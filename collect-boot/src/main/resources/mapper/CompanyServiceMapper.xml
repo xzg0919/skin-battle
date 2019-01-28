@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.mapper.CompanyServiceMapper">
+  <select id="selectCompanyServiceByCompanyId" parameterType="long" resultType="java.lang.Integer">
+     	 SELECT
+				count(*)
+			FROM
+				sb_company_service scs
+			LEFT JOIN sb_company sc ON scs.company_id = sc.id
+			WHERE
+			 sc.id =#{companyId}
+            AND scs.del_flag!='1'
+            
+</select>
+</mapper>

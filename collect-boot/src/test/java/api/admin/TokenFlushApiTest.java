@@ -1,0 +1,39 @@
+package api.admin;
+
+import com.alibaba.fastjson.JSON;
+import com.tzj.module.easyopen.util.ApiUtil;
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.UUID;
+
+/**
+ * 
+ * @author Michael_Wang
+ *
+ */
+public class TokenFlushApiTest {
+    public static void main(String[] args) throws Exception {
+        String api="http://localhost:8080/admin/api";
+
+
+        HashMap<String,Object> param=new HashMap<>();
+        param.put("name","admin.token.flush");
+        param.put("version","1.0");
+        param.put("format","json");
+        param.put("token","F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CERH5SHVK5VFUCPIWVF7FTVZNCPSETCYWSIQUPXLGOFKMADQBRNAD3WA5QFHLLJYVHVHWSUDMQVNDVCVRZE4RUOLVUQBC63GQI4DTF5WKH7UBKDWL4LFJSOLLQZCZPOSELKKAZNC6HPFVSBUHIJPEBR2CYXGOWNFEBSK7U6QDXV3ZGNUG5G776EEZFAQNUU2B5LGKS42BZE7BIVVAX7BHZQBR6LLA");
+        param.put("app_key", "app_id_4");
+        param.put("timestamp", Calendar.getInstance().getTimeInMillis());
+        param.put("nonce", UUID.randomUUID().toString());
+
+        String jsonStr = JSON.toJSONString(param);
+        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_998877");
+        param.put("sign", sign);
+
+        Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
+        String resultJson=response.body().string();
+        System.out.println(resultJson);
+    }
+}

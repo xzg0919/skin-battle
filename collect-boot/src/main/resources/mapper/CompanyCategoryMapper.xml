@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.mapper.CompanyCategoryMapper">
+	<select id="selectCompany" parameterType="Integer" resultType="com.tzj.collect.entity.Company">
+		SELECT
+			DISTINCT a.*
+		FROM
+			sb_company a
+		LEFT JOIN sb_company_category b ON a.id = b.company_id
+		LEFT JOIN sb_company_service c ON a.id = c.company_id
+		WHERE
+			b.parent_id = #{categoryId} AND c.community_id = #{communityId} AND b.del_flag = 0 AND a.del_flag = 0 AND c.del_flag = 0
+	</select>
+
+
+	
+	<select id="selectCategoryByCompanyId" parameterType="long" resultType="java.lang.Integer">
+				SELECT
+			count(*)
+			FROM
+				sb_company_category sbc
+			LEFT JOIN sb_company sc ON sbc.company_id = sc.id
+			AND sc.id =#{companyId}
+            AND sc.del_flag='0'
+
+	</select>
+	<select id= "getCategoryData" parameterType="String" resultType="com.tzj.collect.api.business.result.CategoryResult">
+		SELECT
+			sc.id,
+			sc.name_
+		FROM
+			sb_category sc
+		WHERE
+			sc.del_flag = 0
+		AND sc.level_ = 0
+		AND sc.unuseful = 0
+		AND sc.title IN (
+			(
+				SELECT
+				IF (
+					(
+						SELECT
+							COUNT(*)
+						FROM
+							sb_company_service scs
+						WHERE
+							scs.del_flag = 0
+						AND scs.company_id = #{companyId}
+					) > 0,
+					'2',
+					NULL
+				) AS title
+			),
+			'1'
+		)
+	</select>
+	<select id="getOwnnerPrice" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			FORMAT(sccp.price,2) AS price,
+			sccp.unit,
+			sc.name_,
+			sc.id,
+			sc.icon,
+			b.name_ AS parentName,
+			b.id AS parentId,
+			sc.is_old_exchange_new AS isOldExchangeNew
+		FROM
+			sb_company_category sccp
+		INNER JOIN sb_category sc ON sc.id = sccp.category_id
+		LEFT JOIN sb_category b
+		ON sc.parent_id = b.id
+		WHERE
+			sccp.parent_id = #{categoryBean.id}
+		AND sccp.company_id = #{companyId} 
+		AND sccp.price > 0
+		AND sccp.del_flag = 0
+		AND b.del_flag = 0
+		ORDER BY sc.code_ ASC
+	</select>
+	<select id="getOwnnerNoPrice" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			FORMAT(sccp.price,2) AS price,
+			sccp.unit,
+			sc.name_,
+			sc.id,
+			sc.icon,
+			b.name_ AS parentName,
+			b.id AS parentId,
+			sc.is_old_exchange_new AS isOldExchangeNew
+		FROM
+			sb_company_category sccp
+		INNER JOIN sb_category sc ON sc.id = sccp.category_id
+		LEFT JOIN sb_category b
+		ON sc.parent_id = b.id
+		WHERE
+			sccp.parent_id = #{categoryBean.id}
+		AND sccp.company_id = #{companyId} 
+		AND sccp.price = 0
+		AND sccp.del_flag = 0
+		AND b.del_flag = 0
+		ORDER BY sc.code_ ASC
+	</select>
+	<select id="getNoPrice" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			FORMAT(0,2) AS price, 
+			sccp.unit, 
+			sc.name_, 
+			sc.id, 
+			sc.icon,
+			b.name_ AS parentName,
+			b.id AS parentId,
+			sc.is_old_exchange_new AS isOldExchangeNew
+		FROM
+			sb_company_category sccp
+		INNER JOIN sb_category sc ON sc.id = sccp.category_id
+		LEFT JOIN sb_category b
+		ON sc.parent_id = b.id
+		WHERE
+			sccp.parent_id = #{categoryBean.id}
+		AND sccp.company_id = #{companyId}
+		AND sccp.del_flag = 0
+		AND b.del_flag = 0
+		ORDER BY sc.code_ ASC
+	</select>
+	<select id="getOwnnerPriceApp" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			FORMAT(sccp.price,2) AS price,
+			sccp.unit,
+			sc.name_,
+			sc.id,
+			sc.icon
+		FROM 
+			sb_company_category sccp 
+		INNER JOIN sb_category sc ON sc.id = sccp.category_id 
+		WHERE
+			sccp.parent_id = #{categoryBean.id} 
+		AND sccp.company_id = #{companyId} 
+		AND (FORMAT(sccp.price,2) > 0 OR sc.unuseful = '1')
+		AND sccp.del_flag = 0
+		AND sc.del_flag = 0
+		ORDER BY sc.code_ ASC
+	</select>
+	
+	<!-- <select id="getAvgPrice" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			ROUND(AVG(sccp.price), 2) AS price,
+			sccp.unit,
+			sc.name_,
+			sc.id,
+			sc.icon
+		FROM
+		sb_category sc
+		LEFT  JOIN sb_company_category sccp ON sc.id = sccp.category_id
+		WHERE
+			sc.parent_id = #{categoryBean.id}
+		GROUP BY
+			sc.id
+		ORDER BY
+			sc.code_ ASC;
+	</select> -->
+	<!-- 获取市场价格 -->
+	<select id="getAvgPrice" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			FORMAT(sc.market_price, 2) AS price,
+			sc.name_,
+			sc.id,
+			sc.icon,
+			sc.unit,
+			b.name_ AS parentName,
+			b.id AS parentId,
+			sc.is_old_exchange_new AS isOldExchangeNew
+		FROM
+		sb_category sc
+		LEFT JOIN sb_category b
+		ON sc.parent_id = b.id
+		WHERE
+			sc.parent_id = #{categoryBean.id} 
+		AND sc.price > 0
+		AND sc.del_flag = 0
+		GROUP BY
+			sc.id
+		ORDER BY
+			sc.code_ ASC;
+	</select>
+	<select id="getAvgNoPrice" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			FORMAT(sc.market_price, 2) AS price,
+			sc.name_,
+			sc.id,
+			sc.icon,
+			sc.unit,
+			b.name_ AS parentName,
+			b.id AS parentId,
+			sc.is_old_exchange_new AS isOldExchangeNew
+		FROM
+		sb_category sc
+		LEFT JOIN sb_category b
+		ON sc.parent_id = b.id
+		WHERE
+			sc.parent_id = #{categoryBean.id} 
+		AND sc.price = 0
+		AND sc.del_flag = 0
+		GROUP BY
+			sc.id
+		ORDER BY
+			sc.code_ ASC;
+	</select>
+	<select id="getAvgPriceApp" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			FORMAT(sc.market_price, 2) AS price,
+			sc.name_,
+			sc.id,
+			sc.icon,
+			sc.unit
+		FROM
+		sb_category sc
+		WHERE
+			sc.parent_id = #{categoryBean.id} 
+		AND (FORMAT(sc.market_price, 2) > 0 OR sc.unuseful = '1')
+		AND sc.del_flag = 0
+		GROUP BY
+			sc.id
+		ORDER BY
+			sc.code_ ASC;
+	</select>
+
+	
+	<select id="selectComCateAttOptPrice" parameterType="com.tzj.collect.api.business.param.ComIdAndCateOptIdBean" resultType="com.tzj.collect.api.business.result.BusinessCategoryResult">
+		SELECT
+			acao.id AS attOptionId,
+			acao.name_ AS attOptionName,
+			sccao.id AS comOptPriceId,
+			sccao.attr_option_price AS comOptPrice, 
+			acao.is_special AS isSpecial, 
+			sccao.special_price AS specialPrice 
+		FROM
+			sb_category_attr_option acao
+		LEFT JOIN (
+			SELECT
+				sccao.id,
+				sccao.attr_option_price,
+				sccao.category_attr_option_id, 
+				sccao.special_price 
+			FROM
+				sb_company_category_attr_option sccao
+			WHERE
+				sccao.del_flag = 0
+				AND sccao.company_id = #{companyId}
+		) sccao ON sccao.category_attr_option_id = acao.id
+		WHERE
+			acao.del_flag = 0 AND acao.category_attr_id =  #{cateOptId};
+	</select>
+	<select id="priceIsAvailable" parameterType="com.tzj.collect.api.business.param.ComIdAndCateOptIdBean" resultType = "String">
+		SELECT
+			SUM(minPrice.minPrice) AS minSUM
+		FROM
+			(
+				SELECT
+					scaoSca.id,
+					scaoSca.name_,
+					Min(
+						IFNULL(acaoPrice.comOptPrice, 0)
+					) AS minPrice
+				FROM
+					(
+						SELECT
+							sca.id,
+							sca.name_,
+							scao.id AS attrId,
+							scao.name_ AS attrName
+						FROM
+							sb_category_attr sca
+						INNER JOIN sb_category_attr_option scao ON sca.id = scao.category_attr_id
+						WHERE
+							sca.category_id = #{categoryId}
+					) scaoSca
+				INNER JOIN (
+					SELECT
+						acao.id AS attOptionId,
+						acao.name_ AS attOptionName,
+						sccao.id AS comOptPriceId,
+						sccao.attr_option_price AS comOptPrice
+					FROM
+						sb_category_attr_option acao
+					LEFT JOIN (
+						SELECT
+							sccao.id,
+							sccao.attr_option_price,
+							sccao.category_attr_option_id
+						FROM
+							sb_company_category_attr_option sccao
+						WHERE
+							sccao.del_flag = 0
+						AND sccao.company_id = #{companyId}
+					) sccao ON sccao.category_attr_option_id = acao.id
+					WHERE
+						acao.del_flag = 0
+				) acaoPrice ON acaoPrice.attOptionId = scaoSca.attrId
+				GROUP BY
+					scaoSca.id
+			) minPrice
+	</select>
+	
+	
+	 <update id="updateHousePrice" parameterType="com.tzj.collect.entity.CompanyCategory">
+		 UPDATE sb_company_category SET price = #{price} WHERE category_id = #{categoryId} AND company_id = #{categoryId} 
+	 </update>
+	 
+	<select id="selectByCategoryId" parameterType="int" resultType="com.tzj.collect.entity.CompanyCategory">
+		select * from sb_company_category where category_id = #{param1}
+	</select>
+	
+	<insert id="insertPrice" parameterType="com.tzj.collect.entity.CompanyCategory">
+		INSERT sb_company_category (category_id,parent_id,parent_ids,company_id,price,unit,create_date,update_date,del_flag)
+		 VALUES(#{categoryId},#{parentId},#{parentIds},#(companyId),#{price},#{unit},NOW(),NOW(),#{delFlag});
+	</insert>
+	
+	<select id="selectPriceByAttrId" parameterType="String" resultType="com.tzj.collect.entity.CompanyCategory">
+		SELECT scc.* FROM sb_company_category scc 
+		LEFT JOIN sb_category sc 
+		ON scc.category_id=sc.id
+		LEFT JOIN sb_category_attr sca
+		ON sc.id = sca.category_id
+		WHERE sca.id =#{id}
+		 and scc.company_id = #{companyId}
+	</select>
+
+	</mapper>

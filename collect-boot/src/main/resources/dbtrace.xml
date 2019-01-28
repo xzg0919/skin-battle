@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="dbtrace.xsd"></root>
+
+<monitor>
+<!-- 是否开启sql监控 -->
+<queryLog>true</queryLog>
+
+<!-- 只打印指定耗时及以上的sql语句，单位毫秒 -->
+<queryLogThreshold>500</queryLogThreshold>
+
+<!-- 开启sql监控，是否打印耗调用栈 -->
+<queryLogTrace>true</queryLogTrace>
+
+<!-- 显示sql打印的日子文件路径，（必须添加文件Logger） -->
+<queryLogFile></queryLogFile>
+
+<!-- 日志组件配置 -->
+<loggers>
+    <!-- 添加 日志打印组件 ，也可以继承AbstractLogger类，实现相应方法  -->
+    <!--
+    <logger>john.walker.log.ConsoleLogger</logger>
+    -->
+    <logger>john.walker.log.FileLogger</logger>
+    <logger>john.walker.log.DingDingLogger</logger>
+    <!-- <logger>john.walker.log.Log4jLogger</logger> -->
+</loggers>
+
+<!-- 正则表达式过滤器，若开启调用栈输出，会忽略以下配置的调用栈 -->
+<excludes>
+    <exclude>org.apache.*</exclude>
+    <exclude>java.*</exclude>
+    <exclude>javax.*</exclude>
+    <exclude>com.sun.*</exclude>
+    <exclude>oracle.*</exclude>
+    <exclude>com.alibaba.druid*</exclude>
+    <exclude>*$$EnhancerByCGLIB$$*</exclude>
+    <exclude>org.mortbay.*</exclude>
+    <exclude>sun.reflect.*</exclude>
+    <exclude>org.eclipse.*</exclude>
+    <exclude>org.codehaus.*</exclude>
+</excludes>
+
+<!-- 过滤不需要打印的SQL -->
+<sqlExcludes>
+    <exclude>SELECT 1 from dual</exclude>
+    <exclude>SELECT 'x'</exclude>
+</sqlExcludes>
+
+<appName>@@收呗@@</appName>
+<dingdingWebHook>https://oapi.dingtalk.com/robot/send?access_token=6ecdd910e4bd9320772be0eac074eb7affff9d21e82924c5db53abcad8ec7a77</dingdingWebHook>
+</monitor>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.mapper.AreaMapper">
+
+	<select id="selectAreaByCouOrStrOrCom"  resultType="com.tzj.collect.api.admin.param.AdminCommunityBean">
+		SELECT
+			countyStreet.countyId,
+			countyStreet.countyName,
+			countyStreet.streetId,
+			countyStreet.streetName,
+			sc.id AS communityId,
+			sc.name_ AS communityName
+		FROM
+			(
+				SELECT
+					sa.id AS countyId,
+					sa.area_name AS countyName,
+					sa1.id AS streetId,
+					sa1.area_name AS streetName
+				FROM
+					sb_area sa
+				INNER JOIN sb_area sa1 ON sa.id = sa1.parent_id
+			) countyStreet
+		LEFT JOIN sb_community sc ON countyStreet.streetId = sc.area_id
+		WHERE
+			countyStreet.countyId = #{countyId}
+			<if test="streetId != null and streetId != ''">
+				AND countyStreet.streetId = #{streetId}
+			</if>
+			<if test="communityId != null and communityId != ''">
+				AND sc.id  = #{communityId}
+			</if>   
+	</select>
+	<select id="getAred" resultType="Map" parameterType="String">
+		SELECT SUM(d.road) as roadNum,SUM(d.community) as communityNum,COUNT(*) as areaNum FROM 
+		(SELECT COUNT(*) AS road,SUM(c.count) as community,b.parent_id as area FROM sb_area b  
+		LEFT JOIN (SELECT DISTINCT a.area_id AS areaid ,COUNT(*) AS count FROM sb_company_service a  WHERE a.company_id = #{id} GROUP BY a.area_id) as c 
+		ON b.id = c.areaid 
+		WHERE c.areaid IS NOT NULL 
+		AND c.count is NOT NULL 
+		GROUP BY b.parent_id ) as d 
+	</select>
+</mapper>

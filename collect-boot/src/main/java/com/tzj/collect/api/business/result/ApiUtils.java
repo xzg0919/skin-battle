@@ -1,0 +1,16 @@
+package com.tzj.collect.api.business.result;
+
+import java.text.DecimalFormat;
+
+public class ApiUtils {
+
+/**
+  * 将数据保留两位小数
+  */
+    public static double privatedoublegetTwoDecimal(double num) {
+          DecimalFormat dFormat=new DecimalFormat("#.00");
+          String yearString=dFormat.format(num);
+          Double temp= Double.valueOf(yearString);
+          return temp;
+    }
+}
