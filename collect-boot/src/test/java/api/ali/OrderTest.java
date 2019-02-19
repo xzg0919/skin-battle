@@ -1,6 +1,7 @@
 package api.ali;
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.module.api.utils.JwtUtils;
@@ -35,14 +36,14 @@ public class OrderTest {
                 System.out.println("反向編譯 token是："+subjectStr);
 
                 //String api="http://open.mayishoubei.com/ali/api";
-                String api="http://localhost:9000/ali/api";
+                String api="http://localhost:9090/ali/api";
 //
                 OrderBean orderBean = new OrderBean();
                 orderBean.setStatus("0");
                 orderBean.setPagebean(new PageBean());
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","order.orderlist");
+                param.put("name","member.getAuthCode");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -50,7 +51,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",orderBean);
+                param.put("data",new MemberBean());
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

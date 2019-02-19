@@ -1,10 +1,12 @@
 package com.tzj.collect.api.business;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.BusinessRecyclerBean;
 import com.tzj.collect.api.business.param.RecyclerServiceBean;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.tzj.collect.api.common.websocket.AppWebSocketServer;
 import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.entity.CompanyRecycler;
@@ -13,16 +15,14 @@ import com.tzj.collect.service.CompanyRecyclerService;
 import com.tzj.collect.service.OrderEvaluationService;
 import com.tzj.collect.service.RecyclerCommunityService;
 import com.tzj.collect.service.RecyclersService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
+import com.tzj.module.easyopen.util.ApiUtil;
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.InetAddress;
+import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
@@ -37,6 +37,8 @@ public class BusinessRecyclerApi {
 	private OrderEvaluationService orderEvaluationService;
 	@Autowired
 	private CompanyRecyclerService companyRecyclerService;
+	@Autowired
+	private AppWebSocketServer appWebSocketServer;
 	/**
 	 * 通过回收员姓名,id返回某公司回收人员列表
 	* @Title: getRecyclerList
@@ -251,10 +253,47 @@ public class BusinessRecyclerApi {
 	@Api(name = "business.recycle.saveRecyclersRange", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public Object saveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+	public Object saveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) throws Exception{
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return recycleService.saveRecyclersRange(recyclersServiceRangeBean,companyAccount.getCompanyId());
+		String result = recycleService.saveRecyclersRange(recyclersServiceRangeBean,companyAccount.getCompanyId()).toString();
+			String api="http://172.19.182.58:9090/business/api";
+			if("172.19.182.58".equals(InetAddress.getLocalHost().getHostAddress())){
+				api = "http://172.19.182.59:9090/business/api";
+			}
+			HashMap<String,Object> param=new HashMap<>();
+			param.put("name","business.recycle.sendMessage");
+			param.put("version","1.0");
+			param.put("format","json");
+			param.put("app_key","app_id_3");
+			param.put("timestamp", Calendar.getInstance().getTimeInMillis());
+			param.put("nonce", UUID.randomUUID().toString());
+			param.put("data",recyclersServiceRangeBean);
+			String jsonStr = JSON.toJSONString(param);
+			String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");
+			param.put("sign", sign);
+			System.out.println("请求的参数是 ："+JSON.toJSONString(param));
+			Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
+			String resultJson=response.body().string();
+			System.out.println("返回的参数是 ："+resultJson);
+			return result;
 	}
+	/**
+	 * 保存业务经理，和下属回收人员的信息
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.recycle.sendMessage", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public void sendMessage(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+		try {
+			appWebSocketServer.sendInfo(recyclersServiceRangeBean.getRecycleId().toString(), "你是回收经理");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * 保存业务经理更改区域信息
 	 * @author wangcan

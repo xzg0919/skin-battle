@@ -2,8 +2,15 @@ package com.tzj.collect.controller;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.ali.param.OrderBean;
+import com.tzj.collect.entity.EnterpriseCode;
+import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
+import com.tzj.collect.service.EnterpriseCodeService;
+import com.tzj.collect.service.OrderService;
 import com.tzj.collect.service.PaymentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -12,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -28,6 +36,10 @@ public class NotifyController {
 
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private EnterpriseCodeService enterpriseCodeService;
 
 
     /**
@@ -102,14 +114,45 @@ public class NotifyController {
                     payment.setBuyerLogonId(params.get("buyer_logon_id"));
 
                     paymentService.insertOrUpdate(payment);
-
+                    //給用戶轉賬
                     paymentService.transfer(payment);
+
+                    //根據order_no查询相关订单
+                    Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
+                    if(null != order&&order.getIsScan().equals("0")){
+                    //修改订单状态
+                    OrderBean orderBean = new OrderBean();
+                    orderBean.setId(order.getId().intValue());
+                    orderBean.setStatus("3");
+                    orderBean.setAmount(order.getGreenCount());
+                    orderService.modifyOrderSta(orderBean);
+                        //判断是否有券码完成转账
+                        if(!StringUtils.isBlank(order.getEnterpriseCode())){
+                            EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
+                            //判断券码是否存在并且未使用
+                            if(null!=enterpriseCode){
+                                //储存转账信息
+                                Payment payments = new Payment();
+                                payments.setAliUserId(order.getAliUserId());
+                                payments.setTradeNo("1");
+                                payments.setPrice(enterpriseCode.getPrice());
+                                payments.setRecyclersId(order.getRecyclerId().longValue());
+                                payments.setOrderSn(order.getOrderNo());
+                                paymentService.insert(payments);
+                                //给用户转账
+                                paymentService.transfer(payments);
+                                enterpriseCode.setReceiveDate(new Date());
+                                enterpriseCode.setIsUse("2");
+                                enterpriseCodeService.updateById(enterpriseCode);
+                            }
+                        }
+                    }
                 }
 
             } else {
                 return "failure";
             }
-        } catch (AlipayApiException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "failure";
         }

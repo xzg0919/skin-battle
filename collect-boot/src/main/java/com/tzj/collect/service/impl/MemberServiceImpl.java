@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.common.constant.AlipayConst;
+import com.tzj.collect.common.redis.RedisUtil;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.mapper.MemberMapper;
 import com.tzj.collect.service.*;
@@ -43,6 +44,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	private PiccWaterService piccWaterService;
 	@Autowired
 	private PiccInsurancePolicyService piccInsurancePolicyService;
+	@Autowired
+	private RedisUtil redisUtil;
 
     @Override
     public Member findMemberByAliId(String aliMemberId) {
@@ -69,7 +72,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Transactional
 	@Override
 	public Object getAuthCode(String authCode,String state,String cityName,String source) {
-    	
     	Map<String,Object> resultMap = new HashMap<String,Object>();
 		System.out.println("--------拿到的参数state是："+state+"---拿到的cityName参数是 ： "+cityName);
 		Area area = null;
@@ -156,11 +158,21 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			}
 			member.setCardNo(cardNo);
 			member.setAppId(appId);
-			Member member1 = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", userId));
-			if(null!=member1){
-				throw new ApiException("用户已存在");
+			Object obj = null;
+			try {
+				obj = redisUtil.get(member.getAliUserId());
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			if (obj != null){
+				throw new ApiException("用户已注册");
 			}
 			this.insert(member);
+			try {
+				redisUtil.set(member.getAliUserId(),member.getId(),10);
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 		}else {
 			member.setAliUserId(userId);
 			if ("XCX".equals(source)){
@@ -275,6 +287,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		Double greenCount = 0.0;
 		Integer insuranceId = null;
 		String title = null;
+		String defeatMsg = "";
 		//查询该用户是否有保单
 		PiccOrder piccOrder = piccOrderService.selectOne(new EntityWrapper<PiccOrder>().eq("member_id", memberId).eq("del_flag", 0).in("status_","0,2,4"));
 		if (null != piccOrder){
@@ -282,6 +295,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 				isPiccInsurance = "YES";
 			}else if(piccOrder.getStatus().getValue() == PiccOrder.PiccOrderType.RECEIVE.getValue()||piccOrder.getStatus().getValue() == PiccOrder.PiccOrderType.WAIT.getValue()){
 				isPiccInsurance = "ING";
+			}
+		}else{
+			List<PiccOrder> piccOrderList = piccOrderService.selectList(new EntityWrapper<PiccOrder>().eq("member_id", memberId).eq("del_flag", 0).eq("status_", "1").orderBy("create_date", false));
+			if(null != piccOrderList&&!piccOrderList.isEmpty()){
+				defeatMsg = piccOrderList.get(0).getCancelReason();
 			}
 		}
 		//判断是否有保额待领取
@@ -312,6 +330,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		resultMap.put("title",title);
 		resultMap.put("piccOrder",piccOrder);
 		resultMap.put("member",member);
+		resultMap.put("defeatMsg",defeatMsg);
 		return resultMap;
 	}
 

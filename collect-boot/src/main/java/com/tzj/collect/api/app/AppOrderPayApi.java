@@ -1,6 +1,7 @@
 package com.tzj.collect.api.app;
 
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.app.param.OrderPayParam;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order;
@@ -69,12 +70,24 @@ public class AppOrderPayApi {
         }else{
             //判断订单是否支付
             if(payment.getStatus()==1){
+                //修改订单状态
+                OrderBean orderBean = new OrderBean();
+                orderBean.setId(order.getId().intValue());
+                orderBean.setStatus("3");
+                orderBean.setAmount(order.getGreenCount());
+                orderService.modifyOrderSta(orderBean);
                 return "订单已支付";
             }
             //判断回收人员是否支付成功
             if(!StringUtils.isBlank(payment.getTradeNo())){
                 AlipayTradeQueryResponse aliPayment = paymentService.getAliPayment(payment.getTradeNo());
                 if ("TRADE_SUCCESS".equals(aliPayment.getTradeStatus())){
+                    //修改订单状态
+                    OrderBean orderBean = new OrderBean();
+                    orderBean.setId(order.getId().intValue());
+                    orderBean.setStatus("3");
+                    orderBean.setAmount(order.getGreenCount());
+                    orderService.modifyOrderSta(orderBean);
                     return "订单已支付";
                 }
             }

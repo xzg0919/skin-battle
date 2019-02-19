@@ -321,6 +321,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				}
 			}
 		}
+		//删除上次储存的记录
+		try{
+			orderPicAchService.delete(new EntityWrapper<OrderPicAch>().eq("order_id",order.getId()));
+			orderItemAchService.delete(new EntityWrapper<OrderItemAch>().eq("order_id",order.getId()));
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		order.setAchRemarks(orderbean.getAchRemarks());
 		order.setSignUrl(orderbean.getSignUrl());
 		if (StringUtils.isNotBlank(orderbean.getAchPrice())) {
@@ -354,26 +361,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				flag = orderPicAchService.insert(orderPicc);
 			}
 		}
-		//修改订单状态
-		this.modifyOrderSta(orderbean);
-		//判断是否有券码完成转账
-		if(!StringUtils.isBlank(order.getEnterpriseCode())){
-			EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
-			//判断券码是否存在并且未使用
-			if(null!=enterpriseCode){
-				//储存转账信息
-				Payment payment = new Payment();
-				payment.setAliUserId(order.getAliUserId());
-				payment.setTradeNo("1");
-				payment.setPrice(enterpriseCode.getPrice());
-				payment.setRecyclersId(order.getRecyclerId().longValue());
-				payment.setOrderSn(order.getOrderNo());
-				paymentService.insert(payment);
-				//给用户转账
-				paymentService.transfer(payment);
-				enterpriseCode.setReceiveDate(new Date());
-				enterpriseCode.setIsUse("2");
-				enterpriseCodeService.updateById(enterpriseCode);
+		if("1".equals(order.getIsCash())) {
+			//修改订单状态
+			this.modifyOrderSta(orderbean);
+			//判断是否有券码完成转账
+			if (!StringUtils.isBlank(order.getEnterpriseCode())) {
+				EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use", 1));
+				//判断券码是否存在并且未使用
+				if (null != enterpriseCode) {
+					//储存转账信息
+					Payment payment = new Payment();
+					payment.setAliUserId(order.getAliUserId());
+					payment.setTradeNo("1");
+					payment.setPrice(enterpriseCode.getPrice());
+					payment.setRecyclersId(order.getRecyclerId().longValue());
+					payment.setOrderSn(order.getOrderNo());
+					paymentService.insert(payment);
+					//给用户转账
+					paymentService.transfer(payment);
+					enterpriseCode.setReceiveDate(new Date());
+					enterpriseCode.setIsUse("2");
+					enterpriseCodeService.updateById(enterpriseCode);
+				}
 			}
 		}
 		return flag;
