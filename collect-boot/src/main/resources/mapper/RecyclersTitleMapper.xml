@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.mapper.RecyclersTitleMapper">
+
+<select id="getRecyclerTitleList" parameterType="String" resultType="Map">
+SELECT
+	a.id AS titleId,
+	a.name_ AS titleName,
+	IF (c.id IS NULL, 1, 2) AS isChoose
+FROM
+	sb_title a
+LEFT JOIN (
+	SELECT
+		b.id,
+		b.title_id,
+		b.recycle_id
+	FROM
+		sb_recyclers_title b
+	WHERE
+		b.recycle_id = #{recycleId}
+	AND b.del_flag = 0
+) c ON c.title_id = a.id
+</select>
+
+
+
+
+
+</mapper>
