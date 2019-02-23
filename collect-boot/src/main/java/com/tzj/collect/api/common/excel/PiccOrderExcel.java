@@ -127,7 +127,10 @@ public class PiccOrderExcel {
                             piccOrder.setMemberName(memberName.substring(0, memberName.length()-2>0?memberName.length()-2:1));//投保人姓名
                         }else{
                             piccOrder.setMemberName(cell.getStringCellValue());//投保人姓名
-                        }  
+                        }
+                        if(StringUtils.isBlank(piccOrder.getMemberName())){
+                            return resultMap;
+                        }
                     } else if (c == 1) {  
                         if(cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC){  
                             String cateDate = String.valueOf(cell.getNumericCellValue());

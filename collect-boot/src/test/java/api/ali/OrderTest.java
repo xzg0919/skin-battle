@@ -1,9 +1,7 @@
 package api.ali;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.param.MemberBean;
-import com.tzj.collect.api.ali.param.OrderBean;
-import com.tzj.collect.api.ali.param.PageBean;
+import com.tzj.collect.api.ali.param.*;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -24,7 +22,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("22920", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("8401", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -38,12 +36,11 @@ public class OrderTest {
                 //String api="http://open.mayishoubei.com/ali/api";
                 String api="http://localhost:9090/ali/api";
 //
-                OrderBean orderBean = new OrderBean();
-                orderBean.setStatus("0");
-                orderBean.setPagebean(new PageBean());
+                CategoryBean categoryBean = new CategoryBean();
+                categoryBean.setIsFiveKg("Y");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","member.getAuthCode");
+                param.put("name","category.categoryOneList");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -51,7 +48,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",new MemberBean());
+                param.put("data",null);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

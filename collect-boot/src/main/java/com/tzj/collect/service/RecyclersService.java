@@ -166,6 +166,13 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 */
 	Object getAreaRecyclersRange(String cityId,String recycleId,Integer companyId);
 	/**
+	 * 根据市级Id和回收人员id获取街道信息
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	Object getStreeRecyclersRange(String areaId,String recycleId,Integer companyId);
+	/**
 	 * 获取回收经理人员列表
 	 * @author wangcan
 	 * @param companyId : 企业Id

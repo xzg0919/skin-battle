@@ -19,6 +19,8 @@ public class CategoryBean {
 	private String code;
 	
 	private Integer communityId;//小区id
+
+	private Integer streeId;//街道id
 	
 	private PageBean pageBean;
 	
@@ -39,10 +41,29 @@ public class CategoryBean {
 	 * 区域Id
 	 */
 	private String cityId;
+	/**
+	 * 是否是五公斤废纺衣物回收
+	 */
+	private String isFiveKg;
 	
 	//分类属性
 	private List<CategoryAttrBean> categoryAttr;
-	
+
+	public String getIsFiveKg() {
+		return isFiveKg;
+	}
+
+	public void setIsFiveKg(String isFiveKg) {
+		this.isFiveKg = isFiveKg;
+	}
+
+	public Integer getStreeId() {
+		return streeId;
+	}
+
+	public void setStreeId(Integer streeId) {
+		this.streeId = streeId;
+	}
 
 	public Integer getId() {
 		return id;

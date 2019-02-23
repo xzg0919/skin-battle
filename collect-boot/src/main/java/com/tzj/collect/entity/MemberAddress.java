@@ -74,7 +74,20 @@ public class MemberAddress extends  DataEntity<Long>{
 	 */
 	@TableField(exist = false)
 	private String isHousehold;
-	 
+	/**
+	 * 是否回收5公斤废纺衣物
+	 */
+	@TableField(exist = false)
+	private String isFiveKg;
+
+	public String getIsFiveKg() {
+		return isFiveKg;
+	}
+
+	public void setIsFiveKg(String isFiveKg) {
+		this.isFiveKg = isFiveKg;
+	}
+
 	public String getMemberId() {
 		return memberId;
 	}

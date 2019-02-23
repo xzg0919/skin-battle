@@ -68,7 +68,7 @@ public class CategoryApi {
 		}else if (CategoryType.HOUSEHOLD.toString().equals(categoryBean.getTitle())) {
 			title = CategoryType.HOUSEHOLD.getValue();
 		}
-		 return categoryService.topList(categoryBean.getLevel(), title);		 				 
+		 return categoryService.topList(categoryBean.getLevel(), title,"0");
 	 }
 	
 	
@@ -196,10 +196,10 @@ public class CategoryApi {
 	@Api(name = "category.categoryOneList", version = "1.0")
 	@SignIgnore
 	@AuthIgnore
-	public Object categoryOneList(){
+	public Object categoryOneList(CategoryBean categoryBean){
 		Map<String,Object> resultMap = new HashMap<String,Object>();
-		resultMap.put("DIGITAL",categoryService.topList(0, 1));
-		resultMap.put("HOUSEHOLD",categoryService.topList(0, 2));
+		resultMap.put("DIGITAL",categoryService.topList(0, 1,categoryBean.getIsFiveKg()));
+		resultMap.put("HOUSEHOLD",categoryService.topList(0, 2,categoryBean.getIsFiveKg()));
 		return resultMap;
 	}
 	/**

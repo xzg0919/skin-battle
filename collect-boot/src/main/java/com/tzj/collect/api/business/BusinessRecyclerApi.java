@@ -321,6 +321,19 @@ public class BusinessRecyclerApi {
 		return recycleService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(),recyclersServiceRangeBean.getRecycleId(),companyAccount.getCompanyId());
 	}
 	/**
+	 * 根据市级Id和回收人员id获取街道信息
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.recycle.getStreeRecyclersRange", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getStreeRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return recycleService.getStreeRecyclersRange(recyclersServiceRangeBean.getAreaId(),recyclersServiceRangeBean.getRecycleId(),companyAccount.getCompanyId());
+	}
+	/**
 	 * 获取回收经理人员列表
 	 * @author wangcan
 	 * @param

@@ -90,6 +90,13 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	 */
 	public List<Map<String,Object>> getAreaRecyclersRange(@Param("cityId")String cityId,@Param("recycleId")String recycleId);
 	/**
+	 * 根据市级Id和回收人员id获取街道信息
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	public List<Map<String,Object>> getStreeRecyclersRange(@Param("areaId")String areaId,@Param("recycleId")String recycleId);
+	/**
 	 * 获取回收经理人员列表
 	 * @author wangcan
 	 * @param companyId : 企业Id

@@ -26,7 +26,7 @@ public interface CategoryService extends IService<Category> {
 	* @throws
 	*/
 	
-	List<Category> topList(int level, Serializable title);
+	List<Category> topList(int level, Serializable title,String isFiveKg);
 	/**
 	* @Title: getCategoryListByLevel
 	* @Description: 【】

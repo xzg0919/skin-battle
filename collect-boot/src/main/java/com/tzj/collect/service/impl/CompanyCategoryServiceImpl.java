@@ -13,10 +13,7 @@ import com.tzj.collect.entity.CompanyCategory;
 import com.tzj.collect.entity.CompanyServiceRange;
 import com.tzj.collect.mapper.CompanyCategoryMapper;
 import com.tzj.collect.mapper.CompanyMapper;
-import com.tzj.collect.service.CategoryService;
-import com.tzj.collect.service.CommunityService;
-import com.tzj.collect.service.CompanyCategoryService;
-import com.tzj.collect.service.CompanyServiceService;
+import com.tzj.collect.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +50,8 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	private CompanyCategoryMapper companyCategoryMapper;
 	@Autowired
 	private CommunityService communityService;
+	@Autowired
+	private LogisticsCompanyService logisticsCompanyService;
 
 
 	/**
@@ -104,8 +103,15 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 					noPriceList = this.getOwnnerNoPrice(categoryBean,Integer.parseInt(company.getId().toString()));
 				}
 			}else{
-				priceList = this.getAvgPrice(categoryBean);
-				noPriceList = this.getAvgNoPrice(categoryBean);
+				//判断是否有公司回收5公斤废纺衣物
+				Integer logisticsId = logisticsCompanyService.selectLogisticeCompanyIds(categoryBean.getId(), categoryBean.getStreeId());
+				if (null != logisticsId){
+					noPriceList =	this.getlogisticsPriceList(0,logisticsId,categoryBean.getId());
+					priceList = this.getlogisticsPriceList(1,logisticsId,categoryBean.getId());
+				}else{
+					priceList = this.getAvgPrice(categoryBean);
+					noPriceList = this.getAvgNoPrice(categoryBean);
+				}
 			}
 			map.put("ComCatePriceList", priceList);
 			map.put("ComCateNoPriceList", noPriceList);
@@ -229,6 +235,10 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	public List<ComCatePrice> getAvgPriceApp(CategoryBean categoryBean) {
 		return comCateMapper.getAvgPriceApp(categoryBean);
 	}
+	public List<ComCatePrice> getlogisticsPriceList(Integer isCash,Integer logisticsId,Integer categoryId) {
+		return comCateMapper.getlogisticsPriceList(isCash,logisticsId,categoryId);
+	}
+
 	@Override
 	public List<BusinessCategoryResult> selectComCateAttOptPrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) {
 		String cateOptId = comIdAndCateOptIdBean.getCateOptId();

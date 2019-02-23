@@ -22,7 +22,10 @@ import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
@@ -127,6 +130,16 @@ public class BusinessCompanyApi {
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getAreasById(CompanyBean companyBean) {
-		return areaService.selectList(new EntityWrapper<Area>().eq("parent_id", companyBean.getAreaId()));
+		List<Map<String,Object>> resultList = new ArrayList<>();
+		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", companyBean.getAreaId()));
+		for (Area area: areaList) {
+			Map<String,Object> resultMap = new HashMap<>();
+			List<Area> streeList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", area.getId()));
+			resultMap.put("streeList",streeList);
+			resultMap.put("areaName",area.getAreaName());
+			resultMap.put("id",area.getId());
+			resultList.add(resultMap);
+		}
+		return resultList;
 	}
 }

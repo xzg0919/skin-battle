@@ -140,6 +140,36 @@
 		AND sc.del_flag = 0
 		ORDER BY sc.code_ ASC
 	</select>
+
+	<select id="getlogisticsPriceList" parameterType="Integer" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			FORMAT(b.price, 2) AS price,
+			a.unit,
+			a.name_,
+			a.id,
+			a.icon,
+			c.name_ AS parentName,
+			c.id AS parentId,
+			a.is_old_exchange_new AS isOldExchangeNew
+		FROM
+			sb_category a
+		LEFT JOIN sb_logistics_company_category b ON a.id = b.category_id
+		LEFT JOIN sb_category c ON a.parent_id = c.id
+		WHERE
+			a.parent_id = #{categoryId}
+		AND b.logistics_id = #{logisticsId}
+		<choose>
+			<when test="isCash == 0">
+				AND b.price = 0
+			</when>
+			<otherwise>
+				AND b.price > 0
+			</otherwise>
+		</choose>
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		ORDER BY a.code_ ASC
+	</select>
 	
 	<!-- <select id="getAvgPrice" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
 		SELECT

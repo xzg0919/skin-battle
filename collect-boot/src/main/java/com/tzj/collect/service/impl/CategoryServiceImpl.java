@@ -51,11 +51,14 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 获取一级类的商品
 	 */
 	@Override
-	public List<Category> topList(int level, Serializable title) {
+	public List<Category> topList(int level, Serializable title,String isFiveKg) {
 		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 		wraper.eq("level_", level);
 		wraper.eq("title", title);
 		wraper.eq("unuseful","0");
+		if ("Y".equals(isFiveKg)){
+			wraper.orderBy("create_date",false);
+		}
 		return this.selectList(wraper);
 	}
 

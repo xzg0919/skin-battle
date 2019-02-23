@@ -80,6 +80,10 @@ public interface CompanyCategoryMapper extends BaseMapper<CompanyCategory>{
 	 * @return
 	 */
 	List<ComCatePrice> getAvgPrice(@Param("categoryBean")CategoryBean categoryBean);
+
+
+
+	List<ComCatePrice> getlogisticsPriceList(@Param("isCash")Integer isCash,@Param("logisticsId")Integer logisticsId,@Param("categoryId")Integer categoryId);
 	/**
 	 * 没在所有的公司服务范围,获取所有的平均价格
 	 * @param orderbean

@@ -31,7 +31,30 @@ public class AreaBean {
 	 * 街道名字
 	 */
 	private String streetName;
+	/**
+	 * 街道Id
+	 */
+	private String streeId;
+	/**
+	 * 区域Id
+	 */
+	private String areaId;
 
+	public String getAreaId() {
+		return areaId;
+	}
+
+	public void setAreaId(String areaId) {
+		this.areaId = areaId;
+	}
+
+	public String getStreeId() {
+		return streeId;
+	}
+
+	public void setStreeId(String streeId) {
+		this.streeId = streeId;
+	}
 
 	public String getAreaName() {
 		return areaName;
