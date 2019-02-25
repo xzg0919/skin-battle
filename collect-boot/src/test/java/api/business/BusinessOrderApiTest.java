@@ -85,12 +85,13 @@ public class BusinessOrderApiTest {
 		recyclersServiceRangeBean.setAreaList(areaList);
 
 		RecyclersServiceRangeBean recyclersServiceRangeBeans = new RecyclersServiceRangeBean();
-		recyclersServiceRangeBeans.setRecycleId("115");
+		recyclersServiceRangeBeans.setRecycleId("121");
+		recyclersServiceRangeBeans.setCityId("737");
 
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.title.getRecyclerTitleList");
+		param.put("name","business.recycle.getAreaRecyclersRange");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");

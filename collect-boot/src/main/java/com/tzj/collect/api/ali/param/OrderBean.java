@@ -185,6 +185,67 @@ public class OrderBean {
 
 	private String enterpriseCode;//以旧换新码
 
+	/**
+	 * 快递总重量
+	 */
+	private String expressAmount;
+	/**
+	 * 快递单号
+	 */
+	private String expressNo;
+	/**
+	 * 快递员姓名
+	 */
+	private String expressName;
+	/**
+	 * 快递员电话
+	 */
+	private String expressTel;
+	/**
+	 * 第三方物流公司ID
+	 */
+	private String logisticsId;
+
+	public String getExpressAmount() {
+		return expressAmount;
+	}
+
+	public void setExpressAmount(String expressAmount) {
+		this.expressAmount = expressAmount;
+	}
+
+	public String getExpressNo() {
+		return expressNo;
+	}
+
+	public void setExpressNo(String expressNo) {
+		this.expressNo = expressNo;
+	}
+
+	public String getExpressName() {
+		return expressName;
+	}
+
+	public void setExpressName(String expressName) {
+		this.expressName = expressName;
+	}
+
+	public String getExpressTel() {
+		return expressTel;
+	}
+
+	public void setExpressTel(String expressTel) {
+		this.expressTel = expressTel;
+	}
+
+	public String getLogisticsId() {
+		return logisticsId;
+	}
+
+	public void setLogisticsId(String logisticsId) {
+		this.logisticsId = logisticsId;
+	}
+
 	public String getStartTime() {
 		return startTime;
 	}

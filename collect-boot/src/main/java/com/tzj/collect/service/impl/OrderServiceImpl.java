@@ -103,6 +103,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private PiccWaterService piccWaterService;
 	@Autowired
 	private CompanyCategoryService companyCategoryService;
+	@Autowired
+	private CompanyStreeService companyStreeService;
 
 	@Override
 	public Order getLastestOrderByMember(Integer memberId) {
@@ -750,7 +752,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public List<Map<String,Object>> outOrderExcel(Integer companyId,String startTime,String endTime){
 		return orderMapper.outOrderExcel(companyId,startTime,endTime);
 	}
-
 	/**
 	 * 根据各种查询条件获取订单列表
 	 *
@@ -1905,4 +1906,99 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 		return "操作成功";
 	}
+	/**
+	 * 保存5公斤废纺衣物的订单
+	 * @return
+	 */
+	@Override
+	public Object savefiveKgOrder(OrderBean orderBean) {
+		boolean flag = false;
+		//根据分类Id查询物流公司分类的信息
+		CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("category_id", orderBean.getCategoryId()).eq("del_flag", 0).eq("company_id", orderBean.getCompanyId()));
+		Order order = new Order();
+		try{
+			order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(orderBean.getArrivalTime()));
+			order.setArrivalPeriod(orderBean.getArrivalPeriod());
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+		try {
+			order.setMemberId(orderBean.getMemberId());
+			order.setOrderNo(orderBean.getOrderNo());
+			order.setAreaId(orderBean.getAreaId());
+			order.setCommunityId(orderBean.getCommunityId());
+			order.setCategoryId(orderBean.getCategoryId());
+			order.setCategoryParentIds(orderBean.getCategoryParentIds());
+			order.setUnit(companyCategory.getUnit());
+			order.setPrice(new BigDecimal(companyCategory.getPrice()));
+			order.setAliUserId(orderBean.getAliUserId());
+			order.setTitle(CategoryType.FIVEKG);
+			order.setCompanyId(orderBean.getCompanyId());
+
+			order.setExpressAmount(new BigDecimal(orderBean.getQty()));
+			order.setAddress(orderBean.getAddress());
+			order.setFullAddress(orderBean.getFullAddress());
+			order.setTel(orderBean.getTel());
+			order.setLinkMan(orderBean.getLinkMan());
+			order.setQty(orderBean.getQty());
+			order.setRemarks(orderBean.getRemarks());
+			this.insert(order);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "FAIL";
+		}
+
+		//储存图片链接
+		OrderPic orderPic = orderBean.getOrderPic();
+		if (orderPic != null) {
+			String origPics = orderPic.getOrigPic();
+			String picUrl = orderPic.getPicUrl();
+			String smallPic = orderPic.getSmallPic();
+			String[] origPicss = origPics.split(",");
+			String[] picUrls = picUrl.split(",");
+			String[] smallPics = smallPic.split(",");
+			OrderPic orderPicc = null;
+			for (int i = 0; i < origPicss.length; i++) {
+				orderPicc = new OrderPic();
+				orderPicc.setOrigPic(origPicss[i]);
+				orderPicc.setPicUrl(picUrls[i]);
+				orderPicc.setSmallPic(smallPics[i]);
+				orderPicc.setOrderId(Integer.parseInt(order.getId() + ""));
+				orderPicService.insert(orderPicc);
+			}
+		}
+		//储存回收人员提交的信息
+		List<OrderItemBean> orderItemList = orderBean.getOrderItemList();
+		if (!orderItemList.isEmpty()) {
+			for (OrderItemBean orderItemBean : orderItemList) {
+				//根据分类Id查询分类信息
+				Category category = categoryService.selectById(orderItemBean.getId());
+				OrderItem orderItem = new OrderItem();
+				orderItem.setOrderId(Integer.parseInt(order.getId() + ""));
+				orderItem.setCategoryId(Integer.parseInt(category.getId() + ""));
+				orderItem.setCategoryName(category.getName());
+				orderItem.setParentId(category.getParentId());
+				orderItem.setParentIds(category.getParentIds());
+				orderItem.setParentName(orderItemBean.getParentName());
+				orderItem.setAmount(orderBean.getQty());
+				orderItem.setUnit(category.getUnit());
+				orderItem.setPrice(StringUtils.isBlank(orderItemBean.getPrice())?category.getPrice().floatValue():Float.parseFloat(orderItemBean.getPrice()));
+				orderItemService.insert(orderItem);
+			}
+		}else {
+			throw new ApiException("网络异常，请重新提交订单");
+		}
+		//储存订单的日志
+		OrderLog orderLog = new OrderLog();
+		orderLog.setOrderId(Integer.parseInt(order.getId().toString()));
+		orderLog.setOpStatusAfter("INIT");
+		orderLog.setOp("待接单");
+		orderLogService.insert(orderLog);
+
+
+
+		return "操作成功";
+	}
+
 }

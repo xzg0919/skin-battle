@@ -145,6 +145,67 @@ public class Order extends DataEntity<Long> {
 	private Double greenCount;
 
 	private String enterpriseCode;//以旧换新码
+	/**
+	 * 快递总重量
+	 */
+	private BigDecimal expressAmount;
+	/**
+	 * 快递单号
+	 */
+	private Integer expressNo;
+	/**
+	 * 快递员姓名
+	 */
+	private String expressName;
+	/**
+	 * 快递员电话
+	 */
+	private Integer expressTel;
+	/**
+	 * 第三方物流公司ID
+	 */
+	private Integer logisticsId;
+
+
+	public BigDecimal getExpressAmount() {
+		return expressAmount;
+	}
+
+	public void setExpressAmount(BigDecimal expressAmount) {
+		this.expressAmount = expressAmount;
+	}
+
+	public Integer getExpressNo() {
+		return expressNo;
+	}
+
+	public void setExpressNo(Integer expressNo) {
+		this.expressNo = expressNo;
+	}
+
+	public String getExpressName() {
+		return expressName;
+	}
+
+	public void setExpressName(String expressName) {
+		this.expressName = expressName;
+	}
+
+	public Integer getExpressTel() {
+		return expressTel;
+	}
+
+	public void setExpressTel(Integer expressTel) {
+		this.expressTel = expressTel;
+	}
+
+	public Integer getLogisticsId() {
+		return logisticsId;
+	}
+
+	public void setLogisticsId(Integer logisticsId) {
+		this.logisticsId = logisticsId;
+	}
 
 	public String getEnterpriseCode() {
 		return enterpriseCode;

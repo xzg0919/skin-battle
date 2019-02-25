@@ -77,32 +77,25 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     public static void main(String[] args) {
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-        AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
-        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-
-        String sn = "2019012210412322322";
-        String subject = "垃圾分类回收订单(收呗):" + sn;
-
-        model.setBody(subject);
-        model.setSubject(subject);
-        model.setOutTradeNo(sn);
-        model.setTimeoutExpress("1c");
-        ExtendParams extendParams = new ExtendParams();
-        extendParams.setSysServiceProviderId("2017011905224137");
-        model.setExtendParams(extendParams);
-        model.setTotalAmount("2");
-        model.setProductCode("QUICK_MSECURITY_PAY");
-        request.setBizModel(model);
-        request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay.jhtml");
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APP_APPID, ALI_APP_PAY_KEY, "json", "UTF-8", ALI_APP_PUBLIC_KEY, "RSA2");
+        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
+        request.setBizContent("{" +
+                "\"out_biz_no\":\""+3919+"\"" +
+                //"\"order_id\":\"20160627110070001502260006780837\"" +
+                "  }");
+        AlipayFundTransOrderQueryResponse response = null;
         try {
-            //这里和普通的接口调用不同，使用的是sdkExecute
-            AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
-            System.out.println("------------"+response.getBody());
-            System.out.println("------------"+response.getOutTradeNo());
+            response = alipayClient.execute(request);
         } catch (AlipayApiException e) {
-            throw new ApiException("系统异常：" + e.getErrMsg());
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+        }
+        System.out.println(response.getBody());
     }
 
     /**

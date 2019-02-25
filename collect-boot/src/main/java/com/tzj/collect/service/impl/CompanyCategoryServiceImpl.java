@@ -41,8 +41,6 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	@Autowired
 	private CategoryService categoryService;
 	@Autowired
-	private CompanyMapper companyMapper;
-	@Autowired
 	private CompanyCategoryMapper comCateMapper;
 	@Autowired
 	private CompanyServiceService companyServiceService;
@@ -51,7 +49,7 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	@Autowired
 	private CommunityService communityService;
 	@Autowired
-	private LogisticsCompanyService logisticsCompanyService;
+	private CompanyStreeService companyStreeService;
 
 
 	/**
@@ -103,11 +101,11 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 					noPriceList = this.getOwnnerNoPrice(categoryBean,Integer.parseInt(company.getId().toString()));
 				}
 			}else{
-				//判断是否有公司回收5公斤废纺衣物
-				Integer logisticsId = logisticsCompanyService.selectLogisticeCompanyIds(categoryBean.getId(), categoryBean.getStreeId());
-				if (null != logisticsId){
-					noPriceList =	this.getlogisticsPriceList(0,logisticsId,categoryBean.getId());
-					priceList = this.getlogisticsPriceList(1,logisticsId,categoryBean.getId());
+				//判断该地址是否回收5公斤废纺衣物
+				Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(categoryBean.getId(), categoryBean.getStreeId());
+				if (null != streeCompanyId){
+					priceList = this.getOwnnerPrice(categoryBean,streeCompanyId);
+					noPriceList = this.getOwnnerNoPrice(categoryBean,streeCompanyId);
 				}else{
 					priceList = this.getAvgPrice(categoryBean);
 					noPriceList = this.getAvgNoPrice(categoryBean);
@@ -235,10 +233,6 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	public List<ComCatePrice> getAvgPriceApp(CategoryBean categoryBean) {
 		return comCateMapper.getAvgPriceApp(categoryBean);
 	}
-	public List<ComCatePrice> getlogisticsPriceList(Integer isCash,Integer logisticsId,Integer categoryId) {
-		return comCateMapper.getlogisticsPriceList(isCash,logisticsId,categoryId);
-	}
-
 	@Override
 	public List<BusinessCategoryResult> selectComCateAttOptPrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) {
 		String cateOptId = comIdAndCateOptIdBean.getCateOptId();

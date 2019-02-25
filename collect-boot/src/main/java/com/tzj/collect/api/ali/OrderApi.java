@@ -53,6 +53,8 @@ public class OrderApi {
 	private EnterpriseProductService enterpriseProductService;
 	@Value("${spring.datasource.username}")
 	private String JdbcName;
+	@Autowired
+	private CompanyStreeService companyStreeService;
 	
 
 	/**
@@ -377,5 +379,40 @@ public class OrderApi {
 			map.put("message","此码不存在");
 			return map;
 		}
+	}
+	/**
+	 * 保存5公斤废纺衣物的订单
+	 * @return
+	 */
+	@Api(name = "order.savefiveKgOrder", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object savefiveKgOrder(OrderBean orderbean){
+//获取当前登录的会员
+		Member member = MemberUtils.getMember();
+		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderbean.getCityId()));
+		if(memberAddress==null) {
+			return "您暂未添加回收地址";
+		}
+		//根据分类Id查询父类分类id
+		Category category = categoryService.selectById(orderbean.getCategoryId());
+		orderbean.setMemberId(member.getId().intValue());
+		orderbean.setAliUserId(member.getAliUserId());
+		orderbean.setCategoryParentIds(category.getParentId().toString());
+		Integer communityId = memberAddress.getCommunityId();
+		String areaId = memberAddress.getAreaId().toString();
+		//判断该地址是否回收5公斤废纺衣物
+		Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAddress.getStreetId());
+		if (streeCompanyId == null ){
+			return "您地址所在区域暂无回收企业";
+		}
+		orderbean.setCompanyId(streeCompanyId);
+		orderbean.setCommunityId(communityId);
+		orderbean.setAreaId(Integer.parseInt(areaId));
+		//随机生成订单号
+		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
+		orderbean.setOrderNo(orderNo);
+		return orderService.savefiveKgOrder(orderbean);
+
 	}
 }

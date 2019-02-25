@@ -36,7 +36,7 @@ public class MemberAddressApi {
 	@Autowired
 	private CompanyShareService companyShareService;
 	@Autowired
-	private LogisticsCompanyService logisticsCompanyService;
+	private CompanyStreeService companyStreeService;
 
 	/**
      * 保存用户的新增地址/修改后保存的地址
@@ -159,8 +159,8 @@ public class MemberAddressApi {
 			memberAddress.setIsHousehold("Y");
 		}
 		//判断该地址是否回收5公斤废纺衣物
-		Integer logisticsId = logisticsCompanyService.selectLogisticeCompanyIds(45, memberAddress.getStreetId());
-		if (null != logisticsId){
+		Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAddress.getStreetId());
+		if (null != streeCompanyId){
 			memberAddress.setIsFiveKg("Y");
 		}else{
 			memberAddress.setIsFiveKg("N");

@@ -318,7 +318,15 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getAreaRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return recycleService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(),recyclersServiceRangeBean.getRecycleId(),companyAccount.getCompanyId());
+		List<Map<String,Object>> areaList = ( List<Map<String,Object>>)recycleService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyAccount.getCompanyId());
+			if (areaList != null){
+				for (Map<String, Object> map:areaList){
+					Object streeList = recycleService.getStreeRecyclersRange(map.get("id").toString(), recyclersServiceRangeBean.getRecycleId(), companyAccount.getCompanyId());
+					map.put("streeList",streeList);
+				}
+			}
+
+		return areaList;
 	}
 	/**
 	 * 根据市级Id和回收人员id获取街道信息

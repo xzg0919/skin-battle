@@ -4,20 +4,17 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableName;
 
 /**
- * 第三方物流公司回收范围表
+ * 物流企业关联街道表
+ * @author wangcan
+ *
  */
-@TableName("sb_logistics_company_area")
-public class LogisticsCompanyArea extends  DataEntity<Long>{
-
-    private Long id ;
+@TableName("sb_company_stree")
+public class CompanyStree extends DataEntity<Long>{
+        private Long id;
     /**
-     * 物流公司Id
+     * 公司Id
      */
-    private Integer logisticsId;
-    /**
-     * 物流公司名称
-     */
-    private String logisticsName;
+    private Integer companyId;
     /**
      * 街道Id
      */
@@ -37,20 +34,12 @@ public class LogisticsCompanyArea extends  DataEntity<Long>{
         this.id = id;
     }
 
-    public Integer getLogisticsId() {
-        return logisticsId;
+    public Integer getCompanyId() {
+        return companyId;
     }
 
-    public void setLogisticsId(Integer logisticsId) {
-        this.logisticsId = logisticsId;
-    }
-
-    public String getLogisticsName() {
-        return logisticsName;
-    }
-
-    public void setLogisticsName(String logisticsName) {
-        this.logisticsName = logisticsName;
+    public void setCompanyId(Integer companyId) {
+        this.companyId = companyId;
     }
 
     public Integer getStreeId() {

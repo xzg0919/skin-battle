@@ -2,6 +2,7 @@ package api.ali;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.ali.param.*;
+import com.tzj.collect.entity.OrderPic;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -9,9 +10,7 @@ import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -36,11 +35,40 @@ public class OrderTest {
                 //String api="http://open.mayishoubei.com/ali/api";
                 String api="http://localhost:9090/ali/api";
 //
-                CategoryBean categoryBean = new CategoryBean();
-                categoryBean.setIsFiveKg("Y");
+                OrderBean orderbean = new OrderBean();
+                orderbean.setCategoryId(46);
+                orderbean.setCityId("737");
+                orderbean.setArrivalTime("2019-01-01");
+                orderbean.setArrivalPeriod("pm");
+                orderbean.setQty(5);
+                orderbean.setAddress("上海市浦东新区洲海路100号");
+                orderbean.setFullAddress("10栋101");
+                orderbean.setTel("18375555555");
+                orderbean.setLinkMan("测试龙建");
+                orderbean.setRemarks("我是回收物描述");
+
+                OrderPic orderPic = new OrderPic();
+                orderPic.setSmallPic("www.mayishoubei.com,www.mayishoubei.com");
+                orderPic.setOrigPic("www.mayishoubei.com,www.mayishoubei.com");
+                orderPic.setPicUrl("www.mayishoubei.com,www.mayishoubei.com");
+                orderbean.setOrderPic(orderPic);
+
+                List<OrderItemBean> orderItemList = new ArrayList<>();
+                OrderItemBean orderItemBean1 = new OrderItemBean();
+                orderItemBean1.setId((long)46);
+                orderItemBean1.setParentName("废纺衣物");
+                orderItemBean1.setPrice("2");
+                orderItemList.add(orderItemBean1);
+                OrderItemBean orderItemBean2 = new OrderItemBean();
+                orderItemBean2.setId((long)47);
+                orderItemBean2.setParentName("废纺衣物");
+                orderItemBean2.setPrice("2.5");
+                orderItemList.add(orderItemBean2);
+
+                orderbean.setOrderItemList(orderItemList);
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","category.categoryOneList");
+                param.put("name","order.savefiveKgOrder");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -48,7 +76,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",null);
+                param.put("data",orderbean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

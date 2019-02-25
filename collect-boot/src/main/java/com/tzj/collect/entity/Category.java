@@ -242,7 +242,8 @@ public class Category extends DataEntity<Long> {
 	public enum CategoryType implements IEnum{
     	DEFUALT(0),    //初始值
     	DIGITAL(1),	//家电数码
-    	HOUSEHOLD(2);	//生活垃圾
+    	HOUSEHOLD(2),	//生活垃圾
+		FIVEKG(3);	//5公斤起收
     	private int value;
 
     	CategoryType(final int value) {
