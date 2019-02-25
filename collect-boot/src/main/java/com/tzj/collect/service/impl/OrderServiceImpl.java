@@ -1933,7 +1933,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setUnit(companyCategory.getUnit());
 			order.setPrice(new BigDecimal(companyCategory.getPrice()));
 			order.setAliUserId(orderBean.getAliUserId());
-			order.setTitle(CategoryType.FIVEKG);
+			order.setTitle(CategoryType.HOUSEHOLD);
 			order.setCompanyId(orderBean.getCompanyId());
 
 			order.setExpressAmount(new BigDecimal(orderBean.getQty()));

@@ -11,10 +11,7 @@ import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.collect.service.*;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -388,7 +385,7 @@ public class OrderApi {
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object savefiveKgOrder(OrderBean orderbean){
-//获取当前登录的会员
+		//获取当前登录的会员
 		Member member = MemberUtils.getMember();
 		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderbean.getCityId()));
 		if(memberAddress==null) {
@@ -415,4 +412,5 @@ public class OrderApi {
 		return orderService.savefiveKgOrder(orderbean);
 
 	}
+
 }
