@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -698,9 +697,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Map<String, Object> getOrderLists(BOrderBean orderBean, PageBean pageBean) {
 		List<String> statusList = new ArrayList<>();
 		String status = getStatus(orderBean.getStatus());
-//		if (status.equals("0")) {
-//			statusList.add("6");
-//		}
+		String title = null;
+		if (orderBean.getCategoryType() == null) {
+			throw new ApiException("参数错误");
+		}else {
+			title = orderBean.getCategoryType().getValue().toString();
+		}
 		statusList.add(status);
 		String orderNo = orderBean.getOrderNo();
 		String linkMan = orderBean.getLinkMan();
@@ -725,8 +727,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		int size = pageBean.getPageSize();
 		int num = pageBean.getPageNumber();
 		Map<String, Object> map = new HashMap<String, Object>();
-		Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan);
-		List<Order> list = orderMapper.getOrderLists(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan);
+		Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title);
+		List<Order> list = orderMapper.getOrderLists(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title);
 //		if ("0".equals(status)) {
 //			count += orderMapper.getOrderListsCount(companyId, "6", orderNo, linkMan, recyclersName, size,((num-1)*size),startTime,endTime);
 //			list.addAll(orderMapper.getOrderLists(companyId,"6",orderNo,linkMan,recyclersName,size,((num-1)*size),startTime,endTime));
@@ -784,8 +786,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		int size = pageBean.getPageSize();
 		int num = pageBean.getPageNumber();
 		Map<String, Object> map = new HashMap<>();
-		Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan);
-		List<Order> list = orderMapper.getOrderLists(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan);
+		Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, null);
+		List<Order> list = orderMapper.getOrderLists(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, null);
 
 		map.put("count", count);
 		map.put("list", list);
@@ -804,14 +806,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @author 王灿
 	 */
 	@Override
-	public Map<String, Object> selectCountByStatus(String status, Integer companyId) {
+	public Map<String, Object> selectCountByStatus(String status, Integer companyId, CategoryType categoryType) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId));
-		int TOSENDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId));
-		int ALREADYCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId));
-		int COMPLETECount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId));
-		int CANCELCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId));
-		int REJECTEDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("REJECTED")).eq("del_flag", "0").eq("company_id", companyId));
+		if (categoryType == null){
+			throw new ApiException("参数错误");
+		}
+		int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
+		int TOSENDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
+		int ALREADYCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
+		int COMPLETECount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
+		int CANCELCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
+		int REJECTEDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("REJECTED")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
 		map.put("INIT", INITCount);
 		map.put("TOSEND", TOSENDCount);
 		map.put("ALREADY", ALREADYCount);

@@ -74,7 +74,7 @@ public class BusinessOrderApi {
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderCounts(BOrderBean orderBean){
 		 	//根据各种状态查询相订单表相关的条数
-			Map<String, Object> resultMap = orderService.selectCountByStatus(orderBean.getStatus(),orderBean.getCompanyId());
+			Map<String, Object> resultMap = orderService.selectCountByStatus(orderBean.getStatus(),orderBean.getCompanyId(), orderBean.getCategoryType());
 			return  resultMap; 
 	 }
 	

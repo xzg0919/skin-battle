@@ -10,6 +10,7 @@ import com.tzj.collect.api.app.result.AppOrderResult;
 import com.tzj.collect.api.app.result.AppScoreResult;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.CompanyBean;
+import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Recyclers;
@@ -102,7 +103,7 @@ public interface OrderService extends IService<Order> {
 	 * @param companyId:企业Id
 	 * @return 
 	*/
-	Map<String,Object> selectCountByStatus(String status,Integer companyId);
+	Map<String,Object> selectCountByStatus(String status, Integer companyId, Category.CategoryType categoryType);
 
 	/**
 	 * 根据订单状态获得订单列表

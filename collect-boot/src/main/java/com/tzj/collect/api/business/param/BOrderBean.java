@@ -146,6 +146,8 @@ public class BOrderBean {
 	    //是否是扫码完成的订单 0不是 1是
 		private String isScan;
 
+		private Category.CategoryType categoryType;//订单类型
+
 		public Integer getId() {
 			return id;
 		}
@@ -493,6 +495,12 @@ public class BOrderBean {
 		public void setIsScan(String isScan) {
 			this.isScan = isScan;
 		}
-		
-	
+
+		public Category.CategoryType getCategoryType() {
+			return categoryType;
+		}
+
+		public void setCategoryType(Category.CategoryType categoryType) {
+			this.categoryType = categoryType;
+		}
 }

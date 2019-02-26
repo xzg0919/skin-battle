@@ -55,13 +55,13 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @param pageBean : 分页的条件
 	 * @return 
 	*/
-	List<Order> getOrderLists(@Param("companyId") Integer companyId,@Param("status") List<String> status,@Param("orderNo") String orderNo,@Param("linkMan") String linkMan,@Param("recyclersName") String recyclersName,@Param("pageSize") int pageSize,@Param("startSize") int startSize,@Param("startTime") String startTime,@Param("endTime") String endTime,@Param("isScan")String isScan);
+	List<Order> getOrderLists(@Param("companyId") Integer companyId,@Param("status") List<String> status,@Param("orderNo") String orderNo,@Param("linkMan") String linkMan,@Param("recyclersName") String recyclersName,@Param("pageSize") int pageSize,@Param("startSize") int startSize,@Param("startTime") String startTime,@Param("endTime") String endTime,@Param("isScan")String isScan, @Param("title")String title);
 	/**
 	 * 根据各种查询条件获取订单的条数
 	 * @author 王灿
 	 * @return 
 	*/
-	Integer getOrderListsCount(@Param("companyId") Integer companyId,@Param("status") List<String> status,@Param("orderNo") String orderNo,@Param("linkMan") String linkMan,@Param("recyclersName") String recyclersName,@Param("pageSize") int pageSize,@Param("startSize") int startSize,@Param("startTime") String startTime,@Param("endTime") String endTime,@Param("isScan")String isScan);
+	Integer getOrderListsCount(@Param("companyId") Integer companyId,@Param("status") List<String> status,@Param("orderNo") String orderNo,@Param("linkMan") String linkMan,@Param("recyclersName") String recyclersName,@Param("pageSize") int pageSize,@Param("startSize") int startSize,@Param("startTime") String startTime,@Param("endTime") String endTime,@Param("isScan")String isScan, @Param("title")String title);
 
 	AppOrderResult getOrderDetails(@Param("orderBean") OrderBean orderbean);
 	/**
