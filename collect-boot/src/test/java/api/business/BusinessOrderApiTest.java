@@ -11,6 +11,7 @@ package api.business;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.ali.param.AreaBean;
+import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
 import com.tzj.collect.api.business.param.TitleBean;
 import com.tzj.module.api.utils.JwtUtils;
@@ -88,10 +89,13 @@ public class BusinessOrderApiTest {
 		recyclersServiceRangeBeans.setRecycleId("121");
 		recyclersServiceRangeBeans.setCityId("737");
 
+		BOrderBean orderBean = new BOrderBean();
+		orderBean.setCompanyId(1);
+		orderBean.setId(7175);
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.recycle.getAreaRecyclersRange");
+		param.put("name","business.order.getRecyclersList");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -99,7 +103,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",recyclersServiceRangeBeans);
+		param.put("data",orderBean);
 
 		String jsonStr = JSON.toJSONString(param);
 		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");

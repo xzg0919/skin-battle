@@ -56,8 +56,8 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 		wraper.eq("level_", level);
 		wraper.eq("title", title);
 		wraper.eq("unuseful","0");
+		wraper.orderBy("create_date",false);
 		if ("Y".equals(isFiveKg)){
-			wraper.orderBy("create_date",false);
 		}
 		return this.selectList(wraper);
 	}

@@ -135,16 +135,27 @@
 	</select> -->
 	
 	<select id="getRecyclersLists" resultMap="RecycleResultMap" parameterType="Integer">
-	 SELECT DISTINCT
-	    <include refid="zd"/> ,
-	    (select count(*) from sb_order e where e.status_=1 AND e.del_flag = '0' AND a.id = e.recycler_id) AS init_count, 
+		SELECT DISTINCT
+		<include refid="zd"/>,
+		(select count(*) from sb_order e where e.status_=1 AND e.del_flag = '0' AND a.id = e.recycler_id) AS init_count,
 		(select count(*) from sb_order f where f.status_=2 AND f.del_flag = '0' AND a.id = f.recycler_id) AS already_count,
 		(SELECT COUNT(*)FROM(select * from sb_recycle_cancel_log c  GROUP BY c.recycler_id,c.order_id) con where con.recycler_id=a.id ) as cancel_count
-		FROM sb_recyclers a LEFT JOIN sb_company_recycler b ON a.id = b.recycler_id
-	 LEFT JOIN sb_recyclers_service_range d ON d.recyclers_id = a.id
-	 LEFT JOIN sb_order c ON c.area_id = d.area_parents_id
-	 WHERE b.company_id = #{companyId}  AND b.status_ = '1' AND a.del_flag = '0' AND b.del_flag = '0' AND a.is_manager = 1 AND c.id = #{orderId} AND d.del_flag = 0
-	 ORDER BY init_count,already_count,cancel_count	
+		FROM
+		sb_order f
+		INNER JOIN sb_area b ON f.street_id = b.id
+		INNER JOIN sb_recyclers_service_range c ON b.id = c.area_id
+		INNER JOIN sb_company_recycler d ON c.recyclers_id = d.recycler_id AND f.company_id = d.company_id
+		INNER JOIN sb_recyclers a ON c.recyclers_id = a.id
+		INNER JOIN sb_recyclers_title e ON f.title = e.title_id AND e.recycle_id = a.id
+		WHERE
+		f.id =  #{orderId}
+		AND b.del_flag = 0
+		AND c.del_flag = 0
+		AND d.del_flag = 0
+		AND e.del_flag = 0
+		AND f.del_flag = 0
+		AND a.is_manager = 1
+		AND d.status_ = '1'
 	</select>
 	
 	 <resultMap type="com.tzj.collect.entity.Recyclers" id="RecycleResultMap">  

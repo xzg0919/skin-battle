@@ -206,6 +206,8 @@ public class OrderBean {
 	 */
 	private String logisticsId;
 
+
+
 	public String getExpressAmount() {
 		return expressAmount;
 	}

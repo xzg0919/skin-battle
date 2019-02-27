@@ -705,6 +705,11 @@
 		<result property="paymentPrice" column="paymentPrice"/>
 		<result property="greenCount" column="green_count"/>
 		<result property="enterpriseCode" column="enterprise_code"/>
+		<result property="expressAmount" column="express_amount"/>
+		<result property="expressNo" column="express_no"/>
+		<result property="expressName" column="express_name"/>
+		<result property="expressTel" column="express_tel"/>
+		<result property="logisticsId" column="logistics_id"/>
         <association property="category" javaType="com.tzj.collect.entity.Category">  
             <result property="categoryId" column="categoryId" /> 
             <result property="name" column="name_" /> 
@@ -758,6 +763,11 @@
 		a.is_scan,
 		a.green_count,
 		a.enterprise_code,
+		a.express_amount,
+		a.express_no,
+		a.express_name,
+		a.express_tel,
+		a.logistics_id,
 		c.name_,
 		c.icon
      </sql>

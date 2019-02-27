@@ -56,6 +56,10 @@ public class Order extends DataEntity<Long> {
 	 * 区域id
 	 */
 	private Integer areaId;
+	/**
+	 * 街道id
+	 */
+	private Integer streetId;
 
 	@TableField(exist = false)
 	private Area area;
@@ -152,7 +156,7 @@ public class Order extends DataEntity<Long> {
 	/**
 	 * 快递单号
 	 */
-	private Integer expressNo;
+	private String expressNo;
 	/**
 	 * 快递员姓名
 	 */
@@ -160,12 +164,19 @@ public class Order extends DataEntity<Long> {
 	/**
 	 * 快递员电话
 	 */
-	private Integer expressTel;
+	private String expressTel;
 	/**
 	 * 第三方物流公司ID
 	 */
 	private Integer logisticsId;
 
+	public Integer getStreetId() {
+		return streetId;
+	}
+
+	public void setStreetId(Integer streetId) {
+		this.streetId = streetId;
+	}
 
 	public BigDecimal getExpressAmount() {
 		return expressAmount;
@@ -175,11 +186,11 @@ public class Order extends DataEntity<Long> {
 		this.expressAmount = expressAmount;
 	}
 
-	public Integer getExpressNo() {
+	public String getExpressNo() {
 		return expressNo;
 	}
 
-	public void setExpressNo(Integer expressNo) {
+	public void setExpressNo(String expressNo) {
 		this.expressNo = expressNo;
 	}
 
@@ -191,11 +202,11 @@ public class Order extends DataEntity<Long> {
 		this.expressName = expressName;
 	}
 
-	public Integer getExpressTel() {
+	public String getExpressTel() {
 		return expressTel;
 	}
 
-	public void setExpressTel(Integer expressTel) {
+	public void setExpressTel(String expressTel) {
 		this.expressTel = expressTel;
 	}
 

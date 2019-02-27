@@ -197,6 +197,7 @@ public class OrderApi {
     	orderbean.setCompanyId(Integer.parseInt(companyId));
     	orderbean.setLevel(level);
     	orderbean.setCommunityId(communityId);
+		orderbean.setStreetId(memberAddress.getStreetId());
     	//随机生成订单号
     	String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
     	orderbean.setOrderNo(orderNo);
@@ -248,7 +249,17 @@ public class OrderApi {
     	if(company == null) {
     		//根据分类Id和小区id去公海查询相关企业
     		CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", orderbean.getCategoryId()).eq("area_id", areaId));
-    		companyId = companyShare.getCompanyId().toString();
+    		if(companyShare==null){
+				//判断该地址是否回收5公斤废纺衣物
+				Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(orderbean.getCategoryId(), memberAddress.getStreetId());
+				if(null==streeCompanyId){
+					return "您地址所在区域暂无回收企业";
+				}else{
+					companyId = streeCompanyId.toString();
+				}
+			}else {
+				companyId = companyShare.getCompanyId().toString();
+			}
     	}else {
     		companyId = company.getId().toString();
     	}
@@ -308,6 +319,7 @@ public class OrderApi {
 		orderbean.setLevel(level);
 		orderbean.setCommunityId(communityId);
 		orderbean.setAreaId(Integer.parseInt(areaId));
+		orderbean.setStreetId(memberAddress.getStreetId());
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
@@ -406,11 +418,27 @@ public class OrderApi {
 		orderbean.setCompanyId(streeCompanyId);
 		orderbean.setCommunityId(communityId);
 		orderbean.setAreaId(Integer.parseInt(areaId));
+		orderbean.setStreetId(memberAddress.getStreetId());
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
-		return orderService.savefiveKgOrder(orderbean);
-
+		Object object = orderService.savefiveKgOrder(orderbean);
+		if("操作成功".equals(object)){
+			Map<String,Object> map = new HashMap<>();
+			Date date = new Date();
+			SimpleDateFormat simp = new SimpleDateFormat("HH");
+			String time = simp.format(date);
+			if (Integer.parseInt(time)>= 20){
+				map.put("type",8);
+				map.put("msg","20:00后的订单，次日上午才上门回收哦！");
+				return map;
+			}
+			map.put("type",9);
+			map.put("msg","操作成功");
+			return map;
+		}else {
+			return object;
+		}
 	}
 
 }
