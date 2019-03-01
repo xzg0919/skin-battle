@@ -65,7 +65,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 
 	AppOrderResult getOrderDetails(@Param("orderBean") OrderBean orderbean);
 	/**
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param orderbean
 	 * @return
 	 */

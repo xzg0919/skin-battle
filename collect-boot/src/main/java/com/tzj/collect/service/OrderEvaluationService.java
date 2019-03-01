@@ -15,7 +15,7 @@ import com.tzj.collect.entity.Recyclers;
  **/
 public interface OrderEvaluationService extends IService<OrderEvaluation> {
 	/**
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param Recyclers 当前回收人员, page 分页对象
 	 * @return 评价Page
 	 */

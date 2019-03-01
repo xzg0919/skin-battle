@@ -37,7 +37,7 @@ public interface CategoryAttrOptionMapper  extends BaseMapper<CategoryAttrOption
 	List<CategoryAttrOption> getCategoryAttrOptionLists(@Param("id")long categoryAttrId);
 	/**
      * 根据分类属性的Id(categoryAttrId)查询有关所有的分类选项信息
-     * @author zhangqiang
+     * @author sgmark@aliyun.com
      * @param   categoryAttrId : 分类属性Id
      * @param   companyId : 企业ID
      * @return List<CategoryAttrOption> : 有关所有的分类选项信息

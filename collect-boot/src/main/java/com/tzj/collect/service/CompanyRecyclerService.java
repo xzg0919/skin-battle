@@ -62,7 +62,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	
 	/**
 	 * 我的公司，得到当前公司列表，已入驻或者申请中
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param recyclersBean (recyclerId)
 	 * @return
 	 */

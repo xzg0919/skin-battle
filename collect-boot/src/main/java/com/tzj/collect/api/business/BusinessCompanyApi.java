@@ -75,7 +75,7 @@ public class BusinessCompanyApi {
 	}
 	/**
 	 * 根据回收人员id得到个人信息，评价数目
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param recyclersBean
 	 * @return
 	 */
@@ -87,7 +87,7 @@ public class BusinessCompanyApi {
 	}
 	/**
 	 * 根据回收人员id得到服务小区名称，所属区域
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param recyclersBean
 	 * @return
 	 */
@@ -98,7 +98,7 @@ public class BusinessCompanyApi {
 	}
 	/**
 	 * 根据回收人员id得到服务小区总数
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param recyclersBean
 	 * @return
 	 */

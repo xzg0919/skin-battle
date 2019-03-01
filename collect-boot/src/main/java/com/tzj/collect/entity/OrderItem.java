@@ -56,7 +56,7 @@ public class OrderItem extends  DataEntity<Long>{
     
     /**
      * 2018年6月27日 09:44:56
-     * @author zhangqiang
+     * @author sgmark@aliyun.com
      */
     private double amount;//数量
     

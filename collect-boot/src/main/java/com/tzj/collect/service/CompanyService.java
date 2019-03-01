@@ -32,14 +32,14 @@ public interface CompanyService  extends IService<Company>{
 	
 
 	/**
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * 根据小区Id取得回收企业总数
 	 * @param comId
 	 * @return
 	 */
 	Integer selectCompanyCountByCom(String comId);
 	/**
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * 根据小区Id取得回收企业回收垃圾类型（去重）
 	 * @param comId
 	 * @return
@@ -47,7 +47,7 @@ public interface CompanyService  extends IService<Company>{
 	Integer selectCategoryCountByCom(String comId);
 	/**
 	 * 根据小区id取得服务公司列表
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param comId
 	 * @return
 	 */
@@ -71,7 +71,7 @@ public interface CompanyService  extends IService<Company>{
 	/**
 	 * 根据公司账号获取当前公司
 	 * @param companyAccount
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @return
 	 */
 	Company getCurrent(CompanyAccount companyAccount);

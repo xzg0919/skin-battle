@@ -12,7 +12,7 @@ import java.util.UUID;
 
 /**
  * 
- * @author zhangqiang
+ * @author sgmark@aliyun.com
  *
  */
 public class AreaApiTest {

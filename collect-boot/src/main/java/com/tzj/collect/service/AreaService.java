@@ -19,7 +19,7 @@ public interface AreaService  extends IService<Area>{
 	List<Area> getChildArea(Long id );
 	/**
 	 * 根据区县 街道 小区 搜索 都不是必传条件 
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @return
 	 */
 	List<Area> selectAreaByCouOrStrOrCom(String county,String street, String village);

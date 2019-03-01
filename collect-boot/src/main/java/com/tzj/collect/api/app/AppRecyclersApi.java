@@ -258,7 +258,7 @@ public class AppRecyclersApi {
 	/**
 	 * 根据回收人员id得到个人信息，评价数目
 	 * 
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param
 	 * @return
 	 */
@@ -274,7 +274,7 @@ public class AppRecyclersApi {
 	/**
 	 * 我的公司（状态申请中或者已入驻）
 	 * 
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param recyclersBean
 	 * @return
 	 */
@@ -291,7 +291,7 @@ public class AppRecyclersApi {
 	/**
 	 * 添加公司列表（状态未入驻 或者 已拒绝）
 	 * 
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param recyclersBean
 	 * @return
 	 */

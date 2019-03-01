@@ -1,7 +1,7 @@
 package com.tzj.collect.api.business.result;
 /**
  * 回收类型
- * @author zhangqiang
+ * @author sgmark@aliyun.com
  *
  */
 public class BusinessRecType {

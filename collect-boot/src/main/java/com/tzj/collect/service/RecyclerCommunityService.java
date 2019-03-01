@@ -31,7 +31,7 @@ import com.tzj.collect.entity.RecyclerCommunity;
 public interface RecyclerCommunityService extends IService<RecyclerCommunity>{
 	/**
 	 * 根据小区Id查询回收人员总数
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param ComId
 	 * @return 回收人员总数
 	 */

@@ -11,14 +11,14 @@ import com.tzj.collect.entity.Company;
 public interface CompanyMapper extends BaseMapper<Company>{
 
 	/**
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * 根据小区Id取得回收企业总数
 	 * @param comId 小区Id
 	 * @return 企业总数
 	 */
 	Integer selectCompanyCountByCom(@Param("communityId") String comId);
 	/**
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * 根据小区Id取得回收企业回收垃圾类型（去重）
 	 * @param comId
 	 * @return
@@ -27,7 +27,7 @@ public interface CompanyMapper extends BaseMapper<Company>{
 	
 	/**
 	 * 根据小区id取得服务公司列表
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param comId
 	 * @return
 	 */

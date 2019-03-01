@@ -41,7 +41,7 @@ public interface RecyclersService extends IService<Recyclers>{
     Recyclers selectByMobile(String mobile);
     
     /**
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param Recyclers 当前回收人员, page 分页对象
 	 * @return 回收人员Page
 	 */
@@ -74,7 +74,7 @@ public interface RecyclersService extends IService<Recyclers>{
 
 	/**
 	 * 根据回收人员id得到个人信息，评价数目
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param recyclersBean
 	 * @return
 	 */
@@ -129,7 +129,7 @@ public interface RecyclersService extends IService<Recyclers>{
 
 /**
  * 根据企业Id和分类Id 获取回收人员列表
- * @author zhangqiang
+ * @author sgmark@aliyun.com
  * @param companyId:企业Id
  * @return
  */

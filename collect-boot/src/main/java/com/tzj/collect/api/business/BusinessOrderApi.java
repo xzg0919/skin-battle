@@ -143,7 +143,7 @@ public class BusinessOrderApi {
 		 
 	 /**
 	 * 返回取消原因
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param
 	 * @return
 	 */

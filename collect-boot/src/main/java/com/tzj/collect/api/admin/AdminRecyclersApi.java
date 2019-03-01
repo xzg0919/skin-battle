@@ -82,7 +82,7 @@ public class AdminRecyclersApi {
 	
 //	/**
 //	 * 根据回收人员id得到个人信息，评价数目
-//	 * @author zhangqiang
+//	 * @author sgmark@aliyun.com
 //	 * @param recyclersBean
 //	 * @return
 //	 */

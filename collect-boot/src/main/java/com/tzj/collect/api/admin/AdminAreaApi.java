@@ -23,7 +23,7 @@ import com.tzj.module.api.annotation.SignIgnore;
 /**
  * 管理员小区管理
  * 
- * @author zhangqiang
+ * @author sgmark@aliyun.com
  *
  */
 @ApiService
@@ -48,7 +48,7 @@ public class AdminAreaApi {
 
 	/**
 	 * 根据小区id得到回收人员信息
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param recyclersBean
 	 * @return
 	 */

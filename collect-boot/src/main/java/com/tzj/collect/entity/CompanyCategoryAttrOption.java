@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
  *
  *	回收企业分类属性选项增减价格关联表
  *
- * @Author zhangqiang
+ * @Author sgmark@aliyun.com
  **/
 @TableName("sb_company_category_attr_option")
 public class CompanyCategoryAttrOption extends  DataEntity<Long> {

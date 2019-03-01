@@ -50,7 +50,7 @@ public interface OrderService extends IService<Order> {
 	boolean saveByRecy(OrderBean orderbean);
 
 	/**
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param status 状态, page 分页对象
 	 * @return Page
 	 */
@@ -131,7 +131,7 @@ public interface OrderService extends IService<Order> {
 	AppOrderResult getRecord(TimeBean timeBean);
 	/**
 	 * 得到当前回收人员的评价列表,好评比率
-	 * @author zhangqiang
+	 * @author sgmark@aliyun.com
 	 * @param scoreAppBean
 	 * @return
 	 */
