@@ -13,14 +13,8 @@ import com.aliyun.mns.model.RawTopicMessage;
 import com.aliyun.mns.model.TopicMessage;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.constant.RocketMqConst;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.OrderItem;
-import com.tzj.collect.entity.OrderItemAch;
-import com.tzj.collect.entity.RocketmqMessage;
-import com.tzj.collect.service.OrderItemAchService;
-import com.tzj.collect.service.OrderItemService;
-import com.tzj.collect.service.OrderService;
-import com.tzj.collect.service.RocketmqMessageService;
+import com.tzj.collect.entity.*;
+import com.tzj.collect.service.*;
 import com.tzj.module.common.aliyun.mns.Notification;
 import com.tzj.module.common.aliyun.mns.XMLUtils;
 import com.tzj.module.common.exception.BusiException;
@@ -37,9 +31,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 @Controller
 @RequestMapping("fivekg")
@@ -53,6 +51,10 @@ public class FiveKgController {
     private OrderItemAchService orderItemAchService;
     @Autowired
     private OrderItemService orderItemService;
+    @Autowired
+    private OrderPicService orderPicService;
+    @Autowired
+    private OrderPicAchService orderPicAchService;
 
 
     @RequestMapping(value = "/order/update",method = RequestMethod.POST)
@@ -97,8 +99,10 @@ public class FiveKgController {
             try{
                 order.setStatus(Order.OrderType.COMPLETE);
                 order.setExpressNo(object.getString("expressNo"));
+                order.setLogisticsName(object.getString("logisticsName"));
                 order.setExpressAmount(new BigDecimal(object.getString("expressAmount")));
                 order.setCompleteDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
+                order.setAchPrice(new BigDecimal("0"));
                 orderService.updateById(order);
                 OrderItem orderItem = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));
                 OrderItemAch orderItemAch = new OrderItemAch();
@@ -112,6 +116,13 @@ public class FiveKgController {
                 orderItemAch.setUnit(orderItem.getUnit());
                 orderItemAch.setPrice(orderItem.getPrice());
                 orderItemAchService.insert(orderItemAch);
+                OrderPic orderPic = orderPicService.selectOne(new EntityWrapper<OrderPic>().eq("order_id", order.getId()));
+                OrderPicAch orderPicAch = new OrderPicAch();
+                orderPicAch.setOrderId(orderPic.getOrderId());
+                orderPicAch.setOrigPic(orderPic.getOrigPic());
+                orderPicAch.setPicUrl(orderPic.getPicUrl());
+                orderPicAch.setSmallPic(orderPic.getSmallPic());
+                orderPicAchService.insert(orderPicAch);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -195,22 +206,51 @@ public class FiveKgController {
 
     public static void main(String[] args) {
         HashMap<String,Object> param=new HashMap<>();
-        param.put("orderStatus","3");
-        param.put("orderNo","20190227112534438185");
-        param.put("expressName","岳阳");
-        param.put("expressTel","18375333333");
-        param.put("date", "2019-02-27 14:27:01");
-        param.put("expressNo","20187974123466789");
-        param.put("expressAmount","4.5");
-        param.put("remarks","取消原因4");
-//        param.put("orderNo","20190225164500925088");
-//        param.put("orderType","废纺衣物");
-//        param.put("orderAmount","6.5");
-//        param.put("userName","龙建");
-//        param.put("userTel", "18555696367");
-//        param.put("userAddress","上海市浦东新区洲海路100号10栋101");
-//        param.put("arrivalTime","2019-02-26 am");
-        RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_RETURN_ORDER);
+//        param.put("orderStatus","3");
+//        param.put("orderNo","20190227112534438185");
+//        param.put("expressName","岳阳");
+//        param.put("expressTel","18375333333");
+//        param.put("date", "2019-02-27 14:27:01");
+//        param.put("expressNo","20187974123466789");
+//        param.put("expressAmount","4.5");
+//        param.put("remarks","取消原因4");
+//        param.put("logisticsName","申通快递");
+        param.put("orderNo","20190225164500925088");
+        param.put("orderType","废纺衣物");
+        param.put("orderAmount","6.5");
+        param.put("userName","龙建");
+        param.put("userTel", "18555696367");
+        param.put("userAddress","上海市浦东新区洲海路100号10栋101");
+        param.put("arrivalTime","2019-02-26 am");
+        param.put("isCancel","Y");
+        param.put("cancelReason","取消原因");
+       // RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_RETURN_ORDER);
+
+        List<Order> list = new ArrayList<>();
+        Order order1 = new Order();
+        Order order2 = new Order();
+        Order order3 = new Order();
+        Order order4 = new Order();
+        Order order5 = new Order();
+        order1.setLinkMan("王灿1");
+        order2.setLinkMan("王灿2");
+        order3.setLinkMan("王灿3");
+        order4.setLinkMan("王灿5");
+        order4.setIsScan("99");
+        order5.setLinkMan("王灿5");
+        order5.setIsScan("7");
+        list.add(order1);
+        list.add(order2);
+        list.add(order3);
+        list.add(order4);
+        list.add(order5);
+      //  List<Order> collect = list.stream().filter(order -> order.getLinkMan() == "王灿5").collect(toList());
+
+        System.out.println(LocalTime.now());
+        System.out.println(LocalDate.now());
+        System.out.println(LocalDateTime.now().toString());
+
+
         //sendTest();
     }
     private static void xmlTest() {
@@ -230,4 +270,6 @@ public class FiveKgController {
         System.out.println(notification.getMessageId());
         System.out.println(notification.getMessage());
     }
+
+
 }

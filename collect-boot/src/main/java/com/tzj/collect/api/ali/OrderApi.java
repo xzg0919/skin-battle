@@ -1,5 +1,6 @@
 package com.tzj.collect.api.ali;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.ali.param.CategoryBean;
@@ -7,6 +8,7 @@ import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.common.websocket.WebSocketServer;
 import com.tzj.collect.api.enterprise.param.EnterpriseCodeBean;
+import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Order.OrderType;
@@ -407,7 +409,11 @@ public class OrderApi {
 		Category category = categoryService.selectById(orderbean.getCategoryId());
 		orderbean.setMemberId(member.getId().intValue());
 		orderbean.setAliUserId(member.getAliUserId());
-		orderbean.setCategoryParentIds(category.getParentId().toString());
+		if(null == orderbean.getOrderItemList()){
+			return "请选择详细内容";
+		}
+		orderbean.setCategoryId(orderbean.getOrderItemList().get(0).getId().intValue());
+		orderbean.setCategoryParentIds(orderbean.getOrderItemList().get(0).getParentId());
 		Integer communityId = memberAddress.getCommunityId();
 		String areaId = memberAddress.getAreaId().toString();
 		//判断该地址是否回收5公斤废纺衣物

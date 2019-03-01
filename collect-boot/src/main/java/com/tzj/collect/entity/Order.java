@@ -169,6 +169,18 @@ public class Order extends DataEntity<Long> {
 	 * 第三方物流公司ID
 	 */
 	private Integer logisticsId;
+	/**
+	 * 物流公司名称
+	 */
+	private String logisticsName;
+
+	public String getLogisticsName() {
+		return logisticsName;
+	}
+
+	public void setLogisticsName(String logisticsName) {
+		this.logisticsName = logisticsName;
+	}
 
 	public Integer getStreetId() {
 		return streetId;

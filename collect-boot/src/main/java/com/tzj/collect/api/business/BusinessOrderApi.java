@@ -1,9 +1,11 @@
 package com.tzj.collect.api.business;
 
+import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.result.CancelResult;
+import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderLog;
 import com.tzj.collect.entity.Recyclers;
@@ -15,9 +17,11 @@ import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 
@@ -197,5 +201,33 @@ public class BusinessOrderApi {
 		//修改订单日志表的
 		orderLogService.insert(orderLog);
 		return "SUCCESS";
+	}
+	/**
+	 * 派发5公斤废纺衣物的订单
+	 * @return
+	 */
+	@Api(name = "order.tosendfiveKgOrder", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object tosendfiveKgOrder(OrderBean orderbean){
+		Order order = orderService.selectById(orderbean.getId());
+		order.setDistributeTime(new Date());
+		order.setStatus(Order.OrderType.TOSEND);
+		orderService.updateById(order);
+		try{
+			HashMap<String,Object> param=new HashMap<>();
+			param.put("orderNo",order.getOrderNo());
+			param.put("orderType","废纺衣物");
+			param.put("orderAmount",order.getQty());
+			param.put("userName",order.getLinkMan());
+			param.put("userTel", order.getTel());
+			param.put("userAddress",order.getAddress()+order.getFullAddress());
+			param.put("arrivalTime",order.getArrivalTime()+" "+order.getArrivalPeriod());
+			param.put("isCancel","N");
+			RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_DELIVERY_ORDER);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return "操作成功";
 	}
 }

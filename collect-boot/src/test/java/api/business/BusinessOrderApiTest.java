@@ -11,9 +11,11 @@ package api.business;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.ali.param.AreaBean;
+import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
 import com.tzj.collect.api.business.param.TitleBean;
+import com.tzj.collect.entity.Category;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -44,7 +46,7 @@ public class BusinessOrderApiTest {
 		String subjectStr = claims.getSubject();
 		System.out.println("反向編譯 token是："+subjectStr);
 
-		String api="http://localhost:9090/business/api";
+		String api="http://dog.mayishoubei.com/business/api";
 		RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
 		recyclersServiceRangeBean.setRecycleId("115");
 		recyclersServiceRangeBean.setCityId("737");
@@ -90,12 +92,11 @@ public class BusinessOrderApiTest {
 		recyclersServiceRangeBeans.setCityId("737");
 
 		BOrderBean orderBean = new BOrderBean();
-		orderBean.setCompanyId(1);
-		orderBean.setId(7175);
+		orderBean.setId(7421);
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.order.getRecyclersList");
+		param.put("name","order.tosendfiveKgOrder");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -107,7 +108,7 @@ public class BusinessOrderApiTest {
 
 		String jsonStr = JSON.toJSONString(param);
 		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");
-		param.put("sign", sign);
+		param.put("sign", orderBean);
 
 		System.out.println("请求的参数是 ："+JSON.toJSONString(param));
 		Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();

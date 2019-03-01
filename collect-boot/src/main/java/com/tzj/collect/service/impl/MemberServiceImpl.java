@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -133,6 +130,30 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		//用户会员开卡时间
 		Date openCardDate=null;
 		if(member == null) {
+			UUID uuid = UUID.randomUUID();
+			Object obj = null;
+			try {
+				obj = redisUtil.get(userId);
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			if (obj != null){
+				throw new ApiException("用户已注册");
+			}
+			try {
+				redisUtil.set(userId,uuid,10);
+				Thread.sleep(100);
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			try {
+				obj = redisUtil.get(userId);
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			if ((obj+"").equals(uuid+"")){
+				throw new ApiException("用户已注册");
+			}
 			member = new Member();
 			member.setAliUserId(userId);
 			if ("XCX".equals(source)){
@@ -158,21 +179,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			}
 			member.setCardNo(cardNo);
 			member.setAppId(appId);
-			Object obj = null;
-			try {
-				obj = redisUtil.get(member.getAliUserId());
-			}catch (Exception e){
-				e.printStackTrace();
-			}
-			if (obj != null){
-				throw new ApiException("用户已注册");
-			}
 			this.insert(member);
-			try {
-				redisUtil.set(member.getAliUserId(),member.getId(),10);
-			}catch (Exception e){
-				e.printStackTrace();
-			}
 		}else {
 			member.setAliUserId(userId);
 			if ("XCX".equals(source)){
@@ -334,7 +341,9 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		return resultMap;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws  Exception{
+
+		Thread.sleep(100);
 		System.out.println(PiccOrder.PiccOrderType.RECEIVE.getValue());
 	}
 

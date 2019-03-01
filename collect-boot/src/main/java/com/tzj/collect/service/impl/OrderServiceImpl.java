@@ -909,6 +909,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return "SUCCESS";
 	}
 
+
 	/**
 	 * 取消订单
 	 *
@@ -924,6 +925,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			CommToken commToken = orderMapper.getCommToken(order.getOrderNo());
 			if (commToken != null) {
 				xingeService.sendPostMessage("您有一笔订单已被取消", "已取消订单来自" + commToken.getCommName() + "，点击查看", commToken.getTencentToken(), XingeMessageCode.cancelOrder);
+			}
+		}
+		if("3".equals(order.getTitle().getValue()+"")){
+			try{
+				HashMap<String,Object> param=new HashMap<>();
+				param.put("orderNo",order.getOrderNo());
+				param.put("isCancel","Y");
+				param.put("cancelReason",order.getCancelReason());
+				RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_DELIVERY_ORDER);
+			}catch (Exception e){
+				e.printStackTrace();
 			}
 		}
 		//阿里云推送
@@ -1035,7 +1047,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("company", company);
 		resultMap.put("OrderEvaluation", OrderEvaluation);
 		//System.out.println(11111);
-		if (order.getTitle() == CategoryType.HOUSEHOLD) {
+		if (order.getTitle() == CategoryType.HOUSEHOLD||order.getTitle() == CategoryType.FIVEKG) {
 			OrderBean orderBean = new OrderBean();
 			orderBean.setId(orderId);
 			orderBean.setTitle(order.getTitle().toString());
@@ -1624,7 +1636,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			OrderItemList = orderItemService.selectByOrderId(orderbean.getId());
 		}
 		List<ComCatePrice> cateName = null;
-		if ("HOUSEHOLD".equals(orderbean.getTitle()) && "3".equals(orderbean.getStatus())) {
+		if (("HOUSEHOLD".equals(orderbean.getTitle())||"FIVEKG".equals(orderbean.getTitle())) && "3".equals(orderbean.getStatus())) {
 			cateName = orderItemService.selectCateAchName(orderbean.getId());
 		} else {
 			cateName = orderItemService.selectCateName(orderbean.getId());
@@ -1971,7 +1983,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setAreaId(orderBean.getAreaId());
 			order.setStreetId(orderBean.getStreetId());
 			order.setCommunityId(orderBean.getCommunityId());
-			order.setCategoryId(orderBean.getCategoryId());
+			order.setCategoryId(Integer.parseInt(orderBean.getCategoryParentIds()));
 			order.setCategoryParentIds(orderBean.getCategoryParentIds());
 			order.setUnit(companyCategory.getUnit());
 			order.setPrice(new BigDecimal(companyCategory.getPrice()));
@@ -2038,19 +2050,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOpStatusAfter("INIT");
 		orderLog.setOp("待接单");
 		orderLogService.insert(orderLog);
-		try{
-			HashMap<String,Object> param=new HashMap<>();
-			param.put("orderNo",order.getOrderNo());
-			param.put("orderType",parentCategory.getName());
-			param.put("orderAmount",order.getQty());
-			param.put("userName",order.getLinkMan());
-			param.put("userTel", order.getTel());
-			param.put("userAddress",order.getAddress()+order.getFullAddress());
-			param.put("arrivalTime",order.getArrivalTime()+" "+order.getArrivalPeriod());
-			RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_DELIVERY_ORDER);
-		}catch (Exception e){
-			e.printStackTrace();
-		}
+
 		return "操作成功";
 	}
 

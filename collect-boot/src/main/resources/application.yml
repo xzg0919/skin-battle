@@ -1,8 +1,9 @@
 # Tomcat
 server:
-    #tomcat:
+    tomcat:
     #    uri-encoding: UTF-8
-    #    max-threads: 1000
+        max-threads: 1000
+        max-connections: 2000
     #    min-spare-threads: 30
     port: 9090
     #context-path: /collect
