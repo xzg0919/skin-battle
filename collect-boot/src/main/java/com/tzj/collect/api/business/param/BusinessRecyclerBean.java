@@ -17,9 +17,16 @@ public class BusinessRecyclerBean {
 	private String delFlag;//0表示启用，1表示禁用
 	private String applyStatus;//回收人员的申请状态，1同意，2拒绝
 
-	
-	
-	
+	private String headPicUrl;
+
+	public String getHeadPicUrl() {
+		return headPicUrl;
+	}
+
+	public void setHeadPicUrl(String headPicUrl) {
+		this.headPicUrl = headPicUrl;
+	}
+
 	public String getDelFlag() {
 		return delFlag;
 	}

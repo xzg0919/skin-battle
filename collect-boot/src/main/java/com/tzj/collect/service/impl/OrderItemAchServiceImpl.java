@@ -1,6 +1,7 @@
 package com.tzj.collect.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,8 @@ public class OrderItemAchServiceImpl extends ServiceImpl<OrderItemAchMapper, Ord
 	
 	@Autowired
 	private OrderMapper orderMapper;
+	@Autowired
+	private  OrderItemAchMapper orderItemAchMapper;
 	/**
      * 储存订单分类属性明细
      * @author 王灿
@@ -65,5 +68,12 @@ public class OrderItemAchServiceImpl extends ServiceImpl<OrderItemAchMapper, Ord
 	public List<ComCatePrice> selectCateName(int orderId) {
 		return orderMapper.selectCateName(orderId);
 	}
+
+	@Override
+	public List<Map<String, Object>> selectItemSumAmount(Integer orderId) {
+
+		return orderItemAchMapper.selectItemSumAmount(orderId);
+	}
+
 
 }

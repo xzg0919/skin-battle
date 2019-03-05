@@ -201,7 +201,8 @@
 			sr.address,
 			sr.id_card,
 			sr.id_card_obv,
-			sr.id_card_rev
+			sr.id_card_rev,
+			sr.head_pic_url
 		FROM
 			sb_recyclers sr
 		INNER JOIN sb_company_recycler scr ON sr.id = scr.recycler_id

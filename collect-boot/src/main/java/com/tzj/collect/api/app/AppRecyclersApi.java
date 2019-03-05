@@ -522,4 +522,19 @@ public class AppRecyclersApi {
 		recyclersService.updateById(recyclers);
 		return "操作成功";
 	}
+	/**
+	 * 更新回收人员的头像
+	 */
+	@Api(name = "app.recycler.updateHeadPicUrl", version = "1.0")
+	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object updateHeadPicUrl(RecyclersBean recyclersBean){
+		if(StringUtils.isBlank(recyclersBean.getHeadPicUrl())){
+			return "请传入头像连接";
+		}
+		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
+		recyclers.setHeadPicUrl(recyclersBean.getHeadPicUrl());
+		recyclersService.updateById(recyclers);
+		return "操作成功";
+	}
 }

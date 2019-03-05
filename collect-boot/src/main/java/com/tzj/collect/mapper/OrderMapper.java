@@ -131,5 +131,6 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @param companyId
 	 * @return
 	 */
-	List<Map<String,Object>> outOrderExcel(@Param("companyId") Integer companyId,@Param("startTime")String startTime,@Param("endTime")String endTime);
+	List<Map<String,Object>> outOrderExcel(@Param("companyId") Integer companyId,@Param("type")String type,@Param("startTime")String startTime,@Param("endTime")String endTime);
+
 }

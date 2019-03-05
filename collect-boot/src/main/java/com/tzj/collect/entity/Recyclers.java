@@ -67,6 +67,18 @@ public class Recyclers extends DataEntity<Long> {
 	private String bizNo;
 	//是否芝麻实名 0未实名 1实名
 	private String isReal="0";
+	/**
+	 * 头像Url
+	 */
+	private String headPicUrl;
+
+	public String getHeadPicUrl() {
+		return headPicUrl;
+	}
+
+	public void setHeadPicUrl(String headPicUrl) {
+		this.headPicUrl = headPicUrl;
+	}
 
 	public String getPassword() {
 		return password;

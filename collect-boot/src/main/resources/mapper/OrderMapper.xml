@@ -643,6 +643,7 @@
 			WHERE
 			a.del_flag = '0'
 			AND a.company_id = #{companyId}
+			AND a.title = #{type}
 			AND a.status_ = 3
 			<if test="startTime !=null and startTime !=''">
 				<![CDATA[

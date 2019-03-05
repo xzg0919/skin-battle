@@ -94,6 +94,11 @@
         </dependency>
         <dependency>
             <groupId>com.hufm</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>3.7.13</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hufm</groupId>
             <artifactId>hufm-module-common</artifactId>
             <version>${hufm.version}</version>
             <exclusions>

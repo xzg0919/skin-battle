@@ -224,7 +224,7 @@ public interface OrderService extends IService<Order> {
 	 * @param companyId
 	 * @return
 	 */
-	List<Map<String,Object>> outOrderExcel(Integer companyId,String startTime,String endTime);
+	List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime);
 
 	Object savefiveKgOrder(OrderBean orderBean);
 

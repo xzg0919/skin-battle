@@ -157,6 +157,10 @@ public class OrderBean {
      * 是否是免费 0是不免费，1是免费
      */
     private  String isCash;
+	/**
+	 * 类型
+	 */
+	private  String type;
     
     //page对象
     private PageBean  pagebean;
@@ -206,7 +210,13 @@ public class OrderBean {
 	 */
 	private String logisticsId;
 
+	public String getType() {
+		return type;
+	}
 
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	public String getExpressAmount() {
 		return expressAmount;

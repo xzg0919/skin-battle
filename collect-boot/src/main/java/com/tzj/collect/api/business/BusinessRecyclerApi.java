@@ -11,10 +11,7 @@ import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.entity.CompanyRecycler;
 import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.CompanyRecyclerService;
-import com.tzj.collect.service.OrderEvaluationService;
-import com.tzj.collect.service.RecyclerCommunityService;
-import com.tzj.collect.service.RecyclersService;
+import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.util.ApiUtil;
 import io.itit.itf.okhttp.FastHttpClient;
@@ -39,6 +36,8 @@ public class BusinessRecyclerApi {
 	private CompanyRecyclerService companyRecyclerService;
 	@Autowired
 	private AppWebSocketServer appWebSocketServer;
+	@Autowired
+	private RecyclersTitleService recyclersTitleService;
 	/**
 	 * 通过回收员姓名,id返回某公司回收人员列表
 	* @Title: getRecyclerList
@@ -318,6 +317,8 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getAreaRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		Map<String,Object> resultMap = new HashMap<>();
+		List<Map<String, Object>> recyclerTitleList = recyclersTitleService.getRecyclerTitleList(recyclersServiceRangeBean.getRecycleId());
 		List<Map<String,Object>> areaList = ( List<Map<String,Object>>)recycleService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyAccount.getCompanyId());
 			if (areaList != null){
 				for (Map<String, Object> map:areaList){
@@ -325,8 +326,9 @@ public class BusinessRecyclerApi {
 					map.put("streeList",streeList);
 				}
 			}
-
-		return areaList;
+		resultMap.put("recyclerTitleList",recyclerTitleList);
+		resultMap.put("areaList",areaList);
+		return resultMap;
 	}
 	/**
 	 * 根据市级Id和回收人员id获取街道信息
