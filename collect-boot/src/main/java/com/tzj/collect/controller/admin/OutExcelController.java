@@ -154,7 +154,7 @@ public class OutExcelController {
      */
     @RequestMapping("/outOrderExcel")
     public void outOrderExcel(HttpServletResponse response,OrderBean orderBean)throws Exception {
-        List<Map<String, Object>> list = orderService.outOrderExcel(orderBean.getId(), orderBean.getStartTime(), orderBean.getEndTime());
+        List<Map<String, Object>> list = orderService.outOrderExcel(orderBean.getId(),orderBean.getType(), orderBean.getStartTime(), orderBean.getEndTime());
         //添加表头
         List<String> titles = new ArrayList<>();
         //for(String title: excelInfo.getNames())

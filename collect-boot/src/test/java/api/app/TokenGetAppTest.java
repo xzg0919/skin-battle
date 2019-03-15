@@ -3,6 +3,7 @@ package api.app;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
+import com.tzj.collect.api.app.param.RecyclersBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -25,7 +26,7 @@ import static com.tzj.collect.common.constant.TokenConst.*;
 public class TokenGetAppTest {
 	 public static void main(String[] args) throws Exception {
 
-		 String token = JwtUtils.generateToken("164", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
+		 String token = JwtUtils.generateToken("1", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
 		 String securityToken = JwtUtils.generateEncryptToken(token, APP_API_TOKEN_CYPTO_KEY);
 		 System.out.println("token : "+securityToken);
 
@@ -36,14 +37,13 @@ public class TokenGetAppTest {
 		 String subjectStr = claims.getSubject();
 		 System.out.println("反向編譯 token是："+subjectStr);
 		 // String api="http://localhost:9000/app/api";
-		  String api="http://106.14.196.79:9000/app/api";
+		  String api="http://localhost:9090/app/api";
 
-		 OrderBean orderbean = new OrderBean();
-		 orderbean.setPagebean(new PageBean());
-		 orderbean.setStatus("1");
+		 RecyclersBean recyclersBean=  new RecyclersBean();
+		 recyclersBean.setHeadPicUrl("www.baidu.com");
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.order.getorderlist");
+	        param.put("name", "app.recycler.updateHeadPicUrl");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -51,7 +51,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", orderbean);
+	        param.put("data", recyclersBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

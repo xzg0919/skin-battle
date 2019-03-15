@@ -1,7 +1,9 @@
 package com.tzj.collect.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.ali.param.OrderItemBean;
 import com.tzj.collect.api.ali.result.ComCatePrice;
@@ -37,4 +39,6 @@ public interface OrderItemService extends IService<OrderItem>{
 	 * @return
 	 */
 	List<ComCatePrice> selectCateAchName(int orderId);
+
+	Map<String, Object> selectItemOne(Integer orderId);
 }

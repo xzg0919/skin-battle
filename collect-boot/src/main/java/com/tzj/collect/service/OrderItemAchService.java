@@ -1,6 +1,7 @@
 package com.tzj.collect.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.ali.param.OrderItemBean;
@@ -31,4 +32,6 @@ public interface OrderItemAchService extends IService<OrderItemAch>{
 	 * @return
 	 */
 	List<ComCatePrice> selectCateName(int orderId);
+
+	List<Map<String,Object>> selectItemSumAmount (Integer orderId);
 }

@@ -784,8 +784,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 */
 	@Override
-	public List<Map<String,Object>> outOrderExcel(Integer companyId,String startTime,String endTime){
-		return orderMapper.outOrderExcel(companyId,startTime,endTime);
+	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime){
+		return orderMapper.outOrderExcel(companyId,type,startTime,endTime);
 	}
 	/**
 	 * 根据各种查询条件获取订单列表

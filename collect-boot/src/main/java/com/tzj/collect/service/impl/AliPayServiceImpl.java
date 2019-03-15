@@ -4,14 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.domain.ZhimaCustomerCertificationCertifyModel;
-import com.alipay.api.domain.ZhimaCustomerCertificationInitializeModel;
-import com.alipay.api.domain.ZhimaCustomerCertificationQueryModel;
+import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.tzj.collect.common.constant.AlipayConst;
-import com.tzj.collect.service.AliPayService;
+import com.tzj.collect.entity.Category;
+import com.tzj.collect.entity.Order;
+import com.tzj.collect.service.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -19,6 +20,16 @@ import java.util.*;
 
 @Service
 public class AliPayServiceImpl implements AliPayService{
+
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private OrderItemAchService orderItemAchService;
+    @Autowired
+    private OrderItemService orderItemService;
+    @Autowired
+    private CategoryService categoryService;
+
 	 /**
      * 根据用户授权的具体authCode查询是用户的userid和token 
      * @author 王灿
@@ -74,11 +85,6 @@ public class AliPayServiceImpl implements AliPayService{
 			return response;
 	}
 
-    public static void main(String[] args) {
-
-
-
-    }
     /**
      * 
      * <p>Discription:[发放会员卡]</p>
@@ -332,5 +338,108 @@ public class AliPayServiceImpl implements AliPayService{
             System.out.println("调用芝麻认证初开始接口失败");
         }
         return response;
+    }
+    /**
+     * <p>蚂蚁森林绿色能量接口</p>
+     * @author:[王灿]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     */
+    public AntMerchantExpandTradeorderSyncResponse  update(String buyerId,String sellerId ,String orderId){
+        Order order = orderService.selectById(orderId);
+        Map<String, Object> digitalMap = null;
+        List<Map<String, Object>> houseList  = null;
+        //判断订单是否是电器
+        if((Category.CategoryType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
+            digitalMap = orderItemService.selectItemOne(Integer.parseInt(orderId));
+        }else{
+            houseList = orderItemAchService.selectItemSumAmount(Integer.parseInt(orderId));
+        }
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl,AlipayConst.XappId,AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+        AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
+        AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+        model.setBuyerId(buyerId);
+        model.setSellerId(sellerId);
+        model.setOutBizType("RECYCLING");
+        model.setOutBizNo(order.getOrderNo());
+        List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();
+        //如果是电器
+        if((Category.CategoryType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
+            ItemOrder itemOrder = new ItemOrder();
+            itemOrder.setItemName(digitalMap.get("name").toString());
+            itemOrder.setQuantity((long)1);
+            List<OrderExtInfo> extInfo = new ArrayList<>();
+            OrderExtInfo orderExtInfo = new OrderExtInfo();
+            orderExtInfo.setExtKey("ITEM_TYPE");
+            orderExtInfo.setExtValue(digitalMap.get("aliItemType").toString());
+            extInfo.add(orderExtInfo);
+            itemOrder.setExtInfo(extInfo);
+            orderItemList.add(itemOrder);
+        }else{
+            for (Map<String, Object> itemMap:houseList) {
+                ItemOrder itemOrder = new ItemOrder();
+                itemOrder.setItemName(itemMap.get("parentName").toString());
+                itemOrder.setQuantity((Long)itemMap.get("amount"));
+                List<OrderExtInfo> extInfo = new ArrayList<>();
+                OrderExtInfo orderExtInfo = new OrderExtInfo();
+                orderExtInfo.setExtKey("ITEM_TYPE");
+                orderExtInfo.setExtValue(itemMap.get("aliItemType").toString());
+                extInfo.add(orderExtInfo);
+                itemOrder.setExtInfo(extInfo);
+                orderItemList.add(itemOrder);
+            }
+
+        }
+
+        model.setItemOrderList(orderItemList);
+        request.setBizModel(model);
+        AntMerchantExpandTradeorderSyncResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调⽤成功");
+        } else {
+            System.out.println("调⽤失败");
+        }
+        return response;
+    }
+
+    public static void main(String[] args) {
+
+        AlipayClient alipayClient = new DefaultAlipayClient("openapi.alipaydev.com/gateway.do","2014060600164699",AlipayConst.TZJ_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.TZJ_ali_public_key, AlipayConst.sign_type);
+        AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
+        AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+        model.setBuyerId("2088212854989662");
+        model.setSellerId("2088112805965195");
+        model.setOutBizType("RECYCLING");
+        model.setOutBizNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000));
+        List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();
+        ItemOrder itemOrder = new ItemOrder();
+        itemOrder.setItemName("电视机");
+        itemOrder.setQuantity((long)1);
+        List<OrderExtInfo> extInfo = new ArrayList<>();
+        OrderExtInfo orderExtInfo = new OrderExtInfo();
+        orderExtInfo.setExtKey("ITEM_TYPE");
+        orderExtInfo.setExtValue("appliance");
+        extInfo.add(orderExtInfo);
+        itemOrder.setExtInfo(extInfo);
+        orderItemList.add(itemOrder);
+        model.setItemOrderList(orderItemList);
+        request.setBizModel(model);
+        AntMerchantExpandTradeorderSyncResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调⽤成功");
+        } else {
+            System.out.println("调⽤失败");
+        }
+        System.out.println(response.getBody()); ;
+
     }
 }

@@ -11,6 +11,7 @@ import com.tzj.collect.service.OrderItemService;
 import com.tzj.collect.service.OrderService;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class OrderItemServiceImpl extends ServiceImpl<OrderItemMapper, OrderItem> implements OrderItemService{
-	
+	@Autowired
+	private OrderItemMapper orderItemMapper;
 	
 	@Autowired
 	private OrderMapper orderMapper;
@@ -72,5 +74,10 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemMapper, OrderItem
 	 */
 	public List<ComCatePrice> selectCateAchName(int orderId){
 		return orderMapper.selectCateAchName(orderId);
+	}
+
+	@Override
+	public Map<String, Object> selectItemOne(Integer orderId) {
+		return orderItemMapper.selectItemOne(orderId);
 	}
 }

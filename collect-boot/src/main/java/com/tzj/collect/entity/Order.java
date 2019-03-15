@@ -499,7 +499,7 @@ public class Order extends DataEntity<Long> {
 			statusPage = "待接单";
 			break;
 		case ALREADY:
-			statusPage = "已派单";
+			statusPage = "进行中";
 			break;
 		case REJECTED:
 			statusPage = "平台已取消";

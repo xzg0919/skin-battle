@@ -206,25 +206,25 @@ public class FiveKgController {
 
     public static void main(String[] args) {
         HashMap<String,Object> param=new HashMap<>();
-//        param.put("orderStatus","3");
-//        param.put("orderNo","20190227112534438185");
-//        param.put("expressName","岳阳");
-//        param.put("expressTel","18375333333");
-//        param.put("date", "2019-02-27 14:27:01");
-//        param.put("expressNo","20187974123466789");
-//        param.put("expressAmount","4.5");
-//        param.put("remarks","取消原因4");
-//        param.put("logisticsName","申通快递");
-        param.put("orderNo","20190225164500925088");
-        param.put("orderType","废纺衣物");
-        param.put("orderAmount","6.5");
-        param.put("userName","龙建");
-        param.put("userTel", "18555696367");
-        param.put("userAddress","上海市浦东新区洲海路100号10栋101");
-        param.put("arrivalTime","2019-02-26 am");
-        param.put("isCancel","Y");
-        param.put("cancelReason","取消原因");
-       // RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_RETURN_ORDER);
+        param.put("orderStatus","3");
+        param.put("orderNo","20190301164656307253");
+        param.put("expressName","岳阳");
+        param.put("expressTel","18375333333");
+        param.put("date", "2019-02-27 14:27:01");
+        param.put("expressNo","20187974123466789");
+        param.put("expressAmount","4.5");
+        param.put("remarks","取消原因4");
+        param.put("logisticsName","申通快递");
+//        param.put("orderNo","20190302135536851909");
+//        param.put("orderType","废纺衣物");
+//        param.put("orderAmount","6.5");
+//        param.put("userName","龙建");
+//        param.put("userTel", "18555696367");
+//        param.put("userAddress","上海市浦东新区洲海路100号10栋101");
+//        param.put("arrivalTime","2019-02-26 am");
+//        param.put("isCancel","Y");
+//        param.put("cancelReason","取消原因");
+        RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_RETURN_ORDER);
 
         List<Order> list = new ArrayList<>();
         Order order1 = new Order();
@@ -246,9 +246,9 @@ public class FiveKgController {
         list.add(order5);
       //  List<Order> collect = list.stream().filter(order -> order.getLinkMan() == "王灿5").collect(toList());
 
-        System.out.println(LocalTime.now());
-        System.out.println(LocalDate.now());
-        System.out.println(LocalDateTime.now().toString());
+//        System.out.println(LocalTime.now());
+//        System.out.println(LocalDate.now());
+//        System.out.println(LocalDateTime.now().toString());
 
 
         //sendTest();
