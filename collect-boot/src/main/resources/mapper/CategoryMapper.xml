@@ -29,30 +29,46 @@
 		SELECT sc.name_,sc.id,sbc.price,sc.unit FROM sb_category sc LEFT JOIN (SELECT * FROM sb_company_category scc WHERE scc.`parent_id`=#{param1} AND scc.`company_id`= #{param2})sbc ON sbc.category_id = sc.id WHERE sc.`parent_id`=#{param1}
 	 </select> 
 	 
-	 <select id="topListApp" parameterType="Integer" resultType="Category">
-		SELECT DISTINCT 
-			a.* 
-		FROM 
-			sb_category a 
-		LEFT JOIN sb_category b ON a.id = b.parent_id 
-		WHERE 
-			a.level_ = #{level} 
-		AND a.title = #{title} 
-		AND ( 
-			FORMAT(b.price, 2) > 0 
-			OR b.unuseful = '1' 
-		)
+	 <select id="topListApp" resultType="Category">
+		SELECT
+			scc.*
+		FROM
+			sb_category scc
+		INNER JOIN (
+			SELECT DISTINCT
+				parent_id
+			FROM
+				sb_company_recycler scr
+			LEFT JOIN sb_company_category scc ON scr.company_id = scc.company_id
+			WHERE
+				scr.recycler_id = #{recId}
+			AND FORMAT(scc.price, 2) > 0
+		) notNull ON notNull.parent_id = scc.id
+		WHERE
+			scc.title = #{title}
+		AND scc.level_ = #{level}
+		UNION ALL
+		SELECT DISTINCT
+			a.*
+		FROM
+			sb_category a
+		LEFT JOIN sb_category b ON a.id = b.parent_id
+		WHERE
+			a.level_ = #{level}
+		AND a.title = #{title}
+		AND b.unuseful = '1'
+
 	 </select>
 	 <select id="topListApps" parameterType="Integer" resultType="Category">
-		SELECT DISTINCT 
-			a.* 
-		FROM 
-			sb_category a 
-		LEFT JOIN sb_category b ON a.id = b.parent_id 
-		WHERE 
-			a.level_ = #{level} 
-		AND a.title = #{title}  
-		AND b.unuseful = '1' 
+		SELECT DISTINCT
+			a.*
+		FROM
+			sb_category a
+		LEFT JOIN sb_category b ON a.id = b.parent_id
+		WHERE
+			a.level_ = #{level}
+		AND a.title = #{title}
+		AND b.unuseful = '1'
 	 </select>
 	 
     

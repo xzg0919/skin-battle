@@ -66,12 +66,13 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 获取一级类的商品
 	 */
 	@Override
-	public List<Category> topListApp(int level, Serializable title) {
+	public List<Category> topListApp(int level, Serializable title, Long recId) {
 //		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 //		wraper.eq("level_", level);
 //		wraper.eq("title", title);
 //		return this.selectList(wraper);
-		return categoryMapper.topListApp(level,(int)title);
+		System.out.println(recId);
+		return categoryMapper.topListApp(level,(int)title, recId);
 	}
 	/**
 	 * 获取一级类的商品
