@@ -45,7 +45,7 @@ public interface CategoryMapper extends BaseMapper<Category>  {
 	 * @param title
 	 * @return
 	 */
-	List<Category> topListApp(@Param("level")Integer level,@Param("title")Integer title);
+	List<Category> topListApp(@Param("level")Integer level,@Param("title")Integer title, @Param("recId")Long recId);
 	/**
 	 * 获取一级分类，保证价格不为0 或无价值的分类
 	 * @param level

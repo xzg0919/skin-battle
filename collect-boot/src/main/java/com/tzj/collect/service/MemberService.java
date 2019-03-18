@@ -43,5 +43,6 @@ public interface MemberService extends IService<Member>{
      * @param
      */
     Object memberAdmin(Integer memberId);
-    
+
+    Object memberIsExist(MemberBean memberBean);
 }

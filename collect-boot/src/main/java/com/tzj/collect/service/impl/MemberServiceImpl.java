@@ -342,6 +342,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		return resultMap;
 	}
 
+	@Override
+	public Object memberIsExist(MemberBean memberBean) {
+		if (this.selectCount(new EntityWrapper<Member>().eq("card_no", memberBean.getCardNo())) > 0)
+			return true;
+		else
+			return false;
+	}
+
 	public static void main(String[] args) throws  Exception{
 
 		Thread.sleep(100);
