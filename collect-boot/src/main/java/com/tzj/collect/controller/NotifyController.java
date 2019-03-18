@@ -2,14 +2,18 @@ package com.tzj.collect.controller;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
+import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
+import com.tzj.collect.service.AliPayService;
 import com.tzj.collect.service.EnterpriseCodeService;
 import com.tzj.collect.service.OrderService;
 import com.tzj.collect.service.PaymentService;
+import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,6 +44,8 @@ public class NotifyController {
     private OrderService orderService;
     @Autowired
     private EnterpriseCodeService enterpriseCodeService;
+    @Autowired
+    private AliPayService aliPayService;
 
 
     /**
@@ -119,6 +125,20 @@ public class NotifyController {
 
                     //根據order_no查询相关订单
                     Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
+                    try{
+                        //给用户增加蚂蚁能量
+                        AntMerchantExpandTradeorderSyncResponse antMerchantExpandTradeorderSyncResponse = aliPayService.updateForest(order.getId().toString());
+                        if(!antMerchantExpandTradeorderSyncResponse.isSuccess()){
+                            DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
+                                    RocketMqConst.DINGDING_ERROR,antMerchantExpandTradeorderSyncResponse.getBody());
+                        }
+                    }catch(Exception e){
+                        DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                                ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
+                                RocketMqConst.DINGDING_ERROR,e.toString());
+                        e.printStackTrace();
+                    }
                     if(null != order&&order.getIsScan().equals("0")){
                     //修改订单状态
                     OrderBean orderBean = new OrderBean();

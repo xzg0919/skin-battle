@@ -205,6 +205,10 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				memberAddress.setCityId(memberAddressBean.getCityId());
 				this.updateById(memberAddress);
 			}else {
+				if (null!=memberAddres){
+					memberAddres.setIsSelected(0);
+					this.updateById(memberAddres);
+				}
 				MemberAddress memberAddress = new MemberAddress();
 				memberAddress.setMemberId(memberAddressBean.getMemberId());
 				memberAddress.setName(memberAddressBean.getName());
@@ -223,7 +227,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				}
 				memberAddress.setAddress(areaName);
 				memberAddress.setHouseNumber(memberAddressBean.getHouseNumber());
-				memberAddress.setIsSelected(Integer.parseInt(isSelected));
+				memberAddress.setIsSelected(1);
 				memberAddress.setCityId(memberAddressBean.getCityId());
 				this.insert(memberAddress);
 			}

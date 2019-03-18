@@ -87,6 +87,18 @@ public class Member extends  DataEntity<Long>{
      * 头像
      */
     private String picUrl;
+    /**
+     * 是否授权蚂蚁森林能量
+     */
+    private String isMysl;
+
+    public String getIsMysl() {
+        return isMysl;
+    }
+
+    public void setIsMysl(String isMysl) {
+        this.isMysl = isMysl;
+    }
 
     public String getLinkName() {
         return linkName;

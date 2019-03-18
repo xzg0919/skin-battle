@@ -21,7 +21,7 @@ import java.util.List;
 @Controller
 @RequestMapping("admin")
 public class AdminController {
-	
+
 	@Autowired
 	private WebSocketServer webSocketServer;
 	@Autowired
@@ -31,21 +31,22 @@ public class AdminController {
 	private AppWebSocketServer appWebSocketServer;
 
 	@RequestMapping("/addExcel")
-	public  String addExcel(){
+	public String addExcel() {
 		return "admin/addExcel";
 	}
 
 	@RequestMapping("/love")
-	public  String love(){
+	public String love() {
 		return "admin/love";
 	}
-	
+
 	@RequestMapping("/excel")
-    public  String excel(){
-        return "admin/excel";
-    }
+	public String excel() {
+		return "admin/excel";
+	}
+
 	@RequestMapping("/excels")
-    public void  excels(HttpServletResponse response) throws Exception{
+	public void excels(HttpServletResponse response) throws Exception {
 		ExcelData data = new ExcelData();
 		data.setName("以旧换新信息数据");
 
@@ -64,8 +65,8 @@ public class AdminController {
 		//添加列
 		List<List<Object>> rows = new ArrayList();
 		List<Object> row = null;
-		for(int i=0; i<list.size();i++){
-			row=new ArrayList();
+		for (int i = 0; i < list.size(); i++) {
+			row = new ArrayList();
 			row.add(list.get(i).getCreateDate());
 			row.add(list.get(i).getCustomerName());
 			row.add(list.get(i).getCustomerTel());
@@ -76,25 +77,26 @@ public class AdminController {
 		}
 		data.setRows(rows);
 
-		SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-		String fileName=fdate.format(new Date())+".xlsx";
+		SimpleDateFormat fdate = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+		String fileName = fdate.format(new Date()) + ".xlsx";
 		ExcelUtils.exportExcel(response, fileName, data);
-    }
-	
+	}
+
 	@RequestMapping("/product/order")
-    public @ResponseBody String updateProducrOrder(){
+	public @ResponseBody
+	String updateProducrOrder() {
 		System.out.println("进来了2");
 		try {
 			appWebSocketServer.sendInfo("121", "你是回收经理");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        return "admin/love";
-    }
+		return "admin/love";
+	}
 
 	@RequestMapping("/upload/file")
-    public  String uploadFile(String name){
-		System.out.println("name  "+name);
-        return "admin/admin";
-    }
+	public String uploadFile(String name) {
+		System.out.println("name  " + name);
+		return "admin/admin";
+	}
 }

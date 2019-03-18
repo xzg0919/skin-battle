@@ -20,6 +20,9 @@ public class AlipayConst {
     //小程序APPID
     public static final String XappId = "2018060660292753";
 
+    //铸钱支付Id
+    public static final String SellerId = "2088231676636053";
+
     //支付宝APPID
     public static String TZJ_appId = "2017011905224137";
     // 商户的私钥

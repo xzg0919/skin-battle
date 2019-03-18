@@ -24,6 +24,12 @@ public class Company extends DataEntity<Long> {
 	private String zipcode;    //邮编
 	private String orgCode;   //组织机构编码
 	private String dingDingUrl;   //钉钉通知的连接
+
+	/**
+	 * 是否授权蚂蚁森林能量仅仅用于页面展示
+	 */
+	@TableField(exist=false)
+	private String isMysl;
 	/**
 	 * 回收企业类型，回收企业，智能设备回收企业,回收企业并且是智能设备回收企业
 	 */
@@ -35,10 +41,16 @@ public class Company extends DataEntity<Long> {
 	private Integer companyServiceCount;//该企业回收服务类型个数
 	@TableField(exist=false)
 	private Integer companyCategoryCount;//该回收服务类型个数
-	
-	
 
-	
+
+	public String getIsMysl() {
+		return isMysl;
+	}
+
+	public void setIsMysl(String isMysl) {
+		this.isMysl = isMysl;
+	}
+
 	/**
 	* @return recyclerCount
 	*/

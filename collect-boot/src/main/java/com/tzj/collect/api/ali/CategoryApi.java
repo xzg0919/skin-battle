@@ -346,4 +346,22 @@ public class CategoryApi {
 			return price;
 		}
 	}
+	/**
+	 * 小程序获取首页分类列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "category.getXCategoryList", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public Object getXCategoryList(){
+		Map<String,Object> map = new HashMap<>();
+		List<Category> DQcategoryList = categoryService.selectList(new EntityWrapper<Category>().eq("title", 1).isNull("parent_id"));
+		List<Category> LFcategories = categoryService.selectList(new EntityWrapper<Category>().eq("title", 2).eq("parent_id", 0).eq("unuseful", 0));
+		List<Category> FiveCategory = categoryService.selectList(new EntityWrapper<Category>().eq("parent_id", 45));
+		map.put("DQcategoryList",DQcategoryList);
+		map.put("LFcategories",LFcategories);
+		map.put("FiveCategory",FiveCategory);
+		return  map;
+	}
 }

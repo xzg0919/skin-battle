@@ -1,6 +1,7 @@
 package com.tzj.collect.api.ali.param;
 
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.OrderPic;
@@ -209,6 +210,19 @@ public class OrderBean {
 	 * 第三方物流公司ID
 	 */
 	private String logisticsId;
+
+	/**
+	 * 是否授权蚂蚁森林能量仅仅用于页面展示
+	 */
+	private String isMysl;
+
+	public String getIsMysl() {
+		return isMysl;
+	}
+
+	public void setIsMysl(String isMysl) {
+		this.isMysl = isMysl;
+	}
 
 	public String getType() {
 		return type;

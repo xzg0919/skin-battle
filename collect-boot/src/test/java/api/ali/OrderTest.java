@@ -68,18 +68,18 @@ public class OrderTest {
                 orderbean.setOrderItemList(orderItemList);
 
                 OrderBean orderbean1 = new OrderBean();
-                orderbean1.setId(7237);
+                orderbean1.setId(7347);
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","order.tosendfiveKgOrder");
+                param.put("name","category.getXCategoryList");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
                 param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-                param.put("token",securityToken);
+                //param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",orderbean1);
+                param.put("data",null);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

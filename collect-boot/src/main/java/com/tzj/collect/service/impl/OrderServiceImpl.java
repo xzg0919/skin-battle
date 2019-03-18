@@ -291,6 +291,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //    		newNemberAddress.setIsSelected(1);
 //    		flag = memberAddressService.insert(newNemberAddress);
 //    	}
+		Member member = memberService.selectById(orderbean.getMemberId());
+		member.setIsMysl(orderbean.getIsMysl());
+		memberService.updateById(member);
+
 		if (flag) {
 			return "操作成功";
 		}
@@ -1955,6 +1959,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOp("待接单");
 		orderLogService.insert(orderLog);
 
+		member.setIsMysl(orderBean.getIsMysl());
+		memberService.updateById(member);
+
 		return "操作成功";
 	}
 	/**
@@ -1976,7 +1983,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-
+		Member member = memberService.selectById(orderBean.getMemberId());
+		member.setIsMysl(orderBean.getIsMysl());
+		memberService.updateById(member);
 		try {
 			order.setMemberId(orderBean.getMemberId());
 			order.setOrderNo(orderBean.getOrderNo());

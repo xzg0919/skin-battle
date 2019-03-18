@@ -179,6 +179,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			}
 			member.setCardNo(cardNo);
 			member.setAppId(appId);
+			member.setIsMysl("1");
 			this.insert(member);
 		}else {
 			member.setAliUserId(userId);

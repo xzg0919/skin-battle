@@ -54,6 +54,8 @@ public class OrderApi {
 	private String JdbcName;
 	@Autowired
 	private CompanyStreeService companyStreeService;
+	@Autowired
+	private AliPayService aliPayService;
 	
 
 	/**
@@ -265,7 +267,9 @@ public class OrderApi {
     	}else {
     		companyId = company.getId().toString();
     	}
-    	return companyService.selectById(companyId);
+		Company company1 = companyService.selectById(companyId);
+		company1.setIsMysl(member.getIsMysl());
+		return company1;
     }
     /**
      * 获取详细价格表并分页
@@ -429,6 +433,12 @@ public class OrderApi {
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
 		Object object = orderService.savefiveKgOrder(orderbean);
+		if("操作成功".equals(object)) {
+			if("sb_admin".equals(JdbcName)) {
+				//钉钉通知
+				asyncService.notifyDingDingOrderCreate(orderbean);
+			}
+		}
 		if("操作成功".equals(object)){
 			Map<String,Object> map = new HashMap<>();
 			Date date = new Date();
@@ -446,5 +456,10 @@ public class OrderApi {
 			return object;
 		}
 	}
-
+	@Api(name = "order.updateForest", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object updateForest(OrderBean orderbean){
+		return aliPayService.updateForest(orderbean.getId().toString());
+	}
 }

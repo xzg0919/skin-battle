@@ -4,6 +4,7 @@ package com.tzj.collect.controller.admin;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.aliyun.mns.client.CloudAccount;
 import com.aliyun.mns.client.CloudTopic;
 import com.aliyun.mns.client.MNSClient;
@@ -55,6 +56,8 @@ public class FiveKgController {
     private OrderPicService orderPicService;
     @Autowired
     private OrderPicAchService orderPicAchService;
+    @Autowired
+    private AliPayService aliPayService;
 
 
     @RequestMapping(value = "/order/update",method = RequestMethod.POST)
@@ -112,7 +115,7 @@ public class FiveKgController {
                 orderItemAch.setParentName(orderItem.getParentName());
                 orderItemAch.setParentId(orderItem.getParentId());
                 orderItemAch.setParentIds(orderItem.getParentIds());
-                orderItemAch.setAmount(orderItem.getAmount());
+                orderItemAch.setAmount(Double.parseDouble(object.getString("expressAmount")));
                 orderItemAch.setUnit(orderItem.getUnit());
                 orderItemAch.setPrice(orderItem.getPrice());
                 orderItemAchService.insert(orderItemAch);
@@ -123,6 +126,20 @@ public class FiveKgController {
                 orderPicAch.setPicUrl(orderPic.getPicUrl());
                 orderPicAch.setSmallPic(orderPic.getSmallPic());
                 orderPicAchService.insert(orderPicAch);
+                try{
+                    //给用户增加蚂蚁能量
+                    AntMerchantExpandTradeorderSyncResponse antMerchantExpandTradeorderSyncResponse = aliPayService.updateForest(order.getId().toString());
+                    if(!antMerchantExpandTradeorderSyncResponse.isSuccess()){
+                        DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                                ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
+                                RocketMqConst.DINGDING_ERROR,antMerchantExpandTradeorderSyncResponse.getBody());
+                    }
+                }catch(Exception e){
+                    DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                            ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
+                            RocketMqConst.DINGDING_ERROR,e.toString());
+                    e.printStackTrace();
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -207,7 +224,7 @@ public class FiveKgController {
     public static void main(String[] args) {
         HashMap<String,Object> param=new HashMap<>();
         param.put("orderStatus","3");
-        param.put("orderNo","20190301164656307253");
+        param.put("orderNo","20190301164951100513");
         param.put("expressName","岳阳");
         param.put("expressTel","18375333333");
         param.put("date", "2019-02-27 14:27:01");

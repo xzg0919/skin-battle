@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.alipay.api.response.*;
+import org.springframework.scheduling.annotation.Async;
 
 /**
  * @Author 王灿
@@ -12,14 +13,12 @@ public interface AliPayService {
 	 /**
      * 根据用户授权的具体authCode查询是用户的userid和token 
      * @author 王灿
-     * @param AuthCode
      * @return
      */
     public AlipaySystemOauthTokenResponse selectUserToken(String userCode,String appId);
     /**
      * 调用接口查询用户的详细信息
      * @author 王灿
-     * @param AuthCode
      * @return
      */
     public AlipayUserInfoShareResponse selectUser(String userToken,String appId);
@@ -56,4 +55,10 @@ public interface AliPayService {
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      */
     public ZhimaCustomerCertificationQueryResponse certify(String bizNo);
+    /**
+     * <p>蚂蚁森林绿色能量接口</p>
+     * @author:[王灿]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     */
+    public AntMerchantExpandTradeorderSyncResponse  updateForest(String orderId);
 }

@@ -6,6 +6,7 @@ import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.app.param.RecyclersBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
+import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.util.ApiUtil;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
@@ -39,19 +40,20 @@ public class TokenGetAppTest {
 		 // String api="http://localhost:9000/app/api";
 		  String api="http://localhost:9090/app/api";
 
-		 RecyclersBean recyclersBean=  new RecyclersBean();
-		 recyclersBean.setHeadPicUrl("www.baidu.com");
+		 FileBase64Param fileBase64Param = new FileBase64Param();
+		 fileBase64Param.setFileName("ceshi");
+		 fileBase64Param.setFileContentBase64("");
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.recycler.updateHeadPicUrl");
+	        param.put("name", "util.uploadImage");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
 	        param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-	        param.put("token",securityToken);
+	        //param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", recyclersBean);
+	        param.put("data", fileBase64Param);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");
