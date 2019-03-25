@@ -228,5 +228,7 @@ public interface OrderService extends IService<Order> {
 
 	Object savefiveKgOrder(OrderBean orderBean);
 
+	 void updateMemberPoint(Integer memberId, String OrderNo, double amount,String descrb);
+
 
 }

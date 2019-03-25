@@ -268,7 +268,7 @@ public class OrderApi {
     		companyId = company.getId().toString();
     	}
 		Company company1 = companyService.selectById(companyId);
-		company1.setIsMysl(member.getIsMysl());
+		company1.setIsMysl("1");
 		return company1;
     }
     /**

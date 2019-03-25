@@ -63,7 +63,8 @@
 			sc.icon,
 			b.name_ AS parentName,
 			b.id AS parentId,
-			sc.is_old_exchange_new AS isOldExchangeNew
+			sc.is_old_exchange_new AS isOldExchangeNew,
+			sc.ant_forest_pic AS antForestPic
 		FROM
 			sb_company_category sccp
 		INNER JOIN sb_category sc ON sc.id = sccp.category_id
@@ -86,7 +87,8 @@
 			sc.icon,
 			b.name_ AS parentName,
 			b.id AS parentId,
-			sc.is_old_exchange_new AS isOldExchangeNew
+			sc.is_old_exchange_new AS isOldExchangeNew,
+			sc.ant_forest_pic AS antForestPic
 		FROM
 			sb_company_category sccp
 		INNER JOIN sb_category sc ON sc.id = sccp.category_id
@@ -109,7 +111,8 @@
 			sc.icon,
 			b.name_ AS parentName,
 			b.id AS parentId,
-			sc.is_old_exchange_new AS isOldExchangeNew
+			sc.is_old_exchange_new AS isOldExchangeNew,
+			sc.ant_forest_pic AS antForestPic
 		FROM
 			sb_company_category sccp
 		INNER JOIN sb_category sc ON sc.id = sccp.category_id
@@ -198,7 +201,8 @@
 			sc.unit,
 			b.name_ AS parentName,
 			b.id AS parentId,
-			sc.is_old_exchange_new AS isOldExchangeNew
+			sc.is_old_exchange_new AS isOldExchangeNew,
+			sc.ant_forest_pic AS antForestPic
 		FROM
 		sb_category sc
 		LEFT JOIN sb_category b
@@ -221,7 +225,8 @@
 			sc.unit,
 			b.name_ AS parentName,
 			b.id AS parentId,
-			sc.is_old_exchange_new AS isOldExchangeNew
+			sc.is_old_exchange_new AS isOldExchangeNew,
+			sc.ant_forest_pic AS antForestPic
 		FROM
 		sb_category sc
 		LEFT JOIN sb_category b

@@ -17,6 +17,26 @@ public class ComCatePrice {
 
 	private String isOldExchangeNew;
 
+	private String aliItemType;
+
+	private String antForestPic;
+
+	public String getAliItemType() {
+		return aliItemType;
+	}
+
+	public void setAliItemType(String aliItemType) {
+		this.aliItemType = aliItemType;
+	}
+
+	public String getAntForestPic() {
+		return antForestPic;
+	}
+
+	public void setAntForestPic(String antForestPic) {
+		this.antForestPic = antForestPic;
+	}
+
 	public String getIsOldExchangeNew() {
 		return isOldExchangeNew;
 	}

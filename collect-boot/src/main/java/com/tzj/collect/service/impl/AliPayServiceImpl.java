@@ -8,9 +8,11 @@ import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.tzj.collect.common.constant.AlipayConst;
+import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.service.*;
+import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -347,64 +349,75 @@ public class AliPayServiceImpl implements AliPayService{
      */
     @Override
     public AntMerchantExpandTradeorderSyncResponse  updateForest(String orderId){
-        Order order = orderService.selectById(orderId);
-        Map<String, Object> digitalMap = null;
-        List<Map<String, Object>> houseList  = null;
-        //判断订单是否是电器
-        if((Category.CategoryType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
-            digitalMap = orderItemService.selectItemOne(Integer.parseInt(orderId));
-        }else{
-            houseList = orderItemAchService.selectItemSumAmount(Integer.parseInt(orderId));
-        }
-        AlipayClient alipayClient = new DefaultAlipayClient("http://openapi.dl.alipaydev.com/gateway.do","2019030660663404","MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDOB+7d4u08HvfvzynZGZ1FMfKi/4kravQbBd+6O38Yn/b8AfOy+vHHm6CRFOwpAGT503SliRJgSBs6vCwrdAXZctYRzKkU7l4gCFMG8rL0kX1KWzYi3sQlsBylPay7cXVcjZiBNrxI752753L1C+JFP6yfbOSV2xn3xB4KlMRtLDcDYWHa2ffpS9nuFzY9YF5zt+63yxUhhQxe9ISeS1K+1YGrQCemjZG8908e5kuq/ywcL/lhHB4BJ8xEp0u9OuyUTCnJy84Y/ifTsxog8BXuDRPyzEChplssNUjH1RgHjpeCOPImypGuvbXq47KhEEPUW2qho5zIX0+UcdsZJ0XRAgMBAAECggEAXZLCzSnUf1q9VsArDHwSrquZvKf8X6jKxz8qtoVxGvkEDr7ANQi+KN8o1NvAynpwYfrE3q3bl7kIDOwLz4x5X6JFUX43SNdeDoRZWS1/U46EbfHxK3MreMZ8rBvPyK4mFGwG2KDIcQPLCt16m4rTMIpT13B4fQsuxxXeYwXgFIiQpSbVdWadnoZvZRwDeJF3p2kMOx9THnaMNnVakBuSKgpRd18tq4MnVRLreNk5rdtEvUtRtdINUgIAjCkFISw3XgeodRYCYG04EJtO7CEQNAzirZTUXaRjfFa1WXu33xrYyYAJdtYP/Q0fxY60xL8hcAAc2Zhaee6IsJPnuYPcBQKBgQDq549qQ/DzZV7FoIv51VIhGoJOwAI1XJtTvKBtzfjX4oKDmmjOzU4tVgCryxxU53IPwd8oXmvNKJkXVH4q8h4ILwBLBiaSEPtuIjcVSbo7Z99xY2Vt2z/17h1pFLYdJSdP+yDs7iDQKZe7BmdduOys9bRr+OCrVwDerEP/oEziewKBgQDgiJJtsT60z7cM5Jyc7VvF6VnsRZuQQesicJ7AbJ8k7zCjCeCv4/LLr6VUsWs2yW0KzXG5A2nJ70uBNBe+W08vOD7jNFPvyEQEh4+39IfBWVDzq13lcW1X//OU3zUoftXiqgxxtABVB6Mly6skex4KUN1uDt4I5P8oNnvCiPc9IwKBgQDQAgaz8b++uAgI9lac/3H/kErNUydhe0SsDL7/HMH64T/zK1sdrR1J9fsYJP5MjLorC+EBDUNmY0nVJ+OlQcqoMn6O8L5c357VcoTWW/gGPL/W105szhZAPv9aGpX9DvZV06nfRCpYSkxqt4v2qRcjPVvrtHG2J4/EnkSEar1KWwKBgQCxeuKbuD3DuGiN1WsCFBC1uMUuoLrdZW2SVIj3uyR0kmjUhutGvRze6iD6eB8yODdsEYax4sPNLcx1/ZJDEnPd9EypVWR/pcI1/l2Y374rFAmMAkn/IhB3PcbxRxoCv3cbaqTZf5m/nIDWUE4gUP0m1FKjOzdAupoB1EcxNwiPFwKBgQCBYKck0H/Yl3Z7RHAjpxsoV5gZnljxU0WDa7/QW0xr/c2SBcFY1tr7sV3wiz3bEo35Zou7xd++PCetCmd+5TaQ0nNwye1L75q6x9spzb64WHMtuXfZdCB9nWcKtVx1iFNpaqY6EM8poJ2/5kPTyu+qGm7XTEJNg4gpXEtGjhLWOw==","json","GBK","MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsabuLrA0vENJs4TCcI8CKzDZy3OC3ym/dFdA0QCOtT6/heOyOFvrh6dy5nV3rYrhYXHkRGH334mEgo3tRHeU6ATYBboaLUAAwbQVnV52GaKNtOsodOgfTXwqLounju1V90+KKbN4AzQKn9N4XypRBe1vPqrU9wPy3eAqAWLByprEqFBGuttwlL6TiODvn8F8K/SUqKAl5nFWtygJJZEdIiWFXUEEsggPh+oN51/EWnTVREJiigxRg2u0sPmDKkBeLSriIzSSrkQpoF+mekVXhBUIxd/pMkWu3AL/4S/MDBh6USN5+lP3q6Ij+QfbljJZZpvurO9MmIJ7V4T4nPw4vwIDAQAB","RSA2");
-        AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
-        request.putOtherTextParam("ws_service_url","mrchorder-eu95-3.rz00b.dev.alipay.net:12200");
-        AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
-        model.setBuyerId(order.getAliUserId());
-        model.setSellerId(AlipayConst.SellerId);
-        model.setOutBizType("RECYCLING");
-        model.setOutBizNo(order.getOrderNo());
-        List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();
-        //如果是电器
-        if((Category.CategoryType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
-            ItemOrder itemOrder = new ItemOrder();
-            itemOrder.setItemName(digitalMap.get("name").toString());
-            itemOrder.setQuantity((long)1);
-            List<OrderExtInfo> extInfo = new ArrayList<>();
-            OrderExtInfo orderExtInfo = new OrderExtInfo();
-            orderExtInfo.setExtKey("ITEM_TYPE");
-            orderExtInfo.setExtValue(digitalMap.get("aliItemType").toString());
-            extInfo.add(orderExtInfo);
-            itemOrder.setExtInfo(extInfo);
-            orderItemList.add(itemOrder);
-        }else{
-            for (Map<String, Object> itemMap:houseList) {
+        try{
+            Order order = orderService.selectById(orderId);
+            Map<String, Object> digitalMap = null;
+            List<Map<String, Object>> houseList  = null;
+            //判断订单是否是电器
+            if((Category.CategoryType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
+                digitalMap = orderItemService.selectItemOne(Integer.parseInt(orderId));
+            }else{
+                houseList = orderItemAchService.selectItemSumAmount(Integer.parseInt(orderId));
+            }
+            AlipayClient alipayClient = new DefaultAlipayClient("https://openapipre.alipay.com/gateway.do",AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
+            AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
+            //request.putOtherTextParam("ws_service_url","mrchorder-eu95-3.rz00b.dev.alipay.net:12200");
+            AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+            model.setBuyerId(order.getAliUserId());
+            model.setSellerId(AlipayConst.SellerId);
+            model.setOutBizType("RECYCLING");
+            model.setOutBizNo(order.getOrderNo());
+            List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();
+            //如果是电器
+            if((Category.CategoryType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
                 ItemOrder itemOrder = new ItemOrder();
-                itemOrder.setItemName(itemMap.get("parentName").toString());
-                itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount")));
+                itemOrder.setItemName(digitalMap.get("name").toString());
+                itemOrder.setQuantity((long)1);
                 List<OrderExtInfo> extInfo = new ArrayList<>();
                 OrderExtInfo orderExtInfo = new OrderExtInfo();
                 orderExtInfo.setExtKey("ITEM_TYPE");
-                orderExtInfo.setExtValue(itemMap.get("aliItemType").toString());
+                orderExtInfo.setExtValue(digitalMap.get("aliItemType").toString());
                 extInfo.add(orderExtInfo);
                 itemOrder.setExtInfo(extInfo);
                 orderItemList.add(itemOrder);
+            }else{
+                for (Map<String, Object> itemMap:houseList) {
+                    ItemOrder itemOrder = new ItemOrder();
+                    itemOrder.setItemName(itemMap.get("parentName").toString());
+                    itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount")));
+                    List<OrderExtInfo> extInfo = new ArrayList<>();
+                    OrderExtInfo orderExtInfo = new OrderExtInfo();
+                    orderExtInfo.setExtKey("ITEM_TYPE");
+                    orderExtInfo.setExtValue(itemMap.get("aliItemType").toString());
+                    extInfo.add(orderExtInfo);
+                    itemOrder.setExtInfo(extInfo);
+                    orderItemList.add(itemOrder);
+                }
             }
-        }
-        model.setItemOrderList(orderItemList);
-        request.setBizModel(model);
-        AntMerchantExpandTradeorderSyncResponse response = null;
-        try {
-            response = alipayClient.execute(request);
-        }catch (Exception e){
+            model.setItemOrderList(orderItemList);
+            request.setBizModel(model);
+            AntMerchantExpandTradeorderSyncResponse response = null;
+            try {
+                response = alipayClient.execute(request);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            if(response.isSuccess()){
+                System.out.println("调⽤成功");
+            } else {
+                System.out.println("调⽤失败");
+                DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                        ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
+                        RocketMqConst.DINGDING_ERROR,response.getBody());
+            }
+            return response;
+        }catch (Exception e) {
+            DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
+                    RocketMqConst.DINGDING_ERROR,e.toString());
             e.printStackTrace();
         }
-        if(response.isSuccess()){
-            System.out.println("调⽤成功");
-        } else {
-            System.out.println("调⽤失败");
-        }
-        return response;
+        return null;
     }
 
     public static void main(String[] args) {

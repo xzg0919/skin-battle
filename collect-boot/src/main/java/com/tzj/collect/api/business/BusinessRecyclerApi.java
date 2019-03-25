@@ -256,24 +256,28 @@ public class BusinessRecyclerApi {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		String result = recycleService.saveRecyclersRange(recyclersServiceRangeBean,companyAccount.getCompanyId()).toString();
 			String api="http://172.19.182.58:9090/business/api";
-			if("172.19.182.58".equals(InetAddress.getLocalHost().getHostAddress())){
-				api = "http://172.19.182.59:9090/business/api";
+			try{
+				if("172.19.182.58".equals(InetAddress.getLocalHost().getHostAddress())){
+					api = "http://172.19.182.59:9090/business/api";
+				}
+				HashMap<String,Object> param=new HashMap<>();
+				param.put("name","business.recycle.sendMessage");
+				param.put("version","1.0");
+				param.put("format","json");
+				param.put("app_key","app_id_3");
+				param.put("timestamp", Calendar.getInstance().getTimeInMillis());
+				param.put("nonce", UUID.randomUUID().toString());
+				param.put("data",recyclersServiceRangeBean);
+				String jsonStr = JSON.toJSONString(param);
+				String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");
+				param.put("sign", sign);
+				System.out.println("请求的参数是 ："+JSON.toJSONString(param));
+				Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
+				String resultJson=response.body().string();
+				System.out.println("返回的参数是 ："+resultJson);
+			}catch (Exception e){
+				System.out.println("同意回收人员时，给另一台推送消息失败");
 			}
-			HashMap<String,Object> param=new HashMap<>();
-			param.put("name","business.recycle.sendMessage");
-			param.put("version","1.0");
-			param.put("format","json");
-			param.put("app_key","app_id_3");
-			param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-			param.put("nonce", UUID.randomUUID().toString());
-			param.put("data",recyclersServiceRangeBean);
-			String jsonStr = JSON.toJSONString(param);
-			String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");
-			param.put("sign", sign);
-			System.out.println("请求的参数是 ："+JSON.toJSONString(param));
-			Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
-			String resultJson=response.body().string();
-			System.out.println("返回的参数是 ："+resultJson);
 			return result;
 	}
 	/**

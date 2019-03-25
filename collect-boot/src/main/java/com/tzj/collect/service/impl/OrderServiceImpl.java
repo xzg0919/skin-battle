@@ -2,6 +2,7 @@ package com.tzj.collect.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -30,6 +31,7 @@ import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.collect.mapper.OrderMapper;
 import com.tzj.collect.service.*;
 import com.tzj.collect.service.impl.XingeMessageServiceImp.XingeMessageCode;
+import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,6 +190,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setLinkMan(orderbean.getLinkMan());
 			order.setCategoryId(orderbean.getCategoryId());
 			order.setCategoryParentIds(orderbean.getCategoryParentIds());
+			order.setIsMysl(orderbean.getIsMysl());
 			BigDecimal price = new BigDecimal("0");
 			if(price.compareTo(orderbean.getPrice())==1){
 				order.setPrice(price);
@@ -265,36 +268,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOp("待接单");
 		flag = orderLogService.insert(orderLog);
 
-//    	//根据小区的Id/用户的名字/用户的手机号  查询用户是否存在此地址
-//    	MemberAddress memberAddress= memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("member_id", orderbean.getMemberId()).eq("community_id", orderbean.getCommunityId()).eq("name_", orderbean.getLinkMan()).eq("tel", orderbean.getTel()));
-//    	//判断地址是否存在
-//    	if(null!=memberAddress) {
-//    		//查出用户的默认地址
-//        	MemberAddress memberAddressk= memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", orderbean.getMemberId()).eq("city_id", orderbean.getCityId()));
-//        	if(memberAddressk!=null) {
-//        		memberAddressk.setIsSelected(0);
-//        		//memberAddressMapper.updateById(memberAddressk);
-//        		memberAddressService.update(memberAddressk, new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", orderbean.getMemberId()).eq("city_id", orderbean.getCityId()));
-//        	}
-//        	memberAddress.setIsSelected(1);
-//        	flag = memberAddressService.updateById(memberAddress);
-//    	}else {
-//    		MemberAddress newNemberAddress = new MemberAddress();
-//    		newNemberAddress.setMemberId(orderbean.getMemberId().toString());
-//    		newNemberAddress.setName(orderbean.getLinkMan());
-//    		newNemberAddress.setAreaId(orderbean.getAreaId());
-//    		newNemberAddress.setStreetId(orderbean.getStreetId());
-//    		newNemberAddress.setCommunityId(orderbean.getCommunityId());
-//    		newNemberAddress.setAddress(orderbean.getAddress());
-//    		newNemberAddress.setHouseNumber(orderbean.getFullAddress());
-//    		newNemberAddress.setTel(orderbean.getTel());
-//    		newNemberAddress.setIsSelected(1);
-//    		flag = memberAddressService.insert(newNemberAddress);
-//    	}
-		Member member = memberService.selectById(orderbean.getMemberId());
-		member.setIsMysl(orderbean.getIsMysl());
-		memberService.updateById(member);
-
 		if (flag) {
 			return "操作成功";
 		}
@@ -369,29 +342,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				flag = orderPicAchService.insert(orderPicc);
 			}
 		}
+		//该订单是只要能量的订单
 		if("1".equals(order.getIsCash())) {
 			//修改订单状态
 			this.modifyOrderSta(orderbean);
-			//判断是否有券码完成转账
-			if (!StringUtils.isBlank(order.getEnterpriseCode())) {
-				EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use", 1));
-				//判断券码是否存在并且未使用
-				if (null != enterpriseCode) {
-					//储存转账信息
-					Payment payment = new Payment();
-					payment.setAliUserId(order.getAliUserId());
-					payment.setTradeNo("1");
-					payment.setPrice(enterpriseCode.getPrice());
-					payment.setRecyclersId(order.getRecyclerId().longValue());
-					payment.setOrderSn(order.getOrderNo());
-					paymentService.insert(payment);
-					//给用户转账
-					paymentService.transfer(payment);
-					enterpriseCode.setReceiveDate(new Date());
-					enterpriseCode.setIsUse("2");
-					enterpriseCodeService.updateById(enterpriseCode);
+				if("1".equals(order.getIsMysl())){
+					//给用户增加蚂蚁能量
+					aliPayService.updateForest(order.getId().toString());
 				}
-			}
 		}
 		return flag;
 	}
@@ -992,7 +950,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 			Map<String, Object> map = this.createPriceAmount(orderbean);
 			listMapObject = (List<Map<String, Object>>) map.get("listMapObject");
-			obj = map.get("greenCount");
+			obj = map.get("achAmount");
 
 		} else if (order.getTitle() == CategoryType.DIGITAL) {
 			OrderItemList = orderItemService.selectByOrderId(orderbean.getId());
@@ -1005,7 +963,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("orderPicList", orderPicList);
 		resultMap.put("OrderItemList", OrderItemList);
 		resultMap.put("list", listMapObject);
-		resultMap.put("greenCount", obj);
+		resultMap.put("achAmount", obj);
 		return resultMap;
 	}
 
@@ -1522,8 +1480,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Map<String, String> map = null;
 		float price = 0l;
 		Map<String, Object> mapListMap = null;
-		//定义绿色能量
-		double greenCount = 0;
+		//实际重量
+		double achAmount = 0;
 		//首先取得分类name, 去重
 		for (ComCatePrice name : cateName) {
 			String categoryName = "";
@@ -1542,12 +1500,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						map.put("unit", list.getUnit());
 						map.put("amount", list.getAmount() + "");
 						price += list.getPrice() * list.getAmount();
-						//判断此单是否是免费
-						if ("1".equals(isCash)) {
-							greenCount += list.getAmount();
-						} else {
-							greenCount += list.getAmount();
-						}
+						achAmount += list.getAmount();
 						if (list.getPrice() == 0 && !ToolUtils.categoryName.equals(list.getCategoryName())) {
 							categoryName += list.getCategoryName() + "/";
 						} else {
@@ -1584,7 +1537,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			listMapObject.add(mapListMap);
 		}
 		resultMap.put("listMapObject", listMapObject);
-		resultMap.put("greenCount", greenCount);
+		resultMap.put("achAmount", achAmount);
 		return resultMap;
 	}
 
@@ -1815,6 +1768,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				amount += orderItemBean.getAmount();
 			}
 		}
+		order.setGreenCount(amount);
+		this.updateById(order);
 		//给用户增加积分
 		this.updateMemberPoint(order.getMemberId(), order.getOrderNo(), amount,"定点回收物");
 
@@ -1902,6 +1857,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setGreenCode(orderBean.getGreenCode());
 			order.setAliUserId(member.getAliUserId());
 			order.setTitle(CategoryType.HOUSEHOLD);
+			order.setIsMysl(orderBean.getIsMysl());
 			if ("1".equals(orderBean.getIsCash())) {
 				order.setIsCash(orderBean.getIsCash());
 			} else {
@@ -1959,9 +1915,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOp("待接单");
 		orderLogService.insert(orderLog);
 
-		member.setIsMysl(orderBean.getIsMysl());
-		memberService.updateById(member);
-
 		return "操作成功";
 	}
 	/**
@@ -1983,10 +1936,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		Member member = memberService.selectById(orderBean.getMemberId());
-		member.setIsMysl(orderBean.getIsMysl());
-		memberService.updateById(member);
 		try {
+			order.setIsMysl(orderBean.getIsMysl());
 			order.setMemberId(orderBean.getMemberId());
 			order.setOrderNo(orderBean.getOrderNo());
 			order.setAreaId(orderBean.getAreaId());

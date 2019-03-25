@@ -179,11 +179,11 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 
 		try {
 			//根据行政区姓名查询行政区信息
-			Area areas = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", memberAddressBean.getAreaName()));
+			Area areas = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", memberAddressBean.getAreaName()).eq("parent_id",memberAddressBean.getCityId()));
 			//根据街道姓名查询街道信息
-			Area street = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", memberAddressBean.getStreetName()));
+			Area street = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", memberAddressBean.getStreetName()).eq("parent_id",areas.getId()));
 			//根据小区姓名查询小区信息
-			Community community = communityService.selectOne(new EntityWrapper<Community>().eq("name_",memberAddressBean.getCommunityName()));
+			Community community = communityService.selectOne(new EntityWrapper<Community>().eq("name_",memberAddressBean.getCommunityName()).eq("area_id",street.getId()));
 
 			String adreess = memberAddressBean.getAreaName()+memberAddressBean.getStreetName()+memberAddressBean.getCommunityName()+(StringUtils.isBlank(memberAddressBean.getCommByUserInput())?"":memberAddressBean.getCommByUserInput())+memberAddressBean.getHouseNumber();
 

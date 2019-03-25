@@ -160,7 +160,7 @@ public class MemberAddressApi {
 		}
 		//判断该地址是否回收5公斤废纺衣物
 		Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAddress.getStreetId());
-		if (null != streeCompanyId){
+		if (null != streeCompanyId&&StringUtils.isBlank(companyId)){
 			memberAddress.setIsFiveKg("Y");
 		}else{
 			memberAddress.setIsFiveKg("N");

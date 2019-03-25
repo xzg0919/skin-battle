@@ -125,27 +125,17 @@ public class NotifyController {
 
                     //根據order_no查询相关订单
                     Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
-                    try{
+                    if("1".equals(order.getIsMysl())||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
-                        AntMerchantExpandTradeorderSyncResponse antMerchantExpandTradeorderSyncResponse = aliPayService.updateForest(order.getId().toString());
-                        if(!antMerchantExpandTradeorderSyncResponse.isSuccess()){
-                            DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
-                                    RocketMqConst.DINGDING_ERROR,antMerchantExpandTradeorderSyncResponse.getBody());
-                        }
-                    }catch(Exception e){
-                        DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                                ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
-                                RocketMqConst.DINGDING_ERROR,e.toString());
-                        e.printStackTrace();
+                        aliPayService.updateForest(order.getId().toString());
                     }
                     if(null != order&&order.getIsScan().equals("0")){
-                    //修改订单状态
-                    OrderBean orderBean = new OrderBean();
-                    orderBean.setId(order.getId().intValue());
-                    orderBean.setStatus("3");
-                    orderBean.setAmount(order.getGreenCount());
-                    orderService.modifyOrderSta(orderBean);
+                        //修改订单状态
+                        OrderBean orderBean = new OrderBean();
+                        orderBean.setId(order.getId().intValue());
+                        orderBean.setStatus("3");
+                        orderBean.setAmount(order.getGreenCount());
+                        orderService.modifyOrderSta(orderBean);
                         //判断是否有券码完成转账
                         if(!StringUtils.isBlank(order.getEnterpriseCode())){
                             EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));

@@ -7,10 +7,7 @@ import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.api.ali.result.ComCatePrice;
 import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
-import com.tzj.collect.entity.Community;
-import com.tzj.collect.entity.Company;
-import com.tzj.collect.entity.CompanyCategory;
-import com.tzj.collect.entity.CompanyServiceRange;
+import com.tzj.collect.entity.*;
 import com.tzj.collect.mapper.CompanyCategoryMapper;
 import com.tzj.collect.mapper.CompanyMapper;
 import com.tzj.collect.service.*;
@@ -76,6 +73,7 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	 */
 	@Override
 	public Map<String, Object> categoryHouseTwoList(CategoryBean categoryBean) {
+		Category category = categoryService.selectById(categoryBean.getId());
 		Map<String, Object> map = new HashMap<>();
 		List<ComCatePrice> priceList = null;
 		List<ComCatePrice> noPriceList = null;
@@ -103,6 +101,7 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 			}else{
 				//判断该地址是否回收5公斤废纺衣物
 				Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(categoryBean.getId(), categoryBean.getStreeId());
+				category.setIcon("http://images.sqmall.top/collect/20190318/original_a4e43901-9edb-4e80-b995-cd1f70fd2a94.jpg");
 				if (null != streeCompanyId){
 					priceList = this.getOwnnerPrice(categoryBean,streeCompanyId);
 					noPriceList = this.getOwnnerNoPrice(categoryBean,streeCompanyId);
@@ -113,7 +112,7 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 			}
 			map.put("ComCatePriceList", priceList);
 			map.put("ComCateNoPriceList", noPriceList);
-			map.put("category",categoryService.selectById(categoryBean.getId()));
+			map.put("category",category);
 		return  map;
 	}
 	/**

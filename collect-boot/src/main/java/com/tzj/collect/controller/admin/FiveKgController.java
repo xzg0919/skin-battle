@@ -100,6 +100,7 @@ public class FiveKgController {
         }else if ("3".equals(orderStatus)){
             //订单完成
             try{
+                order.setGreenCount(Double.parseDouble(object.getString("expressAmount")));
                 order.setStatus(Order.OrderType.COMPLETE);
                 order.setExpressNo(object.getString("expressNo"));
                 order.setLogisticsName(object.getString("logisticsName"));
@@ -126,20 +127,10 @@ public class FiveKgController {
                 orderPicAch.setPicUrl(orderPic.getPicUrl());
                 orderPicAch.setSmallPic(orderPic.getSmallPic());
                 orderPicAchService.insert(orderPicAch);
-                try{
-                    //给用户增加蚂蚁能量
-                    AntMerchantExpandTradeorderSyncResponse antMerchantExpandTradeorderSyncResponse = aliPayService.updateForest(order.getId().toString());
-                    if(!antMerchantExpandTradeorderSyncResponse.isSuccess()){
-                        DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                                ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
-                                RocketMqConst.DINGDING_ERROR,antMerchantExpandTradeorderSyncResponse.getBody());
-                    }
-                }catch(Exception e){
-                    DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                            ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
-                            RocketMqConst.DINGDING_ERROR,e.toString());
-                    e.printStackTrace();
-                }
+                //给用户增加积分
+                orderService.updateMemberPoint(order.getMemberId(), order.getOrderNo(), order.getGreenCount(),"生活垃圾");
+                //给用户增加蚂蚁能量
+                 aliPayService.updateForest(order.getId().toString());
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -224,7 +215,7 @@ public class FiveKgController {
     public static void main(String[] args) {
         HashMap<String,Object> param=new HashMap<>();
         param.put("orderStatus","3");
-        param.put("orderNo","20190301164951100513");
+        param.put("orderNo","20190320181056730131");
         param.put("expressName","岳阳");
         param.put("expressTel","18375333333");
         param.put("date", "2019-02-27 14:27:01");

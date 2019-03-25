@@ -38,7 +38,7 @@ public class Category extends DataEntity<Long> {
 	private CategoryType title;//最上层
 	@TableField(exist=false)
 	private Integer categoryId;
-	
+
 	private String recNotes;
 	
 	private String recTypeExp;
@@ -55,6 +55,26 @@ public class Category extends DataEntity<Long> {
 	 * 以旧换新的图片说明连接
 	 */
 	private String oldExchangeNewPic;
+
+	private String aliItemType;
+
+	private String antForestPic;
+
+	public String getAliItemType() {
+		return aliItemType;
+	}
+
+	public void setAliItemType(String aliItemType) {
+		this.aliItemType = aliItemType;
+	}
+
+	public String getAntForestPic() {
+		return antForestPic;
+	}
+
+	public void setAntForestPic(String antForestPic) {
+		this.antForestPic = antForestPic;
+	}
 
 	public String getIsOldExchangeNew() {
 		return isOldExchangeNew;
@@ -240,10 +260,12 @@ public class Category extends DataEntity<Long> {
 	}
 
 	public enum CategoryType implements IEnum{
-    	DEFUALT(0),    //初始值
-    	DIGITAL(1),	//家电数码
+    	DEFUALT(0),   	 //初始值
+    	DIGITAL(1),		//家电数码
     	HOUSEHOLD(2),	//生活垃圾
-		FIVEKG(3);	//5公斤废纺衣物回收
+		FIVEKG(3),		//5公斤废纺衣物回收
+		BIGTHING(4);	//大件垃圾
+
     	private int value;
 
     	CategoryType(final int value) {

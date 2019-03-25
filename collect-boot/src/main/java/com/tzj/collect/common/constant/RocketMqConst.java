@@ -33,16 +33,15 @@ public class RocketMqConst {
         CloudTopic topic = client.getTopicRef(topicName);
         try {
             TopicMessage msg = new RawTopicMessage() ; //可以使用TopicMessage结构，选择不进行Base64加密
-            System.out.println("我是发送rocketMq消息的内容: "+param);
             //String jsonStr="{\"aliUId\":null,\"member_id\":\"330227\",\"user_code\":\"010031357626\",\"level\":\"2\",\"name\":\"hhh\",\"valid_level_time\":\"2019-12-31 23:59:59\"}";
             msg.setMessageBody(param);
             //msg.setMessageTag("filterTag"); //设置该条发布消息的filterTag
             msg = topic.publishMessage(msg);
-            System.out.println(msg.getMessageId());
-            System.out.println(msg.getMessageBodyMD5());
+            System.out.println("rocketMq发送消息成功 ："+msg.getMessageId()+" 内容是："+param);
+//            System.out.println(msg.getMessageBodyMD5());
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("subscribe error");
+            System.out.println("rocketMq发送消息失败");
         }
         client.close();
     }

@@ -174,6 +174,19 @@ public class Order extends DataEntity<Long> {
 	 */
 	private String logisticsName;
 
+	/**
+	 * 是否授权蚂蚁森林能量 0 不需要 1需要
+	 */
+	private String isMysl;
+
+	public String getIsMysl() {
+		return isMysl;
+	}
+
+	public void setIsMysl(String isMysl) {
+		this.isMysl = isMysl;
+	}
+
 	public String getLogisticsName() {
 		return logisticsName;
 	}
