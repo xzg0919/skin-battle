@@ -139,7 +139,7 @@ public class Order extends DataEntity<Long> {
 	@TableField(exist = false)//成交价格，页面需要
 	private String paymentPrice;
 
-	private CategoryType title;// 回收物类型
+	private TitleType title;// 回收物类型
 
 	private BigDecimal achPrice;//已完成价格
 	
@@ -306,11 +306,11 @@ public class Order extends DataEntity<Long> {
 		this.cateAttName4Page = cateAttName4Page;
 	}
 
-	public CategoryType getTitle() {
+	public TitleType getTitle() {
 		return title;
 	}
 
-	public void setTitle(CategoryType title) {
+	public void setTitle(TitleType title) {
 		this.title = title;
 	}
 
@@ -865,6 +865,24 @@ public class Order extends DataEntity<Long> {
 
 	public void setGreenCount(Double greenCount) {
 		this.greenCount = greenCount;
+	}
+
+	public enum TitleType implements IEnum{
+		DEFUALT(0),   	 //初始值
+		DIGITAL(1),		//家电数码
+		HOUSEHOLD(2),	//生活垃圾
+		FIVEKG(3),		//5公斤废纺衣物回收
+		BIGTHING(4);	//大件垃圾
+
+		private int value;
+
+		TitleType(final int value) {
+			this.value = value;
+		}
+
+		public Serializable getValue() {
+			return this.value;
+		}
 	}
 
 	public enum OrderType implements IEnum {

@@ -204,12 +204,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setGreenCode(orderbean.getGreenCode());
 			order.setAliUserId(orderbean.getAliUserId());
 			order.setRemarks(orderbean.getRemarks());
-			if (CategoryType.DIGITAL.name().equals(orderbean.getTitle())) {
-				order.setTitle(CategoryType.DIGITAL);
-			} else if (CategoryType.HOUSEHOLD.name().equals(orderbean.getTitle())) {
-				order.setTitle(CategoryType.HOUSEHOLD);
+			if (Order.TitleType.DIGITAL.name().equals(orderbean.getTitle())) {
+				order.setTitle(Order.TitleType.DIGITAL);
+			} else if (Order.TitleType.HOUSEHOLD.name().equals(orderbean.getTitle())) {
+				order.setTitle(Order.TitleType.HOUSEHOLD);
 			} else {
-				order.setTitle(CategoryType.DEFUALT);
+				order.setTitle(Order.TitleType.DEFUALT);
 			}
 			if ("1".equals(orderbean.getIsCash())) {
 				order.setIsCash(orderbean.getIsCash());
@@ -505,7 +505,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Set<String> attName = null;
 		List<ComCatePrice> attrList = null;
 		for (Order order : orderList) {
-			if (order.getTitle() == CategoryType.HOUSEHOLD) {
+			if (order.getTitle() == Order.TitleType.HOUSEHOLD) {
 				attName = new HashSet<>();
 				//获得父类名称
 				attrList = orderItemService.selectCateName(Integer.parseInt(order.getId().toString()));
@@ -514,19 +514,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						for (ComCatePrice comCatePrice : attrList) {
 							attName.add(comCatePrice.getName());
 						}
-						order.setTitle(CategoryType.HOUSEHOLD);
+						order.setTitle(Order.TitleType.HOUSEHOLD);
 						order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-			} else if (order.getTitle() == CategoryType.DIGITAL) {
+			} else if (order.getTitle() == Order.TitleType.DIGITAL) {
 				
 				//根据分类Id查询父级分类名字
 				Category category = categoryService.selectById(order.getCategory().getCategoryId());
 				order.setCateAttName4Page(category.getName());
-				order.setTitle(CategoryType.DIGITAL);
-			}else if(order.getTitle() == CategoryType.FIVEKG){
+				order.setTitle(Order.TitleType.DIGITAL);
+			}else if(order.getTitle() == Order.TitleType.FIVEKG){
 				attName = new HashSet<>();
 				//获得父类名称
 				attrList = orderItemService.selectCateName(Integer.parseInt(order.getId().toString()));
@@ -535,7 +535,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						for (ComCatePrice comCatePrice : attrList) {
 							attName.add(comCatePrice.getName());
 						}
-						order.setTitle(CategoryType.FIVEKG);
+						order.setTitle(Order.TitleType.FIVEKG);
 						order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -550,7 +550,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Order createName4Ali(Order order) {
 		Set<String> attName = null;
 		List<ComCatePrice> attrList = null;
-		if (order.getTitle() == CategoryType.HOUSEHOLD) {
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD) {
 			attName = new HashSet<>();
 			//获得父类名称
 			attrList = orderItemService.selectCateName(Integer.parseInt(order.getId().toString()));
@@ -559,16 +559,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					for (ComCatePrice comCatePrice : attrList) {
 						attName.add(comCatePrice.getName());
 					}
-					order.setTitle(CategoryType.HOUSEHOLD);
+					order.setTitle(Order.TitleType.HOUSEHOLD);
 					order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		} else if (order.getTitle() == CategoryType.DIGITAL) {
+		} else if (order.getTitle() == Order.TitleType.DIGITAL) {
 			order.setCateAttName4Page(order.getCategory().getName());
-			order.setTitle(CategoryType.DIGITAL);
-		}else if (order.getTitle() == CategoryType.FIVEKG){
+			order.setTitle(Order.TitleType.DIGITAL);
+		}else if (order.getTitle() == Order.TitleType.FIVEKG){
 			attName = new HashSet<>();
 			//获得父类名称
 			attrList = orderItemService.selectCateName(Integer.parseInt(order.getId().toString()));
@@ -577,7 +577,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					for (ComCatePrice comCatePrice : attrList) {
 						attName.add(comCatePrice.getName());
 					}
-					order.setTitle(CategoryType.FIVEKG);
+					order.setTitle(Order.TitleType.FIVEKG);
 					order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -590,10 +590,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Order createName4PC(Order order) {
 		Category category = order.getCategory();
 		;
-		if (order.getTitle() == CategoryType.HOUSEHOLD) {
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD) {
 			category.setName("生活垃圾");
 			order.setCategory(category);
-		} else if (order.getTitle() == CategoryType.DIGITAL) {
+		} else if (order.getTitle() == Order.TitleType.DIGITAL) {
 			category.setName("家电数码");
 			order.setCategory(category);
 		}
@@ -943,7 +943,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<Map<String, Object>> listMapObject = new ArrayList<>();
 		//Map<String, Object> mapListMap = null;
 		Object obj = null;
-		if (order.getTitle() == CategoryType.HOUSEHOLD||order.getTitle() == CategoryType.FIVEKG) {
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG) {
 			orderbean.setStatus(order.getStatus().getValue().toString());
 			orderbean.setTitle(order.getTitle().toString());
 			orderbean.setIsCash(order.getIsCash());
@@ -952,7 +952,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			listMapObject = (List<Map<String, Object>>) map.get("listMapObject");
 			obj = map.get("achAmount");
 
-		} else if (order.getTitle() == CategoryType.DIGITAL) {
+		} else if (order.getTitle() == Order.TitleType.DIGITAL) {
 			OrderItemList = orderItemService.selectByOrderId(orderbean.getId());
 		}
 
@@ -1009,7 +1009,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("company", company);
 		resultMap.put("OrderEvaluation", OrderEvaluation);
 		//System.out.println(11111);
-		if (order.getTitle() == CategoryType.HOUSEHOLD||order.getTitle() == CategoryType.FIVEKG) {
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG) {
 			OrderBean orderBean = new OrderBean();
 			orderBean.setId(orderId);
 			orderBean.setTitle(order.getTitle().toString());
@@ -1701,7 +1701,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setIsCash("0");
 		order.setIsDistributed("0");
 		order.setAreaId(0);
-		order.setTitle(CategoryType.HOUSEHOLD);
+		order.setTitle(Order.TitleType.HOUSEHOLD);
 		order.setAchPrice(orderBean.getPrice());
 		order.setAchRemarks(orderBean.getAchRemarks());
 		order.setSignUrl(orderBean.getSignUrl());
@@ -1774,6 +1774,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		this.updateMemberPoint(order.getMemberId(), order.getOrderNo(), amount,"定点回收物");
 
 		if (orderBean.getPrice().compareTo(BigDecimal.ZERO)==0){
+			//给用户增加蚂蚁能量
+			aliPayService.updateForest(order.getId().toString());
 			return "操作成功";
 		}
 		return order.getId();
@@ -1856,7 +1858,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setLevel(orderBean.getLevel());
 			order.setGreenCode(orderBean.getGreenCode());
 			order.setAliUserId(member.getAliUserId());
-			order.setTitle(CategoryType.HOUSEHOLD);
+			order.setTitle(Order.TitleType.HOUSEHOLD);
 			order.setIsMysl(orderBean.getIsMysl());
 			if ("1".equals(orderBean.getIsCash())) {
 				order.setIsCash(orderBean.getIsCash());
@@ -1948,7 +1950,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setUnit(companyCategory.getUnit());
 			order.setPrice(new BigDecimal(companyCategory.getPrice()));
 			order.setAliUserId(orderBean.getAliUserId());
-			order.setTitle(CategoryType.FIVEKG);
+			order.setTitle(Order.TitleType.FIVEKG);
 			order.setCompanyId(orderBean.getCompanyId());
 
 			order.setExpressAmount(new BigDecimal(orderBean.getQty()));
