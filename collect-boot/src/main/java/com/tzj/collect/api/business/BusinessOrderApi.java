@@ -38,15 +38,7 @@ public class BusinessOrderApi {
 	@Autowired
 	private OrderLogService orderLogService;
 	@Autowired
-	private CompanyService  companyService;
-	@Autowired
-	private OrderEvaluationService orderEvaluationService;
-	@Autowired
 	private RecyclersService recyclersService;
-	@Autowired
-	private OrderPicService orderPicService;
-	@Autowired
-	private OrderItemService orderItemService;
 	@Autowired
 	private RecyclerCancelLogService logService;
 	/**
@@ -64,9 +56,24 @@ public class BusinessOrderApi {
 		PageBean pageBean = orderBean.getPagebean(); 
 		Map<String, Object> orderMap = orderService.getOrderLists(orderBean,pageBean);
 		return  orderMap; 
-	}	
-
-	 /**
+	}
+	/**
+	 * 再处理订单列表
+	  * @author sgmark@aliyun.com
+	  * @date 2019/3/25 0025
+	  * @param
+	  * @return
+	  */
+	@Api(name = "business.order.getOrderListsDistribute", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Map<String, Object> getOrderListsDistribute(BOrderBean orderBean)
+	{	//获取分页数据
+		PageBean pageBean = orderBean.getPagebean();
+		Map<String, Object> orderMap = orderService.getOrderListsDistribute(orderBean,pageBean);
+		return  orderMap;
+	}
+	/**
 	 * 根据各种状态的订单条数
 	 * @author 王灿
 	 * @param orderBean

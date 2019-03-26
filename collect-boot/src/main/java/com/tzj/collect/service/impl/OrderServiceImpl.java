@@ -2,7 +2,6 @@ package com.tzj.collect.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -31,7 +30,6 @@ import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.collect.mapper.OrderMapper;
 import com.tzj.collect.service.*;
 import com.tzj.collect.service.impl.XingeMessageServiceImp.XingeMessageCode;
-import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -737,6 +735,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		map.put("count", count);
 		map.put("list", list);
+		if (CategoryType.BIGTHING.getValue().equals(title)){
+			map.put("distributedCount", this.getOrderListsDistribute(orderBean, pageBean).get("count"));// 再处理订单数量
+		}
+		return map;
+	}
+
+	/**
+	 * 再处理订单
+	  * @author sgmark@aliyun.com
+	  * @date 2019/3/25 0025
+	  * @param
+	  * @return
+	  */
+	@Override
+	public Map<String, Object> getOrderListsDistribute(BOrderBean orderBean, PageBean pageBean) {
+		Map map = new HashMap();
+		String status = getStatus(orderBean.getStatus());
+		Integer companyId = orderBean.getCompanyId();
+		String title = orderBean.getCategoryType().getValue().toString();
+		EntityWrapper entityWrapper = new EntityWrapper();
+		entityWrapper.eq("status_", status);
+		entityWrapper.eq("title", title);
+		entityWrapper.eq("company_id", companyId);
+		entityWrapper.eq("is_distribute", 1);
+		List<Order> orderList = orderMapper.selectList(entityWrapper);
+		orderList.stream().forEach(order -> {
+			if (order.getCategoryId() != null) {
+				order.setCategory(categoryService.selectById(order.getCategoryId()));
+			}
+		});
+		map.put("count", orderList.size());
+		map.put("list", orderList);
 		return map;
 	}
 
@@ -1412,6 +1442,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		piccWater.setDescrb(descrb);
 		piccWaterService.insert(piccWater);
 	}
+
 
 	/**
 	 * 订单数据看板折线图

@@ -231,4 +231,5 @@ public interface OrderService extends IService<Order> {
 	 void updateMemberPoint(Integer memberId, String OrderNo, double amount,String descrb);
 
 
+	Map<String, Object> getOrderListsDistribute(BOrderBean orderBean, PageBean pageBean);
 }
