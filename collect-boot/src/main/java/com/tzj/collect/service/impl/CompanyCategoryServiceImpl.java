@@ -101,8 +101,21 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 			}else{
 				//判断该地址是否回收5公斤废纺衣物
 				Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(categoryBean.getId(), categoryBean.getStreeId());
-				category.setIcon("http://images.sqmall.top/collect/20190318/original_a4e43901-9edb-4e80-b995-cd1f70fd2a94.jpg");
 				if (null != streeCompanyId){
+					if("45".equals(categoryBean.getId().toString())){
+						category.setIcon("http://images.sqmall.top/collect/20190318/original_a4e43901-9edb-4e80-b995-cd1f70fd2a94.jpg");
+						category.setRecNotes("1.废旧衣物指无污染、无霉变的各类纺织品,包含衣服、鞋子、纺织包袋、床上用品和织物类家具用品；，" +
+								"2.衣服包含毛衣、大衣、T恤和衬衫等；，" +
+								"3.鞋子包含运动鞋、皮鞋和帆布鞋等；，" +
+								"4.纺织包袋包含手提包、皮包和电脑包等；，" +
+								"5.床上用品包含床单、被套和枕套等；，" +
+								"6.织物类家居用品包含窗帘、地毯、毛巾、浴巾和桌布等;，" +
+								"7.当日晚8点后预约，可预约时间最早为次日上午；，" +
+								"8.预约完成后，回收人员会在预约时间段电话联系您,确认具体的上门时间,免费上门收取废旧衣物.，" +
+								"提示：，" +
+								"1.邮管局规定各快递公司全面推进实名制寄件，回收人员上门收件时可能需要您配合出示身份证件，望您理解;" +
+								"2.废旧衣物积累到5kg及以上可进行预约,需要您亲自打包好，这样可以减少上门回收的时间，方便回收人员称重.");
+					}
 					priceList = this.getOwnnerPrice(categoryBean,streeCompanyId);
 					noPriceList = this.getOwnnerNoPrice(categoryBean,streeCompanyId);
 				}else{

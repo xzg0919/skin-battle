@@ -263,7 +263,7 @@ public class Category extends DataEntity<Long> {
     	DEFUALT(0),   	 //初始值
     	DIGITAL(1),		//家电数码
     	HOUSEHOLD(2),	//生活垃圾
-		BIGTHING(3);	//大件垃圾
+		BIGTHING(4);	//大件垃圾
 
     	private int value;
 
