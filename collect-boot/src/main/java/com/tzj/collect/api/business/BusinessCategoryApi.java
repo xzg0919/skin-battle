@@ -1,45 +1,29 @@
 package com.tzj.collect.api.business;
 
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.business.param.CategoryAttrOptionBean;
 import com.tzj.collect.api.business.param.CategoryBean;
 import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
-import com.tzj.collect.api.business.param.CompanyCategoryAttrOptionBean;
-import com.tzj.collect.api.business.param.CompanyCategoryBean;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
 import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.entity.Category;
-import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.entity.CompanyCategory;
-import com.tzj.collect.entity.CompanyCategoryAttrOption;
 import com.tzj.collect.entity.Category.CategoryType;
-import com.tzj.collect.entity.CategoryAttr;
-import com.tzj.collect.entity.CategoryAttrOption;
-import com.tzj.collect.service.CategoryAttrOptionService;
+import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.service.CategoryService;
 import com.tzj.collect.service.CompanyCategoryAttrOptionService;
 import com.tzj.collect.service.CompanyCategoryService;
-import com.tzj.collect.service.CompanyService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
-import com.tzj.module.api.entity.Subject;
-import com.tzj.module.easyopen.ApiContext;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 /**
  * 
  * @author Administrator
@@ -54,9 +38,7 @@ public class BusinessCategoryApi {
 	private CompanyCategoryService companyCategoryService;
 	@Autowired
 	private CompanyCategoryAttrOptionService attrOptionService;
-	@Autowired
-	private CategoryAttrOptionService categoryAttrOptionService;
-	
+
 	 /**
      * 取得所有一级分类 
      * @param 
@@ -75,10 +57,23 @@ public class BusinessCategoryApi {
 		map.put("houseHoldList", houseHoldList);
 		return map;
 	}
+
+	//大件一级分类接口
+	@Api(name="business.category.bigtoplist",version="1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Map<String,List<Category>> getTopBigthingList(){
+		Map<String,List<Category>> map = new HashMap<>();
+		CompanyAccount companyAccount = getCompanyAccount();
+		int companyId = companyAccount.getCompanyId();
+		map.put("bigthingList", categoryService.getTopList(companyId,CategoryType.BIGTHING.getValue()));
+		return map;
+	}
+
 	
 	/**
 	 * 根据parentId查询家电数码二级菜单
-	 * @param parentId
+	 * @param
 	 * @return
 	 */
 	@Api(name="business.category.digitalsecondlist",version="1.0")
@@ -110,7 +105,7 @@ public class BusinessCategoryApi {
 	
 	/**
 	 * 根据parentId查询生活垃圾品类、单价
-	 * @param category
+	 * @param
 	 * @return
 	 */
 	@Api(name="business.category.householddetail",version="1.0")
@@ -228,7 +223,7 @@ public class BusinessCategoryApi {
 	
 	/**
 	 * 提交价格集合
-	 * @param comIdAndCateOptIdBean
+	 * @param
 	 * @return
 	 * @throws ApiException
 	 */

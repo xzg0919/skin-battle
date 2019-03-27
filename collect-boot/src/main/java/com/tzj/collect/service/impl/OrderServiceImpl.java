@@ -735,7 +735,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		map.put("count", count);
 		map.put("list", list);
-		if (CategoryType.BIGTHING.getValue().equals(title)){
+		if (CategoryType.BIGTHING.getValue().toString().equals(title)){
 			map.put("distributedCount", this.getOrderListsDistribute(orderBean, pageBean).get("count"));// 再处理订单数量
 		}
 		return map;
@@ -758,7 +758,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		entityWrapper.eq("status_", status);
 		entityWrapper.eq("title", title);
 		entityWrapper.eq("company_id", companyId);
-		entityWrapper.eq("is_distribute", 1);
+		entityWrapper.eq("is_distributed", 1);
 		List<Order> orderList = orderMapper.selectList(entityWrapper);
 		orderList.stream().forEach(order -> {
 			if (order.getCategoryId() != null) {

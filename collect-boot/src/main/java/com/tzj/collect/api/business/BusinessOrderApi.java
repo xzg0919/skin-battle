@@ -1,19 +1,18 @@
 package com.tzj.collect.api.business;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.result.CancelResult;
 import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderLog;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.service.*;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
@@ -41,6 +40,8 @@ public class BusinessOrderApi {
 	private RecyclersService recyclersService;
 	@Autowired
 	private RecyclerCancelLogService logService;
+	@Autowired
+	private  CategoryService categoryService;
 	/**
 	 * 根据各种查询条件获取订单 列表
 	 * @author 王灿
@@ -236,5 +237,22 @@ public class BusinessOrderApi {
 			e.printStackTrace();
 		}
 		return "操作成功";
+	}
+	/**
+	 * test
+	  * @author sgmark@aliyun.com
+	  * @date 2019/3/27 0027
+	  * @param
+	  * @return
+	  */
+	@Api(name = "order.test", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public List<Category> categoriesList(){
+		EntityWrapper<Category> entityWrapper = new EntityWrapper<>();
+		entityWrapper.eq("title", 4);
+		entityWrapper.eq("del_flag", 0);
+		return categoryService.selectList(entityWrapper);
 	}
 }
