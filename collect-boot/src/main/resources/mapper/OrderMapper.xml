@@ -166,6 +166,7 @@
 		LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 		WHERE
 			so.del_flag = '0'
+			and  so.title != 4
 			<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 				AND so.recycler_id = #{orderBean.recyclerId}
 			</if>
@@ -198,6 +199,7 @@
 		LEFT JOIN sb_category sc  ON so.category_id = sc.id
 		WHERE
 			so.del_flag = '0'
+			and so.title != 4
 			<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 				AND so.recycler_id = #{orderBean.recyclerId}
 			</if>
@@ -232,6 +234,7 @@
 			WHERE
 				so.del_flag = '0'
 		AND srcl.recycler_id = #{orderBean.recyclerId}
+		and so.title != 4
 		GROUP BY so.id
 			ORDER BY so.create_date DESC LIMIT #{startSize} , #{pageSize}
     </select>
@@ -263,6 +266,7 @@
 			INNER JOIN sb_order so ON so.category_id = sc.id
 			WHERE
 				so.del_flag = '0'
+			and so.title != 4
 			<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 				AND so.recycler_id = #{orderBean.recyclerId}
 			</if>
@@ -604,6 +608,7 @@
 	LEFT JOIN sb_order b ON a.id = b.recycler_id
 	WHERE
 		a.parents_id = #{recyclerId}
+	AND b.title != 4
 	AND b.status_ = 1
 	AND a.del_flag = 0
 	AND b.del_flag = 0
@@ -657,13 +662,198 @@
 			</if>
       		ORDER BY a.create_date DESC
 	</select>
+	<select id="getBigOrderTransferList" parameterType="Object" resultType="Map">
+		SELECT
+			a.id AS recyclerId,
+			a.name_ AS recyclerName,
+			a.tel AS recyclerMobile,
+			b.id,
+			b.title,
+			b.status_ AS orderStatus,
+			b.link_man AS userName,
+			b.tel AS userMobile,
+			b.address AS address,
+			b.price,
+			b.is_cash AS isCash,
+			b.order_no AS orderNo,
+			b.category_id AS categoryId,
+			c.name_ AS categoryName,
+			c.icon AS icon,
+			date_format(b.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
+			CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'am',' 上午',' 下午'))AS arrivalTime,
+			date_format(b.cancel_time,'%Y-%m-%d %H:%i:%S')AS cancelTime,
+			date_format(b.receive_time,'%Y-%m-%d %H:%i:%S')AS receiveTime,
+			date_format(b.distribute_time,'%Y-%m-%d %H:%i:%S') AS distributeTime,
+			date_format(b.complete_date,'%Y-%m-%d %H:%i:%S')AS completeDate,
+			IF(now()> CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'pm',' 12:00:00',' 00:00:01')),'Y','N') AS isRead
+		FROM
+			sb_recyclers a
+		LEFT JOIN sb_order b ON a.id = b.recycler_id
+		LEFT JOIN sb_category c ON c.id = b.category_id
+		WHERE
+			a.parents_id = #{recycleId}
+		AND b.title = 4
+		AND b.status_ = 1
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		AND b.is_scan = 0
+		order by b.create_date desc
+		LIMIT #{startPage},#{endPage}
+	</select>
+	<select id="getBigOrderTransferCount" parameterType="Integer" resultType="Integer">
+		SELECT
+		count(1)
+		FROM
+		sb_recyclers a
+		LEFT JOIN sb_order b ON a.id = b.recycler_id
+		LEFT JOIN sb_category c ON c.id = b.category_id
+		WHERE
+		a.parents_id = #{recycleId}
+		AND b.title = 4
+		AND b.status_ = 1
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		AND b.is_scan = 0
+	</select>
+	<select id="getBigOrderList" parameterType="Object" resultType="Map">
+		SELECT
+		a.id AS recyclerId,
+		a.name_ AS recyclerName,
+		a.tel AS recyclerMobile,
+		b.id,
+		b.title,
+		b.status_ AS orderStatus,
+		b.link_man AS userName,
+		b.tel AS userMobile,
+		b.address AS address,
+		b.price,
+		b.ach_price AS achPrice,
+		b.is_cash AS isCash,
+		b.order_no AS orderNo,
+		b.category_id AS categoryId,
+		c.name_ AS categoryName,
+		c.icon AS icon,
+		date_format(b.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
+		CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'am',' 上午',' 下午'))AS arrivalTime,
+		date_format(b.cancel_time,'%Y-%m-%d %H:%i:%S')AS cancelTime,
+		date_format(b.receive_time,'%Y-%m-%d %H:%i:%S')AS receiveTime,
+		date_format(b.distribute_time,'%Y-%m-%d %H:%i:%S') AS distributeTime,
+		date_format(b.complete_date,'%Y-%m-%d %H:%i:%S')AS completeDate,
+		IF(now()> CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'pm',' 12:00:00',' 00:00:01')),'Y','N') AS isRead
+		FROM
+		sb_order b
+		LEFT JOIN sb_recyclers a ON a.id = b.recycler_id
+		LEFT JOIN sb_category c ON c.id = b.category_id
+		WHERE
+		b.recycler_id = #{recycleId}
+		AND b.title = 4
+		<choose>
+			<when test="status == 4">
+				and (b.status_ = 4 or b.status_ = 5)
+			</when>
+			<otherwise>
+				AND b.status_ = #{status}
+			</otherwise>
+		</choose>
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		AND b.is_scan = 0
+		<choose>
+			<when test="status == 3">
+				ORDER BY b.complete_date DESC
+			</when>
+			<otherwise>
+				<choose>
+					<when test="status == 2">
+						ORDER BY b.arrival_time ASC,b.arrival_period ASC,b.create_date ASC
+					</when>
+					<otherwise>
+						ORDER BY b.create_date DESC
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+		LIMIT #{startPage},#{endPage}
+	</select>
+	<select id="getBigOrderCount" parameterType="Integer" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+		sb_order b
+		LEFT JOIN sb_recyclers a ON a.id = b.recycler_id
+		LEFT JOIN sb_category c ON c.id = b.category_id
+		WHERE
+		b.recycler_id = #{recycleId}
+		AND b.title = 4
+		<choose>
+			<when test="status == 4">
+				and (b.status_ = 4 or b.status_ = 5)
+			</when>
+			<otherwise>
+				AND b.status_ = #{status}
+			</otherwise>
+		</choose>
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		AND b.is_scan = 0
+	</select>
+	<select id="getBigOrderDetails" parameterType="Integer" resultType="com.tzj.collect.api.app.result.AppOrderResult">
+		SELECT
+			scomco.order_no AS orderNo,
+			sc.name_ AS cateName,
+			sc.icon,
+			scomco.address,
+			scomco.full_address AS fullAddress,
+			scomco.complete_date AS completeTime,
+			scomco.link_man AS linkName,
+			scomco.tel,
+			scomco.id AS orderId,
+			FORMAT(scomco.price, 2) AS price,
+			scomco.ach_price AS achPrice,
+			scomco.comTel,
+			scomco.comName,
+			scomco.status_,
+			scomco.arrival_period AS arrivalPeriod,
+			scomco.remarks,
+			scomco.title,
+			scomco.community_id,
+			scomco.company_id,
+			scomco.ach_remarks,
+			scomco.is_cash,
+			scomco.sign_url,
+			scomco.green_count,
+			sr.is_manager,
+		date_format(scomco.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
+		CONCAT(date_format(scomco.arrival_time,'%Y-%m-%d'),IF(scomco.arrival_period = 'am',' 上午',' 下午'))AS arrivalTime,
+		date_format(scomco.cancel_time,'%Y-%m-%d %H:%i:%S')AS cancelTime,
+		date_format(scomco.receive_time,'%Y-%m-%d %H:%i:%S')AS receiveTime,
+		date_format(scomco.distribute_time,'%Y-%m-%d %H:%i:%S') AS distributeTime,
+		date_format(scomco.complete_date,'%Y-%m-%d %H:%i:%S')AS completeDate,
+		IF(now()> CONCAT(date_format(scomco.arrival_time,'%Y-%m-%d'),IF(scomco.arrival_period = 'pm',' 12:00:00',' 00:00:01')),'Y','N') AS isRead
+		FROM
+			(
+				SELECT
+					scom.name_ AS comName,
+					scom.tel AS comTel,
+					so.*
+				FROM
+					sb_company scom
+				INNER JOIN sb_order so ON so.company_id = scom.id
+				WHERE
+					so.del_flag = '0'
+					AND so.id = #{orderId}
+				) scomco
+			LEFT JOIN sb_category sc ON sc.id = scomco.category_id
+			LEFT JOIN sb_recyclers sr ON sr.id = scomco.recycler_id
 
 
-    
 
-    <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->  
-    <resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">  
-        <id property="id" column="id" />  
+	</select>
+
+
+	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
+	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
+        <id property="id" column="id" />
         <result property="memberId" column="member_id" />
         <result property="companyId" column="company_id" />
         <result property="recyclerId" column="recycler_id" />
@@ -671,28 +861,28 @@
         <result property="orderNo" column="order_no" />
         <result property="areaId" column="area_id" />
         <result property="communityId" column="community_id" />
-        <result property="address" column="address" /> 
-        <result property="tel" column="tel" /> 
-        <result property="linkMan" column="link_man" /> 
-        <result property="categoryId" column="category_id" /> 
-        <result property="categoryParentIds" column="category_parent_ids" /> 
-        <result property="price" column="price" /> 
-        <result property="unit" column="unit" /> 
-        <result property="qty" column="qty" /> 
-        <result property="completeDate" column="complete_date" /> 
-        <result property="isEvaluated" column="is_evaluated" /> 
-        <result property="cancelReason" column="cancel_reason" /> 
-        <result property="cancelTime" column="cancel_time" /> 
-        <result property="level" column="level" /> 
-        <result property="receiveTime" column="receive_time" /> 
-        <result property="distributeTime" column="distribute_time" /> 
-        <result property="arrivalTime" column="arrival_time" /> 
-        <result property="arrivalPeriod" column="arrival_period" /> 
-        <result property="greenCode" column="green_code" /> 
-        <result property="aliUserId" column="ali_user_id" /> 
-        <result property="createBy" column="create_by" /> 
-        <result property="createDate" column="create_date" /> 
-        <result property="updateDate" column="update_date" /> 
+        <result property="address" column="address" />
+        <result property="tel" column="tel" />
+        <result property="linkMan" column="link_man" />
+        <result property="categoryId" column="category_id" />
+        <result property="categoryParentIds" column="category_parent_ids" />
+        <result property="price" column="price" />
+        <result property="unit" column="unit" />
+        <result property="qty" column="qty" />
+        <result property="completeDate" column="complete_date" />
+        <result property="isEvaluated" column="is_evaluated" />
+        <result property="cancelReason" column="cancel_reason" />
+        <result property="cancelTime" column="cancel_time" />
+        <result property="level" column="level" />
+        <result property="receiveTime" column="receive_time" />
+        <result property="distributeTime" column="distribute_time" />
+        <result property="arrivalTime" column="arrival_time" />
+        <result property="arrivalPeriod" column="arrival_period" />
+        <result property="greenCode" column="green_code" />
+        <result property="aliUserId" column="ali_user_id" />
+        <result property="createBy" column="create_by" />
+        <result property="createDate" column="create_date" />
+        <result property="updateDate" column="update_date" />
         <result property="delFlag" column="del_flag" />
         <result property="achPrice" column="ach_price" />
         <result property="remarks" column="remarks" />
@@ -712,20 +902,20 @@
 		<result property="expressTel" column="express_tel"/>
 		<result property="logisticsId" column="logistics_id"/>
 		<result property="logisticsName" column="logistics_name"/>
-        <association property="category" javaType="com.tzj.collect.entity.Category">  
-            <result property="categoryId" column="categoryId" /> 
-            <result property="name" column="name_" /> 
+        <association property="category" javaType="com.tzj.collect.entity.Category">
+            <result property="categoryId" column="categoryId" />
+            <result property="name" column="name_" />
             <result property="icon" column="icon" />
             <result property="title" column="title"  typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
         </association>
-        <association property="recyclers" javaType="com.tzj.collect.entity.Recyclers">  
+        <association property="recyclers" javaType="com.tzj.collect.entity.Recyclers">
             <result property="name" column="Recyclers_name" />
             <result property="tel" column="BTel" />
 			<result property="headPicUrl" column="headPicUrl" />
 		</association>
     </resultMap>
 	<sql id="zd">
-        a.id,
+		a.id,
 		a.member_id,
 		a.company_id,
 		a.recycler_id,
@@ -774,5 +964,6 @@
 		a.logistics_name,
 		c.name_,
 		c.icon
-     </sql>
+	</sql>
 </mapper>
+

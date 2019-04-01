@@ -36,11 +36,22 @@ public class AppOrderResult {
 	private String tel;//电话
 	
 	private String icon;//图片
+
+	private String signUrl;
 	
 	private String remarks;//描述
+
+	private  String createDate;
 	
 	private String arrivalTime;//预计到达时间
-	
+
+	private  String cancelTime;
+	private  String receiveTime;
+	private  String distributeTime;
+	private  String completeDate;
+	private  String isRead;
+
+
 	private String arrivalPeriod;//时间段
 	
 	private String completeTime;//完成时间
@@ -85,6 +96,62 @@ public class AppOrderResult {
 	
 	
 	private Object obj;
+
+	public String getSignUrl() {
+		return signUrl;
+	}
+
+	public void setSignUrl(String signUrl) {
+		this.signUrl = signUrl;
+	}
+
+	public String getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(String createDate) {
+		this.createDate = createDate;
+	}
+
+	public String getCancelTime() {
+		return cancelTime;
+	}
+
+	public void setCancelTime(String cancelTime) {
+		this.cancelTime = cancelTime;
+	}
+
+	public String getReceiveTime() {
+		return receiveTime;
+	}
+
+	public void setReceiveTime(String receiveTime) {
+		this.receiveTime = receiveTime;
+	}
+
+	public String getDistributeTime() {
+		return distributeTime;
+	}
+
+	public void setDistributeTime(String distributeTime) {
+		this.distributeTime = distributeTime;
+	}
+
+	public String getCompleteDate() {
+		return completeDate;
+	}
+
+	public void setCompleteDate(String completeDate) {
+		this.completeDate = completeDate;
+	}
+
+	public String getIsRead() {
+		return isRead;
+	}
+
+	public void setIsRead(String isRead) {
+		this.isRead = isRead;
+	}
 
 	public String getIsManager() {
 		return isManager;

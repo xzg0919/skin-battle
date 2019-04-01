@@ -190,6 +190,8 @@ public class OrderBean {
 
 	private String enterpriseCode;//以旧换新码
 
+	private String picUrl;
+
 	/**
 	 * 快递总重量
 	 */
@@ -246,6 +248,14 @@ public class OrderBean {
 
 	public void setExpressNo(String expressNo) {
 		this.expressNo = expressNo;
+	}
+
+	public String getPicUrl() {
+		return picUrl;
+	}
+
+	public void setPicUrl(String picUrl) {
+		this.picUrl = picUrl;
 	}
 
 	public String getExpressName() {

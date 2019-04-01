@@ -179,6 +179,24 @@ public class Order extends DataEntity<Long> {
 	 */
 	private String isMysl;
 
+	/**
+	 * 是否待支付
+	 * @return
+	 */
+	@TableField(exist = false)
+	private String isPayment;
+
+	public String getIsPayment() {
+		if((title+"").equals(TitleType.BIGTHING+"")&&achPrice.compareTo((new BigDecimal("0")))==1&&(status+"").equals(OrderType.ALREADY+"")){
+			return "Y";
+		}
+		return "N";
+	}
+
+	public void setIsPayment(String isPayment) {
+		this.isPayment = isPayment;
+	}
+
 	public String getIsMysl() {
 		return isMysl;
 	}

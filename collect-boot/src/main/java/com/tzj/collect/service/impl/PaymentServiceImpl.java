@@ -3,24 +3,18 @@ package com.tzj.collect.service.impl;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.domain.AlipayFundTransToaccountTransferModel;
-import com.alipay.api.domain.AlipayTradeAppPayModel;
-import com.alipay.api.domain.AlipayTradeQueryModel;
-import com.alipay.api.domain.ExtendParams;
-import com.alipay.api.request.AlipayFundTransOrderQueryRequest;
-import com.alipay.api.request.AlipayFundTransToaccountTransferRequest;
-import com.alipay.api.request.AlipayTradeAppPayRequest;
-import com.alipay.api.request.AlipayTradeQueryRequest;
-import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
-import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
-import com.alipay.api.response.AlipayTradeAppPayResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.domain.*;
+import com.alipay.api.request.*;
+import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
 import com.tzj.collect.mapper.PaymentMapper;
+import com.tzj.collect.service.OrderService;
 import com.tzj.collect.service.PaymentService;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -32,12 +26,44 @@ import static com.tzj.collect.api.common.constant.Const.*;
 @Service
 @Transactional(readOnly = true)
 public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> implements PaymentService {
+    @Autowired
+    private OrderService orderService;
 
     @Override
     public Payment selectByOrderSn(String orderNo) {
         return selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo));
     }
 
+    /**
+     * 小程序支付
+     */
+    @Override
+    public String genalPayXcx(Payment payment) {
+        Assert.notNull(payment, "payment不能为空！");
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayTradeCreateRequest request = new AlipayTradeCreateRequest();
+        AlipayTradeCreateModel model = new AlipayTradeCreateModel();
+        String sn = payment.getOrderSn();
+        String subject = "垃圾分类回收订单(收呗):" + sn;
+
+        model.setBody(subject);
+        model.setSubject(subject);
+        model.setOutTradeNo(sn);
+        model.setTimeoutExpress("15d");
+        ExtendParams extendParams = new ExtendParams();
+        extendParams.setSysServiceProviderId("2017011905224137");
+        model.setExtendParams(extendParams);
+        model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_HALF_UP).toString());
+        request.setBizModel(model);
+        request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay.jhtml");
+        try {
+            //这里和普通的接口调用不同，使用的是sdkExecutee
+            AlipayTradeCreateResponse response = alipayClient.execute(request);
+            return response.getTradeNo();
+        } catch (AlipayApiException e) {
+            throw new ApiException("系统异常：" + e.getErrMsg());
+        }
+    }
     /**
      * 支付宝支付
      *
@@ -70,6 +96,11 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+            System.out.println(response.getOutTradeNo());
+            System.out.println(response.getSellerId());
+            System.out.println(response.getTotalAmount());
+            System.out.println(response.getTradeNo());
+            System.out.println(response.getBody());
             return response.getBody();
         } catch (AlipayApiException e) {
             throw new ApiException("系统异常：" + e.getErrMsg());
@@ -160,7 +191,6 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     
     /**
      * 查询转账信息
-     * @param tradeNo
      */
     public AlipayFundTransOrderQueryResponse getTransfer(String paymentId) {
     	AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APP_APPID, ALI_APP_PAY_KEY, "json", "UTF-8", ALI_APP_PUBLIC_KEY, "RSA2");

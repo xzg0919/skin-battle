@@ -200,6 +200,7 @@ public class CategoryApi {
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("DIGITAL",categoryService.topList(0, 1,categoryBean.getIsFiveKg()));
 		resultMap.put("HOUSEHOLD",categoryService.topList(0, 2,categoryBean.getIsFiveKg()));
+		resultMap.put("BIGTHING",categoryService.topList(0, 4,categoryBean.getIsFiveKg()));
 		return resultMap;
 	}
 	/**
@@ -340,11 +341,12 @@ public class CategoryApi {
 		}
 		System.out.println("查出预估价格了了:"+price);
 		BigDecimal newprice = new BigDecimal("0");
-		if(newprice.compareTo(price)==1){
-			return 10;
-		}else{
-			return price;
+		if(categoryId<25){
+			if(newprice.compareTo(price)==1){
+				return 10;
+			}
 		}
+		return price;
 	}
 	/**
 	 * 小程序获取首页分类列表

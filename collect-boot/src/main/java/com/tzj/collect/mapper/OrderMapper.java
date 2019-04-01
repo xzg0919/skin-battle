@@ -133,4 +133,25 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 */
 	List<Map<String,Object>> outOrderExcel(@Param("companyId") Integer companyId,@Param("type")String type,@Param("startTime")String startTime,@Param("endTime")String endTime);
 
+	/**
+	 * 大件已转派订单列表
+	 * @param recycleId
+	 * @param startPage
+	 * @param endPage
+	 * @return
+	 */
+	List<Map<String,Object>> getBigOrderTransferList(@Param("recycleId")Integer recycleId,@Param("startPage")Integer startPage,@Param("endPage")Integer endPage);
+	Integer getBigOrderTransferCount(@Param("recycleId")Integer recycleId);
+	/**
+	 * 大件订单列表
+	 * @param recycleId
+	 * @param startPage
+	 * @param endPage
+	 * @return
+	 */
+	List<Map<String,Object>> getBigOrderList(@Param("status")Integer status,@Param("recycleId")Integer recycleId,@Param("startPage")Integer startPage,@Param("endPage")Integer endPage);
+	Integer getBigOrderCount(@Param("status")Integer status,@Param("recycleId")Integer recycleId);
+
+	AppOrderResult getBigOrderDetails(Integer orderId);
 }
+

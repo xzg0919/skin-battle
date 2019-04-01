@@ -46,57 +46,20 @@ public class BusinessOrderApiTest {
 		String subjectStr = claims.getSubject();
 		System.out.println("反向編譯 token是："+subjectStr);
 
-		String api="http://dog.mayishoubei.com/business/api";
-		RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
-		recyclersServiceRangeBean.setRecycleId("115");
-		recyclersServiceRangeBean.setCityId("737");
-		recyclersServiceRangeBean.setIsEnable("0");
+		String api="http://localhost:9090/business/api";
 
-		List<AreaBean> areaList = new ArrayList<>();
-		AreaBean areaBean1 = new AreaBean();
-		areaBean1.setAreaId("241");
-		areaBean1.setStreeId("513");
-		AreaBean areaBean2 = new AreaBean();
-		areaBean2.setAreaId("241");
-		areaBean2.setStreeId("514");
-		AreaBean areaBean3 = new AreaBean();
-		areaBean3.setAreaId("242");
-		areaBean3.setStreeId("521");
-		AreaBean areaBean4 = new AreaBean();
-		areaBean4.setAreaId("242");
-		areaBean4.setStreeId("522");
-		areaList.add(areaBean1);
-		areaList.add(areaBean2);
-		areaList.add(areaBean3);
-		areaList.add(areaBean4);
+        BOrderBean orderBean = new BOrderBean();
+        orderBean.setCompanyId(1);
+        orderBean.setStatus("INIT");
+        orderBean.setCategoryType("DIGITAL");
+        orderBean.setPagebean(new PageBean());
 
-		List<TitleBean> TitleList = new ArrayList<>();
-		TitleBean titleBean1 = new TitleBean();
-		titleBean1.setTitleId("1");
-		titleBean1.setTitleName("家电数码");
-		TitleBean titleBean2 = new TitleBean();
-		titleBean2.setTitleId("2");
-		titleBean2.setTitleName("生活垃圾");
-		TitleBean titleBean3 = new TitleBean();
-		titleBean3.setTitleId("3");
-		titleBean3.setTitleName("废纺衣物5公斤起收");
-		TitleList.add(titleBean1);
-		TitleList.add(titleBean2);
-		TitleList.add(titleBean3);
-
-		recyclersServiceRangeBean.setTitleList(TitleList);
-		recyclersServiceRangeBean.setAreaList(areaList);
-
-		RecyclersServiceRangeBean recyclersServiceRangeBeans = new RecyclersServiceRangeBean();
-		recyclersServiceRangeBeans.setRecycleId("121");
-		recyclersServiceRangeBeans.setCityId("737");
-
-		BOrderBean orderBean = new BOrderBean();
-		orderBean.setId(7421);
+//		BOrderBean orderBean = new BOrderBean();
+//		orderBean.setId(8784);
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","order.tosendfiveKgOrder");
+		param.put("name","business.order.getOrderLists");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");

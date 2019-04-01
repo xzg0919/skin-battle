@@ -462,4 +462,78 @@ public class OrderApi {
 	public Object updateForest(OrderBean orderbean){
 		return aliPayService.updateForest(orderbean.getId().toString());
 	}
+
+	/**
+	 * 小程序大家具下单接口
+	 * @author 王灿
+	 * @param
+	 * @return
+	 * @throws ApiException
+	 */
+	@Api(name = "order.saveBigThingOrder", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public String saveBigThingOrder(OrderBean orderbean) throws ApiException{
+		Member member = MemberUtils.getMember();
+		//根据当前登录的会员，获取姓名、绿账号和阿里userId
+		orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
+		orderbean.setAliUserId(member.getAliUserId());
+		//查询用户的默认地址
+		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderbean.getCityId()));
+		if(memberAddress==null) {
+			return "您暂未添加回收地址";
+		}
+		//根据分类Id查询父类分类id
+		Category category = categoryService.selectById(orderbean.getCategoryId());
+		Integer communityId = memberAddress.getCommunityId();
+		String companyId = "";
+		String level = "";
+		String areaId = memberAddress.getAreaId().toString();
+		//根据分类Id和小区Id查询所属企业
+		Company companys = priceService.selectCompany(category.getParentId(),communityId);
+		if(companys == null) {
+			//根据分类Id和小区id去公海查询相关企业
+			CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
+			if(companyShare==null) {
+				return "您地址所在区域暂无回收企业";
+			}
+			companyId = companyShare.getCompanyId().toString();
+			level = "1";
+		}else {
+			companyId = companys.getId().toString();
+			level = "0";
+		}
+		//Integer companyId = companyService.getCompanyIdByIds(orderbean.getCommunityId(),orderbean.getCategoryParentId());
+		orderbean.setCompanyId(Integer.parseInt(companyId));
+		orderbean.setLevel(level);
+		orderbean.setCommunityId(communityId);
+		orderbean.setStreetId(memberAddress.getStreetId());
+		orderbean.setAreaId(Integer.parseInt(areaId));
+		//随机生成订单号
+		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
+		orderbean.setOrderNo(orderNo);
+		//保存订单
+		String status = orderService.saveBigThingOrder(orderbean);
+		//钉钉消息赋值回收公司名称
+		if (StringUtils.isNoneBlank(companyId)) {
+			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", companyId));
+			orderbean.setCompanyName(company.getName());
+			orderbean.setDingDingUrl(company.getDingDingUrl());
+		}else{
+			throw new ApiException("回收公司异常！！！！！");
+		}
+		if("操作成功".equals(status)) {
+			if("sb_admin".equals(JdbcName)) {
+				//钉钉通知
+				asyncService.notifyDingDingOrderCreate(orderbean);
+			}
+		}
+		try {
+			webSocketServer.sendInfo(companyId, "你有新订单了");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return status;
+	}
 }

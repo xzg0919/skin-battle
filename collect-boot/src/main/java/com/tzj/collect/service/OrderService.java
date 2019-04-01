@@ -2,6 +2,7 @@ package com.tzj.collect.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.taobao.api.ApiException;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.app.param.ScoreAppBean;
@@ -103,7 +104,7 @@ public interface OrderService extends IService<Order> {
 	 * @param companyId:企业Id
 	 * @return 
 	*/
-	Map<String,Object> selectCountByStatus(String status, Integer companyId, Category.CategoryType categoryType);
+	Map<String,Object> selectCountByStatus(String status, Integer companyId, Order.TitleType titleType);
 
 	/**
 	 * 根据订单状态获得订单列表
@@ -228,8 +229,28 @@ public interface OrderService extends IService<Order> {
 
 	Object savefiveKgOrder(OrderBean orderBean);
 
+	/**
+	 * 小程序大家具下单接口
+	 * @param orderbean
+	 * @return
+	 * @throws ApiException
+	 */
+	String saveBigThingOrder(OrderBean orderbean) throws ApiException;
+
 	 void updateMemberPoint(Integer memberId, String OrderNo, double amount,String descrb);
 
 
 	Map<String, Object> getOrderListsDistribute(BOrderBean orderBean, PageBean pageBean);
+	/**
+	 * 根据订单传来的状态获取订单列表
+	 */
+	Map<String, Object> getBigOrderList(String status,Long recycleId , PageBean pagebean);
+	/**
+	 * 根据订单id查询订单的详细信息
+	 */
+	Map<String, Object> getBigOrderDetails(Integer orderId);
+
+	String setAchOrder(OrderBean orderBean);
+
+	String saveBigOrderPrice(OrderBean orderBean);
 }

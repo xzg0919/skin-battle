@@ -243,6 +243,9 @@ public class AliPayServiceImpl implements AliPayService{
             if(!response.isSuccess())
             {
                System.out.println("更新会员卡积分失败");
+                DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                        ,Thread.currentThread().getStackTrace()[1].getMethodName(),"更新会员卡积分失败",
+                        RocketMqConst.DINGDING_ERROR,response.getBody());
             }else {
                System.out.println("更新会员卡积分成功");
             }

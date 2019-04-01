@@ -70,6 +70,11 @@ public class MemberAddress extends  DataEntity<Long>{
 	@TableField(exist = false)
 	private String isDigital;
 	/**
+	 * 是否回收大件
+	 */
+	@TableField(exist = false)
+	private String isDigThing;
+	/**
 	 * 是否回收生活垃圾
 	 */
 	@TableField(exist = false)
@@ -79,6 +84,14 @@ public class MemberAddress extends  DataEntity<Long>{
 	 */
 	@TableField(exist = false)
 	private String isFiveKg;
+
+	public String getIsDigThing() {
+		return isDigThing;
+	}
+
+	public void setIsDigThing(String isDigThing) {
+		this.isDigThing = isDigThing;
+	}
 
 	public String getIsFiveKg() {
 		return isFiveKg;

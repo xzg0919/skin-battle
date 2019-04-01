@@ -2,6 +2,7 @@ package api.ali;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.ali.param.*;
+import com.tzj.collect.api.app.param.OrderPayParam;
 import com.tzj.collect.entity.OrderPic;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -10,6 +11,7 @@ import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
@@ -36,42 +38,38 @@ public class OrderTest {
                 String api="http://localhost:9090/ali/api";
 //
                 OrderBean orderbean = new OrderBean();
-                orderbean.setCategoryId(46);
+                orderbean.setCategoryId(73);
                 orderbean.setCityId("737");
                 orderbean.setArrivalTime("2019-01-01");
                 orderbean.setArrivalPeriod("pm");
-                orderbean.setQty(5);
+                orderbean.setPrice(new BigDecimal("-1"));
                 orderbean.setAddress("上海市浦东新区洲海路100号");
                 orderbean.setFullAddress("10栋101");
                 orderbean.setTel("18375555555");
-                orderbean.setLinkMan("测试龙建");
+                orderbean.setLinkMan("测试大象");
                 orderbean.setRemarks("我是回收物描述");
+                orderbean.setIsMysl("0");
 
                 OrderPic orderPic = new OrderPic();
-                orderPic.setSmallPic("www.mayishoubei.com,www.mayishoubei.com");
-                orderPic.setOrigPic("www.mayishoubei.com,www.mayishoubei.com");
-                orderPic.setPicUrl("www.mayishoubei.com,www.mayishoubei.com");
+                orderPic.setSmallPic("http://images.sqmall.top/collect/20180727/bigpicture_140f4f1a-a415-41be-a0f9-ee1e53c49977.jpg");
+                orderPic.setOrigPic("http://images.sqmall.top/collect/20180727/bigpicture_140f4f1a-a415-41be-a0f9-ee1e53c49977.jpg");
+                orderPic.setPicUrl("http://images.sqmall.top/collect/20180727/bigpicture_140f4f1a-a415-41be-a0f9-ee1e53c49977.jpg");
                 orderbean.setOrderPic(orderPic);
 
-                List<OrderItemBean> orderItemList = new ArrayList<>();
-                OrderItemBean orderItemBean1 = new OrderItemBean();
-                orderItemBean1.setId((long)46);
-                orderItemBean1.setParentName("废纺衣物");
-                orderItemBean1.setPrice("2");
-                orderItemList.add(orderItemBean1);
-                OrderItemBean orderItemBean2 = new OrderItemBean();
-                orderItemBean2.setId((long)47);
-                orderItemBean2.setParentName("废纺衣物");
-                orderItemBean2.setPrice("2.5");
-                orderItemList.add(orderItemBean2);
+                OrderItemBean orderItemBean = new OrderItemBean();
+                orderItemBean.setCategoryAttrOppIds("326,330,334,338");
+                orderbean.setOrderItemBean(orderItemBean);
 
-                orderbean.setOrderItemList(orderItemList);
 
                 OrderBean orderbean1 = new OrderBean();
-                orderbean1.setId(154);
+                orderbean1.setId(8803);
+
+                OrderPayParam orderPayParam = new OrderPayParam();
+                orderPayParam.setOrderId(8795);
+                orderPayParam.setPrice(new BigDecimal("1"));
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","order.detail");
+                param.put("name","app.order.pay");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -79,7 +77,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",orderbean1);
+                param.put("data",orderPayParam);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

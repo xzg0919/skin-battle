@@ -41,6 +41,11 @@ public class CategoryBean {
 	 * 区域Id
 	 */
 	private String cityId;
+
+	/**
+	 * 类型
+	 */
+	private String type;
 	/**
 	 * 是否是五公斤废纺衣物回收
 	 */
@@ -168,5 +173,12 @@ public class CategoryBean {
 	public void setCityId(String cityId) {
 		this.cityId = cityId;
 	}
-	
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }
