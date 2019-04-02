@@ -20,6 +20,7 @@ import com.tzj.collect.api.app.result.EvaluationResult;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.CompanyBean;
 import com.tzj.collect.api.business.result.ApiUtils;
+import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.PushConst;
 import com.tzj.collect.common.constant.RocketMqConst;
@@ -31,12 +32,14 @@ import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.collect.mapper.OrderMapper;
 import com.tzj.collect.service.*;
 import com.tzj.collect.service.impl.XingeMessageServiceImp.XingeMessageCode;
+import com.tzj.module.api.annotation.Api;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -107,6 +110,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private CompanyCategoryService companyCategoryService;
 	@Autowired
 	private CompanyStreeService companyStreeService;
+	@Autowired
+	private CompanyEquipmentService companyEquipmentService;
 
 	@Override
 	public Order getLastestOrderByMember(Integer memberId) {
@@ -796,9 +801,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Map<String, Object> iotCreatOrder(IotParamBean iotParamBean) {
 		Map<String, Object> map = new HashMap<>();
 		List<IotParamBean.ParentList> parentLists = iotParamBean.getParentLists();
+		EntityWrapper<CompanyEquipment> entityWrapper = new EntityWrapper();
+		entityWrapper.eq("del_falg", 0);
+		entityWrapper.eq("equipment_code", iotParamBean.getEquipmentCode());
+		CompanyEquipment companyEquipment = companyEquipmentService.selectOne(entityWrapper);
+		if(companyEquipment == null){
+			throw new ApiException("当前设备不存在","-9");
+		}else if (companyEquipment.getStatus() == 1){
+			throw new ApiException("当前设备不可用","-9");
+		}
 		Order order = new Order();
-		// todo 根据设备code找到所属公司
-		order.setCompanyId(1);
+		order.setCompanyId(Integer.parseInt(companyEquipment.getCompanyId().toString()));
 		if (iotParamBean.getMemberId() == null || "".equals(iotParamBean.getMemberId().trim())){
 			throw new ApiException("参数错误, 缺少memberId。。", "-9");
 		}
@@ -806,11 +819,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setMemberId(Integer.parseInt(iotParamBean.getMemberId()));
 		order.setIotEquipmentCode(iotParamBean.getEquipmentCode());
 		order.setPrice(iotParamBean.getSumPrice());
-		// todo 地址不明确(对应设备地址)
-		order.setAreaId(-1);
-		order.setCommunityId(-1);
+		order.setAreaId(companyEquipment.getAreaId());
+		order.setStreetId(companyEquipment.getStreetId());
+		order.setCommunityId(companyEquipment.getCommunityId());
 		this.insert(order);
-		if(parentLists.size() >= 1){
+		if(!parentLists.isEmpty()){
 			//说明是同步传过来的
 			this.saveOrderItemAch(order, parentLists);
 		}else {
@@ -821,6 +834,43 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		map.put("msg", "CREATED");
 		return map;
 	}
+
+//	/**
+//	 * 初始检验价格计算是否合理
+//	 * @author sgmark@aliyun.com
+//	 * @date 2018/12/26 0026
+//	 * @param
+//	 * @return
+//	 */
+//	public boolean checkSubmit(List<IotParamBean.ParentList> parentLists){
+//		//数据库里查询当前回收物价格
+//		final BigDecimal[] sumPrice = {BigDecimal.ZERO};
+//		final BigDecimal[] sumKg = {BigDecimal.ZERO};
+//		stationCateList.stream().forEach(map ->{
+//			List<CategoryResult> list = null;
+//			list = (List<CategoryResult>) map.get("content");
+//			list.stream().forEach(statCate ->{
+//				categoryList.stream().forEach(category -> {
+//					if (statCate.getId().equals(category.getId())){
+//						category.setInPrice(new BigDecimal(statCate.getInPrice()));
+//						category.setOutPrice(new BigDecimal(statCate.getOutPrice()));
+//						category.setUnit(statCate.getUnit());
+//						category.setCateName(statCate.getCategoryName());
+//						sumKg[0] = sumKg[0].add(category.getWeight());
+//						if (StationCategory.INOUTFLOW.INFLOW.getValue() == inOut)
+//							sumPrice[0] = sumPrice[0].add(new BigDecimal(statCate.getInPrice()).multiply(category.getWeight()));
+//						else
+//							sumPrice[0] = sumPrice[0].add(new BigDecimal(statCate.getOutPrice()).multiply(category.getWeight()));
+//					}
+//				});
+//			});
+//		});
+//		orderPriceBean.setCategoryList(categoryList);//放入单价单位
+//		if (sumPrice[0].compareTo(orderPriceBean.getSumPrice()) == 0 && sumKg[0].compareTo(orderPriceBean.getSumKg()) ==0){//算出值和页面数据不对等
+//			return true;
+//		}
+//		return false;
+//	}
 	/**
 	 * iot设备更新订单
 	 * @author sgmark@aliyun.com

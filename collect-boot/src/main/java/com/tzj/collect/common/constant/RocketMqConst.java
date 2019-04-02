@@ -85,7 +85,6 @@ public class RocketMqConst {
                     RocketMqConst.DINGDING_ERROR,messageId);
             throw new BusiException("messageId不能为空！");
         }
-        System.out.println("---------------------------"+notification.getPublishTime());
         return notification;
     }
 
