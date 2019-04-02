@@ -300,11 +300,11 @@ public class Category extends DataEntity<Long> {
 
 	/**
 	 * 对外IOT设备，一级类型(以code对应)
-	  * @author sgmark@aliyun.com
-	  * @date 2019/3/30 0030
-	  * @param
-	  * @return
-	  */
+	 * @author sgmark@aliyun.com
+	 * @date 2019/3/30 0030
+	 * @param
+	 * @return
+	 */
 	public enum ParentType implements IEnum{
 		PAPER("001"),   	 //纸类
 		PLASTIC("002"),		//塑料类
@@ -325,11 +325,11 @@ public class Category extends DataEntity<Long> {
 	}
 	/**
 	 * 对外IOT设备，二级类型(以code对应)
-	  * @author sgmark@aliyun.com
-	  * @date 2019/3/30 0030
-	  * @param
-	  * @return
-	  */
+	 * @author sgmark@aliyun.com
+	 * @date 2019/3/30 0030
+	 * @param
+	 * @return
+	 */
 	public enum SecondType implements IEnum{
 		//纸类(PAPER)
 		BOOK_MAGAZINE("001", "0011"),   	 //书本杂志
@@ -393,5 +393,4 @@ public class Category extends DataEntity<Long> {
 			return "";
 		}
 	}
-
 }

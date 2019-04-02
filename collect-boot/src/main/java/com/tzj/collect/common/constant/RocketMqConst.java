@@ -53,6 +53,7 @@ public class RocketMqConst {
         }
         client.close();
     }
+
     /**
      * 预处理MNS收到的消息
      * @param body
@@ -89,3 +90,4 @@ public class RocketMqConst {
     }
 
 }
+

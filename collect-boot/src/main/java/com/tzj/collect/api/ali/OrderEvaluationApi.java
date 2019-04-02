@@ -3,7 +3,6 @@ package com.tzj.collect.api.ali;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.OrderEvaluationBean;
-import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderEvaluation;
 import com.tzj.collect.service.OrderEvaluationService;

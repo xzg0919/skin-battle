@@ -179,6 +179,26 @@ public class Order extends DataEntity<Long> {
 	 */
 	private String isMysl;
 
+	private String iotEquipmentCode;//iot设备编号
+
+	/**
+	 * 是否待支付
+	 * @return
+	 */
+	@TableField(exist = false)
+	private String isPayment;
+
+	public String getIsPayment() {
+		if((title+"").equals(TitleType.BIGTHING+"")&&achPrice.compareTo((new BigDecimal("0")))==1&&(status+"").equals(OrderType.ALREADY+"")){
+			return "Y";
+		}
+		return "N";
+	}
+
+	public void setIsPayment(String isPayment) {
+		this.isPayment = isPayment;
+	}
+
 	public String getIsMysl() {
 		return isMysl;
 	}
@@ -915,6 +935,12 @@ public class Order extends DataEntity<Long> {
 		return sdf.format(date);
 
 	}
-	
 
+	public String getIotEquipmentCode() {
+		return iotEquipmentCode;
+	}
+
+	public void setIotEquipmentCode(String iotEquipmentCode) {
+		this.iotEquipmentCode = iotEquipmentCode;
+	}
 }
