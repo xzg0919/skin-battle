@@ -86,10 +86,11 @@ public class FiveKgController {
         if("2".equals(orderStatus)){
             //已经派单
             try{
+                String nameTel = object.getString("expressTel");
                 order.setStatus(Order.OrderType.ALREADY);
-                order.setExpressName(object.getString("expressName"));
-                if (StringUtils.isNotBlank(object.getString("expressTel"))){
-                    order.setExpressTel(object.getString("expressTel"));
+                order.setExpressName(nameTel.substring(3,nameTel.length()-11));
+                if (StringUtils.isNotBlank(nameTel)){
+                    order.setExpressTel(nameTel.substring(nameTel.length()-11, nameTel.length()));
                 }
                 order.setReceiveTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
                 orderService.updateById(order);
@@ -139,7 +140,7 @@ public class FiveKgController {
             //取消订单
             try{
                 order.setStatus(Order.OrderType.REJECTED);
-                order.setRemarks(object.getString("remarks"));
+                order.setCancelReason(object.getString("remarks"));
                 order.setCancelTime(new Date());
                 orderService.updateById(order);
             }catch (Exception e){
@@ -232,6 +233,11 @@ public class FiveKgController {
 //        param.put("arrivalTime","2019-02-26 am");
 //        param.put("isCancel","Y");
 //        param.put("cancelReason","取消原因");
+String tel = "接货中何海平18046748800";
+        System.out.println(tel.substring(3,tel.length()-11));
+        System.out.println(tel.substring(tel.length()-11, tel.length()));
+
+        System.out.println(VoucherType.discount.getNameCN());
         RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_RETURN_ORDER);
 
         List<Order> list = new ArrayList<>();

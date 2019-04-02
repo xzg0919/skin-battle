@@ -27,6 +27,18 @@ public class RecyclersBean {
 	 * 头像Url
 	 */
 	private String headPicUrl;
+	/**
+	 * 支付宝账号
+	 */
+	private String aliAccountNumber;
+
+	public String getAliAccountNumber() {
+		return aliAccountNumber;
+	}
+
+	public void setAliAccountNumber(String aliAccountNumber) {
+		this.aliAccountNumber = aliAccountNumber;
+	}
 
 	public String getHeadPicUrl() {
 		return headPicUrl;

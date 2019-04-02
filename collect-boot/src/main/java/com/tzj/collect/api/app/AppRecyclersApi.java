@@ -537,4 +537,20 @@ public class AppRecyclersApi {
 		recyclersService.updateById(recyclers);
 		return "操作成功";
 	}
+	/**
+	 * 增加回收人员的支付宝号码
+	 */
+	@Api(name = "app.recycler.updateRecycleAccount", version = "1.0")
+	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object updateRecycleAccount(RecyclersBean recyclersBean){
+		if(StringUtils.isBlank(recyclersBean.getAliAccountNumber())){
+			return "请传支付宝账号";
+		}
+		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
+		recyclers.setAliAccountNumber(recyclersBean.getAliAccountNumber());
+		recyclersService.updateById(recyclers);
+		return "操作成功";
+	}
+
 }

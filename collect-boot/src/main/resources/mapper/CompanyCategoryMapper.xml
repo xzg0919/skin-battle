@@ -6,8 +6,8 @@
 			DISTINCT a.*
 		FROM
 			sb_company a
-		LEFT JOIN sb_company_category b ON a.id = b.company_id
-		LEFT JOIN sb_company_service c ON a.id = c.company_id
+		inner JOIN sb_company_category b ON a.id = b.company_id
+		inner JOIN sb_company_service c ON a.id = c.company_id
 		WHERE
 			b.parent_id = #{categoryId} AND c.community_id = #{communityId} AND b.del_flag = 0 AND a.del_flag = 0 AND c.del_flag = 0
 	</select>

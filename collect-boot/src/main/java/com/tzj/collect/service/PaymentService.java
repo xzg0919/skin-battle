@@ -4,6 +4,7 @@ import com.alipay.api.request.AlipayFundTransOrderQueryRequest;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.service.IService;
+import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
 
 public interface PaymentService extends IService<Payment> {
@@ -16,6 +17,8 @@ public interface PaymentService extends IService<Payment> {
     Payment selectByOrderSn(String orderNo);
 
     String genalPay(Payment payment);
+
+    String genalPayXcx(Payment payment) ;
 
     /**
      * 转账

@@ -10,7 +10,6 @@ import com.tzj.collect.api.app.result.AppOrderResult;
 import com.tzj.collect.api.app.result.AppScoreResult;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.CompanyBean;
-import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order;
@@ -233,8 +232,4 @@ public interface OrderService extends IService<Order> {
 
 
 	Map<String, Object> getOrderListsDistribute(BOrderBean orderBean, PageBean pageBean);
-
-	Map<String, Object> iotCreatOrder(IotParamBean iotParamBean);
-
-	Map<String, Object> iotUpdateOrderItemAch(IotParamBean iotParamBean);
 }

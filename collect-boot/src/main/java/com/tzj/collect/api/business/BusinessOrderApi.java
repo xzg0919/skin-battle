@@ -7,10 +7,7 @@ import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.result.CancelResult;
 import com.tzj.collect.common.constant.RocketMqConst;
-import com.tzj.collect.entity.Category;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.OrderLog;
-import com.tzj.collect.entity.Recyclers;
+import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +39,8 @@ public class BusinessOrderApi {
 	private RecyclerCancelLogService logService;
 	@Autowired
 	private  CategoryService categoryService;
+	@Autowired
+	private  AreaService areaService;
 	/**
 	 * 根据各种查询条件获取订单 列表
 	 * @author 王灿
@@ -86,8 +85,8 @@ public class BusinessOrderApi {
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderCounts(BOrderBean orderBean){
 		 	//根据各种状态查询相订单表相关的条数
-			Map<String, Object> resultMap = orderService.selectCountByStatus(orderBean.getStatus(),orderBean.getCompanyId(), orderBean.getCategoryType());
-			return  resultMap; 
+			Map<String, Object> resultMap = orderService.selectCountByStatus(orderBean.getStatus(),orderBean.getCompanyId(), Order.TitleType.valueOf(orderBean.getCategoryType()));
+			return  resultMap;
 	 }
 	
 	/**
@@ -223,7 +222,13 @@ public class BusinessOrderApi {
 		order.setStatus(Order.OrderType.TOSEND);
 		orderService.updateById(order);
 		try{
+			Area county = areaService.selectById(order.getAreaId());
+			Area city = areaService.selectById(county.getParentId());
+			Area province = areaService.selectById(city.getParentId());
 			HashMap<String,Object> param=new HashMap<>();
+			param.put("provinceNname",province.getAreaName());
+			param.put("cityName",city.getAreaName());
+			param.put("countyName",county.getAreaName());
 			param.put("orderNo",order.getOrderNo());
 			param.put("orderType","废纺衣物");
 			param.put("orderAmount",order.getQty());

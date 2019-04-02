@@ -172,6 +172,13 @@ public class MemberAddressApi {
 		}else {
 			memberAddress.setIsDigital("Y");
 		}
+		//判断地址是否有公司回收大件
+		String companyIdss = selectCompanyId(72, memberAddress.getCommunityId(), memberAddress.getAreaId());
+		if(StringUtils.isBlank(companyIdss)){
+			memberAddress.setIsDigThing("N");
+		}else {
+			memberAddress.setIsDigThing("Y");
+		}
 		return  memberAddress;
     }
     /**
