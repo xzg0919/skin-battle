@@ -3,7 +3,6 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
-import com.tzj.collect.entity.Category.CategoryType;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -178,6 +177,8 @@ public class Order extends DataEntity<Long> {
 	 * 是否授权蚂蚁森林能量 0 不需要 1需要
 	 */
 	private String isMysl;
+
+	private String iotEquipmentCode;//iot设备编号
 
 	public String getIsMysl() {
 		return isMysl;
@@ -915,6 +916,12 @@ public class Order extends DataEntity<Long> {
 		return sdf.format(date);
 
 	}
-	
 
+	public String getIotEquipmentCode() {
+		return iotEquipmentCode;
+	}
+
+	public void setIotEquipmentCode(String iotEquipmentCode) {
+		this.iotEquipmentCode = iotEquipmentCode;
+	}
 }

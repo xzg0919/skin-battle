@@ -6,6 +6,12 @@ import com.aliyun.mns.client.CloudTopic;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.RawTopicMessage;
 import com.aliyun.mns.model.TopicMessage;
+import com.tzj.collect.entity.RocketmqMessage;
+import com.tzj.module.common.aliyun.mns.Notification;
+import com.tzj.module.common.aliyun.mns.XMLUtils;
+import com.tzj.module.common.exception.BusiException;
+import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 消息队列常量
@@ -22,6 +28,8 @@ public class RocketMqConst {
     public static final String TOPIC_NAME_DELIVERY_ORDER="DeliveryOrder";
 
     public static final String TOPIC_NAME_RETURN_ORDER="ReturnOrder";
+
+    public static final String TOPIC_NAME_IOT_ORDER="IOT-TOPIC-TEST";
 
     public static final String DINGDING_ERROR = "https://oapi.dingtalk.com/robot/send?access_token=c41ce5b249d8627a88f0b9b00615fd55a5ce48d6a447a891eef25fe03e514cd9";
 
@@ -45,6 +53,39 @@ public class RocketMqConst {
         }
         client.close();
     }
-
+    /**
+     * 预处理MNS收到的消息
+     * @param body
+     * @return
+     */
+    public static Notification processMNSMessage(String body, String topicName) throws BusiException {
+        Notification notification=null;
+        try {
+            //解析XML,不能使用json
+            notification = XMLUtils.parse(body);
+        }catch(Exception e){
+            DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"解析JSON出错！可能不是MNS消息",
+                    RocketMqConst.DINGDING_ERROR,body);
+            throw new BusiException("解析JSON出错！可能不是MNS消息");
+        }
+        if(!notification.getTopicName().equals(topicName)){
+            //说明不是这个TOPIC的Message，不需要处理，直接return
+            DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"topicName不一致！",
+                    RocketMqConst.DINGDING_ERROR,topicName);
+            throw new BusiException("topicName不一致！");
+        }
+        String messageId=notification.getMessageId();
+        if(StringUtils.isBlank(messageId)){
+            //说明不是MNS通知的，直接return
+            DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"messageId不能为空！",
+                    RocketMqConst.DINGDING_ERROR,messageId);
+            throw new BusiException("messageId不能为空！");
+        }
+        System.out.println("---------------------------"+notification.getPublishTime());
+        return notification;
+    }
 
 }

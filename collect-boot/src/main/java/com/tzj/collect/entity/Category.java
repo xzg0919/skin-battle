@@ -297,4 +297,101 @@ public class Category extends DataEntity<Long> {
 //		}
 //		return builder.toString();
 //	}
+
+	/**
+	 * 对外IOT设备，一级类型(以code对应)
+	  * @author sgmark@aliyun.com
+	  * @date 2019/3/30 0030
+	  * @param
+	  * @return
+	  */
+	public enum ParentType implements IEnum{
+		PAPER("001"),   	 //纸类
+		PLASTIC("002"),		//塑料类
+		GLASS("003"),	//玻璃类
+		FABRIC("004"),		//纺织类
+		METAL("006"),	//金属类
+		OTHER("007"); //其他类型
+
+		private String value;
+
+		ParentType(final String value) {
+			this.value = value;
+		}
+
+		public Serializable getValue() {
+			return this.value;
+		}
+	}
+	/**
+	 * 对外IOT设备，二级类型(以code对应)
+	  * @author sgmark@aliyun.com
+	  * @date 2019/3/30 0030
+	  * @param
+	  * @return
+	  */
+	public enum SecondType implements IEnum{
+		//纸类(PAPER)
+		BOOK_MAGAZINE("001", "0011"),   	 //书本杂志
+		CARD_BOARD_BOXES("001", "0015"),   	 //纸板箱
+		NEWS_PAPER("001", "0016"),   	 //报纸
+		PACKING_BOX("001", "0017"),		//包装盒
+		WASTE_PAPER("001", "0018"),	//杂纸
+
+		//塑料类(PLASTIC)
+		BEVERAGE_BOTTLES("002", "0021"),		//饮料瓶
+		PLASTIC_TOYS("002", "0022"),	//玩具
+		KETTLE_BARREL("002", "0023"), //油壶油桶
+		FOAM("002", "0024"),	//泡沫塑料
+		MISCELLANEOUS_PLASTICS("002", "0025"),	//杂塑料
+
+		//玻璃类(GLASS)
+		GLASS_BOTTLE("003", "0031"),//玻璃瓶
+		BLOCKS_GLASS("003", "0032"),//成块玻璃
+		SHREDDED_GLASS("003", "0033"),//碎玻璃
+		GLASS_PRODUCTS("003", "0034"),//其他玻璃制品
+
+		//纺织类(FABRIC)
+		CLOTHES("004", "0041"),//衣服
+		PANTS("004", "0042"),//裤子
+		SHOES("004", "0043"),//鞋子
+		SKIRT("004", "0044"),//裙子
+		BAG("004", "0045"),//包袋
+
+		//金属类(METAL)
+		CANS("006", "0061"),//易拉罐
+		POWER_CORD("006", "0065"),	//电源线
+		OLD_METAL("006", "0066"),	//玩具
+
+
+		//其他类型(OTHER)
+		OTHERS("007", "0071");	//其他类型(暂存六废)
+		private String key;
+
+		private String value;
+
+		SecondType(final String key, final String value) {
+			this.key = key;
+			this.value = value;
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public static String getValueByKey(String key) {
+			SecondType[] enums = SecondType.values();
+			for (int i = 0; i < enums.length; i++) {
+				if (enums[i].getKey().equals(key)) {
+					return enums[i].getValue();
+				}
+			}
+			return "";
+		}
+	}
+
 }

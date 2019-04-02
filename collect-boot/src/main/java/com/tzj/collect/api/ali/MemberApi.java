@@ -132,12 +132,4 @@ public class MemberApi {
 		return resultMap;
 	}
 
-	@Api(name = "member.isexist", version = "1.0")
-	@SignIgnore
-	@AuthIgnore
-	public Map<String,Object> memberIsExist(MemberBean memberBean){
-		Map<String,Object> resultMap = new HashMap<String,Object>();
-		resultMap.put("isExist", memberService.memberIsExist(memberBean));
-		return resultMap;
-	}
 }

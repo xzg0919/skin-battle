@@ -343,10 +343,16 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
 	@Override
 	public Object memberIsExist(MemberBean memberBean) {
-		if (this.selectCount(new EntityWrapper<Member>().eq("card_no", memberBean.getCardNo())) > 0)
-			return true;
-		else
-			return false;
+		Map<String, Object> map = new HashMap<>();
+		Member member = this.selectOne(new EntityWrapper<Member>().eq("card_no", memberBean.getCardNo()));
+		if (member != null) {
+			map.put("isExist", true);
+			map.put("tel", member.getMobile());
+			return map;
+		}else {
+			map.put("isExist", false);
+			return map;
+		}
 	}
 
 	public static void main(String[] args) throws  Exception{
