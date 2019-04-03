@@ -1245,6 +1245,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			resultMap.put("order", order);
 			resultMap.put("orderPicList", orderPicAchList);
 			resultMap.put("orderUserPicList", orderPicList);
+			resultMap.put("cancelTime", order.getDate(order.getCancelTime()));
 			return resultMap;
 		}
 		//查询订单表的关联图片表

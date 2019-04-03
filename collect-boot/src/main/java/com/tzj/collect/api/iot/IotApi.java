@@ -37,10 +37,8 @@ public class IotApi {
     @Api(name = "member.isexist", version = "1.0")
     @SignIgnore
     @AuthIgnore
-    public Map<String,Object> memberIsExist(MemberBean memberBean){
-        Map<String,Object> resultMap = new HashMap<String,Object>();
-        resultMap.put("isExist", memberService.memberIsExist(memberBean));
-        return resultMap;
+    public Object memberIsExist(MemberBean memberBean){
+        return memberService.memberIsExist(memberBean);
     }
 
     @Api(name = "iot.order.create", version = "1.0")
