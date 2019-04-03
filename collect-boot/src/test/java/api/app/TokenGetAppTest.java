@@ -41,17 +41,14 @@ public class TokenGetAppTest {
 		  String api="http://localhost:9090/app/api";
 
 		 	OrderBean orderBean = new OrderBean();
-				 orderBean.setId(8795);
-				 orderBean.setAchPrice("0");
-				 orderBean.setSignUrl("http://images.sqmall.top/collect/20190326/bigpicture_3593e28f-3f88-414c-852d-ced4824ff04a.jpg");
-				 orderBean.setAchRemarks("完成是的描述");
-				 orderBean.setPicUrl("http://images.sqmall.top/collect/20190326/original_e39d7c76-0cc8-46b7-849e-c87062379602.jpg");
+				 orderBean.setId(8834);
+				 orderBean.setOrderRemarks("回收人员怼这个单子的备注");
 
 		 RecyclersBean recyclersBean = new RecyclersBean();
 		 recyclersBean.setAliAccountNumber("123456789");
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.recycler.updateRecycleAccount");
+	        param.put("name", "app.bigOrder.saveBigOrderRemarks");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -59,7 +56,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", recyclersBean);
+	        param.put("data", orderBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

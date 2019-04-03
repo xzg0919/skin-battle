@@ -62,6 +62,10 @@ public class OrderBean {
      * 区域id
      */
     private  Integer areaId;
+	/**
+	 *
+	 */
+	private String orderRemarks;
     /**
      * 街道Id
      */
@@ -217,6 +221,14 @@ public class OrderBean {
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示
 	 */
 	private String isMysl;
+
+	public String getOrderRemarks() {
+		return orderRemarks;
+	}
+
+	public void setOrderRemarks(String orderRemarks) {
+		this.orderRemarks = orderRemarks;
+	}
 
 	public String getIsMysl() {
 		return isMysl;

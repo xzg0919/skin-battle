@@ -182,6 +182,11 @@ public class Order extends DataEntity<Long> {
 	private String iotEquipmentCode;//iot设备编号
 
 	/**
+	 * 订单备注
+	 */
+	private String orderRemarks;
+
+	/**
 	 * 是否待支付
 	 * @return
 	 */
@@ -193,6 +198,14 @@ public class Order extends DataEntity<Long> {
 			return "Y";
 		}
 		return "N";
+	}
+
+	public String getOrderRemarks() {
+		return orderRemarks;
+	}
+
+	public void setOrderRemarks(String orderRemarks) {
+		this.orderRemarks = orderRemarks;
 	}
 
 	public void setIsPayment(String isPayment) {

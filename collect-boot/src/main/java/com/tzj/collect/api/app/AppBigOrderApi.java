@@ -74,6 +74,19 @@ public class AppBigOrderApi {
         return orderService.saveBigOrderPrice(orderBean);
     }
 
+    /**
+     * 根据订单id保存订单备注
+     * */
+    @Api(name = "app.bigOrder.saveBigOrderRemarks", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+    public String saveBigOrderRemarks(OrderBean orderBean){
+        Order order = orderService.selectById(orderBean.getId());
+        order.setOrderRemarks(orderBean.getOrderRemarks());
+        orderService.updateById(order);
+        return "操作成功";
+    }
+
 
 
 
