@@ -111,7 +111,7 @@ public class IotController {
         parentLists.add(parentList);
 
         param.put("memberId", 6786);
-        param.put("equipmentCode", "kw_1232");
+        param.put("equipmentCode", "ceshi_code");
         param.put("sumPrice",17.20);
         param.put("parentLists", parentLists);
         RocketMqConst.sendDeliveryOrder("{\\\"memberId\\\": \\\"6786\\\",\\\"equipmentCode\\\": \\\"kw_1232\\\",\\\"sumPrice\\\": 17.00,\\\"parentLists\\\": [{\\\"parentName\\\": \\\"PAPER\\\",\\\"itemList\\\": [{\\\"name\\\": \\\"BOOK_MAGAZINE\\\",\\\"quantity\\\": \\\"2\\\",\\\"unit\\\": \\\"kg\\\",\\\"price\\\": 3.40},{\\\"name\\\": \\\"CARD_BOARD_BOXES\\\",\\\"quantity\\\": \\\"2\\\",\\\"unit\\\": \\\"kg\\\",\\\"price\\\": 5.20}]}]}",RocketMqConst.TOPIC_NAME_IOT_ORDER);

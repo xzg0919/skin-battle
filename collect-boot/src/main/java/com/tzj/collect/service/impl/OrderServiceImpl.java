@@ -802,7 +802,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Map<String, Object> map = new HashMap<>();
 		List<IotParamBean.ParentList> parentLists = iotParamBean.getParentLists();
 		EntityWrapper<CompanyEquipment> entityWrapper = new EntityWrapper();
-		entityWrapper.eq("del_falg", 0);
+		entityWrapper.eq("del_flag", 0);
 		entityWrapper.eq("equipment_code", iotParamBean.getEquipmentCode());
 		CompanyEquipment companyEquipment = companyEquipmentService.selectOne(entityWrapper);
 		if(companyEquipment == null){
@@ -1245,7 +1245,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			resultMap.put("order", order);
 			resultMap.put("orderPicList", orderPicAchList);
 			resultMap.put("orderUserPicList", orderPicList);
-			resultMap.put("cancelTime", order.getDate(order.getCancelTime()));
 			return resultMap;
 		}
 		//查询订单表的关联图片表
@@ -1255,7 +1254,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("order", order);
 		resultMap.put("orderPicList", orderPicList);
 		resultMap.put("OrderItemList", OrderItemList);
-
+		resultMap.put("cancelTime", order.getDate(order.getCancelTime()));
 		return resultMap;
 	}
 

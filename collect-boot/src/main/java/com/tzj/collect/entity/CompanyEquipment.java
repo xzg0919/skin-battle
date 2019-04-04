@@ -37,7 +37,7 @@ public class CompanyEquipment extends  DataEntity<Long> {
     private Integer communityId;
 
     private String address;
-
+    @TableField(value = "status_")
     private Integer status;//当前状态(满仓与否)
 
     public static long getSerialVersionUID() {
