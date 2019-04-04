@@ -62,14 +62,15 @@ public class OrderTest {
 
 
                 OrderBean orderbean1 = new OrderBean();
-                orderbean1.setId(22);
+                orderbean1.setStatus("0");
+                orderbean1.setPagebean(new PageBean());
 
                 OrderPayParam orderPayParam = new OrderPayParam();
                 orderPayParam.setOrderId(8795);
-                orderPayParam.setPrice(new BigDecimal("1"));
+                orderPayParam.setPrice(new BigDecimal("0"));
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","category.categoryTwoList");
+                param.put("name","order.orderlist");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");

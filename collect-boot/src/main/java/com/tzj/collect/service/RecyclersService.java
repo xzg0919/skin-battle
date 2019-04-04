@@ -17,6 +17,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.taobao.api.ApiException;
 import com.tzj.collect.api.admin.param.AdminCommunityBean;
 import com.tzj.collect.api.admin.param.RecyclersBean;
 import com.tzj.collect.api.ali.param.PageBean;
@@ -187,5 +188,5 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 */
 	List<Map<String,Object>> getRecycleDetails(Integer recyclerId);
 
-	String getAuthCode(String authCode,Long recyclersId);
+	String getAuthCode(String authCode,Long recyclersId) throws ApiException;
 }

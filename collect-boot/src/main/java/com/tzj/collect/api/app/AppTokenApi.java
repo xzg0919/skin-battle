@@ -148,7 +148,7 @@ public class AppTokenApi {
     @Api(name = "app.token.getAuthCode", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
-    public String getAuthCode(RecyclersBean recyclersBean) {
+    public String getAuthCode(RecyclersBean recyclersBean) throws com.taobao.api.ApiException {
         Recyclers recycler = RecyclersUtils.getRecycler();
         return  recyclersService.getAuthCode(recyclersBean.getAuthCode(),recycler.getId());
     }
