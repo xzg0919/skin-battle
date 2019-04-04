@@ -816,12 +816,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			throw new ApiException("参数错误, 缺少memberId。。", "-9");
 		}
 		order.setOrderNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000));
-		order.setMemberId(Integer.parseInt(iotParamBean.getMemberId()));
+        EntityWrapper<Member> entity =  new EntityWrapper<>();
+        entity.eq("card_no", iotParamBean.getMemberId()).eq("del_flag", 0);
+		Member member = memberService.selectOne(entity);
+        if (member == null){
+        	throw new ApiException("当前用户不是我们系统会员");
+		}
+		order.setMemberId(Integer.parseInt(member.getId().toString()));
 		order.setIotEquipmentCode(iotParamBean.getEquipmentCode());
 		order.setPrice(iotParamBean.getSumPrice());
 		order.setAreaId(companyEquipment.getAreaId());
 		order.setStreetId(companyEquipment.getStreetId());
 		order.setCommunityId(companyEquipment.getCommunityId());
+        order.setTitle(Order.TitleType.IOTORDER);
 		this.insert(order);
 		if(!parentLists.isEmpty()){
 			//说明是同步传过来的
