@@ -18,6 +18,15 @@ public class BusinessRecyclerBean {
 	private String applyStatus;//回收人员的申请状态，1同意，2拒绝
 
 	private String headPicUrl;
+	private String isBigRecycle;
+
+	public String getIsBigRecycle() {
+		return isBigRecycle;
+	}
+
+	public void setIsBigRecycle(String isBigRecycle) {
+		this.isBigRecycle = isBigRecycle;
+	}
 
 	public String getHeadPicUrl() {
 		return headPicUrl;

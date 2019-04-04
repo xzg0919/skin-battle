@@ -175,7 +175,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 */
 	@Override
 	public List<Recyclers> getRecyclersApply(BusinessRecyclerBean recyclerBean) {
-		return recyclersMapper.getRecyclersApply(recyclerBean);
+		return recyclersMapper.getRecyclersApply(recyclerBean.getCompanyId(),recyclerBean.getIsBigRecycle());
 	}
 
 

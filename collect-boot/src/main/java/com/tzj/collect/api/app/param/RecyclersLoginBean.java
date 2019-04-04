@@ -16,6 +16,16 @@ public class RecyclersLoginBean {
 
     private String password;
 
+    private String isBigRecycle;
+
+    public String getIsBigRecycle() {
+        return isBigRecycle;
+    }
+
+    public void setIsBigRecycle(String isBigRecycle) {
+        this.isBigRecycle = isBigRecycle;
+    }
+
     public String getPassword() {
         return password;
     }

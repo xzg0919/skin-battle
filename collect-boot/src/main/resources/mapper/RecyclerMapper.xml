@@ -213,7 +213,7 @@
 		      
      </select>
      
-     <select id="getRecyclersApply" resultType="Recyclers" parameterType="com.tzj.collect.api.business.param.BusinessRecyclerBean">
+     <select id="getRecyclersApply" resultType="Recyclers" parameterType="Object">
 	        SELECT
 	        sr.id,
 		sr.name_,
@@ -224,8 +224,17 @@
 	FROM
 		sb_recyclers sr
 	INNER JOIN sb_company_recycler scr ON sr.id = scr.recycler_id
+	 LEFT JOIN sb_recyclers_title srt ON sr.id = srt.recycle_id
 	WHERE
-		scr.status_ = '0' and scr.company_id= #{recyclerBean.companyId}
+		scr.status_ = '0' and scr.company_id= #{companyId}
+		 <choose>
+			 <when test=" isBigRecycle == 'Y'.toString() ">
+				 and srt.title_id = 4
+			 </when>
+			 <otherwise>
+				 AND srt.title_id is null
+			 </otherwise>
+		 </choose>
       ORDER BY scr.id 
      </select>
      <select id="getRecyclers" parameterType="Integer" resultType="Map">

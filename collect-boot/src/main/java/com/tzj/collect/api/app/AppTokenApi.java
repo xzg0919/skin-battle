@@ -6,8 +6,10 @@ import com.tzj.collect.api.app.param.RecyclersLoginBean;
 import com.tzj.collect.api.param.TokenBean;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.entity.Recyclers;
+import com.tzj.collect.entity.RecyclersTitle;
 import com.tzj.collect.service.MessageService;
 import com.tzj.collect.service.RecyclersService;
+import com.tzj.collect.service.RecyclersTitleService;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;
@@ -41,6 +43,8 @@ public class AppTokenApi {
     private RecyclersService recyclersService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private RecyclersTitleService recyclersTitleService;
 
     /**
      * 回收人员手机登录验证后获取token
@@ -71,6 +75,9 @@ public class AppTokenApi {
                 TokenBean tokenBean = new TokenBean();
                 tokenBean.setExpire(APP_API_EXPRIRE);
                 tokenBean.setToken(securityToken);
+                if("Y".equals(recyclersLoginBean.getIsBigRecycle())){
+                   this.saveRecycle(recyclers.getId().toString());
+                }
                 return tokenBean;
             }
 
@@ -91,10 +98,26 @@ public class AppTokenApi {
                 TokenBean tokenBean = new TokenBean();
                 tokenBean.setExpire(APP_API_EXPRIRE);
                 tokenBean.setToken(securityToken);
+                if("Y".equals(recyclersLoginBean.getIsBigRecycle())){
+                    this.saveRecycle(recyclers.getId().toString());
+                }
                 return tokenBean;
             }else{
                 throw new ApiException("验证码错误");
             }
+        }
+    }
+
+    public void saveRecycle(String recyclerId){
+        RecyclersTitle recyclersTitle = recyclersTitleService.selectOne(new EntityWrapper<RecyclersTitle>().eq("recycle_id", recyclerId).eq("title_id", 4).eq("del_flag", 0));
+        if(recyclersTitle!=null){
+            return;
+        }else {
+            recyclersTitle = new RecyclersTitle();
+            recyclersTitle.setRecycleId(Integer.parseInt(recyclerId));
+            recyclersTitle.setTitleId(4);
+            recyclersTitle.setTitleName("大件垃圾");
+            recyclersTitleService.insert(recyclersTitle);
         }
     }
 

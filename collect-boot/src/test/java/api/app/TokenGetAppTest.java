@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.app.param.RecyclersBean;
+import com.tzj.collect.api.app.param.RecyclersLoginBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.file.FileBase64Param;
@@ -45,10 +46,15 @@ public class TokenGetAppTest {
 				 orderBean.setOrderRemarks("回收人员怼这个单子的备注");
 
 		 RecyclersBean recyclersBean = new RecyclersBean();
-		 recyclersBean.setAuthCode("3ab43599767e47dfaf60779db3e3RC66");
+		 recyclersBean.setPassword("1111");
+
+		 RecyclersLoginBean recyclersLoginBean = new RecyclersLoginBean();
+		 recyclersLoginBean.setMobile("18912367774");
+		 recyclersLoginBean.setPassword("1111");
+		 recyclersLoginBean.setIsBigRecycle("Y");
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.token.getAuthUrl");
+	        param.put("name", "app.token.get");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -56,7 +62,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", null);
+	        param.put("data", recyclersLoginBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

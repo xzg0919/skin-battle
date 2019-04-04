@@ -51,6 +51,7 @@ public class AppOrderResult {
 	private  String completeDate;
 	private  String isRead;
 	private String orderRemarks;
+	private String aliUserId;
 
 
 	private String arrivalPeriod;//时间段
@@ -97,6 +98,15 @@ public class AppOrderResult {
 	
 	
 	private Object obj;
+
+
+	public String getAliUserId() {
+		return aliUserId;
+	}
+
+	public void setAliUserId(String aliUserId) {
+		this.aliUserId = aliUserId;
+	}
 
 	public String getSignUrl() {
 		return signUrl;

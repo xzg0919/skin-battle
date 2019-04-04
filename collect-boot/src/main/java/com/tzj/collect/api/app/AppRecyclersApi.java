@@ -9,12 +9,14 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.app.param.RecyclersBean;
+import com.tzj.collect.api.app.param.RecyclersLoginBean;
 import com.tzj.collect.api.app.param.ScoreAppBean;
 import com.tzj.collect.api.app.param.TimeBean;
 import com.tzj.collect.api.app.result.AppCompany;
 import com.tzj.collect.api.app.result.AppOrderResult;
 import com.tzj.collect.api.app.result.AppScoreResult;
 import com.tzj.collect.api.common.MyX509TrustManager;
+import com.tzj.collect.api.param.TokenBean;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.OrderEvaluation;
@@ -26,6 +28,7 @@ import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.entity.Subject;
+import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.file.upload.FileUpload;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
@@ -46,7 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * 回收人员api
@@ -73,6 +76,8 @@ public class AppRecyclersApi {
 	private FileUpload fileUpload;
 	@Autowired
 	private AliPayService aliPayService;
+	@Autowired
+	private MessageService messageService;
 
 	public Recyclers getRecycler() {
 		Subject subject=ApiContext.getSubject();
@@ -552,5 +557,40 @@ public class AppRecyclersApi {
 		recyclersService.updateById(recyclers);
 		return "操作成功";
 	}
+	/**
+	 * 增加回收人员的支付宝号码
+	 */
+	@Api(name = "app.recycler.getCheckPassword", version = "1.0")
+	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getCheckPassword(RecyclersBean recyclersBean) throws ApiException{
+		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
+		if(!recyclersBean.getPassword().equals(recyclers.getPassword())){
+			throw new ApiException("密码不正确");
+		}
+		return "密码正确";
+	}
+
+	/**
+	 * 增加回收人员的支付宝号码
+	 */
+	@Api(name = "app.recycler.updateMobile", version = "1.0")
+	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object updateMobile(RecyclersLoginBean recyclersLoginBean) throws ApiException{
+		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
+		if(messageService.validMessage(recyclersLoginBean.getMobile(),recyclersLoginBean.getCaptcha())){
+			if(recyclersLoginBean.getMobile().equals(recyclers.getTel())){
+				throw new ApiException("手机号不能相同");
+			};
+			recyclers.setTel(recyclersLoginBean.getMobile());
+			recyclersService.insertOrUpdate(recyclers);
+			return "更改成功";
+		}else{
+			throw new ApiException("验证码错误");
+		}
+	}
+
+
 
 }

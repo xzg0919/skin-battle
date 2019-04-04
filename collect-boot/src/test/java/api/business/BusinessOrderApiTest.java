@@ -13,6 +13,7 @@ import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.ali.param.AreaBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.BOrderBean;
+import com.tzj.collect.api.business.param.BusinessRecyclerBean;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
 import com.tzj.collect.api.business.param.TitleBean;
 import com.tzj.collect.entity.Category;
@@ -54,12 +55,12 @@ public class BusinessOrderApiTest {
         orderBean.setCategoryType("BIGTHING");
         orderBean.setPagebean(new PageBean());
 
-//		BOrderBean orderBean = new BOrderBean();
-//		orderBean.setId(8784);
-
+		BusinessRecyclerBean recyclerBean = new BusinessRecyclerBean();
+		recyclerBean.setIsBigRecycle("");
+		recyclerBean.setCompanyId((long)1);
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.order.getOrderLists");
+		param.put("name","business.search.getRecyclersApply");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -67,7 +68,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",orderBean);
+		param.put("data",recyclerBean);
 
 		String jsonStr = JSON.toJSONString(param);
 		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");

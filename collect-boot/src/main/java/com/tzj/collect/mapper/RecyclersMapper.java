@@ -68,7 +68,7 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	/*
 	 * 查询回收人员的申请列表
 	 */
-	public List<Recyclers> getRecyclersApply(@Param("recyclerBean") BusinessRecyclerBean recyclerBean);
+	public List<Recyclers> getRecyclersApply(@Param("companyId") long companyId,@Param("isBigRecycle") String isBigRecycle);
 
 	
 	
