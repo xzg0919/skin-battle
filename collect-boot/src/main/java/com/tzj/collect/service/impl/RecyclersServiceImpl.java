@@ -12,6 +12,7 @@
 
 package com.tzj.collect.service.impl;
 
+import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -25,6 +26,7 @@ import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
 import com.tzj.collect.api.business.param.TitleBean;
 import com.tzj.collect.api.common.websocket.AppWebSocketServer;
 import com.tzj.collect.api.common.websocket.WebSocketServer;
+import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.mapper.RecyclersMapper;
 import com.tzj.collect.service.*;
@@ -50,6 +52,9 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers> implements RecyclersService{
 
+
+	@Autowired
+	private AliPayService aliPayService;
 	@Autowired
 	private RecyclersMapper  recyclersMapper;
 	@Autowired
@@ -376,5 +381,22 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 */
 	public List<Map<String,Object>> getRecycleDetails(Integer recyclerId){
 		return recyclersMapper.getRecycleDetails(recyclerId);
+	}
+
+	@Transactional
+	@Override
+	public String getAuthCode(String authCode,Long recyclersId){
+
+		Recyclers recyclers = this.selectById(recyclersId);
+		//根据用户授权的具体authCode查询是用户的userid和token
+		AlipaySystemOauthTokenResponse response = aliPayService.selectUserToken(authCode, AlipayConst.appId);
+		if(!response.isSuccess()){
+			return "用户授权解析失败";
+		}
+		String accessToken = response.getAccessToken();
+		String userId = response.getUserId();
+		recyclers.setAliUserId(userId);
+		this.updateById(recyclers);
+		return "操作成功";
 	}
 }

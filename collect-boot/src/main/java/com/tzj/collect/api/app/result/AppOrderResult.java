@@ -50,6 +50,7 @@ public class AppOrderResult {
 	private  String distributeTime;
 	private  String completeDate;
 	private  String isRead;
+	private String orderRemarks;
 
 
 	private String arrivalPeriod;//时间段
@@ -103,6 +104,14 @@ public class AppOrderResult {
 
 	public void setSignUrl(String signUrl) {
 		this.signUrl = signUrl;
+	}
+
+	public String getOrderRemarks() {
+		return orderRemarks;
+	}
+
+	public void setOrderRemarks(String orderRemarks) {
+		this.orderRemarks = orderRemarks;
 	}
 
 	public String getCreateDate() {

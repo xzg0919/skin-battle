@@ -76,6 +76,16 @@ public class Recyclers extends DataEntity<Long> {
 	 */
 	private String aliAccountNumber;
 
+	private String aliUserId;
+
+	public String getAliUserId() {
+		return aliUserId;
+	}
+
+	public void setAliUserId(String aliUserId) {
+		this.aliUserId = aliUserId;
+	}
+
 	public String getAliAccountNumber() {
 		return aliAccountNumber;
 	}

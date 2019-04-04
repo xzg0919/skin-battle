@@ -45,10 +45,10 @@ public class TokenGetAppTest {
 				 orderBean.setOrderRemarks("回收人员怼这个单子的备注");
 
 		 RecyclersBean recyclersBean = new RecyclersBean();
-		 recyclersBean.setAliAccountNumber("123456789");
+		 recyclersBean.setAuthCode("3ab43599767e47dfaf60779db3e3RC66");
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.bigOrder.saveBigOrderRemarks");
+	        param.put("name", "app.token.getAuthUrl");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -56,7 +56,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", orderBean);
+	        param.put("data", null);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

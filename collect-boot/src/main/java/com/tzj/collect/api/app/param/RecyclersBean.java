@@ -32,6 +32,26 @@ public class RecyclersBean {
 	 */
 	private String aliAccountNumber;
 
+	private String aliUserId;
+
+	private String authCode;
+
+	public String getAuthCode() {
+		return authCode;
+	}
+
+	public void setAuthCode(String authCode) {
+		this.authCode = authCode;
+	}
+
+	public String getAliUserId() {
+		return aliUserId;
+	}
+
+	public void setAliUserId(String aliUserId) {
+		this.aliUserId = aliUserId;
+	}
+
 	public String getAliAccountNumber() {
 		return aliAccountNumber;
 	}

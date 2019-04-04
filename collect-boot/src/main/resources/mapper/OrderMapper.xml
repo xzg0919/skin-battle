@@ -826,6 +826,7 @@
 			scomco.is_cash,
 			scomco.sign_url,
 			scomco.green_count,
+			scomco.order_remarks as orderRemarks,
 			sr.is_manager,
 		date_format(scomco.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
 		CONCAT(date_format(scomco.arrival_time,'%Y-%m-%d'),IF(scomco.arrival_period = 'am',' 上午',' 下午'))AS arrivalTime,

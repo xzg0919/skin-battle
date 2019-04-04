@@ -186,4 +186,6 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @return
 	 */
 	List<Map<String,Object>> getRecycleDetails(Integer recyclerId);
+
+	String getAuthCode(String authCode,Long recyclersId);
 }

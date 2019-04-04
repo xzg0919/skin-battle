@@ -102,7 +102,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			appId = AlipayConst.appId;
 		}
 
-    	//根据用户授权的具体authCode查询是用户的userid和token 
+    		//根据用户授权的具体authCode查询是用户的userid和token
 			AlipaySystemOauthTokenResponse  response = aliPayService.selectUserToken(authCode,appId);
 			if(!response.isSuccess()){
 				return "用户授权解析失败";

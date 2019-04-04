@@ -1,8 +1,10 @@
 package com.tzj.collect.api.app;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.app.param.RecyclersBean;
 import com.tzj.collect.api.app.param.RecyclersLoginBean;
 import com.tzj.collect.api.param.TokenBean;
+import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.service.MessageService;
 import com.tzj.collect.service.RecyclersService;
@@ -17,6 +19,12 @@ import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -114,6 +122,35 @@ public class AppTokenApi {
         tokenBean.setExpire(APP_API_EXPRIRE);
         tokenBean.setToken(securityToken);
         return tokenBean;
+    }
+
+    /**
+     * 获取回收人员的授权信息
+     *
+     * @return
+     */
+    @Api(name = "app.token.getAuthUrl", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+    public String getAuthUrl() throws Exception {
+        String targetId = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
+
+        String authUrl = "apiname=com.alipay.account.auth&app_id=2017022805948218&app_name=mc&auth_type=AUTHACCOUNT&biz_type=openservice&method=alipay.open.auth.sdk.code.get&pid=2088421446748174&product_id=APP_FAST_LOGIN&scope=kuaijie&sign_type=RSA2&target_id="+targetId;
+        String encodeAuthUrl = URLEncoder.encode(authUrl,"utf-8");
+        return  authUrl+"&sign="+encodeAuthUrl;
+    }
+
+    /**
+     * 获取回收人员的授权信息
+     *
+     * @return
+     */
+    @Api(name = "app.token.getAuthCode", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+    public String getAuthCode(RecyclersBean recyclersBean) {
+        Recyclers recycler = RecyclersUtils.getRecycler();
+        return  recyclersService.getAuthCode(recyclersBean.getAuthCode(),recycler.getId());
+    }
 
     }
-}
