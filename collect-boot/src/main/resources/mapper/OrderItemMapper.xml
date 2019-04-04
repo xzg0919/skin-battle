@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.mapper.OrderItemMapper">
+
+<select id="selectItemOne" parameterType="Integer" resultType="Map">
+SELECT
+	c.id AS categoryId,
+	b.ali_item_type AS aliItemType,
+	c.name_ AS name
+FROM
+	sb_order_item a
+LEFT JOIN sb_category b ON a.category_id = b.id
+LEFT JOIN sb_category c ON b.parent_id = c.id
+WHERE
+	a.order_id = #{orderId}
+GROUP BY
+	a.category_id
+</select>
+
+
+
+
+
+
+
+
+
+</mapper>

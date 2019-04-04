@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.mapper.CommunityMapper">
+
+	<select id="listareaByCategory" parameterType="int" resultType="Community">
+		select sc.* from sb_company_category scc
+		inner join sb_company_service
+		scs
+		on scs.company_id =scc.company_id
+		inner join sb_community sc
+		on
+		sc.id=scs.community_id
+		inner join sb_area sa
+		on
+		sa.id= sc.area_id
+		where
+		scc.category_id=#{categoryId} and sa.id = #{areaId} ORDER BY  convert(sc.address using gbk)
+	</select>
+
+	<select id="defaultAddress" resultType="Community">
+		select sc.* from
+		sb_company_category scc
+		inner join sb_company_service scs
+		on
+		scs.company_id =scc.company_id
+		inner join sb_community sc
+		on
+		sc.id=scs.community_id
+		where sc.id=#{communityId} and scc.category_id
+		=#{categoryId}
+		limit 1
+	</select>
+	<select id="getRecByCommId" resultType="Recyclers">
+		SELECT
+		sr.name_,
+		sr.id_card,
+		sr.tel
+		FROM
+		sb_recyclers sr
+		INNER JOIN sb_recycler_community src ON src.recycler_id = sr.id
+		WHERE
+		src.community_id = #{commId}
+	</select>
+
+
+	<select id="selectCommunityByConditions" resultType="com.tzj.collect.api.admin.param.AdminCommunityBean"
+		parameterType="com.tzj.collect.api.admin.param.CompanyBean">
+		SELECT
+		sc.name_ as communityName,
+		sc.id as communityId
+		FROM
+		sb_community
+		sc
+		WHERE
+		sc.id NOT IN (
+		SELECT
+		scs.community_id
+		FROM
+		sb_company_service scs
+		INNER JOIN
+		sb_company_category scc ON scs.company_id = scc.company_id
+		WHERE
+		scc.category_id IN
+		<foreach collection="companybean.category_id" item="item"
+			index="index" open="(" separator="," close=")">#{item}
+		</foreach>
+
+
+		)
+		and (sc.area_id =
+		#{companybean.areaId} or sc.parent_ids like
+		concat(#{companybean.areaId},'_%'))
+	</select>
+
+	<select id="getSelectedCommunityListByCompanyId" resultType="com.tzj.collect.api.admin.param.AdminCommunityBean"
+		parameterType="long">
+
+		SELECT
+		sba.area_name as countyName,
+		B.streetName,
+		B.communityName
+		FROM
+		sb_area sba
+		INNER JOIN (
+		SELECT
+		A.countyId AS
+		county_id,
+		sa.area_name AS streetName,
+		A. NAME AS communityName
+		FROM
+		sb_area sa
+		INNER JOIN (
+		SELECT
+		scs.area_id AS streetId,
+		sc.name_ AS NAME,
+		SUBSTRING_INDEX(scs.parent_ids, '_', '1') AS countyId
+		FROM
+		sb_company_service scs
+		INNER JOIN sb_company sy ON scs.company_id =
+		sy.id
+		INNER JOIN sb_community sc ON sc.id =
+		scs.community_id
+		WHERE
+		scs.company_id
+		=#{companyId}
+		and scs.del_flag!='1'
+		) A ON sa.id =
+		A.streetId
+		) B ON sba.id = B.county_id
+
+
+	</select>
+
+	<select id="getEditorCommunity" resultType="com.tzj.collect.api.admin.param.AdminCommunityBean"
+		parameterType="com.tzj.collect.api.admin.param.CompanyBean">
+
+		SELECT
+		sc.name_ as communityName,
+		sc.id as communityId
+		FROM
+		sb_community
+		sc
+		WHERE
+		sc.id NOT IN (
+		SELECT
+		scs.community_id
+		FROM
+		sb_company_service scs
+		INNER JOIN
+		sb_company_category scc ON scs.company_id = scc.company_id
+		WHERE
+		scc.category_id IN
+		<foreach collection="companybeanEditor.category_id" item="item"
+			index="index" open="(" separator="," close=")">#{item}
+		</foreach>
+		and scc.company_id !=#{companybeanEditor.id})
+		and (sc.area_id =
+		#{companybeanEditor.areaId} or sc.parent_ids like
+		concat(#{companybeanEditor.areaId},'_%'))
+	</select>
+	<select id="getCommunityData" parameterType="String" resultType="com.tzj.collect.entity.Area">
+		SELECT e.area_name AS area_name ,areas.areaName AS remarks FROM sb_area e LEFT JOIN 
+		(SELECT b.parent_id as parentId ,b.area_name AS areaName FROM sb_area b  WHERE b.id in (SELECT DISTINCT a.area_id AS areaid  FROM sb_company_service a  WHERE a.company_id = #{companyId} AND a.del_flag = '0' GROUP BY a.area_id )AND b.del_flag = '0')as areas
+		ON e.id = areas.parentId 
+		WHERE areas.areaName is not NULL
+		AND areas.parentId IS NOT NULL
+	</select>
+	<select id="areaCommunityList" resultType="com.tzj.collect.entity.Community" parameterType="Object">
+		SELECT 
+		    *, 
+		    ROUND( 
+		        6378.138 * 2 * ASIN( 
+		            SQRT( 
+		                POW( 
+		                    SIN( 
+		                        ( 
+		                            #{latitude} * PI() / 180 - a.latitude * PI() / 180
+		                        ) / 2 
+		                    ), 
+		                    2 
+		                ) + COS(#{latitude} * PI() / 180) * COS(a.latitude * PI() / 180) * POW(
+		                    SIN( 
+		                        ( 
+		                            #{longitude} * PI() / 180 - a.longitude * PI() / 180
+		                        ) / 2 
+		                    ), 
+		                    2 
+		                ) 
+		            ) 
+		        ) * 1000 
+		    ) AS juli 
+		FROM 
+		   sb_community a 
+		WHERE a.area_id = #{areaId} 
+		ORDER BY 
+		    juli ASC 
+	</select>
+</mapper>

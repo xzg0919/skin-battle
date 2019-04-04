@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.mapper.CategoryMapper" >
+
+  <select id="topList" parameterType="int" resultType="Category">
+        select id,parent_id,parent_ids,name_,sort_,code_,level_,icon,price,market_price,unit,ismetering,create_by,create_date,update_by,update_date,remarks,del_flag
+         from sb_category where level_=#{level}
+    </select>
+    
+   <select id="childList" parameterType="Integer" resultType="Category">
+        select id,parent_id,parent_ids,name_,sort_,code_,level_,icon,price,market_price,unit,ismetering,create_by,create_date,update_by,update_date,remarks,del_flag
+         from sb_category where parent_id=#{id}
+    </select>
+    
+    <select id="selectListCategory" parameterType="String" resultMap="OrderResultMap">  
+        SELECT <include refid="zd"/>,COUNT(*) AS count FROM sb_category a LEFT JOIN sb_category_attr b ON a.id = b.category_id WHERE a.id = #{categoryId}  
+    </select> 
+    
+    <select id="getTopList" parameterType="int" resultMap="OrderResultMap">
+    	SELECT name_,id FROM sb_category WHERE  del_flag = 0 AND unuseful = 0 AND  id IN(
+		SELECT parent_id FROM sb_company_category WHERE  company_id = #{param1} AND  del_flag = 0) AND title = #{param2} 
+    </select> 
+    
+    <select id="getSecondList" parameterType="String" resultMap="OrderResultMap">
+    	SELECT sc.name_,sc.id FROM sb_company_category scc LEFT JOIN sb_category sc ON scc.category_id = sc.id  WHERE scc.parent_id = #{param1}
+    </select> 
+    
+     <select id="getHouseHoldDetail" parameterType="String" resultType="com.tzj.collect.api.business.result.CategoryResult">
+		SELECT sc.name_,sc.id,sbc.price,sc.unit FROM sb_category sc LEFT JOIN (SELECT * FROM sb_company_category scc WHERE scc.`parent_id`=#{param1} AND scc.`company_id`= #{param2})sbc ON sbc.category_id = sc.id WHERE sc.`parent_id`=#{param1}
+	 </select> 
+	 
+	 <select id="topListApp" resultType="Category">
+		SELECT
+			scc.*
+		FROM
+			sb_category scc
+		INNER JOIN (
+			SELECT DISTINCT
+				parent_id
+			FROM
+				sb_company_recycler scr
+			LEFT JOIN sb_company_category scc ON scr.company_id = scc.company_id
+			WHERE
+				scr.recycler_id = #{recId}
+			AND FORMAT(scc.price, 2) > 0
+		) notNull ON notNull.parent_id = scc.id
+		WHERE
+			scc.title = #{title}
+		AND scc.level_ = #{level}
+		UNION ALL
+		SELECT DISTINCT
+			a.*
+		FROM
+			sb_category a
+		LEFT JOIN sb_category b ON a.id = b.parent_id
+		WHERE
+			a.level_ = #{level}
+		AND a.title = #{title}
+		AND b.unuseful = '1'
+
+	 </select>
+	 <select id="topListApps" parameterType="Integer" resultType="Category">
+		SELECT DISTINCT
+			a.*
+		FROM
+			sb_category a
+		LEFT JOIN sb_category b ON a.id = b.parent_id
+		WHERE
+			a.level_ = #{level}
+		AND a.title = #{title}
+		AND b.unuseful = '1'
+	 </select>
+	 
+    
+    <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->  
+    <resultMap type="com.tzj.collect.entity.Category" id="OrderResultMap">  
+        <id property="id" column="id" />  
+        <result property="parentId" column="parent_id" />
+        <result property="parentIds" column="parent_ids" />
+        <result property="name" column="name_" />
+        <result property="sort" column="sort_" />
+        <result property="code" column="code_" />
+        <result property="level" column="level_" />
+        <result property="icon" column="icon" />
+        <result property="price" column="price" />
+        <result property="marketPrice" column="market_price" />
+        <result property="unit" column="unit" />
+        <result property="ismetering" column="ismetering" />
+        <result property="createDate" column="create_date" />
+        <result property="updateDate" column="update_date" />
+        <result property="delFlag" column="del_flag" />
+        <result property="count" column="count" />
+        <association property="companyCategory" javaType="com.tzj.collect.entity.CompanyCategory">
+        	<id property="id" column="id"/>
+        	<result property="price" column="price"/>  
+        	<result property="unit" column="unit"/>
+        </association>
+    </resultMap>
+    
+    <sql id="zd">
+    	a.id,
+        a.parent_id,
+		a.parent_ids,
+		a.name_,
+		a.sort_,
+		a.code_,
+		a.level_,
+		a.icon,
+		a.price,
+		a.market_price,
+		a.unit,
+		a.ismetering,
+		a.create_date,
+		a.update_date,
+		a.del_flag 
+     </sql>
+</mapper>
