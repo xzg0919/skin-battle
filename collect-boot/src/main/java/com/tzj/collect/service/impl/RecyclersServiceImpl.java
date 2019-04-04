@@ -16,6 +16,7 @@ import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.taobao.api.ApiException;
 import com.tzj.collect.api.admin.param.AdminCommunityBean;
 import com.tzj.collect.api.admin.param.RecyclersBean;
 import com.tzj.collect.api.ali.param.AreaBean;
@@ -385,13 +386,13 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 
 	@Transactional
 	@Override
-	public String getAuthCode(String authCode,Long recyclersId){
+	public String getAuthCode(String authCode,Long recyclersId) throws ApiException{
 
 		Recyclers recyclers = this.selectById(recyclersId);
 		//根据用户授权的具体authCode查询是用户的userid和token
 		AlipaySystemOauthTokenResponse response = aliPayService.selectUserToken(authCode, AlipayConst.appId);
 		if(!response.isSuccess()){
-			return "用户授权解析失败";
+			throw new ApiException("授权失败，请重新授权");
 		}
 		String accessToken = response.getAccessToken();
 		String userId = response.getUserId();

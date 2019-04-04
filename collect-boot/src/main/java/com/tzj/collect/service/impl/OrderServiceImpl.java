@@ -2276,6 +2276,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setCategoryId(orderbean.getCategoryId());
 			order.setCategoryParentIds(orderbean.getCategoryParentIds());
 			order.setIsMysl(orderbean.getIsMysl());
+			order.setAchPrice(new BigDecimal("0"));
 			BigDecimal price = new BigDecimal("0");
 			if(price.compareTo(orderbean.getPrice())==1){
 				order.setPrice(orderbean.getPrice());

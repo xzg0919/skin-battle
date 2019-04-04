@@ -50,8 +50,8 @@ public class BusinessOrderApiTest {
 
         BOrderBean orderBean = new BOrderBean();
         orderBean.setCompanyId(1);
-        orderBean.setStatus("INIT");
-        orderBean.setCategoryType("DIGITAL");
+        orderBean.setStatus("TOSEND");
+        orderBean.setCategoryType("BIGTHING");
         orderBean.setPagebean(new PageBean());
 
 //		BOrderBean orderBean = new BOrderBean();
