@@ -358,7 +358,7 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getRecyclersList(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return recycleService.getRangeRecyclersList(companyAccount.getCompanyId(),recyclersServiceRangeBean.getRecycleName(),recyclersServiceRangeBean.getCityId(),recyclersServiceRangeBean.getPageNum(),recyclersServiceRangeBean.getPageSize());
+		return recycleService.getRangeRecyclersList(companyAccount.getCompanyId(),recyclersServiceRangeBean.getRecycleName(),recyclersServiceRangeBean.getCityId(),recyclersServiceRangeBean.getPageNum(),recyclersServiceRangeBean.getPageSize(),recyclersServiceRangeBean.getIsBigRecycle());
 	}
 	/**
 	 * 根据回收经理Id获取下属回收人员列表

@@ -55,12 +55,13 @@ public class BusinessOrderApiTest {
         orderBean.setCategoryType("BIGTHING");
         orderBean.setPagebean(new PageBean());
 
-		BusinessRecyclerBean recyclerBean = new BusinessRecyclerBean();
-		recyclerBean.setIsBigRecycle("");
-		recyclerBean.setCompanyId((long)1);
+		RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
+		recyclersServiceRangeBean.setIsBigRecycle("Y");
+		recyclersServiceRangeBean.setPageNum(1);
+		recyclersServiceRangeBean.setPageSize(10);
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.search.getRecyclersApply");
+		param.put("name","business.recycle.getRecyclersList");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -68,7 +69,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",recyclerBean);
+		param.put("data",recyclersServiceRangeBean);
 
 		String jsonStr = JSON.toJSONString(param);
 		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");

@@ -56,6 +56,16 @@ public class RecyclersServiceRangeBean {
      */
     private List<TitleBean> TitleList;
 
+    private String isBigRecycle;
+
+    public String getIsBigRecycle() {
+        return isBigRecycle;
+    }
+
+    public void setIsBigRecycle(String isBigRecycle) {
+        this.isBigRecycle = isBigRecycle;
+    }
+
     public List<TitleBean> getTitleList() {
         return TitleList;
     }

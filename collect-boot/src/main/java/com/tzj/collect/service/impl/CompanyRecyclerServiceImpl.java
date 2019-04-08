@@ -7,6 +7,10 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.tzj.collect.api.app.AppTokenApi;
+import com.tzj.collect.entity.*;
+import com.tzj.collect.service.RecyclersTitleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +19,6 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.app.param.RecyclersBean;
 import com.tzj.collect.api.app.result.AppCompany;
 import com.tzj.collect.api.business.param.BusinessRecyclerBean;
-import com.tzj.collect.entity.Community;
-import com.tzj.collect.entity.Company;
-import com.tzj.collect.entity.CompanyRecycler;
-import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.mapper.CompanyRecyclerMapper;
 import com.tzj.collect.service.CompanyRecyclerService;
 
@@ -29,6 +29,8 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 
 	@Resource
 	private CompanyRecyclerMapper mapper;
+	@Autowired
+	private RecyclersTitleService recyclersTitleService;
 
 	@Override
 	public List<Company> selectCompanyByRecyclerId(String recyclerId) {
@@ -153,11 +155,25 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 					this.insert(companyRecycler);
 				}
 			}
+			if("Y".equals((company.getIsBigRecycle()))){
+				this.saveRecycle(recId+"");
+			}
 			return true;
 		}
 		return false;
 	}
-
+	public void saveRecycle(String recyclerId){
+		RecyclersTitle recyclersTitle = recyclersTitleService.selectOne(new EntityWrapper<RecyclersTitle>().eq("recycle_id", recyclerId).eq("title_id", 4).eq("del_flag", 0));
+		if(recyclersTitle!=null){
+			return;
+		}else {
+			recyclersTitle = new RecyclersTitle();
+			recyclersTitle.setRecycleId(Integer.parseInt(recyclerId));
+			recyclersTitle.setTitleId(4);
+			recyclersTitle.setTitleName("大件垃圾");
+			recyclersTitleService.insert(recyclersTitle);
+		}
+	}
 	/**
 	 * 修改回收人员的启用状态
 	 */

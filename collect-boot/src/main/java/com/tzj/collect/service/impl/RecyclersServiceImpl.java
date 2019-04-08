@@ -362,10 +362,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @return
 	 */
 	@Override
-	public Object getRangeRecyclersList(Integer companyId,String recycleName,String cityId ,Integer pageNum,Integer pageSize){
+	public Object getRangeRecyclersList(Integer companyId,String recycleName,String cityId ,Integer pageNum,Integer pageSize,String isBigRecycle){
 		Map<String,Object> resultMap = new HashMap<String,Object>();
-		List<Map<String,Object>> recycleList = recyclersMapper.getRangeRecyclersList(companyId.toString(),recycleName,cityId,(pageNum-1)*pageSize,pageSize);
-		Integer count = recyclersMapper.getRangeRecyclersListCount(companyId.toString(),recycleName,cityId);
+		List<Map<String,Object>> recycleList = recyclersMapper.getRangeRecyclersList(companyId.toString(),recycleName,cityId,(pageNum-1)*pageSize,pageSize,isBigRecycle);
+		Integer count = recyclersMapper.getRangeRecyclersListCount(companyId.toString(),recycleName,cityId,isBigRecycle);
 		if(recycleList.isEmpty()){
 			return resultMap;
 		}

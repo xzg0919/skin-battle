@@ -102,14 +102,14 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	 * @param companyId : 企业Id
 	 * @return
 	 */
-	List<Map<String,Object>> getRangeRecyclersList(@Param("companyId")String companyId,@Param("recycleName")String recycleName,@Param("cityId")String cityId,@Param("pageStartCount")Integer pageStartCount,@Param("pageSize")Integer pageSize);
+	List<Map<String,Object>> getRangeRecyclersList(@Param("companyId")String companyId,@Param("recycleName")String recycleName,@Param("cityId")String cityId,@Param("pageStartCount")Integer pageStartCount,@Param("pageSize")Integer pageSize,@Param("isBigRecycle")String isBigRecycle);
 	/**
 	 * 获取回收经理人员条数
 	 * @author wangcan
 	 * @param companyId : 企业Id
 	 * @return
 	 */
-	Integer getRangeRecyclersListCount(@Param("companyId")String companyId,@Param("recycleName")String recycleName,@Param("cityId")String cityId);
+	Integer getRangeRecyclersListCount(@Param("companyId")String companyId,@Param("recycleName")String recycleName,@Param("cityId")String cityId,@Param("isBigRecycle")String isBigRecycle);
 	/**
 	 * 获取回收经理的详细信息
 	 * @author wangcan

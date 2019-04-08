@@ -17,8 +17,18 @@ public class AppCompany {
 	private String cateName;
 	
 	private List<String> categList;
+
+	private String isBigRecycle;
 	
 	private String status;//认证状态
+
+	public String getIsBigRecycle() {
+		return isBigRecycle;
+	}
+
+	public void setIsBigRecycle(String isBigRecycle) {
+		this.isBigRecycle = isBigRecycle;
+	}
 
 	public String getComName() {
 		return comName;

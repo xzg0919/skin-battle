@@ -10,9 +10,11 @@ import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.service.MemberService;
 import com.tzj.collect.service.OrderService;
 import com.tzj.collect.service.PaymentService;
+import com.tzj.collect.service.RecyclersService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
@@ -37,9 +39,11 @@ public class AppOrderPayApi {
     private PaymentService paymentService;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private RecyclersService recyclersService;
 
     @Api(name = "app.order.pay", version = "1.0")
-    @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+    @SignIgnore
     @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
     public String orderPay(OrderPayParam orderPayParam) {
 
@@ -52,10 +56,7 @@ public class AppOrderPayApi {
         if(order==null){
             throw new ApiException("未找到Order信息！id:"+orderPayParam.getOrderId());
         }
-
-        Subject subject= ApiContext.getSubject();
-        //接口里面获取  Recyclers 的例子
-        Recyclers recyclers = (Recyclers) subject.getUser();
+        Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 
         Payment payment=paymentService.selectByOrderSn(order.getOrderNo());
         Member member = memberService.selectById(order.getMemberId());
@@ -102,6 +103,10 @@ public class AppOrderPayApi {
                 paymentService.updateById(payment);
             }
         }
-        return paymentService.genalPay(payment);
+        if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
+            return paymentService.genalPayXcx(payment);
+        }else{
+            return paymentService.genalPay(payment);
+        }
     }
 }

@@ -75,9 +75,6 @@ public class AppTokenApi {
                 TokenBean tokenBean = new TokenBean();
                 tokenBean.setExpire(APP_API_EXPRIRE);
                 tokenBean.setToken(securityToken);
-                if("Y".equals(recyclersLoginBean.getIsBigRecycle())){
-                   this.saveRecycle(recyclers.getId().toString());
-                }
                 return tokenBean;
             }
 
@@ -98,29 +95,12 @@ public class AppTokenApi {
                 TokenBean tokenBean = new TokenBean();
                 tokenBean.setExpire(APP_API_EXPRIRE);
                 tokenBean.setToken(securityToken);
-                if("Y".equals(recyclersLoginBean.getIsBigRecycle())){
-                    this.saveRecycle(recyclers.getId().toString());
-                }
                 return tokenBean;
             }else{
                 throw new ApiException("验证码错误");
             }
         }
     }
-
-    public void saveRecycle(String recyclerId){
-        RecyclersTitle recyclersTitle = recyclersTitleService.selectOne(new EntityWrapper<RecyclersTitle>().eq("recycle_id", recyclerId).eq("title_id", 4).eq("del_flag", 0));
-        if(recyclersTitle!=null){
-            return;
-        }else {
-            recyclersTitle = new RecyclersTitle();
-            recyclersTitle.setRecycleId(Integer.parseInt(recyclerId));
-            recyclersTitle.setTitleId(4);
-            recyclersTitle.setTitleName("大件垃圾");
-            recyclersTitleService.insert(recyclersTitle);
-        }
-    }
-
     /**
      * 刷新token
      * 需要token验证，忽略sign签名验证

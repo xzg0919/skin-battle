@@ -308,6 +308,7 @@
 			FROM
 				sb_company_recycler a
 			INNER JOIN sb_recyclers b ON a.recycler_id = b.id
+			LEFT JOIN sb_recyclers_title srt ON srt.recycle_id = b.id
 			LEFT JOIN sb_area c ON c.id = b.city
 			LEFT JOIN sb_area d ON d.id = b.province
 			LEFT JOIN (SELECT e.parent_id,count(*) AS areaNum FROM sb_area e GROUP BY e.parent_id) AS e ON e.parent_id = b.city
@@ -323,14 +324,25 @@
 			<if test="recycleName != null and recycleName != ''">
 				AND b.name_ = #{recycleName}
 			</if>
+			<choose>
+				<when test=" isBigRecycle == 'Y'.toString() ">
+					and srt.title_id = 4
+				</when>
+				<otherwise>
+					and (srt.title_id is null OR srt.title_id in (1,2,3))
+				</otherwise>
+			</choose>
+			GROUP BY b.id
 			LIMIT #{pageStartCount},#{pageSize}
 		</select>
 	<select id="getRangeRecyclersListCount" resultType="int" parameterType="Object">
+select count(*) from (
 		SELECT
-		count(*)
+			b.id
 		FROM
 		sb_company_recycler a
 		INNER JOIN sb_recyclers b ON a.recycler_id = b.id
+		LEFT JOIN sb_recyclers_title srt ON srt.recycle_id = b.id
 		LEFT JOIN sb_area c ON c.id = b.city
 		LEFT JOIN sb_area d ON d.id = b.province
 		LEFT JOIN (SELECT e.parent_id,count(*) AS areaNum FROM sb_area e GROUP BY e.parent_id) AS e ON e.parent_id = b.city
@@ -346,6 +358,16 @@
 		<if test="recycleName != null and recycleName != ''">
 			AND b.name_ = #{recycleName}
 		</if>
+		<choose>
+			<when test=" isBigRecycle == 'Y'.toString() ">
+				and srt.title_id = 4
+			</when>
+			<otherwise>
+				and (srt.title_id is null OR srt.title_id in (1,2,3))
+			</otherwise>
+		</choose>
+		GROUP BY b.id
+		) countFrom
 	</select>
 	<select id="getRecycleDetails" resultType="Map" parameterType="Integer">
 			SELECT
