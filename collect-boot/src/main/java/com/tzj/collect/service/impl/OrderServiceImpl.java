@@ -2401,12 +2401,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Order order = orderService.selectById(orderBean.getId());
 		order.setAchRemarks(orderBean.getAchRemarks());
 		order.setSignUrl(orderBean.getSignUrl());
-		OrderPicAch orderPicAch = new OrderPicAch();
-		orderPicAch.setOrderId(orderBean.getId());
-		orderPicAch.setOrigPic(orderBean.getPicUrl());
-		orderPicAch.setPicUrl(orderBean.getPicUrl());
-		orderPicAch.setSmallPic(orderBean.getPicUrl());
-		orderPicAchService.insert(orderPicAch);
+		String[] origPicss = orderBean.getPicUrl().split(",");
+		for(String picUrl:origPicss){
+			OrderPicAch orderPicAch = new OrderPicAch();
+			orderPicAch.setOrderId(orderBean.getId());
+			orderPicAch.setOrigPic(picUrl);
+			orderPicAch.setPicUrl(picUrl);
+			orderPicAch.setSmallPic(picUrl);
+			orderPicAchService.insert(orderPicAch);
+		}
 		orderService.updateById(order);
 		return "操作成功";
 	}
