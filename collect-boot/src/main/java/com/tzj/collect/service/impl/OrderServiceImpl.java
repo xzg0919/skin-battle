@@ -1261,7 +1261,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("order", order);
 		resultMap.put("orderPicList", orderPicList);
 		resultMap.put("OrderItemList", OrderItemList);
-		resultMap.put("cancelTime", order.getDate(order.getCancelTime()));
+		if(order.getCancelTime() != null){
+			resultMap.put("cancelTime", order.getDate(order.getCancelTime()));
+		}
 		return resultMap;
 	}
 
