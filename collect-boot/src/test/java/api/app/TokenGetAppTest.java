@@ -43,8 +43,7 @@ public class TokenGetAppTest {
 		  String api="http://localhost:9090/app/api";
 
 		 	OrderBean orderBean = new OrderBean();
-				 orderBean.setId(8834);
-				 orderBean.setOrderRemarks("回收人员怼这个单子的备注");
+				 orderBean.setId(8846);
 
 		 RecyclersBean recyclersBean = new RecyclersBean();
 		 recyclersBean.setPassword("1111");
@@ -60,7 +59,7 @@ public class TokenGetAppTest {
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "recycler.insertcomrec");
+	        param.put("name", "app.bigOrder.deleteBigOrderRemarks");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -68,7 +67,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", appCompanys);
+	        param.put("data", orderBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

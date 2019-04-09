@@ -87,6 +87,18 @@ public class AppBigOrderApi {
         return "操作成功";
     }
 
+    /**
+     * 根据订单id保存订单备注
+     * */
+    @Api(name = "app.bigOrder.deleteBigOrderRemarks", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+    public String deleteBigOrderRemarks(OrderBean orderBean){
+        orderService.deleteBigOrderRemarks(orderBean.getId());
+        return "操作成功";
+    }
+
+
 
 
 

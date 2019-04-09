@@ -66,7 +66,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         model.setExtendParams(extendParams);
         model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_HALF_UP).toString());
         request.setBizModel(model);
-        request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay.jhtml");
+        request.setNotifyUrl("http://test.mayishoubei.com/notify/alipay.jhtml");
         try {
             //这里和普通的接口调用不同，使用的是sdkExecutee
             AlipayTradeCreateResponse response = alipayClient.execute(request);

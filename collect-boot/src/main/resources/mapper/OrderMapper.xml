@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tzj.collect.mapper.OrderMapper">
+
+	<update id="deleteBigOrderRemarks" parameterType="Integer" >
+		UPDATE sb_order
+		SET order_remarks = NULL
+		WHERE
+			id = #{orderId}
+	</update>
 	
 	<select id="getUncompleteList" parameterType="long" resultMap="OrderResultMap">  
         SELECT <include refid="zd"/>,c.parent_id AS categoryId FROM sb_order a  LEFT JOIN sb_category c ON a.category_id = c.id WHERE a.member_id = #{memberId} AND a.del_flag = '0' AND a.status_ IN (0,1,2)  ORDER BY a.create_date DESC

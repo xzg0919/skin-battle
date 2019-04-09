@@ -153,5 +153,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	Integer getBigOrderCount(@Param("status")Integer status,@Param("recycleId")Integer recycleId);
 
 	AppOrderResult getBigOrderDetails(Integer orderId);
+
+	void deleteBigOrderRemarks(Integer orderId);
 }
 

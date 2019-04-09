@@ -754,10 +754,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		return map;
 	}
-
-    public static void main(String[] args) {
-        System.out.println(Order.TitleType.valueOf("DIGITAL").getValue().toString());
-    }
 	/**
 	 * 再处理订单
 	  * @author sgmark@aliyun.com
@@ -2288,9 +2284,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setAchPrice(new BigDecimal("0"));
 			BigDecimal price = new BigDecimal("0");
 			if(price.compareTo(orderbean.getPrice())==1){
-				order.setPrice(orderbean.getPrice());
-			}else{
 				order.setPrice(price);
+			}else{
+				order.setPrice(orderbean.getPrice());
 			}
 			order.setUnit("个");
 			order.setQty(1);
@@ -2417,7 +2413,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public String saveBigOrderPrice(OrderBean orderBean){
 		Order order = orderService.selectById(orderBean.getId());
 		order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
-		if(Integer.parseInt(orderBean.getAchPrice())==0){
+		if(Double.parseDouble(orderBean.getAchPrice())==0){
 			Category categorys = categoryService.selectById(order.getCategoryId());
 			orderBean.setStatus("3");
 			orderBean.setAmount(categorys.getGreenCount());
@@ -2427,5 +2423,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderService.updateById(order);
 		}
 		return "操作成功";
+	}
+
+	@Override
+	public void deleteBigOrderRemarks(Integer orderId){
+		orderMapper.deleteBigOrderRemarks(orderId);
 	}
 }
