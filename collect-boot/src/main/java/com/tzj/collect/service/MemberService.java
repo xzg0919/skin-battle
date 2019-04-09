@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.entity.Member;
 
+import java.util.Map;
+
 /**
  * @Author 王灿
  **/
@@ -44,5 +46,5 @@ public interface MemberService extends IService<Member>{
      */
     Object memberAdmin(Integer memberId);
 
-    Object memberIsExist(MemberBean memberBean);
+    Map memberIsExist(MemberBean memberBean);
 }

@@ -25,6 +25,8 @@ public class Company extends DataEntity<Long> {
 	private String orgCode;   //组织机构编码
 	private String dingDingUrl;   //钉钉通知的连接
 
+	private String iotUrl;//iot设备公司所对应的开箱地址
+
 	/**
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示
 	 */
@@ -223,5 +225,12 @@ public class Company extends DataEntity<Long> {
 	public void setDingDingUrl(String dingDingUrl) {
 		this.dingDingUrl = dingDingUrl;
 	}
-	
+
+	public String getIotUrl() {
+		return iotUrl;
+	}
+
+	public void setIotUrl(String iotUrl) {
+		this.iotUrl = iotUrl;
+	}
 }

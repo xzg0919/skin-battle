@@ -63,4 +63,5 @@ public interface CompanyMapper extends BaseMapper<Company>{
 	 */
 	Company getCompanyWithNotFound(@Param("communityId")Integer communityId,@Param("categoryId")Integer categoryId);
 
+    String selectIotUrlByEquipmentCode(@Param("cabinetNo")String cabinetNo);
 }

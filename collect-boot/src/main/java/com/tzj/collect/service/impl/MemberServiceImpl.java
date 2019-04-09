@@ -342,7 +342,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	}
 
 	@Override
-	public Object memberIsExist(MemberBean memberBean) {
+	public Map<String, Object> memberIsExist(MemberBean memberBean) {
 		Map<String, Object> map = new HashMap<>();
 		Member member = this.selectOne(new EntityWrapper<Member>().eq("card_no", memberBean.getCardNo()));
 		if (member != null) {

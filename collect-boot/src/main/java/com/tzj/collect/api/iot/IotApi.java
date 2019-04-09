@@ -1,17 +1,25 @@
 package com.tzj.collect.api.iot;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.api.iot.param.IotParamBean;
+import com.tzj.collect.api.iot.param.IotPostParamBean;
+import com.tzj.collect.service.CompanyService;
 import com.tzj.collect.service.MemberService;
 import com.tzj.collect.service.OrderService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.easyopen.exception.ApiException;
+import com.tzj.module.easyopen.util.ApiUtil;
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * iot设备接口
@@ -26,6 +34,8 @@ public class IotApi {
     private MemberService memberService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private CompanyService companyService;
 
     /**
      * 会员存在与否
@@ -37,7 +47,7 @@ public class IotApi {
     @Api(name = "member.isexist", version = "1.0")
     @SignIgnore
     @AuthIgnore
-    public Object memberIsExist(MemberBean memberBean){
+    public Map memberIsExist(MemberBean memberBean){
         return memberService.memberIsExist(memberBean);
     }
 
@@ -55,4 +65,66 @@ public class IotApi {
 //        return orderService.iotUpdateOrderItemAch(iotParamBean);
 //    }
 
+    @Api(name = "iot.scan", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Map<String, Object> iotScan(IotPostParamBean iotPostParamBean)throws Exception{
+        MemberBean memberBean = new MemberBean();
+        if (StringUtils.isEmpty(iotPostParamBean.getMemberId())){
+            throw new ApiException("memberId不存在");
+        }else if (StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
+            throw new ApiException("cabinetNo不存在");
+        }
+        memberBean.setCardNo(iotPostParamBean.getMemberId());
+        //判断用户是否存在
+        Map map = this.memberIsExist(memberBean);
+        if ((boolean)map.get("isExist")){
+            String iotUrl = null;
+            if (iotPostParamBean.getQrUrl() != null && !"".equals(iotPostParamBean.getQrUrl().trim())){//http://xxx.com?cabinetNo=xxxa
+                iotUrl = iotPostParamBean.getQrUrl();
+            }else {
+                //根据设备编号在company表中找到访问地址
+                iotUrl = companyService.selectIotUrlByEquipmentCode(iotPostParamBean.getCabinetNo());
+            }
+            //发送post请求开箱
+            iotPostParamBean.setMobile(map.get("tel").toString());
+            iotPostParamBean.setAPIName("OpnBox");
+            String jsonStr= JSON.toJSONString(iotPostParamBean);
+            String sign= this.buildSign(JSON.parseObject(jsonStr));
+            iotPostParamBean.setSign(sign);
+            if (iotUrl == null && "".equals(iotUrl.trim())){
+                throw new ApiException("访问地址不存在");
+            }
+            Response response= FastHttpClient.post().url(iotUrl).body(JSON.toJSONString(iotPostParamBean)).build().execute();
+            String resultJson=response.body().string();
+            Object object = JSON.parseObject(resultJson);
+            map = new HashMap();
+            map.put("status", ((JSONObject) object).get("Status"));
+            map.put("APIName", ((JSONObject) object).get("APIName"));
+            map.put("errormsg", ((JSONObject) object).get("errormsg"));
+            map.put("errorcode", ((JSONObject) object).get("errorcode"));
+            map.put("remark", ((JSONObject) object).get("remark"));
+            System.out.println(resultJson);
+        }
+        return map;
+    }
+    private static String buildSign(Map<String, ?> paramsMap){
+        Set<String> keySet = paramsMap.keySet();
+        List<String> paramNames = new ArrayList(keySet);
+        Collections.sort(paramNames);
+        List<String> list = new ArrayList();
+        Iterator var5 = paramNames.iterator();
+
+        String paramName;
+        while(var5.hasNext()) {
+            paramName = (String)var5.next();
+            String value = paramsMap.get(paramName).toString();
+            if (StringUtils.isNotEmpty(paramName) && StringUtils.isNotEmpty(value)) {
+                list.add(paramName + "=" + (value != null ? value : ""));
+            }
+        }
+        String source = StringUtils.join(list, "&");
+        paramName = ApiUtil.md5(source);
+        return paramName;
+    }
 }

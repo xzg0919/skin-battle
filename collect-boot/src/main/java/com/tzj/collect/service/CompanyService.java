@@ -83,4 +83,6 @@ public interface CompanyService  extends IService<Company>{
 	 * @return
 	 */
 	Company getCompanyByIds(Integer CommunityId,Integer CategoryId);
+
+    String selectIotUrlByEquipmentCode(String cabinetNo);
 }

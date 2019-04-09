@@ -153,6 +153,18 @@
 		LIMIT 0,
 		 1
 	 </select>
+	<select id="selectIotUrlByEquipmentCode" parameterType="String" resultType="String">
+		SELECT
+			scc.iot_url
+		FROM
+			sb_company scc
+		LEFT JOIN sb_company_equipment sce ON scc.id = sce.company_id
+		WHERE
+			scc.del_flag = 0
+		AND sce.del_flag = 0
+		AND sce.equipment_code = #{cabinetNo}
+
+	</select>
 	 
 	 <resultMap type="com.tzj.collect.entity.Company" id="companyResultMap">  
         <id property="id" column="id" />  

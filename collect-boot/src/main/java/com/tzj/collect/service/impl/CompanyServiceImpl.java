@@ -94,4 +94,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		}
 		return company;
 	}
+
+	@Override
+	public String selectIotUrlByEquipmentCode(String cabinetNo) {
+
+		return companyMapper.selectIotUrlByEquipmentCode(cabinetNo);
+	}
 }
