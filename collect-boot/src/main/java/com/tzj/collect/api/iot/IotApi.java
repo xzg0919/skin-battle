@@ -95,7 +95,12 @@ public class IotApi {
             if (iotUrl == null && "".equals(iotUrl.trim())){
                 throw new ApiException("访问地址不存在");
             }
-            Response response= FastHttpClient.post().url(iotUrl).body(JSON.toJSONString(iotPostParamBean)).build().execute();
+            iotUrl = iotUrl +"?APIName="+iotPostParamBean.getAPIName()
+                    +"&cabinetNo="+iotPostParamBean.getCabinetNo()+ "&memberId="+ iotPostParamBean.getMemberId()
+                    +"&mobile="+iotPostParamBean.getMobile()+ "&sign="+ iotPostParamBean.getSign()
+                    + "&tranTime"+iotPostParamBean.getTranTime().toString();
+            System.out.println(iotUrl);
+            Response response= FastHttpClient.get().url(iotUrl).build().execute();
             String resultJson=response.body().string();
             Object object = JSON.parseObject(resultJson);
             map = new HashMap();
