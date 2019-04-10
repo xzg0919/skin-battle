@@ -932,9 +932,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderItem.setCategoryName(category.getName());
 					orderItem.setParentId(category.getParentId());
 					orderItem.setParentName(categoryParent.getName());//存父类名称
-					orderItem.setAmount(itemList.getQuantity());
+					if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
+						orderItem.setAmount(itemList.getQuantity() * 0.04);//瓶子'个'转化为kg 40g/个
+					}else{
+						orderItem.setAmount(itemList.getQuantity());
+					}
+					orderItem.setUnit("kg");//转换为kg
 					orderItem.setPrice(itemList.getPrice());
-					orderItem.setUnit(itemList.getUnit()== null ? "kg":itemList.getUnit());
 					orderItem.setCreateDate(new Date());
 					orderItemAchService.insert(orderItem);
 				}
