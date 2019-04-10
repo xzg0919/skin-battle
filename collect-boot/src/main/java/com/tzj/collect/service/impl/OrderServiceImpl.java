@@ -825,6 +825,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setStreetId(companyEquipment.getStreetId());
 		order.setCommunityId(companyEquipment.getCommunityId());
         order.setTitle(Order.TitleType.IOTORDER);
+		order.setStatus(OrderType.COMPLETE);
 		this.insert(order);
 		if(!parentLists.isEmpty()){
 			//说明是同步传过来的
