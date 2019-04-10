@@ -908,7 +908,7 @@ public class Order extends DataEntity<Long> {
 		HOUSEHOLD(2),	//生活垃圾
 		FIVEKG(3),		//5公斤废纺衣物回收
 		BIGTHING(4),	//大件垃圾
-		IOTORDER(5);
+		IOTORDER(5); // iot设备
 		private int value;
 
 		TitleType(final int value) {
