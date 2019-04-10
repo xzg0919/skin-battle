@@ -98,7 +98,7 @@ public class IotApi {
             iotUrl = iotUrl +"?APIName="+iotPostParamBean.getAPIName()
                     +"&cabinetNo="+iotPostParamBean.getCabinetNo()+ "&memberId="+ iotPostParamBean.getMemberId()
                     +"&mobile="+iotPostParamBean.getMobile()+ "&sign="+ iotPostParamBean.getSign()
-                    + "&tranTime"+iotPostParamBean.getTranTime().toString();
+                    + "&tranTime="+iotPostParamBean.getTranTime().toString();
             System.out.println(iotUrl);
             Response response= FastHttpClient.get().url(iotUrl).build().execute();
             String resultJson=response.body().string();
