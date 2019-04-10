@@ -5,13 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.api.iot.param.IotPostParamBean;
+import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.entity.Member;
 import com.tzj.collect.service.CompanyService;
 import com.tzj.collect.service.MemberService;
 import com.tzj.collect.service.OrderService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.util.ApiUtil;
 import io.itit.itf.okhttp.FastHttpClient;
@@ -20,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 /**
  * iot设备接口
@@ -67,18 +68,16 @@ public class IotApi {
 
     @Api(name = "iot.scan", version = "1.0")
     @SignIgnore
-    @AuthIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> iotScan(IotPostParamBean iotPostParamBean)throws Exception{
+        Map map = null;
         MemberBean memberBean = new MemberBean();
-        if (StringUtils.isEmpty(iotPostParamBean.getMemberId())){
-            throw new ApiException("memberId不存在");
-        }else if (StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
+        if (StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
             throw new ApiException("cabinetNo不存在");
         }
-        memberBean.setCardNo(iotPostParamBean.getMemberId());
-        //判断用户是否存在
-        Map map = this.memberIsExist(memberBean);
-        if ((boolean)map.get("isExist")){
+        Member member = MemberUtils.getMember();
+        memberBean.setCardNo(member.getCardNo());
+        if (member != null){
             String iotUrl = null;
             if (iotPostParamBean.getQrUrl() != null && !"".equals(iotPostParamBean.getQrUrl().trim())){//http://xxx.com?cabinetNo=xxxa
                 iotUrl = iotPostParamBean.getQrUrl();
@@ -87,7 +86,7 @@ public class IotApi {
                 iotUrl = companyService.selectIotUrlByEquipmentCode(iotPostParamBean.getCabinetNo());
             }
             //发送post请求开箱
-            iotPostParamBean.setMobile(map.get("tel").toString());
+            iotPostParamBean.setMobile(member.getMobile());
             iotPostParamBean.setAPIName("OpnBox");
             String jsonStr= JSON.toJSONString(iotPostParamBean);
             String sign= this.buildSign(JSON.parseObject(jsonStr));
@@ -96,7 +95,7 @@ public class IotApi {
                 throw new ApiException("访问地址不存在");
             }
             iotUrl = iotUrl +"?APIName="+iotPostParamBean.getAPIName()
-                    +"&cabinetNo="+iotPostParamBean.getCabinetNo()+ "&memberId="+ iotPostParamBean.getMemberId()
+                    +"&cabinetNo="+iotPostParamBean.getCabinetNo()+ "&memberId="+ member.getCardNo()
                     +"&mobile="+iotPostParamBean.getMobile()+ "&sign="+ iotPostParamBean.getSign()
                     + "&tranTime="+iotPostParamBean.getTranTime().toString();
             System.out.println(iotUrl);
@@ -104,7 +103,7 @@ public class IotApi {
             String resultJson=response.body().string();
             Object object = JSON.parseObject(resultJson);
             map = new HashMap();
-            map.put("status", ((JSONObject) object).get("Status"));
+            map.put("status", ((JSONObject) object).get("status"));
             map.put("APIName", ((JSONObject) object).get("APIName"));
             map.put("errormsg", ((JSONObject) object).get("errormsg"));
             map.put("errorcode", ((JSONObject) object).get("errorcode"));
