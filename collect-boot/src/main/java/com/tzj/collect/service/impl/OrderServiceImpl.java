@@ -824,6 +824,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setAreaId(companyEquipment.getAreaId());
 		order.setStreetId(companyEquipment.getStreetId());
 		order.setCommunityId(companyEquipment.getCommunityId());
+		order.setAddress(companyEquipment.getAddress());
         order.setTitle(Order.TitleType.IOTORDER);
 		order.setStatus(OrderType.COMPLETE);
 		this.insert(order);
