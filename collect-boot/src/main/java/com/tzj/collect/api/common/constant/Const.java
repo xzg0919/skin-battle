@@ -40,4 +40,11 @@ public class Const {
 	public final static String ALIYUN_SECRET_2="B0TwGIvC0MOXah9Ncpb1k8HXR09ksa";
 
 	public final static String APP_ID_2="25395801";
+
+	//阿里云大件消息推送3
+	public final static String ALIYUN_ACCESS_KEY_ID_3="LTAIIUwHN6Nam32H";
+
+	public final static String ALIYUN_SECRET_3="B0TwGIvC0MOXah9Ncpb1k8HXR09ksa";
+
+	public final static String APP_ID_3="25935027";
 }

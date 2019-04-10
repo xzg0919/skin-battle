@@ -24,6 +24,7 @@ public class PushUtils {
     public static PushResponse getAcsResponse(String targetValue,String title,String body,String code,String message){
         getAcsResponse(Const.APP_ID_1,Const.ALIYUN_ACCESS_KEY_ID_1,Const.ALIYUN_SECRET_1,targetValue,title,body,code,message);
         getAcsResponse(Const.APP_ID_2,Const.ALIYUN_ACCESS_KEY_ID_2,Const.ALIYUN_SECRET_2,targetValue,title,body,code,message);
+        getAcsResponse(Const.APP_ID_3,Const.ALIYUN_ACCESS_KEY_ID_3,Const.ALIYUN_SECRET_3,targetValue,title,body,code,message);
         return null;
     }
     public static PushResponse getAcsResponse(String aliYunAppId,String aliYunAccessKeyId,String aliYunSercret,String targetValue,String title,String body,String code,String message){
