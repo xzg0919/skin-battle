@@ -40,6 +40,8 @@ public class CompanyEquipment extends  DataEntity<Long> {
     @TableField(value = "status_")
     private Integer status;//当前状态(满仓与否)
 
+    private String  workHours;//设备工作时间
+
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
@@ -124,5 +126,13 @@ public class CompanyEquipment extends  DataEntity<Long> {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getWorkHours() {
+        return workHours;
+    }
+
+    public void setWorkHours(String workHours) {
+        this.workHours = workHours;
     }
 }
