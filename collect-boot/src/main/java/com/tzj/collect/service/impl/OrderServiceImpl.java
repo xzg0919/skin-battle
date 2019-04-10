@@ -550,6 +550,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						e.printStackTrace();
 					}
 				}
+			}else if (order.getTitle() == Order.TitleType.IOTORDER){
+				attName = new HashSet<>();
+				//获得父类名称
+				attrList = orderItemService.selectCateAchName(Integer.parseInt(order.getId().toString()));
+				if (attrList != null && attrList.size() > 0) {
+					try {
+						for (ComCatePrice comCatePrice : attrList) {
+							attName.add(comCatePrice.getName());
+						}
+						order.setTitle(Order.TitleType.IOTORDER);
+						order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 			}
 
 		}
