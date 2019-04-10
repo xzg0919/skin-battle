@@ -6,6 +6,7 @@ import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.redis.RedisUtil;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
@@ -14,6 +15,7 @@ import com.tzj.collect.service.EnterpriseCodeService;
 import com.tzj.collect.service.OrderService;
 import com.tzj.collect.service.PaymentService;
 import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,10 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import static com.tzj.collect.api.common.constant.Const.ALI_APPID;
 import static com.tzj.collect.api.common.constant.Const.ALI_PUBLIC_KEY;
@@ -46,6 +45,8 @@ public class NotifyController {
     private EnterpriseCodeService enterpriseCodeService;
     @Autowired
     private AliPayService aliPayService;
+    @Autowired
+    private RedisUtil redisUtil;
 
 
     /**
@@ -74,7 +75,9 @@ public class NotifyController {
         }
 
         try {
+            System.out.println("最北通过延签----------------------------");
             boolean flag = AlipaySignature.rsaCheckV1(params, ALI_PUBLIC_KEY, "UTF-8", "RSA2");
+            System.out.println("延签结果----------------------------"+flag);
             if (flag) {
                 //验签成功后
                 //按照支付结果异步通知中的描述，对支付结果中的业务内容进行1\2\3\4二次校验，校验成功后在response中返回success，校验失败返回failure
@@ -125,7 +128,31 @@ public class NotifyController {
 
                     //根據order_no查询相关订单
                     Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
-                    if("1".equals(order.getIsMysl())||order.getIsScan().equals("1")){
+                    UUID uuid = UUID.randomUUID();
+                    Object obj = null;
+                    try {
+                        obj = redisUtil.get(orderSN);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    if (obj != null){
+                        throw new ApiException("支付已通知");
+                    }
+                    try {
+                        redisUtil.set(orderSN,uuid,10);
+                        Thread.sleep(100);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    try {
+                        obj = redisUtil.get(orderSN);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    if (!(obj+"").equals(uuid+"")){
+                        throw new ApiException("支付已通知");
+                    }
+                    if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
                         aliPayService.updateForest(order.getId().toString());
                     }

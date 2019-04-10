@@ -151,7 +151,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			}catch (Exception e){
 				e.printStackTrace();
 			}
-			if ((obj+"").equals(uuid+"")){
+			if (!(obj+"").equals(uuid+"")){
 				throw new ApiException("用户已注册");
 			}
 			member = new Member();

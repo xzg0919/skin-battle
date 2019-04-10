@@ -138,6 +138,8 @@ public class Order extends DataEntity<Long> {
 	private String num;// 页面需要
 	@TableField(exist = false)//成交价格，页面需要
 	private String paymentPrice;
+	@TableField(exist = false)//页面需要
+	private CompanyEquipment companyEquipment;
 
 	private TitleType title;// 回收物类型
 
@@ -955,5 +957,13 @@ public class Order extends DataEntity<Long> {
 
 	public void setIotEquipmentCode(String iotEquipmentCode) {
 		this.iotEquipmentCode = iotEquipmentCode;
+	}
+
+	public CompanyEquipment getCompanyEquipment() {
+		return companyEquipment;
+	}
+
+	public void setCompanyEquipment(CompanyEquipment companyEquipment) {
+		this.companyEquipment = companyEquipment;
 	}
 }

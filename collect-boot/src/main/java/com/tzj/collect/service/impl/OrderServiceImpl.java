@@ -1136,6 +1136,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Map<String, Object> selectDetail(OrderBean orderbean) {
 		//查询订单表详情
 		Order order = orderMapper.selectOrder(orderbean.getId());
+		CompanyEquipment companyEquipment = companyEquipmentService.selectOne(new EntityWrapper<CompanyEquipment>().eq("equipment_code", order.getIotEquipmentCode()));
+		order.setCompanyEquipment(companyEquipment);
 		//查询订单表的关联图片表
 		List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderbean.getId());
 		//查询订单表的分了明细表
@@ -2412,16 +2414,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public String saveBigOrderPrice(OrderBean orderBean){
 		Order order = orderService.selectById(orderBean.getId());
+		Category categorys = categoryService.selectById(order.getCategoryId());
 		order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
+		order.setGreenCount(categorys.getGreenCount().doubleValue());
 		if(Double.parseDouble(orderBean.getAchPrice())==0){
-			Category categorys = categoryService.selectById(order.getCategoryId());
 			orderBean.setStatus("3");
 			orderBean.setAmount(categorys.getGreenCount());
 			//修改订单状态
 			this.modifyOrderSta(orderBean);
-		}else {
-			orderService.updateById(order);
 		}
+		orderService.updateById(order);
+
 		return "操作成功";
 	}
 
