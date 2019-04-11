@@ -1167,7 +1167,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<Map<String, Object>> listMapObject = new ArrayList<>();
 		//Map<String, Object> mapListMap = null;
 		Object obj = null;
-		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG) {
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG||order.getTitle() == Order.TitleType.IOTORDER) {
 			orderbean.setStatus(order.getStatus().getValue().toString());
 			orderbean.setTitle(order.getTitle().toString());
 			orderbean.setIsCash(order.getIsCash());
@@ -1723,7 +1723,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			OrderItemList = orderItemService.selectByOrderId(orderbean.getId());
 		}
 		List<ComCatePrice> cateName = null;
-		if (("FIVEKG".equals(orderbean.getTitle())||"HOUSEHOLD".equals(orderbean.getTitle())) && "3".equals(orderbean.getStatus())) {
+		if (("IOTORDER".equals(orderbean.getTitle())||"FIVEKG".equals(orderbean.getTitle())||"HOUSEHOLD".equals(orderbean.getTitle())) && "3".equals(orderbean.getStatus())) {
 			cateName = orderItemService.selectCateAchName(orderbean.getId());
 		} else {
 			cateName = orderItemService.selectCateName(orderbean.getId());
