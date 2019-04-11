@@ -362,8 +362,7 @@ public class Category extends DataEntity<Long> {
 		//金属类(METAL)
 		CANS("006", "0061"),//易拉罐
 		POWER_CORD("006", "0065"),	//电源线
-		OLD_METAL("006", "0066"),	//玩具
-
+		OTHERS_METAL("006","0066"),//其他废旧金属
 
 		//其他类型(OTHER)
 		OTHERS("007", "0071");	//其他类型(暂存六废)
