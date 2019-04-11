@@ -110,7 +110,7 @@ public class CategoryApi {
 		//查询用户的默认地址
     	MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", categoryAttrBean.getCityId()));
     	if(memberAddress==null) {
-    		return "您暂未添加回收地址";
+    		return "该区域暂无回收企业";
     	}
     	//根据分类Id查询父类分类id
     	Category category = categoryService.selectById(categoryId);
@@ -123,7 +123,7 @@ public class CategoryApi {
 			//根据分类Id和小区id去公海查询相关企业
 			CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
 			if(companyShare==null) {
-				return "您地址所在区域暂无回收企业";
+				return "该区域暂无回收企业";
 			}
 			companyId = companyShare.getCompanyId().toString();
 		}else {

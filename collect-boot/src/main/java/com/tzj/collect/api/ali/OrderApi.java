@@ -189,7 +189,7 @@ public class OrderApi {
     		//根据分类Id和小区id去公海查询相关企业
     		CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
     		if(companyShare==null) {
-				return "您地址所在区域暂无回收企业";
+				return "该区域暂无回收企业";
 			}
     		companyId = companyShare.getCompanyId().toString();
     		level = "1";
@@ -257,7 +257,7 @@ public class OrderApi {
 				//判断该地址是否回收5公斤废纺衣物
 				Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(orderbean.getCategoryId(), memberAddress.getStreetId());
 				if(null==streeCompanyId){
-					return "您地址所在区域暂无回收企业";
+					return "该区域暂无回收企业";
 				}else{
 					companyId = streeCompanyId.toString();
 				}
@@ -312,7 +312,7 @@ public class OrderApi {
 			//根据分类Id和小区id去公海查询相关企业
 			CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
 			if(companyShare==null) {
-				return "您地址所在区域暂无回收企业";
+				return "该区域暂无回收企业";
 			}
 			companyId = companyShare.getCompanyId().toString();
 			level = "1";
@@ -423,7 +423,7 @@ public class OrderApi {
 		//判断该地址是否回收5公斤废纺衣物
 		Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAddress.getStreetId());
 		if (streeCompanyId == null ){
-			return "您地址所在区域暂无回收企业";
+			return "该区域暂无回收企业";
 		}
 		orderbean.setCompanyId(streeCompanyId);
 		orderbean.setCommunityId(communityId);
@@ -495,7 +495,7 @@ public class OrderApi {
 			//根据分类Id和小区id去公海查询相关企业
 			CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
 			if(companyShare==null) {
-				return "您地址所在区域暂无回收企业";
+				return "该区域暂无回收企业";
 			}
 			companyId = companyShare.getCompanyId().toString();
 			level = "1";
