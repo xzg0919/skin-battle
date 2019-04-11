@@ -20,7 +20,6 @@ import com.tzj.collect.api.app.result.EvaluationResult;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.CompanyBean;
 import com.tzj.collect.api.business.result.ApiUtils;
-import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.PushConst;
 import com.tzj.collect.common.constant.RocketMqConst;
@@ -32,18 +31,17 @@ import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.collect.mapper.OrderMapper;
 import com.tzj.collect.service.*;
 import com.tzj.collect.service.impl.XingeMessageServiceImp.XingeMessageCode;
-import com.tzj.module.api.annotation.Api;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 订单ServiceImpl
@@ -835,13 +833,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		order.setMemberId(Integer.parseInt(member.getId().toString()));
 		order.setIotEquipmentCode(iotParamBean.getEquipmentCode());
-		order.setPrice(iotParamBean.getSumPrice());
+//		order.setPrice(iotParamBean.getSumPrice());
+		//查找所有重量
+		final double[] score = {0};
+		parentLists.stream().forEach(parentList -> {
+			parentList.getItemList().stream().forEach(itemList -> {
+				if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
+					score[0] += itemList.getQuantity() * 0.04;//瓶子个数40g/个
+				}else {
+					score[0] += itemList.getQuantity();
+				}
+			});
+
+		});
+		order.setGreenCount(score[0]);
 		order.setAreaId(companyEquipment.getAreaId());
 		order.setStreetId(companyEquipment.getStreetId());
 		order.setCommunityId(companyEquipment.getCommunityId());
 		order.setAddress(companyEquipment.getAddress());
         order.setTitle(Order.TitleType.IOTORDER);
 		order.setStatus(OrderType.COMPLETE);
+		order.setPrice(BigDecimal.ZERO);
 		this.insert(order);
 		if(!parentLists.isEmpty()){
 			//说明是同步传过来的
@@ -941,21 +953,30 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				categoryEntityWrapper.eq("code_", itemList.getName().getValue());//code
 				Category category = categoryService.selectOne(categoryEntityWrapper);
 				if (category != null){
-					OrderItemAch orderItem = new OrderItemAch();
-					orderItem.setOrderId(Integer.parseInt(order.getId().toString()));
-					orderItem.setCategoryId(Integer.parseInt(category.getId().toString()));
-					orderItem.setCategoryName(category.getName());
-					orderItem.setParentId(category.getParentId());
-					orderItem.setParentName(categoryParent.getName());//存父类名称
+					OrderItemAch orderItemAch = new OrderItemAch();
+					orderItemAch.setOrderId(Integer.parseInt(order.getId().toString()));
+					orderItemAch.setCategoryId(Integer.parseInt(category.getId().toString()));
+					orderItemAch.setCategoryName(category.getName());
+					orderItemAch.setParentId(category.getParentId());
+					orderItemAch.setParentName(categoryParent.getName());//存父类名称
 					if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
-						orderItem.setAmount(itemList.getQuantity() * 0.04);//瓶子'个'转化为kg 40g/个
+						orderItemAch.setAmount(itemList.getQuantity() * 0.04);//瓶子'个'转化为kg 40g/个
 					}else{
-						orderItem.setAmount(itemList.getQuantity());
+						orderItemAch.setAmount(itemList.getQuantity());
 					}
-					orderItem.setUnit("kg");//转换为kg
-					orderItem.setPrice(itemList.getPrice());
+					orderItemAch.setUnit("kg");//转换为kg
+					orderItemAch.setCreateDate(new Date());
+					orderItemAchService.insert(orderItemAch);
+					OrderItem orderItem = new OrderItem();
+					orderItem.setOrderId(orderItemAch.getOrderId());
+					orderItem.setCategoryId(orderItemAch.getCategoryId());
+					orderItem.setCategoryName(orderItemAch.getCategoryName());
+					orderItem.setParentId(orderItemAch.getParentId());
+					orderItem.setParentName(orderItemAch.getParentName());
+					orderItem.setAmount(orderItemAch.getAmount());
+					orderItem.setUnit("kg");
 					orderItem.setCreateDate(new Date());
-					orderItemAchService.insert(orderItem);
+					orderItemService.insert(orderItem);
 				}
 			});
 		});
