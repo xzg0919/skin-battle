@@ -386,4 +386,19 @@ public class BusinessRecyclerApi {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		return recycleService.selectById(recyclersServiceRangeBean.getRecycleId());
 	}
+
+	/**
+	 * 删除公司下面所对应的回收员
+	  * @author sgmark@aliyun.com
+	  * @date 2019/4/12 0012
+	  * @param
+	  * @return
+	  */
+	@Api(name = "business.recycle.del", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object recyclersDel(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return companyRecyclerService.recyclersDel(companyAccount.getCompanyId(), recyclersServiceRangeBean.getRecycleId());
+	}
 }

@@ -107,4 +107,6 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	 * @return
 	 */
 	Object getCompanyRange(Integer companyId);
+
+	Object recyclersDel(Integer companyId, String recycleId);
 }

@@ -200,4 +200,15 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	public Object getCompanyRange(Integer companyId){
 		return mapper.getCompanyRange(companyId);
 	}
+
+	@Override
+	public Object recyclersDel(Integer companyId, String recycleId) {
+		EntityWrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>();
+		wrapper.eq("recycler_id", recycleId);
+		wrapper.eq("company_id", companyId);
+		wrapper.eq("del_flag", 0);
+		CompanyRecycler companyRecycler = this.selectOne(wrapper);
+		companyRecycler.setDelFlag("1");
+		return this.updateAllColumnById(companyRecycler);
+	}
 }

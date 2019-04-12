@@ -315,7 +315,8 @@
 			LEFT JOIN (SELECT a.parents_id ,COUNT(*) AS recycleNum FROM sb_recyclers a INNER JOIN sb_recyclers b ON a.parents_id = b.id WHERE a.del_flag = 0 GROUP BY a.parents_id) f ON f.parents_id = b.id
 			LEFT JOIN (SELECT a.recyclers_id,COUNT(*) AS NUMS FROM (SELECT a.recyclers_id,a.area_parents_id  FROM sb_recyclers_service_range a LEFT JOIN sb_recyclers b ON a.recyclers_id = b.id WHERE a.del_flag = 0 AND b.del_flag = 0 GROUP BY a.area_parents_id,a.recyclers_id) a GROUP BY a.recyclers_id) g ON g.recyclers_id = b.id
 			WHERE
-				a.company_id = #{companyId}
+				a.del_flag = 0
+			AND a.company_id = #{companyId}
 			AND a.status_ = 1
 			AND b.is_manager = '1'
 			<if test="cityId != null and cityId != ''">
@@ -349,7 +350,8 @@ select count(*) from (
 		LEFT JOIN (SELECT a.parents_id ,COUNT(*) AS recycleNum FROM sb_recyclers a INNER JOIN sb_recyclers b ON a.parents_id = b.id WHERE a.del_flag = 0 GROUP BY a.parents_id) f ON f.parents_id = b.id
 		LEFT JOIN (SELECT a.recyclers_id,COUNT(*) AS NUMS FROM (SELECT a.recyclers_id,a.area_parents_id  FROM sb_recyclers_service_range a LEFT JOIN sb_recyclers b ON a.recyclers_id = b.id WHERE a.del_flag = 0 AND b.del_flag = 0 GROUP BY a.area_parents_id,a.recyclers_id) a GROUP BY a.recyclers_id) g ON g.recyclers_id = b.id
 		WHERE
-		a.company_id = #{companyId}
+			a.del_flag = 0
+		AND a.company_id = #{companyId}
 		AND a.status_ = 1
 		AND b.is_manager = '1'
 		<if test="cityId != null and cityId != ''">

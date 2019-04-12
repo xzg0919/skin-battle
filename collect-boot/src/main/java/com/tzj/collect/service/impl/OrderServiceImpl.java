@@ -844,8 +844,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					score[0] += itemList.getQuantity();
 				}
 			});
-
 		});
+//		parentLists.stream().map(IotParamBean.ParentList::getItemList).forEach(itemLists -> {
+//			if (itemLists.stream().map(IotParamBean.ItemList::getName).equals(Category.SecondType.BEVERAGE_BOTTLES)){
+//				score[0] += 0.04 * itemLists.stream().map(IotParamBean.ItemList::getQuantity).reduce((x, y) -> x+y).get();
+//			}else {
+//				score[0] += itemLists.stream().map(IotParamBean.ItemList::getQuantity).reduce((x, y) -> x+y).get();
+//			}
+//		});
 		order.setGreenCount(score[0]);
 		order.setAreaId(companyEquipment.getAreaId());
 		order.setStreetId(companyEquipment.getStreetId());
