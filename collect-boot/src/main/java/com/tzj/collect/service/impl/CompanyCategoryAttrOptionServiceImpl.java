@@ -100,18 +100,19 @@ public class CompanyCategoryAttrOptionServiceImpl extends ServiceImpl<CompanyCat
 				CompanyCategory companyCategory = companyCategoryService.selectPriceByAttrId(id,companyAccount.getCompanyId().toString());
 				if(companyCategory!=null) {
 					double price = (double) companyCategory.getPrice();
-					for (CategoryAttrOptionBean categoryAttrOptionBean : categoryAttrOptionBeanList) {
-						List<CompanyCategoryAttrOptionBean> companyCategoryAttrOptionBeanList = categoryAttrOptionBean.getCompanyCategoryAttrOptionBeanList();
-						double minPrice = Double.parseDouble(companyCategoryAttrOptionBeanList.get(0).getComOptPrice());
-						double newPrice = 0;
-						for (int i = 1; i < companyCategoryAttrOptionBeanList.size(); i++) {
-							newPrice = Double.parseDouble(companyCategoryAttrOptionBeanList.get(i).getComOptPrice());
-							if(minPrice>newPrice) {
-								minPrice = newPrice;
-							}
-						}
-						price+=minPrice;
-					}
+//					for (CategoryAttrOptionBean categoryAttrOptionBean : categoryAttrOptionBeanList) {
+//						List<CompanyCategoryAttrOptionBean> companyCategoryAttrOptionBeanList = categoryAttrOptionBean.getCompanyCategoryAttrOptionBeanList();
+//						double minPrice = Double.parseDouble(companyCategoryAttrOptionBeanList.get(0).getComOptPrice());
+//						double newPrice = 0;
+//						for (int i = 1; i < companyCategoryAttrOptionBeanList.size(); i++) {
+//							newPrice = Double.parseDouble(companyCategoryAttrOptionBeanList.get(i).getComOptPrice());
+//							if(minPrice>newPrice) {
+//								minPrice = newPrice;
+//							}
+//						}
+//						price+=minPrice;
+//					}
+					price += categoryAttrOptionBeanList.stream().map(CategoryAttrOptionBean::getCompanyCategoryAttrOptionBeanList).mapToDouble(companyCategoryAttrOptionBeans -> companyCategoryAttrOptionBeans.stream().map(CompanyCategoryAttrOptionBean::getComOptPrice).map(Double::parseDouble).min(Double::compare).get()).sum();
 					if(price<=0) {
 						throw new ApiException("总价格应大于0");
 					}else {
