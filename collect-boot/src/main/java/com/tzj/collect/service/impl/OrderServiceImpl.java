@@ -2464,6 +2464,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderBean.setAmount(categorys.getGreenCount());
 			//修改订单状态
 			this.modifyOrderSta(orderBean);
+			order.setStatus(OrderType.COMPLETE);
 		}
 		orderService.updateById(order);
 
