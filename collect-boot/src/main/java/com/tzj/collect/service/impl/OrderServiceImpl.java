@@ -1296,8 +1296,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 			order.setPrice(order.getAchPrice());
 			resultMap.put("order", order);
-			resultMap.put("orderPicList", orderPicAchList);
-			resultMap.put("orderUserPicList", orderPicList);
+			resultMap.put("orderUserPicList" , orderPicAchList);
+			resultMap.put("orderPicList", orderPicList);
 			return resultMap;
 		}
 		//查询订单表的关联图片表
