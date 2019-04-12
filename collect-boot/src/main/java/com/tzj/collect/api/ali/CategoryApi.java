@@ -305,7 +305,7 @@ public class CategoryApi {
 				//根据分类Id和小区id去公海查询相关企业
 				CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
 				if(companyShare==null) {
-					return "所在区域暂无回收企业";
+					return "该区域暂无服务";
 				}
 				companyId = companyShare.getCompanyId().toString();
 			}else {
