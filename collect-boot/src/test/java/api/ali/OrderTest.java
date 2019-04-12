@@ -62,15 +62,17 @@ public class OrderTest {
 
 
                 OrderBean orderbean1 = new OrderBean();
-                orderbean1.setStatus("0");
-                orderbean1.setPagebean(new PageBean());
+               orderbean1.setId(8874);
 
                 OrderPayParam orderPayParam = new OrderPayParam();
                 orderPayParam.setOrderId(8841);
                 orderPayParam.setPrice(new BigDecimal("1"));
 
+            CategoryBean categoryBean = new CategoryBean();
+            categoryBean.setId(103);
+
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","app.order.pay");
+                param.put("name","category.listCategoryAttrsXCX");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -78,7 +80,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",orderPayParam);
+                param.put("data",categoryBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");
