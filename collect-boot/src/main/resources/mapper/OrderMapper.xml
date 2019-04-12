@@ -778,7 +778,7 @@
 			<otherwise>
 				<choose>
 					<when test="status == 2">
-						ORDER BY b.ach_price DESC ,b.arrival_time ASC,b.arrival_period ASC,b.create_date ASC
+						ORDER BY b.ach_price ASC ,b.arrival_time ASC,b.arrival_period ASC,b.create_date ASC
 					</when>
 					<otherwise>
 						ORDER BY b.create_date DESC
