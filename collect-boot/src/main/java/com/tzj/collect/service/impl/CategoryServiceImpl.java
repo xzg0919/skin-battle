@@ -236,7 +236,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	@Override
 	@Transactional(readOnly=false)
 	public boolean updatePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) {
-		if (comIdAndCateOptIdBean.getTitle().equals(CategoryType.HOUSEHOLD.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.DIGITAL.name())) {
+		if (comIdAndCateOptIdBean.getTitle().equals(CategoryType.HOUSEHOLD.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.DIGITAL.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.BIGTHING.name())) {
 			List<CategoryBean> priceList = comIdAndCateOptIdBean.getHouseholdPriceList();
 			CompanyCategory companyCategory = null;
 			for (CategoryBean categoryBean : priceList) {
