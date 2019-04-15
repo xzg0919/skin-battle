@@ -80,7 +80,7 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	 * @param companyId : 企业Id
 	 * @return
 	 */
-    List<Map<String,Object>> getRecyclers(Integer companyId);
+    List<Map<String,Object>> getRecyclers(@Param("companyId")Integer companyId, @Param("isBigRecycle") String isBigRecycle);
 
 	/**
 	 * 根据市级Id和回收人员id获取区域信息
@@ -118,5 +118,5 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	 */
 	List<Map<String,Object>> getRecycleDetails(Integer recyclerId);
 
-	List<Recyclers> getRecyclersListByParentId(@Param("companyId")Integer companyId, @Param("recycleId")String recycleId);
+	List<Recyclers> getRecyclersListByParentId(@Param("companyId")Integer companyId, @Param("recycleId")String recycleId, @Param("isBigRecycle")String isBigRecycle);
 }

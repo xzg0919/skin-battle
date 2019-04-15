@@ -189,8 +189,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @param companyId : 企业Id
 	 * @return
 	 */
-	public List<Map<String,Object>> getRecyclers(Integer companyId){
-		return recyclersMapper.getRecyclers(companyId);
+	public List<Map<String,Object>> getRecyclers(Integer companyId, String isBigRecycle){
+		return recyclersMapper.getRecyclers(companyId, isBigRecycle);
 	}
 
 	/**
@@ -402,7 +402,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	}
 
 	@Override
-	public List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId) {
-		return recyclersMapper.getRecyclersListByParentId(companyId, recycleId);
+	public List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId, String isBigRecycle) {
+		return recyclersMapper.getRecyclersListByParentId(companyId, recycleId, isBigRecycle);
 	}
 }

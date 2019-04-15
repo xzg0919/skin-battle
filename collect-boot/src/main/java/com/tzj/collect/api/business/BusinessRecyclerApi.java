@@ -239,9 +239,13 @@ public class BusinessRecyclerApi {
 	@Api(name = "business.recycle.getRecyclers", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public Object getRecyclers() {
+	public Object getRecyclers(BusinessRecyclerBean recyclerBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return recycleService.getRecyclers(companyAccount.getCompanyId());
+		String isBigRecycle = "N";
+		if (recyclerBean != null){
+			isBigRecycle = recyclerBean.getIsBigRecycle();
+		}
+		return recycleService.getRecyclers(companyAccount.getCompanyId(), isBigRecycle);
 	}
 	/**
 	 * 保存业务经理，和下属回收人员的信息
@@ -370,9 +374,13 @@ public class BusinessRecyclerApi {
 	@Api(name = "business.recycle.getSunRecyclersList", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public List<Recyclers> getSunRecyclersList(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+	public List<Recyclers> getSunRecyclersList(RecyclersServiceRangeBean recyclerBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return recycleService.getRecyclersListByParentId(companyAccount.getCompanyId(), recyclersServiceRangeBean.getRecycleId());
+			String isBigRecycle = "N";
+			if (recyclerBean != null){
+				isBigRecycle = recyclerBean.getIsBigRecycle();
+			}
+		return recycleService.getRecyclersListByParentId(companyAccount.getCompanyId(), recyclerBean.getRecycleId(), isBigRecycle);
 	}
 	/**
 	 * 根据回收人员Id查询详细信息列表

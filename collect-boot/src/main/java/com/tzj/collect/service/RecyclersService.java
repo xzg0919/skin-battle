@@ -142,7 +142,7 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @param companyId : 企业Id
 	 * @return
 	 */
-	List<Map<String,Object>> getRecyclers(Integer companyId);
+	List<Map<String,Object>> getRecyclers(Integer companyId, String isBigRecycle);
 
 	/**
 	 * 保存业务经理，和下属回收人员的信息
@@ -190,5 +190,5 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 
 	String getAuthCode(String authCode,Long recyclersId) throws ApiException;
 
-	List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId);
+	List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId, String isBigRecycle);
 }
