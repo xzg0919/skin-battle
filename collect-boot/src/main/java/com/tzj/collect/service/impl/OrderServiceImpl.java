@@ -20,6 +20,7 @@ import com.tzj.collect.api.app.result.EvaluationResult;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.CompanyBean;
 import com.tzj.collect.api.business.result.ApiUtils;
+import com.tzj.collect.api.business.result.CancelResult;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.PushConst;
 import com.tzj.collect.common.constant.RocketMqConst;
@@ -1315,8 +1316,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("order", order);
 		resultMap.put("orderPicList", orderPicList);
 		resultMap.put("OrderItemList", OrderItemList);
-		if(order.getCancelTime() != null){
-			resultMap.put("cancelTime", order.getDate(order.getCancelTime()));
+		//回收员取消任务表中找最新取消任务的回收员名称
+		OrderBean o = new OrderBean();
+		o.setId(orderId);
+		CancelResult cancelResult = recyclerCancelLogService.selectCancel(o);
+		if(cancelResult != null){
+			resultMap.put("cancelTime", cancelResult.getCancelDate());
+			resultMap.put("cancelNameLast", cancelResult.getRecycleName());
 		}
 		return resultMap;
 	}
