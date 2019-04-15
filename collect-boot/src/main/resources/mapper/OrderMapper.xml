@@ -638,7 +638,7 @@
 			a.id,
 			a.order_no AS orderNo,
 			IF(a.arrival_period = 'am',CONCAT(date_format(a.arrival_time,'%Y-%m-%d'),'上午'),CONCAT(date_format(a.arrival_time,'%Y-%m-%d'),'下午'))AS arrivalTime,
-			IF(a.title = 1,'废弃家电','生活垃圾') AS titleName,
+			case a.title when 1 then '废弃家电' when 2 then  '生活垃圾' when 4 then '大件物品' else '其他' end AS titleName,
 			IF(a.is_cash = 0,a.price,'绿色能量') AS price,
 			IF(a.is_cash = 0,p.price,'绿色能量') AS paymentPrise,
 			b.name_ AS recycleName,
