@@ -189,4 +189,6 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	List<Map<String,Object>> getRecycleDetails(Integer recyclerId);
 
 	String getAuthCode(String authCode,Long recyclersId) throws ApiException;
+
+	List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId);
 }

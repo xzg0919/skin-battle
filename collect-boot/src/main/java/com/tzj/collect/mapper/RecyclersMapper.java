@@ -117,4 +117,6 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	 * @return
 	 */
 	List<Map<String,Object>> getRecycleDetails(Integer recyclerId);
+
+	List<Recyclers> getRecyclersListByParentId(@Param("companyId")Integer companyId, @Param("recycleId")String recycleId);
 }

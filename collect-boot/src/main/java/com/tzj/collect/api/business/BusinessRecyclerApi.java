@@ -365,13 +365,14 @@ public class BusinessRecyclerApi {
 	 * @author wangcan
 	 * @param
 	 * @return
+	 * @updateBy sgmark@aliyun.com(根据公司找当前下属回收人员)
 	 */
 	@Api(name = "business.recycle.getSunRecyclersList", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public Object getSunRecyclersList(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+	public List<Recyclers> getSunRecyclersList(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return recycleService.selectList(new EntityWrapper<Recyclers>().eq("parents_id",recyclersServiceRangeBean.getRecycleId()).eq("del_flag",0));
+		return recycleService.getRecyclersListByParentId(companyAccount.getCompanyId(), recyclersServiceRangeBean.getRecycleId());
 	}
 	/**
 	 * 根据回收人员Id查询详细信息列表

@@ -400,4 +400,9 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 		this.updateById(recyclers);
 		return "操作成功";
 	}
+
+	@Override
+	public List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId) {
+		return recyclersMapper.getRecyclersListByParentId(companyId, recycleId);
+	}
 }
