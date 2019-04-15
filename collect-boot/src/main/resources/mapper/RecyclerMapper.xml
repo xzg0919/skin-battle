@@ -193,7 +193,8 @@
      </sql>   
      
      <select id="getRecyclersById" resultType="Recyclers" parameterType="com.tzj.collect.api.business.param.BusinessRecyclerBean">
-		       SELECT
+	   SELECT
+	   DISTINCT
 			sr.id,
 			sr.name_,
 			sr.sex,
