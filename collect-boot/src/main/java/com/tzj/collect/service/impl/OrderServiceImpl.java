@@ -762,9 +762,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		for (Order order : list) {
 			createName4PC(order);
 //			完成列表预估价格显示不正确
-//			if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
-//				order.setPrice(order.getAchPrice());
-//			}
+			if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue()) && order.getTitle() == Order.TitleType.HOUSEHOLD) {
+				order.setPrice(order.getAchPrice());
+			}
 		}
 		map.put("count", count);
 		map.put("list", list);
