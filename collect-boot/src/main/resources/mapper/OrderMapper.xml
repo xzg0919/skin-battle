@@ -74,7 +74,14 @@
 			AND a.link_man LIKE concat(concat('%',#{linkMan}),'%')
 		</if>
 		<if test="recyclersName !=null and recyclersName!='' ">
-			AND b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+			<choose>
+				<when test="title == 3">
+					and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
+				</when>
+				<otherwise>
+					AND b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+				</otherwise>
+			</choose>
 		</if>
 		<if test="startTime !=null and startTime !=''">
 			<![CDATA[
@@ -127,7 +134,14 @@
         		AND a.link_man LIKE concat(concat('%',#{linkMan}),'%') 
         	</if>
         	<if test="recyclersName !=null and recyclersName!='' ">
-        		AND b.name_ LIKE concat(concat('%',#{recyclersName}),'%') 
+				<choose>
+					<when test="title == 3">
+						and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
+					</when>
+					<otherwise>
+						AND b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+					</otherwise>
+				</choose>
         	</if>
         	<if test="startTime !=null and startTime !=''">
 				<![CDATA[

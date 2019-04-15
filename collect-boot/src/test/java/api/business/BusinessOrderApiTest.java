@@ -17,6 +17,7 @@ import com.tzj.collect.api.business.param.BusinessRecyclerBean;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
 import com.tzj.collect.api.business.param.TitleBean;
 import com.tzj.collect.entity.Category;
+import com.tzj.collect.entity.Recyclers;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -51,9 +52,12 @@ public class BusinessOrderApiTest {
 
         BOrderBean orderBean = new BOrderBean();
         orderBean.setCompanyId(1);
-        orderBean.setStatus("TOSEND");
-        orderBean.setCategoryType("BIGTHING");
+        orderBean.setStatus("ALREADY");
+        orderBean.setCategoryType("HOUSEHOLD");
         orderBean.setPagebean(new PageBean());
+		Recyclers recyclers = new Recyclers();
+		recyclers.setName("东");
+		orderBean.setRecyclers(recyclers);
 
 
 
