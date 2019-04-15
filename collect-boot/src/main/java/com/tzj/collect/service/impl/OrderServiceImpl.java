@@ -1303,7 +1303,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				List<OrderItemAch> orderItemAchList = orderItemAchService.selectByOrderId(orderId);
 				resultMap.put("OrderItemList", orderItemAchList);
 			}
-			order.setPrice(order.getAchPrice());
+//			order.setPrice(order.getAchPrice()); 导致大件后台价格紊乱
 			resultMap.put("order", order);
 			resultMap.put("orderPicList", orderPicAchList);
 			resultMap.put("orderUserPicList", orderPicList);
