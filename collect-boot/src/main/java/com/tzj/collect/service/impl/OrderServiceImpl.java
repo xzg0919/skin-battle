@@ -756,9 +756,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//判断生活垃圾，还是家用电器，给category.name赋值
 		for (Order order : list) {
 			createName4PC(order);
-			if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
-				order.setPrice(order.getAchPrice());
-			}
+//			完成列表预估价格显示不正确
+//			if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
+//				order.setPrice(order.getAchPrice());
+//			}
 		}
 		map.put("count", count);
 		map.put("list", list);
