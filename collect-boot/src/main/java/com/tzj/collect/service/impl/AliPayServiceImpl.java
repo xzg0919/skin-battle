@@ -357,10 +357,12 @@ public class AliPayServiceImpl implements AliPayService{
             Map<String, Object> digitalMap = null;
             List<Map<String, Object>> houseList  = null;
             //判断订单是否是电器
-            if((Category.CategoryType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
+            if((Order.TitleType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
                 digitalMap = orderItemService.selectItemOne(Integer.parseInt(orderId));
-            }else{
+            }else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")){
                 houseList = orderItemAchService.selectItemSumAmount(Integer.parseInt(orderId));
+            }else {
+                return null;
             }
             AlipayClient alipayClient = new DefaultAlipayClient("https://openapipre.alipay.com/gateway.do",AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
             AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
@@ -383,8 +385,11 @@ public class AliPayServiceImpl implements AliPayService{
                 extInfo.add(orderExtInfo);
                 itemOrder.setExtInfo(extInfo);
                 orderItemList.add(itemOrder);
-            }else{
+            }else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")){
                 for (Map<String, Object> itemMap:houseList) {
+                    if (null==itemMap.get("aliItemType")){
+                        continue;
+                    }
                     ItemOrder itemOrder = new ItemOrder();
                     itemOrder.setItemName(itemMap.get("parentName").toString());
                     itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount")));

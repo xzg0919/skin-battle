@@ -38,7 +38,7 @@
 		LIMIT #{sizeStart} , #{size}
     </select>
     <select id="selectOrder" parameterType="int" resultMap="OrderResultMap">  
-        SELECT <include refid="zd"/>,b.name_ AS Recyclers_name,b.tel AS BTel,b.head_pic_url AS headPicUrl FROM sb_order a  LEFT JOIN sb_category c ON a.category_id = c.id LEFT JOIN sb_recyclers b ON b.id = a.recycler_id WHERE a.id = #{orderId} AND a.del_flag = '0'  ORDER BY a.create_date DESC
+        SELECT <include refid="zd"/>,b.name_ AS Recyclers_name,b.tel AS BTel,b.head_pic_url AS headPicUrl,e.price AS paymentPrice FROM sb_order a  LEFT JOIN sb_category c ON a.category_id = c.id LEFT JOIN sb_recyclers b ON b.id = a.recycler_id LEFT JOIN sb_payment e ON a.order_no = e.order_sn WHERE a.id = #{orderId} AND a.del_flag = '0'  ORDER BY a.create_date DESC
     </select> 
     <select id="getOrderListsCount" parameterType="Object" resultType="Integer">
 		SELECT

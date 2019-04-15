@@ -63,6 +63,8 @@ public class Order extends DataEntity<Long> {
 
 	@TableField(exist = false)
 	private Area area;
+	@TableField(exist = false)
+	private String quantity;
 	/**
 	 * 小区id
 	 */
@@ -196,10 +198,18 @@ public class Order extends DataEntity<Long> {
 	private String isPayment;
 
 	public String getIsPayment() {
-		if((title+"").equals(TitleType.BIGTHING+"")&&achPrice.compareTo((new BigDecimal("0")))==1&&(status+"").equals(OrderType.ALREADY+"")){
+		if((title+"").equals(TitleType.BIGTHING+"")&&(status+"").equals(OrderType.ALREADY+"")&&achPrice.compareTo((new BigDecimal("0")))==1){
 			return "Y";
 		}
 		return "N";
+	}
+
+	public String getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(String quantity) {
+		this.quantity = quantity;
 	}
 
 	public String getOrderRemarks() {

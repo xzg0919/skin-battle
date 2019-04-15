@@ -62,7 +62,7 @@ public class OrderTest {
 
 
                 OrderBean orderbean1 = new OrderBean();
-               orderbean1.setId(8874);
+               orderbean1.setId(9095);
 
                 OrderPayParam orderPayParam = new OrderPayParam();
                 orderPayParam.setOrderId(8841);
@@ -72,7 +72,7 @@ public class OrderTest {
             categoryBean.setId(103);
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","category.listCategoryAttrsXCX");
+                param.put("name","order.updateForest");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -80,7 +80,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",categoryBean);
+                param.put("data",orderbean1);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

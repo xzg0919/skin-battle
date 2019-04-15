@@ -1,11 +1,13 @@
 package api.app;
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.app.param.RecyclersBean;
 import com.tzj.collect.api.app.param.RecyclersLoginBean;
 import com.tzj.collect.api.app.result.AppCompany;
+import com.tzj.collect.entity.Category;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.file.FileBase64Param;
@@ -43,23 +45,19 @@ public class TokenGetAppTest {
 		  String api="http://localhost:9090/app/api";
 
 		 	OrderBean orderBean = new OrderBean();
-				 orderBean.setId(8846);
+				 orderBean.setId(8941);
+		 orderBean.setAchPrice("0.0");
 
-		 RecyclersBean recyclersBean = new RecyclersBean();
-		 recyclersBean.setPassword("1111");
+		 CategoryBean categoryBean = new CategoryBean();
+		 categoryBean.setIsCash("0");
+		 categoryBean.setTitle("HOUSEHOLD");
+		 categoryBean.setLevel(0);
 
-		 RecyclersLoginBean recyclersLoginBean = new RecyclersLoginBean();
-		 recyclersLoginBean.setMobile("18912367774");
-		 recyclersLoginBean.setPassword("1111");
-		 recyclersLoginBean.setIsBigRecycle("Y");
 
-		 AppCompany appCompanys = new AppCompany();
-		 appCompanys.setIsBigRecycle("Y");
-		 appCompanys.setComIds("2");
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.bigOrder.deleteBigOrderRemarks");
+	        param.put("name", "app.category.getOneCategoryList");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -67,7 +65,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", orderBean);
+	        param.put("data", categoryBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

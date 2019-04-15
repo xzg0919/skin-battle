@@ -441,14 +441,6 @@ public class OrderApi {
 		}
 		if("操作成功".equals(object)){
 			Map<String,Object> map = new HashMap<>();
-			Date date = new Date();
-			SimpleDateFormat simp = new SimpleDateFormat("HH");
-			String time = simp.format(date);
-			if (Integer.parseInt(time)>= 20){
-				map.put("type",8);
-				map.put("msg","20:00后的订单，次日上午才上门回收哦！");
-				return map;
-			}
 			map.put("type",9);
 			map.put("msg","操作成功");
 			return map;

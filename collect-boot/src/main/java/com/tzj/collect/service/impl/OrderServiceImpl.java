@@ -514,7 +514,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				if (attrList != null && attrList.size() > 0) {
 					try {
 						for (ComCatePrice comCatePrice : attrList) {
-							attName.add(comCatePrice.getName());
+							if (null!=comCatePrice){
+								attName.add(comCatePrice.getName());
+							}
 						}
 						order.setTitle(Order.TitleType.HOUSEHOLD);
 						order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
@@ -579,7 +581,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			if (attrList != null && attrList.size() > 0) {
 				try {
 					for (ComCatePrice comCatePrice : attrList) {
-						attName.add(comCatePrice.getName());
+						if (null!=comCatePrice){
+							attName.add(comCatePrice.getName());
+						}
 					}
 					order.setTitle(Order.TitleType.HOUSEHOLD);
 					order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
@@ -1185,6 +1189,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Map<String, Object> selectDetail(OrderBean orderbean) {
 		//查询订单表详情
 		Order order = orderMapper.selectOrder(orderbean.getId());
+		if((Order.TitleType.FIVEKG +"") .equals(order.getTitle()+"")){
+			order.setQuantity(order.getQty()+"-"+(order.getQty()+5)+"kg");
+		}
 		CompanyEquipment companyEquipment = companyEquipmentService.selectOne(new EntityWrapper<CompanyEquipment>().eq("equipment_code", order.getIotEquipmentCode()));
 		order.setCompanyEquipment(companyEquipment);
 		//查询订单表的关联图片表
