@@ -1295,7 +1295,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			List<OrderPicAch> orderPicAchList = orderPicAchService.selectbyOrderId(orderId);
 			//查询订单表的用户填的图片
 			List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
-			if (CategoryType.DIGITAL.getValue().equals(order.getTitle().getValue())) {
+			if (CategoryType.DIGITAL.getValue().equals(order.getTitle().getValue()) || CategoryType.BIGTHING.getValue().equals(order.getTitle().getValue())) {
 				List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
 				resultMap.put("OrderItemList", OrderItemList);
 			} else {
