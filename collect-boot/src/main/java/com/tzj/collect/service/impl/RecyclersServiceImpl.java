@@ -267,6 +267,14 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 			//获取回收类型信息
 			List<TitleBean> titleList = recyclersServiceRangeBean.getTitleList();
 			for (TitleBean titleBean: titleList) {
+				//大件回收员申请是RecyclersTitle会新增一条数据（此处设置为管理员时，应过滤掉之前那条）
+				EntityWrapper<RecyclersTitle> recyclersTitleEntityWrapper = new EntityWrapper<>();
+				recyclersTitleEntityWrapper.eq("recycle_id", recyclersServiceRangeBean.getRecycleId());
+				recyclersTitleEntityWrapper.eq("title_id", titleBean.getTitleId());
+				recyclersTitleEntityWrapper.eq("del_flag", 0);
+				if (recyclersTitleService.selectList(recyclersTitleEntityWrapper).size() >= 1){
+					continue;
+				}
 				RecyclersTitle recyclersTitle = new RecyclersTitle();
 				recyclersTitle.setRecycleId(Integer.parseInt(recyclersServiceRangeBean.getRecycleId()));
 				recyclersTitle.setTitleId(Integer.parseInt(titleBean.getTitleId()));
