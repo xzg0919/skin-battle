@@ -858,7 +858,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //				score[0] += itemLists.stream().map(IotParamBean.ItemList::getQuantity).reduce((x, y) -> x+y).get();
 //			}
 //		});
-		order.setGreenCount(score[0]);
+		//保留两位小数
+		order.setGreenCount(new BigDecimal(score[0]).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 		order.setAreaId(companyEquipment.getAreaId());
 		order.setStreetId(companyEquipment.getStreetId());
 		order.setCommunityId(companyEquipment.getCommunityId());
