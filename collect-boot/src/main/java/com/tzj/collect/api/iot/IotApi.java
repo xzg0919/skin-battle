@@ -73,7 +73,7 @@ public class IotApi {
         Map map = null;
         MemberBean memberBean = new MemberBean();
         if (StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
-            throw new ApiException("cabinetNo不存在");
+            throw new ApiException("cabinetNo不存在", "-9");
         }
         Member member = MemberUtils.getMember();
         memberBean.setCardNo(member.getCardNo());
@@ -84,6 +84,9 @@ public class IotApi {
             }else {
                 //根据设备编号在company表中找到访问地址
                 iotUrl = companyService.selectIotUrlByEquipmentCode(iotPostParamBean.getCabinetNo());
+            }
+            if (iotUrl == null){
+                throw new ApiException("cabinetNo不存在", "-9");
             }
             //发送post请求开箱
             iotPostParamBean.setMobile(member.getMobile());
