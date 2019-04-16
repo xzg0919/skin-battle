@@ -85,9 +85,6 @@ public class IotApi {
                 //根据设备编号在company表中找到访问地址
                 iotUrl = companyService.selectIotUrlByEquipmentCode(iotPostParamBean.getCabinetNo());
             }
-            if (iotUrl == null){
-                throw new ApiException("cabinetNo不存在", "-9");
-            }
             //发送post请求开箱
             iotPostParamBean.setMobile(member.getMobile());
             iotPostParamBean.setAPIName("OpnBox");
@@ -95,7 +92,7 @@ public class IotApi {
             String sign= this.buildSign(JSON.parseObject(jsonStr));
             iotPostParamBean.setSign(sign);
             if (iotUrl == null && "".equals(iotUrl.trim())){
-                throw new ApiException("访问地址不存在");
+                throw new ApiException("cabinetNo不存在", "-9");
             }
             iotUrl = iotUrl +"?APIName="+iotPostParamBean.getAPIName()
                     +"&cabinetNo="+iotPostParamBean.getCabinetNo()+ "&memberId="+ member.getCardNo()
