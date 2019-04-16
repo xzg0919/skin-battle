@@ -83,7 +83,11 @@ public class IotApi {
                 iotUrl = iotPostParamBean.getQrUrl();
             }else {
                 //根据设备编号在company表中找到访问地址
-                iotUrl = companyService.selectIotUrlByEquipmentCode(iotPostParamBean.getCabinetNo());
+                String equipmentCode = iotPostParamBean.getCabinetNo();
+                if (equipmentCode.contains("@")){
+                    equipmentCode = equipmentCode.substring(0, equipmentCode.indexOf("@"));
+                }
+                iotUrl = companyService.selectIotUrlByEquipmentCode(equipmentCode);
             }
             //发送post请求开箱
             iotPostParamBean.setMobile(member.getMobile());
@@ -91,7 +95,7 @@ public class IotApi {
             String jsonStr= JSON.toJSONString(iotPostParamBean);
             String sign= this.buildSign(JSON.parseObject(jsonStr));
             iotPostParamBean.setSign(sign);
-            if (iotUrl == null && "".equals(iotUrl.trim())){
+            if (iotUrl == null || "".equals(iotUrl.trim())){
                 throw new ApiException("cabinetNo不存在", "-9");
             }
             iotUrl = iotUrl +"?APIName="+iotPostParamBean.getAPIName()
