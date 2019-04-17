@@ -888,6 +888,19 @@
 		GROUP BY SUBSTR(a.create_date,1,10)
 	</select>
 
+	<select id="oneDayorderNum" parameterType="String" resultType="Map">
+		SELECT
+			SUBSTR(a.create_date,12,2) AS x,COUNT(1) AS y,1 as s
+		FROM
+			sb_order a
+		WHERE
+			a.street_id = #{streetId}
+		AND a.company_id != 1
+		AND a.create_date
+		AND a.create_date BETWEEN date_sub(CURDATE(), INTERVAL 1 DAY) AND CURDATE()
+		GROUP BY SUBSTR(a.create_date,1,13)
+	</select>
+
 
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">

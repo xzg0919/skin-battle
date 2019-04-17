@@ -6,6 +6,7 @@ import java.util.Map;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.ali.param.OrderItemBean;
 import com.tzj.collect.api.ali.result.ComCatePrice;
+import com.tzj.collect.controller.admin.param.ResultDataVParam;
 import com.tzj.collect.entity.OrderItemAch;
 
 /**
@@ -36,5 +37,5 @@ public interface OrderItemAchService extends IService<OrderItemAch>{
 	List<Map<String,Object>> selectItemSumAmount (Integer orderId);
 
 	String orderSum(String streetId);
-	List<Map<String,Object>> orderDetialNum(String streetId);
+	List<ResultDataVParam> orderDetialNum(String streetId);
 }

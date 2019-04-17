@@ -26,10 +26,10 @@
             a.street_id = #{streetId}
         AND a.company_id != 1
     </select>
-    <select id="orderDetialNum" parameterType="String" resultType="Map">
+    <select id="orderDetialNum" parameterType="String" resultType="com.tzj.collect.controller.admin.param.ResultDataVParam">
         SELECT
         b.parent_name AS type,
-            format(SUM(b.amount),2) AS value
+        round(SUM(b.amount),0) AS value
         FROM
             sb_order a
         inner JOIN sb_order_item_ach b ON a.id = b.order_id

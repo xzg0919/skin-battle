@@ -3,6 +3,7 @@ package com.tzj.collect.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.tzj.collect.controller.admin.param.ResultDataVParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +81,7 @@ public class OrderItemAchServiceImpl extends ServiceImpl<OrderItemAchMapper, Ord
 		return orderItemAchMapper.orderSum(streetId);
 	}
 	@Override
-	public List<Map<String,Object>> orderDetialNum(String streetId) {
+	public List<ResultDataVParam> orderDetialNum(String streetId) {
 		return orderItemAchMapper.orderDetialNum(streetId);
 	}
 

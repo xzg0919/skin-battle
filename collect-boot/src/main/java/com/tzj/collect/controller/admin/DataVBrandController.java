@@ -3,14 +3,9 @@ package com.tzj.collect.controller.admin;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.entity.Community;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.OrderItemAch;
-import com.tzj.collect.entity.RecyclersServiceRange;
-import com.tzj.collect.service.CommunityService;
-import com.tzj.collect.service.OrderItemAchService;
-import com.tzj.collect.service.OrderService;
-import com.tzj.collect.service.RecyclersServiceRangeService;
+import com.tzj.collect.controller.admin.param.ResultDataVParam;
+import com.tzj.collect.entity.*;
+import com.tzj.collect.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +30,8 @@ public class DataVBrandController {
     private RecyclersServiceRangeService recyclersServiceRangeService;
     @Autowired
     private OrderItemAchService orderItemAchService;
+    @Autowired
+    private BrandCommunityService brandCommunityService;
 
     @RequestMapping(value = "/get/location",method = RequestMethod.GET)
     public Object getLocation(String streetId){
@@ -149,21 +146,53 @@ public class DataVBrandController {
      List<Map<String,Object>> restList = new ArrayList<>();
      Map<String,Object> map = new HashMap<>();
      String count = orderItemAchService.orderSum(streetId);
+     if (StringUtils.isBlank(count)){
+         count = "0";
+     }
      map.put("name","");
-     map.put("value",count);
+     map.put("value",Double.parseDouble(count.replace(",","")));
      restList.add(map);
      return restList;
     }
 
     @RequestMapping(value = "/get/orderDetialNum",method = RequestMethod.GET)
     public Object orderDetialNum(String streetId){
-     List<Map<String,Object>> restList = orderItemAchService.orderDetialNum(streetId);
+        List<ResultDataVParam> restList = orderItemAchService.orderDetialNum(streetId);
      return restList;
     }
 
     @RequestMapping(value = "/get/sevenDayorderNum",method = RequestMethod.GET)
     public Object sevenDayorderNum(String streetId){
         List<Map<String,Object>> restList = orderService.sevenDayorderNum(streetId);
+        return restList;
+    }
+    @RequestMapping(value = "/get/oneDayorderNum",method = RequestMethod.GET)
+    public Object oneDayorderNum(String streetId){
+        List<Map<String,Object>> restList = orderService.oneDayorderNum(streetId);
+        return restList;
+    }
+    @RequestMapping(value = "/get/brandCommunityNum",method = RequestMethod.GET)
+    public Object getBrandCommunityNum(String streetId){
+        List<Map<String,Object>> restList = new ArrayList<>();
+        Map<String,Object> map = new HashMap<>();
+        EntityWrapper<BrandCommunity> wrapper = new EntityWrapper<>();
+        wrapper.eq("area_id",streetId);
+        wrapper.eq("del_flag",0);
+        int count = brandCommunityService.selectCount(wrapper);
+        map.put("name","");
+        map.put("value",count);
+        restList.add(map);
+        return restList;
+    }
+
+    @RequestMapping(value = "/get/brandCommunityList",method = RequestMethod.GET)
+    public Object getBrandCommunityList(String streetId){
+        List<Map<String,Object>> restList = brandCommunityService.getBrandCommunityList(streetId);
+        return restList;
+    }
+    @RequestMapping(value = "/get/brandCommunityLists",method = RequestMethod.GET)
+    public Object getBrandCommunityLists(String streetId){
+        List<Map<String,Object>> restList = brandCommunityService.getBrandCommunityLists(streetId);
         return restList;
     }
 

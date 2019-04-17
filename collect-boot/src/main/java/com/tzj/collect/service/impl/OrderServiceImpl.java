@@ -2503,4 +2503,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public List<Map<String, Object>> sevenDayorderNum(String streetId) {
 		return orderMapper.sevenDayorderNum(streetId);
 	}
+	@Override
+	public List<Map<String, Object>> oneDayorderNum(String streetId) {
+		return orderMapper.oneDayorderNum(streetId);
+	}
 }

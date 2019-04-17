@@ -1,6 +1,7 @@
 package com.tzj.collect.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.tzj.collect.controller.admin.param.ResultDataVParam;
 import com.tzj.collect.entity.OrderItemAch;
 
 import java.util.List;
@@ -15,6 +16,6 @@ public interface OrderItemAchMapper extends BaseMapper<OrderItemAch>{
 
     String orderSum(String streetId);
 
-    List<Map<String,Object>> orderDetialNum(String streetId);
+    List<ResultDataVParam> orderDetialNum(String streetId);
 
 }
