@@ -155,5 +155,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	AppOrderResult getBigOrderDetails(Integer orderId);
 
 	void deleteBigOrderRemarks(Integer orderId);
+
+	List<Map<String,Object>> sevenDayorderNum(String streetId);
 }
 

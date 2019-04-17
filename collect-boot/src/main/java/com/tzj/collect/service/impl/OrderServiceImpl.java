@@ -2498,4 +2498,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public void deleteBigOrderRemarks(Integer orderId){
 		orderMapper.deleteBigOrderRemarks(orderId);
 	}
+
+	@Override
+	public List<Map<String, Object>> sevenDayorderNum(String streetId) {
+		return orderMapper.sevenDayorderNum(streetId);
+	}
 }

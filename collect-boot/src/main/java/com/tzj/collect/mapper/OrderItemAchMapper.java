@@ -13,4 +13,8 @@ public interface OrderItemAchMapper extends BaseMapper<OrderItemAch>{
 
     List<Map<String,Object>> selectItemSumAmount (Integer orderId);
 
+    String orderSum(String streetId);
+
+    List<Map<String,Object>> orderDetialNum(String streetId);
+
 }

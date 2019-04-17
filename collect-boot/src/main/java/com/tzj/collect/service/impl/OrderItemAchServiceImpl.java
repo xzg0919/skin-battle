@@ -75,5 +75,14 @@ public class OrderItemAchServiceImpl extends ServiceImpl<OrderItemAchMapper, Ord
 		return orderItemAchMapper.selectItemSumAmount(orderId);
 	}
 
+	@Override
+	public String orderSum(String streetId) {
+		return orderItemAchMapper.orderSum(streetId);
+	}
+	@Override
+	public List<Map<String,Object>> orderDetialNum(String streetId) {
+		return orderItemAchMapper.orderDetialNum(streetId);
+	}
+
 
 }

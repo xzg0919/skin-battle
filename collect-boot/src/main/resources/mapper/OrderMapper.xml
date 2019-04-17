@@ -874,9 +874,18 @@
 				) scomco
 			LEFT JOIN sb_category sc ON sc.id = scomco.category_id
 			LEFT JOIN sb_recyclers sr ON sr.id = scomco.recycler_id
-
-
-
+	</select>
+	<select id="sevenDayorderNum" parameterType="String" resultType="Map">
+		SELECT
+			SUBSTR(a.create_date,6,5) AS x,COUNT(1) AS y
+		FROM
+			sb_order a
+		WHERE
+			a.street_id = #{streetId}
+		AND a.company_id != 1
+		AND a.create_date
+		AND a.create_date BETWEEN date_sub(CURDATE(), INTERVAL 7 DAY) AND CURDATE()
+		GROUP BY SUBSTR(a.create_date,1,10)
 	</select>
 
 

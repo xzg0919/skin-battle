@@ -34,4 +34,7 @@ public interface OrderItemAchService extends IService<OrderItemAch>{
 	List<ComCatePrice> selectCateName(int orderId);
 
 	List<Map<String,Object>> selectItemSumAmount (Integer orderId);
+
+	String orderSum(String streetId);
+	List<Map<String,Object>> orderDetialNum(String streetId);
 }

@@ -260,4 +260,5 @@ public interface OrderService extends IService<Order> {
 	Map<String, Object> iotUpdateOrderItemAch(IotParamBean iotParamBean);
 
 	void deleteBigOrderRemarks(Integer orderId);
+	List<Map<String,Object>> sevenDayorderNum(String streetId);
 }

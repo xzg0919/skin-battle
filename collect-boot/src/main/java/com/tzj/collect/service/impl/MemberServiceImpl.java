@@ -77,6 +77,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", CityType.getEnum(state).getNameCN()));
 			//并向前端返回行政市的id
 			resultMap.put("cityId", area.getId());
+			resultMap.put("cityName", area.getAreaName());
 			resultMap.put("isExist","0");
 			cityName = CityType.getEnum(state).getNameCN();
 		} catch (Exception e) {
@@ -84,11 +85,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 				//根据拿到的state参数去查询他的主键
 				area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", cityName));
 				resultMap.put("cityId", area.getId());
+				resultMap.put("cityName", area.getAreaName());
 				resultMap.put("isExist","0");
 			} catch (Exception e2) {
 				//根据拿到的state参数去查询他的主键
 				area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", "上海市"));
 				resultMap.put("cityId", area.getId());
+				resultMap.put("cityName", area.getAreaName());
 				resultMap.put("isExist","1");
 			}
 		}
@@ -378,11 +381,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			//根据拿到的state参数去查询他的主键
 			area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", cityName));
 			resultMap.put("cityId", area.getId());
+			resultMap.put("cityName", area.getAreaName());
 			resultMap.put("isExist","0");
 		} catch (Exception e2) {
 			//根据拿到的state参数去查询他的主键
 			area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", "上海市"));
 			resultMap.put("cityId", area.getId());
+			resultMap.put("cityName", area.getAreaName());
 			resultMap.put("isExist","1");
 		}
 		String appId = AlipayConst.XappId;

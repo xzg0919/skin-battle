@@ -16,5 +16,28 @@
         parentId
     </select>
 
+    <select id="orderSum" parameterType="String" resultType="String">
+        SELECT
+            format(SUM(b.amount),2)
+        FROM
+            sb_order a
+        LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
+        WHERE
+            a.street_id = #{streetId}
+        AND a.company_id != 1
+    </select>
+    <select id="orderDetialNum" parameterType="String" resultType="Map">
+        SELECT
+        b.parent_name AS type,
+            format(SUM(b.amount),2) AS value
+        FROM
+            sb_order a
+        inner JOIN sb_order_item_ach b ON a.id = b.order_id
+        WHERE
+            a.street_id = #{streetId}
+        AND a.company_id != 1
+        GROUP BY b.parent_id
+    </select>
+
 
 </mapper>
