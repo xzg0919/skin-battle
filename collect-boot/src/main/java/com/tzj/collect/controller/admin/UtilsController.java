@@ -19,6 +19,10 @@ public class UtilsController {
     @RequestMapping("/get/xcxUrl")
     public String getXcxUrl(String urlParam, String id, String type){
         System.out.println("---------"+urlParam+"-------"+id+"-------"+type);
+        return    UtilsController.getXcxUri(urlParam,id,type);
+    }
+    public static String getXcxUri(String urlParam, String id, String type){
+        System.out.println("---------"+urlParam+"-------"+id+"-------"+type);
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
         AlipayOpenAppQrcodeCreateRequest request = new AlipayOpenAppQrcodeCreateRequest();
         AlipayOpenAppQrcodeCreateModel model = new AlipayOpenAppQrcodeCreateModel();
@@ -37,7 +41,6 @@ public class UtilsController {
         } else {
             System.out.println("调用失败");
         }
-
         return response.getQrCodeUrl();
     }
 }

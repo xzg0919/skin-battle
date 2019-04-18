@@ -1194,6 +1194,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if((Order.TitleType.FIVEKG +"") .equals(order.getTitle()+"")){
 			order.setQuantity(order.getQty()+"-"+(order.getQty()+5)+"kg");
 		}
+		if ((Order.OrderType.COMPLETE +"") .equals(order.getStatus()+"")&&null != order.getCompleteDate()){
+			try {
+				SimpleDateFormat simple = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				order.setReceiveTime(simple.parse(order.getCompleteDate().toString()));
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+		}
 		CompanyEquipment companyEquipment = companyEquipmentService.selectOne(new EntityWrapper<CompanyEquipment>().eq("equipment_code", order.getIotEquipmentCode()));
 		order.setCompanyEquipment(companyEquipment);
 		//查询订单表的关联图片表
