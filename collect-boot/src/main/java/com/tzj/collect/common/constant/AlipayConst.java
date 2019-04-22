@@ -22,6 +22,8 @@ public class AlipayConst {
 
     //铸钱支付Id
     public static final String SellerId = "2088231676636053";
+    //铸钱支付Id
+    public static final String ant_seller_id = "zhuqian.shzq@aliyun.com";
 
     //支付宝APPID
     public static String TZJ_appId = "2017011905224137";
