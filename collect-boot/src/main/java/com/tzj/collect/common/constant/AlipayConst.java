@@ -20,8 +20,8 @@ public class AlipayConst {
     //小程序APPID
     public static final String XappId = "2018060660292753";
 
-    //铸钱支付Id
-    public static final String SellerId = "2088231676636053";
+    //蚂蚁深林扣款Id
+    public static final String SellerId = "2088221992947092";
     //铸钱支付Id
     public static final String ant_seller_id = "zhuqian.shzq@aliyun.com";
 
