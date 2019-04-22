@@ -18,7 +18,7 @@ import java.util.UUID;
  **/
 public class TokenGetApiTest {
     public static void main(String[] args) throws Exception {
-        String api="http://localhost:9000/ali/api";
+        String api="http://localhost:9090/ali/api";
 //        MemberBean memberBean=new MemberBean();
 //        memberBean.setAliMemberId("2088212384105273");
 ////        memberBean.setCertNo("310XXXXXXXXX");
@@ -56,21 +56,21 @@ public class TokenGetApiTest {
         page.setPageSize(6);
         page.setMemberId(1);
        // orderBean.setPagebean(page);
-        param.put("name","order.unfinishlist");
+        param.put("name","iot.long.pulling");
         param.put("version","1.0");  
         param.put("format","json");
 //        cb.setTitle("DIGITAL");
 //        cb.setLevel(0);
         
         param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-        param.put("token","3F3TEMH74565Q5QORHNPE76UZM6VT4JPWVV4OPUNTGAXLLRLC6B5GYU3LW34YHVNOEFL2LXPVT24VDPYKJDZTFWQI6YJ2KXG2OVQSA67LJL2R6CVIVNAEWQR7CZM233I7LTOFLZYLUKM3BQC5PEU6DQFJQG5LIT7JILBGMUKSMOCONU72WNY5FRO5UAONCRBX5MPROR2IBC4HFOLB3BWR4ZCQTQZJ57G4MCA2W5B3CNSYPR3BRD6OEVYTMFDJLG5ITAQFPYIC563KRDGQ5SNDN4WQE5TTYNFDUMM5TTPZ4O2ZIFJROTQ");
+        param.put("token","F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CEQWJEMAIRCFOEPCSCWP6N5VXZUE5JRSLSAGIQADK5GV347M7FDSGP5FKG34NFYA2ULTVDEQJOCRU3CNTT6GOE3ATM4MXDWFNR5OJAVBXD2263AY7GYCIR2A3IESXHNQST3OFOHEYPYR3NTNYRR3GTPJCYX7TONQ6HYROE75NLAKN66ZED4IBJVO3TYE3IAMZWW4XBZDC4JSEA65AX7BHZQBR6LLA");
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID());
-        param.put("data",categoryBean);
+//        param.put("data",categoryBean);
 
         String jsonStr2=JSON.toJSONString(param);
         String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr2),"sign_key_11223344");
-        param.put("sign",sign);
+//        param.put("sign",sign);
         System.out.println(JSON.toJSONString(param));
         Response response2= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
         String resultJson2=response2.body().string();

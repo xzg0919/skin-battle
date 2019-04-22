@@ -1,10 +1,14 @@
 package com.tzj.collect.common.redis;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -526,6 +530,85 @@ public class RedisUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    /**
+     * 从redis中读取存入数据(存入对象需序列化)
+     * @author sgmark@aliyun.com
+     * @date 2018/10/18 0018
+     * @param
+     * @return
+     */
+    public static class SaveOrGetFromRedis{
+        @Async
+        public void saveInRedis(String uuId, Object value, Integer expire, JedisPool jedisPool){
+            Jedis jedis = null;
+            try{
+                jedis  = jedisPool.getResource();
+                jedis.set(uuId.getBytes(), this.serialize(value));
+                jedis.expire(uuId, expire);
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally{
+                //pool.returnResource(jedis);
+                jedis.close();//Jedis3.0版本后建议用close替换
+            }
+        }
+        public Object getFromRedis(String uuId, JedisPool jedisPool){
+            Jedis jedis = null;
+            Object code = null;
+            try {
+                jedis  = jedisPool.getResource();
+                code = this.unSerialize(jedis.get(uuId.getBytes()));
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                jedis.close();
+            }
+            return  code;
+        }
+
+        /**
+         *  存入对象序列化
+         * @author sgmark@aliyun.com
+         * @date 2018/10/30 0030
+         * @param
+         * @return
+         */
+        public  byte[] serialize(Object obj) {
+            ObjectOutputStream oos = null;
+            ByteArrayOutputStream baos = null;
+            try {
+                // 序列化
+                baos = new ByteArrayOutputStream();
+                oos = new ObjectOutputStream(baos);
+                oos.writeObject(obj);
+                byte[] byteArray = baos.toByteArray();
+                return byteArray;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        /**
+         * 反序列化
+         * @author sgmark@aliyun.com
+         * @date 2018/10/30 0030
+         * @param
+         * @return
+         */
+        public  Object unSerialize(byte[] bytes) {
+            ByteArrayInputStream bais = null;
+            try {
+                // 反序列化为对象
+                bais = new ByteArrayInputStream(bytes);
+                ObjectInputStream ois = new ObjectInputStream(bais);
+                return ois.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 }

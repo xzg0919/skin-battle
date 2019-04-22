@@ -24,6 +24,7 @@ import com.tzj.collect.api.business.result.CancelResult;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.PushConst;
 import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.redis.RedisUtil;
 import com.tzj.collect.common.util.PushUtils;
 import com.tzj.collect.common.util.ToolUtils;
 import com.tzj.collect.entity.*;
@@ -111,7 +112,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private CompanyStreeService companyStreeService;
 	@Autowired
 	private CompanyEquipmentService companyEquipmentService;
-
+	@Autowired
+	private RedisUtil redisUtil;
 	@Override
 	public Order getLastestOrderByMember(Integer memberId) {
 		return selectOne(new EntityWrapper<Order>().eq("member_id", memberId).orderBy("complete_date", false).last("LIMIT 1"));
@@ -877,6 +879,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		map.put("order_no", order.getOrderNo());
 		map.put("equipment_code",iotParamBean.getEquipmentCode());
 		map.put("msg", "CREATED");
+		//保存id至redis，跳转到订单详情页面
+		try {
+			Hashtable<String, String> hashTable = new Hashtable<>();
+			String uuId = "iot_member_id_" + member.getId();
+			hashTable.put(uuId, order.getId()+"");
+			redisUtil.set("iotMap", hashTable, 300);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		return map;
 	}
 
