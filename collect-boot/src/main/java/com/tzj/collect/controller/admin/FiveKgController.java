@@ -101,6 +101,9 @@ public class FiveKgController {
         }else if ("3".equals(orderStatus)){
             //订单完成
             try{
+                if((Order.OrderType.COMPLETE+"").equals(order.getStatus()+"")){
+                    return null;
+                }
                 order.setGreenCount(Double.parseDouble(object.getString("expressAmount")));
                 order.setStatus(Order.OrderType.COMPLETE);
                 order.setExpressNo(object.getString("expressNo"));

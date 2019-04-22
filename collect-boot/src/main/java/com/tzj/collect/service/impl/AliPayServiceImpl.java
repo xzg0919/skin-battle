@@ -369,7 +369,7 @@ public class AliPayServiceImpl implements AliPayService{
             //request.putOtherTextParam("ws_service_url","mrchorder-eu95-3.rz00b.dev.alipay.net:12200");
             AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
             model.setBuyerId(order.getAliUserId());
-            model.setSellerId(AlipayConst.SellerId);
+            model.setSellerId(AlipayConst.ant_seller_id);
             model.setOutBizType("RECYCLING");
             model.setOutBizNo(order.getOrderNo());
             List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();
@@ -402,6 +402,9 @@ public class AliPayServiceImpl implements AliPayService{
                     orderItemList.add(itemOrder);
                 }
             }
+            if (null == orderItemList || orderItemList.isEmpty() ){
+                return null;
+            }
             model.setItemOrderList(orderItemList);
             request.setBizModel(model);
             AntMerchantExpandTradeorderSyncResponse response = null;
@@ -415,13 +418,13 @@ public class AliPayServiceImpl implements AliPayService{
             } else {
                 System.out.println("调⽤失败");
                 DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                        ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
+                        ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是："+orderId,
                         RocketMqConst.DINGDING_ERROR,response.getBody());
             }
             return response;
         }catch (Exception e) {
             DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常",
+                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是："+orderId,
                     RocketMqConst.DINGDING_ERROR,e.toString());
             e.printStackTrace();
         }
@@ -433,8 +436,8 @@ public class AliPayServiceImpl implements AliPayService{
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapipre.alipay.com/gateway.do",AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
         AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
         AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
-        model.setBuyerId("2088612344446855");
-        model.setSellerId("2088612344446855");
+        model.setBuyerId("2088212854989662");
+        model.setSellerId(AlipayConst.ant_seller_id);
         model.setOutBizType("RECYCLING");
         model.setOutBizNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000));
         List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();

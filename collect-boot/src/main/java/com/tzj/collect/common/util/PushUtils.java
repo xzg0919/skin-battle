@@ -37,7 +37,7 @@ public class PushUtils {
         // 推送配置
         pushRequest.setPushType("NOTICE"); // MESSAGE:表示消息(默认), NOTICE:表示通知
         pushRequest.setTitle(title); // 消息的标题
-        pushRequest.setBody(body); // 消息的内容
+        pushRequest.setBody("{\"code\":\""+code+"\",\"message\":\""+message+"\"}"); // 消息的内容
         // 推送配置: iOS
 //        pushRequest.setIOSBadge(5); // iOS应用图标右上角角标
 //        pushRequest.setIOSSilentNotification(false);//开启静默通知
@@ -85,6 +85,6 @@ public class PushUtils {
 
 
     public static void main(String[] args) {
-        PushUtils.getAcsResponse("18912367774","垃圾分类回收","垃圾分类回收内容","1001","垃圾是龙建");
+        PushUtils.getAcsResponse("15691728708","垃圾分类回收","垃圾分类回收内容","1002","垃圾是龙建");
     }
 }
