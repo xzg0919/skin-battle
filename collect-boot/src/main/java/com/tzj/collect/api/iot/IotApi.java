@@ -172,11 +172,11 @@ public class IotApi {
                 latchMap = latMapConcurrent.get(uuId);
             }
 
-            if (latchMap.orderId != null) {
+            if (null != latchMap.orderId) {
                 result.put("success", true);
             }
 
-            if (latchMap.latch == null) {
+            if (null == latchMap.latch) {
                 latchMap.latch = new CountDownLatch(1);
             }
             try {
@@ -228,6 +228,8 @@ public class IotApi {
             }
         }while (System.currentTimeMillis() - startTime <= 300*1000 && flag);
         //5分钟内还没被扫码成功，关闭长连接
-        latchMapResult.latch.countDown();
+        if (null != latchMapResult){
+            latchMapResult.latch.countDown();
+        }
     }
 }
