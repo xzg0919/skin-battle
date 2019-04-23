@@ -58,7 +58,7 @@ public class AdminController {
 	public @ResponseBody  Object  geviMysl(){
 
 		int i = 0;
-		List<Order> orders = orderService.selectList(new EntityWrapper<Order>().eq("status_", 3).le("create_date", "2019-04-22 23:00:00").ge("create_date", "2019-04-16 00:00:01").in("company_id", "2,3,4,5,6,7,8,9,10").eq("title", 3).eq("is_mysl",1));
+		List<Order> orders = orderService.selectList(new EntityWrapper<Order>().eq("status_", 3).le("create_date", "2019-04-23 16:34:00").ge("create_date", "2019-04-16 00:00:01").in("company_id", "2,3,4,5,6,7,8,9,10").eq("title", 3).eq("is_mysl",1));
 		for (Order order: orders
 			 ) {
 				AntMerchantExpandTradeorderSyncResponse response = aliPayService.updateForest(order.getId().toString());

@@ -392,7 +392,7 @@ public class AliPayServiceImpl implements AliPayService{
                     }
                     ItemOrder itemOrder = new ItemOrder();
                     itemOrder.setItemName(itemMap.get("parentName").toString());
-                    itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount")));
+                    itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount"))*1000);
                     List<OrderExtInfo> extInfo = new ArrayList<>();
                     OrderExtInfo orderExtInfo = new OrderExtInfo();
                     orderExtInfo.setExtKey("ITEM_TYPE");
@@ -429,42 +429,5 @@ public class AliPayServiceImpl implements AliPayService{
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapipre.alipay.com/gateway.do",AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
-        AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
-        AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
-        model.setBuyerId("2088212854989662");
-        model.setSellerId(AlipayConst.SellerId);
-        model.setOutBizType("RECYCLING");
-        model.setOutBizNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000));
-        List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();
-        ItemOrder itemOrder = new ItemOrder();
-        itemOrder.setItemName("废纸一堆");
-        itemOrder.setQuantity((long)1);
-        List<OrderExtInfo> extInfo = new ArrayList<>();
-        OrderExtInfo orderExtInfo = new OrderExtInfo();
-        orderExtInfo.setExtKey("ITEM_TYPE");
-        orderExtInfo.setExtValue("paper");
-        extInfo.add(orderExtInfo);
-        itemOrder.setExtInfo(extInfo);
-        orderItemList.add(itemOrder);
-        model.setItemOrderList(orderItemList);
-        request.setBizModel(model);
-        AntMerchantExpandTradeorderSyncResponse response = null;
-        try {
-            response = alipayClient.execute(request);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        if(response.isSuccess()){
-            System.out.println("调⽤成功");
-        } else {
-            System.out.println("调⽤失败");
-        }
-        System.out.println(response.getBody()); ;
-
     }
 }
