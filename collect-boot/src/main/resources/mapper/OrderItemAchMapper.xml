@@ -3,7 +3,7 @@
 <mapper namespace="com.tzj.collect.mapper.OrderItemAchMapper">
     <select id="selectItemSumAmount" parameterType="Integer" resultType="Map">
         SELECT
-            SUM(a.amount) AS amount,
+            round(SUM(a.amount),0)  AS amount,
             a.parent_id AS parentId,
             a.parent_name AS parentName,
             b.ali_item_type AS aliItemType
