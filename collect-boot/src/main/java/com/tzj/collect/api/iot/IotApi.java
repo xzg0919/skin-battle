@@ -47,7 +47,7 @@ public class IotApi {
     private RedisUtil redisUtil;
 
     private Boolean flag = true;//保证当前线程能执行
-    private LatchMap latchMapResult = null;
+//    private LatchMap latchMapResult = null;
     private Map<String, LatchMap> latMapConcurrent = new ConcurrentHashMap<>();//本地
     /**
      * 会员存在与否
@@ -118,15 +118,19 @@ public class IotApi {
             String resultJson=response.body().string();
             Object object = JSON.parseObject(resultJson);
             map = new HashMap();
-            map.put("status", ((JSONObject) object).get("errorcode"));
+//            map.put("status", ((JSONObject) object).get("errorcode"));
             if (MessageCode.SUCCESS_OPEN.getKey().equals(((JSONObject) object).get("errorcode"))){
                 map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
+                map.put("status", MessageCode.SUCCESS_OPEN.getKey());
             }else if (MessageCode.EMPLOY_ERROR.getKey().equals(((JSONObject) object).get("errorcode"))){
                 map.put("msg", MessageCode.EMPLOY_ERROR.getValue());
+                map.put("status", MessageCode.EMPLOY_ERROR.getKey());
             }else if (MessageCode.STOPPAGE_ERROR.getKey().equals(((JSONObject) object).get("errorcode"))){
                 map.put("msg", MessageCode.STOPPAGE_ERROR.getValue());
+                map.put("status", MessageCode.STOPPAGE_ERROR.getKey());
             }else {
                 map.put("msg", MessageCode.OTHERS_ERROR.getValue());
+                map.put("status", MessageCode.OTHERS_ERROR.getKey());
             }
             map.put("errorMsg", ((JSONObject) object).get("errormsg"));
             map.put("APIName", ((JSONObject) object).get("APIName"));
@@ -167,22 +171,21 @@ public class IotApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> longPulling(){
         Member member = MemberUtils.getMember();
-        String uuId = "iot_member_id_"+ member.getId();
+        String iotMemId = "iot_member_id_"+ member.getId();
         Long date = null;
         HashMap<String, Object> result = new HashMap<>();
-        //如果uuid时间已过期，获取新的uuId
         date = System.currentTimeMillis();
         try {
             LatchMap latchMap = null;
-            if (!latMapConcurrent.containsKey(uuId)) {
+            if (!latMapConcurrent.containsKey(iotMemId)) {
                 latchMap = new LatchMap();
-                latMapConcurrent.put(uuId, latchMap);
+                latMapConcurrent.put(iotMemId, latchMap);
             } else {
-                latchMap = latMapConcurrent.get(uuId);
+                latchMap = latMapConcurrent.get(iotMemId);
             }
 
             if (null != latchMap.orderId) {
-                result.put("success", true);
+                result.put("success", true);//表示二次扫码
             }
 
             if (null == latchMap.latch) {
@@ -191,13 +194,14 @@ public class IotApi {
             try {
                 // 线程等待
                 //开启异步线程，如果redis有当前用户订单，当前线程重新启动
-                this.getTokenByCache(date, uuId);
+                this.getTokenByCache(date, iotMemId);
                 latchMap.latch.await(5, TimeUnit.MINUTES);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (latchMapResult.getOrderId() != null){
-                result.put("id", latchMapResult.getOrderId());
+            latchMap = latMapConcurrent.get(iotMemId);
+            if (latchMap.getOrderId() != null){
+                result.put("id", latchMap.getOrderId());
                 result.put("code", 0);
                 result.put("msg", "操作成功");
                 return result;
@@ -209,17 +213,19 @@ public class IotApi {
         return result;
     }
 
-    public void getTokenByCache(Long startTime, String uuId){
+    public void getTokenByCache(Long startTime, String iotMemId){
         flag = true;//每次进来设值为真
         Hashtable<String, String> iotMapCache;
+        LatchMap latchMapResult = null;
         do {
             try {
                 iotMapCache  = (Hashtable<String, String>)redisUtil.get("iotMap");
-                if (iotMapCache != null && iotMapCache.containsKey(uuId)){
-                    latchMapResult = latMapConcurrent.get(uuId);
+                if (iotMapCache != null && iotMapCache.containsKey(iotMemId)){
+                    latchMapResult = latMapConcurrent.get(iotMemId);
                     if (latchMapResult != null){
-                        latchMapResult.orderId = iotMapCache.get(uuId);
+                        latchMapResult.orderId = iotMapCache.get(iotMemId);
                         latchMapResult.latch.countDown();
+                        latMapConcurrent.put(iotMemId, latchMapResult);
                         break;
                     }else{
                         continue;
