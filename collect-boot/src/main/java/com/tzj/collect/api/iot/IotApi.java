@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.api.iot.localmap.LatchMap;
+import com.tzj.collect.api.iot.messagecode.MessageCode;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.api.iot.param.IotPostParamBean;
 import com.tzj.collect.common.redis.RedisUtil;
@@ -117,10 +118,18 @@ public class IotApi {
             String resultJson=response.body().string();
             Object object = JSON.parseObject(resultJson);
             map = new HashMap();
-            map.put("status", ((JSONObject) object).get("status"));
+            map.put("status", ((JSONObject) object).get("errorcode"));
+            if (MessageCode.SUCCESS_OPEN.getKey().equals(((JSONObject) object).get("errorcode"))){
+                map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
+            }else if (MessageCode.EMPLOY_ERROR.getKey().equals(((JSONObject) object).get("errorcode"))){
+                map.put("msg", MessageCode.EMPLOY_ERROR.getValue());
+            }else if (MessageCode.STOPPAGE_ERROR.getKey().equals(((JSONObject) object).get("errorcode"))){
+                map.put("msg", MessageCode.STOPPAGE_ERROR.getValue());
+            }else {
+                map.put("msg", MessageCode.OTHERS_ERROR.getValue());
+            }
+            map.put("errorMsg", ((JSONObject) object).get("errormsg"));
             map.put("APIName", ((JSONObject) object).get("APIName"));
-            map.put("errormsg", ((JSONObject) object).get("errormsg"));
-            map.put("errorcode", ((JSONObject) object).get("errorcode"));
             map.put("remark", ((JSONObject) object).get("remark"));
             System.out.println(resultJson);
         }
@@ -232,4 +241,6 @@ public class IotApi {
             latchMapResult.latch.countDown();
         }
     }
+
+
 }
