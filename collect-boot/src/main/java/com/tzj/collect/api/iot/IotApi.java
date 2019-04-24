@@ -199,7 +199,7 @@ public class IotApi {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            latchMap = latMapConcurrent.get(iotMemId);
+//            latchMap = latMapConcurrent.get(iotMemId);
             if (latchMap.getOrderId() != null){
                 result.put("id", latchMap.getOrderId());
                 result.put("code", 0);
@@ -222,10 +222,11 @@ public class IotApi {
                 iotMapCache  = (Hashtable<String, String>)redisUtil.get("iotMap");
                 if (iotMapCache != null && iotMapCache.containsKey(iotMemId)){
                     latchMapResult = latMapConcurrent.get(iotMemId);
-                    if (latchMapResult != null){
+                    if (null != latchMapResult){
                         latchMapResult.orderId = iotMapCache.get(iotMemId);
                         latchMapResult.latch.countDown();
-                        latMapConcurrent.put(iotMemId, latchMapResult);
+                        iotMapCache.remove(iotMemId);
+                        redisUtil.set("iotMap", iotMapCache);
                         break;
                     }else{
                         continue;
