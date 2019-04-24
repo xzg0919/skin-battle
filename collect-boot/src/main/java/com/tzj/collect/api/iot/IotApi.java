@@ -204,6 +204,9 @@ public class IotApi {
                 result.put("id", latchMap.getOrderId());
                 result.put("code", 0);
                 result.put("msg", "操作成功");
+                //使用后清空
+                latchMap.orderId = null;
+                latMapConcurrent.put(iotMemId, latchMap);
                 return result;
             }
 
@@ -239,7 +242,7 @@ public class IotApi {
                         System.exit(0);//退出程序
                     }
                 }
-            }catch (NullPointerException e){
+            }catch (Exception e){
                 System.exit(0);//退出程序
             }
         }while (System.currentTimeMillis() - startTime <= 300*1000 && flag);
