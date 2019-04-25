@@ -6,6 +6,7 @@ import com.tzj.collect.api.common.excel.ExcelData;
 import com.tzj.collect.api.common.excel.ExcelUtils;
 import com.tzj.collect.api.common.websocket.AppWebSocketServer;
 import com.tzj.collect.api.common.websocket.WebSocketServer;
+import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.service.AliPayService;
@@ -37,6 +38,8 @@ public class AdminController {
 
 	@Autowired
 	private AppWebSocketServer appWebSocketServer;
+	@Autowired
+	private XcxWebSocketServer xcxWebSocketServer;
 
 	@RequestMapping("/addExcel")
 	public String addExcel() {
@@ -105,12 +108,19 @@ public class AdminController {
 		ExcelUtils.exportExcel(response, fileName, data);
 	}
 
+	@RequestMapping("/open/socket")
+	public  String openSocket() {
+		System.out.println("socket");
+
+		return "admin/love";
+	}
+
 	@RequestMapping("/product/order")
 	public @ResponseBody
-	String updateProducrOrder() {
+	String updateProducrOrder(String id) {
 		System.out.println("进来了2");
 		try {
-			appWebSocketServer.sendInfo("121", "你是回收经理");
+			xcxWebSocketServer.sendInfo(id, "你是回收经理");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

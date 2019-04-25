@@ -354,11 +354,17 @@ public class AliPayServiceImpl implements AliPayService{
     public AntMerchantExpandTradeorderSyncResponse  updateForest(String orderId){
         try{
             Order order = orderService.selectById(orderId);
+            if(!StringUtils.isBlank(order.getMyslOrderId())||!StringUtils.isBlank(order.getMyslParam())){
+                return null;
+            }
             Map<String, Object> digitalMap = null;
             List<Map<String, Object>> houseList  = null;
             //判断订单是否是电器
             if((Order.TitleType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
                 digitalMap = orderItemService.selectItemOne(Integer.parseInt(orderId));
+                if (null == digitalMap || digitalMap.isEmpty() ){
+                    return null;
+                }
             }else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")){
                 houseList = orderItemAchService.selectItemSumAmount(Integer.parseInt(orderId));
             }else {

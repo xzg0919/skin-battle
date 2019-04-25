@@ -13,6 +13,7 @@ LEFT JOIN sb_category b ON a.category_id = b.id
 LEFT JOIN sb_category c ON b.parent_id = c.id
 WHERE
 	a.order_id = #{orderId}
+AND b.ali_item_type is not null
 GROUP BY
 	a.category_id
 </select>
