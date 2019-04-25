@@ -364,7 +364,7 @@ public class AliPayServiceImpl implements AliPayService{
             }else {
                 return null;
             }
-            AlipayClient alipayClient = new DefaultAlipayClient("https://openapipre.alipay.com/gateway.do",AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
+            AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do",AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
             AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
             //request.putOtherTextParam("ws_service_url","mrchorder-eu95-3.rz00b.dev.alipay.net:12200");
             AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
@@ -392,7 +392,7 @@ public class AliPayServiceImpl implements AliPayService{
                     }
                     ItemOrder itemOrder = new ItemOrder();
                     itemOrder.setItemName(itemMap.get("parentName").toString());
-                    itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount"))*1000);
+                    itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount")));
                     List<OrderExtInfo> extInfo = new ArrayList<>();
                     OrderExtInfo orderExtInfo = new OrderExtInfo();
                     orderExtInfo.setExtKey("ITEM_TYPE");
@@ -415,6 +415,10 @@ public class AliPayServiceImpl implements AliPayService{
             }
             if(response.isSuccess()){
                 System.out.println("调⽤成功");
+                String MorderId = response.getOrderId();
+                order.setMyslOrderId(MorderId);
+                order.setMyslParam(JSON.toJSONString(response.getParams()));
+                orderService.updateById(order);
             } else {
                 System.out.println("调⽤失败");
                 DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()

@@ -51,18 +51,12 @@ public class BusinessOrderApiTest {
 		String api="http://localhost:9090/business/api";
 
         BOrderBean orderBean = new BOrderBean();
-        orderBean.setCompanyId(1);
-        orderBean.setStatus("ALREADY");
-        orderBean.setCategoryType("HOUSEHOLD");
-        orderBean.setPagebean(new PageBean());
-		Recyclers recyclers = new Recyclers();
-		recyclers.setName("东");
-		orderBean.setRecyclers(recyclers);
+        orderBean.setId(10212);
 
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.order.getOrderLists");
+		param.put("name","business.order.getOrderDetail");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");

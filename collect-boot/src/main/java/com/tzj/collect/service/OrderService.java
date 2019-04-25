@@ -47,7 +47,7 @@ public interface OrderService extends IService<Order> {
      * @param  orderbean : 订单参数实体
      * @return long
      */
-	String saveOrder(OrderBean orderbean);
+	 Map<String,Object> saveOrder(OrderBean orderbean);
 	
 	boolean saveByRecy(OrderBean orderbean);
 
@@ -236,7 +236,7 @@ public interface OrderService extends IService<Order> {
 	 * @return
 	 * @throws ApiException
 	 */
-	String saveBigThingOrder(OrderBean orderbean) throws ApiException;
+	Map<String,Object> saveBigThingOrder(OrderBean orderbean) throws ApiException;
 
 	 void updateMemberPoint(Integer memberId, String OrderNo, double amount,String descrb);
 

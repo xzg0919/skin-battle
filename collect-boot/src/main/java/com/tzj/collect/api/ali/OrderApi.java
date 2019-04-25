@@ -166,7 +166,7 @@ public class OrderApi {
     @Api(name = "order.create", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    public String createOrder(OrderBean orderbean) throws ApiException{
+    public Object createOrder(OrderBean orderbean) throws ApiException{
     	Member member = MemberUtils.getMember();
     	//根据当前登录的会员，获取姓名、绿账号和阿里userId
     	orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
@@ -206,7 +206,7 @@ public class OrderApi {
     	String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
     	orderbean.setOrderNo(orderNo);
     	//保存订单
-    	String status = orderService.saveOrder(orderbean);
+    	Map<String,Object> resultMap = orderService.saveOrder(orderbean);
     	//钉钉消息赋值回收公司名称
     	if (companyId != null && !"".equals(companyId)) {
 			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", companyId));
@@ -215,7 +215,7 @@ public class OrderApi {
 		}else{
 			throw new ApiException("回收公司异常！！！！！");
 		}
-    	if("操作成功".equals(status)) {
+    	if("操作成功".equals(resultMap.get("msg")+"")) {
     		if("sb_admin".equals(JdbcName)) {
     			//钉钉通知
     			asyncService.notifyDingDingOrderCreate(orderbean);
@@ -227,7 +227,7 @@ public class OrderApi {
 			e.printStackTrace();
 		}
 
-    	return status;
+    	return resultMap;
     }
 	/**
      * 根据小区Id和分类Id查询所属的企业
@@ -329,7 +329,7 @@ public class OrderApi {
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
-		String status = (String)orderService.XcxSaveOrder(orderbean,member);
+		Map<String,Object> resultMap = (Map<String,Object>)orderService.XcxSaveOrder(orderbean,member);
 		//钉钉消息赋值回收公司名称
 		if (companyId != null && !"".equals(companyId)) {
 			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", companyId));
@@ -338,7 +338,7 @@ public class OrderApi {
 		}else{
 			return "回收公司异常";
 		}
-		if("操作成功".equals(status)) {
+		if("操作成功".equals(resultMap.get("msg")+"")) {
 			if("sb_admin".equals(JdbcName)) {
 				//钉钉通知
 				asyncService.notifyDingDingOrderCreate(orderbean);
@@ -356,10 +356,14 @@ public class OrderApi {
 		if (Integer.parseInt(time)>= 20){
 			map.put("type",8);
 			map.put("msg","20:00后的订单，次日上午才上门回收哦！");
+			map.put("code",resultMap.get("code"));
+			map.put("id",resultMap.get("id"));
 			return map;
 		}
 		map.put("type",9);
 		map.put("msg","操作成功");
+		map.put("code",resultMap.get("code"));
+		map.put("id",resultMap.get("id"));
 		return map;
 	}
 	/**
@@ -432,20 +436,22 @@ public class OrderApi {
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
-		Object object = orderService.savefiveKgOrder(orderbean);
-		if("操作成功".equals(object)) {
+		Map<String,Object> resultMap = (Map<String,Object>)orderService.savefiveKgOrder(orderbean);
+		if("操作成功".equals(resultMap.get("msg")+"")) {
 			if("sb_admin".equals(JdbcName)) {
 				//钉钉通知
 				asyncService.notifyDingDingOrderCreate(orderbean);
 			}
 		}
-		if("操作成功".equals(object)){
+		if("操作成功".equals(resultMap.get("msg")+"")){
 			Map<String,Object> map = new HashMap<>();
 			map.put("type",9);
 			map.put("msg","操作成功");
+			map.put("code",resultMap.get("code"));
+			map.put("id",resultMap.get("id"));
 			return map;
 		}else {
-			return object;
+			return resultMap;
 		}
 	}
 	@Api(name = "order.updateForest", version = "1.0")
@@ -465,7 +471,7 @@ public class OrderApi {
 	@Api(name = "order.saveBigThingOrder", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	public String saveBigThingOrder(OrderBean orderbean) throws ApiException{
+	public Object saveBigThingOrder(OrderBean orderbean) throws ApiException{
 		Member member = MemberUtils.getMember();
 		//根据当前登录的会员，获取姓名、绿账号和阿里userId
 		orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
@@ -505,7 +511,7 @@ public class OrderApi {
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
 		//保存订单
-		String status = orderService.saveBigThingOrder(orderbean);
+		Map<String,Object> resultMap = orderService.saveBigThingOrder(orderbean);
 		//钉钉消息赋值回收公司名称
 		if (StringUtils.isNoneBlank(companyId)) {
 			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", companyId));
@@ -514,7 +520,7 @@ public class OrderApi {
 		}else{
 			throw new ApiException("回收公司异常！！！！！");
 		}
-		if("操作成功".equals(status)) {
+		if("操作成功".equals(resultMap.get("msg")+"")) {
 			if("sb_admin".equals(JdbcName)) {
 				//钉钉通知
 				asyncService.notifyDingDingOrderCreate(orderbean);
@@ -525,7 +531,6 @@ public class OrderApi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		return status;
+		return resultMap;
 	}
 }

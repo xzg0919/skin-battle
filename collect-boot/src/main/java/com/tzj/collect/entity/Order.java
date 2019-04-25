@@ -182,6 +182,12 @@ public class Order extends DataEntity<Long> {
 	 * 是否授权蚂蚁森林能量 0 不需要 1需要
 	 */
 	private String isMysl;
+	/*
+	蚂蚁深林能量Id
+	 */
+	private String myslOrderId;
+
+	private String myslParam;
 
 	private String iotEquipmentCode;//iot设备编号
 
@@ -210,6 +216,22 @@ public class Order extends DataEntity<Long> {
 
 	public void setQuantity(String quantity) {
 		this.quantity = quantity;
+	}
+
+	public String getMyslOrderId() {
+		return myslOrderId;
+	}
+
+	public void setMyslOrderId(String myslOrderId) {
+		this.myslOrderId = myslOrderId;
+	}
+
+	public String getMyslParam() {
+		return myslParam;
+	}
+
+	public void setMyslParam(String myslParam) {
+		this.myslParam = myslParam;
 	}
 
 	public String getOrderRemarks() {

@@ -196,8 +196,16 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	@Override
 	public Map<String, Object> getTowCategoryList(CategoryBean categoryBean) {
 		Map<String, Object> map = new HashMap<>();
-		
+
 		List<ComCatePrice> priceList = null;
+		//判断是否免费
+		String isCash = categoryBean.getIsCash();
+		if ("1".equals(isCash)){
+			map.put("comIsNull", false);
+			priceList = comCateMapper.getAppCategoryList();
+			map.put("ComCatePriceList", priceList);
+			return  map;
+		}
 		//如果不为空获取当前公司回收价格
 		if (categoryBean.getCommunityId() != null) {
 			//根据小区Id查询唯一的所属企业

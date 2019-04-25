@@ -23,7 +23,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("172487", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("8401", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -35,7 +35,7 @@ public class OrderTest {
                 System.out.println("反向編譯 token是："+subjectStr);
 
                 //String api="http://open.mayishoubei.com/ali/api";
-                String api="http://localhost:9090/ali/api";
+                String api="http://open.mayishoubei.com/ali/api";
 //
                 OrderBean orderbean = new OrderBean();
                 orderbean.setCategoryId(73);
@@ -62,7 +62,7 @@ public class OrderTest {
 
 
                 OrderBean orderbean1 = new OrderBean();
-               orderbean1.setId(9095);
+               orderbean1.setId(10758);
 
                 OrderPayParam orderPayParam = new OrderPayParam();
                 orderPayParam.setOrderId(8841);

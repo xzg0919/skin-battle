@@ -102,6 +102,8 @@ public interface CompanyCategoryMapper extends BaseMapper<CompanyCategory>{
 	 */
 	List<ComCatePrice> getAvgPriceApp(@Param("categoryBean")CategoryBean categoryBean);
 
+	List<ComCatePrice> getAppCategoryList();
+
 
 	/**
 	 * 根据公司id及分类属性选项id查找公司对应属性选项价格列表

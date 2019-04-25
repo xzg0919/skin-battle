@@ -22,4 +22,7 @@ public class PushConst {
     public static final String APP_CODE_05 = "1005";
     public static final String APP_CODE_05_MESSAGE = "您有新的订单了";
 
+    public static final String APP_CODE_06 = "1006";
+    public static final String APP_CODE_06_MESSAGE = "您有订单已被平台取消";
+
 }

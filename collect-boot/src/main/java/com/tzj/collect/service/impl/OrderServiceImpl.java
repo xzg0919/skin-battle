@@ -154,7 +154,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 */
 	@Transactional
 	@Override
-	public String saveOrder(OrderBean orderbean) {
+	public Map<String,Object> saveOrder(OrderBean orderbean) {
+		Map<String,Object> resultMap = new HashMap<>();
 		boolean flag = false;
 		//获取分类的所有父类编号
 		Category category = null;
@@ -238,7 +239,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "FAIL";
+			resultMap.put("msg","FAIL");
+			return resultMap;
 		}
 		long orderId = order.getId();
 
@@ -274,9 +276,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		flag = orderLogService.insert(orderLog);
 
 		if (flag) {
-			return "操作成功";
+			resultMap.put("msg","操作成功");
+			resultMap.put("code",0);
+			resultMap.put("id",orderId);
+			return resultMap;
 		}
-		return "操作失败";
+		resultMap.put("msg","操作失败");
+		return resultMap;
 	}
 	/**
 	 * 回收员确认上传订单
@@ -444,33 +450,52 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<OrderItemBean> idAmount = null;
 		if (CategoryType.HOUSEHOLD.name().equals(orderbean.getTitle())) {
 			List<IdAmountListBean> listBean = orderbean.getIdAndListList();
-			for (IdAmountListBean idAmountListBean : listBean) {
-				orderItem = new OrderItemAch();
-				orderItem.setOrderId(Integer.parseInt(orderbean.getId() + ""));
-				orderItem.setParentId(idAmountListBean.getCategoryParentId());
-				orderItem.setParentName(idAmountListBean.getCategoryParentName());
-				idAmount = idAmountListBean.getIdAndAmount();
-				wrapper = new EntityWrapper<CompanyCategory>();
-				wrapper.eq("company_id", orderbean.getCompanyId());
-				wrapper.eq("parent_id", idAmountListBean.getCategoryParentId());
-				comPriceList = comCatePriceService.selectList(wrapper);
-				for (OrderItemBean item : idAmount) {
-					orderItem.setCategoryId(Integer.parseInt(item.getCategoryId() + ""));
-					orderItem.setCategoryName(item.getCategoryName());
-					orderItem.setAmount(item.getAmount());
-					System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
-					//判断此单是否是免费
-					if ("1".equals(isCash)) {
+			//判断此单是否是免费
+			if("1".equals(isCash)){
+				for (IdAmountListBean idAmountListBean : listBean) {
+					idAmount = idAmountListBean.getIdAndAmount();
+					for (OrderItemBean item : idAmount) {
+						orderItem = new OrderItemAch();
+						orderItem.setOrderId(Integer.parseInt(orderbean.getId() + ""));
+						orderItem.setParentId(item.getCategoryId());
+						orderItem.setParentName(item.getCategoryName());
+						orderItem.setAmount(item.getAmount());
+						comPriceList = comCatePriceService.selectList(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("parent_id", item.getCategoryId()));
+						orderItem.setCategoryId(Integer.parseInt(comPriceList.get(0).getCategoryId()));
+						orderItem.setCategoryName(item.getCategoryName());
+						orderItem.setParentIds(comPriceList.get(0).getParentIds());
+						orderItem.setPrice(0);
+						orderItem.setUnit(comPriceList.get(0).getUnit());
+						orderItemAchService.insert(orderItem);
 						amount += item.getAmount()*2;
-					} else if(ToolUtils.categoryName.equals(item.getCategoryName())){
-						amount += item.getAmount();
 					}
-					for (CompanyCategory comPrice : comPriceList) {
-						if (comPrice.getCategoryId().equals(item.getCategoryId() + "")) {
-							orderItem.setParentIds(comPrice.getParentIds());
-							orderItem.setPrice(comPrice.getPrice());
-							orderItem.setUnit(comPrice.getUnit());
-							orderItemAchService.insert(orderItem);
+				}
+			}else {
+				for (IdAmountListBean idAmountListBean : listBean) {
+					orderItem = new OrderItemAch();
+					orderItem.setOrderId(Integer.parseInt(orderbean.getId() + ""));
+					orderItem.setParentId(idAmountListBean.getCategoryParentId());
+					orderItem.setParentName(idAmountListBean.getCategoryParentName());
+					idAmount = idAmountListBean.getIdAndAmount();
+					wrapper = new EntityWrapper<CompanyCategory>();
+					wrapper.eq("company_id", orderbean.getCompanyId());
+					wrapper.eq("parent_id", idAmountListBean.getCategoryParentId());
+					comPriceList = comCatePriceService.selectList(wrapper);
+					for (OrderItemBean item : idAmount) {
+						orderItem.setCategoryId(Integer.parseInt(item.getCategoryId() + ""));
+						orderItem.setCategoryName(item.getCategoryName());
+						orderItem.setAmount(item.getAmount());
+						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
+						if(ToolUtils.categoryName.equals(item.getCategoryName())){
+							amount += item.getAmount();
+						}
+						for (CompanyCategory comPrice : comPriceList) {
+							if (comPrice.getCategoryId().equals(item.getCategoryId() + "")) {
+								orderItem.setParentIds(comPrice.getParentIds());
+								orderItem.setPrice(comPrice.getPrice());
+								orderItem.setUnit(comPrice.getUnit());
+								orderItemAchService.insert(orderItem);
+							}
 						}
 					}
 				}
@@ -1385,6 +1410,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						enterpriseCodeService.updateById(enterpriseCode);
 					}
 				}
+				try{
+					//查询回收人员信息推送消息
+					Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+					if(null!=recyclers){
+						PushUtils.getAcsResponse(recyclers.getTel(), PushConst.APP_TITLE,PushConst.APP_CODE_06_MESSAGE,PushConst.APP_CODE_06,PushConst.APP_CODE_06_MESSAGE);
+					}
+				}catch (Exception e){
+					e.printStackTrace();
+				}
 				break;
 			case "ALREADY":
 				order.setStatus(OrderType.ALREADY);
@@ -1942,6 +1976,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						price += list.getPrice() * list.getAmount();
 						//判断是否免费
 						if ("1".equals(isCash)) {
+							listMap.add(map);
 							greenCount += list.getAmount() * 2;
 						} else if (ToolUtils.categoryName.equals(list.getCategoryName())) {
 							greenCount += list.getAmount();
@@ -2139,6 +2174,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @author 王灿
 	 */
 	public Object XcxSaveOrder(OrderBean orderBean, Member member) {
+		Map<String,Object> resultMap = new HashMap<>();
 		Order order = new Order();
 		try {
 			if (StringUtils.isNotBlank(orderBean.getArrivalTime())) {
@@ -2234,7 +2270,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOp("待接单");
 		orderLogService.insert(orderLog);
 
-		return "操作成功";
+		resultMap.put("msg","操作成功");
+		resultMap.put("code",0);
+		resultMap.put("id",order.getId());
+		return resultMap;
 	}
 	/**
 	 * 保存5公斤废纺衣物的订单
@@ -2242,6 +2281,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 */
 	@Override
 	public Object savefiveKgOrder(OrderBean orderBean) {
+		Map<String,Object> resultMap = new HashMap<>();
 		boolean flag = false;
 		//根据分类Id查询物流公司分类的信息
 		CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("category_id", orderBean.getCategoryId()).eq("del_flag", 0).eq("company_id", orderBean.getCompanyId()));
@@ -2280,7 +2320,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			this.insert(order);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "FAIL";
+			resultMap.put("msg","FAIL");
+			return resultMap;
 		}
 
 		//储存图片链接
@@ -2330,7 +2371,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOp("待接单");
 		orderLogService.insert(orderLog);
 
-		return "操作成功";
+		resultMap.put("msg","操作成功");
+		resultMap.put("code",0);
+		resultMap.put("id",order.getId());
+		return resultMap;
 	}
 
 	/**
@@ -2340,7 +2384,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @throws com.taobao.api.ApiException
 	 */
 	@Override
-	public String saveBigThingOrder(OrderBean orderbean) throws com.taobao.api.ApiException{
+	public Map<String,Object> saveBigThingOrder(OrderBean orderbean) throws com.taobao.api.ApiException{
+		Map<String,Object> resultMap = new HashMap<>();
 		//获取分类的所有父类编号
 		Category category =  categoryService.selectById(orderbean.getCategoryId());
 		EnterpriseCode enterpriseCode = null;
@@ -2404,7 +2449,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "FAIL";
+			resultMap.put("msg","FAIL");
+			return resultMap;
 		}
 		long orderId = order.getId();
 
@@ -2453,8 +2499,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOpStatusAfter("INIT");
 		orderLog.setOp("待接单");
 		orderLogService.insert(orderLog);
-
-		return "操作成功";
+		resultMap.put("msg","操作成功");
+		resultMap.put("id",orderId);
+		resultMap.put("code",0);
+		return resultMap;
 
 	}
 	/**

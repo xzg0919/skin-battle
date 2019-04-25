@@ -258,6 +258,21 @@
 		ORDER BY
 			sc.code_ ASC;
 	</select>
+	<select id="getAppCategoryList" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+			SELECT
+						0 AS price,
+						sc.name_,
+						sc.id,
+						scc.icon,
+						'kg' as unit
+			FROM sb_category sc
+			LEFT JOIN sb_category scc ON sc.id = scc.parent_id
+			WHERE sc.level_= 0
+			AND sc.title = 2
+			AND sc.unuseful = 0
+			GROUP BY sc.id
+	</select>
+
 
 	
 	<select id="selectComCateAttOptPrice" parameterType="com.tzj.collect.api.business.param.ComIdAndCateOptIdBean" resultType="com.tzj.collect.api.business.result.BusinessCategoryResult">
