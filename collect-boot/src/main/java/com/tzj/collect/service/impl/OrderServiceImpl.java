@@ -1983,7 +1983,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						}
 						if (list.getPrice() == 0 && !ToolUtils.categoryName.equals(list.getCategoryName())) {
 							categoryName += list.getCategoryName() + "/";
-						} else {
+						} else if (!"1".equals(isCash)){
 							listMap.add(map);
 						}
 					}
