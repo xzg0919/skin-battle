@@ -35,7 +35,7 @@ public class OrderTest {
                 System.out.println("反向編譯 token是："+subjectStr);
 
                 //String api="http://open.mayishoubei.com/ali/api";
-                String api="http://open.mayishoubei.com/ali/api";
+                String api="http://localhost:9090/ali/api";
 //
                 OrderBean orderbean = new OrderBean();
                 orderbean.setCategoryId(73);
@@ -69,10 +69,10 @@ public class OrderTest {
                 orderPayParam.setPrice(new BigDecimal("1"));
 
             CategoryBean categoryBean = new CategoryBean();
-            categoryBean.setId(103);
+            categoryBean.setId(10228);
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","order.updateForest");
+                param.put("name","theme.getXcxThemeMysl");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -80,7 +80,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",orderbean1);
+                param.put("data",categoryBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

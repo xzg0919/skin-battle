@@ -1,8 +1,17 @@
 package com.tzj.collect.api.common.websocket;
 
 
+import com.alibaba.fastjson.JSON;
+import com.tzj.collect.api.ali.param.MemberBean;
+import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.tzj.module.api.annotation.Api;
+import com.tzj.module.api.annotation.AuthIgnore;
+import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
+import com.tzj.module.easyopen.util.ApiUtil;
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +19,11 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
@@ -100,7 +112,7 @@ public class XcxWebSocketServer {
     /**
      * 單發发自定义消息
      * */
-    public static void sendInfo(String memberId,String message) throws IOException {
+    public static void sendInfo(String memberId,String type,String message) throws IOException {
         try {
             XcxWebSocketServer item = xcxWebSocketSetMap.get(memberId);
             //判断企业是否连接
@@ -135,4 +147,39 @@ public class XcxWebSocketServer {
         System.out.println("反向編譯 token是："+subjectStr);
         return subjectStr;
     }
+
+    public static void pushXcxDetail(String memberId,String type,String message){
+        try{
+            XcxWebSocketServer.sendInfo(memberId,type,message);
+
+            String api="http://172.19.182.58:9090/ali/api";
+            if("172.19.182.58".equals(InetAddress.getLocalHost().getHostAddress())){
+                api = "http://172.19.182.59:9090/ali/api";
+            }
+
+            MemberBean memberBean = new MemberBean();
+            memberBean.setMemberId(memberId);
+            memberBean.setType(type);
+            memberBean.setMessage(message);
+            HashMap<String,Object> param=new HashMap<>();
+            param.put("name","member.pushXcxDetail");
+            param.put("version","1.0");
+            param.put("format","json");
+            param.put("app_key","app_id_1");
+            param.put("timestamp", Calendar.getInstance().getTimeInMillis());
+            //param.put("token",securityToken);
+            //param.put("sign","111");
+            param.put("nonce", UUID.randomUUID().toString());
+            param.put("data",memberBean);
+            String jsonStr=JSON.toJSONString(param);
+            String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");
+            param.put("sign",sign);
+            Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
+            String resultJson=response.body().string();
+        }catch (Exception e){
+            System.out.println("给另一台推送消息失败");
+        }
+    }
+
+
 }

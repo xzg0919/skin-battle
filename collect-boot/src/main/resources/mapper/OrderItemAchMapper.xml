@@ -5,16 +5,16 @@
         SELECT
             round(SUM(a.amount)*1000,0)  AS amount,
             a.parent_id AS parentId,
-            a.parent_name AS parentName,
+            b.name_ AS parentName,
             b.ali_item_type AS aliItemType
         FROM
         sb_order_item_ach a
-        LEFT JOIN sb_category b ON a.parent_id = b.id
+        LEFT JOIN sb_category b ON a.category_id = b.id
+		LEFT JOIN sb_category c ON c.id = b.parent_id
         WHERE
         a.order_id = #{orderId}
-        AND  b.ali_item_type is not null
-        GROUP BY
-        parentId
+		AND b.ali_item_type is NOT NULL
+        GROUP BY b.ali_item_type;
     </select>
 
     <select id="orderSum" parameterType="String" resultType="String">

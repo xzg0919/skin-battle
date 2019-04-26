@@ -2,11 +2,10 @@ package com.tzj.collect.api.app;
 
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.app.result.AppOrderResult;
+import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
+import com.tzj.collect.common.redis.RedisUtil;
 import com.tzj.collect.common.util.RecyclersUtils;
-import com.tzj.collect.entity.Category;
-import com.tzj.collect.entity.OrderItem;
-import com.tzj.collect.entity.OrderPic;
-import com.tzj.collect.entity.Recyclers;
+import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
@@ -40,6 +40,10 @@ public class AppOrderApi {
 	private RecyclersService recyclersService;
 	@Autowired
 	private CategoryService categoryService;
+	@Autowired
+	private XcxWebSocketServer xcxWebSocketServer;
+	@Autowired
+	private RedisUtil redisUtil;
 	
 	// 接口里面获取 Recyclers
 	public Recyclers getRecycler() {
@@ -171,6 +175,30 @@ public class AppOrderApi {
 		}
 		return orderList;
 	}
-
+	/**
+	 * 回收经理转派订单
+	 * @author 王灿
+	 * @return
+	 */
+	@Api(name = "app.order.pullCollectMoney", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object pullCollectMoney(OrderBean orderBean) {
+		Order order = orderService.selectById(orderBean.getId());
+		Object o = redisUtil.get(order.getOrderNo());
+		if (null!=o){
+			return "您已提醒用户，请在12小时以后再次点击提醒";
+		}
+		if (null == order){
+			return "找不到该订单";
+		}
+		redisUtil.set(order.getOrderNo(), UUID.randomUUID(),60*60*12);
+		try {
+			xcxWebSocketServer.pushXcxDetail(order.getMemberId().toString(),"detalis","请支付订单");
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return "操作成功";
+	}
 }
 

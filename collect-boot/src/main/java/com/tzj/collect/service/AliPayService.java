@@ -61,4 +61,6 @@ public interface AliPayService {
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      */
     public AntMerchantExpandTradeorderSyncResponse  updateForest(String orderId);
+
+    AntMerchantExpandTradeorderSyncResponse  updateCansForest(String aliUserId,String outBizNo,long count,String type);
 }

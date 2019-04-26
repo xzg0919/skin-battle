@@ -120,7 +120,7 @@ public class AdminController {
 	String updateProducrOrder(String id) {
 		System.out.println("进来了2");
 		try {
-			xcxWebSocketServer.sendInfo(id, "你是回收经理");
+			xcxWebSocketServer.sendInfo(id,"", "你是回收经理");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

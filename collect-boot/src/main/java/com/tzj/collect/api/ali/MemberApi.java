@@ -2,6 +2,8 @@ package com.tzj.collect.api.ali;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.MemberBean;
+import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.service.MemberService;
@@ -30,6 +32,8 @@ public class MemberApi {
 	private MemberService memberService;
 	@Autowired
 	private MessageService MessageService;
+	@Autowired
+	private XcxWebSocketServer xcxWebSocketServer;
 	
 	/**
      * 根据用户授权返回的authCode,解析用户的数据
@@ -130,6 +134,17 @@ public class MemberApi {
 		resultMap.put("mobile", StringUtils.isBlank(member.getMobile())?"":member.getMobile());
 		resultMap.put("name", StringUtils.isBlank(member.getName())?"":member.getName());
 		return resultMap;
+	}
+
+	@Api(name = "member.pushXcxDetail", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public void sendMessage(MemberBean memberBean) {
+		try {
+			xcxWebSocketServer.sendInfo(memberBean.getMemberId(),memberBean.getType(),memberBean.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

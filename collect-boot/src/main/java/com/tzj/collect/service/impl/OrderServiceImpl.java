@@ -21,6 +21,7 @@ import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.CompanyBean;
 import com.tzj.collect.api.business.result.ApiUtils;
 import com.tzj.collect.api.business.result.CancelResult;
+import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.PushConst;
 import com.tzj.collect.common.constant.RocketMqConst;
@@ -114,6 +115,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private CompanyEquipmentService companyEquipmentService;
 	@Autowired
 	private RedisUtil redisUtil;
+	@Autowired
+	private XcxWebSocketServer xcxWebSocketServer;
 	@Override
 	public Order getLastestOrderByMember(Integer memberId) {
 		return selectOne(new EntityWrapper<Order>().eq("member_id", memberId).orderBy("complete_date", false).last("LIMIT 1"));
@@ -450,27 +453,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<OrderItemBean> idAmount = null;
 		if (CategoryType.HOUSEHOLD.name().equals(orderbean.getTitle())) {
 			List<IdAmountListBean> listBean = orderbean.getIdAndListList();
-			//判断此单是否是免费
-			if("1".equals(isCash)){
-				for (IdAmountListBean idAmountListBean : listBean) {
-					idAmount = idAmountListBean.getIdAndAmount();
-					for (OrderItemBean item : idAmount) {
-						orderItem = new OrderItemAch();
-						orderItem.setOrderId(Integer.parseInt(orderbean.getId() + ""));
-						orderItem.setParentId(item.getCategoryId());
-						orderItem.setParentName(item.getCategoryName());
-						orderItem.setAmount(item.getAmount());
-						comPriceList = comCatePriceService.selectList(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("parent_id", item.getCategoryId()));
-						orderItem.setCategoryId(Integer.parseInt(comPriceList.get(0).getCategoryId()));
-						orderItem.setCategoryName(item.getCategoryName());
-						orderItem.setParentIds(comPriceList.get(0).getParentIds());
-						orderItem.setPrice(0);
-						orderItem.setUnit(comPriceList.get(0).getUnit());
-						orderItemAchService.insert(orderItem);
-						amount += item.getAmount()*2;
-					}
-				}
-			}else {
 				for (IdAmountListBean idAmountListBean : listBean) {
 					orderItem = new OrderItemAch();
 					orderItem.setOrderId(Integer.parseInt(orderbean.getId() + ""));
@@ -486,7 +468,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						orderItem.setCategoryName(item.getCategoryName());
 						orderItem.setAmount(item.getAmount());
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
-						if(ToolUtils.categoryName.equals(item.getCategoryName())){
+						if("1".equals(isCash)){
+							amount += item.getAmount()*2;
+						}else if(ToolUtils.categoryName.equals(item.getCategoryName())){
 							amount += item.getAmount();
 						}
 						for (CompanyCategory comPrice : comPriceList) {
@@ -499,7 +483,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						}
 					}
 				}
-			}
 		} else if (CategoryType.DIGITAL.name().equals(orderbean.getTitle())) {
 			//根据订单Id获取电器订单所属分类的绿色能量值
 			OrderItem item = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id", orderbean.getId()).groupBy("order_id"));
@@ -1571,6 +1554,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (!flag) {
 			throw new ApiException("修改失敗");
 		}
+		try {
+			xcxWebSocketServer.pushXcxDetail(order.getMemberId().toString(),"detalis","上门时间被修改，请及时查看");
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		return flag;
 	}
 
@@ -1852,9 +1840,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						map.put("amount", list.getAmount() + "");
 						price += list.getPrice() * list.getAmount();
 						achAmount += list.getAmount();
-						if (list.getPrice() == 0 && !ToolUtils.categoryName.equals(list.getCategoryName())) {
+						if (list.getPrice() == 0 && !ToolUtils.categoryName.equals(name.getName())) {
 							categoryName += list.getCategoryName() + "/";
-						} else {
+						} else{
 							listMap.add(map);
 						}
 						count++;
@@ -1976,14 +1964,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						price += list.getPrice() * list.getAmount();
 						//判断是否免费
 						if ("1".equals(isCash)) {
-							listMap.add(map);
 							greenCount += list.getAmount() * 2;
-						} else if (ToolUtils.categoryName.equals(list.getCategoryName())) {
+						} else if (ToolUtils.categoryName.equals(name.getName())) {
 							greenCount += list.getAmount();
 						}
-						if (list.getPrice() == 0 && !ToolUtils.categoryName.equals(list.getCategoryName())) {
+						if (list.getPrice() == 0 && !ToolUtils.categoryName.equals(name.getName())) {
 							categoryName += list.getCategoryName() + "/";
-						} else if (!"1".equals(isCash)){
+						} else{
 							listMap.add(map);
 						}
 					}

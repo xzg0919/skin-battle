@@ -31,6 +31,33 @@ public class MemberBean {
 	//来源  H5, HCX,
 	private String source;
 
+	private String memberId;
+	private String type;
+	private String message;
+
+	public String getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
 	public String getSource() {
 		return source;

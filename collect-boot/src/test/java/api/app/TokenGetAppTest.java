@@ -49,14 +49,13 @@ public class TokenGetAppTest {
 		 orderBean.setAchPrice("0.0");
 
 		 CategoryBean categoryBean = new CategoryBean();
-		 categoryBean.setIsCash("1");
-		 categoryBean.setId(68);
+		 categoryBean.setId(163);
 
 
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.category.getTowCategoryList");
+	        param.put("name", "app.order.pullCollectMoney");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");

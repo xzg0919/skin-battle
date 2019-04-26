@@ -43,4 +43,21 @@ public class ThemeApi {
         });
         return xcxThemes;
     }
+    /**
+     * 返回小程序首页蚂蚁深林文案
+     * @author 王灿
+     * @param
+     */
+    @Api(name = "theme.getXcxThemeMysl", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object getXcxThemeMysl() {
+        List<XcxTheme> xcxThemes = xcxThemeService.selectList(new EntityWrapper<XcxTheme>().eq("type", 1).eq("del_flag", 0));
+        xcxThemes.stream().forEach(xcxTheme -> {
+            List<XcxThemeContent> xcxThemeContents = xcxThemeContentService.selectList(new EntityWrapper<XcxThemeContent>().eq("theme_id", xcxTheme.getId()).eq("del_flag", 0));
+            xcxTheme.setContentList(xcxThemeContents);
+        });
+        return xcxThemes;
+    }
+
 }
