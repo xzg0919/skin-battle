@@ -2,6 +2,7 @@ package com.tzj.collect.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -37,6 +38,7 @@ import com.tzj.collect.service.impl.XingeMessageServiceImp.XingeMessageCode;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -840,7 +842,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (iotParamBean.getMemberId() == null || "".equals(iotParamBean.getMemberId().trim())){
 			throw new ApiException("参数错误, 缺少memberId。。", "-9");
 		}
-		order.setOrderNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000));
+		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+		order.setOrderNo(orderNo);
         EntityWrapper<Member> entity =  new EntityWrapper<>();
         entity.eq("card_no", iotParamBean.getMemberId()).eq("del_flag", 0);
 		Member member = memberService.selectOne(entity);
@@ -850,6 +853,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setMemberId(Integer.parseInt(member.getId().toString()));
 		order.setIotEquipmentCode(iotParamBean.getEquipmentCode());
 //		order.setPrice(iotParamBean.getSumPrice());
+		AtomicReference<Float> bottlesCount = new AtomicReference<>((float) 0);
 		//查找所有重量
 		final double[] score = {0};
 		parentLists.stream().forEach(parentList -> {
@@ -857,7 +861,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
 					score[0] += itemList.getQuantity();//瓶子个数40g/个
 					//峰会只给瓶子蚂蚁森林能量
-
+					bottlesCount.set(itemList.getQuantity());
 				}else {
 					score[0] += itemList.getQuantity();
 				}
@@ -898,7 +902,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+		//只给瓶子增加能量，为峰会使用
+		updateCansForestIot(order, member.getAliUserId(), Long.parseLong(bottlesCount.get().toString()), "cans");
 		return map;
+	}
+	@Async
+	public void updateCansForestIot(Order order, String aliUserId, long count, String type){
+		//增加蚂蚁能量
+		AntMerchantExpandTradeorderSyncResponse tradeorderSyncResponse = null;
+		if (count >= 1) {
+			tradeorderSyncResponse = aliPayService.updateCansForest(aliUserId, UUID.randomUUID().toString(), count, type);
+			//更新order
+			order.setMyslOrderId(tradeorderSyncResponse.getOrderId());
+			order.setMyslParam(tradeorderSyncResponse.getParams().toString());
+			this.updateById(order);
+		}
 	}
 
 //	/**
