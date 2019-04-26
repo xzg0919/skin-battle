@@ -855,7 +855,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		parentLists.stream().forEach(parentList -> {
 			parentList.getItemList().stream().forEach(itemList -> {
 				if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
-					score[0] += itemList.getQuantity() * 0.04;//瓶子个数40g/个
+					score[0] += itemList.getQuantity();//瓶子个数40g/个
+					//峰会只给瓶子蚂蚁森林能量
+
 				}else {
 					score[0] += itemList.getQuantity();
 				}
