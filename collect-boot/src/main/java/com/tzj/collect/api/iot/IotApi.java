@@ -199,7 +199,7 @@ public class IotApi {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//            latchMap = latMapConcurrent.get(iotMemId);
+            latchMap = latMapConcurrent.get(iotMemId);
             if (latchMap.getOrderId() != null){
                 result.put("id", latchMap.getOrderId());
                 result.put("code", 0);
