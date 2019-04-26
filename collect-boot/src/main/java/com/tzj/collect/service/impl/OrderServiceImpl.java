@@ -903,21 +903,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			e.printStackTrace();
 		}
 		//只给瓶子增加能量，为峰会使用
-		//updateCansForestIot(order, member.getAliUserId(), Long.parseLong(bottlesCount.get().toString()), "cans");
+		updateCansForestIot(order, member.getAliUserId(), Long.parseLong(bottlesCount.get().toString()), "cans");
 		return map;
 	}
-//	@Async
-//	public void updateCansForestIot(Order order, String aliUserId, long count, String type){
-//		//增加蚂蚁能量
-//		AntMerchantExpandTradeorderSyncResponse tradeorderSyncResponse = null;
-//		if (count >= 1) {
-//			tradeorderSyncResponse = aliPayService.updateCansForest(aliUserId, UUID.randomUUID().toString(), count, type);
-//			//更新order
-//			order.setMyslOrderId(tradeorderSyncResponse.getOrderId());
-//			order.setMyslParam(tradeorderSyncResponse.getParams().toString());
-//			this.updateById(order);
-//		}
-//	}
+
+	public void updateCansForestIot(Order order, String aliUserId, long count, String type){
+		//增加蚂蚁能量
+		AntMerchantExpandTradeorderSyncResponse tradeorderSyncResponse = null;
+		if (count >= 1) {
+			tradeorderSyncResponse = aliPayService.updateCansForest(aliUserId, UUID.randomUUID().toString(), count, type);
+			//更新order
+			order.setMyslOrderId(tradeorderSyncResponse.getOrderId());
+			order.setMyslParam(tradeorderSyncResponse.getParams().toString());
+			this.updateById(order);
+		}
+	}
 
 //	/**
 //	 * 初始检验价格计算是否合理
