@@ -903,21 +903,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			e.printStackTrace();
 		}
 		//只给瓶子增加能量，为峰会使用
-		updateCansForestIot(order, member.getAliUserId(), Long.parseLong(bottlesCount.get().toString()), "cans");
+		//updateCansForestIot(order, member.getAliUserId(), Long.parseLong(bottlesCount.get().toString()), "cans");
 		return map;
 	}
-	@Async
-	public void updateCansForestIot(Order order, String aliUserId, long count, String type){
-		//增加蚂蚁能量
-		AntMerchantExpandTradeorderSyncResponse tradeorderSyncResponse = null;
-		if (count >= 1) {
-			tradeorderSyncResponse = aliPayService.updateCansForest(aliUserId, UUID.randomUUID().toString(), count, type);
-			//更新order
-			order.setMyslOrderId(tradeorderSyncResponse.getOrderId());
-			order.setMyslParam(tradeorderSyncResponse.getParams().toString());
-			this.updateById(order);
-		}
-	}
+//	@Async
+//	public void updateCansForestIot(Order order, String aliUserId, long count, String type){
+//		//增加蚂蚁能量
+//		AntMerchantExpandTradeorderSyncResponse tradeorderSyncResponse = null;
+//		if (count >= 1) {
+//			tradeorderSyncResponse = aliPayService.updateCansForest(aliUserId, UUID.randomUUID().toString(), count, type);
+//			//更新order
+//			order.setMyslOrderId(tradeorderSyncResponse.getOrderId());
+//			order.setMyslParam(tradeorderSyncResponse.getParams().toString());
+//			this.updateById(order);
+//		}
+//	}
 
 //	/**
 //	 * 初始检验价格计算是否合理
@@ -1229,6 +1229,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public Map<String, Object> selectDetail(OrderBean orderbean) {
 		//查询订单表详情
+		Order order1 = this.selectById(orderbean.getId());
+		order1.setIsRead("1");
+		this.updateById(order1);
 		Order order = orderMapper.selectOrder(orderbean.getId());
 		if((Order.TitleType.FIVEKG +"") .equals(order.getTitle()+"")){
 			order.setQuantity(order.getQty()+"-"+(order.getQty()+5)+"kg");
@@ -1401,6 +1404,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				order.setCancelReason(cancelReason);
 				//驳回时间
 				order.setCancelTime(new Date());
+				order.setIsRead("0");
 				orderLog.setOpStatusAfter("REJECTED");
 				orderLog.setOp("已驳回");
 				this.updateById(order);
@@ -1422,6 +1426,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				}catch (Exception e){
 					e.printStackTrace();
 				}
+				try {
+					xcxWebSocketServer.pushXcxDetail(order.getMemberId().toString(),"user", this.isUserOrder(order.getMemberId().toString()));
+				}catch (Exception e){
+					e.printStackTrace();
+				}
 				break;
 			case "ALREADY":
 				order.setStatus(OrderType.ALREADY);
@@ -1439,6 +1448,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 				order.setRecyclerId(recyclerId);
 				order.setDistributeTime(new Date());
+				order.setIsRead("0");
 				orderLog.setOpStatusAfter("TOSEND");
 				orderLog.setOp("已派单");
 				order.setIsDistributed("1");//是否被派送过
@@ -1450,6 +1460,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				//查询回收人员信息
 				Recyclers recyclers = recyclersService.selectById(recyclerId);
 				PushUtils.getAcsResponse(recyclers.getTel(), PushConst.APP_TITLE,PushConst.APP_CODE_01_MESSAGE,PushConst.APP_CODE_01,PushConst.APP_CODE_01_MESSAGE);
+				try {
+					xcxWebSocketServer.pushXcxDetail(order.getMemberId().toString(),"user", this.isUserOrder(order.getMemberId().toString()));
+				}catch (Exception e){
+					e.printStackTrace();
+				}
 				break;
 			default:
 				res = "传入的订单状态不对";
@@ -1648,6 +1663,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderLog.setOpStatusBefore(order.getStatus().name());
 		}
 		order.setUpdateDate(new Date());
+		order.setIsRead("0");
 		boolean flag = false;
 		if (orderBean.getStatus() != null && !"".equals(orderBean.getStatus())) {
 			switch (orderBean.getStatus()) {
@@ -1722,6 +1738,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					break;
 				default:
 					throw new ApiException("不能修改为此状态");
+			}
+			try {
+				xcxWebSocketServer.pushXcxDetail(order.getMemberId().toString(),"user", this.isUserOrder(order.getMemberId().toString()));
+			}catch (Exception e){
+				e.printStackTrace();
 			}
 		}
 		//修改日志列表
@@ -2581,4 +2602,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public List<Map<String, Object>> oneDayorderNum(String streetId) {
 		return orderMapper.oneDayorderNum(streetId);
 	}
+
+
+	public String isUserOrder(String memberId){
+		List<Order> initOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "0,1").eq("is_read", 0));
+		List<Order> alreadyOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 2).eq("is_read", 0));
+		List<Order> completeOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 3).eq("is_read", 0));
+		List<Order> cancleOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "4,5").eq("is_read", 0));
+		Map<String,Object> orderMap = new HashMap<>();
+		orderMap.put("initOrder",initOrder.size());
+		orderMap.put("alreadyOrder",alreadyOrder.size());
+		orderMap.put("completeOrder",completeOrder.size());
+		orderMap.put("cancleOrder",cancleOrder.size());
+		return JSON.toJSONString(orderMap);
+	};
 }

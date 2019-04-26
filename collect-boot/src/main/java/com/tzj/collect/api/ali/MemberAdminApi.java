@@ -1,16 +1,25 @@
 package com.tzj.collect.api.ali;
 
 
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.api.picc.param.PiccInsurancePolicyBean;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.Member;
+import com.tzj.collect.entity.Order;
 import com.tzj.collect.service.MemberService;
+import com.tzj.collect.service.OrderService;
 import com.tzj.collect.service.PiccInsurancePolicyService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
@@ -25,6 +34,10 @@ public class MemberAdminApi {
     private MemberService memberService;
     @Autowired
     private PiccInsurancePolicyService piccInsurancePolicyService;
+    @Autowired
+    private XcxWebSocketServer xcxWebSocketServer;
+    @Autowired
+    private OrderService orderService;
 
 
 
@@ -39,6 +52,11 @@ public class MemberAdminApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object memberAdmin() {
         Member member = MemberUtils.getMember();
+        try {
+            xcxWebSocketServer.pushXcxDetail(member.getId().toString(),"user", orderService.isUserOrder(member.getId().toString()));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return memberService.memberAdmin(member.getId().intValue());
     }
 
@@ -54,5 +72,4 @@ public class MemberAdminApi {
         Member member = MemberUtils.getMember();
         return piccInsurancePolicyService.insuranceDetal(member.getId().intValue(),Integer.parseInt(piccInsurancePolicyBean.getId()));
     }
-
 }

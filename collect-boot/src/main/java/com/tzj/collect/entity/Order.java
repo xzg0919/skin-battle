@@ -149,6 +149,8 @@ public class Order extends DataEntity<Long> {
 	
 	//是否是扫码完成的订单 0不是 1是
 	private String isScan;
+	//是否读取0未读 1以读取
+	private String isRead="0";
 
 	private Double greenCount;
 
@@ -208,6 +210,14 @@ public class Order extends DataEntity<Long> {
 			return "Y";
 		}
 		return "N";
+	}
+
+	public String getIsRead() {
+		return isRead;
+	}
+
+	public void setIsRead(String isRead) {
+		this.isRead = isRead;
 	}
 
 	public String getQuantity() {
