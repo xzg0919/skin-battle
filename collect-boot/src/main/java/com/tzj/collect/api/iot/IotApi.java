@@ -195,7 +195,7 @@ public class IotApi {
                 // 线程等待
                 //开启异步线程，如果redis有当前用户订单，当前线程重新启动
                 this.getTokenByCache(date, iotMemId);
-                latchMap.latch.await(5, TimeUnit.MINUTES);
+                latchMap.latch.await(9, TimeUnit.SECONDS);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -204,6 +204,7 @@ public class IotApi {
                 result.put("id", latchMap.getOrderId());
                 result.put("code", 0);
                 result.put("msg", "操作成功");
+                result.put("tryAgain", "N");
                 //使用后清空
                 latchMap.orderId = null;
                 latMapConcurrent.put(iotMemId, latchMap);
@@ -213,6 +214,7 @@ public class IotApi {
         }catch (Exception e){
            throw new ApiException(e.getMessage());
         }
+        result.put("tryAgain", "Y");
         return result;
     }
 
@@ -245,7 +247,7 @@ public class IotApi {
             }catch (Exception e){
                 System.exit(0);//退出程序
             }
-        }while (System.currentTimeMillis() - startTime <= 300*1000 && flag);
+        }while (System.currentTimeMillis() - startTime <= 9*1000 && flag);
         //5分钟内还没被扫码成功，关闭长连接
         if (null != latchMapResult){
             latchMapResult.latch.countDown();
