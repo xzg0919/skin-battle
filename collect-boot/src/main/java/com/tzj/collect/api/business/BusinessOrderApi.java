@@ -12,6 +12,7 @@ import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -217,6 +218,7 @@ public class BusinessOrderApi {
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object tosendfiveKgOrder(OrderBean orderbean){
+		SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
 		Order order = orderService.selectById(orderbean.getId());
 		order.setDistributeTime(new Date());
 		order.setStatus(Order.OrderType.TOSEND);
@@ -235,7 +237,7 @@ public class BusinessOrderApi {
 			param.put("userName",order.getLinkMan());
 			param.put("userTel", order.getTel());
 			param.put("userAddress",order.getAddress()+order.getFullAddress());
-			param.put("arrivalTime",order.getArrivalTime()+" "+order.getArrivalPeriod());
+			param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+order.getArrivalPeriod());
 			param.put("isCancel","N");
 			RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_DELIVERY_ORDER);
 		}catch (Exception e){
