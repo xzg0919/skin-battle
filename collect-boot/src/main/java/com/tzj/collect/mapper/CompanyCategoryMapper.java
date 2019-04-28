@@ -49,6 +49,8 @@ public interface CompanyCategoryMapper extends BaseMapper<CompanyCategory>{
 	 * @return
 	 */
 	List<ComCatePrice> getOwnnerPrice(@Param("categoryBean")CategoryBean categoryBean, @Param("companyId")Integer companyId);
+
+	List<ComCatePrice> getBigThingCategoryList(@Param("categoryId")Integer categoryId, @Param("companyId")Integer companyId);
 	/**
 	 * 该地区有服务范围的公司,获取该公司的价格列表
 	 * @param orderbean

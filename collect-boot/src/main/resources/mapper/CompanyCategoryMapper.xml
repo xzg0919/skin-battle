@@ -54,6 +54,29 @@
 			'1'
 		)
 	</select>
+	<select id="getBigThingCategoryList" parameterType="Integer" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
+		SELECT
+			FORMAT(sccp.price,2) AS price,
+			sccp.unit,
+			sc.name_,
+			sc.id,
+			sc.icon,
+			b.name_ AS parentName,
+			b.id AS parentId,
+			sc.is_old_exchange_new AS isOldExchangeNew,
+			sc.ant_forest_pic AS antForestPic
+		FROM
+			sb_company_category sccp
+		INNER JOIN sb_category sc ON sc.id = sccp.category_id
+		LEFT JOIN sb_category b
+		ON sc.parent_id = b.id
+		WHERE
+			sccp.parent_id = #{categoryId}
+		AND sccp.company_id = #{companyId}
+		AND sccp.del_flag = 0
+		AND b.del_flag = 0
+		ORDER BY sc.code_ ASC
+	</select>
 	<select id="getOwnnerPrice" parameterType="com.tzj.collect.api.ali.param.CategoryBean" resultType="com.tzj.collect.api.ali.result.ComCatePrice">
 		SELECT
 			FORMAT(sccp.price,2) AS price,

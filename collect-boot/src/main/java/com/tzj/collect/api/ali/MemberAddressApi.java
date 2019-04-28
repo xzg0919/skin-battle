@@ -37,6 +37,8 @@ public class MemberAddressApi {
 	private CompanyShareService companyShareService;
 	@Autowired
 	private CompanyStreeService companyStreeService;
+	@Autowired
+	private CompanyStreetBigService companyStreetBigService;
 
 	/**
      * 保存用户的新增地址/修改后保存的地址
@@ -173,11 +175,11 @@ public class MemberAddressApi {
 			memberAddress.setIsDigital("Y");
 		}
 		//判断地址是否有公司回收大件
-		String companyIdss = selectCompanyId(72, memberAddress.getCommunityId(), memberAddress.getAreaId());
-		if(StringUtils.isBlank(companyIdss)){
-			memberAddress.setIsDigThing("N");
-		}else {
+		Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(78,memberAddress.getStreetId());
+		if(null != streetBigCompanyId){
 			memberAddress.setIsDigThing("Y");
+		}else {
+			memberAddress.setIsDigThing("N");
 		}
 		return  memberAddress;
     }

@@ -47,6 +47,8 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	private CommunityService communityService;
 	@Autowired
 	private CompanyStreeService companyStreeService;
+	@Autowired
+	private CompanyStreetBigService companyStreetBigService;
 
 
 	/**
@@ -79,7 +81,16 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 		List<ComCatePrice> noPriceList = null;
 			//根据分类Id和小区Id查询所属企业
 			Company company = this.selectCompany(categoryBean.getId(),categoryBean.getCommunityId());
-			if("appliance".equals(categoryBean.getType())||"bigFurniture".equals(categoryBean.getType())){
+			if("bigFurniture".equals(categoryBean.getType())){
+				//判断该地址是否回收5公斤废纺衣物
+				Integer streeCompanyId = companyStreetBigService.selectStreetBigCompanyId(categoryBean.getId(), categoryBean.getStreeId());
+				if(null != streeCompanyId){
+					priceList = comCateMapper.getBigThingCategoryList(categoryBean.getId(),streeCompanyId);
+				}else {
+					priceList = this.getAvgPrice(categoryBean);
+					noPriceList = this.getAvgNoPrice(categoryBean);
+				}
+			}else if("appliance".equals(categoryBean.getType())){
 				if(null!=company){
 					//获取当前公司下的回收列表
 					priceList = this.getOwnnerPrice(categoryBean, Integer.parseInt(company.getId().toString()));

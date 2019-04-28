@@ -102,7 +102,7 @@ public class AreaApi {
 			return "请传入行政区名字";
 		}
 		//根据行政区名字获取行政区Id
-		Area area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", areaBean.getAreaName()));
+		Area area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", areaBean.getAreaName()).in("parent_id",areaBean.getCityId()));
 		//返回街道信息
 		return areaService.selectList(new EntityWrapper<Area>().eq("parent_id",area.getId()));
 	}

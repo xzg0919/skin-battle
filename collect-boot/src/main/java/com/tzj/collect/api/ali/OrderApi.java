@@ -56,6 +56,8 @@ public class OrderApi {
 	private CompanyStreeService companyStreeService;
 	@Autowired
 	private AliPayService aliPayService;
+	@Autowired
+	private CompanyStreetBigService companyStreetBigService;
 	
 
 	/**
@@ -248,25 +250,42 @@ public class OrderApi {
     	Integer communityId = memberAddress.getCommunityId();
     	String areaId = memberAddress.getAreaId().toString();
     	String companyId = "";
-    	//根据分类Id和小区Id查询所属企业
-    	Company company = priceService.selectCompany(orderbean.getCategoryId(),communityId);
-    	if(company == null) {
-    		//根据分类Id和小区id去公海查询相关企业
-    		CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", orderbean.getCategoryId()).eq("area_id", areaId));
-    		if(companyShare==null){
-				//判断该地址是否回收5公斤废纺衣物
-				Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(orderbean.getCategoryId(), memberAddress.getStreetId());
-				if(null==streeCompanyId){
-					return "该区域暂无回收企业";
-				}else{
-					companyId = streeCompanyId.toString();
+		if("FIVEKG".equals(orderbean.getType())){
+			//判断该地址是否回收5公斤废纺衣物
+			Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(orderbean.getCategoryId(), memberAddress.getStreetId());
+			if(null==streeCompanyId){
+				return "该区域暂无回收企业";
+			}
+			companyId = streeCompanyId+"";
+		}else if("BIGTHING".equals(orderbean.getType())){
+			//判断地址是否有公司回收大件
+			Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(orderbean.getCategoryId(),memberAddress.getStreetId());
+			if(null==streetBigCompanyId){
+				return "该区域暂无回收企业";
+			}
+			companyId = streetBigCompanyId+"";
+		}else {
+			//判断地址是否收生活垃圾或家电
+			//根据分类Id和小区Id查询所属企业
+			Company company = priceService.selectCompany(orderbean.getCategoryId(),communityId);
+			if(company == null) {
+				//根据分类Id和小区id去公海查询相关企业
+				CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", orderbean.getCategoryId()).eq("area_id", areaId));
+				if(companyShare==null){
+					//判断该地址是否回收5公斤废纺衣物
+					Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(orderbean.getCategoryId(), memberAddress.getStreetId());
+					if(null==streeCompanyId){
+						return "该区域暂无回收企业";
+					}else{
+						companyId = streeCompanyId.toString();
+					}
+				}else {
+					companyId = companyShare.getCompanyId().toString();
 				}
 			}else {
-				companyId = companyShare.getCompanyId().toString();
+				companyId = company.getId().toString();
 			}
-    	}else {
-    		companyId = company.getId().toString();
-    	}
+		}
 		Company company1 = companyService.selectById(companyId);
 		company1.setIsMysl("1");
 		return company1;
@@ -484,25 +503,14 @@ public class OrderApi {
 		//根据分类Id查询父类分类id
 		Category category = categoryService.selectById(orderbean.getCategoryId());
 		Integer communityId = memberAddress.getCommunityId();
-		String companyId = "";
-		String level = "";
+		String level = "0";
 		String areaId = memberAddress.getAreaId().toString();
 		//根据分类Id和小区Id查询所属企业
-		Company companys = priceService.selectCompany(category.getParentId(),communityId);
-		if(companys == null) {
-			//根据分类Id和小区id去公海查询相关企业
-			CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
-			if(companyShare==null) {
+		Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(category.getParentId(), memberAddress.getStreetId());
+		if(streetBigCompanyId == null) {
 				return "该区域暂无回收企业";
-			}
-			companyId = companyShare.getCompanyId().toString();
-			level = "1";
-		}else {
-			companyId = companys.getId().toString();
-			level = "0";
 		}
-		//Integer companyId = companyService.getCompanyIdByIds(orderbean.getCommunityId(),orderbean.getCategoryParentId());
-		orderbean.setCompanyId(Integer.parseInt(companyId));
+		orderbean.setCompanyId(streetBigCompanyId);
 		orderbean.setLevel(level);
 		orderbean.setCommunityId(communityId);
 		orderbean.setStreetId(memberAddress.getStreetId());
@@ -513,8 +521,8 @@ public class OrderApi {
 		//保存订单
 		Map<String,Object> resultMap = orderService.saveBigThingOrder(orderbean);
 		//钉钉消息赋值回收公司名称
-		if (StringUtils.isNoneBlank(companyId)) {
-			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", companyId));
+		if (StringUtils.isNoneBlank(streetBigCompanyId+"")) {
+			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", streetBigCompanyId));
 			orderbean.setCompanyName(company.getName());
 			orderbean.setDingDingUrl(company.getDingDingUrl());
 		}else{
@@ -527,7 +535,7 @@ public class OrderApi {
 			}
 		}
 		try {
-			webSocketServer.sendInfo(companyId, "你有新订单了");
+			webSocketServer.sendInfo(streetBigCompanyId+"", "你有新订单了");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

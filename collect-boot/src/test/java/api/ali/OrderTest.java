@@ -37,42 +37,13 @@ public class OrderTest {
                 //String api="http://open.mayishoubei.com/ali/api";
                 String api="http://localhost:9090/ali/api";
 //
-                OrderBean orderbean = new OrderBean();
-                orderbean.setCategoryId(73);
-                orderbean.setCityId("737");
-                orderbean.setArrivalTime("2019-01-01");
-                orderbean.setArrivalPeriod("pm");
-                orderbean.setPrice(new BigDecimal("-1"));
-                orderbean.setAddress("上海市浦东新区洲海路100号");
-                orderbean.setFullAddress("10栋101");
-                orderbean.setTel("18375555555");
-                orderbean.setLinkMan("测试大象");
-                orderbean.setRemarks("我是回收物描述");
-                orderbean.setIsMysl("0");
-
-                OrderPic orderPic = new OrderPic();
-                orderPic.setSmallPic("http://images.sqmall.top/collect/20180727/bigpicture_140f4f1a-a415-41be-a0f9-ee1e53c49977.jpg");
-                orderPic.setOrigPic("http://images.sqmall.top/collect/20180727/bigpicture_140f4f1a-a415-41be-a0f9-ee1e53c49977.jpg");
-                orderPic.setPicUrl("http://images.sqmall.top/collect/20180727/bigpicture_140f4f1a-a415-41be-a0f9-ee1e53c49977.jpg");
-                orderbean.setOrderPic(orderPic);
-
-                OrderItemBean orderItemBean = new OrderItemBean();
-                orderItemBean.setCategoryAttrOppIds("326,330,334,338");
-                orderbean.setOrderItemBean(orderItemBean);
 
 
-                OrderBean orderbean1 = new OrderBean();
-               orderbean1.setId(10758);
-
-                OrderPayParam orderPayParam = new OrderPayParam();
-                orderPayParam.setOrderId(8841);
-                orderPayParam.setPrice(new BigDecimal("1"));
-
-            CategoryBean categoryBean = new CategoryBean();
-            categoryBean.setId(10228);
+            MemberAddressBean memberAddressBean = new MemberAddressBean();
+            memberAddressBean.setCityId(737);
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","admin.memberAdmin");
+                param.put("name","memberAddress.memberAddress");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -80,7 +51,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",categoryBean);
+                param.put("data",memberAddressBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

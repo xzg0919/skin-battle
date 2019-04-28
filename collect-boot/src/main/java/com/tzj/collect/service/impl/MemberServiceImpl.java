@@ -43,6 +43,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	private PiccInsurancePolicyService piccInsurancePolicyService;
 	@Autowired
 	private RedisUtil redisUtil;
+	@Autowired
+	private CompanyService companyService;
 
     @Override
     public Member findMemberByAliId(String aliMemberId) {
@@ -333,6 +335,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		}else {
 			resultMap.put("greenCount","0");
 		}
+		//获取个人中心电话
+		Company company = companyService.selectById(1);
 		resultMap.put("isPiccInsurance",isPiccInsurance);
 		resultMap.put("isPiccWater",isPiccWater);
 		resultMap.put("piccOrder",piccOrder);
@@ -341,6 +345,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		resultMap.put("piccOrder",piccOrder);
 		resultMap.put("member",member);
 		resultMap.put("defeatMsg",defeatMsg);
+		resultMap.put("tel",company.getTel());
 		return resultMap;
 	}
 

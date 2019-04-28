@@ -28,10 +28,21 @@ public class CategoryAttrBean {
 	private String token;
 
 	private String categoryAttrOptionids;
+
+	private String type;
 	
 	//选项
 	private List<CategoryAttrOption> optionList;
-	
+
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public Long getId() {
 		return id;
 	}

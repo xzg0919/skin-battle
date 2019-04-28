@@ -1,7 +1,7 @@
 package com.tzj.collect.common.util;
 
 public class ToolUtils {
-	public static final String categoryName = "六废";
+	public static final String categoryName = "五废";
 	//调用绿账的发券接口
 	public static final String greenH5 = "http://106.15.157.147/green/sbProduct/sendVoucher.jhtml";
 

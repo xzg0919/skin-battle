@@ -53,6 +53,8 @@ public class CategoryApi {
 	private MemberService memberService;
 	@Autowired
 	private CategoryAttrOptionService categoryAttrOptionService;
+	@Autowired
+	private CompanyStreetBigService companyStreetBigService;
     /**
      * 取得所有一级分类 
      * @param 
@@ -299,17 +301,25 @@ public class CategoryApi {
 			Integer communityId = memberAddress.getCommunityId();
 			String companyId = "";
 			String areaId = memberAddress.getAreaId()+"";
-			//根据小区Id查询的私海所属企业
-			Company company = companyCategoryService.selectCompany(category.getParentId(), communityId);
-			if(company == null) {
-				//根据分类Id和小区id去公海查询相关企业
-				CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
-				if(companyShare==null) {
+			if("DIGITAL".equals(categoryAttrBean.getType())){
+				//根据小区Id查询的私海所属企业
+				Company company = companyCategoryService.selectCompany(category.getParentId(), communityId);
+				if(company == null) {
+					//根据分类Id和小区id去公海查询相关企业
+					CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
+					if(companyShare==null) {
+						return "该区域暂无服务";
+					}
+					companyId = companyShare.getCompanyId().toString();
+				}else {
+					companyId = company.getId().toString();
+				}
+			}else if ("BIGTHING".equals(categoryAttrBean.getType())){
+				Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(78,memberAddress.getStreetId());
+				if(null==streetBigCompanyId) {
 					return "该区域暂无服务";
 				}
-				companyId = companyShare.getCompanyId().toString();
-			}else {
-				companyId = company.getId().toString();
+				companyId = streetBigCompanyId+"";
 			}
 			//根据企业Id查询和分类Id查询对应的一条关联记录
 			CompanyCategory companyCategory  = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId));

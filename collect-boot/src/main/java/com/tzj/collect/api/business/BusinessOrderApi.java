@@ -233,6 +233,7 @@ public class BusinessOrderApi {
 			param.put("countyName",county.getAreaName());
 			param.put("orderNo",order.getOrderNo());
 			param.put("orderType","废纺衣物");
+			param.put("ChannelMemberId","RC20190427231730100044422");
 			param.put("orderAmount",order.getQty());
 			param.put("userName",order.getLinkMan());
 			param.put("userTel", order.getTel());
