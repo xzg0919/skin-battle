@@ -117,10 +117,17 @@ public class IotApi {
                     +"&mobile="+iotPostParamBean.getMobile()+ "&sign="+ iotPostParamBean.getSign()
                     + "&tranTime="+iotPostParamBean.getTranTime().toString();
             System.out.println(iotUrl);
-            Response response= FastHttpClient.get().url(iotUrl).build().execute();
+            Response response = null;
+            map = new HashMap();
+            try {
+                response =  FastHttpClient.get().url(iotUrl).build().execute();
+            }catch (Exception e){
+                map.put("msg", "连接超时");
+                map.put("status", MessageCode.STOPPAGE_ERROR.getKey());
+                return map;
+            }
             String resultJson=response.body().string();
             Object object = JSON.parseObject(resultJson);
-            map = new HashMap();
 //            map.put("status", ((JSONObject) object).get("errorcode"));
             if (MessageCode.SUCCESS_OPEN.getKey().equals(((JSONObject) object).get("errorcode"))){
                 map.put("msg", MessageCode.SUCCESS_OPEN.getValue());

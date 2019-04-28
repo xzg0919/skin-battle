@@ -862,8 +862,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					//峰会只给瓶子蚂蚁森林能量
 					bottlesCount.set(itemList.getQuantity());
 					score[0] += itemList.getQuantity() * 0.04;//瓶子个数40g/个
+					order.setUnit("个");
 				}else {
 					score[0] += itemList.getQuantity();
+					order.setUnit("kg");
 				}
 			});
 		});
@@ -1014,11 +1016,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderItemAch.setParentId(category.getParentId());
 					orderItemAch.setParentName(categoryParent.getName());//存父类名称
 					if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
-						orderItemAch.setAmount(itemList.getQuantity() * 0.04);//瓶子'个'转化为kg 40g/个
+						orderItemAch.setAmount(itemList.getQuantity());//瓶子'个'转化为kg 40g/个
+						orderItemAch.setUnit("个");
 					}else{
 						orderItemAch.setAmount(itemList.getQuantity());
+						orderItemAch.setUnit("kg");//转换为kg
 					}
-					orderItemAch.setUnit("kg");//转换为kg
 					orderItemAch.setCreateDate(new Date());
 					orderItemAchService.insert(orderItemAch);
 					OrderItem orderItem = new OrderItem();
@@ -1028,7 +1031,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderItem.setParentId(orderItemAch.getParentId());
 					orderItem.setParentName(orderItemAch.getParentName());
 					orderItem.setAmount(orderItemAch.getAmount());
-					orderItem.setUnit("kg");
+					orderItem.setUnit(orderItemAch.getUnit());
 					orderItem.setCreateDate(new Date());
 					orderItemService.insert(orderItem);
 				}
