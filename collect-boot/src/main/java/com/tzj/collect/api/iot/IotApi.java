@@ -3,11 +3,11 @@ package com.tzj.collect.api.iot;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.api.ali.param.MemberBean;
+import com.tzj.collect.api.common.async.AsyncRedis;
 import com.tzj.collect.api.iot.localmap.LatchMap;
 import com.tzj.collect.api.iot.messagecode.MessageCode;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.api.iot.param.IotPostParamBean;
-import com.tzj.collect.common.redis.RedisUtil;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.service.CompanyService;
@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
@@ -44,11 +45,13 @@ public class IotApi {
     @Autowired
     private CompanyService companyService;
     @Autowired
-    private RedisUtil redisUtil;
+    private AsyncRedis asyncRedis;
 
-    private Boolean flag = true;//保证当前线程能执行
+
+
+    public static AtomicBoolean flag = new AtomicBoolean(true);//保证当前线程能执行
 //    private LatchMap latchMapResult = null;
-    private Map<String, LatchMap> latMapConcurrent = new ConcurrentHashMap<>();//本地
+    public static Map<String, LatchMap> latMapConcurrent = new ConcurrentHashMap<>();//本地
     /**
      * 会员存在与否
       * @author sgmark@aliyun.com
@@ -187,14 +190,13 @@ public class IotApi {
             if (null != latchMap.orderId) {
                 result.put("success", true);//表示二次扫码
             }
+            //每次进来初始化线程
+            latchMap.latch = new CountDownLatch(1);
 
-            if (null == latchMap.latch) {
-                latchMap.latch = new CountDownLatch(1);
-            }
             try {
                 // 线程等待
                 //开启异步线程，如果redis有当前用户订单，当前线程重新启动
-                this.getTokenByCache(date, iotMemId);
+                asyncRedis.getTokenByCache(date, iotMemId);
                 latchMap.latch.await(9, TimeUnit.SECONDS);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -218,41 +220,6 @@ public class IotApi {
         return result;
     }
 
-    public void getTokenByCache(Long startTime, String iotMemId){
-        flag = true;//每次进来设值为真
-        Hashtable<String, String> iotMapCache;
-        LatchMap latchMapResult = null;
-        do {
-            try {
-                iotMapCache  = (Hashtable<String, String>)redisUtil.get("iotMap");
-                if (iotMapCache != null && iotMapCache.containsKey(iotMemId)){
-                    latchMapResult = latMapConcurrent.get(iotMemId);
-                    if (null != latchMapResult){
-                        latchMapResult.orderId = iotMapCache.get(iotMemId);
-                        latchMapResult.latch.countDown();
-                        iotMapCache.remove(iotMemId);
-                        redisUtil.set("iotMap", iotMapCache);
-                        break;
-                    }else{
-                        continue;
-                    }
-                }else{
-                    //每秒执行一次
-                    try{
-                        Thread.sleep(1000);
-                    }catch(Exception e){
-                        System.exit(0);//退出程序
-                    }
-                }
-            }catch (Exception e){
-                System.exit(0);//退出程序
-            }
-        }while (System.currentTimeMillis() - startTime <= 9*1000 && flag);
-        //5分钟内还没被扫码成功，关闭长连接
-        if (null != latchMapResult){
-            latchMapResult.latch.countDown();
-        }
-    }
 
 
 }
