@@ -859,9 +859,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		parentLists.stream().forEach(parentList -> {
 			parentList.getItemList().stream().forEach(itemList -> {
 				if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
-					score[0] += itemList.getQuantity();//瓶子个数40g/个
 					//峰会只给瓶子蚂蚁森林能量
 					bottlesCount.set(itemList.getQuantity());
+					score[0] += itemList.getQuantity() * 0.04;//瓶子个数40g/个
 				}else {
 					score[0] += itemList.getQuantity();
 				}
@@ -902,8 +902,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-		//只给瓶子增加能量，为峰会使用
-		updateCansForestIot(order, member.getAliUserId(), Long.parseLong(bottlesCount.get().toString()), "cans");
+		//只给瓶子增加能量，为峰会使用bottlesCount.get().toString()
+		this.updateCansForestIot(order, member.getAliUserId(), Float.valueOf(bottlesCount.get()).longValue(), "cans");
+		//增加平台积分
+		this.updateMemberPoint(order.getMemberId(), order.getOrderNo(),order.getGreenCount(), "智能回收箱投放");
 		return map;
 	}
 
