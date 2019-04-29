@@ -84,10 +84,13 @@ public class IotApi {
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> iotScan(IotPostParamBean iotPostParamBean)throws Exception{
-        Map map = null;
+        Map map = new HashMap();
         MemberBean memberBean = new MemberBean();
         if (StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
-            throw new ApiException("cabinetNo不存在", "-9");
+//            throw new ApiException("cabinetNo不存在", "-9");
+            map.put("msg", MessageCode.ERROR_QRCODE.getValue());
+            map.put("status", MessageCode.ERROR_QRCODE.getKey());
+            return map;
         }
         Member member = MemberUtils.getMember();
         memberBean.setCardNo(member.getCardNo());
@@ -110,7 +113,10 @@ public class IotApi {
             String sign= this.buildSign(JSON.parseObject(jsonStr));
             iotPostParamBean.setSign(sign);
             if (iotUrl == null || "".equals(iotUrl.trim())){
-                throw new ApiException("cabinetNo不存在", "-9");
+//              throw new ApiException("cabinetNo不存在", "-9");
+                map.put("msg", MessageCode.ERROR_QRCODE.getValue());
+                map.put("status", MessageCode.ERROR_QRCODE.getKey());
+                return map;
             }
             iotUrl = iotUrl +"?APIName="+iotPostParamBean.getAPIName()
                     +"&cabinetNo="+iotPostParamBean.getCabinetNo()+ "&memberId="+ member.getCardNo()
@@ -118,7 +124,6 @@ public class IotApi {
                     + "&tranTime="+iotPostParamBean.getTranTime().toString();
             System.out.println(iotUrl);
             Response response = null;
-            map = new HashMap();
             try {
                 response =  FastHttpClient.get().url(iotUrl).build().execute();
             }catch (Exception e){
