@@ -2075,7 +2075,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setOrderNo(orderNo);
 		order.setTel(member.getMobile() == null ? "" : member.getMobile());
 		order.setPrice(orderBean.getPrice());
-		order.setUnit("计量单位");
+		order.setUnit("kg");
 		order.setQty(9999);
 		order.setCompleteDate(new Date());
 		order.setIsEvaluated("0");
@@ -2238,7 +2238,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setFullAddress(orderBean.getFullAddress());
 			order.setTel(orderBean.getTel());
 			order.setLinkMan(orderBean.getLinkMan());
-			order.setUnit("计量单位");
+			order.setUnit("kg");
 			order.setQty(9999);
 			order.setPrice(BigDecimal.ZERO);
 			order.setLevel(orderBean.getLevel());
