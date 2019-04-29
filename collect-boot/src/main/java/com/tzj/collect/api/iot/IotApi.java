@@ -87,7 +87,10 @@ public class IotApi {
         Map map = null;
         MemberBean memberBean = new MemberBean();
         if (StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
-            throw new ApiException("cabinetNo不存在", "-9");
+//            throw new ApiException("cabinetNo不存在", "-9");
+            map.put("msg", MessageCode.ERROR_QRCODE.getValue());
+            map.put("status", MessageCode.ERROR_QRCODE.getKey());
+            return map;
         }
         Member member = MemberUtils.getMember();
         memberBean.setCardNo(member.getCardNo());
@@ -110,7 +113,10 @@ public class IotApi {
             String sign= this.buildSign(JSON.parseObject(jsonStr));
             iotPostParamBean.setSign(sign);
             if (iotUrl == null || "".equals(iotUrl.trim())){
-                throw new ApiException("cabinetNo不存在", "-9");
+//              throw new ApiException("cabinetNo不存在", "-9");
+                map.put("msg", MessageCode.ERROR_QRCODE.getValue());
+                map.put("status", MessageCode.ERROR_QRCODE.getKey());
+                return map;
             }
             iotUrl = iotUrl +"?APIName="+iotPostParamBean.getAPIName()
                     +"&cabinetNo="+iotPostParamBean.getCabinetNo()+ "&memberId="+ member.getCardNo()
