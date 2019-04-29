@@ -13,7 +13,9 @@ public enum  MessageCode implements IEnum{
         EMPLOY_ERROR("201", "其他用户已打开"),   	 //占用中
         STOPPAGE_ERROR("202", "柜门打开失败"),   	 //设备故障
         //其他类型(OTHER)
-        OTHERS_ERROR("203", "柜门打开失败");	//设备故障
+        OTHERS_ERROR("203", "柜门打开失败"),       //设备故障
+
+        ERROR_QRCODE("404", "二维码无法识别");
         private String key;
 
         private String value;
