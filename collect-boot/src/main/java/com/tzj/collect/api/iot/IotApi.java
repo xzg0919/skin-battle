@@ -84,7 +84,7 @@ public class IotApi {
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> iotScan(IotPostParamBean iotPostParamBean)throws Exception{
-        Map map = null;
+        Map map = new HashMap();
         MemberBean memberBean = new MemberBean();
         if (StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
 //            throw new ApiException("cabinetNo不存在", "-9");
@@ -124,7 +124,6 @@ public class IotApi {
                     + "&tranTime="+iotPostParamBean.getTranTime().toString();
             System.out.println(iotUrl);
             Response response = null;
-            map = new HashMap();
             try {
                 response =  FastHttpClient.get().url(iotUrl).build().execute();
             }catch (Exception e){
