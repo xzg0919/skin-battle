@@ -944,6 +944,7 @@
         <result property="signUrl" column="sign_url" />
          <result property="isCash" column="is_cash" />
          <result property="isScan" column="is_scan" />
+		<result property="isRead" column="is_read" />
 		<result property="paymentPrice" column="paymentPrice"/>
 		<result property="greenCount" column="green_count"/>
 		<result property="enterpriseCode" column="enterprise_code"/>
@@ -1006,6 +1007,7 @@
 		a.sign_url,
 		a.is_cash,
 		a.is_scan,
+		a.is_read,
 		a.green_count,
 		a.enterprise_code,
 		a.express_amount,

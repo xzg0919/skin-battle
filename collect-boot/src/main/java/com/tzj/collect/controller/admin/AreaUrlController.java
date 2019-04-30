@@ -42,8 +42,15 @@ public class AreaUrlController {
 
 
     @RequestMapping("/toXcxIndex")
-    public  String toXcxIndex(String areaId, String companyId, String communityId, ModelMap model, String urlParam, String id, String type){
+    public  String toXcxIndex(String outUrl,String areaId, String companyId, String communityId, ModelMap model, String urlParam, String id, String type){
         RegionCity regionCity = null;
+        if ("Y".equals(outUrl)){
+            regionCity = new RegionCity();
+            regionCity.setToUrl("http://open.mayishoubei.com/area/url/toXcxIndex?outUrl=Y&type="+type);
+            regionCityService.insert(regionCity);
+            model.addAttribute("url","https://qr.alipay.com/s6x08110vnu8n4tl0po9w92");
+            return "admin/xcxIndex";
+        }
         if(StringUtils.isNotBlank(urlParam)&&StringUtils.isNotBlank(id)&&StringUtils.isNotBlank(type)){
             String getqRcode = null;
             regionCity = new RegionCity();
@@ -63,25 +70,27 @@ public class AreaUrlController {
             System.out.println("参数："+urlParam+"-------"+id+"-------"+type+"  小程序链接："+getqRcode);
             regionCityService.insert(regionCity);
         }else {
+            regionCity = new RegionCity();
+            regionCity.setCompanyId(Integer.parseInt(companyId));
             String url = "http://open.mayishoubei.com/area/url/toXcxIndex?areaId="+areaId+"&companyId="+companyId;
             Community community = communityService.selectById(communityId);
             Area area = areaService.selectById(areaId);
-            System.out.println("进入城市入口了 : "+area.getAreaName());
-            Area city = areaService.selectById(area.getParentId());
-            Area province = areaService.selectById(city.getParentId());
-            regionCity = new RegionCity();
-            regionCity.setCompanyId(Integer.parseInt(companyId));
             regionCity.setAreaId(area.getId().intValue());
             regionCity.setAreaName(area.getAreaName());
+            System.out.println("进入城市入口了 : "+area.getAreaName());
+            Area city = areaService.selectById(area.getParentId());
+            regionCity.setCityId(city.getId().intValue());
+            regionCity.setCityName(city.getAreaName());
+            Area province = areaService.selectById(city.getParentId());
+            if(null!=province){
+                regionCity.setProvinceId(province.getId().intValue());
+                regionCity.setProvinceName(province.getAreaName());
+            }
             if(community!=null){
                 url += "&communityId="+communityId;
                 regionCity.setCommunityId(community.getId().intValue());
                 regionCity.setCommunityName(community.getName());
             }
-            regionCity.setCityId(city.getId().intValue());
-            regionCity.setCityName(city.getAreaName());
-            regionCity.setProvinceId(province.getId().intValue());
-            regionCity.setProvinceName(province.getAreaName());
             regionCity.setToUrl(url);
             regionCityService.insert(regionCity);
             model.addAttribute("url","https://qr.alipay.com/s6x08110vnu8n4tl0po9w92");

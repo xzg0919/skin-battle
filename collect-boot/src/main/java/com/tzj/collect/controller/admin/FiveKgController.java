@@ -86,11 +86,21 @@ public class FiveKgController {
         if("2".equals(orderStatus)){
             //已经派单
             try{
-                String nameTel = object.getString("expressTel");
                 order.setStatus(Order.OrderType.ALREADY);
-                order.setExpressName(nameTel.substring(3,nameTel.length()-11));
+                String nameTel = object.getString("expressTel");
+                String expressName = object.getString("expressName");
                 if (StringUtils.isNotBlank(nameTel)){
                     order.setExpressTel(nameTel.substring(nameTel.length()-11, nameTel.length()));
+                    order.setExpressName(nameTel.substring(3,nameTel.length()-11));
+                }else if (StringUtils.isNotBlank(expressName)){
+                    order.setExpressTel(expressName.substring(expressName.length()-11, expressName.length()));
+                    order.setExpressName(expressName.substring(3,expressName.length()-11));
+                }
+                if(null != object.getString("expressNo") &&StringUtils.isNotBlank(object.getString("expressNo"))){
+                    order.setExpressNo(object.getString("expressNo"));
+                }
+                if(null != object.getString("logisticsName")&&StringUtils.isNotBlank(object.getString("logisticsName"))){
+                    order.setLogisticsName(object.getString("logisticsName"));
                 }
                 order.setReceiveTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
                 orderService.updateById(order);
@@ -104,10 +114,14 @@ public class FiveKgController {
                 if((Order.OrderType.COMPLETE+"").equals(order.getStatus()+"")){
                     return null;
                 }
+                if(null != object.getString("expressNo") &&StringUtils.isNotBlank(object.getString("expressNo")+"")){
+                    order.setExpressNo(object.getString("expressNo"));
+                }
+                if(null != object.getString("logisticsName")&&StringUtils.isNotBlank(object.getString("logisticsName")+"")){
+                    order.setLogisticsName(object.getString("logisticsName"));
+                }
                 order.setGreenCount(Double.parseDouble(object.getString("expressAmount")));
                 order.setStatus(Order.OrderType.COMPLETE);
-                order.setExpressNo(object.getString("expressNo"));
-                order.setLogisticsName(object.getString("logisticsName"));
                 order.setExpressAmount(new BigDecimal(object.getString("expressAmount")));
                 order.setCompleteDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
                 order.setAchPrice(new BigDecimal("0"));
@@ -241,7 +255,7 @@ String tel = "接货中何海平18046748800";
         System.out.println(tel.substring(tel.length()-11, tel.length()));
 
         System.out.println(VoucherType.discount.getNameCN());
-        RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_RETURN_ORDER);
+        RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),"WuGongJin-TEST");
 
         List<Order> list = new ArrayList<>();
         Order order1 = new Order();

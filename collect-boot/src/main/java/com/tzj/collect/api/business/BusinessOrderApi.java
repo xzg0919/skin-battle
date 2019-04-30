@@ -233,12 +233,12 @@ public class BusinessOrderApi {
 			param.put("countyName",county.getAreaName());
 			param.put("orderNo",order.getOrderNo());
 			param.put("orderType","废纺衣物");
-			param.put("ChannelMemberId","RC20190427231730100044422");
+			param.put("channelMemberId","RC20190427231730100044422");
 			param.put("orderAmount",order.getQty());
 			param.put("userName",order.getLinkMan());
 			param.put("userTel", order.getTel());
 			param.put("userAddress",order.getAddress()+order.getFullAddress());
-			param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+order.getArrivalPeriod());
+			param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+("am".equals(order.getArrivalPeriod())?"10:00:00":"16:00:00"));
 			param.put("isCancel","N");
 			RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_DELIVERY_ORDER);
 		}catch (Exception e){

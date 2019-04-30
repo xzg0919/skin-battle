@@ -359,7 +359,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 		}
 		//该订单是只要能量的订单
-		if("1".equals(order.getIsCash())) {
+		if("1".equals(order.getIsCash())||0==Double.parseDouble(orderbean.getAchPrice())) {
 			//修改订单状态
 			this.modifyOrderSta(orderbean);
 				if("1".equals(order.getIsMysl())){
@@ -368,6 +368,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				}
 		}
 		return flag;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(0==Double.parseDouble("0.8"));
 	}
 
 	/**
@@ -472,7 +476,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
 						if("1".equals(isCash)){
 							amount += item.getAmount()*2;
-						}else if(ToolUtils.categoryName.equals(item.getCategoryName())){
+						}else{
 							amount += item.getAmount();
 						}
 						for (CompanyCategory comPrice : comPriceList) {
@@ -2011,7 +2015,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						//判断是否免费
 						if ("1".equals(isCash)) {
 							greenCount += list.getAmount() * 2;
-						} else if (ToolUtils.categoryName.equals(name.getName())) {
+						} else {
 							greenCount += list.getAmount();
 						}
 						if (list.getPrice() == 0 && !ToolUtils.categoryName.equals(name.getName())) {
@@ -2219,7 +2223,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				order.setArrivalTime(date);
 				if (i < 12) {
 					order.setArrivalPeriod("am");
-				} else {
+				} else if(20 <= i){
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(date);
+					cal.set(Calendar.DATE, cal.get(Calendar.DATE) + 1);
+					order.setArrivalTime(cal.getTime());
+					order.setArrivalPeriod("am");
+				}else {
 					order.setArrivalPeriod("pm");
 				}
 			}
