@@ -5,6 +5,7 @@ import com.tzj.collect.entity.SN;
 import com.tzj.collect.service.SNService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
+import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,6 +39,12 @@ public class SNApi {
     public List<SN> listSNs() {
         return snService.selectPage(new Page<SN>(0, 12)).getRecords();
     }
-
+    @Api(name = "sn.update.test", version = "1.0")
+    @AuthIgnore //这个api忽略token验证
+    @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
+    public Integer listUpdateTest() {
+        SN sn = snService.selectById(4);
+        return snService.updateTest(sn);
+    }
 
 }

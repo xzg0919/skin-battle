@@ -2,6 +2,7 @@ package com.tzj.collect.entity;
 
 
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.Version;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.tzj.collect.common.constant.DataBaseConstant;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +32,14 @@ public abstract class DataEntity<ID> extends AbstractEntity<ID> {
 	@TableField(value = "del_flag", fill = FieldFill.INSERT)
 	protected String delFlag = "0";
 
+	@Version
+	@TableField(value = "version_")
+	private Integer version;
+
 	public DataEntity() {
 		super();
 		this.delFlag = DataBaseConstant.DEL_FLAG_NORMAL;
+		this.version = 1;
 	}
 
 	@TableField(value = "create_by",fill = FieldFill.INSERT)
@@ -91,6 +97,18 @@ public abstract class DataEntity<ID> extends AbstractEntity<ID> {
 
 	public void setUpdateBy(String updateBy) {
 		this.updateBy = updateBy;
+	}
+
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 
 	@Transactional

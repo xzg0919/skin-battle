@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
  * @Author 胡方明（12795880@qq.com）
  **/
 @TableName("xx_sn")
-public class SN extends AbstractEntity<Long> {
+public class SN extends DataEntity<Long>{
     private Long id;
     private Long lastValue;
 

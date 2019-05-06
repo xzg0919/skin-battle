@@ -11,12 +11,12 @@ public class ApkVersion extends DataEntity<Long>{
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getVersion() {
-		return version;
-	}
-	public void setVersion(String version) {
-		this.version = version;
-	}
+//	public String getVersion() {
+//		return version;
+//	}
+//	public void setVersion(String version) {
+//		this.version = version;
+//	}
 	public String getVersionCode() {
 		return versionCode;
 	}
@@ -60,7 +60,7 @@ public class ApkVersion extends DataEntity<Long>{
 		this.apkName = apkName;
 	}
 	
-	private String version; //版本号
+//	private String version; //版本号
 	private String versionCode;//版本编号
 	private String versionNo; //版本名称
 	
