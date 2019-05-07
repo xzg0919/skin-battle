@@ -1,5 +1,7 @@
 package com.tzj.collect.common.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,5 +28,27 @@ public class SnUtils {
 		
 		return result;
 	}
+	/**
+	 * 只显示第一个汉字，其他隐藏为2个星号<例子：李**>
+	 *
+	 * @param fullName
+	 * @param  index 1 为第index位
+	 * @return
+	 */
+	public static String leftOne(String fullName,int index) {
+		if (StringUtils.isBlank(fullName)) {
+			return "";
+		}
+		String name = StringUtils.left(fullName, index);
+		return StringUtils.rightPad(name, StringUtils.length(fullName), "*");
+	}
+
+	public static String telEncry(String tel){
+		if (tel.length() == 11){
+			return tel.substring(0,3)+ "****" + tel.substring(7);
+		}
+		return tel;
+	}
+
 	
 }

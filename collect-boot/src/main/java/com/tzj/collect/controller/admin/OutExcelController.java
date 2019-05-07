@@ -6,6 +6,7 @@ import com.tzj.collect.api.ali.param.PiccOrderBean;
 import com.tzj.collect.api.common.excel.ExcelData;
 import com.tzj.collect.api.common.excel.ExcelUtils;
 import com.tzj.collect.api.enterprise.param.EnterpriseCodeBean;
+import com.tzj.collect.common.util.SnUtils;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.OrderItem;
 import com.tzj.collect.entity.OrderItemAch;
@@ -207,8 +208,8 @@ public class OutExcelController {
             row.add(list.get(i).get("distributeTime"));
 //            row.add(list.get(i).get("receiveTime"));5.9版本干掉接单时间
             row.add(list.get(i).get("completeDate"));
-            row.add(list.get(i).get("linkMan"));
-            row.add(list.get(i).get("tel"));
+            row.add(SnUtils.leftOne(list.get(i).get("linkMan")+"",1));
+            row.add(SnUtils.telEncry(list.get(i).get("tel")+""));
             row.add(list.get(i).get("areaName"));
             rows.add(row);
         }
