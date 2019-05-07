@@ -648,7 +648,7 @@
 
 	</select>
 	<select id="outOrderExcel" parameterType="Object" resultType="Map">
-			SELECT
+		select excel.*, saa.area_name as areaName from sb_area saa RIGHT JOIN (SELECT
 			a.id,
 			a.order_no AS orderNo,
 			IF(a.arrival_period = 'am',CONCAT(date_format(a.arrival_time,'%Y-%m-%d'),'上午'),CONCAT(date_format(a.arrival_time,'%Y-%m-%d'),'下午'))AS arrivalTime,
@@ -661,7 +661,8 @@
 			date_format(a.complete_date,'%Y-%m-%d %H:%i:%S') AS completeDate,
 			a.link_man AS linkMan,
 			a.tel,
-			a.address
+			a.address,
+			a.area_id
 			FROM
 			sb_order a
 			LEFT JOIN sb_payment p ON p.order_sn = a.order_no
@@ -681,7 +682,7 @@
 						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
 					 ]]>
 			</if>
-      		ORDER BY a.create_date DESC
+      		ORDER BY a.create_date DESC) excel on excel.area_id = saa.id
 	</select>
 	<select id="getBigOrderTransferList" parameterType="Object" resultType="Map">
 		SELECT

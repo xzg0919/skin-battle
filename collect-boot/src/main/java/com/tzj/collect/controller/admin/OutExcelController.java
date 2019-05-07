@@ -168,11 +168,11 @@ public class OutExcelController {
         titles.add("成交金额");
         titles.add("回收人员姓名");
         titles.add("派单时间");
-        titles.add("确认接单时间");
+//        titles.add("确认接单时间");
         titles.add("完成时间");
         titles.add("客户姓名");
         titles.add("客户电话");
-        titles.add("回收地址");
+        titles.add("回收区域");
         data.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
@@ -205,11 +205,11 @@ public class OutExcelController {
             row.add(list.get(i).get("paymentPrise"));
             row.add(list.get(i).get("recycleName"));
             row.add(list.get(i).get("distributeTime"));
-            row.add(list.get(i).get("receiveTime"));
+//            row.add(list.get(i).get("receiveTime"));5.9版本干掉接单时间
             row.add(list.get(i).get("completeDate"));
             row.add(list.get(i).get("linkMan"));
             row.add(list.get(i).get("tel"));
-            row.add(list.get(i).get("address"));
+            row.add(list.get(i).get("areaName"));
             rows.add(row);
         }
         data.setRows(rows);
