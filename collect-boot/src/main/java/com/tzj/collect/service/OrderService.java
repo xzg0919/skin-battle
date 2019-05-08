@@ -264,4 +264,7 @@ public interface OrderService extends IService<Order> {
 	List<Map<String,Object>> oneDayorderNum(String streetId);
 
 	public String isUserOrder(String memberId);
+
+	//解析该订单的数据成蚂蚁森林结构MyslData
+	OrderBean myslOrderData (String orderId);
 }

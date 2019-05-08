@@ -10,10 +10,7 @@ import com.tzj.collect.common.redis.RedisUtil;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
-import com.tzj.collect.service.AliPayService;
-import com.tzj.collect.service.EnterpriseCodeService;
-import com.tzj.collect.service.OrderService;
-import com.tzj.collect.service.PaymentService;
+import com.tzj.collect.service.*;
 import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +43,7 @@ public class NotifyController {
     @Autowired
     private AliPayService aliPayService;
     @Autowired
-    private RedisUtil redisUtil;
+    private AnsycMyslService ansycMyslService;
 
 
     /**
@@ -128,33 +125,13 @@ public class NotifyController {
 
                     //根據order_no查询相关订单
                     Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
-                    UUID uuid = UUID.randomUUID();
-                    Object obj = null;
-                    try {
-                        obj = redisUtil.get(orderSN);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    if (obj != null){
-                        throw new ApiException("支付已通知");
-                    }
-                    try {
-                        redisUtil.set(orderSN,uuid,10);
-                        Thread.sleep(100);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    try {
-                        obj = redisUtil.get(orderSN);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    if (!(obj+"").equals(uuid+"")){
-                        throw new ApiException("支付已通知");
-                    }
+
                     if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
-                        aliPayService.updateForest(order.getId().toString());
+                        OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+                        if (null!=orderBean&&StringUtils.isNotBlank(orderBean.getMyslParam())){
+                            ansycMyslService.updateForest(order.getId().toString(),orderBean.getMyslParam());
+                        }
                     }
                     if(null != order&&order.getIsScan().equals("0")){
                         //修改订单状态

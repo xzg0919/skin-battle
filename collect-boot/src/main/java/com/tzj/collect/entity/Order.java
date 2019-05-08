@@ -198,6 +198,8 @@ public class Order extends DataEntity<Long> {
 	 */
 	private String orderRemarks;
 
+	private String isRisk;
+
 	/**
 	 * 是否待支付
 	 * @return
@@ -210,6 +212,14 @@ public class Order extends DataEntity<Long> {
 			return "Y";
 		}
 		return "N";
+	}
+
+	public String getIsRisk() {
+		return isRisk;
+	}
+
+	public void setIsRisk(String isRisk) {
+		this.isRisk = isRisk;
 	}
 
 	public String getIsRead() {

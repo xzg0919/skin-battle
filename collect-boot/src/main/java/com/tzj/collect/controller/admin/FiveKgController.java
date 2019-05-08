@@ -13,6 +13,7 @@ import com.aliyun.mns.common.http.ServiceClient;
 import com.aliyun.mns.model.RawTopicMessage;
 import com.aliyun.mns.model.TopicMessage;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
@@ -58,6 +59,8 @@ public class FiveKgController {
     private OrderPicAchService orderPicAchService;
     @Autowired
     private AliPayService aliPayService;
+    @Autowired
+    private AnsycMyslService ansycMyslService;
 
 
     @RequestMapping(value = "/order/update",method = RequestMethod.POST)
@@ -148,7 +151,10 @@ public class FiveKgController {
                 //给用户增加积分
                 orderService.updateMemberPoint(order.getMemberId(), order.getOrderNo(), order.getGreenCount(),"生活垃圾");
                 //给用户增加蚂蚁能量
-                 aliPayService.updateForest(order.getId().toString());
+                OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+                if (null!=orderBean&&StringUtils.isNotBlank(orderBean.getMyslParam())){
+                    ansycMyslService.updateForest(order.getId().toString(),orderBean.getMyslParam());
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }

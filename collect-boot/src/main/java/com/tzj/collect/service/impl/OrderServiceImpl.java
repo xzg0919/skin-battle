@@ -1,6 +1,9 @@
 package com.tzj.collect.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alipay.api.domain.AntMerchantExpandTradeorderSyncModel;
+import com.alipay.api.domain.ItemOrder;
+import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -24,6 +27,7 @@ import com.tzj.collect.api.business.result.ApiUtils;
 import com.tzj.collect.api.business.result.CancelResult;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.api.iot.param.IotParamBean;
+import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.PushConst;
 import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.common.redis.RedisUtil;
@@ -119,6 +123,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private RedisUtil redisUtil;
 	@Autowired
 	private XcxWebSocketServer xcxWebSocketServer;
+	@Autowired
+	private AnsycMyslService ansycMyslService;
+
 	@Override
 	public Order getLastestOrderByMember(Integer memberId) {
 		return selectOne(new EntityWrapper<Order>().eq("member_id", memberId).orderBy("complete_date", false).last("LIMIT 1"));
@@ -364,7 +371,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			this.modifyOrderSta(orderbean);
 				if("1".equals(order.getIsMysl())){
 					//给用户增加蚂蚁能量
-					aliPayService.updateForest(order.getId().toString());
+					OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+					if (null!=orderBean&&StringUtils.isNotBlank(orderBean.getMyslParam())){
+						ansycMyslService.updateForest(order.getId().toString(),orderBean.getMyslParam());
+					}
 				}
 		}
 		return flag;
@@ -919,7 +929,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//增加蚂蚁能量
 		AntMerchantExpandTradeorderSyncResponse tradeorderSyncResponse = null;
 		if (count >= 1) {
-			tradeorderSyncResponse = aliPayService.updateCansForest(aliUserId, UUID.randomUUID().toString(), count, type);
+			tradeorderSyncResponse = ansycMyslService.updateCansForest(aliUserId, UUID.randomUUID().toString(), count, type);
 			//更新order
 			order.setMyslOrderId(tradeorderSyncResponse.getOrderId());
 			order.setMyslParam(tradeorderSyncResponse.getParams().toString());
@@ -2164,7 +2174,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 		if (orderBean.getPrice().compareTo(BigDecimal.ZERO)==0){
 			//给用户增加蚂蚁能量
-			aliPayService.updateForest(order.getId().toString());
+			OrderBean orderBeans = orderService.myslOrderData(order.getId().toString());
+			if (null!=orderBeans&&StringUtils.isNotBlank(orderBeans.getMyslParam())){
+				ansycMyslService.updateForest(order.getId().toString(),orderBeans.getMyslParam());
+			}
 			return "操作成功";
 		}
 		return order.getId();
@@ -2630,5 +2643,81 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderMap.put("completeOrder",completeOrder.size());
 		orderMap.put("cancleOrder",cancleOrder.size());
 		return JSON.toJSONString(orderMap);
-	};
+	}
+
+	@Override
+	public OrderBean myslOrderData(String orderId) {
+		Order order = orderService.selectById(orderId);
+		if(!StringUtils.isBlank(order.getMyslOrderId())){
+			return null;
+		}
+		Map<String, Object> digitalMap = null;
+		List<Map<String, Object>> houseList  = null;
+		//判断订单是否是电器
+		if((Order.TitleType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
+			digitalMap = orderItemService.selectItemOne(Integer.parseInt(orderId));
+			if (null == digitalMap || digitalMap.isEmpty() ){
+				return null;
+			}
+		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")){
+			houseList = orderItemAchService.selectItemSumAmount(Integer.parseInt(orderId));
+		}else {
+			return null;
+		}
+		long amount = 0;
+		AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+		model.setBuyerId(order.getAliUserId());
+		model.setSellerId(AlipayConst.SellerId);
+		model.setOutBizType("RECYCLING");
+		model.setOutBizNo(order.getOrderNo());
+		List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();
+		//如果是电器
+		if((Category.CategoryType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
+			ItemOrder itemOrder = new ItemOrder();
+			itemOrder.setItemName(digitalMap.get("name").toString());
+			itemOrder.setQuantity((long)1);
+			List<OrderExtInfo> extInfo = new ArrayList<>();
+			OrderExtInfo orderExtInfo = new OrderExtInfo();
+			orderExtInfo.setExtKey("ITEM_TYPE");
+			orderExtInfo.setExtValue(digitalMap.get("aliItemType").toString());
+			extInfo.add(orderExtInfo);
+			itemOrder.setExtInfo(extInfo);
+			orderItemList.add(itemOrder);
+		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")){
+			for (Map<String, Object> itemMap:houseList) {
+				if (null==itemMap.get("aliItemType")){
+					continue;
+				}
+				amount += (long)Math.floor((double)itemMap.get("amount"));
+				ItemOrder itemOrder = new ItemOrder();
+				itemOrder.setItemName(itemMap.get("parentName").toString());
+				itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount")));
+				List<OrderExtInfo> extInfo = new ArrayList<>();
+				OrderExtInfo orderExtInfo = new OrderExtInfo();
+				orderExtInfo.setExtKey("ITEM_TYPE");
+				orderExtInfo.setExtValue(itemMap.get("aliItemType").toString());
+				extInfo.add(orderExtInfo);
+				itemOrder.setExtInfo(extInfo);
+				orderItemList.add(itemOrder);
+			}
+		}
+		if (null == orderItemList || orderItemList.isEmpty() ){
+			return null;
+		}
+		model.setItemOrderList(orderItemList);
+		order.setMyslParam(JSON.toJSONString(model));
+		OrderBean orderBean = new OrderBean();
+		if (amount<=30000){
+			orderBean.setIsRisk("0");
+			order.setIsRisk("0");
+		}else {
+			order.setIsRisk("1");
+			orderBean.setIsRisk("1");
+		}
+		orderService.updateById(order);
+		orderBean.setMyslParam(JSON.toJSONString(model));
+		return orderBean;
+	}
+
+	;
 }

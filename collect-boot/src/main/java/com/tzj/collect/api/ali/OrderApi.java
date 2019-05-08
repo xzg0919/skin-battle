@@ -58,6 +58,8 @@ public class OrderApi {
 	private AliPayService aliPayService;
 	@Autowired
 	private CompanyStreetBigService companyStreetBigService;
+	@Autowired
+	private AnsycMyslService ansycMyslService;
 	
 
 	/**
@@ -477,7 +479,12 @@ public class OrderApi {
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object updateForest(OrderBean orderbean){
-		return aliPayService.updateForest(orderbean.getId().toString());
+		//给用户增加蚂蚁能量
+		OrderBean orderBean = orderService.myslOrderData(orderbean.getId().toString());
+		if (null!=orderBean&&StringUtils.isNotBlank(orderBean.getMyslParam())){
+			ansycMyslService.updateForest(orderbean.getId().toString(),orderBean.getMyslParam());
+		}
+		return "操作成功";
 	}
 
 	/**

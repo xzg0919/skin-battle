@@ -55,12 +55,7 @@ public interface AliPayService {
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      */
     public ZhimaCustomerCertificationQueryResponse certify(String bizNo);
-    /**
-     * <p>蚂蚁森林绿色能量接口</p>
-     * @author:[王灿]
-     * @update:[日期YYYY-MM-DD] [更改人姓名]
-     */
-    public AntMerchantExpandTradeorderSyncResponse  updateForest(String orderId);
 
-    AntMerchantExpandTradeorderSyncResponse  updateCansForest(String aliUserId,String outBizNo,long count,String type);
+
+
 }

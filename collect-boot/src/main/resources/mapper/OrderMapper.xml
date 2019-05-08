@@ -180,6 +180,7 @@
 			so.community_id,
 			so.company_id,
 			so.is_cash,
+			so.order_remarks,
 			sr.is_manager
 		FROM
 			 sb_order so
@@ -946,6 +947,7 @@
          <result property="isCash" column="is_cash" />
          <result property="isScan" column="is_scan" />
 		<result property="isRead" column="is_read" />
+		<result property="isRisk" column="is_risk" />
 		<result property="paymentPrice" column="paymentPrice"/>
 		<result property="greenCount" column="green_count"/>
 		<result property="enterpriseCode" column="enterprise_code"/>
@@ -1009,6 +1011,7 @@
 		a.is_cash,
 		a.is_scan,
 		a.is_read,
+		a.is_risk,
 		a.green_count,
 		a.enterprise_code,
 		a.express_amount,

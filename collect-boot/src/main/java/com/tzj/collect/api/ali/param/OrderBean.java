@@ -222,6 +222,26 @@ public class OrderBean {
 	 */
 	private String isMysl;
 
+	private String isRisk;
+
+	private String myslParam;
+
+	public String getMyslParam() {
+		return myslParam;
+	}
+
+	public void setMyslParam(String myslParam) {
+		this.myslParam = myslParam;
+	}
+
+	public String getIsRisk() {
+		return isRisk;
+	}
+
+	public void setIsRisk(String isRisk) {
+		this.isRisk = isRisk;
+	}
+
 	public String getOrderRemarks() {
 		return orderRemarks;
 	}
