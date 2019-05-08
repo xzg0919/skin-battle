@@ -117,8 +117,9 @@ public class MemberApi {
     	//获取当前登录的会员
     	Member member = MemberUtils.getMember();
     	member.setIsShowDialog("1");
-    	memberService.update(member, new EntityWrapper<Member>().eq("ali_user_id",member.getAliUserId()));
-    	return "success";
+		Member member1 = memberService.selectById(member.getId());
+		memberService.updateById(member1);
+		return "success";
     }
 	/**
 	 * 返回用户信息

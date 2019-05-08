@@ -209,6 +209,6 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		wrapper.eq("del_flag", 0);
 		CompanyRecycler companyRecycler = this.selectOne(wrapper);
 		companyRecycler.setDelFlag("1");
-		return this.update(companyRecycler, wrapper);
+		return this.updateById(companyRecycler);
 	}
 }

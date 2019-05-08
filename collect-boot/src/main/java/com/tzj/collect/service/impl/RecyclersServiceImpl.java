@@ -312,9 +312,9 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 		recyclers.setProvince(area.getParentId());
 		recyclerService.updateById(recyclers);
 		//清除与该回收人员绑定的区域
-		RecyclersServiceRange recyclersServiceRange = new RecyclersServiceRange();
+		RecyclersServiceRange recyclersServiceRange = recyclersServiceRangeService.selectOne(new EntityWrapper<RecyclersServiceRange>().eq("recyclers_id",recyclersServiceRangeBean.getRecycleId()).eq("del_flag",0));
 		recyclersServiceRange.setDelFlag("1");
-		recyclersServiceRangeService.update(recyclersServiceRange,new EntityWrapper<RecyclersServiceRange>().eq("recyclers_id",recyclersServiceRangeBean.getRecycleId()).eq("del_flag",0));
+		recyclersServiceRangeService.updateById(recyclersServiceRange);
 		//获取所有的区域Id
 		List<AreaBean> areaList = recyclersServiceRangeBean.getAreaList();
 		for (AreaBean areaBean: areaList) {

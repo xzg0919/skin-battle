@@ -1589,15 +1589,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 	@Override
 	public boolean modifyOrder(OrderBean orderBean) {
-		EntityWrapper<Order> wrapper = new EntityWrapper<Order>();
-		wrapper.eq("recycler_id", orderBean.getRecyclerId());
-		if (orderBean.getId() != null && !"".equals(orderBean.getId())) {
-			wrapper.eq("id", orderBean.getId());
-		} else if (orderBean.getOrderNo() != null && !"".equals(orderBean.getOrderNo())) {
-			wrapper.eq("order_no", orderBean.getOrderNo());
-		} else {
-			return false;
-		}
 		Order order = this.selectById(orderBean.getId());
 		if (orderBean.getArrivalTime() != null && !"".equals(orderBean.getArrivalTime())) {
 			try {
@@ -1606,7 +1597,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				e.printStackTrace();
 			}
 		}
-		boolean flag = this.update(order, wrapper);
+		boolean flag = this.updateById(order);
 		if (!flag) {
 			throw new ApiException("修改失敗");
 		}

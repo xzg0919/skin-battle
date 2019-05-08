@@ -238,8 +238,8 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	public boolean updatePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) {
 		if (comIdAndCateOptIdBean.getTitle().equals(CategoryType.HOUSEHOLD.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.DIGITAL.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.BIGTHING.name())) {
 			List<CategoryBean> priceList = comIdAndCateOptIdBean.getHouseholdPriceList();
-			CompanyCategory companyCategory = null;
 			for (CategoryBean categoryBean : priceList) {
+				CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", comIdAndCateOptIdBean.getCompanyId()).eq("category_id", categoryBean.getId()));
 				Category category = this.selectById(categoryBean.getId());
 				if(category!=null) {
 					EntityWrapper<CompanyCategory> wrapper = new EntityWrapper<CompanyCategory>();
@@ -253,10 +253,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 					companyCategory.setUpdateDate(new Date());
 					companyCategory.setUpdateBy(comIdAndCateOptIdBean.getCompanyId());
 					//companyCategoryMapper.updateAllColumnById(companyCategory);
-					EntityWrapper<CompanyCategory> wrapper = new EntityWrapper<CompanyCategory>();
-					wrapper.eq("company_id", comIdAndCateOptIdBean.getCompanyId());
-					wrapper.eq("category_id", categoryBean.getId());
-					companyCategoryService.update(companyCategory, wrapper);
+					companyCategoryService.updateById(companyCategory);
 				}else{
 					companyCategory = new CompanyCategory();
 					if(category!=null) {

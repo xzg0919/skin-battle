@@ -216,13 +216,15 @@ public class MemberAddressApi {
     public String updateIsSelectedAddress(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
 		Member member = MemberUtils.getMember();
-		MemberAddress memberAddressk = new MemberAddress();
-		memberAddressk.setIsSelected(0);
-    	memberAddressService.update(memberAddressk, new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_Id", memberAddressBean.getCityId()));
-    	MemberAddress memberAddress = new MemberAddress();
-    	memberAddress.setIsSelected(1);
-    	memberAddressService.update(memberAddress, new EntityWrapper<MemberAddress>().eq("id",memberAddressBean.getId()).eq("del_flag", 0));
-    	return "success";
+		MemberAddress memberAddress1 = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_Id", memberAddressBean.getCityId()));
+		if(null != memberAddress1){
+			memberAddress1.setIsSelected(0);
+		}
+		memberAddressService.updateById(memberAddress1);
+		MemberAddress memberAddress = memberAddressService.selectById(memberAddressBean.getId());
+		memberAddress.setIsSelected(1);
+		memberAddressService.updateById(memberAddress);
+		return "success";
     }
 
 	/**

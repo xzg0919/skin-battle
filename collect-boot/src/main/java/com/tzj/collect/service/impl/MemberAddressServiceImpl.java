@@ -45,10 +45,11 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      */ 
     @Transactional(readOnly=false)
 	public String saveMemberAddress(MemberAddressBean memberAddressBean) {
-    	
-    		MemberAddress memberAddressk = new MemberAddress();
-    		memberAddressk.setIsSelected(0);
-    		this.update(memberAddressk, new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", memberAddressBean.getMemberId()).eq("city_id", memberAddressBean.getCityId()));
+		MemberAddress memberAddress1 = this.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberAddressBean.getMemberId()).eq("city_id", memberAddressBean.getCityId()));
+		if (null != memberAddress1){
+			memberAddress1.setIsSelected(0);
+			this.updateById(memberAddress1);
+		}
     	try {
     		if(StringUtils.isBlank(memberAddressBean.getName())) {
     			return "请输入名字";
@@ -161,11 +162,6 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean) {
 		String isSelected = memberAddressBean.getIsSelected();
 		//判断是否将地址设置为默认
-//		if ("1".equals(isSelected)){
-//			MemberAddress memberAddressk = new MemberAddress();
-//			memberAddressk.setIsSelected(0);
-//			this.update(memberAddressk, );
-//		}
 		MemberAddress memberAddres = this.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberAddressBean.getMemberId()).eq("city_id", memberAddressBean.getCityId()));
 		if(memberAddres==null){
 			isSelected = "1";
