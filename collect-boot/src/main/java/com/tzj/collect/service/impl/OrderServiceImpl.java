@@ -931,9 +931,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (count >= 1) {
 			tradeorderSyncResponse = ansycMyslService.updateCansForest(aliUserId, UUID.randomUUID().toString(), count, type);
 			//更新order
-			order.setMyslOrderId(tradeorderSyncResponse.getOrderId());
-			order.setMyslParam(tradeorderSyncResponse.getParams().toString());
-			this.updateById(order);
+			if (null != tradeorderSyncResponse) {
+				order.setMyslOrderId(tradeorderSyncResponse.getOrderId());
+				order.setMyslParam(tradeorderSyncResponse.getParams().toString());
+				this.updateById(order);
+			}
 		}
 	}
 
