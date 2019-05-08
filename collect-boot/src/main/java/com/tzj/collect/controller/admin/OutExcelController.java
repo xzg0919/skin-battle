@@ -183,7 +183,7 @@ public class OutExcelController {
             row.add(list.get(i).get("orderNo"));
             row.add(list.get(i).get("arrivalTime"));
             row.add(list.get(i).get("titleName"));
-            if ("废弃家电".equals(list.get(i).get("titleName"))){
+            if ("废弃家电".equals(list.get(i).get("titleName")) || "大件物品".equals(list.get(i).get("titleName"))){
                 OrderItem orderItem = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id", list.get(i).get("id")));
                 row.add(orderItem.getCategoryName());
             }else if("生活垃圾".equals(list.get(i).get("titleName"))){
