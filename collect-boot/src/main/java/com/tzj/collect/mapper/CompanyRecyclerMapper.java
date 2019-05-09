@@ -79,4 +79,6 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 	 * @return
 	 */
 	List<Map<String,Object>> getCompanyRange(Integer companyId);
+
+	List<Map<String,Object>> getBigCompanyRange(Integer companyId);
 }

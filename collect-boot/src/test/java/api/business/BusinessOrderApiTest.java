@@ -56,7 +56,7 @@ public class BusinessOrderApiTest {
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.order.getOrderDetail");
+		param.put("name","business.company.getBigCompanyRange");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -64,11 +64,11 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",orderBean);
+		param.put("data",null);
 
 		String jsonStr = JSON.toJSONString(param);
 		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");
-		param.put("sign", orderBean);
+		param.put("sign", sign);
 
 		System.out.println("请求的参数是 ："+JSON.toJSONString(param));
 		Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();

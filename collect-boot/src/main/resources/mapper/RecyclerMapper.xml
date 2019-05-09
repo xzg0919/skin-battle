@@ -236,7 +236,7 @@
 				 AND srt.title_id is null
 			 </otherwise>
 		 </choose>
-      ORDER BY scr.id 
+      ORDER BY scr.id
      </select>
      <select id="getRecyclers" parameterType="String" resultType="Map">
 		SELECT

@@ -202,6 +202,11 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	}
 
 	@Override
+	public Object getBigCompanyRange(Integer companyId){
+		return mapper.getBigCompanyRange(companyId);
+	}
+
+	@Override
 	public Object recyclersDel(Integer companyId, String recycleId) {
 		EntityWrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>();
 		wrapper.eq("recycler_id", recycleId);

@@ -121,6 +121,19 @@ public class BusinessCompanyApi {
 		return comRecService.getCompanyRange(companyAccount.getCompanyId());
 	}
 	/**
+	 * 获取大件企业服务范围（例南京市，苏州市等）
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.company.getBigCompanyRange", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getBigCompanyRange() {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return comRecService.getBigCompanyRange(companyAccount.getCompanyId());
+	}
+	/**
 	 * 根据市级Id获取市级下属行政区
 	 * @author wangcan
 	 * @param

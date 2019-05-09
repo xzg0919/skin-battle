@@ -21,7 +21,7 @@ public class CompanyRecycler extends DataEntity<Long> {
 	private Integer recyclerId;// 回收人员id
 	private Integer companyId;// 回收企业id
 	@TableField(value = "status_")
-	private String status = "0";// 状态 0申请 1入住2拒绝 
+	private String status = "0";// 状态 0申请 1入住2拒绝
 
 	public Integer getRecyclerId() {
 		return recyclerId;
