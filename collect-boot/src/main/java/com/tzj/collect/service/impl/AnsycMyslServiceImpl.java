@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@PropertySource("classpath:application-init.yml")
 public class AnsycMyslServiceImpl implements AnsycMyslService {
 
     @Autowired
@@ -39,9 +38,10 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
 
 
     @Override
-    @Async
     public AntMerchantExpandTradeorderSyncResponse updateForest(String orderId,String myslParam){
+        System.out.println("进入蚂蚁能量方法了----------------------------");
         if("true".equals(applicationInit.getIsMysl())){
+            System.out.println("开始增加能量了----------------------------");
             Order order = orderService.selectById(orderId);
             try{
                 AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
@@ -83,7 +83,6 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      */
     @Override
-    @Async
     public AntMerchantExpandTradeorderSyncResponse  updateCansForest(String aliUserId,String outBizNo,long count,String type){
         if("true".equals(applicationInit.getIsMysl())){
             AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do",AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");

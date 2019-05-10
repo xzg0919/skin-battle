@@ -57,6 +57,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @Author 王灿
  **/
 @Service
+@Transactional
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
 	@Autowired
@@ -372,9 +373,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				if("1".equals(order.getIsMysl())){
 					//给用户增加蚂蚁能量
 					OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
-					if (null!=orderBean&&StringUtils.isNotBlank(orderBean.getMyslParam())){
-						ansycMyslService.updateForest(order.getId().toString(),orderBean.getMyslParam());
-					}
 				}
 		}
 		return flag;
@@ -2171,9 +2169,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (orderBean.getPrice().compareTo(BigDecimal.ZERO)==0){
 			//给用户增加蚂蚁能量
 			OrderBean orderBeans = orderService.myslOrderData(order.getId().toString());
-			if (null!=orderBeans&&StringUtils.isNotBlank(orderBeans.getMyslParam())){
-				ansycMyslService.updateForest(order.getId().toString(),orderBeans.getMyslParam());
-			}
 			return "操作成功";
 		}
 		return order.getId();
@@ -2711,6 +2706,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderBean.setIsRisk("1");
 		}
 		orderService.updateById(order);
+		//给用户增加能量
+		ansycMyslService.updateForest(order.getId().toString(),JSON.toJSONString(model));
 		orderBean.setMyslParam(JSON.toJSONString(model));
 		return orderBean;
 	}
