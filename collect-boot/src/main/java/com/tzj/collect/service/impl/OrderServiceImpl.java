@@ -1207,11 +1207,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		if("3".equals(order.getTitle().getValue()+"")&&!"0".equals(status)){
 			try{
-				HashMap<String,Object> param=new HashMap<>();
-				param.put("orderNo",order.getOrderNo());
-				param.put("isCancel","Y");
-				param.put("cancelReason",order.getCancelReason());
-				RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_DELIVERY_ORDER);
+				Company company = companyService.selectById(order.getCompanyId());
+				if(null!=company&&null!=company.getAliMns()){
+					HashMap<String,Object> param=new HashMap<>();
+					param.put("orderNo",order.getOrderNo());
+					param.put("isCancel","Y");
+					param.put("cancelReason",order.getCancelReason());
+					RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
+				}
 			}catch (Exception e){
 				e.printStackTrace();
 			}

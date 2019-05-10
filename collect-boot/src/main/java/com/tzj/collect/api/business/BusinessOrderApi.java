@@ -42,6 +42,8 @@ public class BusinessOrderApi {
 	private  CategoryService categoryService;
 	@Autowired
 	private  AreaService areaService;
+	@Autowired
+	private CompanyService companyService;
 	/**
 	 * 根据各种查询条件获取订单 列表
 	 * @author 王灿
@@ -220,6 +222,10 @@ public class BusinessOrderApi {
 	public Object tosendfiveKgOrder(OrderBean orderbean){
 		SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
 		Order order = orderService.selectById(orderbean.getId());
+		Company company = companyService.selectById(order.getCompanyId());
+		if(null==company||null==company.getAliMns()){
+			return "该企业无法回收五公斤";
+		}
 		order.setDistributeTime(new Date());
 		order.setStatus(Order.OrderType.TOSEND);
 		orderService.updateById(order);
@@ -240,7 +246,7 @@ public class BusinessOrderApi {
 			param.put("userAddress",order.getAddress()+order.getFullAddress());
 			param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+("am".equals(order.getArrivalPeriod())?"10:00:00":"16:00:00"));
 			param.put("isCancel","N");
-			RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),RocketMqConst.TOPIC_NAME_DELIVERY_ORDER);
+			RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
 		}catch (Exception e){
 			e.printStackTrace();
 		}
