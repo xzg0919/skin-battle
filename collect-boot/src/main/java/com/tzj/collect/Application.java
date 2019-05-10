@@ -22,7 +22,6 @@ public class Application {
 
     protected final static Logger logger = LoggerFactory.getLogger(Application.class);
 
-
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(Application.class);
         app.setBannerMode(Banner.Mode.OFF);
