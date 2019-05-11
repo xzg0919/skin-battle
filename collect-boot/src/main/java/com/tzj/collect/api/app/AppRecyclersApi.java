@@ -94,7 +94,7 @@ public class AppRecyclersApi {
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public String changeStatus(RecyclersBean recyclersBean) {
-		Recyclers recyclers = this.getRecycler();
+		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		if (recyclersBean.getStatus() != null && !"".equals(recyclersBean.getStatus())) {
 			recyclers.setStatus(recyclersBean.getStatus());
 		} else {
@@ -144,7 +144,7 @@ public class AppRecyclersApi {
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object save1(RecyclersBean recyclersBean) {
 		System.out.println("回收人员的姓名是+："+recyclersBean.getName()+"性别是："+recyclersBean.getSex()+"省份正号是"+recyclersBean.getIdCard()+"地址是："+recyclersBean.getAddress());
-		Recyclers recycler = this.getRecycler();
+		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		if (!StringUtils.isBlank(recyclersBean.getName())&&
 			!StringUtils.isBlank(recyclersBean.getSex())&& 
 			!StringUtils.isBlank(recyclersBean.getIdCard())&&
@@ -169,7 +169,7 @@ public class AppRecyclersApi {
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object save2(RecyclersBean recyclersBean) {
-		Recyclers recyclers = this.getRecycler();
+		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		System.out.println("回收人员的省份正连接+："+recyclersBean.getIdCardObv()+"和："+recyclersBean.getIdCardRev());
 //		if (recyclersBean.getIdCardObv() != null && !"".equals(recyclersBean.getIdCardObv())
 //				&& recyclersBean.getIdCardRev() != null && !"".equals(recyclersBean.getIdCardRev())) {
@@ -381,7 +381,7 @@ public class AppRecyclersApi {
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getRecycleSon(){
-		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
+		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		return recyclersService.selectList(new EntityWrapper<Recyclers>().eq("parents_id",recycler.getId()).eq("del_flag",0));
 	}
 	/**
@@ -391,7 +391,7 @@ public class AppRecyclersApi {
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getRecycleDetails(){
-		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
+		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		if(recycler==null|| recycler.getParentsId()==null){
 			return "暂无信息";
 		}
@@ -409,7 +409,7 @@ public class AppRecyclersApi {
 	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object aliUploadImage(PageBean param){
-		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
+		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		List<FileBase64Param> files=new ArrayList<>();
 		FileBase64Param file = new FileBase64Param();
 		file.setFileName(param.getFileName());
@@ -457,7 +457,7 @@ public class AppRecyclersApi {
 	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object certify(){
-		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
+		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		ZhimaCustomerCertificationQueryResponse certify = aliPayService.certify(recycler.getBizNo());
 
 		return certify.getBody();
@@ -469,7 +469,7 @@ public class AppRecyclersApi {
 	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getCertifyUrl(){
-		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
+		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		if (StringUtils.isBlank(recycler.getName())||StringUtils.isBlank(recycler.getIdCard())){
 			return "信息不全";
 		}
@@ -488,7 +488,7 @@ public class AppRecyclersApi {
 	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object updatRecycleReal(RecyclersBean recyclersBean){
-		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler());
+		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		recyclers.setIsReal(recyclersBean.getIsReal());
 		recyclersService.updateById(recyclers) ;
 		return "SUCCESS";
