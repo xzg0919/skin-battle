@@ -27,6 +27,8 @@ public class Company extends DataEntity<Long> {
 
 	private String iotUrl;//iot设备公司所对应的开箱地址
 
+	private String aliMns;
+
 	/**
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示
 	 */
@@ -44,6 +46,13 @@ public class Company extends DataEntity<Long> {
 	@TableField(exist=false)
 	private Integer companyCategoryCount;//该回收服务类型个数
 
+	public String getAliMns() {
+		return aliMns;
+	}
+
+	public void setAliMns(String aliMns) {
+		this.aliMns = aliMns;
+	}
 
 	public String getIsMysl() {
 		return isMysl;

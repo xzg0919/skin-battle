@@ -481,9 +481,6 @@ public class OrderApi {
 	public Object updateForest(OrderBean orderbean){
 		//给用户增加蚂蚁能量
 		OrderBean orderBean = orderService.myslOrderData(orderbean.getId().toString());
-		if (null!=orderBean&&StringUtils.isNotBlank(orderBean.getMyslParam())){
-			ansycMyslService.updateForest(orderbean.getId().toString(),orderBean.getMyslParam());
-		}
 		return "操作成功";
 	}
 

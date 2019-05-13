@@ -152,9 +152,6 @@ public class FiveKgController {
                 orderService.updateMemberPoint(order.getMemberId(), order.getOrderNo(), order.getGreenCount(),"生活垃圾");
                 //给用户增加蚂蚁能量
                 OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
-                if (null!=orderBean&&StringUtils.isNotBlank(orderBean.getMyslParam())){
-                    ansycMyslService.updateForest(order.getId().toString(),orderBean.getMyslParam());
-                }
             }catch (Exception e){
                 e.printStackTrace();
             }

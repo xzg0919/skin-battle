@@ -72,9 +72,7 @@ public class NotifyController {
         }
 
         try {
-            System.out.println("最北通过延签----------------------------");
             boolean flag = AlipaySignature.rsaCheckV1(params, ALI_PUBLIC_KEY, "UTF-8", "RSA2");
-            System.out.println("延签结果----------------------------"+flag);
             if (flag) {
                 //验签成功后
                 //按照支付结果异步通知中的描述，对支付结果中的业务内容进行1\2\3\4二次校验，校验成功后在response中返回success，校验失败返回failure
@@ -129,9 +127,6 @@ public class NotifyController {
                     if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
                         OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
-                        if (null!=orderBean&&StringUtils.isNotBlank(orderBean.getMyslParam())){
-                            ansycMyslService.updateForest(order.getId().toString(),orderBean.getMyslParam());
-                        }
                     }
                     if(null != order&&order.getIsScan().equals("0")){
                         //修改订单状态
