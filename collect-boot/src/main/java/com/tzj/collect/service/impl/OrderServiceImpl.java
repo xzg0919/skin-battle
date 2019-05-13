@@ -25,6 +25,7 @@ import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.CompanyBean;
 import com.tzj.collect.api.business.result.ApiUtils;
 import com.tzj.collect.api.business.result.CancelResult;
+import com.tzj.collect.api.common.async.AsyncRedis;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.AlipayConst;
@@ -42,7 +43,6 @@ import com.tzj.collect.service.impl.XingeMessageServiceImp.XingeMessageCode;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -125,6 +125,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private XcxWebSocketServer xcxWebSocketServer;
 	@Autowired
 	private AnsycMyslService ansycMyslService;
+	@Autowired
+	private AsyncRedis asyncRedis;
 
 	@Override
 	public Order getLastestOrderByMember(Integer memberId) {
@@ -1467,6 +1469,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					throw new ApiException("该订单已被操作，请刷新页面查看状态");
 				}
 
+				//异步保存至redis中(订单号，派单时间)
+				asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclerId.longValue(), System.currentTimeMillis(), "save");
+
 				order.setRecyclerId(recyclerId);
 				order.setDistributeTime(new Date());
 				order.setIsRead("0");
@@ -1698,6 +1703,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					} else {
 						throw new ApiException("该订单已被操作，请刷新页面查看状态");
 					}
+
+					//異步刪除redis裡面派單id
+					asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recycler.getId(), System.currentTimeMillis(), "remove");
+
 					if (orderBean.getCancelReason() != null && !"".equals(orderBean.getCancelReason())) {
 						order.setCancelReason(orderBean.getCancelReason());
 					} else {
@@ -1746,6 +1755,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 							//发送接单短信
 							asyncService.sendOrder("垃圾分类回收", order.getTel(), "SMS_142151759", recyclers.getName(), recyclers.getTel(), company.getName());
 						}
+						//異步刪除redis裡面派單id
+						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
 					}
 					break;
 				default:
