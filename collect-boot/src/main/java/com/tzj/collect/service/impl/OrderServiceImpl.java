@@ -900,6 +900,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setStatus(OrderType.COMPLETE);
 		order.setPrice(BigDecimal.ZERO);
 		this.insert(order);
+
+		//保存id至redis，跳转到订单详情页面
+		try {
+			Hashtable<String, String> hashTable = null;
+			if (null == redisUtil.get("iotMap")){
+				hashTable = new Hashtable<>();
+			}else {
+				hashTable = (Hashtable<String, String>)redisUtil.get("iotMap");
+			}
+			String iotMemberId = "iot_member_id_" + member.getId();
+			if (parentLists.isEmpty()){
+				hashTable.put(iotMemberId, "empty");
+			}else {
+				hashTable.put(iotMemberId, order.getId()+"");
+			}
+			redisUtil.set("iotMap", hashTable, 300);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
 		if(!parentLists.isEmpty()){
 			//说明是同步传过来的
 			this.saveOrderItemAch(order, parentLists);
@@ -909,15 +929,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		map.put("order_no", order.getOrderNo());
 		map.put("equipment_code",iotParamBean.getEquipmentCode());
 		map.put("msg", "CREATED");
-		//保存id至redis，跳转到订单详情页面
-		try {
-			Hashtable<String, String> hashTable = new Hashtable<>();
-			String uuId = "iot_member_id_" + member.getId();
-			hashTable.put(uuId, order.getId()+"");
-			redisUtil.set("iotMap", hashTable, 300);
-		}catch (Exception e){
-			e.printStackTrace();
-		}
+
 		//只给瓶子增加能量，为峰会使用bottlesCount.get().toString()
 		this.updateCansForestIot(order, member.getAliUserId(), Float.valueOf(bottlesCount.get()).longValue(), "cans");
 		//增加平台积分
