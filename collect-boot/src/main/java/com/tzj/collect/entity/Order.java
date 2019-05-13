@@ -412,10 +412,12 @@ public class Order extends DataEntity<Long> {
 	}
 
 	public String getPaymentPrice() {
-		if ("0".equals(paymentPrice)){
-			return "0.00";
+		if (null != paymentPrice){
+			return ApiUtils.doublegetTwoDecimal(Float.parseFloat(paymentPrice));
+		}else if (null != achPrice){
+			return ApiUtils.doublegetTwoDecimal(achPrice.floatValue());
 		}
-		return paymentPrice;
+		return ApiUtils.doublegetTwoDecimal(0f);
 	}
 
 	public void setPaymentPrice(String paymentPrice) {
