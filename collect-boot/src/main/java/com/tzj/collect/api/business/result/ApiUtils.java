@@ -14,7 +14,7 @@ public class ApiUtils {
         return temp;
     }
     public static String doublegetTwoDecimal(Float num) {
-        DecimalFormat dFormat=new DecimalFormat("#.00");
+        DecimalFormat dFormat=new DecimalFormat("0.00");
         return dFormat.format(num);
     }
 }

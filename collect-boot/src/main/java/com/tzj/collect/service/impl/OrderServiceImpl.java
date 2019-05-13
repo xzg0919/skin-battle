@@ -792,6 +792,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				order.setPrice(order.getAchPrice());
 			}
 		}
+
 		map.put("count", count);
 		map.put("list", list);
 		if (CategoryType.BIGTHING.getValue().toString().equals(title)){
@@ -2035,9 +2036,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					//listMap = new ArrayList<>();
 					if (name.getId() == list.getParentId()) {
 						map.put("cateName", list.getCategoryName());
-						map.put("price", list.getPrice() + "");
+						map.put("price", ApiUtils.doublegetTwoDecimal(list.getPrice()));
 						map.put("unit", list.getUnit());
-						map.put("amount", list.getAmount() + "");
+						map.put("amount", ApiUtils.doublegetTwoDecimal(Float.parseFloat(list.getAmount()+"")));
 						price += list.getPrice() * list.getAmount();
 						//判断是否免费
 						if ("1".equals(isCash)) {
@@ -2058,9 +2059,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					//listMap = new ArrayList<>();
 					if (name.getId() == list.getParentId()) {
 						map.put("cateName", list.getCategoryName());
-						map.put("price", list.getPrice() + "");
+						map.put("price", ApiUtils.doublegetTwoDecimal(list.getPrice()));
 						map.put("unit", list.getUnit());
-						map.put("amount", list.getAmount() + "");
+						map.put("amount", ApiUtils.doublegetTwoDecimal(Float.parseFloat(list.getAmount()+"")));
 						price += list.getPrice() * list.getAmount();
 						listMap.add(map);
 					}
@@ -2070,7 +2071,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			mapListMap.put("categoryName", StringUtils.isBlank(categoryName) ? "" : categoryName.substring(0, categoryName.length() - 1));
 			mapListMap.put("list", listMap);
 			mapListMap.put("name", name == null ? null : name.getName());
-			mapListMap.put("price", price);
+			mapListMap.put("price", ApiUtils.doublegetTwoDecimal(price));
 			listMapObject.add(mapListMap);
 		}
 		resultMap.put("listMapObject", listMapObject);
