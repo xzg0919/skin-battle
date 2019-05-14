@@ -1,12 +1,12 @@
 spring:
   #数据源配置
   datasource:
-    #url: jdbc:mysql://rm-uf6392q32wbe8px01o.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8
-    #username: sb_admin
-    #password: shoubei_123
-    url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8
-    username: devuser
-    password: dev123456@1
+    url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8
+    username: sb_admin
+    password: shoubei_123
+    #url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8
+    #username: devuser
+    #password: dev123456@1
     driver-class-name: com.mysql.jdbc.Driver
     #driver-class-name: john.walker.spi.CommonProxyDriver
     #druid

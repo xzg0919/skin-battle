@@ -135,6 +135,9 @@ public class MemberAddressApi {
     public MemberAddress memberAddress(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
 		Member member = MemberUtils.getMember();
+		if(member==null){
+			return  null;
+		}
 		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", memberAddressBean.getCityId()));
 		if(null==memberAddress) {
 			memberAddress =new MemberAddress();

@@ -87,76 +87,85 @@ public class FiveKgController {
         }
         Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo).eq("del_flag", 0));
         if("2".equals(orderStatus)){
-            //已经派单
-            try{
-                order.setStatus(Order.OrderType.ALREADY);
-                String nameTel = object.getString("expressTel");
-                String expressName = object.getString("expressName");
-                if (StringUtils.isNotBlank(nameTel)){
-                    order.setExpressTel(nameTel.substring(nameTel.length()-11, nameTel.length()));
-                    order.setExpressName(nameTel.substring(3,nameTel.length()-11));
-                }else if (StringUtils.isNotBlank(expressName)){
-                    order.setExpressTel(expressName.substring(expressName.length()-11, expressName.length()));
-                    order.setExpressName(expressName.substring(3,expressName.length()-11));
+            if((Order.OrderType.TOSEND+"").equals(order.getStatus()+"")){
+                //已经派单
+                try{
+                    order.setStatus(Order.OrderType.ALREADY);
+                    String nameTel = object.getString("expressTel");
+                    String expressName = object.getString("expressName");
+                    if (9==order.getCompanyId()) {
+                        if (StringUtils.isNotBlank(nameTel)){
+                            order.setExpressTel(nameTel.substring(nameTel.length()-11, nameTel.length()));
+                            order.setExpressName(nameTel.substring(3,nameTel.length()-11));
+                        }else if (StringUtils.isNotBlank(expressName)){
+                            order.setExpressTel(expressName.substring(expressName.length()-11, expressName.length()));
+                            order.setExpressName(expressName.substring(3,expressName.length()-11));
+                        }
+                    }else {
+                        order.setExpressTel(nameTel);
+                        order.setExpressName(expressName);
+                    }
+                    if(null != object.getString("expressNo") &&StringUtils.isNotBlank(object.getString("expressNo"))){
+                        order.setExpressNo(object.getString("expressNo"));
+                    }
+                    if(null != object.getString("logisticsName")&&StringUtils.isNotBlank(object.getString("logisticsName"))){
+                        order.setLogisticsName(object.getString("logisticsName"));
+                    }
+                    order.setReceiveTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
+                    orderService.updateById(order);
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-                if(null != object.getString("expressNo") &&StringUtils.isNotBlank(object.getString("expressNo"))){
-                    order.setExpressNo(object.getString("expressNo"));
-                }
-                if(null != object.getString("logisticsName")&&StringUtils.isNotBlank(object.getString("logisticsName"))){
-                    order.setLogisticsName(object.getString("logisticsName"));
-                }
-                order.setReceiveTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
-                orderService.updateById(order);
-            }catch (Exception e){
-                e.printStackTrace();
             }
             return null;
         }else if ("3".equals(orderStatus)){
             //订单完成
             try{
-                if((Order.OrderType.COMPLETE+"").equals(order.getStatus()+"")){
-                    return null;
+                if((Order.OrderType.ALREADY+"").equals(order.getStatus()+"")){
+                    if(null != object.getString("expressNo") &&StringUtils.isNotBlank(object.getString("expressNo")+"")){
+                        order.setExpressNo(object.getString("expressNo"));
+                    }
+                    if(null != object.getString("logisticsName")&&StringUtils.isNotBlank(object.getString("logisticsName")+"")){
+                        order.setLogisticsName(object.getString("logisticsName"));
+                    }
+                    order.setGreenCount(Double.parseDouble(object.getString("expressAmount")));
+                    order.setStatus(Order.OrderType.COMPLETE);
+                    order.setExpressAmount(new BigDecimal(object.getString("expressAmount")));
+                    order.setCompleteDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
+                    order.setAchPrice(new BigDecimal("0"));
+                    orderService.updateById(order);
+                    OrderItem orderItem = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));
+                    OrderItemAch orderItemAch = new OrderItemAch();
+                    orderItemAch.setOrderId(order.getId().intValue());
+                    orderItemAch.setCategoryId(orderItem.getCategoryId());
+                    orderItemAch.setCategoryName(orderItem.getCategoryName());
+                    orderItemAch.setParentName(orderItem.getParentName());
+                    orderItemAch.setParentId(orderItem.getParentId());
+                    orderItemAch.setParentIds(orderItem.getParentIds());
+                    orderItemAch.setAmount(Double.parseDouble(object.getString("expressAmount")));
+                    orderItemAch.setUnit(orderItem.getUnit());
+                    orderItemAch.setPrice(orderItem.getPrice());
+                    orderItemAchService.insert(orderItemAch);
+                    OrderPic orderPic = orderPicService.selectOne(new EntityWrapper<OrderPic>().eq("order_id", order.getId()));
+                    OrderPicAch orderPicAch = new OrderPicAch();
+                    orderPicAch.setOrderId(orderPic.getOrderId());
+                    orderPicAch.setOrigPic(orderPic.getOrigPic());
+                    orderPicAch.setPicUrl(orderPic.getPicUrl());
+                    orderPicAch.setSmallPic(orderPic.getSmallPic());
+                    orderPicAchService.insert(orderPicAch);
+                    //给用户增加积分
+                    orderService.updateMemberPoint(order.getMemberId(), order.getOrderNo(), order.getGreenCount(),"生活垃圾");
+                    //给用户增加蚂蚁能量
+                    OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
                 }
-                if(null != object.getString("expressNo") &&StringUtils.isNotBlank(object.getString("expressNo")+"")){
-                    order.setExpressNo(object.getString("expressNo"));
-                }
-                if(null != object.getString("logisticsName")&&StringUtils.isNotBlank(object.getString("logisticsName")+"")){
-                    order.setLogisticsName(object.getString("logisticsName"));
-                }
-                order.setGreenCount(Double.parseDouble(object.getString("expressAmount")));
-                order.setStatus(Order.OrderType.COMPLETE);
-                order.setExpressAmount(new BigDecimal(object.getString("expressAmount")));
-                order.setCompleteDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
-                order.setAchPrice(new BigDecimal("0"));
-                orderService.updateById(order);
-                OrderItem orderItem = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));
-                OrderItemAch orderItemAch = new OrderItemAch();
-                orderItemAch.setOrderId(order.getId().intValue());
-                orderItemAch.setCategoryId(orderItem.getCategoryId());
-                orderItemAch.setCategoryName(orderItem.getCategoryName());
-                orderItemAch.setParentName(orderItem.getParentName());
-                orderItemAch.setParentId(orderItem.getParentId());
-                orderItemAch.setParentIds(orderItem.getParentIds());
-                orderItemAch.setAmount(Double.parseDouble(object.getString("expressAmount")));
-                orderItemAch.setUnit(orderItem.getUnit());
-                orderItemAch.setPrice(orderItem.getPrice());
-                orderItemAchService.insert(orderItemAch);
-                OrderPic orderPic = orderPicService.selectOne(new EntityWrapper<OrderPic>().eq("order_id", order.getId()));
-                OrderPicAch orderPicAch = new OrderPicAch();
-                orderPicAch.setOrderId(orderPic.getOrderId());
-                orderPicAch.setOrigPic(orderPic.getOrigPic());
-                orderPicAch.setPicUrl(orderPic.getPicUrl());
-                orderPicAch.setSmallPic(orderPic.getSmallPic());
-                orderPicAchService.insert(orderPicAch);
-                //给用户增加积分
-                orderService.updateMemberPoint(order.getMemberId(), order.getOrderNo(), order.getGreenCount(),"生活垃圾");
-                //给用户增加蚂蚁能量
-                OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
             }catch (Exception e){
                 e.printStackTrace();
             }
             return null;
         }else if ("4".equals(orderStatus)){
+            if((Order.OrderType.COMPLETE+"").equals(order.getStatus()+"")){
+                return null;
+            }
             //取消订单
             try{
                 order.setStatus(Order.OrderType.REJECTED);
@@ -236,14 +245,14 @@ public class FiveKgController {
     public static void main(String[] args) {
         HashMap<String,Object> param=new HashMap<>();
         param.put("orderStatus","3");
-        param.put("orderNo","20190320181056730131");
-        param.put("expressName","岳阳");
-        param.put("expressTel","18375333333");
-        param.put("date", "2019-02-27 14:27:01");
-        param.put("expressNo","20187974123466789");
-        param.put("expressAmount","4.5");
-        param.put("remarks","取消原因4");
-        param.put("logisticsName","申通快递");
+        param.put("orderNo","20190420205314116639");
+        //param.put("expressName","接货中申武林13298688002");
+        //param.put("expressTel","接货中申武林13298688002");
+        param.put("date", "2019-05-11 18:11:04");
+        // param.put("expressNo","CVAV1129519734415190");
+        param.put("expressAmount","3");
+       // param.put("remarks","取消原因4");
+        param.put("logisticsName","德邦");
 //        param.put("orderNo","20190302135536851909");
 //        param.put("orderType","废纺衣物");
 //        param.put("orderAmount","6.5");
@@ -258,7 +267,7 @@ String tel = "接货中何海平18046748800";
         System.out.println(tel.substring(tel.length()-11, tel.length()));
 
         System.out.println(VoucherType.discount.getNameCN());
-        RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),"WuGongJin-TEST");
+        RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),"ReturnOrder");
 
         List<Order> list = new ArrayList<>();
         Order order1 = new Order();
