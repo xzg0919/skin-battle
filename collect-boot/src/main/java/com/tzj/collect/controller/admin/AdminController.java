@@ -68,38 +68,43 @@ public class AdminController {
 
 	@RequestMapping("/update/rocket")
 	public @ResponseBody Object rocket() throws Exception {
-		List<Order> orderList = orderService.selectList(new EntityWrapper<Order>().le("create_date", "2019-05-10 23:59:40").ge("create_date", "2019-05-10 00:00:01").eq("title", 3).in("status_","0,1"));
-		for (Order order:orderList) {
-			SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
-			Company company = companyService.selectById(order.getCompanyId());
-			if(null==company||null==company.getAliMns()){
-				continue;
-			}
-			order.setDistributeTime(new Date());
-			order.setStatus(Order.OrderType.TOSEND);
-			orderService.updateById(order);
-			try{
-				Area county = areaService.selectById(order.getAreaId());
-				Area city = areaService.selectById(county.getParentId());
-				Area province = areaService.selectById(city.getParentId());
-				HashMap<String,Object> param=new HashMap<>();
-				param.put("provinceNname",province.getAreaName());
-				param.put("cityName",city.getAreaName());
-				param.put("countyName",county.getAreaName());
-				param.put("orderNo",order.getOrderNo());
-				param.put("orderType","废纺衣物");
-				param.put("channelMemberId","RC20190427231730100044422");
-				param.put("orderAmount",order.getQty());
-				param.put("userName",order.getLinkMan());
-				param.put("userTel", order.getTel());
-				param.put("userAddress",order.getAddress()+order.getFullAddress());
-				param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+("am".equals(order.getArrivalPeriod())?"10:00:00":"16:00:00"));
-				param.put("isCancel","N");
-				RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
-			}catch (Exception e){
-				e.printStackTrace();
-			}
+		List<Order> orderList = orderService.selectList(new EntityWrapper<Order>().le("complete_date", "2019-05-14 10:36:40").ge("complete_date", "2019-05-14 09:30:01").eq("status_","3").isNotNull("mysl_param"));
+
+		for (Order order:
+			 orderList) {
+			orderService.myslOrderData(order.getId().toString());
 		}
+//		for (Order order:orderList) {
+//			SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+//			Company company = companyService.selectById(order.getCompanyId());
+//			if(null==company||null==company.getAliMns()){
+//				continue;
+//			}
+//			order.setDistributeTime(new Date());
+//			order.setStatus(Order.OrderType.TOSEND);
+//			orderService.updateById(order);
+//			try{
+//				Area county = areaService.selectById(order.getAreaId());
+//				Area city = areaService.selectById(county.getParentId());
+//				Area province = areaService.selectById(city.getParentId());
+//				HashMap<String,Object> param=new HashMap<>();
+//				param.put("provinceNname",province.getAreaName());
+//				param.put("cityName",city.getAreaName());
+//				param.put("countyName",county.getAreaName());
+//				param.put("orderNo",order.getOrderNo());
+//				param.put("orderType","废纺衣物");
+//				param.put("channelMemberId","RC20190427231730100044422");
+//				param.put("orderAmount",order.getQty());
+//				param.put("userName",order.getLinkMan());
+//				param.put("userTel", order.getTel());
+//				param.put("userAddress",order.getAddress()+order.getFullAddress());
+//				param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+("am".equals(order.getArrivalPeriod())?"10:00:00":"16:00:00"));
+//				param.put("isCancel","N");
+//				RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
+//			}catch (Exception e){
+//				e.printStackTrace();
+//			}
+//		}
 
 
 		return orderList ;
@@ -169,9 +174,9 @@ public class AdminController {
 	}
 
 	@RequestMapping("/test/mysl")
-	public @ResponseBody String mysl() {
+	public @ResponseBody String mysl(String orderId) {
 
-		OrderBean orderBean = orderService.myslOrderData("14378");
+		OrderBean orderBean = orderService.myslOrderData(orderId);
 		return "操作成功";
 	}
 

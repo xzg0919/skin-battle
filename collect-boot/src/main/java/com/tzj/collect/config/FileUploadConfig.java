@@ -17,8 +17,8 @@ public class FileUploadConfig {
         fileUploadFactoryBean.setAccessId("LTAIMbbuj3E2uX48");
         fileUploadFactoryBean.setAccessKey("V8RPkZqqaBg6QK0mk9GsPcub8ePRyN");
         fileUploadFactoryBean.setBucketName("osssqt");
-        //fileUploadFactoryBean.setOssEndPointer("http://oss-cn-shanghai-internal.aliyuncs.com");//内网
-        fileUploadFactoryBean.setOssEndPointer("http://oss-cn-shanghai.aliyuncs.com");//外网
+        fileUploadFactoryBean.setOssEndPointer("http://oss-cn-shanghai-internal.aliyuncs.com");//内网
+        //fileUploadFactoryBean.setOssEndPointer("http://oss-cn-shanghai.aliyuncs.com");//外网
         fileUploadFactoryBean.setImageDomain("http://images.sqmall.top");
         return fileUploadFactoryBean;
     }
