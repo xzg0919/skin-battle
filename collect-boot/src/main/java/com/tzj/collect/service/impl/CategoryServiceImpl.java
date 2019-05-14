@@ -1,19 +1,5 @@
 package com.tzj.collect.service.impl;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -21,6 +7,7 @@ import com.tzj.collect.api.ali.param.CategoryAttrBean;
 import com.tzj.collect.api.ali.result.ClassifyAndMoney;
 import com.tzj.collect.api.business.param.CategoryBean;
 import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
+import com.tzj.collect.api.business.result.ApiUtils;
 import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Category.CategoryType;
@@ -31,6 +18,13 @@ import com.tzj.collect.mapper.CategoryMapper;
 import com.tzj.collect.mapper.CompanyCategoryMapper;
 import com.tzj.collect.service.CategoryService;
 import com.tzj.collect.service.CompanyCategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.*;
 
 
 @Service
@@ -304,7 +298,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 		if (attrOption == null) {
 			returnMap.put("Price", BigDecimal.ZERO);
 		}else{
-			returnMap.put("Price", attrOption.getPrice());
+			returnMap.put("Price", ApiUtils.doublegetTwoDecimal(attrOption.getPrice()));
 		}
 		return returnMap;
 	}

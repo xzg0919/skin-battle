@@ -25,6 +25,7 @@ import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.CompanyBean;
 import com.tzj.collect.api.business.result.ApiUtils;
 import com.tzj.collect.api.business.result.CancelResult;
+import com.tzj.collect.api.common.async.AsyncRedis;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.AlipayConst;
@@ -42,7 +43,6 @@ import com.tzj.collect.service.impl.XingeMessageServiceImp.XingeMessageCode;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,6 +126,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private XcxWebSocketServer xcxWebSocketServer;
 	@Autowired
 	private AnsycMyslService ansycMyslService;
+	@Autowired
+	private AsyncRedis asyncRedis;
 
 	@Override
 	public Order getLastestOrderByMember(Integer memberId) {
@@ -790,6 +792,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				order.setPrice(order.getAchPrice());
 			}
 		}
+
 		map.put("count", count);
 		map.put("list", list);
 		if (CategoryType.BIGTHING.getValue().toString().equals(title)){
@@ -898,6 +901,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setStatus(OrderType.COMPLETE);
 		order.setPrice(BigDecimal.ZERO);
 		this.insert(order);
+
+		//保存id至redis，跳转到订单详情页面
+		try {
+			Hashtable<String, String> hashTable = null;
+			if (null == redisUtil.get("iotMap")){
+				hashTable = new Hashtable<>();
+			}else {
+				hashTable = (Hashtable<String, String>)redisUtil.get("iotMap");
+			}
+			String iotMemberId = "iot_member_id_" + member.getId();
+			if (parentLists.isEmpty()){
+				hashTable.put(iotMemberId, "empty");
+			}else {
+				hashTable.put(iotMemberId, order.getId()+"");
+			}
+			redisUtil.set("iotMap", hashTable, 300);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
 		if(!parentLists.isEmpty()){
 			//说明是同步传过来的
 			this.saveOrderItemAch(order, parentLists);
@@ -907,15 +930,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		map.put("order_no", order.getOrderNo());
 		map.put("equipment_code",iotParamBean.getEquipmentCode());
 		map.put("msg", "CREATED");
-		//保存id至redis，跳转到订单详情页面
-		try {
-			Hashtable<String, String> hashTable = new Hashtable<>();
-			String uuId = "iot_member_id_" + member.getId();
-			hashTable.put(uuId, order.getId()+"");
-			redisUtil.set("iotMap", hashTable, 300);
-		}catch (Exception e){
-			e.printStackTrace();
-		}
+
 		//只给瓶子增加能量，为峰会使用bottlesCount.get().toString()
 		this.updateCansForestIot(order, member.getAliUserId(), Float.valueOf(bottlesCount.get()).longValue(), "cans");
 		//增加平台积分
@@ -1468,6 +1483,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					throw new ApiException("该订单已被操作，请刷新页面查看状态");
 				}
 
+				//异步保存至redis中(订单号，派单时间)
+				asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclerId.longValue(), System.currentTimeMillis(), "save");
+
 				order.setRecyclerId(recyclerId);
 				order.setDistributeTime(new Date());
 				order.setIsRead("0");
@@ -1699,6 +1717,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					} else {
 						throw new ApiException("该订单已被操作，请刷新页面查看状态");
 					}
+
+					//異步刪除redis裡面派單id
+					asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recycler.getId(), System.currentTimeMillis(), "remove");
+
 					if (orderBean.getCancelReason() != null && !"".equals(orderBean.getCancelReason())) {
 						order.setCancelReason(orderBean.getCancelReason());
 					} else {
@@ -1747,6 +1769,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 							//发送接单短信
 							asyncService.sendOrder("垃圾分类回收", order.getTel(), "SMS_142151759", recyclers.getName(), recyclers.getTel(), company.getName());
 						}
+						//異步刪除redis裡面派單id
+						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
 					}
 					break;
 				default:
@@ -2012,9 +2036,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					//listMap = new ArrayList<>();
 					if (name.getId() == list.getParentId()) {
 						map.put("cateName", list.getCategoryName());
-						map.put("price", list.getPrice() + "");
+						map.put("price", ApiUtils.doublegetTwoDecimal(list.getPrice()));
 						map.put("unit", list.getUnit());
-						map.put("amount", list.getAmount() + "");
+						map.put("amount", ApiUtils.doublegetTwoDecimal(Float.parseFloat(list.getAmount()+"")));
 						price += list.getPrice() * list.getAmount();
 						//判断是否免费
 						if ("1".equals(isCash)) {
@@ -2035,9 +2059,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					//listMap = new ArrayList<>();
 					if (name.getId() == list.getParentId()) {
 						map.put("cateName", list.getCategoryName());
-						map.put("price", list.getPrice() + "");
+						map.put("price", ApiUtils.doublegetTwoDecimal(list.getPrice()));
 						map.put("unit", list.getUnit());
-						map.put("amount", list.getAmount() + "");
+						map.put("amount", ApiUtils.doublegetTwoDecimal(Float.parseFloat(list.getAmount()+"")));
 						price += list.getPrice() * list.getAmount();
 						listMap.add(map);
 					}
@@ -2047,7 +2071,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			mapListMap.put("categoryName", StringUtils.isBlank(categoryName) ? "" : categoryName.substring(0, categoryName.length() - 1));
 			mapListMap.put("list", listMap);
 			mapListMap.put("name", name == null ? null : name.getName());
-			mapListMap.put("price", price);
+			mapListMap.put("price", ApiUtils.doublegetTwoDecimal(price));
 			listMapObject.add(mapListMap);
 		}
 		resultMap.put("listMapObject", listMapObject);

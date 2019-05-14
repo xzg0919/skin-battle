@@ -3,11 +3,13 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
+import com.tzj.collect.api.business.result.ApiUtils;
 import com.tzj.collect.entity.Category.CategoryType;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -410,7 +412,12 @@ public class Order extends DataEntity<Long> {
 	}
 
 	public String getPaymentPrice() {
-		return paymentPrice;
+		if (null != paymentPrice){
+			return ApiUtils.doublegetTwoDecimal(Float.parseFloat(paymentPrice));
+		}else if (null != achPrice){
+			return ApiUtils.doublegetTwoDecimal(achPrice.floatValue());
+		}
+		return ApiUtils.doublegetTwoDecimal(0f);
 	}
 
 	public void setPaymentPrice(String paymentPrice) {
@@ -776,6 +783,10 @@ public class Order extends DataEntity<Long> {
 
 	public BigDecimal getPrice() {
 		 return price.setScale(2,BigDecimal.ROUND_DOWN);
+	}
+
+	public String getPrice4Page(){
+		return ApiUtils.doublegetTwoDecimal(price.floatValue());
 	}
 
 	public void setPrice(BigDecimal price) {
