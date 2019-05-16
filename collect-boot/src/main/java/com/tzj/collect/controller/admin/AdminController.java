@@ -48,6 +48,8 @@ public class AdminController {
 	private CompanyService companyService;
 	@Autowired
 	private AreaService areaService;
+	@Autowired
+	private AsyncService asyncService;
 
 	@RequestMapping("/addExcel")
 	public String addExcel() {
@@ -177,6 +179,20 @@ public class AdminController {
 	public @ResponseBody String mysl(String orderId) {
 
 		OrderBean orderBean = orderService.myslOrderData(orderId);
+		return "操作成功";
+	}
+
+
+	@RequestMapping("/getDD")
+	public @ResponseBody  String getDD()throws Exception{
+		System.out.println("等待前");
+		OrderBean orderBean = new OrderBean();
+		orderBean.setOrderNo("测试订单");
+		orderBean.setCompanyName("测试企业名字");
+		orderBean.setDingDingUrl("https://oapi.dingtalk.com/robot/send?access_token=c41ce5b249d8627a88f0b9b00615fd55a5ce48d6a447a891eef25fe03e514cd9");
+		//钉钉通知
+		asyncService.notifyDingDingOrderCreate(orderBean);
+		Thread.sleep(3000);
 		return "操作成功";
 	}
 

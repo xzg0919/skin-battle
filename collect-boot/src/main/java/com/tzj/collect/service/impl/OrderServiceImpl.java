@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1793,6 +1794,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @author 王灿
 	 */
 	public void updateMemberPoint(Integer memberId, String OrderNo, double amount,String descrb) {
+		DecimalFormat df   = new DecimalFormat("######0.00");
+		amount = Double.parseDouble(df.format(amount));
+
 		Point points = pointService.getPoint(memberId);
 		if (points == null) {
 			points = new Point();

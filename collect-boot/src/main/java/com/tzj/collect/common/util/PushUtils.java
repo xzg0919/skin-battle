@@ -35,7 +35,7 @@ public class PushUtils {
         pushRequest.setDeviceType("ANDROID"); // 设备类型deviceType, iOS设备: "iOS"; Android设备: "ANDROID"; 全部: "ALL", 这是默认值.
 
         // 推送配置
-        pushRequest.setPushType("MESSAGE"); // MESSAGE:表示消息(默认), NOTICE:表示通知
+        pushRequest.setPushType("NOTICE"); // MESSAGE:表示消息(默认), NOTICE:表示通知
         pushRequest.setTitle(title); // 消息的标题
         pushRequest.setBody("{\"code\":\""+code+"\",\"message\":\""+message+"\"}"); // 消息的内容
         // 推送配置: iOS

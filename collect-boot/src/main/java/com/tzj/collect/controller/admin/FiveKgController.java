@@ -87,12 +87,14 @@ public class FiveKgController {
         }
         Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo).eq("del_flag", 0));
         if("2".equals(orderStatus)){
-            if((Order.OrderType.TOSEND+"").equals(order.getStatus()+"")){
                 //已经派单
                 try{
                     order.setStatus(Order.OrderType.ALREADY);
                     String nameTel = object.getString("expressTel");
                     String expressName = object.getString("expressName");
+                    if(StringUtils.isBlank(nameTel)&&StringUtils.isBlank(expressName)){
+                        return null;
+                    }
                     if (9==order.getCompanyId()) {
                         if (StringUtils.isNotBlank(nameTel)){
                             order.setExpressTel(nameTel.substring(nameTel.length()-11, nameTel.length()));
@@ -116,7 +118,7 @@ public class FiveKgController {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-            }
+
             return null;
         }else if ("3".equals(orderStatus)){
             //订单完成

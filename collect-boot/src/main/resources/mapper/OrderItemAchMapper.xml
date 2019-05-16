@@ -14,6 +14,7 @@
         WHERE
         a.order_id = #{orderId}
 		AND b.ali_item_type is NOT NULL
+		AND a.amount > 0
         GROUP BY b.ali_item_type;
     </select>
 

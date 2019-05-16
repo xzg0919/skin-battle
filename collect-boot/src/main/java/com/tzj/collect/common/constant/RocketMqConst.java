@@ -29,6 +29,8 @@ public class RocketMqConst {
 
     public static final String TOPIC_NAME_RETURN_ORDER="ReturnOrder";
 
+    public static final String TOPIC_NAME_RETURN_ORDER_TEST="ReturnOeder-TEST";
+
     public static final String TOPIC_NAME_IOT_ORDER="IOT-TOPIC-TEST";
 
     public static final String DINGDING_ERROR = "https://oapi.dingtalk.com/robot/send?access_token=c41ce5b249d8627a88f0b9b00615fd55a5ce48d6a447a891eef25fe03e514cd9";
