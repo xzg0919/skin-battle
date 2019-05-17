@@ -92,20 +92,19 @@ public class FiveKgController {
                     order.setStatus(Order.OrderType.ALREADY);
                     String nameTel = object.getString("expressTel");
                     String expressName = object.getString("expressName");
-                    if(StringUtils.isBlank(nameTel)&&StringUtils.isBlank(expressName)){
-                        return null;
-                    }
-                    if (9==order.getCompanyId()) {
-                        if (StringUtils.isNotBlank(nameTel)){
-                            order.setExpressTel(nameTel.substring(nameTel.length()-11, nameTel.length()));
-                            order.setExpressName(nameTel.substring(3,nameTel.length()-11));
-                        }else if (StringUtils.isNotBlank(expressName)){
-                            order.setExpressTel(expressName.substring(expressName.length()-11, expressName.length()));
-                            order.setExpressName(expressName.substring(3,expressName.length()-11));
+                    if(!StringUtils.isBlank(nameTel)&&!StringUtils.isBlank(expressName)){
+                        if (9==order.getCompanyId()) {
+                            if (StringUtils.isNotBlank(nameTel)){
+                                order.setExpressTel(nameTel.substring(nameTel.length()-11, nameTel.length()));
+                                order.setExpressName(nameTel.substring(3,nameTel.length()-11));
+                            }else if (StringUtils.isNotBlank(expressName)){
+                                order.setExpressTel(expressName.substring(expressName.length()-11, expressName.length()));
+                                order.setExpressName(expressName.substring(3,expressName.length()-11));
+                            }
+                        }else {
+                            order.setExpressTel(nameTel);
+                            order.setExpressName(expressName);
                         }
-                    }else {
-                        order.setExpressTel(nameTel);
-                        order.setExpressName(expressName);
                     }
                     if(null != object.getString("expressNo") &&StringUtils.isNotBlank(object.getString("expressNo"))){
                         order.setExpressNo(object.getString("expressNo"));
