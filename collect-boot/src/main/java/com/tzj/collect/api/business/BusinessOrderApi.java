@@ -44,6 +44,8 @@ public class BusinessOrderApi {
 	private  AreaService areaService;
 	@Autowired
 	private CompanyService companyService;
+	@Autowired
+	private SendRocketmqMessageService sendRocketmqMessageService;
 	/**
 	 * 根据各种查询条件获取订单 列表
 	 * @author 王灿
@@ -246,7 +248,7 @@ public class BusinessOrderApi {
 			param.put("userAddress",order.getAddress()+order.getFullAddress());
 			param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+("am".equals(order.getArrivalPeriod())?"10:00:00":"16:00:00"));
 			param.put("isCancel","N");
-			RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
+			sendRocketmqMessageService.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
 		}catch (Exception e){
 			e.printStackTrace();
 		}

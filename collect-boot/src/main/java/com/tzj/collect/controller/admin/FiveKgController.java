@@ -1,17 +1,8 @@
 package com.tzj.collect.controller.admin;
 
 
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
-import com.aliyun.mns.client.CloudAccount;
-import com.aliyun.mns.client.CloudTopic;
-import com.aliyun.mns.client.MNSClient;
-import com.aliyun.mns.common.auth.ServiceCredentials;
-import com.aliyun.mns.common.http.ServiceClient;
-import com.aliyun.mns.model.RawTopicMessage;
-import com.aliyun.mns.model.TopicMessage;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.common.constant.RocketMqConst;
@@ -20,7 +11,6 @@ import com.tzj.collect.service.*;
 import com.tzj.module.common.aliyun.mns.Notification;
 import com.tzj.module.common.aliyun.mns.XMLUtils;
 import com.tzj.module.common.exception.BusiException;
-import com.tzj.module.common.notify.dingtalk.DingTalkConfig;
 import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +21,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 @Controller
 @RequestMapping("fivekg")
@@ -87,6 +73,9 @@ public class FiveKgController {
         }
         Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo).eq("del_flag", 0));
         if("2".equals(orderStatus)){
+            if((Order.OrderType.COMPLETE+"").equals(order.getStatus()+"")||(Order.OrderType.CANCEL+"").equals(order.getStatus()+"")||(Order.OrderType.REJECTED+"").equals(order.getStatus()+"")){
+                return null;
+            }
                 //已经派单
                 try{
                     order.setStatus(Order.OrderType.ALREADY);
@@ -132,7 +121,7 @@ public class FiveKgController {
                     order.setGreenCount(Double.parseDouble(object.getString("expressAmount")));
                     order.setStatus(Order.OrderType.COMPLETE);
                     order.setExpressAmount(new BigDecimal(object.getString("expressAmount")));
-                    order.setCompleteDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
+                    order.setCompleteDate(new Date());
                     order.setAchPrice(new BigDecimal("0"));
                     orderService.updateById(order);
                     OrderItem orderItem = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));

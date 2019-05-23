@@ -42,7 +42,7 @@ public class ProductOrderController {
 	 * @param productName : 商品名字
 	 * @return
 	 */
-	@RequestMapping("/getProductOrderList")
+	@RequestMapping("/getProduct/orderLists")
 	public String getProductOrderList(String mobile,String productName,final ModelMap model) {
 		EntityWrapper wrapper = new EntityWrapper<GoodsProductOrder>();
 		wrapper.eq("goods_state", 0);

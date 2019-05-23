@@ -129,6 +129,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private AnsycMyslService ansycMyslService;
 	@Autowired
 	private AsyncRedis asyncRedis;
+	@Autowired
+	private SendRocketmqMessageService sendRocketmqMessageService;
 
 	@Override
 	public Order getLastestOrderByMember(Integer memberId) {
@@ -1227,7 +1229,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					param.put("orderNo",order.getOrderNo());
 					param.put("isCancel","Y");
 					param.put("cancelReason",order.getCancelReason());
-					RocketMqConst.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
+					sendRocketmqMessageService.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
 				}
 			}catch (Exception e){
 				e.printStackTrace();
@@ -1236,7 +1238,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//阿里云推送
 		if(order.getRecyclerId()!=null&&order.getRecyclerId()!=0){
 			Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
-			PushUtils.getAcsResponse(recyclers.getTel(),PushConst.APP_TITLE,PushConst.APP_CODE_03_MESSAGE,PushConst.APP_CODE_03,PushConst.APP_CODE_03_MESSAGE);
+			PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 		}
 		//判断是否有券码
 		if(!StringUtils.isBlank(order.getEnterpriseCode())){
@@ -1459,7 +1461,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					//查询回收人员信息推送消息
 					Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 					if(null!=recyclers){
-						PushUtils.getAcsResponse(recyclers.getTel(), PushConst.APP_TITLE,PushConst.APP_CODE_06_MESSAGE,PushConst.APP_CODE_06,PushConst.APP_CODE_06_MESSAGE);
+						PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 					}
 				}catch (Exception e){
 					e.printStackTrace();
@@ -1500,7 +1502,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				}
 				//查询回收人员信息
 				Recyclers recyclers = recyclersService.selectById(recyclerId);
-				PushUtils.getAcsResponse(recyclers.getTel(), PushConst.APP_TITLE,PushConst.APP_CODE_01_MESSAGE,PushConst.APP_CODE_01,PushConst.APP_CODE_01_MESSAGE);
+				PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 				try {
 					xcxWebSocketServer.pushXcxDetail(order.getMemberId().toString(),"user", this.isUserOrder(order.getMemberId().toString()));
 				}catch (Exception e){
@@ -1713,7 +1715,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 							order.setRecyclerId(recycler.getParentsId());
 							//阿里云推送
 							Recyclers recyclers = recyclersService.selectById(recycler.getParentsId());
-							PushUtils.getAcsResponse(recyclers.getTel(),PushConst.APP_TITLE,PushConst.APP_CODE_04_MESSAGE,PushConst.APP_CODE_04,PushConst.APP_CODE_04_MESSAGE);
+							PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 						}
 					} else {
 						throw new ApiException("该订单已被操作，请刷新页面查看状态");
@@ -1745,6 +1747,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						throw new ApiException("该订单已被操作，请刷新页面查看状态");
 					}
 					order.setCompleteDate(new Date());
+					if(StringUtils.isNotBlank(orderBean.getAchPrice())){
+						order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
+					}
 					flag = orderService.updateById(order);
 					orderLog.setOpStatusAfter("COMPLETE");
 					orderLog.setOp("已完成");
@@ -2220,7 +2225,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			return "转派失败";
 		}
 		Recyclers recyclers = recyclersService.selectById(recyclerId);
-		PushUtils.getAcsResponse(recyclers.getTel(),PushConst.APP_TITLE,PushConst.APP_CODE_02_MESSAGE,PushConst.APP_CODE_02,PushConst.APP_CODE_02_MESSAGE);
+		PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 		return "转派成功";
 	}
 

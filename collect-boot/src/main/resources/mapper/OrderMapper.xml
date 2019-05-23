@@ -638,7 +638,7 @@
 	</select>
 
 	<select id="paymentPriceByOrderId" parameterType="Integer" resultType="Object">
-		SELECT
+		SELECT distinct
 			b.price
 		FROM
 			sb_order a

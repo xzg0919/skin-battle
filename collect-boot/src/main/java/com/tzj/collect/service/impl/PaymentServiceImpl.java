@@ -114,80 +114,46 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     public static void main(String[] args) {
-//        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APP_APPID, ALI_APP_PAY_KEY, "json", "UTF-8", ALI_APP_PUBLIC_KEY, "RSA2");
-//        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
-//        request.setBizContent("{" +
-//                "\"out_biz_no\":\""+5244+"\"" +
-//                //"\"order_id\":\"20160627110070001502260006780837\"" +
-//                "  }");
-//        AlipayFundTransOrderQueryResponse response = null;
-//        try {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
+        request.setBizContent("{" +
+                "\"out_biz_no\":\""+9978+"\"" +
+                //"\"order_id\":\"20160627110070001502260006780837\"" +
+                "  }");
+        AlipayFundTransOrderQueryResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        } catch (AlipayApiException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+        }
+        System.out.println(response.getBody());
+
+//        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+//        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+//        String tradeNo = "2019051822001429961039969802";
+//        AlipayTradeQueryModel model = new AlipayTradeQueryModel();
+//        model.setOutTradeNo(tradeNo);
+//        model.setTradeNo(tradeNo);
+//        request.setBizModel(model);
+//
+//        AlipayTradeQueryResponse response = null;
+//        try{
 //            response = alipayClient.execute(request);
-//        } catch (AlipayApiException e) {
-//            // TODO Auto-generated catch block
+//        }catch (Exception e){
 //            e.printStackTrace();
 //        }
 //        if(response.isSuccess()){
-//            System.out.println("调用成功");
+//            System.out.println("调用查询交易接口成功 : "+response.getBody());
 //        } else {
-//            System.out.println("调用失败");
+//            System.out.println("调用查询交易接口失败 : "+response.getBody());
 //        }
 //        System.out.println(response.getBody());
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
-
-
-        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
-        model.setOutBizNo("2018040209312523258");
-        model.setPayeeType("ALIPAY_USERID");
-        model.setPayeeAccount("2088212869139500");
-        model.setAmount("5");
-        model.setPayerShowName("垃圾分类回收(收呗)货款");
-        model.setRemark("垃圾分类回收(收呗)货款");
-
-        request.setBizModel(model);
-        try {
-            AlipayFundTransToaccountTransferResponse response = alipayClient.execute(request);
-            if (response.isSuccess()){
-                response.getBody();
-            }else {
-                System.out.println("转账异常");
-            }
-        }catch (AlipayApiException e){
-            throw new ApiException("系统异常：" + e.getErrMsg());
-        }
-//        String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
-//
-//        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-//        AlipayTradeCreateRequest request = new AlipayTradeCreateRequest();
-//        AlipayTradeCreateModel model = new AlipayTradeCreateModel();
-//        String sn = orderNo;
-//        String subject = "垃圾分类回收订单(收呗):" + sn;
-//
-//        model.setOutTradeNo(sn);
-//        model.setTotalAmount("1");
-//        model.setSubject(subject);
-//        model.setTimeoutExpress("15d");
-//        model.setBuyerId("2088212854989662");
-//        ExtendParams extendParams = new ExtendParams();
-//        extendParams.setSysServiceProviderId("2088421446748174");
-//        model.setExtendParams(extendParams);
-//        request.setBizModel(model);
-//        request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay.jhtml");
-//        try {
-//            //这里和普通的接口调用不同，使用的是sdkExecutee
-//            AlipayTradeCreateResponse response = alipayClient.execute(request);
-//           if (response.isSuccess()){
-//               System.out.println(response.getTradeNo());
-//           }else {
-//               System.out.println(response.getBody());
-//               DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-//                       ,Thread.currentThread().getStackTrace()[1].getMethodName(),"转账失败",
-//                       RocketMqConst.DINGDING_ERROR,response.getBody());
-//           }
-//        } catch (AlipayApiException e) {
-//            throw new ApiException("系统异常：" + e.getErrMsg());
-//        }
     }
 
     /**
@@ -262,7 +228,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
      * 查询转账信息
      */
     public AlipayFundTransOrderQueryResponse getTransfer(String paymentId) {
-    	AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APP_APPID, ALI_APP_PAY_KEY, "json", "UTF-8", ALI_APP_PUBLIC_KEY, "RSA2");
+    	AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
     	AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
     	request.setBizContent("{" +
     	"\"out_biz_no\":\""+paymentId+"\"" +

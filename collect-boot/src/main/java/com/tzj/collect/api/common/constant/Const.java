@@ -34,6 +34,9 @@ public class Const {
 
 	public final static String APP_ID_1="25312348";
 
+	public final static String APP_ACTIVITY_1="com.tzj.pro.tzj.base.PopupPushActivity";
+
+
 	//阿里云消息推送2
 	public final static String ALIYUN_ACCESS_KEY_ID_2="LTAIIUwHN6Nam32H";
 
@@ -47,4 +50,6 @@ public class Const {
 	public final static String ALIYUN_SECRET_3="B0TwGIvC0MOXah9Ncpb1k8HXR09ksa";
 
 	public final static String APP_ID_3="25935027";
+
+	public final static String APP_ACTIVITY_3="com.tingzj.bigthingrecyler.base.PopupPushActivity";
 }
