@@ -315,7 +315,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			}
 		}
 		//判断是否有保额待领取
-		PiccWater piccWater = piccWaterService.selectOne(new EntityWrapper<PiccWater>().eq("member_id", memberId).eq("del_flag", 0).eq("status_", 0));
+		PiccWater piccWater = piccWaterService.selectOne(new EntityWrapper<PiccWater>().eq("member_id", memberId).eq("del_flag", 0).eq("status_", 0).ge("point_count", 1));
 		if(null!= piccWater){
 			isPiccWater = "YES";
 		}

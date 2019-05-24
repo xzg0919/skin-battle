@@ -59,8 +59,9 @@ public class PiccOrderApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String updatePiccWater(PiccOrderBean piccOrderBean) throws ApiException {
         Member member = MemberUtils.getMember();
-        if(StringUtils.isBlank(piccOrderBean.getId())){
-            throw new ApiException("请传入要收取的能量Id");
+        String piccWaterId = piccOrderBean.getId();
+        if(StringUtils.isBlank(piccWaterId)){
+            piccWaterId = "0";
         }
         return piccOrderService.updatePiccWater(member.getId().intValue(),Integer.parseInt(piccOrderBean.getId()));
     }

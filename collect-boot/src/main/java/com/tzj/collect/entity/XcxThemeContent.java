@@ -18,6 +18,42 @@ public class XcxThemeContent extends DataEntity<Long> {
      * 主题内容
      */
     private String content;
+    /**
+     * 主题内容
+     */
+    private String contents;
+    /**
+     * 主题内容
+     */
+    private String contentDate;
+    /**
+     * 主题内容
+     */
+    private String contentImg;
+
+    public String getContents() {
+        return contents;
+    }
+
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+
+    public String getContentDate() {
+        return contentDate;
+    }
+
+    public void setContentDate(String contentDate) {
+        this.contentDate = contentDate;
+    }
+
+    public String getContentImg() {
+        return contentImg;
+    }
+
+    public void setContentImg(String contentImg) {
+        this.contentImg = contentImg;
+    }
 
     @Override
     public Long getId() {

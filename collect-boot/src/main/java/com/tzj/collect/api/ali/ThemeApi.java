@@ -60,4 +60,26 @@ public class ThemeApi {
         return xcxThemes;
     }
 
+    /**
+     * 返回小程序首页蚂蚁深林文案
+     * @author 王灿
+     * @param
+     */
+    @Api(name = "theme.getXcxThemeNews", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object getXcxThemeNews() {
+        List<XcxTheme> xcxThemes = xcxThemeService.selectList(new EntityWrapper<XcxTheme>().eq("type", 2).eq("del_flag", 0));
+        xcxThemes.stream().forEach(xcxTheme -> {
+            List<XcxThemeContent> xcxThemeContents = xcxThemeContentService.selectList(new EntityWrapper<XcxThemeContent>().eq("theme_id", xcxTheme.getId()).eq("del_flag", 0));
+            if (!xcxThemeContents.isEmpty()){
+                xcxTheme.setContent(xcxThemeContents.get(0).getContent());
+                xcxTheme.setContents(xcxThemeContents.get(0).getContents());
+                xcxTheme.setContentDate(xcxThemeContents.get(0).getContentDate());
+                xcxTheme.setContentImg(xcxThemeContents.get(0).getContentImg());
+            }
+        });
+        return xcxThemes;
+    }
+
 }

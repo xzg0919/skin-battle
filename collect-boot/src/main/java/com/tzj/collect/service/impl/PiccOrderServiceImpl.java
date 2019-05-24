@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -228,13 +229,28 @@ public class PiccOrderServiceImpl extends ServiceImpl<PiccOrderMapper,PiccOrder>
     public String updatePiccWater(Integer memberId, Integer piccWaterId) {
         Date date = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        PiccWater piccWater = piccWaterService.selectById(piccWaterId);
-        piccWater.setStatus("1");
-        piccWaterService.updateById(piccWater);
+        Integer pointCount = 0;
+        if (piccWaterId == 0) {
+            List<PiccWater> piccWaterList = piccWaterService.selectList(new EntityWrapper<PiccWater>().eq("member_id", memberId).eq("del_flag", 0).eq("status_", 0).ge("point_count", 1));
+            if (!piccWaterList.isEmpty()){
+                for (PiccWater piccWater:piccWaterList){
+                    piccWater.setStatus("1");
+                    piccWaterService.updateById(piccWater);
+                    pointCount += piccWater.getPointCount();
+                }
+            }
+        }else {
+            PiccWater piccWater = piccWaterService.selectById(piccWaterId);
+            piccWater.setStatus("1");
+            piccWaterService.updateById(piccWater);
+            pointCount = piccWater.getPointCount();
+
+        }
+
         PiccOrder piccOrder = this.selectOne(new EntityWrapper<PiccOrder>().eq("status_", 2).eq("del_flag", 0).eq("member_id", memberId).ge("pick_end_time", df.format(date)));
         if (null!=piccOrder&&piccOrder.getInitPrice()<piccOrder.getUnderwritingPrice()){
-            if (piccOrder.getInitPrice()+piccWater.getPointCount()<=piccOrder.getUnderwritingPrice()){
-                piccOrder.setInitPrice(piccOrder.getInitPrice()+piccWater.getPointCount());
+            if (piccOrder.getInitPrice()+pointCount<=piccOrder.getUnderwritingPrice()){
+                piccOrder.setInitPrice(piccOrder.getInitPrice()+pointCount);
 
             }else {
                 piccOrder.setInitPrice(piccOrder.getUnderwritingPrice());

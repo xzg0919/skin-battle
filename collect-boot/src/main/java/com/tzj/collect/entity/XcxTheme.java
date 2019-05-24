@@ -37,6 +37,27 @@ public class XcxTheme  extends DataEntity<Long> {
      */
     @TableField(exist = false)
     private List<XcxThemeContent> contentList;
+    /**
+     * 仅用于页面返回
+     */
+    @TableField(exist = false)
+    private String contents;
+    /**
+     * 仅用于页面返回
+     */
+    @TableField(exist = false)
+    private String content;
+    /**
+     * 仅用于页面返回
+     */
+    @TableField(exist = false)
+    private String contentDate;
+    /**
+     * 仅用于页面返回
+     */
+    @TableField(exist = false)
+    private String contentImg;
+
 
     public List<XcxThemeContent> getContentList() {
         return contentList;
@@ -44,6 +65,38 @@ public class XcxTheme  extends DataEntity<Long> {
 
     public void setContentList(List<XcxThemeContent> contentList) {
         this.contentList = contentList;
+    }
+
+    public String getContents() {
+        return contents;
+    }
+
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+
+    public String getContentDate() {
+        return contentDate;
+    }
+
+    public void setContentDate(String contentDate) {
+        this.contentDate = contentDate;
+    }
+
+    public String getContentImg() {
+        return contentImg;
+    }
+
+    public void setContentImg(String contentImg) {
+        this.contentImg = contentImg;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override
