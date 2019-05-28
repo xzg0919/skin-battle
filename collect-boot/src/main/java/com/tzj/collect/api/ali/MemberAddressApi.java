@@ -34,11 +34,11 @@ public class MemberAddressApi {
 	@Autowired
 	private CompanyCategoryService companyCategoryService;
 	@Autowired
-	private CompanyShareService companyShareService;
-	@Autowired
 	private CompanyStreeService companyStreeService;
 	@Autowired
 	private CompanyStreetBigService companyStreetBigService;
+	@Autowired
+	private CompanyStreetApplianceService companyStreetApplianceService;
 
 	/**
      * 保存用户的新增地址/修改后保存的地址
@@ -157,7 +157,7 @@ public class MemberAddressApi {
 			memberAddress.setIsFixedPoint("0");
 		}
 		//判断地址是否有公司回收六废
-		String companyId = selectCompanyId(25, memberAddress.getCommunityId(), memberAddress.getAreaId());
+		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(25,memberAddress.getStreetId(), memberAddress.getCommunityId());
 		if(StringUtils.isBlank(companyId)){
 			memberAddress.setIsHousehold("N");
 		}else{
@@ -171,7 +171,7 @@ public class MemberAddressApi {
 			memberAddress.setIsFiveKg("N");
 		}
 		//判断地址是否有公司回收电器
-		String companyIds = selectCompanyId(9, memberAddress.getCommunityId(), memberAddress.getAreaId());
+		String companyIds = companyStreetApplianceService.selectStreetApplianceCompanyId(9,memberAddress.getStreetId(), memberAddress.getCommunityId());
 		if(StringUtils.isBlank(companyIds)){
 			memberAddress.setIsDigital("N");
 		}else {
@@ -244,27 +244,6 @@ public class MemberAddressApi {
 		Member member = MemberUtils.getMember();
 		memberAddressBean.setMemberId(member.getId().toString());
 		return memberAddressService.saveMemberAddressd(memberAddressBean);
-	}
-
-	/**
-	 * 根据小区Id,区域Id和分类Id查询所属企业
-	 * @return
-	 */
-	public String selectCompanyId(Integer categoryId, Integer cummintyId, Integer areaId) {
-		String companyId = "";
-		//根据分类Id和小区Id查询所属企业
-		Company companys = companyCategoryService.selectCompany(categoryId,cummintyId);
-		if(companys == null) {
-			//根据分类Id和小区id去公海查询相关企业
-			CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", categoryId).eq("area_id", areaId));
-			if(companyShare==null) {
-				return companyId;
-			}
-			companyId = companyShare.getCompanyId().toString();
-		}else {
-			companyId = companys.getId().toString();
-		}
-		return companyId;
 	}
     
 }

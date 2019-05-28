@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.mapper.CompanyStreetApplianceMapper">
+    <select id="selectStreetApplianceCompanyId" resultType="Integer" parameterType="Integer">
+        SELECT DISTINCT
+         a.company_id
+        FROM
+          sb_company_street_appliance a
+        LEFT JOIN sb_company_category b ON a.company_id = b.company_id
+        WHERE
+        a.street_id = #{streetId}
+        AND b.parent_id = #{categoryId}
+        AND b.del_flag = 0
+        AND a.del_flag = 0
+    </select>
+</mapper>

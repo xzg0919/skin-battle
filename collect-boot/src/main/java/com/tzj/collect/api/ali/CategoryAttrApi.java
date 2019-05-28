@@ -9,6 +9,7 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
@@ -31,9 +32,9 @@ public class CategoryAttrApi {
 	@Autowired
 	private CategoryService categoryService;
 	@Autowired
-	private CompanyShareService companyShareService;
-	@Autowired
 	private CompanyCategoryService companyCategoryService;
+	@Autowired
+	private CompanyStreetApplianceService companyStreetApplianceService;
     /**
      * 根据分类id取得所有分类属性
      * @author 王灿
@@ -54,28 +55,13 @@ public class CategoryAttrApi {
     	}
     	//根据分类Id查询父类分类id
     	Category category = categoryService.selectById(categoryBean.getId());
-    	Integer communityId = memberAddress.getCommunityId();
-    	String companyId = "";
-    	String areaId = memberAddress.getAreaId()+"";
-		//根据小区Id查询的私海所属企业
-		Company company = companyCategoryService.selectCompany(category.getParentId(), communityId);
-		if(company == null) {
-			//根据分类Id和小区id去公海查询相关企业
-			CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
-			if(companyShare==null) {
-				return categoryAttrService.getCategoryAttrListss(categoryBean.getId());
-			}
-			companyId = companyShare.getCompanyId().toString();
-		}else {
-			companyId = company.getId().toString();
+		//根据小区Id，分类id和街道id 查询相关企业
+		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(category.getParentId(),memberAddress.getStreetId(),memberAddress.getCommunityId());
+		if(StringUtils.isBlank(companyId)) {
+			return "该区域暂无服务";
 		}
 		//根据分类id取得所有分类属性
 		return categoryAttrService.getCategoryAttrLists(categoryBean.getId(),Integer.parseInt(companyId));
     }
-	
-	
-	/**
-	 * 展示生活垃圾的回首类型,可以修改调用上面的接口
-	 */
 	
 }

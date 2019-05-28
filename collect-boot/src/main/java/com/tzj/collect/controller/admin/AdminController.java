@@ -4,15 +4,22 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.ali.param.MemberAddressBean;
 import com.tzj.collect.api.ali.param.OrderBean;
+import com.tzj.collect.api.ali.param.OrderItemBean;
 import com.tzj.collect.api.common.excel.ExcelData;
 import com.tzj.collect.api.common.excel.ExcelUtils;
 import com.tzj.collect.api.common.websocket.AppWebSocketServer;
 import com.tzj.collect.api.common.websocket.WebSocketServer;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
+import com.tzj.module.easyopen.util.ApiUtil;
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -50,6 +58,20 @@ public class AdminController {
 	private AreaService areaService;
 	@Autowired
 	private AsyncService asyncService;
+	@Autowired
+	private CompanyCategoryService companyCategoryService;
+	@Autowired
+	private MemberAddressService memberAddressService;
+	@Autowired
+	private CommunityService communityService;
+	@Autowired
+	private  CompanyStreeService companyStreeService;
+	@Autowired
+	private CompanyStreetBigService companyStreetBigService;
+	@Autowired
+	private CategoryService categoryService;
+	@Autowired
+	private CompanyStreetApplianceService companyStreetApplianceService;
 
 	@RequestMapping("/addExcel")
 	public String addExcel() {
@@ -196,5 +218,186 @@ public class AdminController {
 		return "操作成功";
 	}
 
+	@RequestMapping("/ceMemberAddress")
+	public @ResponseBody Object ceMemberAddress() throws Exception {
+
+		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", 8401).eq("city_id", "737"));
+		if(null==memberAddress) {
+			memberAddress =new MemberAddress();
+			memberAddress.setCommunityId(0);
+			memberAddress.setAddress("请选择地址");
+			memberAddress.setAreaId(0);
+			memberAddress.setCreateDate(new Date());
+			memberAddress.setHouseNumber("");
+		}
+		Integer communityId = memberAddress.getCommunityId();
+		//根据小区Id查询小区信息
+		Community community = communityService.selectById(communityId);
+		//判断小区是否有定点回收
+		if(community!=null&& StringUtils.isNotBlank(community.getFixedPointTime())&&StringUtils.isNotBlank(community.getFixedPointAddress())) {
+			memberAddress.setIsFixedPoint("1");
+		}else {
+			memberAddress.setIsFixedPoint("0");
+		}
+		//判断地址是否有公司回收六废
+		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(25,memberAddress.getStreetId(), memberAddress.getCommunityId());
+		if(StringUtils.isBlank(companyId)){
+			memberAddress.setIsHousehold("N");
+		}else{
+			memberAddress.setIsHousehold("Y");
+		}
+		//判断该地址是否回收5公斤废纺衣物
+		Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAddress.getStreetId());
+		if (null != streeCompanyId){
+			memberAddress.setIsFiveKg("Y");
+		}else{
+			memberAddress.setIsFiveKg("N");
+		}
+		//判断地址是否有公司回收电器
+		String companyIds = companyStreetApplianceService.selectStreetApplianceCompanyId(9,memberAddress.getStreetId(), memberAddress.getCommunityId());
+		if(StringUtils.isBlank(companyIds)){
+			memberAddress.setIsDigital("N");
+		}else {
+			memberAddress.setIsDigital("Y");
+		}
+		//判断地址是否有公司回收大件
+		Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(78,memberAddress.getStreetId());
+		if(null != streetBigCompanyId){
+			memberAddress.setIsDigThing("Y");
+		}else {
+			memberAddress.setIsDigThing("N");
+		}
+		return  memberAddress;
+
+	}
+
+	@RequestMapping("/ceMember")
+	public @ResponseBody Object ceMember() throws Exception {
+
+		Random random = new Random();
+		int i = random.nextInt(200000);
+		Member member1 = memberService.selectById(i);
+		Member member = new Member();
+		if (null!=member){
+			member.setMobile(member1.getMobile());
+		}
+		member.setName(i+"");
+		member.setMobile("123456789");
+		member.setBirthday("测试哦");
+		member.setGender("f");
+		member.setIsCertified("F");
+		member.setCity("上海市");
+		member.setLinkName("王灿");
+		member.setPicUrl("测试");
+		member.setAliUserId(i+"");
+		return memberService.insert(member);
+	}
+
+	@RequestMapping("/saveOrder")
+	public @ResponseBody Object saveOrder(){
+		OrderBean orderBean = new OrderBean();
+		orderBean.setCategoryId(35);
+		orderBean.setCityId("737");
+		orderBean.setArrivalTime("2019-05-16");
+		orderBean.setArrivalPeriod("pm");
+		orderBean.setAddress("上海市上海区");
+		orderBean.setFullAddress("c测试详细地址");
+		orderBean.setTel("18633336235");
+		orderBean.setLinkMan("王**");
+		orderBean.setGreenCode("12233213");
+		orderBean.setIsMysl("1");
+		OrderPic orderPic = new OrderPic();
+		orderPic.setOrigPic("www.baudu.com,www.baudu.com,www.baudu.com");
+		orderPic.setPicUrl("www.baudu.com,www.baudu.com,www.baudu.com");
+		orderPic.setSmallPic("www.baudu.com,www.baudu.com,www.baudu.com");
+		orderBean.setOrderPic(orderPic);
+		List<OrderItemBean> orderItems = new ArrayList<>();
+		OrderItemBean orderItemBean1 = new OrderItemBean();
+		OrderItemBean orderItemBean2 = new OrderItemBean();
+
+		orderItemBean1.setId((long)35);
+		orderItemBean2.setId((long)36);
+		orderItemBean1.setParentName("");
+		orderItemBean2.setParentName("");
+		orderItemBean1.setPrice("3");
+		orderItemBean2.setPrice("3");
+		orderItemBean1.setAmount((double)3);
+		orderItemBean2.setAmount((double)3);
+		orderItems.add(orderItemBean1);
+		orderItems.add(orderItemBean2);
+		orderBean.setOrderItemList(orderItems);
+
+		Member member = memberService.selectById(8401);
+		//查询用户的默认地址
+		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderBean.getCityId()));
+		if(memberAddress==null) {
+			return "您暂未添加回收地址";
+		}
+		//根据分类Id查询父类分类id
+		Category category = categoryService.selectById(orderBean.getCategoryId());
+		Integer communityId = memberAddress.getCommunityId();
+		String companyId = "1";
+		String level = "0";
+		String areaId = memberAddress.getAreaId().toString();
+		//根据分类Id和小区Id查询所属企业
+//		Company companys = priceService.selectCompany(category.getParentId(),communityId);
+//		if(companys == null) {
+//			//根据分类Id和小区id去公海查询相关企业
+//			CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
+//			if(companyShare==null) {
+//				return "该区域暂无回收企业";
+//			}
+//			companyId = companyShare.getCompanyId().toString();
+//			level = "1";
+//		}else {
+//			companyId = companys.getId().toString();
+//			level = "0";
+//		}
+		//Integer companyId = companyService.getCompanyIdByIds(orderbean.getCommunityId(),orderbean.getCategoryParentId());
+		orderBean.setCompanyId(Integer.parseInt(companyId));
+		orderBean.setLevel(level);
+		orderBean.setCommunityId(communityId);
+		orderBean.setAreaId(Integer.parseInt(areaId));
+		orderBean.setStreetId(memberAddress.getStreetId());
+		//随机生成订单号
+		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
+		orderBean.setOrderNo(orderNo);
+		Map<String,Object> resultMap = (Map<String,Object>)orderService.XcxSaveOrder(orderBean,member);
+		//钉钉消息赋值回收公司名称
+		if (companyId != null && !"".equals(companyId)) {
+			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", companyId));
+			orderBean.setCompanyName(company.getName());
+			orderBean.setDingDingUrl(company.getDingDingUrl());
+		}else{
+			return "回收公司异常";
+		}
+		try {
+			webSocketServer.sendInfo(companyId, "你有新订单了");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Map<String,Object> map = new HashMap<>();
+		Date date = new Date();
+		SimpleDateFormat simp = new SimpleDateFormat("HH");
+		String time = simp.format(date);
+		if (Integer.parseInt(time)>= 20){
+			map.put("type",8);
+			map.put("msg","20:00后的订单，次日上午才上门回收哦！");
+			map.put("code",resultMap.get("code"));
+			map.put("id",resultMap.get("id"));
+			return map;
+		}
+		map.put("type",9);
+		map.put("msg","操作成功");
+		map.put("code",resultMap.get("code"));
+		map.put("id",resultMap.get("id"));
+		return map;
+
+	}
+
+	@Autowired
+	private MemberService memberService;
+	@Autowired
+	private CompanyCategoryService priceService;
 
 }

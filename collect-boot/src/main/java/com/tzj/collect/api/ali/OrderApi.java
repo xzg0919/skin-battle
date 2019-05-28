@@ -41,8 +41,6 @@ public class OrderApi {
 	@Autowired
 	private AsyncService asyncService;
 	@Autowired
-	private CompanyShareService companyShareService;
-	@Autowired
 	private CategoryService categoryService;
 	@Autowired
 	private MemberAddressService memberAddressService;
@@ -60,6 +58,8 @@ public class OrderApi {
 	private CompanyStreetBigService companyStreetBigService;
 	@Autowired
 	private AnsycMyslService ansycMyslService;
+	@Autowired
+	private CompanyStreetApplianceService companyStreetApplianceService;
 	
 
 	/**
@@ -184,24 +184,13 @@ public class OrderApi {
     	//根据分类Id查询父类分类id
     	Category category = categoryService.selectById(orderbean.getCategoryId());
     	Integer communityId = memberAddress.getCommunityId();
-    	String companyId = "";
-    	String level = "";
+    	String level = "1";
     	String areaId = memberAddress.getAreaId().toString();
-    	//根据分类Id和小区Id查询所属企业
-    	Company companys = priceService.selectCompany(category.getParentId(),communityId);
-    	if(companys == null) {
-    		//根据分类Id和小区id去公海查询相关企业
-    		CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
-    		if(companyShare==null) {
-				return "该区域暂无回收企业";
-			}
-    		companyId = companyShare.getCompanyId().toString();
-    		level = "1";
-    	}else {
-    		companyId = companys.getId().toString();
-    		level = "0";
-    	}
-    	//Integer companyId = companyService.getCompanyIdByIds(orderbean.getCommunityId(),orderbean.getCategoryParentId());
+		//根据分类Id、街道id和小区Id查询所属企业
+		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(category.getParentId(), memberAddress.getStreetId(), communityId);
+		if (StringUtils.isBlank(companyId)){
+			return "该区域暂无回收企业";
+		}
     	orderbean.setCompanyId(Integer.parseInt(companyId));
     	orderbean.setLevel(level);
     	orderbean.setCommunityId(communityId);
@@ -249,8 +238,6 @@ public class OrderApi {
     	if(memberAddress==null) {
     		return "您暂未添加回收地址";
     	}
-    	Integer communityId = memberAddress.getCommunityId();
-    	String areaId = memberAddress.getAreaId().toString();
     	String companyId = "";
 		if("FIVEKG".equals(orderbean.getType())){
 			//判断该地址是否回收5公斤废纺衣物
@@ -268,28 +255,13 @@ public class OrderApi {
 			companyId = streetBigCompanyId+"";
 		}else {
 			//判断地址是否收生活垃圾或家电
-			//根据分类Id和小区Id查询所属企业
-			Company company = priceService.selectCompany(orderbean.getCategoryId(),communityId);
-			if(company == null) {
-				//根据分类Id和小区id去公海查询相关企业
-				CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", orderbean.getCategoryId()).eq("area_id", areaId));
-				if(companyShare==null){
-					//判断该地址是否回收5公斤废纺衣物
-					Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(orderbean.getCategoryId(), memberAddress.getStreetId());
-					if(null==streeCompanyId){
-						return "该区域暂无回收企业";
-					}else{
-						companyId = streeCompanyId.toString();
-					}
-				}else {
-					companyId = companyShare.getCompanyId().toString();
-				}
-			}else {
-				companyId = company.getId().toString();
+			String applianceCompanyId = companyStreetApplianceService.selectStreetApplianceCompanyId(orderbean.getCategoryId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
+			if(null==applianceCompanyId){
+				return "该区域暂无回收企业";
 			}
+			companyId = applianceCompanyId+"";
 		}
 		Company company1 = companyService.selectById(companyId);
-		company1.setIsMysl("1");
 		return company1;
     }
     /**
@@ -330,16 +302,9 @@ public class OrderApi {
 		//根据分类Id和小区Id查询所属企业
 		Company companys = priceService.selectCompany(category.getParentId(),communityId);
 		if(companys == null) {
-			//根据分类Id和小区id去公海查询相关企业
-			CompanyShare companyShare =	companyShareService.selectOne(new EntityWrapper<CompanyShare>().eq("category_id", category.getParentId()).eq("area_id", areaId));
-			if(companyShare==null) {
-				return "该区域暂无回收企业";
-			}
-			companyId = companyShare.getCompanyId().toString();
-			level = "1";
+			return "该区域暂无回收企业";
 		}else {
 			companyId = companys.getId().toString();
-			level = "0";
 		}
 		//Integer companyId = companyService.getCompanyIdByIds(orderbean.getCommunityId(),orderbean.getCategoryParentId());
 		orderbean.setCompanyId(Integer.parseInt(companyId));
