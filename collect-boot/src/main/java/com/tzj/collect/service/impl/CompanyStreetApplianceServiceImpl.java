@@ -21,6 +21,8 @@ public class CompanyStreetApplianceServiceImpl extends ServiceImpl<CompanyStreet
     @Autowired
     private CompanyCategoryService companyCategoryService;
 
+
+
     /**
      * 根据分类id和街道id查询所属公司
      * @param categoryId
@@ -44,5 +46,16 @@ public class CompanyStreetApplianceServiceImpl extends ServiceImpl<CompanyStreet
         }
         return companyId;
 
+    }
+
+    @Override
+    public String selectStreetApplianceCompanyId(Integer categoryId, Integer streetId) {
+        String companyId = "";
+        //根据分类Id和小区id去公海查询相关企业
+        Integer companyId1 = companyStreetApplianceMapper.selectStreetApplianceCompanyId(categoryId, streetId);
+        if(companyId1==null) {
+            return null;
+        }
+        return companyId1.toString();
     }
 }

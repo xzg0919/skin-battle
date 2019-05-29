@@ -60,6 +60,8 @@ public class OrderApi {
 	private AnsycMyslService ansycMyslService;
 	@Autowired
 	private CompanyStreetApplianceService companyStreetApplianceService;
+	@Autowired
+	private CompanyCategoryService companyCategoryService;
 	
 
 	/**
@@ -253,13 +255,27 @@ public class OrderApi {
 				return "该区域暂无回收企业";
 			}
 			companyId = streetBigCompanyId+"";
-		}else {
-			//判断地址是否收生活垃圾或家电
-			String applianceCompanyId = companyStreetApplianceService.selectStreetApplianceCompanyId(orderbean.getCategoryId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
-			if(null==applianceCompanyId){
+		}else if("DIGITAL".equals(orderbean.getType())){
+			//根据分类Id和小区id去公海查询相关企业
+			String companyId1 = companyStreetApplianceService.selectStreetApplianceCompanyId(orderbean.getCategoryId(), memberAddress.getStreetId(),memberAddress.getCommunityId());
+			if(StringUtils.isBlank(companyId1)) {
 				return "该区域暂无回收企业";
 			}
-			companyId = applianceCompanyId+"";
+			companyId = companyId1.toString();
+		}else {
+			//根据分类Id和小区Id查询所属企业
+			Company companys = companyCategoryService.selectCompany(orderbean.getCategoryId(),memberAddress.getCommunityId());
+			if(null==companys){
+				//判断该地址是否回收5公斤废纺衣物
+				Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(orderbean.getCategoryId(), memberAddress.getStreetId());
+				if(null==streeCompanyId){
+					return "该区域暂无回收企业";
+				}else {
+					companyId = streeCompanyId+"";
+				}
+			}else {
+				companyId = companys.getId().toString();
+			}
 		}
 		Company company1 = companyService.selectById(companyId);
 		return company1;

@@ -157,11 +157,12 @@ public class MemberAddressApi {
 			memberAddress.setIsFixedPoint("0");
 		}
 		//判断地址是否有公司回收六废
-		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(25,memberAddress.getStreetId(), memberAddress.getCommunityId());
-		if(StringUtils.isBlank(companyId)){
-			memberAddress.setIsHousehold("N");
-		}else{
+		//根据分类Id和小区Id查询所属企业
+		Company companys = companyCategoryService.selectCompany(25,communityId);
+		if(null != companys){
 			memberAddress.setIsHousehold("Y");
+		}else{
+			memberAddress.setIsHousehold("N");
 		}
 		//判断该地址是否回收5公斤废纺衣物
 		Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAddress.getStreetId());
