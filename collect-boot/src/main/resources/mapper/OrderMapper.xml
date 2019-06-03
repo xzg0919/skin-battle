@@ -902,7 +902,194 @@
 		AND a.create_date BETWEEN date_sub(CURDATE(), INTERVAL 1 DAY) AND CURDATE()
 		GROUP BY SUBSTR(a.create_date,1,13)
 	</select>
+	<select id="getOrderCountByPhone"  parameterType="String" resultType="Integer">
+		SELECT
+			SUM(1) AS count_
+		FROM
+			(
+				SELECT
+			so.id AS orderId,
+			so.create_date AS creatDate,
+			so.address,
+			so.link_man AS linkName,
+			so.tel,
+			so.full_address,
+			6 AS status_,
+			so.price,
+			so.ach_price,
+			so.order_no orderNo,
+			date_format(
 
+				IF (
+					ISNULL(so.arrival_time),
+					"",
+					so.arrival_time
+				),
+				'%Y-%m-%d'
+			) AS arrivalTime,
+			so.arrival_period AS arrivalPeriod,
+			sc.name_ AS cateName,
+			sc.icon,
+			so.complete_date completeDate,
+			so.title,
+			so.community_id,
+			so.company_id,
+			so.is_cash,
+			so.order_remarks,
+			sr.is_manager
+		FROM
+			sb_category sc
+		INNER JOIN sb_order so ON so.category_id = sc.id
+		LEFT JOIN sb_recycle_cancel_log srcl ON srcl.order_id = so.id
+		LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
+		WHERE
+			so.del_flag = '0'
+		AND srcl.recycler_id = #{orderBean.recyclerId}
+		AND so.recycler_id = #{orderBean.recyclerId}
+		<if test="orderBean.tel != null and orderBean.tel != '' ">
+			AND so.tel like #{orderBean.tel}
+		</if>
+		UNION
+			SELECT
+				so.id AS orderId,
+				so.create_date AS creatDate,
+				so.address,
+				so.link_man AS linkName,
+				so.tel,
+				so.full_address,
+				so.status_,
+				FORMAT(so.price, 2) AS price,
+				so.ach_price AS achPrice,
+				so.order_no orderNo,
+				date_format(
+
+					IF (
+						ISNULL(so.arrival_time),
+						"",
+						so.arrival_time
+					),
+					'%Y-%m-%d'
+				) AS arrivalTime,
+				so.arrival_period,
+				sc.name_ AS cateName,
+				sc.icon,
+				so.complete_date completeDate,
+				so.title,
+				so.community_id,
+				so.company_id,
+				so.is_cash,
+				so.order_remarks,
+				sr.is_manager
+			FROM
+				sb_order so
+			LEFT JOIN sb_category sc ON so.category_id = sc.id
+			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
+			WHERE
+				so.del_flag = '0'
+			AND so.recycler_id = #{orderBean.recyclerId}
+			<if test="orderBean.tel != null and orderBean.tel != '' ">
+				AND so.tel like #{orderBean.tel}
+			</if>
+
+			) countALL
+		WHERE
+			1 = 1;
+
+	</select>
+	<select id="getOrderListByPhone" parameterType="com.tzj.collect.api.ali.param.OrderBean" resultType="com.tzj.collect.api.app.result.AppOrderResult">
+	    SELECT
+			*
+		FROM
+			(
+				SELECT
+					so.id AS orderId,
+					so.create_date AS creatDate,
+					so.address,
+					so.link_man AS linkName,
+					so.tel,
+					so.full_address,
+					6 AS status_,
+					so.price,
+					so.ach_price,
+					so.order_no orderNo,
+					date_format(
+
+						IF (
+							ISNULL(so.arrival_time),
+							"",
+							so.arrival_time
+						),
+						'%Y-%m-%d'
+					) AS arrivalTime,
+					so.arrival_period AS arrivalPeriod,
+					sc.name_ AS cateName,
+					sc.icon,
+					so.complete_date completeDate,
+					so.title,
+					so.community_id,
+					so.company_id,
+					so.is_cash,
+					so.order_remarks,
+					sr.is_manager
+				FROM
+					sb_category sc
+				INNER JOIN sb_order so ON so.category_id = sc.id
+				LEFT JOIN sb_recycle_cancel_log srcl ON srcl.order_id = so.id
+				LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
+				WHERE
+					so.del_flag = '0'
+				AND srcl.recycler_id = #{orderBean.recyclerId}
+				AND so.recycler_id = #{orderBean.recyclerId}
+				<if test="orderBean.tel != null and orderBean.tel != '' ">
+					AND so.tel like #{orderBean.tel}
+				</if>
+				UNION
+					SELECT
+						so.id AS orderId,
+						so.create_date AS creatDate,
+						so.address,
+						so.link_man AS linkName,
+						so.tel,
+						so.full_address,
+						so.status_,
+						FORMAT(so.price, 2) AS price,
+						so.ach_price AS achPrice,
+						so.order_no orderNo,
+						date_format(
+
+							IF (
+								ISNULL(so.arrival_time),
+								"",
+								so.arrival_time
+							),
+							'%Y-%m-%d'
+						) AS arrivalTime,
+						so.arrival_period,
+						sc.name_ AS cateName,
+						sc.icon,
+						so.complete_date completeDate,
+						so.title,
+						so.community_id,
+						so.company_id,
+						so.is_cash,
+						so.order_remarks,
+						sr.is_manager
+					FROM
+						sb_order so
+					LEFT JOIN sb_category sc ON so.category_id = sc.id
+					LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
+					WHERE
+						so.del_flag = '0'
+						AND so.recycler_id = #{orderBean.recyclerId}
+						<if test="orderBean.tel != null and orderBean.tel != '' ">
+							AND so.tel like #{orderBean.tel}
+						</if>
+			) countALL
+		WHERE
+			1 = 1
+		ORDER BY
+			countALL.creatDate DESC LIMIT #{startSize} , #{pageSize}
+    </select>
 
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">

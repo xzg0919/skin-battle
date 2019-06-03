@@ -158,5 +158,9 @@ public interface OrderMapper extends BaseMapper<Order> {
 
 	List<Map<String,Object>> sevenDayorderNum(String streetId);
 	List<Map<String,Object>> oneDayorderNum(String streetId);
+
+	Integer getOrderCountByPhone(@Param("orderBean")OrderBean orderbean);
+
+	List<AppOrderResult> getOrderListByPhone(@Param("orderBean") OrderBean orderbean, @Param("startSize") int startSize, @Param("pageSize") int pageSize);
 }
 

@@ -67,6 +67,17 @@ public class AppOrderApi {
 		return pageOrder;
 	}
 	/**
+	 * 根据订单传来的状态获取订单列表
+	 */
+	@Api(name = "app.order.list.phone", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String,Object> getOrderListByPhone(OrderBean orderbean){
+		orderbean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
+		Map<String,Object> pageOrder = orderService.getOrderListByPhone(orderbean);
+		return pageOrder;
+	}
+	/**
 	 * 得到订单详情
 	 * @param orderbean
 	 * @return
@@ -200,5 +211,7 @@ public class AppOrderApi {
 		}
 		return "操作成功";
 	}
+
+
 }
 
