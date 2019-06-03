@@ -13,11 +13,13 @@
 
 
     <dependencies>
-    	<dependency>
+    	<!--
+        <dependency>
 		    <groupId>com.alipay.sdk</groupId>
 		    <artifactId>alipay-sdk-java</artifactId>
 		    <version>3.0.52.ALL</version>
 		</dependency>
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -98,11 +100,15 @@
             <artifactId>hufm-module-api</artifactId>
             <version>${hufm.version}</version>
         </dependency>
+        
+        <!--
         <dependency>
             <groupId>com.hufm</groupId>
             <artifactId>alipay-sdk-java</artifactId>
             <version>3.7.13</version>
         </dependency>
+        -->
+        
         <dependency>
             <groupId>com.hufm</groupId>
             <artifactId>hufm-module-common</artifactId>
@@ -159,17 +165,19 @@
         </dependency>
         
         <!-- 阿里大鱼 -->
+        <!-- 改为云效的Maven私库 -->
         <dependency>
-            <groupId>com.taobao</groupId>
-            <artifactId>alidayu</artifactId>
+            <groupId>com.alipay</groupId>
+            <artifactId>ali-dayu</artifactId>
             <version>20160607</version>
         </dependency>
 
         <!-- 支付宝 -->
+        <!-- 官方maven库 -->
         <dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
-            <version>3.3.49.ALL</version>
+            <version>3.7.73.ALL</version>
         </dependency>
 
         <dependency>
