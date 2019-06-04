@@ -8,7 +8,7 @@ import com.alipay.api.domain.AlipayOpenAppQrcodeCreateModel;
 import com.alipay.api.request.AlipayOpenAppQrcodeCreateRequest;
 import com.alipay.api.response.AlipayOpenAppQrcodeCreateResponse;
 import com.tzj.collect.common.constant.AlipayConst;
-import jdk.nashorn.internal.runtime.regexp.joni.constants.StringType;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

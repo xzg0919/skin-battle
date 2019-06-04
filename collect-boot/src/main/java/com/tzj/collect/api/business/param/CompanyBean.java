@@ -1,9 +1,5 @@
 package com.tzj.collect.api.business.param;
 
-import java.util.List;
-
-import com.tzj.collect.entity.Category;
-
 public class CompanyBean {
 	private String id; //企业ID
 	private String name;   //企业名称

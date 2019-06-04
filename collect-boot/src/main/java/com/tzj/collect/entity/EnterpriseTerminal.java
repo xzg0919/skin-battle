@@ -14,7 +14,8 @@ import java.util.Date;
 @TableName("sb_enterprise_terminal")
 public class EnterpriseTerminal extends  DataEntity<Long>{
 
-    private Long id ;
+    private static final long serialVersionUID = -4319801771936965912L;
+    private Long id;
     /**
      * 企业id
      */

@@ -1,17 +1,16 @@
 package com.tzj.collect.entity;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
 import com.tzj.collect.api.business.result.ApiUtils;
-import com.tzj.collect.entity.Category.CategoryType;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *

@@ -16,9 +16,11 @@ import com.baomidou.mybatisplus.enums.IEnum;
  */
 @TableName("sb_goods_product_order")
 public class GoodsProductOrder extends DataEntity<Integer>{
+	private static final long serialVersionUID = -6350971499748254327L;
+
 	/**
-     *  Id
-     */
+	 * Id
+	 */
     private Integer id;
     
     /**
