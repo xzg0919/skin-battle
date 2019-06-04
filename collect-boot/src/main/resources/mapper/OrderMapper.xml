@@ -904,7 +904,7 @@
 	</select>
 	<select id="getOrderCountByPhone"  parameterType="String" resultType="Integer">
 		SELECT
-			SUM(1) AS count_
+			IFNULL(count(1),0) AS count_
 		FROM
 			(
 				SELECT
