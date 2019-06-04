@@ -267,4 +267,6 @@ public interface OrderService extends IService<Order> {
 
 	//解析该订单的数据成蚂蚁森林结构MyslData
 	OrderBean myslOrderData (String orderId);
+
+    Map<String, Object> getOrderListByPhone(OrderBean orderbean);
 }

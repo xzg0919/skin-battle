@@ -2745,5 +2745,30 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return orderBean;
 	}
 
-	;
+	/**	根据手机号查询订单列表
+	  * @author sgmark@aliyun.com
+	  * @date 2019/6/3 0003
+	  * @param
+	  * @return
+	  */
+	@Override
+	public Map<String, Object> getOrderListByPhone(OrderBean orderbean) {
+		int count = 0;
+		List<AppOrderResult> listOrder = null;
+		if (null != orderbean.getTel()){
+			orderbean.setTel("%"+orderbean.getTel()+"%");
+		}
+		count = orderMapper.getOrderCountByPhone(orderbean);//得到总数
+		listOrder = orderMapper.getOrderListByPhone(orderbean, (orderbean.getPagebean().getPageNumber() - 1) * orderbean.getPagebean().getPageSize(), orderbean.getPagebean().getPageSize());
+		Map<String, Object> map = new HashMap<String, Object>();
+		int pageNum = count % orderbean.getPagebean().getPageSize() == 0 ? count / orderbean.getPagebean().getPageSize() : count / orderbean.getPagebean().getPageSize() + 1;
+		int currentpage = orderbean.getPagebean().getPageNumber();
+		map.put("pageNum", pageNum);
+		map.put("listOrder", this.createName4App(listOrder));
+		map.put("count", count);
+		map.put("currentPage", currentpage > pageNum ? pageNum : currentpage);
+		return map;
+	}
+
+
 }
