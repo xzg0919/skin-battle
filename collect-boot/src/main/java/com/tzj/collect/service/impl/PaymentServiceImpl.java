@@ -1,14 +1,31 @@
 package com.tzj.collect.service.impl;
 
+import static com.tzj.collect.api.common.constant.Const.ALI_APPID;
+import static com.tzj.collect.api.common.constant.Const.ALI_PAY_KEY;
+import static com.tzj.collect.api.common.constant.Const.ALI_PUBLIC_KEY;
+
+import java.math.BigDecimal;
+
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.domain.*;
-import com.alipay.api.request.*;
-import com.alipay.api.response.*;
+import com.alipay.api.domain.AlipayFundTransToaccountTransferModel;
+import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.domain.AlipayTradeCreateModel;
+import com.alipay.api.domain.AlipayTradeQueryModel;
+import com.alipay.api.domain.ExtendParams;
+import com.alipay.api.request.AlipayFundTransOrderQueryRequest;
+import com.alipay.api.request.AlipayFundTransToaccountTransferRequest;
+import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradeCreateRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
+import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
+import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.alipay.api.response.AlipayTradeCreateResponse;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
 import com.tzj.collect.entity.Recyclers;
@@ -16,20 +33,12 @@ import com.tzj.collect.mapper.PaymentMapper;
 import com.tzj.collect.service.OrderService;
 import com.tzj.collect.service.PaymentService;
 import com.tzj.collect.service.RecyclersService;
-import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
 import com.tzj.module.easyopen.exception.ApiException;
-import net.sf.ehcache.search.expression.Or;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
-
-import static com.tzj.collect.api.common.constant.Const.*;
 
 @Service
 @Transactional(readOnly = true)

@@ -1,23 +1,9 @@
 package com.tzj.collect.api.common.websocket;
 
 
-import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.param.MemberBean;
-import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.SignIgnore;
-import com.tzj.module.api.utils.JwtUtils;
-import com.tzj.module.common.utils.security.CipherTools;
-import com.tzj.module.easyopen.util.ApiUtil;
-import io.itit.itf.okhttp.FastHttpClient;
-import io.itit.itf.okhttp.Response;
-import io.jsonwebtoken.Claims;
-import org.springframework.stereotype.Component;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
 
-import javax.websocket.*;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Calendar;
@@ -25,8 +11,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.tzj.collect.common.constant.TokenConst.*;
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+
+import com.alibaba.fastjson.JSON;
+import com.tzj.collect.api.ali.param.MemberBean;
+import com.tzj.module.api.utils.JwtUtils;
+import com.tzj.module.common.utils.security.CipherTools;
+import com.tzj.module.easyopen.util.ApiUtil;
+
+import org.springframework.stereotype.Component;
+
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
+import io.jsonwebtoken.Claims;
 
 @ServerEndpoint(value = "/xcxwebsocket/{type}/{token}")
 @Component

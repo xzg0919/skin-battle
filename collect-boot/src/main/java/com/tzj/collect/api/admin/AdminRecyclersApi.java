@@ -15,7 +15,6 @@ import com.tzj.collect.service.RecyclersService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
 
 /**
  * 

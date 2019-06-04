@@ -1,15 +1,13 @@
 package com.tzj.collect.api.ali;
 
 
-import com.taobao.api.ApiException;
-import com.tzj.collect.api.admin.param.AdminBean;
 import com.tzj.collect.api.ali.param.RecruitExpressBean;
-import com.tzj.collect.api.param.TokenBean;
 import com.tzj.collect.service.RecruitExpressService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 @ApiService

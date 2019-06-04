@@ -2,13 +2,6 @@ package com.tzj.collect.api.app;
 
 import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
-import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.app.param.ArrivalTimeLogBean;
 import com.tzj.collect.entity.ArrivalTimeLog;
@@ -18,6 +11,8 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 上门回收时间日志
