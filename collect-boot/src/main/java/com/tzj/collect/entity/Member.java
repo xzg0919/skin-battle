@@ -15,6 +15,7 @@ import java.util.Date;
  **/
 @TableName("sb_member")
 public class Member extends  DataEntity<Long>{
+    private static final long serialVersionUID = -6405467088491154588L;
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     /**

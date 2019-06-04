@@ -3,8 +3,6 @@ package com.tzj.collect.api.business.param;
 import java.util.List;
 
 import com.tzj.collect.api.ali.param.PageBean;
-import com.tzj.collect.entity.CompanyRecycler;
-import com.tzj.collect.entity.Recyclers;
 
 public class BusinessRecyclerBean {
 	private String telephone;//回收人员电话

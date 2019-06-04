@@ -8,26 +8,24 @@
 
 package api.business;
 
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_EXPRIRE;
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_CYPTO_KEY;
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_SECRET_KEY;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.UUID;
+
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.admin.param.CompanyBean;
-import com.tzj.collect.api.ali.param.AreaBean;
-import com.tzj.collect.api.ali.param.PageBean;
-import com.tzj.collect.api.business.param.BOrderBean;
-import com.tzj.collect.api.business.param.BusinessRecyclerBean;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
-import com.tzj.collect.api.business.param.TitleBean;
-import com.tzj.collect.entity.Category;
-import com.tzj.collect.entity.Recyclers;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
+
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
-
-import java.util.*;
-
-import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * @ClassName: BusinessOrderApiTest

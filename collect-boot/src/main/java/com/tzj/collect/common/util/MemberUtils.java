@@ -5,8 +5,6 @@ import com.tzj.module.api.entity.Subject;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * @Author 胡方明（12795880@qq.com）
  **/

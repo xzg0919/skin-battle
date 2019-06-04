@@ -1,17 +1,14 @@
 package com.tzj.collect.entity;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
-import org.hibernate.validator.constraints.Length;
-
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import org.hibernate.validator.constraints.Length;
 
 /**
  * Created on 2018-08-08

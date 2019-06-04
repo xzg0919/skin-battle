@@ -1,5 +1,19 @@
 package com.tzj.collect.api.app;
 
+import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
+
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.ZhimaCustomerCertificationCertifyResponse;
@@ -16,40 +30,31 @@ import com.tzj.collect.api.app.result.AppCompany;
 import com.tzj.collect.api.app.result.AppOrderResult;
 import com.tzj.collect.api.app.result.AppScoreResult;
 import com.tzj.collect.api.common.MyX509TrustManager;
-import com.tzj.collect.api.param.TokenBean;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.OrderEvaluation;
 import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.*;
+import com.tzj.collect.service.AliPayService;
+import com.tzj.collect.service.CompanyRecyclerService;
+import com.tzj.collect.service.MessageService;
+import com.tzj.collect.service.OrderEvaluationService;
+import com.tzj.collect.service.OrderService;
+import com.tzj.collect.service.RecyclersService;
 import com.tzj.collect.service.impl.FileUploadServiceImpl;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.entity.Subject;
-import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.file.upload.FileUpload;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
 import com.tzj.module.easyopen.file.FileUploadService;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * 回收人员api

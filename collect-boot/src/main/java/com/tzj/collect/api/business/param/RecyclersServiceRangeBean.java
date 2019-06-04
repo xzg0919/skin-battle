@@ -1,9 +1,8 @@
 package com.tzj.collect.api.business.param;
 
-import com.tzj.collect.api.ali.param.AreaBean;
-
 import java.util.List;
-import java.util.Map;
+
+import com.tzj.collect.api.ali.param.AreaBean;
 
 public class RecyclersServiceRangeBean {
     /**

@@ -1,21 +1,18 @@
 package com.tzj.collect.api.common.async;
 
-import com.tzj.collect.api.iot.IotApi;
-import com.tzj.collect.api.iot.localmap.LatchMap;
-import com.tzj.collect.common.redis.RedisUtil;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.OrderService;
-import com.tzj.collect.service.RecyclersService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
+
+import com.tzj.collect.api.iot.IotApi;
+import com.tzj.collect.api.iot.localmap.LatchMap;
+import com.tzj.collect.common.redis.RedisUtil;
+import com.tzj.collect.service.OrderService;
+import com.tzj.collect.service.RecyclersService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 /**
  * 异步调用

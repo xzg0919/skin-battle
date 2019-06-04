@@ -1,8 +1,13 @@
 package com.tzj.collect.api.ali;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_EXPRIRE;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tzj.collect.api.ali.param.MemberBean;
-import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.Member;
@@ -13,13 +18,9 @@ import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.utils.JwtUtils;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * 会员用户相关Api

@@ -1,7 +1,5 @@
 package com.tzj.collect.api.app.param;
 
-import java.util.Date;
-
 public class ArrivalTimeLogBean {
 	private Long id;
 	/**

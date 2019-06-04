@@ -2,14 +2,9 @@ package com.tzj.collect.api.admin;
 
 import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.admin.param.CategoryAttrBean;
@@ -18,7 +13,6 @@ import com.tzj.collect.api.admin.param.CompanyCategoryBean;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.CategoryAttr;
 import com.tzj.collect.entity.CategoryAttrOption;
-import com.tzj.collect.entity.CompanyCategory;
 import com.tzj.collect.service.CategoryAttrOptionService;
 import com.tzj.collect.service.CategoryAttrService;
 import com.tzj.collect.service.CategoryService;
@@ -27,6 +21,8 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 @ApiService
 public class AdminCategoryApi {

@@ -4,8 +4,6 @@ import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHOR
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.tzj.collect.api.admin.param.AdminCommunityBean;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Company;
@@ -16,9 +14,9 @@ import com.tzj.collect.service.CompanyService;
 import com.tzj.collect.service.RecyclerCommunityService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 管理员小区管理

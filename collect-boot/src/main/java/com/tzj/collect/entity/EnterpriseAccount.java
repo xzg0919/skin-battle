@@ -10,7 +10,8 @@ import com.baomidou.mybatisplus.annotations.TableName;
 @TableName("sb_enterprise_account")
 public class EnterpriseAccount extends DataEntity<Long>{
 
-    private Long id ;
+    private static final long serialVersionUID = -5442921971118837809L;
+    private Long id;
     /**
      * 企业id
      */

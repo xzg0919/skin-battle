@@ -1,10 +1,13 @@
 package com.tzj.collect.api.app;
 
 
+import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
+
+import java.util.Map;
+
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.OrderPicAch;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.service.OrderPicAchService;
 import com.tzj.collect.service.OrderService;
@@ -12,11 +15,8 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
-
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 /**
  * 大件订单信息

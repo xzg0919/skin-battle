@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.business.param.CategoryBean;
-import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.CompanyCategory;
 import com.tzj.module.easyopen.util.ApiUtil;
 

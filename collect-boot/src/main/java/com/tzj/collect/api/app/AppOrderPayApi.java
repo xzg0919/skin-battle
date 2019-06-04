@@ -1,5 +1,7 @@
 package com.tzj.collect.api.app;
 
+import java.math.BigDecimal;
+
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.app.param.OrderPayParam;
@@ -13,18 +15,12 @@ import com.tzj.collect.service.PaymentService;
 import com.tzj.collect.service.RecyclersService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
-import com.tzj.module.api.entity.Subject;
-import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
 import com.tzj.module.easyopen.exception.ApiException;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.math.BigDecimal;
-
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 /**
  * 订单支付接口

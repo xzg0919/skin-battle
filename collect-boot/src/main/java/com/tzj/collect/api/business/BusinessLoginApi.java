@@ -2,10 +2,6 @@ package com.tzj.collect.api.business;
 
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.tzj.collect.api.business.param.CompanyAccountBean;
 import com.tzj.collect.api.param.TokenBean;
 import com.tzj.collect.common.util.BusinessUtils;
@@ -18,8 +14,8 @@ import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
-import com.tzj.module.api.entity.Subject;
-import com.tzj.module.easyopen.ApiContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 @ApiService
 public class BusinessLoginApi {

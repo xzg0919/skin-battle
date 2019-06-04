@@ -3,12 +3,7 @@ package com.tzj.collect.api.ali.param;
 import java.math.BigDecimal;
 import java.util.Date;
 
-
-import org.hibernate.validator.constraints.Length;
-
 import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * Created on 2018-08-08
