@@ -29,6 +29,21 @@ public class AppBigOrderApi {
     @Autowired
     private OrderPicAchService orderPicAchService;
 
+    /** 根据手机号搜索
+      * @author sgmark@aliyun.com
+      * @date 2019/6/4 0004
+      * @param
+      * @return
+      */
+    @Api(name = "app.big.order.list.phone", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+    public Map<String,Object> getOrderListByPhone(OrderBean orderbean){
+        orderbean.setRecyclerId(Integer.valueOf(RecyclersUtils.getRecycler().getId().toString()));
+        Map<String,Object> pageOrder = orderService.getBigOrderListByPhone(orderbean);
+        return pageOrder;
+    }
+
 
     /**
      * 根据订单传来的状态获取订单列表

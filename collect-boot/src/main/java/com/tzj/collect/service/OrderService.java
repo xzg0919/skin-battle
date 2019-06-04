@@ -269,4 +269,6 @@ public interface OrderService extends IService<Order> {
 	OrderBean myslOrderData (String orderId);
 
     Map<String, Object> getOrderListByPhone(OrderBean orderbean);
+
+    Map<String, Object> getBigOrderListByPhone(OrderBean orderbean);
 }

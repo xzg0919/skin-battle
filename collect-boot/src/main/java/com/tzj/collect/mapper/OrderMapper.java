@@ -162,5 +162,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	Integer getOrderCountByPhone(@Param("orderBean")OrderBean orderbean);
 
 	List<AppOrderResult> getOrderListByPhone(@Param("orderBean") OrderBean orderbean, @Param("startSize") int startSize, @Param("pageSize") int pageSize);
+	List<Map<String,Object>> getBigOrderListByPhone(@Param("recycleId")Integer recycleId, @Param("tel")String tel,@Param("startPage")Integer startPage,@Param("endPage")Integer endPage);
+	Integer getBigOrderCountByPhone(@Param("recycleId")Integer recycleId, @Param("tel")String tel);
 }
 

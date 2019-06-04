@@ -1090,6 +1090,207 @@
 		ORDER BY
 			countALL.creatDate DESC LIMIT #{startSize} , #{pageSize}
     </select>
+	<select id="getBigOrderCountByPhone" parameterType="Integer" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			(
+				SELECT
+					b.*
+				FROM
+					sb_recyclers a
+				LEFT JOIN sb_order b ON a.id = b.recycler_id
+				LEFT JOIN sb_category c ON c.id = b.category_id
+				WHERE
+					a.parents_id = #{recycleId}
+				AND b.title = 4
+				AND b.status_ = 1
+				AND a.del_flag = 0
+				AND b.del_flag = 0
+				AND b.is_scan = 0
+				<if test="tel != null and tel != '' ">
+					AND b.tel like #{tel}
+				</if>
+				UNION
+					SELECT
+						b.*
+					FROM
+						sb_order b
+					LEFT JOIN sb_recyclers a ON a.id = b.recycler_id
+					LEFT JOIN sb_category c ON c.id = b.category_id
+					WHERE
+						b.recycler_id = #{recycleId}
+					AND b.title = 4
+					AND a.del_flag = 0
+					AND b.del_flag = 0
+					AND b.is_scan = 0
+					<if test="tel != null and tel != '' ">
+						AND b.tel like #{tel}
+					</if>
+			) countAll
+
+	</select>
+	<select id="getBigOrderListByPhone"  parameterType="Object" resultType="Map">
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					a.id AS recyclerId,
+					a.name_ AS recyclerName,
+					a.tel AS recyclerMobile,
+					a.is_manager AS isManager,
+					a.ali_user_id AS aliUserId,
+					b.id,
+					b.title,
+					b.status_ AS orderStatus,
+					b.link_man AS userName,
+					b.tel AS userMobile,
+					b.address AS address,
+					b.price,
+					b.ach_price AS achPrice,
+					b.is_cash AS isCash,
+					b.order_no AS orderNo,
+					b.category_id AS categoryId,
+					b.order_remarks AS orderRemarks,
+					c.name_ AS categoryName,
+					c.icon AS icon,
+					date_format(
+						b.create_date,
+						'%Y-%m-%d %H:%i:%S'
+					) AS createDate,
+					CONCAT(
+						date_format(b.arrival_time, '%Y-%m-%d'),
+
+					IF (
+						b.arrival_period = 'am',
+						' 上午',
+						' 下午'
+					)
+					) AS arrivalTime,
+					date_format(
+						b.cancel_time,
+						'%Y-%m-%d %H:%i:%S'
+					) AS cancelTime,
+					date_format(
+						b.receive_time,
+						'%Y-%m-%d %H:%i:%S'
+					) AS receiveTime,
+					date_format(
+						b.distribute_time,
+						'%Y-%m-%d %H:%i:%S'
+					) AS distributeTime,
+					date_format(
+						b.complete_date,
+						'%Y-%m-%d %H:%i:%S'
+					) AS completeDate,
+
+				IF (
+					now() > CONCAT(
+						date_format(b.arrival_time, '%Y-%m-%d'),
+
+					IF (
+						b.arrival_period = 'pm',
+						' 12:00:00',
+						' 00:00:01'
+					)
+					),
+					'Y',
+					'N'
+				) AS isRead
+				FROM
+					sb_recyclers a
+				LEFT JOIN sb_order b ON a.id = b.recycler_id
+				LEFT JOIN sb_category c ON c.id = b.category_id
+				WHERE
+					a.parents_id = #{recycleId}
+				AND b.title = 4
+				AND b.status_ = 1
+				AND a.del_flag = 0
+				AND b.del_flag = 0
+				AND b.is_scan = 0
+				<if test="tel != null and tel != '' ">
+					AND b.tel like #{tel}
+				</if>
+				UNION
+					SELECT
+						a.id AS recyclerId,
+						a.name_ AS recyclerName,
+						a.tel AS recyclerMobile,
+						a.is_manager AS isManager,
+						a.ali_user_id AS aliUserId,
+						b.id,
+						b.title,
+						b.status_ AS orderStatus,
+						b.link_man AS userName,
+						b.tel AS userMobile,
+						b.address AS address,
+						b.price,
+						b.ach_price AS achPrice,
+						b.is_cash AS isCash,
+						b.order_no AS orderNo,
+						b.category_id AS categoryId,
+						b.order_remarks AS orderRemarks,
+						c.name_ AS categoryName,
+						c.icon AS icon,
+						date_format(
+							b.create_date,
+							'%Y-%m-%d %H:%i:%S'
+						) AS createDate,
+						CONCAT(
+							date_format(b.arrival_time, '%Y-%m-%d'),
+
+						IF (
+							b.arrival_period = 'am',
+							' 上午',
+							' 下午'
+						)
+						) AS arrivalTime,
+						date_format(
+							b.cancel_time,
+							'%Y-%m-%d %H:%i:%S'
+						) AS cancelTime,
+						date_format(
+							b.receive_time,
+							'%Y-%m-%d %H:%i:%S'
+						) AS receiveTime,
+						date_format(
+							b.distribute_time,
+							'%Y-%m-%d %H:%i:%S'
+						) AS distributeTime,
+						date_format(
+							b.complete_date,
+							'%Y-%m-%d %H:%i:%S'
+						) AS completeDate,
+
+					IF (
+						now() > CONCAT(
+							date_format(b.arrival_time, '%Y-%m-%d'),
+
+						IF (
+							b.arrival_period = 'pm',
+							' 12:00:00',
+							' 00:00:01'
+						)
+						),
+						'Y',
+						'N'
+					) AS isRead
+					FROM
+						sb_order b
+					LEFT JOIN sb_recyclers a ON a.id = b.recycler_id
+					LEFT JOIN sb_category c ON c.id = b.category_id
+					WHERE
+						b.recycler_id = #{recycleId}
+					AND b.title = 4
+					AND a.del_flag = 0
+					AND b.del_flag = 0
+					AND b.is_scan = 0
+					<if test="tel != null and tel != '' ">
+						AND b.tel like #{tel}
+					</if>
+			) countAll WHERE 1 = 1 LIMIT #{startPage},#{endPage}
+	</select>
 
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">

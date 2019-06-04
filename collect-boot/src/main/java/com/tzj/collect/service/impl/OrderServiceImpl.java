@@ -29,8 +29,6 @@ import com.tzj.collect.api.common.async.AsyncRedis;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.AlipayConst;
-import com.tzj.collect.common.constant.PushConst;
-import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.common.redis.RedisUtil;
 import com.tzj.collect.common.util.PushUtils;
 import com.tzj.collect.common.util.ToolUtils;
@@ -2768,6 +2766,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		map.put("count", count);
 		map.put("currentPage", currentpage > pageNum ? pageNum : currentpage);
 		return map;
+	}
+	/** 根据手机号查询大件订单列表
+	  * @author sgmark@aliyun.com
+	  * @date 2019/6/4 0004
+	  * @param 
+	  * @return 
+	  */
+	@Override
+	public Map<String, Object> getBigOrderListByPhone(OrderBean orderbean) {
+		Map<String, Object> result = new HashMap<>();
+		if (null != orderbean.getTel() && orderbean.getTel().length() < 11){
+			orderbean.setTel("%"+orderbean.getTel()+"%");
+		}
+		List<Map<String, Object>> bigOrderList = null;
+		Integer count = 0;
+		bigOrderList = orderMapper.getBigOrderListByPhone(orderbean.getRecyclerId(), orderbean.getTel(), (orderbean.getPagebean().getPageNumber() - 1) * orderbean.getPagebean().getPageSize(), orderbean.getPagebean().getPageSize());
+		count = orderMapper.getBigOrderCountByPhone(orderbean.getRecyclerId(), orderbean.getTel());
+		result.put("bigOrderList", bigOrderList);
+		result.put("count", count);
+		return result;
 	}
 
 
