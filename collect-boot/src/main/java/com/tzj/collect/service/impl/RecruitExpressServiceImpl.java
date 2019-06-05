@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.ali.param.RecruitExpressBean;
 import com.tzj.collect.entity.RecruitExpress;
 import com.tzj.collect.mapper.RecruitExpressMapper;
+import com.tzj.collect.service.AsyncService;
 import com.tzj.collect.service.RecruitExpressService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
@@ -16,8 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly=true)
 public class RecruitExpressServiceImpl extends ServiceImpl<RecruitExpressMapper, RecruitExpress> implements RecruitExpressService {
 
+    //招募钉钉通知
+    public static final String recruitDingDing ="https://oapi.dingtalk.com/robot/send?access_token=78cd495bcf1bd047590f5b67ad1d1b9a7fef9a0eeaf5d65b322ecf36125b8895";
+
     @Autowired
     private RecruitExpressMapper recruitExpressMapper;
+    @Autowired
+    private AsyncService asyncService;
 
     @Transactional
     @Override
@@ -33,7 +39,12 @@ public class RecruitExpressServiceImpl extends ServiceImpl<RecruitExpressMapper,
         recruitExpress.setMobile(recruitExpressBean.getMobile());
         recruitExpress.setCity(recruitExpressBean.getCity());
         recruitExpress.setCategoryType(recruitExpressBean.getCategoryType());
-        this.insert(recruitExpress);
+        if(this.insert(recruitExpress)){
+            //发送钉钉消息
+            StringBuffer message = new StringBuffer();
+            message.append("您有新的招募信息了！\r\n");
+            asyncService.notifyDingDingOrderCreate(message.toString(), true, recruitDingDing);
+        }
         return "操作成功";
     }
 }
