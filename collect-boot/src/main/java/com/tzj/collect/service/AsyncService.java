@@ -63,4 +63,6 @@ public interface AsyncService {
     @Async
     public void sendEnterprise(final String freeSignName, final String moblie, final String temlateCode,
                           final String code,final String productName);
+    @Async
+    void notifyDingDingOrderCreate(String toString, boolean b, String recruitDingDing);
 }

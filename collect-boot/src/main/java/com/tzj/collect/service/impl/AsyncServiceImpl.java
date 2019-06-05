@@ -40,7 +40,10 @@ public class AsyncServiceImpl implements AsyncService{
         atMobiles.add("15121063188");
         atMobiles.add("13262790702");
         DingTalkNotify.sendTextMessageWithAt(message.toString(),atMobiles, orderBean.getDingDingUrl());
-
+    }
+    @Async
+    public void notifyDingDingOrderCreate(String message, boolean atAll,  String dingDingUrl) {
+        DingTalkNotify.sendTextMessageWithAtAndAtAll(message, null, atAll, dingDingUrl);
     }
     
     /**
