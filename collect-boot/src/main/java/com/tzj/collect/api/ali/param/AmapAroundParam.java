@@ -1,9 +1,11 @@
 package com.tzj.collect.api.ali.param;
 
 import com.tzj.module.easyopen.doc.annotation.ApiDocField;
+import lombok.Data;
 
 import java.io.Serializable;
 
+@Data
 public class AmapAroundParam implements Serializable {
 
     private static final long serialVersionUID = 6981800187882832233L;

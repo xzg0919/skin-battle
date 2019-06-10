@@ -2,6 +2,7 @@ package api.amap;
 
 import api.util.ApiUtils;
 import api.util.TestConst;
+import com.tzj.collect.api.ali.param.AmapAroundParam;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import junit.framework.TestCase;
@@ -45,6 +46,19 @@ public class AmapTest extends TestCase {
     public void testAmapApiRegeo() throws Exception{
         String resultJson= ApiUtils.createCommonParam(TestConst.appid,TestConst.gateway,
                 "amap.regeo","121.557677,31.284158",TestConst.token,null);
+        System.out.println(resultJson);
+    }
+
+    @Test
+    public void testAmapApiRound() throws Exception{
+
+        AmapAroundParam aroundParam=new AmapAroundParam();
+        aroundParam.setOffset("50");
+        aroundParam.setPage("1");
+        aroundParam.setLocation("121.557677,31.284158");
+
+        String resultJson= ApiUtils.createCommonParam(TestConst.appid,TestConst.gateway,
+                "amap.around",aroundParam,TestConst.token,null);
         System.out.println(resultJson);
     }
 }
