@@ -55,6 +55,7 @@
         <HikariCP.version>2.4.13</HikariCP.version>
         <fastjson.version>1.2.39</fastjson.version>
         <hufm.version>2.6.0</hufm.version>
+        <skipTests>true</skipTests>
     </properties>
 
 </project>
