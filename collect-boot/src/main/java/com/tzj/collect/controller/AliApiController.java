@@ -35,7 +35,7 @@ public class AliApiController extends ApiController {
 
         apiConfig.setShowDoc(true); // 显示文档页面
         apiConfig.setDocRemark("<H><font size=\"3\">支付宝端API模块</font></H><br>备注：使用静态签名key");
-
+        apiConfig.setModuleName("ali");
 
         //设置开发者模式，即使api方法上面注明需要的，也不需要验证token以及签名
         apiConfig.setDevMode(false);
