@@ -184,6 +184,13 @@ public interface OrderService extends IService<Order> {
 	String updateOrderByBusiness(Integer orderId,String status,String cancelReason,Integer recyclerId);
 
 	boolean modifyOrderSta(OrderBean orderBean);
+	/** 回调修改状态
+	  * @author sgmark@aliyun.com
+	  * @date 2019/6/11 0011
+	  * @param
+	  * @return
+	  */
+	String callbackForGround(OrderBean orderBean);
 	/**
 	 * 订单数据看板折线图
 	 * @author 王灿
