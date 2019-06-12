@@ -58,4 +58,16 @@
         <skipTests>true</skipTests>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- 友盟OpenAPI -->
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>umeng-openapi</artifactId>
+                <version>1.0.9</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 </project>
