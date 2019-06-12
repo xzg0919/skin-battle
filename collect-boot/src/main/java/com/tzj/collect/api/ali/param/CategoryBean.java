@@ -25,6 +25,8 @@ public class CategoryBean {
 	private PageBean pageBean;
 	
     private Integer areaId;
+
+	private String orderId;
     /**
      * 企业id 
      */
@@ -53,6 +55,14 @@ public class CategoryBean {
 	
 	//分类属性
 	private List<CategoryAttrBean> categoryAttr;
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
 
 	public String getIsFiveKg() {
 		return isFiveKg;

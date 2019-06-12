@@ -129,6 +129,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private AsyncRedis asyncRedis;
 	@Autowired
 	private SendRocketmqMessageService sendRocketmqMessageService;
+	@Autowired
+	private CompanyCategoryCityService companyCategoryCityService;
+	@Autowired
+	private AreaService areaService;
 
 	@Override
 	public Order getLastestOrderByMember(Integer memberId) {
@@ -344,6 +348,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setAchPrice(order.getPrice());
 		}
 		orderbean.setIsCash(order.getIsCash());
+		Area city = areaService.selectById(order.getAreaId());
+		orderbean.setCityId(city.getParentId().toString());
 		//保存orderItem
 		double amount = this.saveOrderItemAch(orderbean, null);
 		order.setGreenCount(amount);
@@ -476,10 +482,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderItem.setParentId(idAmountListBean.getCategoryParentId());
 					orderItem.setParentName(idAmountListBean.getCategoryParentName());
 					idAmount = idAmountListBean.getIdAndAmount();
-					wrapper = new EntityWrapper<CompanyCategory>();
-					wrapper.eq("company_id", orderbean.getCompanyId());
-					wrapper.eq("parent_id", idAmountListBean.getCategoryParentId());
-					comPriceList = comCatePriceService.selectList(wrapper);
 					for (OrderItemBean item : idAmount) {
 						orderItem.setCategoryId(Integer.parseInt(item.getCategoryId() + ""));
 						orderItem.setCategoryName(item.getCategoryName());
@@ -490,14 +492,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						}else{
 							amount += item.getAmount();
 						}
-						for (CompanyCategory comPrice : comPriceList) {
-							if (comPrice.getCategoryId().equals(item.getCategoryId() + "")) {
-								orderItem.setParentIds(comPrice.getParentIds());
-								orderItem.setPrice(comPrice.getPrice());
-								orderItem.setUnit(comPrice.getUnit());
-								orderItemAchService.insert(orderItem);
-							}
+						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
+						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
+						if (companyCategoryCity!=null) {
+							orderItem.setParentIds(companyCategoryCity.getParentIds());
+							orderItem.setPrice(companyCategoryCity.getPrice().floatValue());
+							orderItem.setUnit(companyCategoryCity.getUnit());
+						}else {
+							orderItem.setParentIds(companyCategory.getParentIds());
+							orderItem.setPrice(companyCategory.getPrice());
+							orderItem.setUnit(companyCategory.getUnit());
 						}
+						orderItemAchService.insert(orderItem);
 					}
 				}
 		} else if (CategoryType.DIGITAL.name().equals(orderbean.getTitle())) {

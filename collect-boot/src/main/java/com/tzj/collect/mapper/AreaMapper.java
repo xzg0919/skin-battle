@@ -13,4 +13,6 @@ public interface AreaMapper extends BaseMapper<Area> {
 			@Param("communityId") String communityId);
 	
 	Map<String,Object> getAred(String id);
+
+	List<Area> selectByNameCityId(@Param("streetName") String streetName,@Param("cityId") String cityId);
 }

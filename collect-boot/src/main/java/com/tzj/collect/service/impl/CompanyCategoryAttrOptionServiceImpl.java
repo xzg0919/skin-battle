@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.tzj.collect.entity.CompanyCategoryAttrOptionCity;
+import com.tzj.collect.service.CompanyCategoryAttrOptionCityService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class CompanyCategoryAttrOptionServiceImpl extends ServiceImpl<CompanyCat
 	private CompanyCategoryMapper comCateMapper;
 	@Autowired
 	private CompanyCategoryService companyCategoryService;
+	@Autowired
+	private CompanyCategoryAttrOptionCityService companyCategoryAttrOptionCityService;
 	
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -89,66 +93,41 @@ public class CompanyCategoryAttrOptionServiceImpl extends ServiceImpl<CompanyCat
 	
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public boolean updateComCateAttOptPrice(List<CategoryAttrOptionBean> categoryAttrOptionBeanList) throws ApiException {
+	public boolean updateComCateAttOptPrice(List<CategoryAttrOptionBean> categoryAttrOptionBeanList,String cityId) throws ApiException {
 		Subject subject=ApiContext.getSubject();
 		// 接口里面获取 CompanyAccount 的例子
 		CompanyAccount companyAccount = (CompanyAccount)subject.getUser();
 		if (companyAccount != null) {
 			//判断总价格是否大于0
-			if(categoryAttrOptionBeanList!=null&&categoryAttrOptionBeanList.size()>0) {
-				String id = categoryAttrOptionBeanList.get(0).getId().toString();
-				CompanyCategory companyCategory = companyCategoryService.selectPriceByAttrId(id,companyAccount.getCompanyId().toString());
-				if(companyCategory!=null) {
-					double price = (double) companyCategory.getPrice();
-//					for (CategoryAttrOptionBean categoryAttrOptionBean : categoryAttrOptionBeanList) {
-//						List<CompanyCategoryAttrOptionBean> companyCategoryAttrOptionBeanList = categoryAttrOptionBean.getCompanyCategoryAttrOptionBeanList();
-//						double minPrice = Double.parseDouble(companyCategoryAttrOptionBeanList.get(0).getComOptPrice());
-//						double newPrice = 0;
-//						for (int i = 1; i < companyCategoryAttrOptionBeanList.size(); i++) {
-//							newPrice = Double.parseDouble(companyCategoryAttrOptionBeanList.get(i).getComOptPrice());
-//							if(minPrice>newPrice) {
-//								minPrice = newPrice;
-//							}
-//						}
-//						price+=minPrice;
-//					}
-					price += categoryAttrOptionBeanList.stream().map(CategoryAttrOptionBean::getCompanyCategoryAttrOptionBeanList).mapToDouble(companyCategoryAttrOptionBeans -> companyCategoryAttrOptionBeans.stream().map(CompanyCategoryAttrOptionBean::getComOptPrice).map(Double::parseDouble).min(Double::compare).get()).sum();
-					if(price<=0) {
-						throw new ApiException("总价格应大于0");
-					}else {
-						for (CategoryAttrOptionBean categoryAttrOptionBean : categoryAttrOptionBeanList) {
-							List<CompanyCategoryAttrOptionBean> companyCategoryAttrOptionBeanList = categoryAttrOptionBean.getCompanyCategoryAttrOptionBeanList();
-							for (CompanyCategoryAttrOptionBean companyCategoryAttrOptionBean : companyCategoryAttrOptionBeanList) {
-								CompanyCategoryAttrOption companyCategoryAttrOption = new CompanyCategoryAttrOption();
-								companyCategoryAttrOption.setCompanyId(companyAccount.getCompanyId().longValue());
-								companyCategoryAttrOption.setAttrOptionPrice(new BigDecimal(companyCategoryAttrOptionBean.getComOptPrice()));
-								companyCategoryAttrOption.setCategoryAttrOptionId(Long.valueOf(companyCategoryAttrOptionBean.getAttOptionId()));
-								EntityWrapper<CompanyCategoryAttrOption> wraper = new EntityWrapper<CompanyCategoryAttrOption>();
-								wraper.eq("company_id", companyCategoryAttrOption.getCompanyId());
-								wraper.eq("category_attr_option_id", companyCategoryAttrOption.getCategoryAttrOptionId());
-								wraper.eq("del_flag", "0");
-								CompanyCategoryAttrOption attrOption = this.selectOne(wraper);
-								if (attrOption != null) {
-									attrOption.setAttrOptionPrice(companyCategoryAttrOption.getAttrOptionPrice());
-									attrOption.setUpdateBy(companyCategoryAttrOption.getCompanyId().toString());
-									attrOption.setUpdateDate(new Date());
-									attrOption.setSpecialPrice(StringUtils.isBlank(companyCategoryAttrOptionBean.getSpecialPrice())?BigDecimal.ZERO:new BigDecimal(companyCategoryAttrOptionBean.getSpecialPrice()));
-									this.updateAllColumnById(attrOption);
-								}else {
-									attrOption = new CompanyCategoryAttrOption();
-									attrOption.setCompanyId(companyCategoryAttrOption.getCompanyId());
-									attrOption.setAttrOptionPrice(companyCategoryAttrOption.getAttrOptionPrice());
-									attrOption.setCategoryAttrOptionId(companyCategoryAttrOption.getCategoryAttrOptionId());
-									attrOption.setSpecialPrice(StringUtils.isBlank(companyCategoryAttrOptionBean.getSpecialPrice())?BigDecimal.ZERO:new BigDecimal(companyCategoryAttrOptionBean.getSpecialPrice()));
-									this.insert(attrOption);
-								}
-							}
+			if(!categoryAttrOptionBeanList.isEmpty()) {
+				double price = 0;
+				for (CategoryAttrOptionBean categoryAttrOptionBean : categoryAttrOptionBeanList) {
+					List<CompanyCategoryAttrOptionBean> companyCategoryAttrOptionBeanList = categoryAttrOptionBean.getCompanyCategoryAttrOptionBeanList();
+					for (CompanyCategoryAttrOptionBean companyCategoryAttrOptionBean : companyCategoryAttrOptionBeanList) {
+						EntityWrapper<CompanyCategoryAttrOptionCity> wraper = new EntityWrapper<CompanyCategoryAttrOptionCity>();
+						wraper.eq("company_id", companyAccount.getCompanyId());
+						wraper.eq("category_attr_option_id", companyCategoryAttrOptionBean.getAttOptionId());
+						wraper.eq("city_id",cityId);
+						wraper.eq("del_flag", "0");
+						CompanyCategoryAttrOptionCity companyCategoryAttrOptionCity = companyCategoryAttrOptionCityService.selectOne(wraper);
+						if (companyCategoryAttrOptionCity != null) {
+							companyCategoryAttrOptionCity.setAttrOptionPrice(new BigDecimal(companyCategoryAttrOptionBean.getComOptPrice()));
+							companyCategoryAttrOptionCity.setUpdateBy(companyAccount.getCompanyId().toString());
+							companyCategoryAttrOptionCity.setUpdateDate(new Date());
+							companyCategoryAttrOptionCity.setSpecialPrice(StringUtils.isBlank(companyCategoryAttrOptionBean.getSpecialPrice())?BigDecimal.ZERO:new BigDecimal(companyCategoryAttrOptionBean.getSpecialPrice()));
+							companyCategoryAttrOptionCityService.updateById(companyCategoryAttrOptionCity);
+						}else {
+							companyCategoryAttrOptionCity = new CompanyCategoryAttrOptionCity();
+							companyCategoryAttrOptionCity.setCityId(cityId);
+							companyCategoryAttrOptionCity.setCompanyId(companyAccount.getCompanyId().toString());
+							companyCategoryAttrOptionCity.setAttrOptionPrice(new BigDecimal(companyCategoryAttrOptionBean.getComOptPrice()));
+							companyCategoryAttrOptionCity.setCategoryAttrOptionId(Integer.parseInt(companyCategoryAttrOptionBean.getAttOptionId()));
+							companyCategoryAttrOptionCity.setSpecialPrice(StringUtils.isBlank(companyCategoryAttrOptionBean.getSpecialPrice())?BigDecimal.ZERO:new BigDecimal(companyCategoryAttrOptionBean.getSpecialPrice()));
+							companyCategoryAttrOptionCityService.insert(companyCategoryAttrOptionCity);
 						}
-						return true;
 					}
-				}else {
-					throw new ApiException("获取不到价格!");
 				}
+					return true;
 			}else {
 				throw new ApiException("集合为空!");
 			}

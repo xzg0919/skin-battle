@@ -12,6 +12,8 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.easyopen.ApiEncrypter;
+import com.tzj.module.easyopen.exception.ApiException;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
@@ -119,10 +121,13 @@ public class AreaApi {
 		if(StringUtils.isBlank(areaBean.getStreetName())) {
 			return "请传入街道名字";
 		}
-		//根据街道名字获取街道信息
-		Area area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", areaBean.getStreetName()));
+		//根据街道名字和市级Id获取街道信息
+		List<Area> areaList = areaService.selectByNameCityId(areaBean.getStreetName(),areaBean.getCityId());
+		if(areaList.isEmpty()){
+			throw  new ApiException("未找到该小区");
+		}
 		//返回街道信息
-		return communityService.selectList(new EntityWrapper<Community>().eq("area_id",area.getId()));
+		return communityService.selectList(new EntityWrapper<Community>().eq("area_id",areaList.get(0).getId()));
 	}
 	/**
 	 * 小程序获取所有城市列表

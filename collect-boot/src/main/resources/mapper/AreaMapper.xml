@@ -40,4 +40,15 @@
 		AND c.count is NOT NULL 
 		GROUP BY b.parent_id ) as d 
 	</select>
+	
+	<select id="selectByNameCityId" parameterType="String" resultType="com.tzj.collect.entity.Area">
+		SELECT
+			a.*
+		FROM
+			sb_area a
+		LEFT JOIN sb_area b ON b.id = a.parent_id
+		WHERE
+			a.area_name = #{streetName}
+		AND b.parent_id = #{cityId}
+	</select>
 </mapper>

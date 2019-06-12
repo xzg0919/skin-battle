@@ -36,4 +36,9 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		return mapper.selectAreaByCouOrStrOrCom(countyId, streetId, communityId);
 	}
 
+	@Override
+	public List<Area> selectByNameCityId(String streetName, String cityId) {
+		return mapper.selectByNameCityId(streetName,cityId);
+	}
+
 }

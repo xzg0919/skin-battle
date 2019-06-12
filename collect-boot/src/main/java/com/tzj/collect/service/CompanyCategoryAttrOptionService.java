@@ -17,7 +17,7 @@ public interface CompanyCategoryAttrOptionService extends IService<CompanyCatego
 	 */
 	boolean modifyComCateAttOptPrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException;
 
-	boolean updateComCateAttOptPrice(List<CategoryAttrOptionBean> categoryAttrOptionBeanList) throws ApiException;
+	boolean updateComCateAttOptPrice(List<CategoryAttrOptionBean> categoryAttrOptionBeanList,String cityId) throws ApiException;
 	
 	//boolean modifyCompanyCategoryAttrOptPrice(List<CategoryAttrOptionBean> categoryAttrOptionBeanList) throws ApiException;
 }

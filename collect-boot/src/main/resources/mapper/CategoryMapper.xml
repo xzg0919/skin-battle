@@ -18,16 +18,26 @@
     
     <select id="getTopList" parameterType="int" resultMap="OrderResultMap">
     	SELECT name_,id FROM sb_category WHERE  del_flag = 0 AND unuseful = 0 AND  id IN(
-		SELECT parent_id FROM sb_company_category WHERE  company_id = #{param1} AND  del_flag = 0) AND title = #{param2} 
+		SELECT DISTINCT parent_id FROM sb_company_category WHERE  company_id = #{param1} AND  del_flag = 0) AND title = #{param2}
     </select> 
     
     <select id="getSecondList" parameterType="String" resultMap="OrderResultMap">
-    	SELECT sc.name_,sc.id FROM sb_company_category scc LEFT JOIN sb_category sc ON scc.category_id = sc.id  WHERE scc.parent_id = #{param1}
+    	SELECT sc.name_,sc.id FROM  sb_category sc   WHERE sc.parent_id =  #{param1}
     </select> 
     
      <select id="getHouseHoldDetail" parameterType="String" resultType="com.tzj.collect.api.business.result.CategoryResult">
-		SELECT sc.name_,sc.id,sbc.price,sc.unit FROM sb_category sc LEFT JOIN (SELECT * FROM sb_company_category scc WHERE scc.`parent_id`=#{param1} AND scc.`company_id`= #{param2})sbc ON sbc.category_id = sc.id WHERE sc.`parent_id`=#{param1}
-	 </select> 
+		SELECT
+			sc.name_,
+			sc.id,
+			scc.price,
+			sc.unit
+		FROM
+			sb_category sc
+		LEFT JOIN sb_company_category scc ON scc.category_id = sc.id
+		WHERE
+			scc.`parent_id` = #{param1}
+		AND scc.`company_id` = #{param2}
+	 </select>
 	 
 	 <select id="topListApp" resultType="Category">
 		SELECT

@@ -302,26 +302,14 @@
 		SELECT
 			acao.id AS attOptionId,
 			acao.name_ AS attOptionName,
-			sccao.id AS comOptPriceId,
-			sccao.attr_option_price AS comOptPrice, 
-			acao.is_special AS isSpecial, 
-			sccao.special_price AS specialPrice 
+			acao.id AS comOptPriceId,
+			acao.price AS comOptPrice,
+			acao.is_special AS isSpecial,
+			20 AS specialPrice
 		FROM
 			sb_category_attr_option acao
-		LEFT JOIN (
-			SELECT
-				sccao.id,
-				sccao.attr_option_price,
-				sccao.category_attr_option_id, 
-				sccao.special_price 
-			FROM
-				sb_company_category_attr_option sccao
-			WHERE
-				sccao.del_flag = 0
-				AND sccao.company_id = #{companyId}
-		) sccao ON sccao.category_attr_option_id = acao.id
 		WHERE
-			acao.del_flag = 0 AND acao.category_attr_id =  #{cateOptId};
+			acao.del_flag = 0 AND acao.category_attr_id =  #{cateOptId}
 	</select>
 	<select id="priceIsAvailable" parameterType="com.tzj.collect.api.business.param.ComIdAndCateOptIdBean" resultType = "String">
 		SELECT

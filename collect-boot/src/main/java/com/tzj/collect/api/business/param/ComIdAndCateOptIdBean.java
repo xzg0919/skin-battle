@@ -15,7 +15,27 @@ public class ComIdAndCateOptIdBean {
 	private String title;//回收物类型
 	
 	private List<CategoryBean> householdPriceList;//生活垃圾价格列表(id,price)
-	
+
+	private List<CategoryAttrOptionBean> categoryAttrOptionBeanList;
+
+	private String cityId;
+
+	public List<CategoryAttrOptionBean> getCategoryAttrOptionBeanList() {
+		return categoryAttrOptionBeanList;
+	}
+
+	public void setCategoryAttrOptionBeanList(List<CategoryAttrOptionBean> categoryAttrOptionBeanList) {
+		this.categoryAttrOptionBeanList = categoryAttrOptionBeanList;
+	}
+
+	public String getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(String cityId) {
+		this.cityId = cityId;
+	}
+
 	public String getCompanyId() {
 		return companyId;
 	}
