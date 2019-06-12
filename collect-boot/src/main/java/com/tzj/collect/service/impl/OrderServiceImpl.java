@@ -1790,6 +1790,36 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		flag = orderLogService.insert(orderLog);
 		return flag;
 	}
+	@Override
+	public String callbackForGround(OrderBean orderBean){
+		try {
+			OrderLog orderLog = new OrderLog();
+			Order order = orderService.selectById(orderBean.getId());
+			if (order.getStatus() != null && !"".equals(order.getStatus())) {
+				orderLog.setOpStatusBefore(order.getStatus().name());
+				if("0".equals(order.getStatus().getValue().toString())) {
+					return "初始状态，不允许回调";
+				}else if ("3".equals(order.getStatus().getValue().toString())){
+					return "已完成，不允许回调";
+				}
+			}
+			order.setUpdateDate(new Date());
+			order.setIsRead("0");
+			order.setRecyclerId(null);
+			order.setStatus(OrderType.INIT);
+			order.setCancelReason("");
+			orderLog.setOpStatusAfter(OrderType.INIT.name());
+			orderLog.setOp("订单回调");
+			orderLog.setOrderId(Integer.parseInt(order.getId().toString()));
+			if(!orderService.updateById(order)){
+				return "订单已被修改，稍后重试";
+			}
+			orderLogService.insert(orderLog);
+			return "修改成功";
+		}catch (Exception e){
+			return "订单已被修改，稍后重试";
+		}
+	}
 
 	/**
 	 * @param memberId:用户Id

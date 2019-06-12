@@ -188,6 +188,18 @@ public class BusinessOrderApi {
 	     return sta;
 	}
 	/**
+	 * 派单、驳回、接单 接口
+	 * @author 王灿
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.order.callback", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public String callbackForground(OrderBean orderbean) {
+		return orderService.callbackForGround(orderbean);
+	}
+	/**
 	 * 企业取消订单
 	 * @author 王灿
 	 * @param
