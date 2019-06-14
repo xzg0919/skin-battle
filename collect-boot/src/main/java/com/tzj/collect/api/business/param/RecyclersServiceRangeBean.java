@@ -9,6 +9,8 @@ public class RecyclersServiceRangeBean {
      * 0是经理，1下级回收人员，2拒绝该用户
      */
     private String isEnable;
+
+    private String tel;
     /**
      * 市级Id
      */
@@ -158,5 +160,13 @@ public class RecyclersServiceRangeBean {
 
     public void setManagerId(String managerId) {
         this.managerId = managerId;
+    }
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
     }
 }

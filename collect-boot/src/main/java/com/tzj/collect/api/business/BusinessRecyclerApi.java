@@ -354,6 +354,7 @@ public class BusinessRecyclerApi {
 	/**
 	 * 获取回收经理人员列表
 	 * @author wangcan
+	 * @updateBy sgmark 增加电话号码搜索
 	 * @param
 	 * @return
 	 */
@@ -362,7 +363,7 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getRecyclersList(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return recycleService.getRangeRecyclersList(companyAccount.getCompanyId(),recyclersServiceRangeBean.getRecycleName(),recyclersServiceRangeBean.getCityId(),recyclersServiceRangeBean.getPageNum(),recyclersServiceRangeBean.getPageSize(),recyclersServiceRangeBean.getIsBigRecycle());
+		return recycleService.getRangeRecyclersList(companyAccount.getCompanyId(),recyclersServiceRangeBean.getRecycleName(),recyclersServiceRangeBean.getCityId(),recyclersServiceRangeBean.getPageNum(),recyclersServiceRangeBean.getPageSize(),recyclersServiceRangeBean.getIsBigRecycle(), recyclersServiceRangeBean.getTel());
 	}
 	/**
 	 * 根据回收经理Id获取下属回收人员列表

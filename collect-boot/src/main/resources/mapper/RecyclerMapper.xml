@@ -336,6 +336,9 @@
 			<if test="recycleName != null and recycleName != ''">
 				AND b.name_ = #{recycleName}
 			</if>
+			<if test="tel != null and tel != ''">
+				AND b.tel = #{tel}
+			</if>
 			<choose>
 				<when test=" isBigRecycle == 'Y'.toString() ">
 					and srt.title_id = 4
@@ -369,6 +372,9 @@ select count(*) from (
 		</if>
 		<if test="recycleName != null and recycleName != ''">
 			AND b.name_ = #{recycleName}
+		</if>
+		<if test="tel != null and tel != ''">
+			AND b.tel = #{tel}
 		</if>
 		<choose>
 			<when test=" isBigRecycle == 'Y'.toString() ">

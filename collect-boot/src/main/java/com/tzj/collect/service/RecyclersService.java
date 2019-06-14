@@ -179,7 +179,7 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @param companyId : 企业Id
 	 * @return
 	 */
-	Object getRangeRecyclersList(Integer companyId,String recycleName,String cityId,Integer pageNum,Integer pageSize,String isBigRecycle);
+	Object getRangeRecyclersList(Integer companyId,String recycleName,String cityId,Integer pageNum,Integer pageSize,String isBigRecycle, String tel);
 	/**
 	 * 获取回收经理的详细信息
 	 * @author wangcan

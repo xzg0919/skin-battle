@@ -16,18 +16,17 @@ import com.tzj.collect.service.AreaService;
 import com.tzj.collect.service.CompanyRecyclerService;
 import com.tzj.collect.service.CompanyService;
 import com.tzj.collect.service.RecyclersService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 @ApiService
@@ -136,6 +135,33 @@ public class BusinessCompanyApi {
 		List<Map<String,Object>> mapList = (List<Map<String, Object>>) comRecService.getCompanyRange(companyAccount.getCompanyId());
 		return mapList.stream().filter(stringObjectMap -> stringObjectMap.get("area_name").toString().contains(companyBean.getName())).collect(Collectors.toList());
 	}
+
+//	@Api(name = "iot.area.iot", version = "1.0")
+//	@SignIgnore
+//	@AuthIgnore
+////	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+//	public void  updateArea(){
+//		Long current = System.currentTimeMillis();
+//		System.out.println(current);
+//		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("del_flag", 0));
+//		areaList.parallelStream().forEach(area -> {
+//			Area areaOld = area;
+//			String pareatIds = area.getParentId().toString() + "_";
+//			while (area.getParentId() != 0){
+//				area = areaService.selectById(area.getParentId());
+//				if (!area.getParentId().toString().equals("0")){
+//					pareatIds =  area.getParentId()+"_" + pareatIds;
+//				}else {
+////					System.out.println("我要更新咯，更新数据是："+pareatIds);
+//					areaOld.setParentIds(pareatIds);
+//					areaService.updateById(areaOld);
+//				}
+//			}
+//		});
+//		System.out.println(System.currentTimeMillis()-current);
+//	}
+
+
 	/**
 	 * 获取大件企业服务范围（例南京市，苏州市等）
 	 * @author wangcan

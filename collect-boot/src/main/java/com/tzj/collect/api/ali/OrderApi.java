@@ -17,27 +17,9 @@ import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.common.websocket.WebSocketServer;
 import com.tzj.collect.api.enterprise.param.EnterpriseCodeBean;
 import com.tzj.collect.common.util.MemberUtils;
-import com.tzj.collect.entity.Category;
-import com.tzj.collect.entity.Company;
-import com.tzj.collect.entity.EnterpriseCode;
-import com.tzj.collect.entity.EnterpriseProduct;
-import com.tzj.collect.entity.Member;
-import com.tzj.collect.entity.MemberAddress;
-import com.tzj.collect.entity.Order;
+import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Order.OrderType;
-import com.tzj.collect.service.AliPayService;
-import com.tzj.collect.service.AnsycMyslService;
-import com.tzj.collect.service.AsyncService;
-import com.tzj.collect.service.CategoryService;
-import com.tzj.collect.service.CompanyCategoryService;
-import com.tzj.collect.service.CompanyService;
-import com.tzj.collect.service.CompanyStreeService;
-import com.tzj.collect.service.CompanyStreetApplianceService;
-import com.tzj.collect.service.CompanyStreetBigService;
-import com.tzj.collect.service.EnterpriseCodeService;
-import com.tzj.collect.service.EnterpriseProductService;
-import com.tzj.collect.service.MemberAddressService;
-import com.tzj.collect.service.OrderService;
+import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -46,6 +28,8 @@ import com.tzj.module.api.annotation.SignIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import javax.annotation.Resource;
 
 /**
  * 订单相关api
@@ -550,4 +534,5 @@ public class OrderApi {
 		}
 		return resultMap;
 	}
+
 }
