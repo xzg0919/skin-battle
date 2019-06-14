@@ -912,12 +912,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				hashTable = (Hashtable<String, String>)redisUtil.get("iotMap");
 			}
 			String iotMemberId = "iot_member_id_" + member.getId();
-			if (parentLists.isEmpty()){
+//            System.out.println(parentLists.stream().allMatch(parentList -> parentList.getItemList().stream().allMatch(itemList -> itemList.getQuantity() != 0.0)));
+			if (parentLists.isEmpty() || parentLists.stream().anyMatch(parentList -> parentList.getItemList().stream().anyMatch(itemList -> itemList.getQuantity() == 0.0))){//打开箱门，并没投递任何东西
 				hashTable.put(iotMemberId, "empty");
+                redisUtil.set("iotMap", hashTable);
+				map.put("order_no", order.getOrderNo());
+				map.put("equipment_code",iotParamBean.getEquipmentCode());
+				map.put("msg", "empty");
+                return map;
 			}else {
 				hashTable.put(iotMemberId, order.getId()+"");
 			}
-			redisUtil.set("iotMap", hashTable, 300);
+			redisUtil.set("iotMap", hashTable);
 		}catch (Exception e){
 			e.printStackTrace();
 		}

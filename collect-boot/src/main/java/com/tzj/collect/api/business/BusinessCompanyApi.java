@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
@@ -119,6 +120,21 @@ public class BusinessCompanyApi {
 	public Object getCompanyRange() {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		return comRecService.getCompanyRange(companyAccount.getCompanyId());
+	}
+	/**
+	 * 根据名称获取企业服务范围（例南京市，苏州市等）
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.company.getCompanyRange.code", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getCompanyRangeByCode(com.tzj.collect.api.business.param.CompanyBean companyBean) {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		//要查找的关键字 companyBean.name
+		List<Map<String,Object>> mapList = (List<Map<String, Object>>) comRecService.getCompanyRange(companyAccount.getCompanyId());
+		return mapList.stream().filter(stringObjectMap -> stringObjectMap.get("area_name").toString().contains(companyBean.getName())).collect(Collectors.toList());
 	}
 	/**
 	 * 获取大件企业服务范围（例南京市，苏州市等）
