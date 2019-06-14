@@ -55,6 +55,8 @@ public class CategoryApi {
 	private CompanyStreetBigService companyStreetBigService;
 	@Autowired
 	private CompanyStreetApplianceService companyStreetApplianceService;
+	@Autowired
+	private CompanyCategoryAttrOptionCityService companyCategoryAttrOptionCityService;
     /**
      * 取得所有一级分类 
      * @param 
@@ -216,6 +218,7 @@ public class CategoryApi {
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object categoryHouseTwoList(CategoryBean categoryBean){
+		Member member = MemberUtils.getMember();
 		return priceService.categoryHouseTwoList(categoryBean);
 
 	}
@@ -308,10 +311,15 @@ public class CategoryApi {
 			//获取所有分类属性选项Id的集合
 			String [] OptionIds = categoryAttrOptionIds.split(",");
 			List<String> specialPriceList = new ArrayList<String>();
+			AliCategoryAttrOptionBean categoryAttrOptionBean = null ;
 			for(int i=0;i<OptionIds.length;i++) {
-				//分类属性选项Id和公司id查询相关价格数据
-				AliCategoryAttrOptionBean categoryAttrOptionById = categoryAttrOptionService.getCategoryAttrOptionById(Integer.parseInt(OptionIds[i]), Integer.parseInt(companyId));
-				String optionPrice = categoryAttrOptionById.getPrice().toString();
+				//分类属性选项Id和公司id和公司Id查询相关价格数据
+				categoryAttrOptionBean = companyCategoryAttrOptionCityService.getCategoryAttrOptionByCityId(OptionIds[i],companyId,categoryAttrBean.getCityId());
+				if(null == categoryAttrOptionBean){
+					//分类属性选项Id和公司id查询相关价格数据
+					categoryAttrOptionBean = categoryAttrOptionService.getCategoryAttrOptionById(Integer.parseInt(OptionIds[i]), Integer.parseInt(companyId));
+				}
+				String optionPrice = categoryAttrOptionBean.getPrice().toString();
 				//匹配价格里面是否存在特殊字符的价格
 				String[] array = optionPrice.split("P");
 				if((array.length-1)>0) {

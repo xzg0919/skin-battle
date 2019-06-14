@@ -15,7 +15,16 @@ public class CategoryBean {
 	private String price;
 
 	private String parentId;
-	
+
+	private String cityId;
+
+	public String getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(String cityId) {
+		this.cityId = cityId;
+	}
 
 	public String getParentId() {
 		return parentId;

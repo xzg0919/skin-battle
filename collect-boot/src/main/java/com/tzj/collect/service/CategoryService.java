@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.taobao.api.ApiException;
 import com.tzj.collect.api.ali.param.CategoryAttrBean;
 import com.tzj.collect.api.ali.result.ClassifyAndMoney;
 import com.tzj.collect.api.business.param.CategoryBean;
@@ -120,10 +121,10 @@ public interface CategoryService extends IService<Category> {
 	 * @param parentId
 	 * @return
 	 */
-	List<CategoryResult> getHouseHoldDetail(String parentId,String companyId);
+	List<CategoryResult> getHouseHoldDetail(String parentId,String companyId,String cityId);
 
 
-	boolean updatePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean);
+	boolean updatePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException;
 	/**
 	 * 获取分类属性所有价格及当前价格
 	 * @param categoryBean

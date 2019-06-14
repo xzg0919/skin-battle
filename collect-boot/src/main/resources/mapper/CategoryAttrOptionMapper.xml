@@ -71,10 +71,13 @@
 	    LEFT JOIN sb_category sc 
 	    ON sca.category_id = sc.id 
 	    WHERE sc.id = #{param1} -->
-	    SELECT sca.id,sca.name_ AS name FROM sb_category sc 
-		LEFT JOIN sb_category_attr sca 
-		ON sca.`category_id` = sc.`id`
-		WHERE sc.`id`= #{categoryId}
+			SELECT
+				sca.id,
+				sca.name_ AS name
+			FROM
+				sb_category_attr sca
+			WHERE
+				sca.`category_id` = #{categoryId}
     </select>
     
 </mapper>

@@ -40,7 +40,11 @@ public class OrderTest {
 
 
             MemberAddressBean memberAddressBean = new MemberAddressBean();
-            memberAddressBean.setCityId(737);
+            memberAddressBean.setCityId(5479);
+
+            AreaBean areaBean = new AreaBean();
+            areaBean.setCityId("9699");
+            areaBean.setStreetName("矿区街道");
 
                 HashMap<String,Object> param=new HashMap<>();
                 param.put("name","memberAddress.memberAddress");

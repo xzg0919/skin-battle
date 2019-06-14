@@ -115,7 +115,7 @@ public class BusinessCategoryApi {
 		String parentId = categoryBean.getParentId();
 		CompanyAccount companyAccount = getCompanyAccount();
 		String companyId = companyAccount.getCompanyId().toString();
-		return categoryService.getHouseHoldDetail(parentId, companyId);
+		return categoryService.getHouseHoldDetail(parentId, companyId,categoryBean.getCityId());
 	}
 	
 	/**
@@ -230,7 +230,8 @@ public class BusinessCategoryApi {
 	@Api(name = "business.category.updatecomcateattroptprice", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public boolean updateComCateAttrOptPrice(List<CategoryAttrOptionBean> categoryAttrOptionBeanList) throws ApiException {
-		return attrOptionService.updateComCateAttOptPrice(categoryAttrOptionBeanList);
+	public boolean updateComCateAttrOptPrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException {
+
+		return attrOptionService.updateComCateAttOptPrice(comIdAndCateOptIdBean.getCategoryAttrOptionBeanList(),comIdAndCateOptIdBean.getCityId());
 	}
 }

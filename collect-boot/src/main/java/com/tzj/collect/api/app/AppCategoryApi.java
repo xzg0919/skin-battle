@@ -4,14 +4,9 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.api.ali.result.ComCatePrice;
 import com.tzj.collect.common.util.RecyclersUtils;
-import com.tzj.collect.entity.Category;
+import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
-import com.tzj.collect.entity.CompanyRecycler;
-import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.CategoryService;
-import com.tzj.collect.service.CompanyCategoryService;
-import com.tzj.collect.service.CompanyRecyclerService;
-import com.tzj.collect.service.RecyclersService;
+import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -43,18 +38,24 @@ public class AppCategoryApi {
 	private CompanyRecyclerService companyRecyclerService;
 	@Autowired
 	private RecyclersService recyclersService;
+	@Autowired
+	private OrderService orderService;
+	@Autowired
+	private AreaService areaService;
+	@Autowired
+	private CompanyCategoryCityService companyCategoryCityService;
 	/**
      * 取得所有一级分类 
      * @author wangcan
-     * @param title : 分类属性
-     * @param level : 分类级别
      * @return
      */
 	 @Api(name = "app.category.getOneCategoryList", version = "1.0")
 	 @SignIgnore
 	 @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	 public List<Category> getOneCategoryList(CategoryBean categoryBean){
-		Serializable title = null;
+		 Order order = orderService.selectById(categoryBean.getOrderId());
+		 Area area = areaService.selectById(order.getAreaId());
+		 Serializable title = null;
 	 	if (CategoryType.DIGITAL.toString().equals(categoryBean.getTitle())) {
 	 		title = CategoryType.DIGITAL.getValue();
 		}else if (CategoryType.HOUSEHOLD.toString().equals(categoryBean.getTitle())) {
@@ -62,12 +63,18 @@ public class AppCategoryApi {
 		}
 	 	//判断是否免费
 	 	String isCash = categoryBean.getIsCash();
-	 	if(StringUtils.isBlank(isCash)||"0".equals(isCash)) {
-	 		//不免费
-	 		return categoryService.topListApp(categoryBean.getLevel(), title, RecyclersUtils.getRecycler().getId());
+		 List<Category> categoryList = null;
+		 if(StringUtils.isBlank(isCash)||"0".equals(isCash)) {
+		 	//不免费
+			 //判断是否配置该区域的城市价格
+				categoryList = companyCategoryCityService.topListAppByCity(categoryBean.getLevel().toString(), title.toString(), order.getCompanyId().toString(), area.getParentId().toString());
+			if(categoryList.isEmpty()){
+				categoryList = categoryService.topListApp(categoryBean.getLevel(), title, RecyclersUtils.getRecycler().getId());
+			}
 	 	}else {
-	 		return categoryService.topListApps(categoryBean.getLevel(), title);
-	 	}
+			 categoryList = categoryService.topListApps(categoryBean.getLevel(), title);
+		 }
+		 return categoryList;
 	 }
 	 /**
      * 根据一级分类id取得所有二级分类
@@ -87,10 +94,7 @@ public class AppCategoryApi {
 //		}
 		return priceService.getTowCategoryList(categoryBean);
 	 }
-	 public static void main(String[] args) {
-		System.out.println(CategoryType.DIGITAL.toString());
-	}
-	 
+
 	 /**
 	 * 取得六废的一级分类
 	 * @author wangcan

@@ -8,15 +8,19 @@ import com.tzj.collect.api.ali.result.ClassifyAndMoney;
 import com.tzj.collect.api.business.param.CategoryBean;
 import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
 import com.tzj.collect.api.business.result.ApiUtils;
+import com.tzj.collect.api.business.result.BusinessCategoryResult;
 import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Category.CategoryType;
 import com.tzj.collect.entity.CategoryAttr;
 import com.tzj.collect.entity.CompanyCategory;
+import com.tzj.collect.entity.CompanyCategoryCity;
 import com.tzj.collect.mapper.CategoryAttrOptionMapper;
 import com.tzj.collect.mapper.CategoryMapper;
 import com.tzj.collect.mapper.CompanyCategoryMapper;
 import com.tzj.collect.service.CategoryService;
+import com.tzj.collect.service.CompanyCategoryAttrOptionCityService;
+import com.tzj.collect.service.CompanyCategoryCityService;
 import com.tzj.collect.service.CompanyCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,10 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	private CompanyCategoryService companyCategoryService;
 	@Autowired
 	private CategoryAttrOptionMapper categoryAttrOptionMapper;
+	@Autowired
+	private CompanyCategoryAttrOptionCityService companyCategoryAttrOptionCityService;
+	@Autowired
+	private CompanyCategoryCityService companyCategoryCityService;
 
 	
 	/**
@@ -220,8 +228,13 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * @return
 	 */
 	@Override
-	public List<CategoryResult> getHouseHoldDetail(String parentId,String companyId) {
-		return categoryMapper.getHouseHoldDetail(parentId,companyId);
+	public List<CategoryResult> getHouseHoldDetail(String parentId,String companyId,String cityId) {
+		List<CategoryResult> categoryResultList = null;
+		categoryResultList = companyCategoryCityService.getCityHouseHoldDetail(parentId,companyId,cityId);
+		if(categoryResultList.isEmpty()){
+			categoryResultList = categoryMapper.getHouseHoldDetail(parentId,companyId);
+		}
+		return categoryResultList;
 	}
 
 
@@ -229,38 +242,36 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 
 	@Override
 	@Transactional(readOnly=false)
-	public boolean updatePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) {
+	public boolean updatePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException {
 		if (comIdAndCateOptIdBean.getTitle().equals(CategoryType.HOUSEHOLD.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.DIGITAL.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.BIGTHING.name())) {
 			List<CategoryBean> priceList = comIdAndCateOptIdBean.getHouseholdPriceList();
 			for (CategoryBean categoryBean : priceList) {
-				CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", comIdAndCateOptIdBean.getCompanyId()).eq("category_id", categoryBean.getId()));
 				Category category = this.selectById(categoryBean.getId());
-				if(category!=null) {
-					EntityWrapper<CompanyCategory> wrapper = new EntityWrapper<CompanyCategory>();
-					wrapper.eq("category_id", category.getId());
-					wrapper.eq("company_id", comIdAndCateOptIdBean.getCompanyId());
-					companyCategory = companyCategoryService.selectOne(wrapper);
+				if(category==null) {
+					throw  new ApiException("传入的分类Id不存在："+categoryBean.getId());
 				}
-				//companyCategory = companyCategoryMapper.selectById(categoryBean.getId());
-				if (companyCategory != null) {
-					companyCategory.setPrice(Float.parseFloat(categoryBean.getPrice()));
-					companyCategory.setUpdateDate(new Date());
-					companyCategory.setUpdateBy(comIdAndCateOptIdBean.getCompanyId());
+				CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("city_id", comIdAndCateOptIdBean.getCityId()).eq("company_id", comIdAndCateOptIdBean.getCompanyId()).eq("category_id", categoryBean.getId()).eq("del_flag", 0));
+				if (companyCategoryCity != null) {
+					companyCategoryCity.setPrice(new BigDecimal(categoryBean.getPrice()));
+					companyCategoryCity.setUpdateDate(new Date());
+					companyCategoryCity.setCityId(comIdAndCateOptIdBean.getCityId());
+					companyCategoryCity.setUpdateBy(comIdAndCateOptIdBean.getCompanyId());
 					//companyCategoryMapper.updateAllColumnById(companyCategory);
-					companyCategoryService.updateById(companyCategory);
+					companyCategoryCityService.updateById(companyCategoryCity);
 				}else{
-					companyCategory = new CompanyCategory();
+					companyCategoryCity = new CompanyCategoryCity();
 					if(category!=null) {
-						companyCategory.setParentId(category.getParentId().longValue());
-						companyCategory.setParentIds(category.getParentIds());
-						companyCategory.setCategoryId(categoryBean.getId());
-						companyCategory.setCompanyId(comIdAndCateOptIdBean.getCompanyId());
-						companyCategory.setPrice(Float.parseFloat(categoryBean.getPrice()));
+						companyCategoryCity.setParentId(category.getParentId());
+						companyCategoryCity.setParentIds(category.getParentIds());
+						companyCategoryCity.setCategoryId(Integer.parseInt(categoryBean.getId()));
+						companyCategoryCity.setCompanyId(comIdAndCateOptIdBean.getCompanyId());
+						companyCategoryCity.setPrice(new BigDecimal(categoryBean.getPrice()));
 						//暂时将单位放进去（之后更新弃置todoing）
-						companyCategory.setUnit("kg");
-						companyCategory.setCreateBy(comIdAndCateOptIdBean.getCompanyId());
+						companyCategoryCity.setUnit("kg");
+						companyCategoryCity.setCityId(comIdAndCateOptIdBean.getCityId());
+						companyCategoryCity.setCreateBy(comIdAndCateOptIdBean.getCompanyId());
 					}
-						companyCategoryService.insertAllColumn(companyCategory);
+					companyCategoryCityService.insert(companyCategoryCity);
 					//companyCategoryMapper.insert(companyCategory);
 				}
 			}
@@ -280,25 +291,31 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 		Map<String, Object> returnMap = new HashMap<>();
 		List<CategoryAttr> attrOptions =  categoryAttrOptionMapper.getDigitNameRePlace(Integer.parseInt(categoryBean.getId()));
 		ComIdAndCateOptIdBean comIdAndCateOptIdBean = null;
-		if (attrOptions.size() > 0) {
+		List<BusinessCategoryResult> businessCategoryResults = null;
+		if (!attrOptions.isEmpty()) {
 			for (CategoryAttr categoryAttr : attrOptions) {
 				comIdAndCateOptIdBean = new ComIdAndCateOptIdBean();
 				comIdAndCateOptIdBean.setCateOptId(categoryAttr.getId().toString());
 				comIdAndCateOptIdBean.setCompanyId(companyId);
-				categoryAttr.setResultList(companyCategoryService.selectComCateAttOptPrice(comIdAndCateOptIdBean));
+				businessCategoryResults = companyCategoryAttrOptionCityService.selectComCityCateAttOptPrice(categoryBean.getCityId(), companyId, categoryAttr.getId().toString());
+				if (businessCategoryResults.isEmpty()) {
+					businessCategoryResults = companyCategoryService.selectComCateAttOptPrice(comIdAndCateOptIdBean);
+				}
+				categoryAttr.setResultList(businessCategoryResults);
 			}
 		}
-		//获取当前公司回收价格
 		returnMap.put("List", attrOptions);
-		EntityWrapper<CompanyCategory> wraper = new EntityWrapper<CompanyCategory>();
-		wraper.eq("company_id", comIdAndCateOptIdBean.getCompanyId());
-		wraper.eq("category_id", categoryBean.getId().toString());
-		wraper.eq("del_flag", "0");
-		CompanyCategory attrOption = companyCategoryService.selectOne(wraper);
-		if (attrOption == null) {
-			returnMap.put("Price", BigDecimal.ZERO);
+		//获取当前公司回收价格
+		CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", comIdAndCateOptIdBean.getCompanyId()).eq("category_id", categoryBean.getId()).eq("del_flag", "0").eq("city_id", categoryBean.getCityId()));
+		if (companyCategoryCity == null) {
+			CompanyCategory attrOption = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", comIdAndCateOptIdBean.getCompanyId()).eq("category_id", categoryBean.getId()).eq("del_flag", "0"));
+			if(null != attrOption){
+				returnMap.put("Price", attrOption.getPrice());
+			}else {
+				returnMap.put("Price", BigDecimal.ZERO);
+			}
 		}else{
-			returnMap.put("Price", ApiUtils.doublegetTwoDecimal(attrOption.getPrice()));
+			returnMap.put("Price", companyCategoryCity.getPrice());
 		}
 		return returnMap;
 	}
