@@ -96,7 +96,11 @@ public class AmapApi {
                         result.setTownship(township);
                         result.setAddress(address);
                         if (StringUtils.isEmpty(city)) {
-                            result.setCity(province);
+                            if(province.endsWith("市")){
+                                result.setCity(province);
+                            }else{
+                                result.setCity(district);
+                            }
                         } else {
                             result.setCity(city);
                         }
