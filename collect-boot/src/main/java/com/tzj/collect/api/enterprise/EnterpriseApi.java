@@ -37,7 +37,6 @@ public class EnterpriseApi {
     @Api(name="enterprise.login",version="1.0")
     @SignIgnore
     @AuthIgnore
-    @DS("slave")
     public Object login(EnterpriseBean enterpriseBean)throws ApiException{
 
         if(StringUtils.isBlank(enterpriseBean.getUserName())||StringUtils.isBlank(enterpriseBean.getPassword())){

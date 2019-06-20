@@ -11,7 +11,6 @@ import java.util.Map;
  **/
 public interface OrderItemMapper extends BaseMapper<OrderItem>{
 
-    @DS("slave")
     Map<String, Object> selectItemOne(Integer orderId);
 
 }

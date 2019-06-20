@@ -68,7 +68,6 @@ public class CommunityApi {
     @Api(name = "community.defaultAddress", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	@DS("slave")
     public Community defaultAddress(CategoryBean categoryBean){
     	Member  member  = MemberUtils.getMember();
     	Order order= orderService.getLastestOrderByMember(Integer.parseInt(member.getId()+""));

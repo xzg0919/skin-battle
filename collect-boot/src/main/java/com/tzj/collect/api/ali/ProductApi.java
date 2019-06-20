@@ -133,7 +133,6 @@ public class ProductApi {
     @Api(name = "product.getProductDetail", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	@DS("slave")
     public Object getProductDetail(ProductBean productBean) {
     	
        return productService.selectById(productBean.getId());

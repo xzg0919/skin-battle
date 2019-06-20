@@ -87,7 +87,6 @@ public class CategoryApi {
 	 @Api(name = "category.listchild", version = "1.0")
 	 @SignIgnore
 	 @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	 @DS("slave")
 	 public  Map<String, Object> childlist(CategoryBean categoryBean){
 //		 if (categoryBean.getTitle().equals(CategoryType.DIGITAL.name())) {
 //			return categoryService.childList(categoryBean.getId());
@@ -106,7 +105,6 @@ public class CategoryApi {
 	@Api(name = "categoryAttr.computeValue", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	@DS("slave")
 	public Object computeValue(CategoryAttrBean categoryAttrBean){
 		Member member = MemberUtils.getMember();
 		//分类Id
@@ -175,7 +173,6 @@ public class CategoryApi {
 	@Api(name = "category.communityBycompany", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	@DS("slave")
 	public Object communityBycompany(CategoryAttrBean categoryAttrBean){
 		//分类Id
 		long categoryId = categoryAttrBean.getCategoryId();
@@ -248,7 +245,6 @@ public class CategoryApi {
 	@Api(name = "category.getPrices", version = "1.0")
 	@SignIgnore
 	@AuthIgnore
-	@DS("slave")
 	public Object getPrices(CategoryAttrBean categoryAttrBean){
 		//分类Id
 		long categoryId = categoryAttrBean.getCategoryId();

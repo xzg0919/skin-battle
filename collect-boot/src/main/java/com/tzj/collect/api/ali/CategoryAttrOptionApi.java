@@ -37,7 +37,6 @@ public class CategoryAttrOptionApi {
 	@Api(name = "categoryAttrOption.listCategoryAttrOption", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	@DS("slave")
     public Object getCategoryAttrOptionList(CategoryAttr categoryAttr){
 		if(categoryAttr.getCommunityId()==null) {
 			return "请传入小区id";

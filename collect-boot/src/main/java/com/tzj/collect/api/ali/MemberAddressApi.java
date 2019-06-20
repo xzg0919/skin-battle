@@ -134,7 +134,6 @@ public class MemberAddressApi {
     @Api(name = "memberAddress.memberAddress", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	@DS("slave")
     public MemberAddress memberAddress(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
 		Member member = MemberUtils.getMember();
