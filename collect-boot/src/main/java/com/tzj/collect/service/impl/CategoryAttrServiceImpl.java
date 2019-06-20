@@ -30,7 +30,6 @@ public class CategoryAttrServiceImpl extends ServiceImpl<CategoryAttrMapper, Cat
      * @return List<CategoryAttr>
      */
 	@Override
-	@DS("slave")
 	public List<CategoryAttr> getCategoryAttrLists(int categoryId,long companyId) {
 		EntityWrapper<CategoryAttr> wraper = new EntityWrapper<CategoryAttr>();
 		wraper.eq("category_id", categoryId);
@@ -50,7 +49,6 @@ public class CategoryAttrServiceImpl extends ServiceImpl<CategoryAttrMapper, Cat
      * @return List<CategoryAttr>
      */
 	@Override
-	@DS("slave")
 	public List<CategoryAttr> getCategoryAttrListss(int categoryId) {
 		EntityWrapper<CategoryAttr> wraper = new EntityWrapper<CategoryAttr>();
 		wraper.eq("category_id", categoryId);

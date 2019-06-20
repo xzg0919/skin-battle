@@ -19,7 +19,6 @@ public class CompanyStreetBigServiceImpl extends ServiceImpl<CompanyStreetBigMap
     private CompanyStreetBigMapper companyStreetBigMapper;
 
     @Override
-    @DS("slave")
     public Integer selectStreetBigCompanyId(Integer categoryId, Integer streetId) {
 
 

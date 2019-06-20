@@ -54,7 +54,6 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 获取一级类的商品
 	 */
 	@Override
-	@DS("slave")
 	public List<Category> topList(int level, Serializable title,String isFiveKg) {
 		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 		wraper.eq("level_", level);
@@ -70,7 +69,6 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 获取一级类的商品
 	 */
 	@Override
-	@DS("slave")
 	public List<Category> topListApp(int level, Serializable title, Long recId) {
 //		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 //		wraper.eq("level_", level);
@@ -83,7 +81,6 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 获取一级类的商品
 	 */
 	@Override
-	@DS("slave")
 	public List<Category> topListApps(int level, Serializable title) {
 //		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 //		wraper.eq("level_", level);
@@ -94,7 +91,6 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	
 	
 	@Override
-	@DS("slave")
 	public List<Category> childList(Integer id) {
 		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 		wraper.eq("parent_id", id);
@@ -159,7 +155,6 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 
 	 */
 	@Override
-	@DS("slave")
 	public List<CategoryResult> getCategoryData(String companyId) {
 		List<Category> categoryChildList = null;
 		Set<String> cateChildName = null;

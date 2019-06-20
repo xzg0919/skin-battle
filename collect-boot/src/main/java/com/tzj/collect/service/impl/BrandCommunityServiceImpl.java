@@ -24,13 +24,11 @@ public class BrandCommunityServiceImpl extends ServiceImpl<BrandCommunityMapper,
 
 
     @Override
-    @DS("slave")
     public List<Map<String, Object>> getBrandCommunityList(String streetId) {
         return brandCommunityMapper.getBrandCommunityList(streetId);
     }
 
     @Override
-    @DS("slave")
     public List<Map<String, Object>> getBrandCommunityLists(String streetId) {
         return brandCommunityMapper.getBrandCommunityLists(streetId);
     }

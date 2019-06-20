@@ -31,7 +31,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 	 * @throw
 	 */
 	@Override
-	@DS("slave")
 	public Admin selectByUserNameAndPwd(String userName, String pwd) {
 		return selectOne(new EntityWrapper<Admin>().eq("username", userName).eq("password", pwd));
 	}
@@ -46,7 +45,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 	 * @throw
 	 */
 	@Override
-	@DS("slave")
 	public Admin selectByid(Long id) {
 		return adminMapper.selectById(id);
 	}

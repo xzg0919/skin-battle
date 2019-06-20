@@ -23,31 +23,26 @@ public class CompanyCategoryCityServiceImpl extends ServiceImpl<CompanyCategoryC
 
 
     @Override
-    @DS("slave")
     public List<CategoryResult> getCityHouseHoldDetail(String parentId, String companyId, String cityId) {
         return companyCategoryCityMapper.getCityHouseHoldDetail(parentId,companyId,cityId);
     }
 
     @Override
-    @DS("slave")
     public List<ComCatePrice> getOwnnerPriceBycityId(String categoryId, String companyId, String cityId) {
         return companyCategoryCityMapper.getOwnnerPriceBycityId(categoryId,companyId,cityId);
     }
 
     @Override
-    @DS("slave")
     public List<ComCatePrice> getOwnnerNoPriceBycityId(String categoryId, String companyId, String cityId) {
         return companyCategoryCityMapper.getOwnnerNoPriceBycityId(categoryId,companyId,cityId);
     }
 
     @Override
-    @DS("slave")
     public List<Category> topListAppByCity(String level, String title, String companyId, String cityId) {
         return companyCategoryCityMapper.topListAppByCity(level,title,companyId,cityId);
     }
 
     @Override
-    @DS("slave")
     public List<ComCatePrice> getOwnnerPriceAppByCity(String categoryId, String companyId, String cityId) {
         return companyCategoryCityMapper.getOwnnerPriceAppByCity(categoryId,companyId,cityId);
     }

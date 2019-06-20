@@ -24,7 +24,6 @@ public class CommunityServiceImpl  extends ServiceImpl<CommunityMapper, Communit
 	private CommunityMapper communityMapper;
 	
 	@Override
-	@DS("slave")
 	public List<Community> areaCommunity(Integer areaId) {
 		return selectList(new EntityWrapper<Community>().eq("area_id", areaId).eq("del_flag", "0").orderBy("initials", true));
 	}
@@ -37,27 +36,23 @@ public class CommunityServiceImpl  extends ServiceImpl<CommunityMapper, Communit
 	 * @param latitude : 纬度
 	 */
 	@Override
-	@DS("slave")
 	public List<Community> areaCommunityList(Integer areaId,double longitude,double latitude){
 		
 		return communityMapper.areaCommunityList(areaId,longitude,latitude);
 	}
 
 	@Override
-	@DS("slave")
 	public List<Community> listareaByCategory(Integer categoryId,Integer areaId) {
 		return communityMapper.listareaByCategory(categoryId,areaId);
 	}
 
 	@Override
-	@DS("slave")
 	public Community defaultAddress(Integer communityId,Integer categoryId) {
 		return communityMapper.defaultAddress(communityId, categoryId);
  	}
 
 
 	@Override
-	@DS("slave")
 	public List<Recyclers> getRecByCommId(String commId) {
 		return communityMapper.getRecByCommId(commId);
 	}
@@ -66,14 +61,12 @@ public class CommunityServiceImpl  extends ServiceImpl<CommunityMapper, Communit
 	
 	
 	@Override
-	@DS("slave")
 	public List<AdminCommunityBean> selectCommunityByConditions(CompanyBean companybean) {
 		
 		return communityMapper.selectCommunityByConditions(companybean);
 	}
 
 	@Override
-	@DS("slave")
 	public List<AdminCommunityBean> getSelectedCommunityListByCompanyId(long id) {
 		
 		return communityMapper.getSelectedCommunityListByCompanyId(id);
@@ -82,7 +75,6 @@ public class CommunityServiceImpl  extends ServiceImpl<CommunityMapper, Communit
  * 根据公司id和区县或者街道id显示已过滤的小区(点击 编辑后显示的页面----只传区县或者街道id)
  */
 	@Override
-	@DS("slave")
 	public List<AdminCommunityBean> getEditorCommunity(CompanyBean companybean) {
 		
 		return communityMapper.getEditorCommunity(companybean);
@@ -93,7 +85,6 @@ public class CommunityServiceImpl  extends ServiceImpl<CommunityMapper, Communit
      * @return
      */
 	@Override
-	@DS("slave")
 	public List<Area> getCommunityData(String companyId) {
 		 List<Area> list = communityMapper.getCommunityData(companyId);
 		return list;

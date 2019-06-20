@@ -121,7 +121,6 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      * @return 
      */
 	@Override
-    @DS("slave")
 	public List<MemberAddress> memberAddressList(long memberId,String cityId) {
 		return this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("member_id", memberId).eq("city_id", cityId).orderBy("is_selected", false));
 	}

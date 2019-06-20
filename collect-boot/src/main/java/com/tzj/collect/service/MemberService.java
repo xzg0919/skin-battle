@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.entity.Member;
@@ -10,6 +11,7 @@ import java.util.Map;
  * @Author 王灿
  **/
 public interface MemberService extends IService<Member>{
+    @DS("slave")
     Member findMemberByAliId(String aliMemberId);
 
     Member saveByMemberBean(MemberBean memberBean);
@@ -38,15 +40,17 @@ public interface MemberService extends IService<Member>{
      * @param authCode
      * @return
      */
+    @DS("slave")
     Object getUserToken(String authCode,String cityName);
     /**
      * 获取会员个人中心的相关数据
      * @author 王灿
      * @param
      */
+    @DS("slave")
     Object memberAdmin(Integer memberId);
-
+    @DS("slave")
     Map memberIsExist(MemberBean memberBean);
-
+    @DS("slave")
     Object getPassIdUrl(Long memberId);
 }

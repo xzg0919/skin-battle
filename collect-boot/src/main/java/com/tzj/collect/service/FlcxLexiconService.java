@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.lexicon.param.FlcxBean;
@@ -14,5 +15,6 @@ import java.util.Map;
   * @return 
   */
 public interface FlcxLexiconService extends IService<FlcxLexicon> {
+    @DS("slave")
     Map lexCheck(FlcxBean flcxBean) throws ApiException;
 }

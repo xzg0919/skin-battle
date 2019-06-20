@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.enterprise.param.EnterpriseCodeBean;
@@ -23,6 +24,7 @@ public interface EnterpriseCodeService extends IService<EnterpriseCode> {
      * @param enterpriseCodeBean
      * @return
      */
+    @DS("slave")
     Object enterpriseCodeList(EnterpriseCodeBean enterpriseCodeBean,Integer enterpriseId)throws ApiException;
     /**
      * 以旧换新的券的详情
@@ -30,6 +32,7 @@ public interface EnterpriseCodeService extends IService<EnterpriseCode> {
      * @param enterpriseCodeId
      * @return
      */
+    @DS("slave")
     Object enterpriseCodeDetil(String enterpriseCodeId);
     /**
      * 旧换新的券的excel列表
@@ -37,5 +40,6 @@ public interface EnterpriseCodeService extends IService<EnterpriseCode> {
      * @param enterpriseCodeBean
      * @return
      */
+    @DS("slave")
     List<Map<String,Object>> outEnterpriseCodeExcel(EnterpriseCodeBean enterpriseCodeBean, Integer enterpriseId)throws ApiException;
 }

@@ -19,7 +19,6 @@ public class CompanyStreeServiceImpl extends ServiceImpl<CompanyStreeMapper,Comp
 
 
     @Override
-    @DS("slave")
     public Integer selectStreeCompanyIds(Integer categoryId, Integer streetId) {
 
 

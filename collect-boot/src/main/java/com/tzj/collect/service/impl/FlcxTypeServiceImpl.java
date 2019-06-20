@@ -30,7 +30,6 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
     private FlcxTypeMapper flcxTypeMapper;
 
     @Override
-    @DS("slave")
     public Map typeList() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("typeList", flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", 0).eq("level_", 0).eq("parent_id", 0)));

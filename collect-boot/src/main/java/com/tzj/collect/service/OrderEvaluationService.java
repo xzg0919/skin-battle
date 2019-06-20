@@ -2,6 +2,7 @@ package com.tzj.collect.service;
 
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.ali.param.OrderEvaluationBean;
@@ -19,6 +20,7 @@ public interface OrderEvaluationService extends IService<OrderEvaluation> {
 	 * @param Recyclers 当前回收人员, page 分页对象
 	 * @return 评价Page
 	 */
+	@DS("slave")
 	Page<OrderEvaluation> selectEvalByRecyclePage(long recId, PageBean page);
 
 	/**
@@ -30,6 +32,7 @@ public interface OrderEvaluationService extends IService<OrderEvaluation> {
 	* @param @return    参数
 	* @return Map<String,Object>    返回类型
 	 */
+	@DS("slave")
 	Map<String, Object> getScoreCount(Long recyclerId);
 
 	OrderEvaluation updateOrderEvaluation(OrderEvaluationBean orderEvaluationBean, Order order);

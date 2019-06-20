@@ -31,7 +31,6 @@ public class CompanyStreetApplianceServiceImpl extends ServiceImpl<CompanyStreet
      * @return
      */
     @Override
-    @DS("slave")
     public String selectStreetApplianceCompanyId(Integer categoryId, Integer streetId,Integer communityId) {
         String companyId = "";
         //根据分类Id和小区Id查询所属企业
@@ -51,7 +50,6 @@ public class CompanyStreetApplianceServiceImpl extends ServiceImpl<CompanyStreet
     }
 
     @Override
-    @DS("slave")
     public String selectStreetApplianceCompanyId(Integer categoryId, Integer streetId) {
         String companyId = "";
         //根据分类Id和小区id去公海查询相关企业

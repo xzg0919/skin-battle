@@ -34,7 +34,6 @@ public class CategoryAttrOptionServiceImpl extends ServiceImpl<CategoryAttrOptio
      * @return CategoryAttrOption : 分类选项信息
      */
 	@Override
-	@DS("slave")
 	public CategoryAttrOption getOptionById(String OptionId) {
 		EntityWrapper<CategoryAttrOption> wrapper = new EntityWrapper<CategoryAttrOption>();
 		wrapper.eq("id", OptionId);
@@ -50,7 +49,6 @@ public class CategoryAttrOptionServiceImpl extends ServiceImpl<CategoryAttrOptio
      * @return List<CategoryAttrOption> : 有关所有的分类选项信息
      */
 	@Override
-	@DS("slave")
 	public List<CategoryAttrOption> getOptionByCategoryAttrId(long categoryAttrId,long companyId) {
 		
 		/*EntityWrapper<CategoryAttrOption> wrapper = new EntityWrapper<CategoryAttrOption>();
@@ -68,7 +66,6 @@ public class CategoryAttrOptionServiceImpl extends ServiceImpl<CategoryAttrOptio
 	 * @return List<CategoryAttrOption> : 有关所有的分类选项信息
 	 */
 	@Override
-	@DS("slave")
 	public AliCategoryAttrOptionBean getCategoryAttrOptionById(long categoryAttrOptionId, long companyId) {
 
 		/*EntityWrapper<CategoryAttrOption> wrapper = new EntityWrapper<CategoryAttrOption>();
@@ -86,7 +83,6 @@ public class CategoryAttrOptionServiceImpl extends ServiceImpl<CategoryAttrOptio
      * @return List<CategoryAttrOption> : 有关所有的分类选项信息
      */
 	@Override
-	@DS("slave")
 	public List<CategoryAttrOption> getOptionByCategoryAttrIds(long categoryAttrId) {
 		
 //		EntityWrapper<CategoryAttrOption> wrapper = new EntityWrapper<CategoryAttrOption>();
@@ -98,7 +94,6 @@ public class CategoryAttrOptionServiceImpl extends ServiceImpl<CategoryAttrOptio
 	}
 
 	@Override
-	@DS("slave")
 	public List<CategoryAttrOption> getDigitName(CategoryBean categoryBean) {
 		HttpServletRequest request = ApiContext.getRequest();
 		Subject subject = (Subject)request.getAttribute("subject");

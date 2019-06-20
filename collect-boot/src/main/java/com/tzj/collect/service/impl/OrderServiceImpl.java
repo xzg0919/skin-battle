@@ -759,7 +759,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @changeby sgmark@aliyun.com
 	 */
 	@Override
-	@DS("slave")
 	public Map<String, Object> getOrderLists(BOrderBean orderBean, PageBean pageBean) {
 		List<String> statusList = new ArrayList<>();
 		String status = getStatus(orderBean.getStatus());

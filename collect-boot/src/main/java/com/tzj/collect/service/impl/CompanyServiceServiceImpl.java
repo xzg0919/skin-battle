@@ -23,14 +23,12 @@ public class CompanyServiceServiceImpl extends ServiceImpl<CompanyServiceMapper,
 	private CompanyServiceMapper companyServiceMapper;
 	
 	@Override
-	@DS("slave")
 	public int selectCompanyServiceByCompanyId(long id) {
 		
 		return companyServiceMapper.selectCompanyServiceByCompanyId(id);
 	}
 
 	@Override
-	@DS("slave")
 	public CompanyServiceRange selectRangeByCommunityId(Integer delectCommunityId) {
 		EntityWrapper<CompanyServiceRange> wrapp = new EntityWrapper<CompanyServiceRange>();
 		

@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.app.param.RecyclersBean;
 import com.tzj.collect.api.app.result.AppCompany;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface CompanyRecyclerService extends IService<CompanyRecycler>{
+	@DS("slave")
 	List<Company> selectCompanyByRecyclerId(@Param("recyclerId") String recyclerId);
 
 	
@@ -28,7 +30,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	*/
 	
 	int selectRecycleByCompanyId(long id);
-
+	@DS("slave")
 	List<CompanyRecycler> selectRecByComId(String id);
 
 	/**
@@ -36,6 +38,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	 * @param recId
 	 * @return 
 	 */
+	@DS("slave")
 	List<AppCompany> getRecyclerCompanyStatus(String recId);
 
 	/**
@@ -47,6 +50,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	* @param @return    参数
 	* @return CompanyRecycler    返回类型
 	 */
+	@DS("slave")
 	CompanyRecycler getCompanyRecycler(BusinessRecyclerBean recyclerBean);
 
 /**
@@ -58,6 +62,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 * @param @return    参数
 * @return Recyclers    返回类型
  */
+	@DS("slave")
 	Recyclers findIdCard(BusinessRecyclerBean recyclerBean);
 	
 	/**
@@ -66,6 +71,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	 * @param recyclersBean (recyclerId)
 	 * @return
 	 */
+	@DS("slave")
 	 Map<String,Object> getCurrComList(RecyclersBean recyclersBean);
 
 	/**
@@ -73,7 +79,8 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	 * @param recyclersBean
 	 * @return
 	 */
-	 Map<String,Object> getNotEnterComList(RecyclersBean recyclersBean);
+	@DS("slave")
+	Map<String,Object> getNotEnterComList(RecyclersBean recyclersBean);
 
 
 	boolean insertComRecByComIds(AppCompany appCompanys, long recId);
@@ -89,7 +96,8 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
      * @param @return    参数
      * @return CompanyRecycler    返回类型
       */
-	CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId);
+     @DS("slave")
+	 CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId);
 
 /**
  * 通过条件回收员姓名,id返回某公司回收人员列表
@@ -100,6 +108,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 * @param @return    参数
 * @return List<CompanyRecycler>    返回类型
  */
+	@DS("slave")
 	List<BusinessRecyclerBean> getgetSearchCompanyRecyclerList(BusinessRecyclerBean recyclerBean);
 
 	/**
@@ -108,8 +117,9 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	 * @param
 	 * @return
 	 */
+	@DS("slave")
 	Object getCompanyRange(Integer companyId);
-
+	@DS("slave")
 	Object getBigCompanyRange(Integer companyId);
 
 	Object recyclersDel(Integer companyId, String recycleId);
@@ -117,6 +127,6 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	Object recycleDelete(Integer companyId, String recycleId,String title);
 
 	Object recycleIsDelete(Integer companyId, String recycleId,String title);
-
+	@DS("slave")
 	Object getRecycleRangeByTitle(String companyId,String recyclerId,String title);
 }

@@ -25,7 +25,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 	
 	
 	@Override
-	@DS("slave")
 	public boolean validMessage(String tel, String messageCode) {
 		if (tel != null && messageCode != null && !"".equals(tel) && !"".equals(messageCode)) {
 			EntityWrapper<Message> wrapper = new EntityWrapper<>();
@@ -44,7 +43,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
 
 	@Override
-	@DS("slave")
 	public String getMessageCode(String tel) {
 		EntityWrapper<Message> wrapper = new EntityWrapper<>();
 		wrapper.eq("tel", tel);

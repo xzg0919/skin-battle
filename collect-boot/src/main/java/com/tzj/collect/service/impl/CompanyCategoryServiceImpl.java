@@ -64,7 +64,6 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	 * @return
 	 */
 	@Override
-	@DS("slave")
 	public Map<String, Object> categoryTwoList(CategoryBean categoryBean) {
 		Map<String, Object> map = new HashMap<>();
 		List<ComCatePrice> priceList = null;
@@ -82,7 +81,6 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	 * @return
 	 */
 	@Override
-	@DS("slave")
 	public Map<String, Object> categoryHouseTwoList(CategoryBean categoryBean) {
 		Category category = categoryService.selectById(categoryBean.getId());
 		Map<String, Object> map = new HashMap<>();
@@ -159,7 +157,6 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	 * 获取价格分页(不分页)
 	 */
 	@Override
-	@DS("slave")
 	public Map<String, Object> getPrice(CategoryBean categoryBean) {
 		Map<String, Object> map = new HashMap<>();
 		
@@ -221,7 +218,6 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	 * 获取价格分页(不分页)
 	 */
 	@Override
-	@DS("slave")
 	public Map<String, Object> getTowCategoryList(CategoryBean categoryBean) {
 		Map<String, Object> map = new HashMap<>();
 
@@ -258,37 +254,30 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 		return  map;
 	}
 	@Override
-	@DS("slave")
 	public List<ComCatePrice> getOwnnerPrice(CategoryBean categoryBean, Integer companyId) {
 		return comCateMapper.getOwnnerPrice(categoryBean, companyId);
 	}
-	@DS("slave")
 	public List<ComCatePrice> getOwnnerNoPrice(CategoryBean categoryBean, Integer companyId) {
 		return comCateMapper.getOwnnerNoPrice(categoryBean, companyId);
 	}
-	@DS("slave")
 	public List<ComCatePrice> getNoPrice(CategoryBean categoryBean, Integer companyId) {
 		return comCateMapper.getNoPrice(categoryBean, companyId);
 	}
 	@Override
-	@DS("slave")
 	public List<ComCatePrice> getOwnnerPriceApp(CategoryBean categoryBean, Integer companyId) {
 		return comCateMapper.getOwnnerPriceApp(categoryBean, companyId);
 	}
 	@Override
-	@DS("slave")
 	public List<ComCatePrice> getAvgPrice(CategoryBean categoryBean) {
 		return comCateMapper.getAvgPrice(categoryBean);
 	}
 	public List<ComCatePrice> getAvgNoPrice(CategoryBean categoryBean) {
 		return comCateMapper.getAvgNoPrice(categoryBean);
 	}
-	@DS("slave")
 	public List<ComCatePrice> getAvgPriceApp(CategoryBean categoryBean) {
 		return comCateMapper.getAvgPriceApp(categoryBean);
 	}
 	@Override
-	@DS("slave")
 	public List<BusinessCategoryResult> selectComCateAttOptPrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) {
 		String cateOptId = comIdAndCateOptIdBean.getCateOptId();
 				
@@ -321,7 +310,6 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	}
 	
 	@Override
-	@DS("slave")
 	public CompanyCategory selectByCategoryId(int categoryId) {
 		return comCateMapper.selectByCategoryId(categoryId);
 	}
@@ -345,12 +333,10 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 		return companyCategoryMapper.insertPrice(companyCategory);
 	}
 	@Override
-	@DS("slave")
 	public CompanyCategory selectPriceByAttrId(String id, String companyId) {
 		return companyCategoryMapper.selectPriceByAttrId(id, companyId);
 	}
 	@Override
-	@DS("slave")
 	public Company selectCompany(Integer categoryId, Integer communityId) {
 		return companyCategoryMapper.selectCompany(categoryId,communityId);
 	}  

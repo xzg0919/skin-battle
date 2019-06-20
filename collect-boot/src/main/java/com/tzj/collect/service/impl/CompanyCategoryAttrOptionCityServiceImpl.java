@@ -22,13 +22,11 @@ public class CompanyCategoryAttrOptionCityServiceImpl extends ServiceImpl<Compan
 
 
     @Override
-    @DS("slave")
     public List<BusinessCategoryResult> selectComCityCateAttOptPrice(String cityid, String companyId, String categoryAttrId) {
         return companyCategoryAttrOptionCityMapper.selectComCityCateAttOptPrice(cityid,companyId,categoryAttrId);
     }
 
     @Override
-    @DS("slave")
     public AliCategoryAttrOptionBean getCategoryAttrOptionByCityId(String optionId, String companyId, String cityId) {
         return companyCategoryAttrOptionCityMapper.getCategoryAttrOptionByCityId(optionId,companyId,cityId);
     }

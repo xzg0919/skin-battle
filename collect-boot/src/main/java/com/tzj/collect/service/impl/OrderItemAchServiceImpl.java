@@ -59,7 +59,6 @@ public class OrderItemAchServiceImpl extends ServiceImpl<OrderItemAchMapper, Ord
 	 * @return List<OrderItem>
 	 */
 	@Override
-	@DS("slave")
 	public List<OrderItemAch> selectByOrderId(int orderId) {
 		EntityWrapper<OrderItemAch> wrapper = new EntityWrapper<OrderItemAch>();
 		wrapper.eq("order_id", orderId);
@@ -68,25 +67,21 @@ public class OrderItemAchServiceImpl extends ServiceImpl<OrderItemAchMapper, Ord
 	}
 
 	@Override
-	@DS("slave")
 	public List<ComCatePrice> selectCateName(int orderId) {
 		return orderMapper.selectCateName(orderId);
 	}
 
 	@Override
-	@DS("slave")
 	public List<Map<String, Object>> selectItemSumAmount(Integer orderId) {
 
 		return orderItemAchMapper.selectItemSumAmount(orderId);
 	}
 
 	@Override
-	@DS("slave")
 	public String orderSum(String streetId) {
 		return orderItemAchMapper.orderSum(streetId);
 	}
 	@Override
-	@DS("slave")
 	public List<ResultDataVParam> orderDetialNum(String streetId) {
 		return orderItemAchMapper.orderDetialNum(streetId);
 	}

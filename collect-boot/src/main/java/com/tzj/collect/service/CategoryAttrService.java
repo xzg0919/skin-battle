@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.entity.CategoryAttr;
@@ -15,6 +16,7 @@ public interface CategoryAttrService extends IService<CategoryAttr> {
      * @param pageBean : 分页 
      * @return List<CategoryAttr>
      */
+	@DS("slave")
 	List<CategoryAttr> getCategoryAttrLists(int CategoryId,long companyId);
 	/**
      * 根据分类id取得所有分类属性
@@ -23,6 +25,7 @@ public interface CategoryAttrService extends IService<CategoryAttr> {
      * @param pageBean : 分页 
      * @return List<CategoryAttr>
      */
+	@DS("slave")
 	List<CategoryAttr> getCategoryAttrListss(int CategoryId);
 	
 	 /**
