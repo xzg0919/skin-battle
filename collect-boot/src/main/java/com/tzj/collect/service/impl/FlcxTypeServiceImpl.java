@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.FlcxLexicon;
@@ -29,6 +30,7 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
     private FlcxTypeMapper flcxTypeMapper;
 
     @Override
+    @DS("slave")
     public Map typeList() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("typeList", flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", 0).eq("level_", 0).eq("parent_id", 0)));

@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -83,6 +84,7 @@ public class EnterpriseCodeServiceImpl extends ServiceImpl<EnterpriseCodeMapper,
      * @return
      */
     @Override
+    @DS("slave")
     public Object enterpriseCodeList(EnterpriseCodeBean enterpriseCodeBean,Integer enterpriseId)throws ApiException{
         List<Map<String,Object>>  list = enterpriseCodeMapper.enterpriseCodeList(enterpriseCodeBean.getStartTime(),enterpriseCodeBean.getEndTime(),enterpriseCodeBean.getIsUse(),enterpriseId,(enterpriseCodeBean.getPageBean().getPageNumber()-1)*enterpriseCodeBean.getPageBean().getPageSize(),enterpriseCodeBean.getPageBean().getPageSize());
         Integer count = enterpriseCodeMapper.enterpriseCodeListCount(enterpriseCodeBean.getStartTime(), enterpriseCodeBean.getEndTime(), enterpriseCodeBean.getIsUse(), enterpriseId);
@@ -99,6 +101,7 @@ public class EnterpriseCodeServiceImpl extends ServiceImpl<EnterpriseCodeMapper,
      * @return
      */
     @Override
+    @DS("slave")
     public List<Map<String,Object>> outEnterpriseCodeExcel(EnterpriseCodeBean enterpriseCodeBean,Integer enterpriseId)throws ApiException{
         List<Map<String,Object>>  list = enterpriseCodeMapper.outEnterpriseCodeExcel(enterpriseCodeBean.getStartTime(),enterpriseCodeBean.getEndTime(),enterpriseCodeBean.getIsUse(),enterpriseId);
         return  list;
@@ -111,6 +114,7 @@ public class EnterpriseCodeServiceImpl extends ServiceImpl<EnterpriseCodeMapper,
      * @return
      */
     @Override
+    @DS("slave")
     public Object enterpriseCodeDetil(String enterpriseCodeId){
        return enterpriseCodeMapper.enterpriseCodeDetil(enterpriseCodeId);
     }

@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -29,6 +30,7 @@ public class OrderEvaluationServiceImpl extends ServiceImpl<OrderEvaluationMappe
 	private OrderService orderService;
 	
 	@Override
+	@DS("slave")
 	public Page<OrderEvaluation> selectEvalByRecyclePage(long recId, PageBean page) {
 		Page<OrderEvaluation> pages = new Page<OrderEvaluation>(page.getPageNumber(), page.getPageSize());
 		EntityWrapper<OrderEvaluation> wrapper = new EntityWrapper<OrderEvaluation>();
@@ -40,6 +42,7 @@ public class OrderEvaluationServiceImpl extends ServiceImpl<OrderEvaluationMappe
 	     根据回收人员id获取评价数
 	 */
 	@Override
+	@DS("slave")
 	public Map<String, Object> getScoreCount(Long recyclerId) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		//好评数量

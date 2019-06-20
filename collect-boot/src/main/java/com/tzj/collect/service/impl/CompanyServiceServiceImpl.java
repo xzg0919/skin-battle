@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.CompanyServiceRange;
@@ -22,12 +23,14 @@ public class CompanyServiceServiceImpl extends ServiceImpl<CompanyServiceMapper,
 	private CompanyServiceMapper companyServiceMapper;
 	
 	@Override
+	@DS("slave")
 	public int selectCompanyServiceByCompanyId(long id) {
 		
 		return companyServiceMapper.selectCompanyServiceByCompanyId(id);
 	}
 
 	@Override
+	@DS("slave")
 	public CompanyServiceRange selectRangeByCommunityId(Integer delectCommunityId) {
 		EntityWrapper<CompanyServiceRange> wrapp = new EntityWrapper<CompanyServiceRange>();
 		

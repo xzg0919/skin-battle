@@ -1,6 +1,7 @@
 package com.tzj.collect.api.business;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.BusinessRecyclerBean;
@@ -395,6 +396,7 @@ public class BusinessRecyclerApi {
 	@Api(name = "business.recycle.getRecyclersDetails", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getRecyclersDetails(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		return recycleService.selectById(recyclersServiceRangeBean.getRecycleId());

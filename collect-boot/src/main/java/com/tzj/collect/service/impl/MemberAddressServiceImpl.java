@@ -2,6 +2,7 @@ package com.tzj.collect.service.impl;
 
 import java.util.List;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.service.CommunityService;
 import org.apache.commons.lang.StringUtils;
@@ -120,6 +121,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      * @return 
      */
 	@Override
+    @DS("slave")
 	public List<MemberAddress> memberAddressList(long memberId,String cityId) {
 		return this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("member_id", memberId).eq("city_id", cityId).orderBy("is_selected", false));
 	}

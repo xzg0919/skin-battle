@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -53,6 +54,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 获取一级类的商品
 	 */
 	@Override
+	@DS("slave")
 	public List<Category> topList(int level, Serializable title,String isFiveKg) {
 		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 		wraper.eq("level_", level);
@@ -68,6 +70,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 获取一级类的商品
 	 */
 	@Override
+	@DS("slave")
 	public List<Category> topListApp(int level, Serializable title, Long recId) {
 //		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 //		wraper.eq("level_", level);
@@ -80,6 +83,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 获取一级类的商品
 	 */
 	@Override
+	@DS("slave")
 	public List<Category> topListApps(int level, Serializable title) {
 //		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 //		wraper.eq("level_", level);
@@ -90,6 +94,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	
 	
 	@Override
+	@DS("slave")
 	public List<Category> childList(Integer id) {
 		EntityWrapper<Category> wraper = new EntityWrapper<Category>();
 		wraper.eq("parent_id", id);
@@ -106,6 +111,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
      * @return Category : 分类信息
      */
 	@Override
+	@DS("slave")
 	public Category getCategoryById(long categoryId) {
 		EntityWrapper<Category> wrapper = new EntityWrapper<Category>();
 		wrapper.eq("id", categoryId);
@@ -121,6 +127,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
      * @param   categoryId : 分类Id
 	 */
 	@Override
+	@DS("slave")
 	public Category selectListCategory(String categoryId) {
 		return categoryMapper.selectListCategory(categoryId);
 	}
@@ -152,6 +159,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * 
 	 */
 	@Override
+	@DS("slave")
 	public List<CategoryResult> getCategoryData(String companyId) {
 		List<Category> categoryChildList = null;
 		Set<String> cateChildName = null;
@@ -205,6 +213,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public List<Category> getTopList(int companyId,Serializable title) {
 		return categoryMapper.getTopList(companyId,title);
 	}
@@ -217,6 +226,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public List<Category> getSecondList(String parentId) {
 		return categoryMapper.getSecondList(parentId);
 	}
@@ -228,6 +238,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public List<CategoryResult> getHouseHoldDetail(String parentId,String companyId,String cityId) {
 		List<CategoryResult> categoryResultList = null;
 		categoryResultList = companyCategoryCityService.getCityHouseHoldDetail(parentId,companyId,cityId);
@@ -287,6 +298,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	}
 
 	@Override
+	@DS("slave")
 	public Map<String, Object> getDigitalDetail(CategoryBean categoryBean, String companyId) {
 		Map<String, Object> returnMap = new HashMap<>();
 		List<CategoryAttr> attrOptions =  categoryAttrOptionMapper.getDigitNameRePlace(Integer.parseInt(categoryBean.getId()));

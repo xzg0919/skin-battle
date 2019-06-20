@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	 * 返回企业信息列表
 	 */
 	@Override
+	@DS("slave")
 	public Page<Company> getSearchCompany(CompanyBean companybean, PageBean pageBean) {
 		
 		Page<Company> page = new Page<Company>(pageBean.getPageNumber(), pageBean.getPageSize());
@@ -42,20 +44,24 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	}
 	
 	@Override
+	@DS("slave")
 	public Integer selectCompanyCountByCom(String comId) {
 		return companyMapper.selectCompanyCountByCom(comId);
 	}
 	@Override
+	@DS("slave")
 	public Integer selectCategoryCountByCom(String comId) {
 		return companyMapper.selectCategoryCountByCom(comId);
 	}
 
 	@Override
+	@DS("slave")
 	public List<Company> selectCompanyListByComm(String commId) {
 		return companyMapper.selectCompanyListByComm(commId);
 	}
 
 	@Override
+	@DS("slave")
 	public List<BusinessRecType> getTypeByComId(String comId) {
 		return companyMapper.getTypeByComId(comId);
 	}
@@ -68,12 +74,14 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public Integer getCompanyIdByIds(Integer CommunityId, Integer CategoryId) {
 		
 		return companyMapper.getCompanyIdByIds(CommunityId,CategoryId);
 	}
 
 	@Override
+	@DS("slave")
 	public Company getCurrent(CompanyAccount companyAccount) {
 		return this.selectById(companyAccount.getCompanyId());
 	}
@@ -85,6 +93,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public Company getCompanyByIds(Integer CommunityId, Integer CategoryId) {
 		//私海没找到，找公海信息
 		Company company = companyMapper.getCompanyByIds(CommunityId,CategoryId);
@@ -96,6 +105,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	}
 
 	@Override
+	@DS("slave")
 	public String selectIotUrlByEquipmentCode(String cabinetNo) {
 
 		return companyMapper.selectIotUrlByEquipmentCode(cabinetNo);

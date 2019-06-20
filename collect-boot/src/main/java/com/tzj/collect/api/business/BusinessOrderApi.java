@@ -1,6 +1,7 @@
 package com.tzj.collect.api.business;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
@@ -278,6 +279,7 @@ public class BusinessOrderApi {
 	@SignIgnore
 	@AuthIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public List<Category> categoriesList(){
 		EntityWrapper<Category> entityWrapper = new EntityWrapper<>();
 		entityWrapper.eq("title", 4);

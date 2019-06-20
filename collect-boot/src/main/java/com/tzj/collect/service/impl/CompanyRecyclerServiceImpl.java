@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.tzj.collect.api.app.AppTokenApi;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
@@ -47,6 +48,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	private CompanyStreetBigService companyStreetBigService;
 
 	@Override
+	@DS("slave")
 	public List<Company> selectCompanyByRecyclerId(String recyclerId) {
 		return mapper.selectCompanyByRecyclerId(recyclerId);
 	}
@@ -56,17 +58,20 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	 */
 
 	@Override
+	@DS("slave")
 	public int selectRecycleByCompanyId(long id) {
 
 		return mapper.selectRecycleByCompanyId(id);
 	}
 
 	@Override
+	@DS("slave")
 	public List<CompanyRecycler> selectRecByComId(String id) {
 		return selectList(new EntityWrapper<CompanyRecycler>().eq("company_id", id));
 	}
 
 	@Override
+	@DS("slave")
 	public List<AppCompany> getRecyclerCompanyStatus(String recId) {
 		return mapper.getRecyclerCompanyStatus(recId);
 	}
@@ -75,6 +80,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	 * 根据公司id和回收人员ida查找关联的回收人员
 	 */
 	@Override
+	@DS("slave")
 	public CompanyRecycler getCompanyRecycler(BusinessRecyclerBean recyclerBean) {
 
 		return selectOne(new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId())
@@ -91,11 +97,13 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	 * .api.business.param.BusinessRecyclerBean)
 	 */
 	@Override
+	@DS("slave")
 	public Recyclers findIdCard(BusinessRecyclerBean recyclerBean) {
 		return mapper.findIdCard(recyclerBean);
 	}
 
 	@Override
+	@DS("slave")
 	public Map<String,Object> getCurrComList(RecyclersBean recyclersBean) {
 		List<AppCompany> appComList = mapper.getCurrComList(recyclersBean, (recyclersBean.getPageBean().getPageNumber()-1)*recyclersBean.getPageBean().getPageSize(), recyclersBean.getPageBean().getPageSize());
 		int count = mapper.getCurrComCount(recyclersBean);
@@ -130,6 +138,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	}
 
 	@Override
+	@DS("slave")
 	public Map<String,Object> getNotEnterComList(RecyclersBean recyclersBean) {
 		int count = mapper.getNotEnterComCount(recyclersBean);
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -200,6 +209,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	 * 修改回收人员的启用状态
 	 */
 	@Override
+	@DS("slave")
 	public CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId) {
 		EntityWrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>();
 		wrapper.eq("recycler_id", recyclerId);
@@ -209,6 +219,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
  *  通过回收员姓名,id返回某公司回收人员列表
  */
 	@Override
+	@DS("slave")
 	public List<BusinessRecyclerBean> getgetSearchCompanyRecyclerList(BusinessRecyclerBean recyclerBean) {
 		return mapper.getgetSearchCompanyRecyclerList(recyclerBean);
 	}
@@ -219,11 +230,13 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public Object getCompanyRange(Integer companyId){
 		return mapper.getCompanyRange(companyId);
 	}
 
 	@Override
+	@DS("slave")
 	public Object getBigCompanyRange(Integer companyId){
 		return mapper.getBigCompanyRange(companyId);
 	}
@@ -276,6 +289,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	}
 
 	@Override
+	@DS("slave")
 	public Object recycleIsDelete(Integer companyId, String recycleId,String title) {
 		Map<String,Object> map = new HashMap<>();
 		Recyclers recyclers = recyclersService.selectById(recycleId);
@@ -306,6 +320,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	}
 
 	@Override
+	@DS("slave")
 	public Object getRecycleRangeByTitle(String companyId,String recyclerId,String title){
 		Map<String,Object> resultMap = new HashMap<>();
 		Integer areaNum = 0;

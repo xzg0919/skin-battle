@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.business.param.CompanyAccountBean;
@@ -27,6 +28,7 @@ public class CompanyAccountServiceImpl extends ServiceImpl<CompanyAccountMapper,
 	 * 判断用户名和密码
 	 */
 	@Override
+	@DS("slave")
 	public CompanyAccount selectByUsername(String userName,String passWord) {
 		EntityWrapper<CompanyAccount> wrapper = new EntityWrapper<CompanyAccount>();
 		wrapper.eq("username", userName);
@@ -34,6 +36,7 @@ public class CompanyAccountServiceImpl extends ServiceImpl<CompanyAccountMapper,
 		return this.selectOne(wrapper);
 	}
 	@Override
+	@DS("slave")
 	public TokenBean login(CompanyAccountBean accountBean) {
 		EntityWrapper<CompanyAccount> wrapper = new EntityWrapper<CompanyAccount>();
 		wrapper.eq("username", accountBean.getUsername());

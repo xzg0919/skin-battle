@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.ZhimaCustomerCertificationCertifyResponse;
 import com.alipay.api.response.ZhimaCustomerCertificationInitializeResponse;
 import com.alipay.api.response.ZhimaCustomerCertificationQueryResponse;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.tzj.collect.api.ali.param.PageBean;
@@ -121,6 +122,7 @@ public class AppRecyclersApi {
 	@Api(name = "app.recycler.current", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getCurrenAppRecycler() {
 		Recyclers recyclers = recyclersService.selectById(this.getRecycler().getId());
 		// System.out.println(recyclers.toString());
@@ -397,6 +399,7 @@ public class AppRecyclersApi {
 	@Api(name = "app.recycler.getRecycleSon", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getRecycleSon(){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		return recyclersService.selectList(new EntityWrapper<Recyclers>().eq("parents_id",recycler.getId()).eq("del_flag",0));
@@ -517,6 +520,7 @@ public class AppRecyclersApi {
 	@Api(name = "app.recycler.getPassword", version = "1.0")
 	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getPassword(){
 		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		Map<String,Object> resultMap = new HashMap<>();
@@ -580,6 +584,7 @@ public class AppRecyclersApi {
 	@Api(name = "app.recycler.getCheckPassword", version = "1.0")
 	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getCheckPassword(RecyclersBean recyclersBean) throws ApiException{
 		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
 		if(!recyclersBean.getPassword().equals(recyclers.getPassword())){

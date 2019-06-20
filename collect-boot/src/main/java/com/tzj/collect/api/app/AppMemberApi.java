@@ -3,6 +3,7 @@ package com.tzj.collect.api.app;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -34,7 +35,8 @@ public class AppMemberApi {
      */
     @Api(name = "app.member.getMemberByCard", version = "1.0")
     @SignIgnore 
-    @AuthIgnore 
+    @AuthIgnore
+	@DS("slave")
     public Object getMemberByCard(MemberBean memberBean) { 
     	Map<String,Object> resultMap = new HashMap<String,Object>(); 
     	EntityWrapper wrapper = new EntityWrapper<Member>();

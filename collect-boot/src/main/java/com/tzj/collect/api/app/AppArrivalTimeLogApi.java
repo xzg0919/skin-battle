@@ -2,6 +2,7 @@ package com.tzj.collect.api.app;
 
 import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.app.param.ArrivalTimeLogBean;
 import com.tzj.collect.entity.ArrivalTimeLog;
@@ -54,6 +55,7 @@ public class AppArrivalTimeLogApi {
 	 @Api(name = "app.getArrivalTimeLogList", version = "1.0")
 	 @SignIgnore
 	 @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	 @DS("slave")
 	 public Object getArrivalTimeLogList(ArrivalTimeLogBean arrivalTimeLogBean){
 		//获取订单Id
 		 Integer orderId =  arrivalTimeLogBean.getOrderId();

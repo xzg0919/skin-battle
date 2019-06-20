@@ -7,6 +7,7 @@ import com.alipay.api.request.AlipayMarketingCardQueryRequest;
 import com.alipay.api.response.AlipayMarketingCardQueryResponse;
 import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.alipay.api.response.AlipayUserInfoShareResponse;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.ali.param.MemberBean;
@@ -52,6 +53,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	private CompanyService companyService;
 
     @Override
+	@DS("slave")
     public Member findMemberByAliId(String aliMemberId) {
         return selectOne(new EntityWrapper<Member>().eq("ali_user_id", aliMemberId));
     }
@@ -254,6 +256,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
      * @return
      */
 	@Override
+	@DS("slave")
 	public Object getUserToken(String authCode,String cityName) {
 		//根据用户授权的具体authCode查询是用户的userid和token 
 		AlipaySystemOauthTokenResponse  response = aliPayService.selectUserToken(authCode, AlipayConst.appId);
@@ -297,6 +300,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	 * @param
 	 */
 	@Override
+	@DS("slave")
 	public Object memberAdmin(Integer memberId) {
 		Map<String,Object> resultMap = new HashMap<>();
 		String isPiccInsurance = "NO";
@@ -355,6 +359,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	}
 
 	@Override
+	@DS("slave")
 	public Map<String, Object> memberIsExist(MemberBean memberBean) {
 		Map<String, Object> map = new HashMap<>();
 		Member member = this.selectOne(new EntityWrapper<Member>().eq("card_no", memberBean.getCardNo()));
@@ -430,6 +435,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	}
 
 	@Override
+	@DS("slave")
 	public Object getPassIdUrl(Long memberId)  {
 		Member member = this.selectById(memberId);
 		AlipayMarketingCardQueryResponse response = aliPayService.getPassIdUrl(member.getAliCardNo(), member.getAliUserId());

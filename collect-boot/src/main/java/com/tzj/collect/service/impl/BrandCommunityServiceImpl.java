@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.BrandCommunity;
 import com.tzj.collect.entity.Company;
@@ -23,11 +24,13 @@ public class BrandCommunityServiceImpl extends ServiceImpl<BrandCommunityMapper,
 
 
     @Override
+    @DS("slave")
     public List<Map<String, Object>> getBrandCommunityList(String streetId) {
         return brandCommunityMapper.getBrandCommunityList(streetId);
     }
 
     @Override
+    @DS("slave")
     public List<Map<String, Object>> getBrandCommunityLists(String streetId) {
         return brandCommunityMapper.getBrandCommunityLists(streetId);
     }

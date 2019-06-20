@@ -1,6 +1,7 @@
 package com.tzj.collect.service.impl;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.Admin;
@@ -30,6 +31,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 	 * @throw
 	 */
 	@Override
+	@DS("slave")
 	public Admin selectByUserNameAndPwd(String userName, String pwd) {
 		return selectOne(new EntityWrapper<Admin>().eq("username", userName).eq("password", pwd));
 	}
@@ -44,6 +46,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 	 * @throw
 	 */
 	@Override
+	@DS("slave")
 	public Admin selectByid(Long id) {
 		return adminMapper.selectById(id);
 	}

@@ -3,6 +3,7 @@ package com.tzj.collect.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.tzj.collect.controller.admin.param.ResultDataVParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,7 @@ public class OrderItemAchServiceImpl extends ServiceImpl<OrderItemAchMapper, Ord
 	 * @return List<OrderItem>
 	 */
 	@Override
+	@DS("slave")
 	public List<OrderItemAch> selectByOrderId(int orderId) {
 		EntityWrapper<OrderItemAch> wrapper = new EntityWrapper<OrderItemAch>();
 		wrapper.eq("order_id", orderId);
@@ -66,21 +68,25 @@ public class OrderItemAchServiceImpl extends ServiceImpl<OrderItemAchMapper, Ord
 	}
 
 	@Override
+	@DS("slave")
 	public List<ComCatePrice> selectCateName(int orderId) {
 		return orderMapper.selectCateName(orderId);
 	}
 
 	@Override
+	@DS("slave")
 	public List<Map<String, Object>> selectItemSumAmount(Integer orderId) {
 
 		return orderItemAchMapper.selectItemSumAmount(orderId);
 	}
 
 	@Override
+	@DS("slave")
 	public String orderSum(String streetId) {
 		return orderItemAchMapper.orderSum(streetId);
 	}
 	@Override
+	@DS("slave")
 	public List<ResultDataVParam> orderDetialNum(String streetId) {
 		return orderItemAchMapper.orderDetialNum(streetId);
 	}

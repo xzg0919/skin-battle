@@ -1,5 +1,6 @@
 package com.tzj.collect.api.business;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.tzj.collect.api.admin.param.AdminCommunityBean;
@@ -192,6 +193,7 @@ public class BusinessCompanyApi {
 	@Api(name = "business.company.getAreasById", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getAreasById(CompanyBean companyBean) {
 		List<Map<String,Object>> resultList = new ArrayList<>();
 		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", companyBean.getCityId()));
@@ -206,6 +208,7 @@ public class BusinessCompanyApi {
 	@Api(name = "business.company.getStreetByAreaId", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getStreetByAreaId(CompanyBean companyBean) {
 		List<Map<String,Object>> resultList = new ArrayList<>();
 		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id",companyBean.getAreaId()));
