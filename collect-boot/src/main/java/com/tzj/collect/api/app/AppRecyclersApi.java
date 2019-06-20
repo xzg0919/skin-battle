@@ -324,6 +324,18 @@ public class AppRecyclersApi {
 	public boolean insertComRecByComIds(AppCompany appCompanys) {
 		return companyRecyclerService.insertComRecByComIds(appCompanys, this.getRecycler().getId());
 	}
+	/**
+	 * 删除与自己关联的公司
+	 *
+	 * @return
+	 */
+	@Api(name = "recycler.deleteCompanyRecycle", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object deleteCompanyRecycle(AppCompany appCompanys) {
+		Recyclers recycler = RecyclersUtils.getRecycler();
+		return companyRecyclerService.deleteCompanyRecycle(appCompanys, recycler.getId());
+	}
 
 	/**
 	 * 获得当前回收人员数据

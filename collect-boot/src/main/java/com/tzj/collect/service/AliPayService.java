@@ -56,6 +56,7 @@ public interface AliPayService {
      */
     public ZhimaCustomerCertificationQueryResponse certify(String bizNo);
 
+    AlipayMarketingCardQueryResponse getPassIdUrl(String aliCardNo,String aliUserId);
 
 
 }

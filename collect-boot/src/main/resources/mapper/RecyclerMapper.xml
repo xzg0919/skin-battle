@@ -142,14 +142,20 @@
 		(SELECT COUNT(*)FROM(select * from sb_recycle_cancel_log c  GROUP BY c.recycler_id,c.order_id) con where con.recycler_id=a.id ) as cancel_count
 		FROM
 		sb_order f
-		INNER JOIN sb_area b ON f.street_id = b.id
-		INNER JOIN sb_recyclers_service_range c ON b.id = c.area_id
+		<if test="title == 1">
+			INNER JOIN sb_recyclers_range_appliance c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		<if test="title == 2">
+			INNER JOIN sb_recyclers_range_household c ON f.street_id = c.street_id AND f.company_id = c.company_id and c.community_id = f.community_id
+		</if>
+		<if test="title == 4">
+			INNER JOIN sb_recyclers_range_big c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
 		INNER JOIN sb_company_recycler d ON c.recyclers_id = d.recycler_id AND f.company_id = d.company_id
 		INNER JOIN sb_recyclers a ON c.recyclers_id = a.id
 		INNER JOIN sb_recyclers_title e ON f.title = e.title_id AND e.recycle_id = a.id
 		WHERE
 		f.id =  #{orderId}
-		AND b.del_flag = 0
 		AND c.del_flag = 0
 		AND d.del_flag = 0
 		AND e.del_flag = 0
@@ -315,6 +321,7 @@
 				b.province AS provinceId,
 				CONCAT(d.area_name,'-',c.area_name) AS area_name,
 				IF(a.del_flag=0,"A","B") AS delFlag,
+				srt.title_id AS titleId,
 				CONCAT(IF(g.NUMS is NULL,0,g.NUMS ),'/',e.areaNum) AS areaNum,
 				IF(f.recycleNum is NULL,0,f.recycleNum) AS recycleNum
 			FROM

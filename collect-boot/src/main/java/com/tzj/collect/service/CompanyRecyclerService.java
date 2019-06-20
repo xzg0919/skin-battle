@@ -78,6 +78,8 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 
 	boolean insertComRecByComIds(AppCompany appCompanys, long recId);
 
+	Object deleteCompanyRecycle(AppCompany appCompanys, long recId);
+
      /**
       * 修改回收人员的启用状态
      * @Title: getCompanyRecyclerByRecyclerId
@@ -111,4 +113,10 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	Object getBigCompanyRange(Integer companyId);
 
 	Object recyclersDel(Integer companyId, String recycleId);
+
+	Object recycleDelete(Integer companyId, String recycleId,String title);
+
+	Object recycleIsDelete(Integer companyId, String recycleId,String title);
+
+	Object getRecycleRangeByTitle(String companyId,String recyclerId,String title);
 }

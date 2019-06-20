@@ -75,11 +75,6 @@ public class ArrivalTimeLog extends DataEntity<Long>{
 		this.beforeDate = beforeDate;
 	}
 	public String getBeforePeriod() {
-		if(beforePeriod!=null&&"am".equals(beforePeriod)) {
-			return "上午";
-		}else if(beforePeriod!=null&&"pm".equals(beforePeriod)) {
-			return "下午";
-		}
 		return beforePeriod;
 	}
 	public void setBeforePeriod(String beforePeriod) {
@@ -95,11 +90,6 @@ public class ArrivalTimeLog extends DataEntity<Long>{
 		this.afterDate = afterDate;
 	}
 	public String getAfterPeriod() {
-		if(afterPeriod!=null&&"am".equals(afterPeriod)) {
-			return "上午";
-		}else if(afterPeriod!=null&&"pm".equals(afterPeriod)) {
-			return "下午";
-		}
 		return afterPeriod;
 	}
 	public void setAfterPeriod(String afterPeriod) {

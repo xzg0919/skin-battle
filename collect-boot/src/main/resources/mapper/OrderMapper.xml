@@ -620,7 +620,7 @@
 		b.order_no AS orderNo,
 		b.category_id AS categoryId,
 		date_format(b.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
-		CONCAT('上门时间:',date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'am','上午','下午'))AS arrivalTime,
+		CONCAT('上门时间:',date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'am','上午',IF(b.arrival_period = 'pm','下午',CONCAT(' ',b.arrival_period))))AS arrivalTime,
 		CONCAT('取消时间:',date_format(b.cancel_time,'%Y-%m-%d %H:%i:%S'))AS cancelTime,
 		CONCAT('接单时间:',date_format(b.receive_time,'%Y-%m-%d %H:%i:%S'))AS receiveTime,
 		CONCAT('派单时间:',date_format(b.distribute_time,'%Y-%m-%d %H:%i:%S')) AS distributeTime,
@@ -652,7 +652,7 @@
 		select excel.*, saa.area_name as areaName from sb_area saa RIGHT JOIN (SELECT
 			a.id,
 			a.order_no AS orderNo,
-			IF(a.arrival_period = 'am',CONCAT(date_format(a.arrival_time,'%Y-%m-%d'),'上午'),CONCAT(date_format(a.arrival_time,'%Y-%m-%d'),'下午'))AS arrivalTime,
+			CONCAT(date_format(a.arrival_time,'%Y-%m-%d'),IF(a.arrival_period = 'am','上午',IF(a.arrival_period = 'pm','下午',CONCAT(' ',a.arrival_period))))AS arrivalTime,
 			case a.title when 1 then '废弃家电' when 2 then  '生活垃圾' when 4 then '大件物品' else '其他' end AS titleName,
 			IF(a.is_cash = 0,a.price,'绿色能量') AS price,
 			IF(a.is_cash = 0,p.price,'绿色能量') AS paymentPrise,
@@ -706,12 +706,12 @@
 			c.name_ AS categoryName,
 			c.icon AS icon,
 			date_format(b.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
-			CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'am',' 上午',' 下午'))AS arrivalTime,
+			CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'am','上午',IF(b.arrival_period = 'pm','下午',CONCAT(' ',b.arrival_period))))AS arrivalTime,
 			date_format(b.cancel_time,'%Y-%m-%d %H:%i:%S')AS cancelTime,
 			date_format(b.receive_time,'%Y-%m-%d %H:%i:%S')AS receiveTime,
 			date_format(b.distribute_time,'%Y-%m-%d %H:%i:%S') AS distributeTime,
 			date_format(b.complete_date,'%Y-%m-%d %H:%i:%S')AS completeDate,
-			IF(now()> CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'pm',' 12:00:00',' 00:00:01')),'Y','N') AS isRead
+			IF(now()> CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'pm',' 12:00:00',IF(b.arrival_period = 'am',' 00:00:01',CONCAT(' ',SUBSTR(b.arrival_period,1,2) ,':00:00')))),'Y','N') AS isRead
 		FROM
 			sb_recyclers a
 		LEFT JOIN sb_order b ON a.id = b.recycler_id
@@ -763,12 +763,12 @@
 		c.name_ AS categoryName,
 		c.icon AS icon,
 		date_format(b.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
-		CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'am',' 上午',' 下午'))AS arrivalTime,
+		CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'am','上午',IF(b.arrival_period = 'pm','下午',CONCAT(' ',b.arrival_period))))AS arrivalTime,
 		date_format(b.cancel_time,'%Y-%m-%d %H:%i:%S')AS cancelTime,
 		date_format(b.receive_time,'%Y-%m-%d %H:%i:%S')AS receiveTime,
 		date_format(b.distribute_time,'%Y-%m-%d %H:%i:%S') AS distributeTime,
 		date_format(b.complete_date,'%Y-%m-%d %H:%i:%S')AS completeDate,
-		IF(now()> CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'pm',' 12:00:00',' 00:00:01')),'Y','N') AS isRead
+		IF(now()> CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'pm',' 12:00:00',IF(b.arrival_period = 'am',' 00:00:01',CONCAT(' ',SUBSTR(b.arrival_period,1,2) ,':00:00')))),'Y','N') AS isRead
 		FROM
 		sb_order b
 		LEFT JOIN sb_recyclers a ON a.id = b.recycler_id
@@ -855,12 +855,12 @@
 			sr.is_manager,
 			sr.ali_user_id as aliUserId,
 		date_format(scomco.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
-		CONCAT(date_format(scomco.arrival_time,'%Y-%m-%d'),IF(scomco.arrival_period = 'am',' 上午',' 下午'))AS arrivalTime,
+		CONCAT(date_format(scomco.arrival_time,'%Y-%m-%d'),IF(scomco.arrival_period = 'am','上午',IF(scomco.arrival_period = 'pm','下午',CONCAT(' ',scomco.arrival_period))))AS arrivalTime,
 		date_format(scomco.cancel_time,'%Y-%m-%d %H:%i:%S')AS cancelTime,
 		date_format(scomco.receive_time,'%Y-%m-%d %H:%i:%S')AS receiveTime,
 		date_format(scomco.distribute_time,'%Y-%m-%d %H:%i:%S') AS distributeTime,
 		date_format(scomco.complete_date,'%Y-%m-%d %H:%i:%S')AS completeDate,
-		IF(now()> CONCAT(date_format(scomco.arrival_time,'%Y-%m-%d'),IF(scomco.arrival_period = 'pm',' 12:00:00',' 00:00:01')),'Y','N') AS isRead
+		IF(now()> CONCAT(date_format(scomco.arrival_time,'%Y-%m-%d'),IF(scomco.arrival_period = 'pm',' 12:00:00',IF(scomco.arrival_period = 'am',' 00:00:01',CONCAT(' ',SUBSTR(scomco.arrival_period,1,2) ,':00:00')))),'Y','N') AS isRead
 		FROM
 			(
 				SELECT
@@ -1166,7 +1166,7 @@
 					IF (
 						b.arrival_period = 'am',
 						' 上午',
-						' 下午'
+						IF(b.arrival_period = 'pm','下午',CONCAT(' ',b.arrival_period))
 					)
 					) AS arrivalTime,
 					date_format(
@@ -1193,7 +1193,7 @@
 					IF (
 						b.arrival_period = 'pm',
 						' 12:00:00',
-						' 00:00:01'
+					IF(b.arrival_period = 'am',' 00:00:01',CONCAT(' ',SUBSTR(b.arrival_period,1,2) ,':00:00'))
 					)
 					),
 					'Y',
@@ -1244,7 +1244,7 @@
 						IF (
 							b.arrival_period = 'am',
 							' 上午',
-							' 下午'
+							IF(b.arrival_period = 'pm','下午',CONCAT(' ',b.arrival_period))
 						)
 						) AS arrivalTime,
 						date_format(
@@ -1271,7 +1271,7 @@
 						IF (
 							b.arrival_period = 'pm',
 							' 12:00:00',
-							' 00:00:01'
+							IF(b.arrival_period = 'am',' 00:00:01',CONCAT(' ',SUBSTR(b.arrival_period,1,2) ,':00:00'))
 						)
 						),
 						'Y',

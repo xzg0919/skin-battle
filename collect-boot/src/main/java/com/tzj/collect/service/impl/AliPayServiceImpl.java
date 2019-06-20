@@ -189,6 +189,83 @@ public class AliPayServiceImpl implements AliPayService{
         usefullDate[1] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now.getTime());
         return usefullDate;
     }
+    private  static  String[] getUsefullDates(Date startDate)
+    {
+        Calendar now = Calendar.getInstance();
+        if(null != startDate)
+        {
+            now.setTime(startDate);
+        }
+        String usefullDate[] = new String[2];
+        usefullDate[0] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now.getTime());
+        now.set(Calendar.YEAR,now.get(Calendar.YEAR) + 10);
+        usefullDate[1] = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now.getTime());
+        return usefullDate;
+    }
+
+    public static void main(String[] args) throws Exception{
+        String targetCardNo = "collect00000000000000771466";
+        Date openDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2019-02-25 17:11:05");
+        String point = "20";
+        String vip = null;
+        String appId = "2018060660292753";
+        String bizContent = "{";
+        String usefullDate[] = getUsefullDates(openDate);
+        if(null != point && point.contains("-"))
+        {
+            point = "0";
+        }
+        bizContent = bizContent
+                + "\"target_card_no\":\""
+                + targetCardNo
+                + "\","
+                + "\"target_card_no_type\":\"BIZ_CARD\","
+                + "\"occur_time\":\""
+                + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+                + "\","
+                + "\"card_info\":{"
+                + "\"open_date\":\""
+                + usefullDate[0]
+                + "\","
+                + "\"valid_date\":\""
+                + usefullDate[1]
+                + "\",";
+        if(!StringUtils.isBlank(vip))
+        {
+            bizContent = bizContent
+                    + "\"level\":\""
+                    + vip
+                    + "\",";
+        }
+        bizContent = bizContent
+                + "\"point\":\""
+                + point
+                + "\","
+                + "\"balance\":\"0\""
+                + "},"
+                + "\"ext_info\":\"\\\"\\\"\""
+                + "}";
+        try
+        {
+            AlipayMarketingCardUpdateRequest request = new AlipayMarketingCardUpdateRequest();
+            request.setBizContent(bizContent);
+            AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+            AlipayMarketingCardUpdateResponse response = alipayClient.execute(request);
+            if(!response.isSuccess())
+            {
+                System.out.println("更新会员卡积分失败");
+                DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                        ,Thread.currentThread().getStackTrace()[1].getMethodName(),"更新会员卡积分失败",
+                        RocketMqConst.DINGDING_ERROR,response.getBody());
+            }else {
+                System.out.println("更新会员卡积分成功");
+            }
+        }
+        catch (AlipayApiException e)
+        {
+            e.printStackTrace();
+        }
+    }
     
     /**
      * <p>Discription:[更改会员积分]</p>
@@ -342,6 +419,31 @@ public class AliPayServiceImpl implements AliPayService{
             System.out.println("调用芝麻认证初开始接口成功");
         } else {
             System.out.println("调用芝麻认证初开始接口失败");
+        }
+        return response;
+    }
+
+    public AlipayMarketingCardQueryResponse getPassIdUrl(String aliCardNo,String aliUserId){
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+        AlipayMarketingCardQueryRequest request = new AlipayMarketingCardQueryRequest();
+        AlipayMarketingCardQueryModel model = new AlipayMarketingCardQueryModel();
+        model.setTargetCardNoType("BIZ_CARD");
+        model.setTargetCardNo(aliCardNo);
+        CardUserInfo cardUserInfo = new CardUserInfo();
+        cardUserInfo.setUserUniId(aliUserId);
+        cardUserInfo.setUserUniIdType("UID");
+        model.setCardUserInfo(cardUserInfo);
+        request.setBizModel(model);
+        AlipayMarketingCardQueryResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调用成功" + response.getBody());
+        } else {
+            System.out.println("调用失败");
         }
         return response;
     }

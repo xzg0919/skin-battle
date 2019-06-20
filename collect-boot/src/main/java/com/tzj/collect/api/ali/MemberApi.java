@@ -1,9 +1,5 @@
 package com.tzj.collect.api.ali;
 
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_EXPRIRE;
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,14 +9,13 @@ import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.service.MemberService;
 import com.tzj.collect.service.MessageService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * 会员用户相关Api
@@ -147,6 +142,13 @@ public class MemberApi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	@Api(name = "member.getPassIdUrl", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object getPassIdUrl() {
+		Member member = MemberUtils.getMember();
+		return memberService.getPassIdUrl(member.getId());
 	}
 
 }
