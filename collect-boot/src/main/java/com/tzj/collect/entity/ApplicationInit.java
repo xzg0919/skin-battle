@@ -11,7 +11,7 @@ public class ApplicationInit {
 
     @Value("${isMysl}")
     private String isMysl;
-    @Value("${isDD}")
+    @Value("${isDd}")
     private String isDd;
 
     public String getIsMysl() {
