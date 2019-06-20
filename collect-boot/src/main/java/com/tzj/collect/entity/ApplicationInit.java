@@ -11,6 +11,8 @@ public class ApplicationInit {
 
     @Value("${isMysl}")
     private String isMysl;
+    @Value("${isDd}")
+    private String isDd;
 
     public String getIsMysl() {
         return isMysl;
@@ -18,5 +20,13 @@ public class ApplicationInit {
 
     public void setIsMysl(String isMysl) {
         this.isMysl = isMysl;
+    }
+
+    public String getIsDd() {
+        return isDd;
+    }
+
+    public void setIsDd(String isDd) {
+        this.isDd = isDd;
     }
 }

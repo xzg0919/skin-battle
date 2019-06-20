@@ -57,8 +57,8 @@ public class OrderApi {
 	private WebSocketServer webSocketServer;
 	@Autowired
 	private EnterpriseProductService enterpriseProductService;
-
-	private String JdbcName="";
+	@Autowired
+	private ApplicationInit applicationInit;
 	@Autowired
 	private CompanyStreeService companyStreeService;
 	@Autowired
@@ -220,7 +220,7 @@ public class OrderApi {
 			throw new ApiException("回收公司异常！！！！！");
 		}
     	if("操作成功".equals(resultMap.get("msg")+"")) {
-    		if("sb_admin".equals(JdbcName)) {
+    		if("true".equals(applicationInit.getIsDd())) {
     			//钉钉通知
     			asyncService.notifyDingDingOrderCreate(orderbean);
     		}
@@ -350,7 +350,7 @@ public class OrderApi {
 			return "回收公司异常";
 		}
 		if("操作成功".equals(resultMap.get("msg")+"")) {
-			if("sb_admin".equals(JdbcName)) {
+			if("true".equals(applicationInit.getIsDd())) {
 				//钉钉通知
 				asyncService.notifyDingDingOrderCreate(orderbean);
 			}
@@ -449,7 +449,7 @@ public class OrderApi {
 		orderbean.setOrderNo(orderNo);
 		Map<String,Object> resultMap = (Map<String,Object>)orderService.savefiveKgOrder(orderbean);
 		if("操作成功".equals(resultMap.get("msg")+"")) {
-			if("sb_admin".equals(JdbcName)) {
+			if("true".equals(applicationInit.getIsDd())) {
 				//钉钉通知
 				asyncService.notifyDingDingOrderCreate(orderbean);
 			}
@@ -523,7 +523,7 @@ public class OrderApi {
 			throw new ApiException("回收公司异常！！！！！");
 		}
 		if("操作成功".equals(resultMap.get("msg")+"")) {
-			if("sb_admin".equals(JdbcName)) {
+			if("true".equals(applicationInit.getIsDd())) {
 				//钉钉通知
 				asyncService.notifyDingDingOrderCreate(orderbean);
 			}
