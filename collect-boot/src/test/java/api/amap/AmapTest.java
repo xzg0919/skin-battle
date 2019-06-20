@@ -21,7 +21,7 @@ public class AmapTest extends TestCase {
         String url="https://restapi.amap.com/v3/geocode/regeo";
         Response response= FastHttpClient.get().url(url)
                 .addParams("key",amap_key)
-                .addParams("location","121.557677,31.284158")
+                .addParams("location","121.451635,31.240466")
                 .build().execute();
         String result=response.body().string();
         System.out.println(result);
@@ -45,7 +45,7 @@ public class AmapTest extends TestCase {
     @Test
     public void testAmapApiRegeo() throws Exception{
         String resultJson= ApiUtils.createCommonParam(TestConst.appid,TestConst.gateway,
-                "amap.regeo","121.557677,31.284158",TestConst.token,null);
+                "amap.regeo","121.451635,31.240466",TestConst.token,null);
         System.out.println(resultJson);
     }
 
@@ -55,7 +55,7 @@ public class AmapTest extends TestCase {
         AmapAroundParam aroundParam=new AmapAroundParam();
         aroundParam.setOffset("50");
         aroundParam.setPage("1");
-        aroundParam.setLocation("121.557677,31.284158");
+        aroundParam.setLocation("112.609588,35.0827");
 
         String resultJson= ApiUtils.createCommonParam(TestConst.appid,TestConst.gateway,
                 "amap.around",aroundParam,TestConst.token,null);

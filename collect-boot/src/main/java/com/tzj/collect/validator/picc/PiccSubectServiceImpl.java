@@ -7,11 +7,13 @@ import com.tzj.collect.entity.PiccCompany;
 import com.tzj.collect.service.PiccCompanyService;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.service.SubjectService;
+import com.tzj.module.easyopen.util.EhCache2Utils;
 import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -25,13 +27,14 @@ public class PiccSubectServiceImpl implements SubjectService {
     @Autowired
     private PiccCompanyService piccCompanyService;
 
+
     @Override
-    public Subject getSubjectByTokenSubject(String subjectKey) {
-        Subject subjectCache=getSubjectCache(subjectKey);
+    public Subject getSubjectByTokenSubject(String token,String key, Map<String, Object> map) {
+        Subject subjectCache=getSubjectCache(token);
         if(subjectCache!=null){
             return subjectCache;
         }
-        PiccCompany piccCompany = piccCompanyService.selectById(subjectKey);
+        PiccCompany piccCompany = piccCompanyService.selectById(key);
 
         Subject subject=new Subject();
         subject.setId(piccCompany.getId().toString());
@@ -42,22 +45,25 @@ public class PiccSubectServiceImpl implements SubjectService {
         authorities.add(PICC_API_COMMON_AUTHORITY);
         subject.setAuthorities(authorities);
 
-        setSubjectCache(subject);
+        setSubjectCache(token,subject);
 
         return subject;
     }
+
+
     @Override
-    public void setSubjectCache(Subject subject) {
-        CacheUtils.setCache(subject,cacheManager,cacheName);
+    public void setSubjectCache(String token,Subject subject) {
+        EhCache2Utils.setCache(token,subject,cacheManager,cacheName);
     }
 
     @Override
-    public Subject getSubjectCache(String subjectKey) {
-        return CacheUtils.getSubjectByCache(cacheManager,cacheName,subjectKey);
+    public Subject getSubjectCache(String token) {
+        return EhCache2Utils.getSubjectByCache(cacheManager,cacheName,token);
     }
 
+
     @Override
-    public void removeSubjectCache(Subject subject) {
-        CacheUtils.removeCache(subject,cacheManager,cacheName);
+    public void removeSubjectCache(String token) {
+        EhCache2Utils.removeCache(token,cacheManager,cacheName);
     }
 }

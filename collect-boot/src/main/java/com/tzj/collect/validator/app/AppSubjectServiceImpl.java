@@ -3,8 +3,10 @@ package com.tzj.collect.validator.app;
 import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 import com.tzj.collect.common.util.CacheUtils;
+import com.tzj.module.easyopen.util.EhCache2Utils;
 import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,14 +31,14 @@ public class AppSubjectServiceImpl implements SubjectService {
     private RecyclersService recyclersService;
 
     @Override
-    public Subject getSubjectByTokenSubject(String subjectKey) {
+    public Subject getSubjectByTokenSubject(String token,String key, Map<String, Object> map) {
 
-        Subject subjectCache=getSubjectCache(subjectKey);
+        Subject subjectCache=getSubjectCache(token);
         if(subjectCache!=null){
             return subjectCache;
         }
 
-        Recyclers recyclers=recyclersService.selectById(Long.parseLong(subjectKey));
+        Recyclers recyclers=recyclersService.selectById(Long.parseLong(key));
 
         Subject subject=new Subject();
         subject.setId(recyclers.getId().toString());
@@ -47,24 +49,25 @@ public class AppSubjectServiceImpl implements SubjectService {
         authorities.add(APP_API_COMMON_AUTHORITY);
         subject.setAuthorities(authorities);
 
-        setSubjectCache(subject);
+        setSubjectCache(token,subject);
 
         return subject;
 
     }
 
     @Override
-    public void setSubjectCache(Subject subject) {
-        CacheUtils.setCache(subject,cacheManager,cacheName);
+    public void setSubjectCache(String token,Subject subject) {
+        EhCache2Utils.setCache(token,subject,cacheManager,cacheName);
     }
 
     @Override
-    public Subject getSubjectCache(String subjectKey) {
-        return CacheUtils.getSubjectByCache(cacheManager,cacheName,subjectKey);
+    public Subject getSubjectCache(String token) {
+        return EhCache2Utils.getSubjectByCache(cacheManager,cacheName,token);
     }
 
+
     @Override
-    public void removeSubjectCache(Subject subject) {
-        CacheUtils.removeCache(subject,cacheManager,cacheName);
+    public void removeSubjectCache(String token) {
+        EhCache2Utils.removeCache(token,cacheManager,cacheName);
     }
 }

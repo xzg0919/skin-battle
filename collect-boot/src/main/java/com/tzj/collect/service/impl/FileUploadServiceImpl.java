@@ -8,7 +8,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.module.common.file.upload.FileUpload;
 import com.tzj.module.common.utils.FileUtil;
-import com.tzj.module.common.utils.images.ImageUtils;
+import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
@@ -43,8 +43,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static com.tzj.collect.common.constant.Const.*;
 
 /**
  * @Author 胡方明（12795880@qq.com）
@@ -152,33 +150,14 @@ public class FileUploadServiceImpl implements FileUploadService {
 				}
          
        	
-//           //生成小图
-//           File largeTempFile = new File(tempPath + "/bigpicture_"
-//                   + uuid + "." + extensionName);
-//           File thumbnailTempFile = new File(tempPath
-//                   + "/thumbnail_" + uuid + "."
-//                   + extensionName);
 
-//           ImageUtils.zoom(tempFile, largeTempFile,
-//                   bigpicture_width,
-//                   bigpicture_height);
-//
-//           ImageUtils.zoom(tempFile, thumbnailTempFile,
-//                   thumbnail_width,
-//                   thumbnail_height);
 
 
            String savePath = "collect/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
-           String saveOriginalFile=savePath+"/original_" + uuid + "." +extensionName;
+
            String saveLargeFile=savePath+"/bigpicture_" + uuid + "." +extensionName;
-           String saveThumbnailFile=savePath+"/thumbnail_" + uuid + "." +extensionName;
-            //fileUpload.upload(saveOriginalFile,tempFile,null);
-            fileUpload.upload(saveLargeFile,tempFile,null);
-            //fileUpload.upload(saveThumbnailFile,tempFile,null);
 
-//           fileUpload.upload(saveLargeFile,largeTempFile,null);
-//           fileUpload.upload(saveThumbnailFile,thumbnailTempFile,null);
-
+           fileUpload.upload(saveLargeFile,tempFile,null);
 
            fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveLargeFile);
            fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveLargeFile);
@@ -188,6 +167,72 @@ public class FileUploadServiceImpl implements FileUploadService {
     	}
     	 
     	return fileBeanList;
+    }
+
+    @Override
+    public List<FileBean> uploadImage() {
+        List<MultipartFile> multipartFiles= ApiContext.getUploadContext().getAllFile();
+        if(multipartFiles==null || multipartFiles.size()<=0){
+            return new LinkedList<>();
+        }
+
+        String tempPath = System.getProperty("java.io.tmpdir");
+        List<FileBean> fileBeanList=new LinkedList<>();
+
+        for(MultipartFile multipartFile:multipartFiles){
+            String fileName = multipartFile.getOriginalFilename();
+            String extensionName = FileUtil.getExtension(fileName);
+
+            if (StringUtils.isBlank(extensionName)) {
+                extensionName = "jpg";
+            }
+
+            String uuid = UUID.randomUUID().toString();
+            //先把文件放入临时的地方
+            File tempFile = new File(
+                    tempPath + "/original_" + uuid + "." +extensionName);
+            if (!tempFile.getParentFile().exists()) {
+                tempFile.getParentFile().mkdirs();
+            }
+
+            BufferedImage image = null;
+            byte[] imageByte = null;
+
+            if (!multipartFile.isEmpty()) {
+                try {
+                    byte[] bytes = multipartFile.getBytes();
+                    BufferedOutputStream buffStream =
+                            new BufferedOutputStream(new FileOutputStream(tempFile));
+                    buffStream.write(bytes);
+                    buffStream.close();
+                } catch (Exception e) {
+                    throw new ApiException("api文件上传发生异常："+e.getMessage());
+                }
+            }
+
+            //保存的路径
+            String savePath = "erp/supplier/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
+
+            String saveFile=savePath+"/" + uuid + "." +extensionName;
+
+            fileUpload.upload(saveFile,tempFile,multipartFile.getContentType());
+
+            FileBean fileBean=new FileBean();
+            fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveFile);
+            fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveFile);
+            fileBean.setOriginal(fileUpload.getImageDomain()+"/"+saveFile);
+
+            fileBeanList.add(fileBean);
+
+            //上传到OSS后，删除临时文件
+            try{
+                tempFile.delete();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return fileBeanList;
     }
 
     /**
@@ -229,30 +274,13 @@ public class FileUploadServiceImpl implements FileUploadService {
             }
         }
 
-        //生成小图
-        File largeTempFile = new File(tempPath + "/bigpicture_"
-                + uuid + "." + extensionName);
-        File thumbnailTempFile = new File(tempPath
-                + "/thumbnail_" + uuid + "."
-                + extensionName);
 
-        ImageUtils.zoom(tempFile, largeTempFile,
-                bigpicture_width,
-                bigpicture_height);
-
-        ImageUtils.zoom(tempFile, thumbnailTempFile,
-                thumbnail_width,
-                thumbnail_height);
 
 
         String savePath = "collect/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
         String saveOriginalFile=savePath+"/original_" + uuid + "." +extensionName;
-        String saveLargeFile=savePath+"/bigpicture_" + uuid + "." +extensionName;
-        String saveThumbnailFile=savePath+"/thumbnail_" + uuid + "." +extensionName;
-        fileUpload.upload(saveOriginalFile,tempFile,mpf.getContentType());
 
-//        fileUpload.upload(saveLargeFile,largeTempFile,mpf.getContentType());
-//        fileUpload.upload(saveThumbnailFile,thumbnailTempFile,mpf.getContentType());
+        fileUpload.upload(saveOriginalFile,tempFile,mpf.getContentType());
 
         fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveOriginalFile);
         fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveOriginalFile);

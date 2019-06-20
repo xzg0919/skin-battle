@@ -56,8 +56,8 @@ public class OrderApi {
 	private WebSocketServer webSocketServer;
 	@Autowired
 	private EnterpriseProductService enterpriseProductService;
-	@Value("${spring.datasource.username}")
-	private String JdbcName;
+
+	private String JdbcName="";
 	@Autowired
 	private CompanyStreeService companyStreeService;
 	@Autowired
