@@ -12,6 +12,7 @@
 
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.business.param.BusinessRecyclerBean;
@@ -41,6 +42,7 @@ public class RecyclerCommunityServiceImpl extends ServiceImpl<RecyclerCommunityM
 	private RecyclerCommunityMapper recyclerCommunityMapper;
 	
 	@Override
+	@DS("slave")
 	public Integer selectRecCountByCom(String comId) {
 		EntityWrapper<RecyclerCommunity> wrapper = new EntityWrapper<>();
 		wrapper.eq("community_id", comId);
@@ -48,11 +50,13 @@ public class RecyclerCommunityServiceImpl extends ServiceImpl<RecyclerCommunityM
 	}
 
 	@Override
+	@DS("slave")
 	public List<RecyclerServiceBean> recyclerServiceList(BusinessRecyclerBean recyclerBean) {
 		return recyclerCommunityMapper.recyclerServiceList(recyclerBean);
 	}
 
 	@Override
+	@DS("slave")
 	public int getRecyclerServiceListCount(BusinessRecyclerBean recyclerBean) {
 		return recyclerCommunityMapper.getRecyclerServiceListCount(recyclerBean);
 	}

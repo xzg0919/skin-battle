@@ -1,6 +1,7 @@
 package com.tzj.collect.service.impl;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.RecyclersTitle;
 import com.tzj.collect.mapper.RecyclersTitleMapper;
@@ -21,6 +22,7 @@ public class RecyclersTitleServiceServiceImpl extends ServiceImpl<RecyclersTitle
 
 
     @Override
+    @DS("slave")
     public List<Map<String, Object>> getRecyclerTitleList(String recycleId) {
 
         return recyclersTitleMapper.getRecyclerTitleList(recycleId);

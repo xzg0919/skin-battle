@@ -12,6 +12,7 @@
 
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.OrderPic;
@@ -46,6 +47,7 @@ public class OrderPicAchServiceImpl extends ServiceImpl<OrderPicAchMapper, Order
 	 * @return List<OrderPic>
 	 */
 	@Override
+	@DS("slave")
 	public List<OrderPicAch> selectbyOrderId(int orderId) {
 		EntityWrapper<OrderPicAch> wrapper = new EntityWrapper<OrderPicAch>();
 		wrapper.eq("order_id", orderId);

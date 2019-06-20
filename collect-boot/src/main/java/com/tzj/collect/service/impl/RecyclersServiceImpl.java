@@ -13,6 +13,7 @@
 package com.tzj.collect.service.impl;
 
 import com.alipay.api.response.AlipaySystemOauthTokenResponse;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -83,11 +84,13 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
      * @return
      */
     @Override
+	@DS("slave")
     public Recyclers selectByMobile(String mobile) {
         return selectOne(new EntityWrapper<Recyclers>().eq("tel", mobile));
     }
 
 	@Override
+	@DS("slave")
 	public Page<Recyclers> selectByRecyclersPage(Recyclers recyclers, PageBean page) {
 		Page<Recyclers> pages = new Page<Recyclers>(page.getPageNumber(), page.getPageSize());
 		EntityWrapper<Recyclers> wrapper = new EntityWrapper<Recyclers>();
@@ -105,6 +108,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @throw
 	 */
 	@Override
+	@DS("slave")
 	public List<Recyclers> getRecyclerPage(RecyclersBean bean) {
 		return recyclersMapper.getRecyclerPage(bean);
 	}
@@ -119,6 +123,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @throw
 	 */
 	@Override
+	@DS("slave")
 	public Integer getRecyclerPageSize(RecyclersBean bean) {
 		Integer record=recyclersMapper.getRecyclerPageSize(bean);
 		return record==null?0:record;
@@ -126,11 +131,13 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 
 
 	@Override
+	@DS("slave")
 	public RecyclersBean getRecEvaById(String recyclerId) {
 		return recyclersMapper.getRecEvaById(recyclerId);
 	}
 
 	@Override
+	@DS("slave")
 	public Page<Recyclers> selectRecPageByIds(String ids, CompanyAccountBean companyAccountBean) {
 		Page<Recyclers> pages = new Page<Recyclers>(companyAccountBean.getPageBean().getPageNumber(), companyAccountBean.getPageBean().getPageSize());
 		EntityWrapper<Recyclers> wrapper = new EntityWrapper<Recyclers>();
@@ -146,11 +153,13 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	}
 
 	@Override
+	@DS("slave")
 	public List<AdminCommunityBean> getRecSerCommById(String recyclerId) {
 		return recyclersMapper.getRecSerCommById(recyclerId);
 	}
 
 	@Override
+	@DS("slave")
 	public Integer getCommNumByRecId(String recyclerId) {
 		return recyclersMapper.getCommNumByRecId(recyclerId);
 	}
@@ -164,6 +173,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public List<Recyclers> getRecyclersList(Integer companyId, Integer categoryId) {		
 		return recyclersMapper.getRecyclersList(companyId,categoryId);
 	}
@@ -173,6 +183,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * 根据回收人员id获取回收人员的详情
 	 */
 	@Override
+	@DS("slave")
 	public Recyclers getRecyclersById(BusinessRecyclerBean recyclerBean) {
 		return recyclersMapper.getRecyclersById(recyclerBean);
 	}
@@ -181,12 +192,14 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * 查询回收人员的申请列表
 	 */
 	@Override
+	@DS("slave")
 	public List<Recyclers> getRecyclersApply(BusinessRecyclerBean recyclerBean) {
 		return recyclersMapper.getRecyclersApply(recyclerBean.getCompanyId(),recyclerBean.getIsBigRecycle());
 	}
 
 
 	@Override
+	@DS("slave")
 	public List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId) {
 		Order order = orderService.selectById(orderId);
 		return recyclersMapper.getRecyclersLists(companyId,orderId,Integer.parseInt(order.getTitle().getValue()+""));
@@ -198,6 +211,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @param companyId : 企业Id
 	 * @return
 	 */
+	@DS("slave")
 	public List<Map<String,Object>> getRecyclers(Integer companyId, String isBigRecycle){
 		return recyclersMapper.getRecyclers(companyId, isBigRecycle);
 	}
@@ -377,6 +391,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public Object getAreaRecyclersRange(String cityId,String recycleId,Integer companyId){
 		return recyclersMapper.getAreaRecyclersRange(cityId,recycleId);
 	}
@@ -387,6 +402,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public Object getStreeRecyclersRange(String areaId,String recycleId,Integer companyId,String title){
 		Map<String,Object> resultMap = new HashMap<>();
 		List<Map<String,Object>> areaList = null ;
@@ -425,6 +441,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public Object getRangeRecyclersList(Integer companyId,String recycleName,String cityId ,Integer pageNum,Integer pageSize,String isBigRecycle, String tel){
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		List<Map<String,Object>> recycleList = recyclersMapper.getRangeRecyclersList(companyId.toString(),recycleName,cityId,(pageNum-1)*pageSize,pageSize,isBigRecycle, tel);
@@ -443,6 +460,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	 * @param recyclerId : 经理Id
 	 * @return
 	 */
+	@Override
+	@DS("slave")
 	public List<Map<String,Object>> getRecycleDetails(Integer recyclerId){
 		return recyclersMapper.getRecycleDetails(recyclerId);
 	}
@@ -465,11 +484,13 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	}
 
 	@Override
+	@DS("slave")
 	public List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId, String isBigRecycle) {
 		return recyclersMapper.getRecyclersListByParentId(companyId, recycleId, isBigRecycle);
 	}
 
 	@Override
+	@DS("slave")
 	public Object getAreaRecyclersRangeList(RecyclersServiceRangeBean recyclersServiceRangeBean, String companyId) {
 		RecyclerCompany recyclerCompany = recyclerCompanyService.selectOne(new EntityWrapper<RecyclerCompany>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_", 1));
 		Map<String,Object> resultMap = new HashMap<>();

@@ -1,5 +1,6 @@
 package com.tzj.collect.api.ali;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.common.util.MemberUtils;
@@ -44,6 +45,7 @@ public class CategoryAttrApi {
 	@Api(name = "categoryAttr.listCategoryAttrs", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
     public Object getCategoryAttrList(CategoryBean categoryBean){
 		//查询用户的默认地址
 		Member member = MemberUtils.getMember();

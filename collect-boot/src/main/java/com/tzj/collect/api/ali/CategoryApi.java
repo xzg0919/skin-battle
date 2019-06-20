@@ -1,5 +1,6 @@
 package com.tzj.collect.api.ali;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.AliCategoryAttrOptionBean;
 import com.tzj.collect.api.ali.param.CategoryAttrBean;
@@ -86,6 +87,7 @@ public class CategoryApi {
 	 @Api(name = "category.listchild", version = "1.0")
 	 @SignIgnore
 	 @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	 @DS("slave")
 	 public  Map<String, Object> childlist(CategoryBean categoryBean){
 //		 if (categoryBean.getTitle().equals(CategoryType.DIGITAL.name())) {
 //			return categoryService.childList(categoryBean.getId());
@@ -104,6 +106,7 @@ public class CategoryApi {
 	@Api(name = "categoryAttr.computeValue", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object computeValue(CategoryAttrBean categoryAttrBean){
 		Member member = MemberUtils.getMember();
 		//分类Id
@@ -172,6 +175,7 @@ public class CategoryApi {
 	@Api(name = "category.communityBycompany", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object communityBycompany(CategoryAttrBean categoryAttrBean){
 		//分类Id
 		long categoryId = categoryAttrBean.getCategoryId();
@@ -192,6 +196,7 @@ public class CategoryApi {
 	@Api(name = "category.categoryOneList", version = "1.0")
 	@SignIgnore
 	@AuthIgnore
+	@DS("slave")
 	public Object categoryOneList(CategoryBean categoryBean){
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("DIGITAL",categoryService.topList(0, 1,categoryBean.getIsFiveKg()));
@@ -243,6 +248,7 @@ public class CategoryApi {
 	@Api(name = "category.getPrices", version = "1.0")
 	@SignIgnore
 	@AuthIgnore
+	@DS("slave")
 	public Object getPrices(CategoryAttrBean categoryAttrBean){
 		//分类Id
 		long categoryId = categoryAttrBean.getCategoryId();
@@ -362,6 +368,7 @@ public class CategoryApi {
 	@Api(name = "category.getXCategoryList", version = "1.0")
 	@SignIgnore
 	@AuthIgnore
+	@DS("slave")
 	public Object getXCategoryList(){
 		Map<String,Object> map = new HashMap<>();
 		List<Category> DQcategoryList = categoryService.selectList(new EntityWrapper<Category>().eq("title", 1).isNull("parent_id"));

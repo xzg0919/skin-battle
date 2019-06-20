@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class RecyclerCancelLogServiceImpl extends ServiceImpl<RecyclerCancelLogM
 //		return recyclerCancelLogMapper.selectCacel(orderbean);
 //	}
 	@Override
+	@DS("slave")
 	public CancelResult selectCancel(OrderBean orderbean) {
 		return recyclerCancelLogMapper.selectCancel(orderbean);
 	}

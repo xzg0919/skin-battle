@@ -1,5 +1,6 @@
 package com.tzj.collect.api.terminal;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.enterprise.param.EnterpriseTerminalBean;
@@ -51,6 +52,7 @@ public class TerminalApi {
     @Api(name="terminal.login",version="1.0")
     @SignIgnore
     @AuthIgnore
+    @DS("slave")
     //@RequiresPermissions(values = TERMINAL_API_COMMON_AUTHORITY)
     public Object login(EnterpriseTerminalBean enterpriseTerminalBean)throws ApiException {
         EnterpriseTerminal enterpriseTerminal = null;
