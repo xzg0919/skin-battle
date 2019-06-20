@@ -12,6 +12,7 @@
 
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.Order;
@@ -58,6 +59,7 @@ public class OrderLogServiceImpl extends ServiceImpl<OrderLogMapper, OrderLog> i
 	 * @return OrderLog
 	 */
 	@Override
+	@DS("slave")
 	public OrderLog selectByOrderId(String orderId) {
 		EntityWrapper<OrderLog> wrapper = new EntityWrapper<OrderLog>();
 		wrapper.eq("order_id", orderId);
@@ -73,6 +75,7 @@ public class OrderLogServiceImpl extends ServiceImpl<OrderLogMapper, OrderLog> i
 	 * @return Map<String,Object>
 	 */
 	@Override
+	@DS("slave")
 	public Map<String, Object> getOrderData(String id, String startTime) {
 		if(StringUtils.isBlank(startTime)) {
 			Calendar date = Calendar.getInstance();

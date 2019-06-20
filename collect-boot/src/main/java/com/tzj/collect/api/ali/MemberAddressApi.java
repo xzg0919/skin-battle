@@ -1,5 +1,6 @@
 package com.tzj.collect.api.ali;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.MemberAddressBean;
 import com.tzj.collect.common.util.MemberUtils;
@@ -96,6 +97,7 @@ public class MemberAddressApi {
     @Api(name = "memberAddress.selectMemberAddress", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
     public Object selectMemberAddress(MemberAddressBean memberAddressBean) {
     	MemberAddress memberAddress = memberAddressService.selectById(memberAddressBean.getId());
     	Map<String,Object> map = new HashMap<String,Object>();
@@ -132,6 +134,7 @@ public class MemberAddressApi {
     @Api(name = "memberAddress.memberAddress", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
     public MemberAddress memberAddress(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
 		Member member = MemberUtils.getMember();
@@ -196,6 +199,7 @@ public class MemberAddressApi {
     @Api(name = "memberAddress.getMemberAddressById", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
     public MemberAddress getMemberAddressById(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
     	Member member = MemberUtils.getMember();

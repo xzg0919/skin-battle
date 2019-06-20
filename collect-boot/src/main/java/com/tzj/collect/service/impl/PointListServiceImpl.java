@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -31,6 +32,7 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
 	 * @return PointList
 	 */
 	@Override
+	@DS("slave")
 	public List<Object> getPointListByType(long memberId, PageBean pageBean) {
 		//获取用户积分表
         Point points = pointService.getPoint(memberId);

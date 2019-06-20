@@ -1,6 +1,7 @@
 package com.tzj.collect.api.enterprise;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.enterprise.param.EnterpriseTerminalBean;
@@ -70,6 +71,7 @@ public class EnterpriseTerminalApi {
     @Api(name = "enterprise.enterpriseTerminalList", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ENTERPRISE_API_COMMON_AUTHORITY)
+    @DS("slave")
     public Object enterpriseTerminalList(EnterpriseTerminalBean enterpriseTerminalBean) throws ApiException {
         EnterpriseAccount enterpriseAccount = EnterpriseUtils.getEnterpriseAccount();
         EntityWrapper<EnterpriseTerminal> enterpriseTerminalEntityWrapper = new EntityWrapper<>();
@@ -99,6 +101,7 @@ public class EnterpriseTerminalApi {
     @Api(name = "enterprise.enterpriseTerminalById", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ENTERPRISE_API_COMMON_AUTHORITY)
+    @DS("slave")
     public Object enterpriseTerminalById(EnterpriseTerminalBean enterpriseTerminalBean) throws ApiException {
 
         return enterpriseTerminalService.selectById(enterpriseTerminalBean.getId());

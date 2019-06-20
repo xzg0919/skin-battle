@@ -1,6 +1,7 @@
 package com.tzj.collect.api.terminal;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.enterprise.param.EnterpriseProductBean;
@@ -35,6 +36,7 @@ public class TerminalProductApi {
     @Api(name = "terminal.terminalProductList", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = TERMINAL_API_COMMON_AUTHORITY)
+    @DS("slave")
     public Object terminalProductList(EnterpriseProductBean enterpriseProductBean) throws ApiException {
         EnterpriseTerminal enterpriseTerminal = EnterpriseTerminalUtils.getEnterpriseTerminal();
         EntityWrapper<EnterpriseProduct> wrapper = new EntityWrapper<>();
@@ -59,6 +61,7 @@ public class TerminalProductApi {
     @Api(name = "terminal.terminalProductById", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = TERMINAL_API_COMMON_AUTHORITY)
+    @DS("slave")
     public Object terminalProductById(EnterpriseProductBean enterpriseProductBean) {
         return  enterpriseProductService.selectById(enterpriseProductBean.getId());
     }

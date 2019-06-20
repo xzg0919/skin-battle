@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
@@ -124,6 +125,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 */
 	public List<Map<String,Object>> distributeOrderList(Integer recyclerId);
 	//根据订单Id查询订单交易价格
+	@DS("slave")
 	Object paymentPriceByOrderId(Integer orderId);
 
 	/**
@@ -131,6 +133,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @param companyId
 	 * @return
 	 */
+	@DS("slave")
 	List<Map<String,Object>> outOrderExcel(@Param("companyId") Integer companyId,@Param("type")String type,@Param("startTime")String startTime,@Param("endTime")String endTime);
 
 	/**
@@ -140,7 +143,9 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @param endPage
 	 * @return
 	 */
+	@DS("slave")
 	List<Map<String,Object>> getBigOrderTransferList(@Param("recycleId")Integer recycleId,@Param("startPage")Integer startPage,@Param("endPage")Integer endPage);
+	@DS("slave")
 	Integer getBigOrderTransferCount(@Param("recycleId")Integer recycleId);
 	/**
 	 * 大件订单列表
@@ -149,20 +154,24 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @param endPage
 	 * @return
 	 */
+	@DS("slave")
 	List<Map<String,Object>> getBigOrderList(@Param("status")Integer status,@Param("recycleId")Integer recycleId,@Param("startPage")Integer startPage,@Param("endPage")Integer endPage);
+	@DS("slave")
 	Integer getBigOrderCount(@Param("status")Integer status,@Param("recycleId")Integer recycleId);
-
+	@DS("slave")
 	AppOrderResult getBigOrderDetails(Integer orderId);
-
 	void deleteBigOrderRemarks(Integer orderId);
-
+	@DS("slave")
 	List<Map<String,Object>> sevenDayorderNum(String streetId);
+	@DS("slave")
 	List<Map<String,Object>> oneDayorderNum(String streetId);
-
+	@DS("slave")
 	Integer getOrderCountByPhone(@Param("orderBean")OrderBean orderbean);
-
+	@DS("slave")
 	List<AppOrderResult> getOrderListByPhone(@Param("orderBean") OrderBean orderbean, @Param("startSize") int startSize, @Param("pageSize") int pageSize);
+	@DS("slave")
 	List<Map<String,Object>> getBigOrderListByPhone(@Param("recycleId")Integer recycleId, @Param("tel")String tel,@Param("startPage")Integer startPage,@Param("endPage")Integer endPage);
+	@DS("slave")
 	Integer getBigOrderCountByPhone(@Param("recycleId")Integer recycleId, @Param("tel")String tel);
 }
 

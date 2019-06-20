@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.Point;
@@ -27,6 +28,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 	 * @return Point
 	 */
 	@Override
+	@DS("slave")
 	public Point getPoint(long memberId) {
 		EntityWrapper entityWrapper = new EntityWrapper<Point>();
 				entityWrapper.eq("member_id", memberId);
@@ -35,6 +37,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 	}
 
 	@Override
+	@DS("slave")
 	public Object getPointLists(long memberId) {
 		Map<String,Object> resultMap = new HashMap<>();
 		//获取用户能量信息

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.ali.param.CategoryBean;
@@ -241,6 +242,7 @@ public class OrderApi {
     @Api(name = "order.getCompanyByIds", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
     public Object getCompanyByIds(OrderBean orderbean){
     	Member member = MemberUtils.getMember();
     	//查询用户的默认地址
@@ -383,6 +385,7 @@ public class OrderApi {
 	@Api(name = "order.isEnterpriseCodeByCode", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object isEnterpriseCodeByCode(EnterpriseCodeBean enterpriseCodeBean){
 		EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", enterpriseCodeBean.getCode()).eq("del_flag", 0));
 		Map<String,Object> map = new HashMap<>();

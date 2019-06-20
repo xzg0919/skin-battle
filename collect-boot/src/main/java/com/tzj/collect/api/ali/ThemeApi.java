@@ -1,6 +1,7 @@
 package com.tzj.collect.api.ali;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.ProductBean;
 import com.tzj.collect.entity.XcxTheme;
@@ -35,6 +36,7 @@ public class ThemeApi {
     @Api(name = "theme.getXcxThemeContent", version = "1.0")
     @SignIgnore
     @AuthIgnore
+    @DS("slave")
     public Object getXcxThemeContent() {
         List<XcxTheme> xcxThemes = xcxThemeService.selectList(new EntityWrapper<XcxTheme>().eq("type", 0).eq("del_flag", 0));
         xcxThemes.stream().forEach(xcxTheme -> {
@@ -51,6 +53,7 @@ public class ThemeApi {
     @Api(name = "theme.getXcxThemeMysl", version = "1.0")
     @SignIgnore
     @AuthIgnore
+    @DS("slave")
     public Object getXcxThemeMysl() {
         List<XcxTheme> xcxThemes = xcxThemeService.selectList(new EntityWrapper<XcxTheme>().eq("type", 1).eq("del_flag", 0));
         xcxThemes.stream().forEach(xcxTheme -> {
@@ -68,6 +71,7 @@ public class ThemeApi {
     @Api(name = "theme.getXcxThemeNews", version = "1.0")
     @SignIgnore
     @AuthIgnore
+    @DS("slave")
     public Object getXcxThemeNews() {
         List<XcxTheme> xcxThemes = xcxThemeService.selectList(new EntityWrapper<XcxTheme>().eq("type", 2).eq("del_flag", 0));
         xcxThemes.stream().forEach(xcxTheme -> {

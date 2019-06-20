@@ -1,6 +1,7 @@
 package com.tzj.collect.api.enterprise;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.enterprise.param.EnterpriseProductBean;
@@ -56,6 +57,7 @@ public class EnterpriseProductApi  extends  Exception{
     @Api(name = "enterprise.EnterpriseProductList", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ENTERPRISE_API_COMMON_AUTHORITY)
+    @DS("slave")
     public Object EnterpriseProductList(EnterpriseProductBean enterpriseProductBean) throws ApiException {
         EnterpriseAccount enterpriseAccount = EnterpriseUtils.getEnterpriseAccount();
         EntityWrapper<EnterpriseProduct> wrapper = new EntityWrapper<>();

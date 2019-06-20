@@ -1,5 +1,6 @@
 package com.tzj.collect.api.ali;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.entity.CategoryAttr;
 import com.tzj.collect.entity.CategoryAttrOption;
@@ -30,12 +31,13 @@ public class CategoryAttrOptionApi {
 	/**
      * 根据分类 的属性取 分类属性选项
      * @author 
-     * @param  Categorybean 
+     * @param
      * @return List<CategoryAttr>
      */
 	@Api(name = "categoryAttrOption.listCategoryAttrOption", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
     public Object getCategoryAttrOptionList(CategoryAttr categoryAttr){
 		if(categoryAttr.getCommunityId()==null) {
 			return "请传入小区id";

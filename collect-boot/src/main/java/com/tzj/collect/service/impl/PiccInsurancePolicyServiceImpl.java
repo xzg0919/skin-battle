@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -98,6 +99,7 @@ public class PiccInsurancePolicyServiceImpl extends ServiceImpl<PiccInsurancePol
     }
 
     @Override
+    @DS("slave")
     public Object getInsurancePolicy(long piccCompanyId) {
         Map<String,Object> map = new HashMap<>();
         PiccInsurancePolicy piccInsurancePolicy = this.selectOne(new EntityWrapper<PiccInsurancePolicy>().eq("picc_company_id", piccCompanyId).eq("del_flag", 0));

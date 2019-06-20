@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.RecyclersRangeBig;
 import com.tzj.collect.mapper.RecyclersRangeBigMapper;
@@ -25,6 +26,7 @@ public class RecyclersRangeBigServiceImpl extends ServiceImpl<RecyclersRangeBigM
      * @return
      */
     @Override
+    @DS("slave")
     public Object getAreaRecyclersRange(String cityId,String recycleId,String companyId){
         return recyclersRangeBigMapper.getAreaRecyclersRange(cityId,recycleId,companyId);
     }
@@ -36,6 +38,7 @@ public class RecyclersRangeBigServiceImpl extends ServiceImpl<RecyclersRangeBigM
      * @return
      */
     @Override
+    @DS("slave")
     public Object getStreeRecyclersRange(String areaId,String recycleId,String companyId){
         return recyclersRangeBigMapper.getStreeRecyclersRange(areaId,recycleId,companyId);
     }
@@ -47,6 +50,7 @@ public class RecyclersRangeBigServiceImpl extends ServiceImpl<RecyclersRangeBigM
      * @return
      */
     @Override
+    @DS("slave")
     public List<Map<String,Object>> getCommunityRecyclersRange(String streetId, String recycleId, String companyId){
         return recyclersRangeBigMapper.getCommunityRecyclersRange(streetId,recycleId,companyId);
     }

@@ -2,6 +2,7 @@ package com.tzj.collect.api.ali;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.AreaBean;
 import com.tzj.collect.entity.Area;
@@ -53,6 +54,7 @@ public class AreaApi {
     @Api(name = "area.getByArea", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
     public Object getByArea(AreaBean area){
     	if(StringUtils.isBlank(area.getCityId())||"0".equals(area.getCityId())) {
     		return "您所在的市暂不提供回收地址";
@@ -70,6 +72,7 @@ public class AreaApi {
     @Api(name = "area.child", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
     public JSONArray childArea(AreaBean area){
     	 List<Area>  areaLi= areaService.getChildArea(Long.valueOf(area.getId()));
     	 //经度
@@ -99,6 +102,7 @@ public class AreaApi {
 	@Api(name = "area.getStreetByAreaName", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getStreetByAreaName(AreaBean areaBean){
 		if(StringUtils.isBlank(areaBean.getAreaName())) {
 			return "请传入行政区名字";
@@ -117,6 +121,7 @@ public class AreaApi {
 	@Api(name = "area.getCommunityBystreetName", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getCommunityBystreetName(AreaBean areaBean){
 		if(StringUtils.isBlank(areaBean.getStreetName())) {
 			return "请传入街道名字";
@@ -137,6 +142,7 @@ public class AreaApi {
 	@Api(name = "area.getCityList", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getCityList(){
 		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("type", 1));
 		List<Map<String,Object>> resultList = new ArrayList<Map<String,Object>>();
@@ -157,6 +163,7 @@ public class AreaApi {
 	@Api(name = "area.getCityAreaList", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getCityAreaList(){
 		//获取上海的所有行政区
 		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", 737).eq("del_flag", 0));
