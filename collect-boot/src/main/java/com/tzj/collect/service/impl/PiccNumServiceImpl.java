@@ -28,7 +28,6 @@ public class PiccNumServiceImpl extends ServiceImpl<PiccNumMapper,PiccNum> imple
     private PiccOrderService piccOrderService;
 
     @Override
-    @DS("slave")
     public Map<String, Object> selectPiccNum(long piccConpanyId) {
             Integer sumOutNum = 0;
             Integer sumDeleteNum = 0;
@@ -47,7 +46,6 @@ public class PiccNumServiceImpl extends ServiceImpl<PiccNumMapper,PiccNum> imple
         return map;
     }
     @Override
-    @DS("slave")
     public Map<String, Object> selectPiccErrorNum(long piccConpanyId) {
         Integer sumErrorNum = 0;
         Integer errorNum = 0;
@@ -63,7 +61,6 @@ public class PiccNumServiceImpl extends ServiceImpl<PiccNumMapper,PiccNum> imple
     }
 
     @Override
-    @DS("slave")
     public Map<String, Object> selectPiccSuccessNum(long piccConpanyId) {
         Integer sumSuccessNum = 0;
         Integer successNum = 0;

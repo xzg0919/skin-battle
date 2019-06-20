@@ -99,7 +99,6 @@ public class PiccInsurancePolicyServiceImpl extends ServiceImpl<PiccInsurancePol
     }
 
     @Override
-    @DS("slave")
     public Object getInsurancePolicy(long piccCompanyId) {
         Map<String,Object> map = new HashMap<>();
         PiccInsurancePolicy piccInsurancePolicy = this.selectOne(new EntityWrapper<PiccInsurancePolicy>().eq("picc_company_id", piccCompanyId).eq("del_flag", 0));

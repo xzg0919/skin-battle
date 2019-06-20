@@ -57,7 +57,6 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemMapper, OrderItem
 	 * @return List<OrderItem>
 	 */
 	@Override
-	@DS("slave")
 	public List<OrderItem> selectByOrderId(int orderId) {
 		EntityWrapper<OrderItem> wrapper = new EntityWrapper<OrderItem>();
 		wrapper.eq("order_id", orderId);
@@ -66,7 +65,6 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemMapper, OrderItem
 	}
 
 	@Override
-	@DS("slave")
 	public List<ComCatePrice> selectCateName(int orderId) {
 		return orderMapper.selectCateName(orderId);
 	}
@@ -75,13 +73,11 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemMapper, OrderItem
 	 * @param orderId
 	 * @return
 	 */
-	@DS("slave")
 	public List<ComCatePrice> selectCateAchName(int orderId){
 		return orderMapper.selectCateAchName(orderId);
 	}
 
 	@Override
-	@DS("slave")
 	public Map<String, Object> selectItemOne(Integer orderId) {
 		return orderItemMapper.selectItemOne(orderId);
 	}

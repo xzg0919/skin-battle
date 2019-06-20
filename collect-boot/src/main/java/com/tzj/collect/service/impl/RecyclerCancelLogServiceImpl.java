@@ -23,7 +23,6 @@ public class RecyclerCancelLogServiceImpl extends ServiceImpl<RecyclerCancelLogM
 //		return recyclerCancelLogMapper.selectCacel(orderbean);
 //	}
 	@Override
-	@DS("slave")
 	public CancelResult selectCancel(OrderBean orderbean) {
 		return recyclerCancelLogMapper.selectCancel(orderbean);
 	}

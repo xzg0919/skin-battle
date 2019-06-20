@@ -78,7 +78,6 @@ public class PiccOrderServiceImpl extends ServiceImpl<PiccOrderMapper,PiccOrder>
     }
 
     @Override
-    @DS("slave")
     public Object selectPiccErrorOrderList(long piccCompanyId, PiccOrderBean piccOrderBean) {
         EntityWrapper<PiccOrder> wrapper = new EntityWrapper<>();
         wrapper.eq("picc_company_id",piccCompanyId);
@@ -114,7 +113,6 @@ public class PiccOrderServiceImpl extends ServiceImpl<PiccOrderMapper,PiccOrder>
     }
 
     @Override
-    @DS("slave")
     public Object selectPiccSuccessOrderList(long piccCompanyId, PiccOrderBean piccOrderBean) {
         EntityWrapper<PiccOrder> wrapper = new EntityWrapper<>();
         wrapper.eq("picc_company_id",piccCompanyId);
@@ -150,7 +148,6 @@ public class PiccOrderServiceImpl extends ServiceImpl<PiccOrderMapper,PiccOrder>
     }
 
     @Override
-    @DS("slave")
     public Object selectPiccOrderList(long piccCompanyId, PiccOrderBean piccOrderBean) {
         EntityWrapper<PiccOrder> wrapper = new EntityWrapper<>();
         wrapper.eq("picc_company_id",piccCompanyId);

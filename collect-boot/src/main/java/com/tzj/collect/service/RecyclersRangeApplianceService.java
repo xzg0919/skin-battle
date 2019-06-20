@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.RecyclersRangeAppliance;
 
@@ -14,6 +15,7 @@ public interface RecyclersRangeApplianceService extends IService<RecyclersRangeA
      * @param
      * @return
      */
+    @DS("slave")
     Object getAreaRecyclersRange(String cityId,String recycleId,String companyId);
 
     /**
@@ -22,6 +24,7 @@ public interface RecyclersRangeApplianceService extends IService<RecyclersRangeA
      * @param
      * @return
      */
+    @DS("slave")
     Object getStreeRecyclersRange(String areaId,String recycleId,String companyId);
 
     /**
@@ -30,5 +33,6 @@ public interface RecyclersRangeApplianceService extends IService<RecyclersRangeA
      * @param
      * @return
      */
+    @DS("slave")
     List<Map<String,Object>> getCommunityRecyclersRange(String streetId, String recycleId, String companyId);
 }

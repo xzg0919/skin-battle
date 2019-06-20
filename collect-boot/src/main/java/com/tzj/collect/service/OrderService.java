@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
@@ -27,18 +28,19 @@ import org.springframework.scheduling.annotation.Async;
  * @Author 王灿
  **/
 public interface OrderService extends IService<Order> {
-             
+
+	@DS("slave")
 	Order getLastestOrderByMember(Integer memberId);
 	
 	/**
      * 获取会员的订单列表 分页
      * @author 王灿
      * @param memberId :会员表主键
-     * @param page : 分页对象
      * @param num : 第几页
      * @param size : 共多少条
      * @return
      */
+	@DS("slave")
 	Map<String,Object> getOrderlist(long memberId,Integer status,int num,int size );
 	
 	 /**
@@ -56,6 +58,7 @@ public interface OrderService extends IService<Order> {
 	 * @param status 状态, page 分页对象
 	 * @return Page
 	 */
+	@DS("slave")
 	Page<Order> getOrderPage(String status, PageBean page);
 	
 	 /**
@@ -64,6 +67,7 @@ public interface OrderService extends IService<Order> {
      * @param  memberId : 会员Id（主键）
      * @return List<Order>
      */
+	 @DS("slave")
 	List<Order> getUncompleteList(long memberId);
 	
 	 /**
@@ -72,6 +76,7 @@ public interface OrderService extends IService<Order> {
      * @param orderId : 订单主键Id 
      * @return
      */
+	 @DS("slave")
 	Order selectOrder(int orderId);
 
 	
@@ -85,7 +90,7 @@ public interface OrderService extends IService<Order> {
 	* @return Page<Order>    返回类型
 	* @throws
 	*/
-	
+	@DS("slave")
 	Page<Order> getSearchOrder(BOrderBean orderBean, PageBean pageBean);
 	
 	/**
@@ -95,6 +100,7 @@ public interface OrderService extends IService<Order> {
 	 * @param pageBean : 分页的条件
 	 * @return 
 	*/
+	@DS("slave")
 	Map<String, Object> getOrderLists(BOrderBean orderBean,PageBean pageBean);
 	
 	
@@ -105,6 +111,7 @@ public interface OrderService extends IService<Order> {
 	 * @param companyId:企业Id
 	 * @return 
 	*/
+	@DS("slave")
 	Map<String,Object> selectCountByStatus(String status, Integer companyId, Order.TitleType titleType);
 
 	/**
@@ -112,12 +119,14 @@ public interface OrderService extends IService<Order> {
 	 * @param orderbean
 	 * @return
 	 */
+	@DS("slave")
 	Map<String,Object> getAppOrderList(OrderBean orderbean);
 	/**
 	 * 根据订单id或者订单单号获得订单详情
 	 * @param orderbean
 	 * @return
 	 */
+	@DS("slave")
 	AppOrderResult getOrderDetails(OrderBean orderbean);
 	/**
 	 * 主要是修改上门时间能通用但必须传订单单号或者订单id 及回收人员id,否则返回false
@@ -130,6 +139,7 @@ public interface OrderService extends IService<Order> {
 	 * @param orderBean
 	 * @return
 	 */
+	@DS("slave")
 	AppOrderResult getRecord(TimeBean timeBean);
 	/**
 	 * 得到当前回收人员的评价列表,好评比率
@@ -137,6 +147,7 @@ public interface OrderService extends IService<Order> {
 	 * @param scoreAppBean
 	 * @return
 	 */
+	@DS("slave")
 	AppScoreResult getScoreEvaRate(ScoreAppBean scoreAppBean);
 	
 
@@ -160,6 +171,7 @@ public interface OrderService extends IService<Order> {
 	 * @param order:订单
 	 * @return 
 	*/
+	@DS("slave")
 	Map<String,Object> selectDetail(OrderBean orderbean);
 	/**
 	 * 订单详情(企业)
@@ -167,6 +179,7 @@ public interface OrderService extends IService<Order> {
 	 * @param order:订单
 	 * @return 
 	*/
+	@DS("slave")
 	Map<String,Object> selectOrderByBusiness(Integer orderId);
 	/**
 	 * 获取用户提交生活垃圾订单id详情
@@ -174,6 +187,7 @@ public interface OrderService extends IService<Order> {
 	 * @param order:订单
 	 * @return 
 	*/
+	@DS("slave")
 	Map<String,Object> getInitDetail(Integer orderId);
 	/**
 	 * 派单、驳回、接单 接口(企业)
@@ -197,6 +211,7 @@ public interface OrderService extends IService<Order> {
 	 * @param orderBean
 	 * @return 
 	 */
+	@DS("slave")
 	List<Map<String,Object>> getBrokenLineData(CompanyBean companyBean);
 	 /**
 	 * 扫描用户会员卡卡号完成订单
@@ -219,6 +234,7 @@ public interface OrderService extends IService<Order> {
 	 * @param recyclerId : 需要转派的回收人员id
 	 * @return
 	 */
+	@DS("slave")
 	public Object distributeOrderList(Integer recyclerId);
 	/**
 	 * 小程序保存六废订单
@@ -233,6 +249,7 @@ public interface OrderService extends IService<Order> {
 	 * @param companyId
 	 * @return
 	 */
+	@DS("slave")
 	List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime);
 
 	Object savefiveKgOrder(OrderBean orderBean);
@@ -247,15 +264,17 @@ public interface OrderService extends IService<Order> {
 
 	 void updateMemberPoint(Integer memberId, String OrderNo, double amount,String descrb);
 
-
+	@DS("slave")
 	Map<String, Object> getOrderListsDistribute(BOrderBean orderBean, PageBean pageBean);
 	/**
 	 * 根据订单传来的状态获取订单列表
 	 */
+	@DS("slave")
 	Map<String, Object> getBigOrderList(String status,Long recycleId , PageBean pagebean);
 	/**
 	 * 根据订单id查询订单的详细信息
 	 */
+	@DS("slave")
 	Map<String, Object> getBigOrderDetails(Integer orderId);
 
 	String setAchOrder(OrderBean orderBean);
@@ -267,16 +286,18 @@ public interface OrderService extends IService<Order> {
 	Map<String, Object> iotUpdateOrderItemAch(IotParamBean iotParamBean);
 
 	void deleteBigOrderRemarks(Integer orderId);
+	@DS("slave")
 	List<Map<String,Object>> sevenDayorderNum(String streetId);
+	@DS("slave")
 	List<Map<String,Object>> oneDayorderNum(String streetId);
-
+	@DS("slave")
 	public String isUserOrder(String memberId);
 
 	//解析该订单的数据成蚂蚁森林结构MyslData
 	OrderBean myslOrderData (String orderId);
-
+	@DS("slave")
     Map<String, Object> getOrderListByPhone(OrderBean orderbean);
-
+	@DS("slave")
     Map<String, Object> getBigOrderListByPhone(OrderBean orderbean);
 
 	Object orderUpdateStatus(String companyId,String orderId);

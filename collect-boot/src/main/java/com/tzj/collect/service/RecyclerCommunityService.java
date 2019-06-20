@@ -14,6 +14,7 @@ package com.tzj.collect.service;
 
 import java.util.List;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.business.param.BusinessRecyclerBean;
 import com.tzj.collect.api.business.param.RecyclerServiceBean;
@@ -35,6 +36,7 @@ public interface RecyclerCommunityService extends IService<RecyclerCommunity>{
 	 * @param ComId
 	 * @return 回收人员总数
 	 */
+	@DS("slave")
 	Integer selectRecCountByCom(String ComId);
 
 	/**
@@ -46,6 +48,7 @@ public interface RecyclerCommunityService extends IService<RecyclerCommunity>{
 	* @param @return    参数
 	* @return List<RecyclerServiceBean>    返回类型
 	 */
+	@DS("slave")
 	List<RecyclerServiceBean> recyclerServiceList(BusinessRecyclerBean recyclerBean);
 /**
  * 根据回收人员的id查看回收服务范围个数
@@ -55,7 +58,7 @@ public interface RecyclerCommunityService extends IService<RecyclerCommunity>{
 * @param @param recyclerBean
 * @param @return    参数
 * @return int    返回类型
- */
+ */	@DS("slave")
 	int getRecyclerServiceListCount(BusinessRecyclerBean recyclerBean);
 	
 

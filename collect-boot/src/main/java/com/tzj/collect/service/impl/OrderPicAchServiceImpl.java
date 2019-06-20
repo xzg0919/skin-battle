@@ -47,7 +47,6 @@ public class OrderPicAchServiceImpl extends ServiceImpl<OrderPicAchMapper, Order
 	 * @return List<OrderPic>
 	 */
 	@Override
-	@DS("slave")
 	public List<OrderPicAch> selectbyOrderId(int orderId) {
 		EntityWrapper<OrderPicAch> wrapper = new EntityWrapper<OrderPicAch>();
 		wrapper.eq("order_id", orderId);

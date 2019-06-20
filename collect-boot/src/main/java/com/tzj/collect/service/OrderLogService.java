@@ -14,6 +14,7 @@ package com.tzj.collect.service;
 
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.OrderLog;
 
@@ -33,6 +34,7 @@ public interface OrderLogService extends IService<OrderLog>{
 	 * @param orderId ：订单表主键
 	 * @return OrderLog
 	 */
+	@DS("slave")
 	OrderLog selectByOrderId(String orderId);
 	
 	/**
@@ -42,5 +44,6 @@ public interface OrderLogService extends IService<OrderLog>{
 	 * @param startTime : 具体某一天的时间
 	 * @return Map<String,Object>
 	 */
+	@DS("slave")
 	public Map<String,Object> getOrderData(String id,String startTime);
 }

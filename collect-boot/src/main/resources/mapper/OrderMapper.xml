@@ -60,7 +60,7 @@
 		) f ON a.id = f.order_id
 		WHERE
 		a.del_flag = '0'
-		AND a.company_id =#{companyId} AND a.is_scan = #{isScan} AND a.title = #{title}
+		AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
 		<if test="status != null">
 			AND  a.status_ in
 			<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
@@ -96,6 +96,7 @@
 		<if test="title != null and title !='' ">
 			AND a.title  = #{title}
 		</if>
+		GROUP BY a.id
     	</select>
     <select id="getOrderLists" parameterType="Object" resultMap="OrderResultMap">
 			SELECT

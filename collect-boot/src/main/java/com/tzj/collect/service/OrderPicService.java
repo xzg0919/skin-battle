@@ -14,6 +14,7 @@ package com.tzj.collect.service;
 
 import java.util.List;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.OrderPic;
 
@@ -35,5 +36,6 @@ public interface OrderPicService extends IService<OrderPic>{
 	 * @param orderId:订单主键
 	 * @return List<OrderPic>
 	 */
+	@DS("slave")
 	List<OrderPic> selectbyOrderId(int orderId);
 }

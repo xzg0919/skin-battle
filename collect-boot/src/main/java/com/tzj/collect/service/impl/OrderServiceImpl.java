@@ -136,7 +136,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private AreaService areaService;
 
 	@Override
-	@DS("slave")
 	public Order getLastestOrderByMember(Integer memberId) {
 		return selectOne(new EntityWrapper<Order>().eq("member_id", memberId).orderBy("complete_date", false).last("LIMIT 1"));
 	}
@@ -151,7 +150,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @author 王灿
 	 */
 	@Override
-	@DS("slave")
 	public Map<String, Object> getOrderlist(long memberId,Integer status, int num, int size) {
 		EntityWrapper<Order> wrapper = new EntityWrapper<Order>();
 		wrapper.eq("member_id", memberId);
@@ -525,7 +523,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * 根据订单状态进行分页
 	 */
 	@Override
-	@DS("slave")
 	public Page<Order> getOrderPage(String status, PageBean page) {
 		Page<Order> pages = new Page<Order>(page.getPageNumber(), page.getPageSize());
 		EntityWrapper<Order> wrapper = new EntityWrapper<Order>();
@@ -535,7 +532,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
-	@DS("slave")
 	public List<Order> getUncompleteList(long memberId) {
 		List<Order> orderList = orderMapper.getUncompleteList(memberId);
 		orderList = this.createName4Ali(orderList);
@@ -714,7 +710,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @author 王灿
 	 */
 	@Override
-	@DS("slave")
 	public Order selectOrder(int orderId) {
 
 		return orderMapper.selectOrder(orderId);
@@ -732,7 +727,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 */
 
 	@Override
-	@DS("slave")
 	public Page<Order> getSearchOrder(BOrderBean orderBean, PageBean pageBean) {
 		Page<Order> page = new Page<Order>(pageBean.getPageNumber(), pageBean.getPageSize());
 		EntityWrapper<Order> wrapper = new EntityWrapper<Order>();
@@ -822,7 +816,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	  * @return
 	  */
 	@Override
-	@DS("slave")
 	public Map<String, Object> getOrderListsDistribute(BOrderBean orderBean, PageBean pageBean) {
 		Map map = new HashMap();
 		String status = getStatus(orderBean.getStatus());
@@ -1095,7 +1088,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 */
 	@Override
-	@DS("slave")
 	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime){
 		return orderMapper.outOrderExcel(companyId,type,startTime,endTime);
 	}
@@ -1106,7 +1098,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @param pageBean  分页的条件
 	 * @return
 	 */
-	@DS("slave")
 	public Map<String, Object> getOrderLists2(BOrderBean orderBean, PageBean pageBean) {
 		List<String> statusList = new ArrayList<>();
 		String status = getStatus(orderBean.getStatus());
@@ -1152,7 +1143,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @author 王灿
 	 */
 	@Override
-	@DS("slave")
 	public Map<String, Object> selectCountByStatus(String status, Integer companyId, Order.TitleType categoryType) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (categoryType == null){
@@ -1288,7 +1278,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @author 王灿
 	 */
 	@Override
-	@DS("slave")
 	public Map<String, Object> selectDetail(OrderBean orderbean) {
 		//查询订单表详情
 		Order order1 = this.selectById(orderbean.getId());
@@ -1354,7 +1343,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @author 王灿
 	 */
 	@Override
-	@DS("slave")
 	public Map<String, Object> selectOrderByBusiness(Integer orderId) {
 		//查询订单详情
 		//Order order = orderMapper.selectOrder(orderId);
@@ -1543,7 +1531,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
-	@DS("slave")
 	public Map<String, Object> getAppOrderList(OrderBean orderbean) {
 		int count = 0;
 		List<AppOrderResult> listOrder = null;
@@ -1567,7 +1554,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * 根据订单id查询订单的详细信息
 	 */
 	@Override
-	@DS("slave")
 	public  Map<String, Object> getBigOrderDetails(Integer orderId){
 		Map<String, Object> resultMap = new HashMap<>();
 		AppOrderResult result = orderMapper.getBigOrderDetails(orderId);
@@ -1587,7 +1573,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
-	@DS("slave")
 	public AppOrderResult getOrderDetails(OrderBean orderbean) {
 		AppOrderResult result = orderMapper.getOrderDetails(orderbean);
 		orderbean.setTitle(result.getTitle().toString());
@@ -1658,7 +1643,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
-	@DS("slave")
 	public AppOrderResult getRecord(TimeBean timeBean) {
 		AppOrderResult result = null;
 		if (timeBean.getDate() == null || "".equals(timeBean.getDate())) {
@@ -1673,7 +1657,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
-	@DS("slave")
 	public AppScoreResult getScoreEvaRate(ScoreAppBean scoreAppBean) {
 
 		if (scoreAppBean.getScore() != null && !"".equals(scoreAppBean.getScore())) {
@@ -1905,7 +1888,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @author 王灿
 	 */
 	@Override
-	@DS("slave")
 	public List<Map<String, Object>> getBrokenLineData(CompanyBean companyBean) {
 		//D 查询昨天  W 代表查近一周 M代表查近一个月
 		String date = companyBean.getDate();
@@ -2027,7 +2009,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
-	@DS("slave")
 	public Map<String, Object> getInitDetail(Integer orderId) {
 		//未完成订单的数据
 		List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
@@ -2295,7 +2276,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 * @author 王灿
 	 */
-	@DS("slave")
 	public Object distributeOrderList(Integer recyclerId) {
 		return orderMapper.distributeOrderList(recyclerId);
 	}
@@ -2649,7 +2629,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * 根据订单传来的状态获取订单列表
 	 */
 	@Override
-	@DS("slave")
 	public  Map<String, Object> getBigOrderList(String status,Long recycleId , PageBean pagebean){
 		Map<String, Object> result = new HashMap<>();
 		List<Map<String, Object>> bigOrderList = null;
@@ -2708,18 +2687,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
-	@DS("slave")
 	public List<Map<String, Object>> sevenDayorderNum(String streetId) {
 		return orderMapper.sevenDayorderNum(streetId);
 	}
 	@Override
-	@DS("slave")
 	public List<Map<String, Object>> oneDayorderNum(String streetId) {
 		return orderMapper.oneDayorderNum(streetId);
 	}
 
 	@Override
-	@DS("slave")
 	public String isUserOrder(String memberId){
 		List<Order> initOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "0,1").eq("is_read", 0));
 		List<Order> alreadyOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 2).eq("is_read", 0));
@@ -2816,7 +2792,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	  * @return
 	  */
 	@Override
-	@DS("slave")
 	public Map<String, Object> getOrderListByPhone(OrderBean orderbean) {
 		int count = 0;
 		List<AppOrderResult> listOrder = null;
@@ -2841,7 +2816,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	  * @return 
 	  */
 	@Override
-	@DS("slave")
 	public Map<String, Object> getBigOrderListByPhone(OrderBean orderbean) {
 		Map<String, Object> result = new HashMap<>();
 		if (null != orderbean.getTel() && orderbean.getTel().length() < 11){

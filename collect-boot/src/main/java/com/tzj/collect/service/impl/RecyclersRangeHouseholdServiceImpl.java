@@ -26,7 +26,6 @@ public class RecyclersRangeHouseholdServiceImpl extends ServiceImpl<RecyclersRan
      * @return
      */
     @Override
-    @DS("slave")
     public Object getAreaRecyclersRange(String cityId,String recycleId,String companyId){
         return recyclersRangeHouseholdMapper.getAreaRecyclersRange(cityId,recycleId,companyId);
     }
@@ -37,7 +36,6 @@ public class RecyclersRangeHouseholdServiceImpl extends ServiceImpl<RecyclersRan
      * @return
      */
     @Override
-    @DS("slave")
     public Object getStreeRecyclersRange(String areaId,String recycleId,String companyId){
         return recyclersRangeHouseholdMapper.getStreeRecyclersRange(areaId,recycleId,companyId);
     }
@@ -49,12 +47,10 @@ public class RecyclersRangeHouseholdServiceImpl extends ServiceImpl<RecyclersRan
      * @return
      */
     @Override
-    @DS("slave")
     public List<Map<String,Object>> getCommunityRecyclersRange(String streetId, String recycleId, String companyId){
         return recyclersRangeHouseholdMapper.getCommunityRecyclersRange(streetId,recycleId,companyId);
     }
     @Override
-    @DS("slave")
     public Integer selectAreaRangeCount(String companyId,String recyclerId){
         return recyclersRangeHouseholdMapper.selectAreaRangeCount(companyId,recyclerId);
     }

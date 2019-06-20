@@ -22,7 +22,6 @@ public class RecyclersTitleServiceServiceImpl extends ServiceImpl<RecyclersTitle
 
 
     @Override
-    @DS("slave")
     public List<Map<String, Object>> getRecyclerTitleList(String recycleId) {
 
         return recyclersTitleMapper.getRecyclerTitleList(recycleId);
