@@ -278,4 +278,6 @@ public interface OrderService extends IService<Order> {
     Map<String, Object> getOrderListByPhone(OrderBean orderbean);
 
     Map<String, Object> getBigOrderListByPhone(OrderBean orderbean);
+
+	Object orderUpdateStatus(String companyId,String orderId);
 }

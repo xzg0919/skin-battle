@@ -298,6 +298,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 				comIdAndCateOptIdBean.setCateOptId(categoryAttr.getId().toString());
 				comIdAndCateOptIdBean.setCompanyId(companyId);
 				businessCategoryResults = companyCategoryAttrOptionCityService.selectComCityCateAttOptPrice(categoryBean.getCityId(), companyId, categoryAttr.getId().toString());
+				businessCategoryResults = getBusinessCategoryResult(businessCategoryResults);
 				if (businessCategoryResults.isEmpty()) {
 					businessCategoryResults = companyCategoryService.selectComCateAttOptPrice(comIdAndCateOptIdBean);
 				}
@@ -318,6 +319,23 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 			returnMap.put("Price", companyCategoryCity.getPrice());
 		}
 		return returnMap;
+	}
+
+	public List<BusinessCategoryResult> getBusinessCategoryResult(List<BusinessCategoryResult> businessCategoryResultsList){
+		String price = null;
+		for (BusinessCategoryResult businessCategoryResult : businessCategoryResultsList) {
+			if (businessCategoryResult.getComOptPrice() != null) {
+				price = businessCategoryResult.getComOptPrice();
+			}
+			if (price != null) {
+				if (new BigDecimal(price).compareTo(BigDecimal.ZERO) >= 0) {
+					businessCategoryResult.setComOptAddPrice(price);
+				}else{
+					businessCategoryResult.setComOptDecprice(new BigDecimal(price).abs().toString());
+				}
+			}
+		}
+		return businessCategoryResultsList;
 	}
 
 

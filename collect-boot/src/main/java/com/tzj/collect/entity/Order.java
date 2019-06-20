@@ -476,7 +476,7 @@ public class Order extends DataEntity<Long> {
 			}
 		}
 		if (this.arrivalTime != null) {
-			return this.getYMD(this.arrivalTime) + temp;
+			return this.getYMD(this.arrivalTime) +" "+ temp;
 		}
 		return null;
 	}

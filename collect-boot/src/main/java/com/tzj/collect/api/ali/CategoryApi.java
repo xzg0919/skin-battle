@@ -57,6 +57,8 @@ public class CategoryApi {
 	private CompanyStreetApplianceService companyStreetApplianceService;
 	@Autowired
 	private CompanyCategoryAttrOptionCityService companyCategoryAttrOptionCityService;
+	@Autowired
+	private CompanyCategoryCityService companyCategoryCityService;
     /**
      * 取得所有一级分类 
      * @param 
@@ -306,8 +308,13 @@ public class CategoryApi {
 				companyId = streetBigCompanyId+"";
 			}
 			//根据企业Id查询和分类Id查询对应的一条关联记录
-			CompanyCategory companyCategory  = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId));
-			price = new BigDecimal(companyCategory.getPrice()).setScale(2, BigDecimal.ROUND_HALF_UP);
+			CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", companyId).eq("category_id", categoryId).eq("city_id", categoryAttrBean.getCityId()).eq("del_flag", 0));
+			if(null == companyCategoryCity){
+				CompanyCategory companyCategory  = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId));
+				price = new BigDecimal(companyCategory.getPrice()).setScale(2, BigDecimal.ROUND_HALF_UP);
+			}else {
+				price = companyCategoryCity.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+			}
 			//获取所有分类属性选项Id的集合
 			String [] OptionIds = categoryAttrOptionIds.split(",");
 			List<String> specialPriceList = new ArrayList<String>();

@@ -36,18 +36,26 @@ public class OrderTest {
 
                 //String api="http://open.mayishoubei.com/ali/api";
                 String api="http://localhost:9090/ali/api";
+
+                String  location = "121.446438,30.915836";
+
+            AmapAroundParam aroundParam = new AmapAroundParam();
+            aroundParam.setLocation("121.446438,30.915836");
+            aroundParam.setOffset("10");
+            aroundParam.setPage("1");
+            aroundParam.setSearchKey("酒店");
 //
 
 
-            MemberAddressBean memberAddressBean = new MemberAddressBean();
-            memberAddressBean.setCityId(5479);
+            XcxSourceNumBean xcxSourceNumBean = new XcxSourceNumBean();
+            xcxSourceNumBean.setCode("101");
 
             AreaBean areaBean = new AreaBean();
             areaBean.setCityId("9699");
             areaBean.setStreetName("矿区街道");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","memberAddress.memberAddress");
+                param.put("name","xcx.saveXcxSourceNum");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -55,7 +63,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",memberAddressBean);
+                param.put("data",xcxSourceNumBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

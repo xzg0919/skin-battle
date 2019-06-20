@@ -90,35 +90,21 @@
      </select>
      <select id="getNotEnterComList" resultType="com.tzj.collect.api.app.result.AppCompany" parameterType="com.tzj.collect.api.app.param.RecyclersBean">
      	SELECT
-			comName,
-			id
+			sc.name_ AS comName,
+			sc.id AS id,
+			IF (cr.status_ = 1, 1, 0) AS status
 		FROM
-			(
-				SELECT
-					sc.name_ AS comName,
-					sc.id
-				FROM
-					sb_company sc
-				WHERE
-					sc.id NOT IN (
-						SELECT
-							scr.company_id
-						FROM
-							sb_company_recycler scr
-						WHERE
-							scr.recycler_id = #{recyclerBean.id}
-					)
-				UNION ALL
-					SELECT
-						sc.name_ AS comName,
-						scr.company_id AS id
-					FROM
-						sb_company_recycler scr
-					INNER JOIN sb_company sc ON sc.id = scr.company_id
-					WHERE
-						scr.recycler_id = #{recyclerBean.id}
-					AND scr.status_ = '2'
-			) AS teb
+			sb_company sc
+		LEFT JOIN (
+			SELECT
+				*
+			FROM
+				sb_company_recycler
+			WHERE
+				recycler_id = #{recyclerBean.id}
+		) cr ON sc.id = cr.company_id
+		WHERE
+			sc.name_ like  CONCAT('%',#{recyclerBean.name},'%')
 		LIMIT #{startSize} , #{pageSize}
 
      </select>

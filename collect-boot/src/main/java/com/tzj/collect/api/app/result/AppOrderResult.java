@@ -458,7 +458,7 @@ public class AppOrderResult {
 			}else if (temp.equals("am")) {
 				temp = "上午";
 			}
-			return builder.append(temp).toString();
+			return builder.append(" "+temp).toString();
 		}
 		return arrivalTime;
 	}

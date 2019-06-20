@@ -235,14 +235,14 @@ public class FiveKgController {
     public static void main(String[] args) {
         HashMap<String,Object> param=new HashMap<>();
         param.put("orderStatus","3");
-        param.put("orderNo","20190420205314116639");
+        param.put("orderNo","20190617160901505474");
         //param.put("expressName","接货中申武林13298688002");
         //param.put("expressTel","接货中申武林13298688002");
-        param.put("date", "2019-05-11 18:11:04");
+       // param.put("date", "2019-05-11 18:11:04");
         // param.put("expressNo","CVAV1129519734415190");
-        param.put("expressAmount","3");
+        param.put("expressAmount","12");
        // param.put("remarks","取消原因4");
-        param.put("logisticsName","德邦");
+      //  param.put("logisticsName","德邦");
 //        param.put("orderNo","20190302135536851909");
 //        param.put("orderType","废纺衣物");
 //        param.put("orderAmount","6.5");

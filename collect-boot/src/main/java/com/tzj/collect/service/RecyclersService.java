@@ -43,7 +43,6 @@ public interface RecyclersService extends IService<Recyclers>{
     
     /**
 	 * @author sgmark@aliyun.com
-	 * @param Recyclers 当前回收人员, page 分页对象
 	 * @return 回收人员Page
 	 */
 	Page<Recyclers> selectByRecyclersPage(Recyclers recyclers, PageBean page);
@@ -76,14 +75,12 @@ public interface RecyclersService extends IService<Recyclers>{
 	/**
 	 * 根据回收人员id得到个人信息，评价数目
 	 * @author sgmark@aliyun.com
-	 * @param recyclersBean
 	 * @return
 	 */
 	RecyclersBean getRecEvaById(String recyclerId);
 	/**
 	 * 根据多个回收员id返回Page
 	 * @param ids
-	 * @param page
 	 * @return
 	 */
 	Page<Recyclers> selectRecPageByIds(String ids, CompanyAccountBean companyAccountBean);
@@ -152,6 +149,14 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @return
 	 */
 	Object saveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean, Integer companyId);
+
+	/**
+	 * 保存或更新回收人员区域信息
+	 * @param recyclersServiceRangeBean
+	 * @param companyId
+	 * @return
+	 */
+	Object updateOrSaveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean,Integer companyId);
 	/**
 	 * 保存业务经理更改区域信息
 	 * @author wangcan
@@ -172,7 +177,7 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @param
 	 * @return
 	 */
-	Object getStreeRecyclersRange(String areaId,String recycleId,Integer companyId);
+	Object getStreeRecyclersRange(String areaId,String recycleId,Integer companyId,String title);
 	/**
 	 * 获取回收经理人员列表
 	 * @author wangcan
@@ -191,4 +196,6 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	String getAuthCode(String authCode,Long recyclersId) throws ApiException;
 
 	List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId, String isBigRecycle);
+
+	Object getAreaRecyclersRangeList(RecyclersServiceRangeBean recyclersServiceRangeBean,String companyId);
 }

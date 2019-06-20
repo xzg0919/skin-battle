@@ -47,4 +47,6 @@ public interface MemberService extends IService<Member>{
     Object memberAdmin(Integer memberId);
 
     Map memberIsExist(MemberBean memberBean);
+
+    Object getPassIdUrl(Long memberId);
 }
