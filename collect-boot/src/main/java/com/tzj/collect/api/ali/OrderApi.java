@@ -365,7 +365,7 @@ public class OrderApi {
 		SimpleDateFormat simp = new SimpleDateFormat("HH");
 		String time = simp.format(date);
 		if (Integer.parseInt(time)>= 20){
-			map.put("type",8);
+			map.put("type",9);
 			map.put("msg","20:00后的订单，次日上午才上门回收哦！");
 			map.put("code",resultMap.get("code"));
 			map.put("id",resultMap.get("id"));
