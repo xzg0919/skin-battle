@@ -22,7 +22,18 @@ public class CommunityServiceImpl  extends ServiceImpl<CommunityMapper, Communit
 
 	@Resource
 	private CommunityMapper communityMapper;
-	
+
+	@Override
+	public List<Community> list20CommunityByAmapNameNull() {
+		return communityMapper.list20CommunityByAmapNameNull();
+	}
+
+	@Override
+	@Transactional
+	public void updateCommunityAmapName(String amapName, String neighborhood, String formattedAd, Long communityId) {
+		communityMapper.updateCommunityAmapName(amapName,neighborhood,formattedAd,communityId);
+	}
+
 	@Override
 	public List<Community> areaCommunity(Integer areaId) {
 		return selectList(new EntityWrapper<Community>().eq("area_id", areaId).eq("del_flag", "0").orderBy("initials", true));

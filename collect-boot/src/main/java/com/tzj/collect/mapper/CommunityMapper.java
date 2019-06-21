@@ -52,4 +52,9 @@ public interface CommunityMapper extends BaseMapper<Community> {
      * @return
      */
     List<Area> getCommunityData(String companyId);
+
+    List<Community> list20CommunityByAmapNameNull();
+
+	void updateCommunityAmapName(@Param("amapName") String amapName,@Param("neighborhood") String neighborhood,
+								 @Param("formattedAd") String formattedAd, @Param("communityId") Long communityId);
 }

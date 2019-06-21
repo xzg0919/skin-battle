@@ -58,6 +58,16 @@ public class AmapRegeoJson {
         private AddressComponentBean addressComponent;
         private String formatted_address;
 
+        public List<PoisBean> getPois() {
+            return pois;
+        }
+
+        public void setPois(List<PoisBean> pois) {
+            this.pois = pois;
+        }
+
+        private List<PoisBean> pois;
+
         public AddressComponentBean getAddressComponent() {
             return addressComponent;
         }
