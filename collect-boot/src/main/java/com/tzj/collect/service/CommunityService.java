@@ -11,6 +11,15 @@ import java.util.List;
 
 public interface CommunityService extends IService<Community> {
 
+
+	/**
+	 * 每次取高德名称为空的20个小区
+	 * @return
+	 */
+	List<Community> list20CommunityByAmapNameNull();
+
+	void updateCommunityAmapName(String amapName, String neighborhood, String formattedAd, Long communityId);
+
 	List<Community> areaCommunity(Integer areaId);
 	
 	/**

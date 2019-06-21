@@ -13,6 +13,10 @@ public class AmapResult implements Serializable {
     @ApiDocField(description = "名称")
     private String name; // 名称
 
+    private String neighborhood;
+
+    private String formattedAd;
+
     @ApiDocField(description = "地址")
     private String address; //地址
 

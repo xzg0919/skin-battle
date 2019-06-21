@@ -175,4 +175,20 @@
 		ORDER BY 
 		    juli ASC 
 	</select>
+
+
+	<select id="list20CommunityByAmapNameNull" resultType="Community">
+		SELECT a.*
+			FROM sb_community a
+			WHERE a.amap_name IS NULL
+			<!--
+			LIMIT 0,20
+			-->
+	</select>
+
+	<update id="updateCommunityAmapName">
+		UPDATE sb_community
+			SET amap_name=#{amapName},neighborhood=#{neighborhood},formattedAd=#{formattedAd}
+			  WHERE id=#{communityId}
+	</update>
 </mapper>

@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.alibaba.fastjson.serializer.SerializerFeature.MapSortField;
 import static com.alibaba.fastjson.serializer.SerializerFeature.SortField;
@@ -39,7 +40,11 @@ public class ApiUtils {
             param.put("sign", sign);
         }
 
-        Response response = FastHttpClient.post().url(gateway).body(JSON.toJSONString(param,MapSortField,SortField)).build().execute();
+        Response response = FastHttpClient.newBuilder().connectTimeout(60, TimeUnit.MINUTES).readTimeout(60,TimeUnit.MINUTES).build()
+                .post()
+                .url(gateway)
+                .body(JSON.toJSONString(param,MapSortField,SortField))
+                .build().execute();
         String resultJson = response.body().string();
         return resultJson;
     }
