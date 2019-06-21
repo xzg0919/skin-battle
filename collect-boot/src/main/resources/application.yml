@@ -7,6 +7,9 @@ server:
     #    min-spare-threads: 30
     port: 9090
     #context-path: /collect
+    jetty:
+      acceptors: 2
+      selectors: 4
 
 # mysql
 spring:

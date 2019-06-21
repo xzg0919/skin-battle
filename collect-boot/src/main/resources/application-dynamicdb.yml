@@ -24,14 +24,17 @@ spring:
           url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8
           username: devuser
           password: dev123456@1
+          #driver-class-name: com.mysql.cj.jdbc.Driver
           driver-class-name: com.mysql.jdbc.Driver
         slave_1:
           url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8
           username: devuser
           password: dev123456@1
+          #driver-class-name: com.mysql.cj.jdbc.Driver
           driver-class-name: com.mysql.jdbc.Driver
         slave_2:
           url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8
           username: devuser
           password: dev123456@1
+          #driver-class-name: com.mysql.cj.jdbc.Driver
           driver-class-name: com.mysql.jdbc.Driver
