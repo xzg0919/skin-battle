@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -106,6 +107,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
      * @return Category : 分类信息
      */
 	@Override
+	@DS("slave")
 	public Category getCategoryById(long categoryId) {
 		EntityWrapper<Category> wrapper = new EntityWrapper<Category>();
 		wrapper.eq("id", categoryId);
@@ -121,6 +123,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
      * @param   categoryId : 分类Id
 	 */
 	@Override
+	@DS("slave")
 	public Category selectListCategory(String categoryId) {
 		return categoryMapper.selectListCategory(categoryId);
 	}
@@ -205,6 +208,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public List<Category> getTopList(int companyId,Serializable title) {
 		return categoryMapper.getTopList(companyId,title);
 	}
@@ -217,6 +221,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public List<Category> getSecondList(String parentId) {
 		return categoryMapper.getSecondList(parentId);
 	}
@@ -228,6 +233,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	 * @return
 	 */
 	@Override
+	@DS("slave")
 	public List<CategoryResult> getHouseHoldDetail(String parentId,String companyId,String cityId) {
 		List<CategoryResult> categoryResultList = null;
 		categoryResultList = companyCategoryCityService.getCityHouseHoldDetail(parentId,companyId,cityId);
@@ -287,6 +293,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	}
 
 	@Override
+	@DS("slave")
 	public Map<String, Object> getDigitalDetail(CategoryBean categoryBean, String companyId) {
 		Map<String, Object> returnMap = new HashMap<>();
 		List<CategoryAttr> attrOptions =  categoryAttrOptionMapper.getDigitNameRePlace(Integer.parseInt(categoryBean.getId()));
@@ -298,6 +305,7 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 				comIdAndCateOptIdBean.setCateOptId(categoryAttr.getId().toString());
 				comIdAndCateOptIdBean.setCompanyId(companyId);
 				businessCategoryResults = companyCategoryAttrOptionCityService.selectComCityCateAttOptPrice(categoryBean.getCityId(), companyId, categoryAttr.getId().toString());
+				businessCategoryResults = getBusinessCategoryResult(businessCategoryResults);
 				if (businessCategoryResults.isEmpty()) {
 					businessCategoryResults = companyCategoryService.selectComCateAttOptPrice(comIdAndCateOptIdBean);
 				}
@@ -318,6 +326,23 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 			returnMap.put("Price", companyCategoryCity.getPrice());
 		}
 		return returnMap;
+	}
+
+	public List<BusinessCategoryResult> getBusinessCategoryResult(List<BusinessCategoryResult> businessCategoryResultsList){
+		String price = null;
+		for (BusinessCategoryResult businessCategoryResult : businessCategoryResultsList) {
+			if (businessCategoryResult.getComOptPrice() != null) {
+				price = businessCategoryResult.getComOptPrice();
+			}
+			if (price != null) {
+				if (new BigDecimal(price).compareTo(BigDecimal.ZERO) >= 0) {
+					businessCategoryResult.setComOptAddPrice(price);
+				}else{
+					businessCategoryResult.setComOptDecprice(new BigDecimal(price).abs().toString());
+				}
+			}
+		}
+		return businessCategoryResultsList;
 	}
 
 

@@ -1,6 +1,7 @@
 package com.tzj.collect.api.business;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.BusinessRecyclerBean;
@@ -248,7 +249,21 @@ public class BusinessRecyclerApi {
 		return recycleService.getRecyclers(companyAccount.getCompanyId(), isBigRecycle);
 	}
 	/**
-	 * 保存业务经理，和下属回收人员的信息
+	 * 保存业务经理，和下属回收人员的信息(最新)
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.recycle.updateOrSaveRecyclersRange", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object updateOrSaveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) throws Exception{
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return recycleService.updateOrSaveRecyclersRange(recyclersServiceRangeBean,companyAccount.getCompanyId());
+	}
+
+	/**
+	 * 保存业务经理，和下属回收人员的信息（）
 	 * @author wangcan
 	 * @param
 	 * @return
@@ -285,7 +300,7 @@ public class BusinessRecyclerApi {
 			return result;
 	}
 	/**
-	 * 保存业务经理，和下属回收人员的信息
+	 * 保存业务经理，和下属回收人员的信息()
 	 * @author wangcan
 	 * @param
 	 * @return
@@ -302,7 +317,7 @@ public class BusinessRecyclerApi {
 	}
 
 	/**
-	 * 保存业务经理更改区域信息
+	 * 保存业务经理更改区域信息(废弃)
 	 * @author wangcan
 	 * @param
 	 * @return
@@ -325,21 +340,10 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getAreaRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		Map<String,Object> resultMap = new HashMap<>();
-		List<Map<String, Object>> recyclerTitleList = recyclersTitleService.getRecyclerTitleList(recyclersServiceRangeBean.getRecycleId());
-		List<Map<String,Object>> areaList = ( List<Map<String,Object>>)recycleService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyAccount.getCompanyId());
-			if (areaList != null){
-				for (Map<String, Object> map:areaList){
-					Object streeList = recycleService.getStreeRecyclersRange(map.get("id").toString(), recyclersServiceRangeBean.getRecycleId(), companyAccount.getCompanyId());
-					map.put("streeList",streeList);
-				}
-			}
-		resultMap.put("recyclerTitleList",recyclerTitleList);
-		resultMap.put("areaList",areaList);
-		return resultMap;
+		return recycleService.getAreaRecyclersRangeList(recyclersServiceRangeBean, companyAccount.getCompanyId().toString());
 	}
 	/**
-	 * 根据市级Id和回收人员id获取街道信息
+	 * 根据区域Id和回收人员id获取街道，小区信息
 	 * @author wangcan
 	 * @param
 	 * @return
@@ -349,7 +353,7 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getStreeRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return recycleService.getStreeRecyclersRange(recyclersServiceRangeBean.getAreaId(),recyclersServiceRangeBean.getRecycleId(),companyAccount.getCompanyId());
+		return recycleService.getStreeRecyclersRange(recyclersServiceRangeBean.getAreaId(),recyclersServiceRangeBean.getRecycleId(),companyAccount.getCompanyId(),recyclersServiceRangeBean.getTitle());
 	}
 	/**
 	 * 获取回收经理人员列表
@@ -392,6 +396,7 @@ public class BusinessRecyclerApi {
 	@Api(name = "business.recycle.getRecyclersDetails", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getRecyclersDetails(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		return recycleService.selectById(recyclersServiceRangeBean.getRecycleId());
@@ -411,4 +416,49 @@ public class BusinessRecyclerApi {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		return companyRecyclerService.recyclersDel(companyAccount.getCompanyId(), recyclersServiceRangeBean.getRecycleId());
 	}
+	/**
+	 * 删除公司下面所对应的回收员
+	 * @author wang
+	 * @date 2019/4/12 0012
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.recycle.isDelete", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object recycleIsDelete(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return companyRecyclerService.recycleIsDelete(companyAccount.getCompanyId(), recyclersServiceRangeBean.getRecycleId(),recyclersServiceRangeBean.getTitle());
+	}
+
+	/**
+	 * 删除公司下面所对应的回收员
+	 * @author wang
+	 * @date 2019/4/12 0012
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.recycle.delete", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object recycleDelete(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return companyRecyclerService.recycleDelete(companyAccount.getCompanyId(), recyclersServiceRangeBean.getRecycleId(),recyclersServiceRangeBean.getTitle());
+	}
+	/**
+	 * 查询选中小区数量信息
+	 * @author wang
+	 * @date 2019/4/12 0012
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.recycle.getRecycleRangeByTitle", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getRecycleRangeByTitle(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return companyRecyclerService.getRecycleRangeByTitle(companyAccount.getCompanyId().toString(),recyclersServiceRangeBean.getRecycleId(),recyclersServiceRangeBean.getTitle());
+	}
+
+
 }

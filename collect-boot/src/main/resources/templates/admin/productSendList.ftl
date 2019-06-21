@@ -147,7 +147,7 @@
 <script type="text/javascript">
 //跳转到未发货列表
 function init(){
-	window.location = "/product/order/getProductOrderList"
+	window.location = "/product/order/getProduct/orderLists"
 }
 //条件模糊查询事件
 function search(){

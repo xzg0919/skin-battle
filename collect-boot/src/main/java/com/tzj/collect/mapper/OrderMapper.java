@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
@@ -151,18 +152,18 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 */
 	List<Map<String,Object>> getBigOrderList(@Param("status")Integer status,@Param("recycleId")Integer recycleId,@Param("startPage")Integer startPage,@Param("endPage")Integer endPage);
 	Integer getBigOrderCount(@Param("status")Integer status,@Param("recycleId")Integer recycleId);
-
 	AppOrderResult getBigOrderDetails(Integer orderId);
-
 	void deleteBigOrderRemarks(Integer orderId);
-
 	List<Map<String,Object>> sevenDayorderNum(String streetId);
+
 	List<Map<String,Object>> oneDayorderNum(String streetId);
 
 	Integer getOrderCountByPhone(@Param("orderBean")OrderBean orderbean);
 
 	List<AppOrderResult> getOrderListByPhone(@Param("orderBean") OrderBean orderbean, @Param("startSize") int startSize, @Param("pageSize") int pageSize);
+
 	List<Map<String,Object>> getBigOrderListByPhone(@Param("recycleId")Integer recycleId, @Param("tel")String tel,@Param("startPage")Integer startPage,@Param("endPage")Integer endPage);
+
 	Integer getBigOrderCountByPhone(@Param("recycleId")Integer recycleId, @Param("tel")String tel);
 }
 

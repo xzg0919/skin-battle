@@ -1,5 +1,6 @@
 package com.tzj.collect.api.picc;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.picc.param.PiccCompanyBean;
 import com.tzj.collect.entity.PiccCompany;
@@ -32,6 +33,7 @@ public class PiccCompanyApi {
     @Api(name = "picc.piccLogin", version = "1.0")
     @SignIgnore
     @AuthIgnore
+    @DS("slave")
     public Object piccLogin(PiccCompanyBean piccCompanyBean){
         PiccCompany piccCompany = piccCompanyService.selectOne(new EntityWrapper<PiccCompany>().eq("user_name", piccCompanyBean.getUserName()).eq("password", piccCompanyBean.getPassword()).eq("del_flag", 0));
         if(null==piccCompany){

@@ -33,9 +33,16 @@ public class CompanyBean {
 	private Integer areaId;// 服务范围id（可能是区县id可能是街道id）
     private Integer streetId;//街道id
 	private Integer countyId;//区县id
-	
-	
-	
+	private Integer cityId;//市id
+
+	public Integer getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+
 	public Integer getStreetId() {
 		return streetId;
 	}

@@ -65,6 +65,10 @@ public class BOrderBean {
 	     * 联系人
 	     */
 	    private  String linkMan;
+		/**
+		 * 订单Id
+		 */
+		private  String orderId;
 	    /**
 	     * 分类id
 	     */
@@ -503,4 +507,12 @@ public class BOrderBean {
 		public void setCategoryType(String categoryType) {
 			this.categoryType = categoryType;
 		}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
 }

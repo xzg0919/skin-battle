@@ -15,6 +15,7 @@ package com.tzj.collect.service;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
@@ -39,13 +40,14 @@ import com.tzj.collect.entity.Recyclers;
 
 public interface RecyclersService extends IService<Recyclers>{
 
+	@DS("slave")
     Recyclers selectByMobile(String mobile);
     
     /**
 	 * @author sgmark@aliyun.com
-	 * @param Recyclers 当前回收人员, page 分页对象
 	 * @return 回收人员Page
 	 */
+	@DS("slave")
 	Page<Recyclers> selectByRecyclersPage(Recyclers recyclers, PageBean page);
 	
 	
@@ -59,6 +61,7 @@ public interface RecyclersService extends IService<Recyclers>{
 	 * @return List<Recyclers>    返回类型  
 	 * @throw
 	 */
+	@DS("slave")
 	List<Recyclers> getRecyclerPage(RecyclersBean bean);
 	
 	/**
@@ -71,33 +74,36 @@ public interface RecyclersService extends IService<Recyclers>{
 	 * @return int    返回类型  
 	 * @throw
 	 */
+	@DS("slave")
 	Integer getRecyclerPageSize(RecyclersBean bean);
 
 	/**
 	 * 根据回收人员id得到个人信息，评价数目
 	 * @author sgmark@aliyun.com
-	 * @param recyclersBean
 	 * @return
 	 */
+	@DS("slave")
 	RecyclersBean getRecEvaById(String recyclerId);
 	/**
 	 * 根据多个回收员id返回Page
 	 * @param ids
-	 * @param page
 	 * @return
 	 */
+	@DS("slave")
 	Page<Recyclers> selectRecPageByIds(String ids, CompanyAccountBean companyAccountBean);
 	/**
 	 * 根据回收人员id得到服务小区名称，所属区域
 	 * @param recyclerId
 	 * @return
 	 */
+	@DS("slave")
 	List<AdminCommunityBean> getRecSerCommById (String recyclerId);
 	/**
 	 * 根据回收人员id得到服务小区总数
 	 * @param recyclerId
 	 * @return
 	 */
+	@DS("slave")
 	Integer getCommNumByRecId(String recyclerId);
 
 	
@@ -108,6 +114,7 @@ public interface RecyclersService extends IService<Recyclers>{
 	 * @param categoryId : 分类Id
 	 * @return
 	 */
+	@DS("slave")
 	List<Recyclers> getRecyclersList(Integer companyId,Integer categoryId);
 
 
@@ -115,6 +122,7 @@ public interface RecyclersService extends IService<Recyclers>{
 	/*
 	 * 根据回收人员id获取该公司的回收人员详情
 	 */
+	@DS("slave")
 	Recyclers getRecyclersById(BusinessRecyclerBean recyclerBean);
 /**
  * 查收该公司的回收人员的申请列表
@@ -125,6 +133,7 @@ public interface RecyclersService extends IService<Recyclers>{
 * @param @return    参数
 * @return List<Recyclers>    返回类型
  */
+@DS("slave")
 	List<Recyclers> getRecyclersApply(BusinessRecyclerBean recyclerBean);
 
 
@@ -134,6 +143,7 @@ public interface RecyclersService extends IService<Recyclers>{
  * @param companyId:企业Id
  * @return
  */
+@DS("slave")
 List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 
 	/**
@@ -142,6 +152,7 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @param companyId : 企业Id
 	 * @return
 	 */
+	@DS("slave")
 	List<Map<String,Object>> getRecyclers(Integer companyId, String isBigRecycle);
 
 	/**
@@ -152,6 +163,14 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @return
 	 */
 	Object saveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean, Integer companyId);
+
+	/**
+	 * 保存或更新回收人员区域信息
+	 * @param recyclersServiceRangeBean
+	 * @param companyId
+	 * @return
+	 */
+	Object updateOrSaveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean,Integer companyId);
 	/**
 	 * 保存业务经理更改区域信息
 	 * @author wangcan
@@ -165,6 +184,7 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @param
 	 * @return
 	 */
+	@DS("slave")
 	Object getAreaRecyclersRange(String cityId,String recycleId,Integer companyId);
 	/**
 	 * 根据市级Id和回收人员id获取街道信息
@@ -172,13 +192,15 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @param
 	 * @return
 	 */
-	Object getStreeRecyclersRange(String areaId,String recycleId,Integer companyId);
+	@DS("slave")
+	Object getStreeRecyclersRange(String areaId,String recycleId,Integer companyId,String title);
 	/**
 	 * 获取回收经理人员列表
 	 * @author wangcan
 	 * @param companyId : 企业Id
 	 * @return
 	 */
+	@DS("slave")
 	Object getRangeRecyclersList(Integer companyId,String recycleName,String cityId,Integer pageNum,Integer pageSize,String isBigRecycle, String tel);
 	/**
 	 * 获取回收经理的详细信息
@@ -186,9 +208,12 @@ List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
 	 * @param recyclerId : 经理Id
 	 * @return
 	 */
+	@DS("slave")
 	List<Map<String,Object>> getRecycleDetails(Integer recyclerId);
 
 	String getAuthCode(String authCode,Long recyclersId) throws ApiException;
-
+	@DS("slave")
 	List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId, String isBigRecycle);
+	@DS("slave")
+	Object getAreaRecyclersRangeList(RecyclersServiceRangeBean recyclersServiceRangeBean,String companyId);
 }

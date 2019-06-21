@@ -6,6 +6,7 @@ import com.alipay.api.domain.ItemOrder;
 import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -1857,8 +1858,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//给用户增加会员卡积分
 		try {
 			Member member = memberService.selectById(memberId);
-			System.out.println("给用户增加的积分是 ：" + amount + "----point: " + points.getPoint() + "");
-			aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), points.getRemainPoint() + "", null, member.getAppId());
+			System.out.println("给用户增加的积分是 ：" + amount + "----point: " +Double.parseDouble(df.format(points.getPoint()))+ "");
+			aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), Double.parseDouble(df.format(points.getPoint())) + "", null, member.getAppId());
 		} catch (Exception e) {
 			System.out.println("给用户增加积分失败---------------");
 		}
@@ -2043,7 +2044,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("listMapObject", listMapObject);
 		return resultMap;
 	}
-
 	private Map<String, Object> createPriceAmount4PC(OrderBean orderbean) {
 		//是否是免费
 		String isCash = orderbean.getIsCash();
@@ -2695,7 +2695,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return orderMapper.oneDayorderNum(streetId);
 	}
 
-
+	@Override
 	public String isUserOrder(String memberId){
 		List<Order> initOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "0,1").eq("is_read", 0));
 		List<Order> alreadyOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 2).eq("is_read", 0));
@@ -2828,6 +2828,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		result.put("bigOrderList", bigOrderList);
 		result.put("count", count);
 		return result;
+	}
+
+	@Transactional
+	@Override
+	public Object orderUpdateStatus(String companyId, String orderId) {
+        OrderLog orderLog = new OrderLog();
+        Order order = this.selectById(orderId);
+        orderLog.setOpStatusBefore(order.getStatus().name());
+        order.setStatus(OrderType.INIT);
+        order.setRecyclerId(0);
+        this.updateById(order);
+        //新增订单日志表的记录
+        orderLog.setOpStatusAfter(order.getStatus().name());
+        orderLog.setOp("已初始");
+        orderLog.setOrderId(order.getId().intValue());
+        orderLogService.insert(orderLog);
+        return "操作成功";
 	}
 
 

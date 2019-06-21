@@ -1,6 +1,7 @@
 package com.tzj.collect.api.ali;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.ProductBean;
 import com.tzj.collect.api.common.PostTool;
@@ -49,6 +50,7 @@ public class ProductApi {
     @Api(name = "product.getProductListNo", version = "1.0")
     @SignIgnore
 	@AuthIgnore
+	@DS("slave")
     public Object getProductList(ProductBean productBean) {
     	EntityWrapper<Product> wrapper = new EntityWrapper<Product>();
     	wrapper.eq("is_marketable", "1");
@@ -72,6 +74,7 @@ public class ProductApi {
     @Api(name = "product.getProductListYes", version = "1.0")
     @SignIgnore
 	@AuthIgnore
+	@DS("slave")
     public Object getProductListYes(ProductBean productBean) {
     	EntityWrapper<Product> wrapper = new EntityWrapper<Product>();
     	wrapper.eq("is_marketable", "1");
@@ -95,6 +98,7 @@ public class ProductApi {
     @Api(name = "product.getProductGoodsList", version = "1.0")
     @SignIgnore
 	@AuthIgnore
+	@DS("slave")
     public Object getProductGoodsList(ProductBean productBean) {
     	Map<String,Object> resultMap = new HashMap<String,Object>();
     	EntityWrapper<Product> wrapper = new EntityWrapper<Product>();

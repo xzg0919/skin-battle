@@ -3,6 +3,7 @@ package com.tzj.collect.service;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.tzj.collect.entity.Member;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,7 +31,7 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	* @return int    返回类型
 	* @throws
 	*/
-	
+	@DS("slave")
 	int selectCategoryByCompanyId(long id);
 
 	/**
@@ -41,6 +42,7 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	 * @param pageSize
 	 * @return
 	 */
+	@DS("slave")
 	List<ComCatePrice> getOwnnerPrice(@Param("categoryBean")CategoryBean categoryBean, @Param("companyId")Integer companyId);
 	/**
 	 * 没在所有的公司服务范围,获取所有的平均价格
@@ -50,14 +52,15 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	 * @param pageSize
 	 * @return
 	 */
+	@DS("slave")
 	List<ComCatePrice> getAvgPrice(@Param("categoryBean")CategoryBean categoryBean);
-
+	@DS("slave")
 	Map<String, Object> getPrice(CategoryBean categoryBean);
-
+	@DS("slave")
 	Map<String, Object> categoryTwoList(CategoryBean categoryBean);
-
+	@DS("slave")
 	Map<String, Object> categoryHouseTwoList(CategoryBean categoryBean);
-	
+	@DS("slave")
 	Map<String, Object> getTowCategoryList(CategoryBean categoryBean);
 
 	/**
@@ -65,6 +68,7 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	 * @param comIdAndCateOptIdBean
 	 * @return
 	 */
+	@DS("slave")
 	List<BusinessCategoryResult> selectComCateAttOptPrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean);
 
 	
@@ -89,7 +93,7 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	int insertPrice(CompanyCategory companyCategory);
 	
 	CompanyCategory selectPriceByAttrId(String id, String companyId);
-	
+	@DS("slave")
 	List<ComCatePrice> getOwnnerPriceApp(CategoryBean categoryBean, Integer companyId);
 	/**
 	 * 根据分类Id和小区Id查询所属企业
@@ -97,5 +101,6 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	 * @param communityId : 小区Id
 	 * @return
 	 */
+	@DS("slave")
 	Company selectCompany(Integer categoryId,Integer communityId);
 }

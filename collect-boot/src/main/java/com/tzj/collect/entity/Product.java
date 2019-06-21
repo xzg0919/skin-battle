@@ -248,8 +248,22 @@ public class Product extends DataEntity<String>
      * 商品类型
      */
     private String goodsType;//0 优惠券,1 物品
-    
-	public String getGoodsType() {
+
+    /**
+     * 大图片
+     */
+    private String bigImg;//0大图片
+
+
+    public String getBigImg() {
+        return bigImg;
+    }
+
+    public void setBigImg(String bigImg) {
+        this.bigImg = bigImg;
+    }
+
+    public String getGoodsType() {
 		return goodsType;
 	}
 

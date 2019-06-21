@@ -11,6 +11,7 @@ import java.util.UUID;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.api.ali.param.OrderBean;
+import com.tzj.collect.api.app.result.AppCompany;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -28,7 +29,7 @@ import io.jsonwebtoken.Claims;
 public class TokenGetAppTest {
 	 public static void main(String[] args) throws Exception {
 
-		 String token = JwtUtils.generateToken("408", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
+		 String token = JwtUtils.generateToken("1", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
 		 String securityToken = JwtUtils.generateEncryptToken(token, APP_API_TOKEN_CYPTO_KEY);
 		 System.out.println("token : "+securityToken);
 
@@ -45,14 +46,15 @@ public class TokenGetAppTest {
 				 orderBean.setId(8941);
 		 orderBean.setAchPrice("0.0");
 
-		 CategoryBean categoryBean = new CategoryBean();
-		 categoryBean.setId(163);
+		 AppCompany appCompanys = new AppCompany();
+		 appCompanys.setComIds("1");
+		 appCompanys.setId("1");
 
 
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.order.pullCollectMoney");
+	        param.put("name", "recycler.deleteCompanyRecycle");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -60,7 +62,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", categoryBean);
+	        param.put("data", appCompanys);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.CompanyServiceRange;
 
@@ -20,7 +21,7 @@ public interface CompanyServiceService extends IService<CompanyServiceRange>{
 	* @return int    返回类型
 	* @throws
 	*/
-	
+	@DS("slave")
 	int selectCompanyServiceByCompanyId(long id);
 /**
  * 根据小区id查找要取消的服务范围小区
@@ -31,6 +32,7 @@ public interface CompanyServiceService extends IService<CompanyServiceRange>{
 * @param @return    参数
 * @return CompanyServiceRange    返回类型
  */
+	@DS("slave")
 	CompanyServiceRange selectRangeByCommunityId(Integer delectCommunityId);
 
 }

@@ -1,5 +1,11 @@
 package com.tzj.collect.api.ali.param;
 
+import com.tzj.collect.api.admin.param.AdminCommunityBean;
+import com.tzj.collect.api.business.param.CommunityBean;
+import com.tzj.collect.entity.Community;
+
+import java.util.List;
+
 /**
  * 区域对象
  * @author Michael_Wang
@@ -39,6 +45,28 @@ public class AreaBean {
 	 * 区域Id
 	 */
 	private String areaId;
+	/**
+	 * 0保存，1删除
+	 */
+	private String saveOrDelete;
+
+	private List<CommunityBean> communityIdList;
+
+	public String getSaveOrDelete() {
+		return saveOrDelete;
+	}
+
+	public void setSaveOrDelete(String saveOrDelete) {
+		this.saveOrDelete = saveOrDelete;
+	}
+
+	public List<CommunityBean> getCommunityIdList() {
+		return communityIdList;
+	}
+
+	public void setCommunityIdList(List<CommunityBean> communityIdList) {
+		this.communityIdList = communityIdList;
+	}
 
 	public String getAreaId() {
 		return areaId;

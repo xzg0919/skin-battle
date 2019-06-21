@@ -12,6 +12,7 @@
 
 package com.tzj.collect.mapper;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;

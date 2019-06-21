@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.ali.param.PiccOrderBean;
@@ -16,11 +17,11 @@ public interface PiccOrderService extends IService<PiccOrder> {
     String insertPiccOrder(long memberId,PiccOrderBean piccOrderBean)throws ApiException;
 
     String deletePiccOrderList(String piccOrderIds);
-
+    @DS("slave")
     Object selectPiccErrorOrderList(long piccCompanyId,PiccOrderBean piccOrderBean);
-
+    @DS("slave")
     Object selectPiccSuccessOrderList(long piccCompanyId,PiccOrderBean piccOrderBean);
-
+    @DS("slave")
     Object selectPiccOrderList(long piccCompanyId,PiccOrderBean piccOrderBean);
 
     Map<String,Object> piccOrderImportExcel(MultipartFile file);

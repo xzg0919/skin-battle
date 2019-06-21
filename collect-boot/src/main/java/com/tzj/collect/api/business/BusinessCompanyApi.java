@@ -1,5 +1,6 @@
 package com.tzj.collect.api.business;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.tzj.collect.api.admin.param.AdminCommunityBean;
@@ -8,6 +9,12 @@ import com.tzj.collect.api.admin.param.RecyclersBean;
 import com.tzj.collect.api.business.param.CompanyAccountBean;
 import com.tzj.collect.api.business.result.BusinessRecType;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.entity.*;
+import com.tzj.collect.service.*;
+import com.tzj.module.api.annotation.Api;
+import com.tzj.module.api.annotation.ApiService;
+import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.entity.CompanyRecycler;
@@ -40,6 +47,8 @@ public class BusinessCompanyApi {
 	private CompanyService companyService;
 	@Autowired
 	private AreaService areaService;
+	@Autowired
+	private CommunityService communityService;
 	/**
 	 * 根据公司id查询回收人员Page（可传<回收人员身份证或姓名>）
 	 * 
@@ -184,13 +193,29 @@ public class BusinessCompanyApi {
 	@Api(name = "business.company.getAreasById", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public Object getAreasById(CompanyBean companyBean) {
 		List<Map<String,Object>> resultList = new ArrayList<>();
-		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", companyBean.getAreaId()));
+		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", companyBean.getCityId()));
+		return areaList;
+	}
+	/**
+	 * 根据市级Id获取市级下属行政区
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.company.getStreetByAreaId", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@DS("slave")
+	public Object getStreetByAreaId(CompanyBean companyBean) {
+		List<Map<String,Object>> resultList = new ArrayList<>();
+		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id",companyBean.getAreaId()));
 		for (Area area: areaList) {
 			Map<String,Object> resultMap = new HashMap<>();
-			List<Area> streeList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", area.getId()));
-			resultMap.put("streeList",streeList);
+			List<Community> communityList = communityService.selectList(new EntityWrapper<Community>().eq("area_id", area.getId()));
+			resultMap.put("communityList",communityList);
 			resultMap.put("areaName",area.getAreaName());
 			resultMap.put("id",area.getId());
 			resultList.add(resultMap);

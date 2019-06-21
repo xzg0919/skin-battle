@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.ali.param.MemberAddressBean;
 import com.tzj.collect.entity.MemberAddress;
@@ -23,6 +24,7 @@ public interface MemberAddressService extends IService<MemberAddress>{
      * @param 
      * @return 
      */
+	@DS("slave")
 	public List<MemberAddress> memberAddressList(long memberId,String cityId);
 	/**
 	 * 用户删除地址时，如果是删除默认地址，自动将余下任意一条地址设置为默认地址

@@ -3,6 +3,7 @@ package com.tzj.collect.api.business;
 import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -35,7 +36,8 @@ public class BusinessArrivalTimeLogApi {
      */
 	 @Api(name = "business.getArrivalTimeLogList", version = "1.0")
 	 @SignIgnore
-		@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	 @DS("slave")
 	 public Object getArrivalTimeLogList(ArrivalTimeLogBean arrivalTimeLogBean){
 		//获取订单Id
 		 Integer orderId =  arrivalTimeLogBean.getOrderId();

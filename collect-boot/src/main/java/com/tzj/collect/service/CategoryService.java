@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.ali.param.CategoryAttrBean;
@@ -26,7 +27,7 @@ public interface CategoryService extends IService<Category> {
 	* @return List<Category>    返回类型
 	* @throws
 	*/
-	
+	@DS("slave")
 	List<Category> topList(int level, Serializable title,String isFiveKg);
 	/**
 	* @Title: getCategoryListByLevel
@@ -38,7 +39,7 @@ public interface CategoryService extends IService<Category> {
 	* @return List<Category>    返回类型
 	* @throws
 	*/
-	
+	@DS("slave")
 	List<Category> topListApp(int level, Serializable title, Long recId);
 	/**
 	* @Title: getCategoryListByLevel
@@ -50,7 +51,7 @@ public interface CategoryService extends IService<Category> {
 	* @return List<Category>    返回类型
 	* @throws
 	*/
-	
+	@DS("slave")
 	List<Category> topListApps(int level, Serializable title);
 
 	
@@ -64,7 +65,7 @@ public interface CategoryService extends IService<Category> {
 	* @return List<Category>    返回类型
 	* @throws
 	*/
-	
+	@DS("slave")
 	List<Category> childList(Integer id);
 		
 	
@@ -74,6 +75,7 @@ public interface CategoryService extends IService<Category> {
      * @param   categoryId : 分类Id
      * @return Category : 分类信息
      */
+	@DS("slave")
 	Category getCategoryById(long categoryId);
 	
 	/**
@@ -81,6 +83,7 @@ public interface CategoryService extends IService<Category> {
 	 * @author 王灿
      * @param   categoryId : 分类Id
 	 */
+	@DS("slave")
 	Category selectListCategory(String categoryId);
 	
 	 /**
@@ -97,6 +100,7 @@ public interface CategoryService extends IService<Category> {
 	 * @return 
 	 * 
 	*/
+	 @DS("slave")
 	List<CategoryResult> getCategoryData(String companyId);
 
 
@@ -107,6 +111,7 @@ public interface CategoryService extends IService<Category> {
 	 * @param companyId
 	 * @return
 	 */
+	@DS("slave")
 	List<Category> getTopList(int companyId,Serializable title);
 	
 	/**
@@ -114,6 +119,7 @@ public interface CategoryService extends IService<Category> {
 	 * @param parentId
 	 * @return
 	 */
+	@DS("slave")
 	List<Category> getSecondList(String parentId);
 	
 	/**
@@ -121,6 +127,7 @@ public interface CategoryService extends IService<Category> {
 	 * @param parentId
 	 * @return
 	 */
+	@DS("slave")
 	List<CategoryResult> getHouseHoldDetail(String parentId,String companyId,String cityId);
 
 
@@ -131,6 +138,7 @@ public interface CategoryService extends IService<Category> {
 	 * @param string
 	 * @return
 	 */
+	@DS("slave")
 	Map<String, Object> getDigitalDetail(CategoryBean categoryBean, String string);
 	
 

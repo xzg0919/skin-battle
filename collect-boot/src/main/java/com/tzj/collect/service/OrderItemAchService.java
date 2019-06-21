@@ -3,6 +3,7 @@ package com.tzj.collect.service;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.ali.param.OrderItemBean;
 import com.tzj.collect.api.ali.result.ComCatePrice;
@@ -26,16 +27,19 @@ public interface OrderItemAchService extends IService<OrderItemAch>{
 	 * @param orderId:订单主键
 	 * @return List<OrderItem>
 	 */
+	@DS("slave")
 	List<OrderItemAch> selectByOrderId(int orderId);
 	/**
 	 * 获取父类名称
 	 * @param orderId
 	 * @return
 	 */
+	@DS("slave")
 	List<ComCatePrice> selectCateName(int orderId);
-
+	@DS("slave")
 	List<Map<String,Object>> selectItemSumAmount (Integer orderId);
-
+	@DS("slave")
 	String orderSum(String streetId);
+	@DS("slave")
 	List<ResultDataVParam> orderDetialNum(String streetId);
 }

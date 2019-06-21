@@ -1,12 +1,14 @@
 package com.tzj.collect.api.business;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.result.CancelResult;
 import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.*;
@@ -258,7 +260,7 @@ public class BusinessOrderApi {
 			param.put("userName",order.getLinkMan());
 			param.put("userTel", order.getTel());
 			param.put("userAddress",order.getAddress()+order.getFullAddress());
-			param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+("am".equals(order.getArrivalPeriod())?"10:00:00":"16:00:00"));
+			param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+("am".equals(order.getArrivalPeriod())?"10:00:00":("pm".equals(order.getArrivalPeriod())?"16:00:00":order.getArrivalPeriod().substring(0,2)+":00:00")));
 			param.put("isCancel","N");
 			sendRocketmqMessageService.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
 		}catch (Exception e){
@@ -277,10 +279,28 @@ public class BusinessOrderApi {
 	@SignIgnore
 	@AuthIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@DS("slave")
 	public List<Category> categoriesList(){
 		EntityWrapper<Category> entityWrapper = new EntityWrapper<>();
 		entityWrapper.eq("title", 4);
 		entityWrapper.eq("del_flag", 0);
 		return categoryService.selectList(entityWrapper);
 	}
+
+	/**
+	 * test
+	 * 根据订单id将订单回调到待派发状态
+	 * @date 2019/3/27 0027
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.order.updateStatus", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object orderUpdateStatus(BOrderBean bOrderBean){
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return  orderService.orderUpdateStatus(companyAccount.getCompanyId().toString(),bOrderBean.getOrderId());
+	}
+
+
 }

@@ -1,7 +1,13 @@
 package com.tzj.collect.service.impl;
 
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayMarketingCardQueryRequest;
+import com.alipay.api.response.AlipayMarketingCardQueryResponse;
 import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.alipay.api.response.AlipayUserInfoShareResponse;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.ali.param.MemberBean;
@@ -421,6 +427,21 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		member.setUpdateDate(new Date());
 		this.updateById(member);
 		resultMap.put("member",member);
+		return resultMap;
+	}
+
+	@Override
+	public Object getPassIdUrl(Long memberId)  {
+		Member member = this.selectById(memberId);
+		AlipayMarketingCardQueryResponse response = aliPayService.getPassIdUrl(member.getAliCardNo(), member.getAliUserId());
+		Map<String,Object> resultMap = new HashMap<>();
+		if (response.isSuccess()){
+			resultMap.put("passId",response.getPassId()==null?"No":response.getPassId());
+			resultMap.put("schemaUrl",response.getSchemaUrl()==null?"No":response.getSchemaUrl());
+		}else {
+			resultMap.put("passId","No");
+			resultMap.put("schemaUrl","No");
+		}
 		return resultMap;
 	}
 	

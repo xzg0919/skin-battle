@@ -1,5 +1,6 @@
 package com.tzj.collect.api.ali;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.tzj.collect.api.ali.param.AreaBean;
 import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.common.util.MemberUtils;
@@ -89,6 +90,7 @@ public class CommunityApi {
     @Api(name = "community.getCommunity", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
     public Object getCommunity(CategoryBean categoryBean){
     	Community community = communityService.selectById(categoryBean.getCommunityId());
     	Map<String,Object> resultMap = null;

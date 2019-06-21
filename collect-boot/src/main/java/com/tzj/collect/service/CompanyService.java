@@ -2,6 +2,7 @@ package com.tzj.collect.service;
 
 import java.util.List;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.plugins.Page;
@@ -26,7 +27,7 @@ public interface CompanyService  extends IService<Company>{
 	* @return Page<Company>    返回类型
 	* @throws
 	*/
-	
+	@DS("slave")
 	Page<Company> getSearchCompany(CompanyBean companybean, PageBean pageBean);
 
 	
@@ -37,6 +38,7 @@ public interface CompanyService  extends IService<Company>{
 	 * @param comId
 	 * @return
 	 */
+	@DS("slave")
 	Integer selectCompanyCountByCom(String comId);
 	/**
 	 * @author sgmark@aliyun.com
@@ -44,6 +46,7 @@ public interface CompanyService  extends IService<Company>{
 	 * @param comId
 	 * @return
 	 */
+	@DS("slave")
 	Integer selectCategoryCountByCom(String comId);
 	/**
 	 * 根据小区id取得服务公司列表
@@ -51,6 +54,7 @@ public interface CompanyService  extends IService<Company>{
 	 * @param comId
 	 * @return
 	 */
+	@DS("slave")
 	List<Company> selectCompanyListByComm(String commId);
 
 	/**
@@ -58,6 +62,7 @@ public interface CompanyService  extends IService<Company>{
 	 * @param comId
 	 * @return
 	 */
+	@DS("slave")
 	List<BusinessRecType> getTypeByComId(String comId); 
 	/**
 	 * 根据分类Id和小区Id查询唯一的所属企业Id
@@ -66,6 +71,7 @@ public interface CompanyService  extends IService<Company>{
 	 * @param CategoryId : 分类Id
 	 * @return
 	 */
+	@DS("slave")
 	Integer getCompanyIdByIds(Integer CommunityId,Integer CategoryId);
 
 	/**
@@ -74,6 +80,7 @@ public interface CompanyService  extends IService<Company>{
 	 * @author sgmark@aliyun.com
 	 * @return
 	 */
+	@DS("slave")
 	Company getCurrent(CompanyAccount companyAccount);
 	/**
 	 * 根据分类Id和小区Id查询唯一的所属企业
@@ -83,6 +90,6 @@ public interface CompanyService  extends IService<Company>{
 	 * @return
 	 */
 	Company getCompanyByIds(Integer CommunityId,Integer CategoryId);
-
+	@DS("slave")
     String selectIotUrlByEquipmentCode(String cabinetNo);
 }

@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.CategoryAttr;
