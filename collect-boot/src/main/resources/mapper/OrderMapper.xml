@@ -41,62 +41,64 @@
         SELECT <include refid="zd"/>,b.name_ AS Recyclers_name,b.tel AS BTel,b.head_pic_url AS headPicUrl,e.price AS paymentPrice FROM sb_order a  LEFT JOIN sb_category c ON a.category_id = c.id LEFT JOIN sb_recyclers b ON b.id = a.recycler_id LEFT JOIN sb_payment e ON a.order_no = e.order_sn WHERE a.id = #{orderId} AND a.del_flag = '0'  ORDER BY a.create_date DESC
     </select> 
     <select id="getOrderListsCount" parameterType="Object" resultType="Integer">
-		SELECT
-			count(*)
-		FROM
-		sb_order a
-		LEFT JOIN sb_category c ON a.category_id = c.id
-		LEFT JOIN sb_payment p ON p.order_sn = a.order_no
-		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
-		LEFT JOIN (
-		SELECT
-		d.order_id,
-		max(d.num) AS num
-		FROM
-		sb_arrival_time_log d
-		LEFT JOIN sb_order a ON d.order_id = a.id
-		GROUP BY
-		d.order_id
-		) f ON a.id = f.order_id
-		WHERE
-		a.del_flag = '0'
-		AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
-		<if test="status != null">
-			AND  a.status_ in
-			<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
-				#{item}
-			</foreach>
-		</if>
-		<if test="orderNo != null and orderNo !='' ">
-			AND a.order_no LIKE concat(concat('%',#{orderNo}),'%')
-		</if>
-		<if test="linkMan != null and linkMan !='' ">
-			AND a.link_man LIKE concat(concat('%',#{linkMan}),'%')
-		</if>
-		<if test="recyclersName !=null and recyclersName!='' ">
-			<choose>
-				<when test="title == 3">
-					and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
-				</when>
-				<otherwise>
-					AND b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
-				</otherwise>
-			</choose>
-		</if>
-		<if test="startTime !=null and startTime !=''">
-			<![CDATA[
-					AND a.complete_date >= CONCAT(#{startTime},' 00:00:00')
-				 ]]>
-		</if>
-		<if test="endTime !=null and endTime !=''">
-			<![CDATA[
-					AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
-				 ]]>
-		</if>
-		<if test="title != null and title !='' ">
-			AND a.title  = #{title}
-		</if>
-		GROUP BY a.id
+		SELECT COUNT(1) FROM (
+			SELECT
+				a.*
+			FROM
+			sb_order a
+			LEFT JOIN sb_category c ON a.category_id = c.id
+			LEFT JOIN sb_payment p ON p.order_sn = a.order_no
+			LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+			LEFT JOIN (
+			SELECT
+			d.order_id,
+			max(d.num) AS num
+			FROM
+			sb_arrival_time_log d
+			LEFT JOIN sb_order a ON d.order_id = a.id
+			GROUP BY
+			d.order_id
+			) f ON a.id = f.order_id
+			WHERE
+			a.del_flag = '0'
+			AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
+			<if test="status != null">
+				AND  a.status_ in
+				<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="orderNo != null and orderNo !='' ">
+				AND a.order_no LIKE concat(concat('%',#{orderNo}),'%')
+			</if>
+			<if test="linkMan != null and linkMan !='' ">
+				AND a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+			</if>
+			<if test="recyclersName !=null and recyclersName!='' ">
+				<choose>
+					<when test="title == 3">
+						and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
+					</when>
+					<otherwise>
+						AND b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+					</otherwise>
+				</choose>
+			</if>
+			<if test="startTime !=null and startTime !=''">
+				<![CDATA[
+						AND a.complete_date >= CONCAT(#{startTime},' 00:00:00')
+					 ]]>
+			</if>
+			<if test="endTime !=null and endTime !=''">
+				<![CDATA[
+						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
+					 ]]>
+			</if>
+			<if test="title != null and title !='' ">
+				AND a.title  = #{title}
+			</if>
+			GROUP BY a.id
+		)a
     	</select>
     <select id="getOrderLists" parameterType="Object" resultMap="OrderResultMap">
 			SELECT
@@ -157,7 +159,7 @@
 			<if test="title != null and title !='' ">
 				AND a.title  = #{title}
 			</if>
-       			ORDER BY a.create_date DESC LIMIT #{startSize} , #{pageSize} 
+			GROUP BY a.id ORDER BY a.create_date DESC LIMIT #{startSize} , #{pageSize}
     	</select>
     	
     <select id="getAppOrderList" parameterType="com.tzj.collect.api.ali.param.OrderBean" resultType="com.tzj.collect.api.app.result.AppOrderResult">
@@ -684,7 +686,7 @@
 						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
 					 ]]>
 			</if>
-      		ORDER BY a.create_date DESC) excel on excel.area_id = saa.id
+			GROUP BY a.id	ORDER BY a.create_date DESC) excel on excel.area_id = saa.id
 	</select>
 	<select id="getBigOrderTransferList" parameterType="Object" resultType="Map">
 		SELECT
@@ -1292,7 +1294,7 @@
 						AND b.tel like #{tel}
 					</if>
 			) countAll WHERE 1 = 1 ORDER BY
-		countALL.creatDate DESC  LIMIT #{startPage},#{endPage}
+		countAll.createDate DESC  LIMIT #{startPage},#{endPage}
 	</select>
 
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->

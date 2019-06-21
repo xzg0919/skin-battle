@@ -13,12 +13,12 @@
 				sb_company_service a
 				LEFT JOIN sb_area c ON a.area_id = c.id
 				LEFT JOIN sb_area d ON c.parent_id = d.id
-				WHERE a.company_id = 1
+				WHERE a.company_id = #{companyId}
 				UNION
 				SELECT c.* FROM
 					sb_company_street_appliance a
 				INNER JOIN sb_area c ON a.area_id = c.id
-				WHERE a.company_id = 1
+				WHERE a.company_id = #{companyId}
 				) c
 			LEFT JOIN (
 				SELECT
