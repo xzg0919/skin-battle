@@ -1,13 +1,16 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.api.lexicon.result.FlcxResult;
+import com.tzj.collect.entity.FlcxEggshell;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxRecords;
 import com.tzj.collect.mapper.FlcxLexiconMapper;
 import com.tzj.collect.mapper.FlcxRecordsMapper;
+import com.tzj.collect.service.FlcxEggshellService;
 import com.tzj.collect.service.FlcxLexiconService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,9 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
     private FlcxLexiconMapper flcxLexiconMapper;
     @Resource
     private FlcxRecordsMapper flcxRecordsMapper;
+
+    @Resource
+    private FlcxEggshellService flcxEggshellService;
 
     @Transactional(readOnly = false)
     public Map lexCheck(FlcxBean flcxBean) throws ApiException {
@@ -56,7 +62,14 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
             flcxRecords.setLexiconAfter(flcxResult.getLexicon());
             flcxRecords.setLexiconsId(flcxResult.getLexiconId());
         }else {
-            map.put("msg", "empty");
+            //搜索是否存在彩蛋
+            FlcxEggshell flcxEggshell = flcxEggshellService.selectOne(new EntityWrapper<FlcxEggshell>().eq("del_flag", 0).eq("lexicon_", flcxBean.getName()));
+            if (null != flcxEggshell){
+                map.put("msg", "eggshell");
+                map.put("describe", flcxEggshell.getDescribe());
+            }else {
+                map.put("msg", "empty");
+            }
         }
         flcxRecordsMapper.insert(flcxRecords);
         return map;

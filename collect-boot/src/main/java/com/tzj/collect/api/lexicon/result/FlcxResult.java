@@ -29,6 +29,8 @@ public class FlcxResult {
 
     private String remarks;//后描述
 
+    private String isHarmful;//是否有害；1：有害
+
     public String getParentName() {
         return parentName;
     }
@@ -109,5 +111,13 @@ public class FlcxResult {
 
     public void setEngName(String engName) {
         this.engName = engName;
+    }
+
+    public String getIsHarmful() {
+        return isHarmful;
+    }
+
+    public void setIsHarmful(String isHarmful) {
+        this.isHarmful = isHarmful;
     }
 }
