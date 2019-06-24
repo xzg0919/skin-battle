@@ -2,6 +2,7 @@ package com.tzj.collect.api.ali;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.ali.param.MapAddressBean;
 import com.tzj.collect.api.ali.param.MemberAddressBean;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.*;
@@ -248,6 +249,21 @@ public class MemberAddressApi {
 		Member member = MemberUtils.getMember();
 		memberAddressBean.setMemberId(member.getId().toString());
 		return memberAddressService.saveMemberAddressd(memberAddressBean);
+	}
+
+	/**
+	 * 根据地图获取的信息保存地址
+	 * @author 王灿
+	 * @param
+	 * @return
+	 */
+	@Api(name = "memberAddress.saveMemberAddressdByMap", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public String saveMemberAddressdByMap(MapAddressBean mapAddressBean) {
+		//获取当前登录的会员
+		Member member = MemberUtils.getMember();
+		return memberAddressService.saveMemberAddressdByMap(mapAddressBean,member.getId());
 	}
     
 }

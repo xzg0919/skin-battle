@@ -1,4 +1,6 @@
 #是否启动蚂蚁森林能量接口
-isMysl: true
+isMysl: false
 #是否打开钉钉通知
-isDd: true
+isDd: false
+#五公斤推送是否用正式
+isWuGongJin: false

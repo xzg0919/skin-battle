@@ -236,37 +236,7 @@ public class BusinessOrderApi {
 	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object tosendfiveKgOrder(OrderBean orderbean){
-		SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
-		Order order = orderService.selectById(orderbean.getId());
-		Company company = companyService.selectById(order.getCompanyId());
-		if(null==company||null==company.getAliMns()){
-			return "该企业无法回收五公斤";
-		}
-		order.setDistributeTime(new Date());
-		order.setStatus(Order.OrderType.TOSEND);
-		orderService.updateById(order);
-		try{
-			Area county = areaService.selectById(order.getAreaId());
-			Area city = areaService.selectById(county.getParentId());
-			Area province = areaService.selectById(city.getParentId());
-			HashMap<String,Object> param=new HashMap<>();
-			param.put("provinceNname",province.getAreaName());
-			param.put("cityName",city.getAreaName());
-			param.put("countyName",county.getAreaName());
-			param.put("orderNo",order.getOrderNo());
-			param.put("orderType","废纺衣物");
-			param.put("channelMemberId","RC20190427231730100044422");
-			param.put("orderAmount",order.getQty());
-			param.put("userName",order.getLinkMan());
-			param.put("userTel", order.getTel());
-			param.put("userAddress",order.getAddress()+order.getFullAddress());
-			param.put("arrivalTime", sim.format(order.getArrivalTime())+" "+("am".equals(order.getArrivalPeriod())?"10:00:00":("pm".equals(order.getArrivalPeriod())?"16:00:00":order.getArrivalPeriod().substring(0,2)+":00:00")));
-			param.put("isCancel","N");
-			sendRocketmqMessageService.sendDeliveryOrder(JSON.toJSONString(param),company.getAliMns());
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-		return "操作成功";
+		return  orderService.tosendfiveKgOrder(orderbean.getId());
 	}
 	/**
 	 * test

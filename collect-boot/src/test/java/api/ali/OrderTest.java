@@ -39,23 +39,26 @@ public class OrderTest {
 
                 String  location = "121.446438,30.915836";
 
-            AmapAroundParam aroundParam = new AmapAroundParam();
-            aroundParam.setLocation("121.446438,30.915836");
-            aroundParam.setOffset("10");
-            aroundParam.setPage("1");
-            aroundParam.setSearchKey("酒店");
-//
+            MapAddressBean mapAddressBean = new MapAddressBean();
+            mapAddressBean.setId("92477");
+            mapAddressBean.setAdcCode("330103");
+            mapAddressBean.setAddress("浙江省杭州市下城区朝晖街道环球中心西湖文化广场");
+            mapAddressBean.setCity("杭州市");
+            mapAddressBean.setCityCode("0571");
+            mapAddressBean.setDistrict("下城区");
+            mapAddressBean.setLocation("121.451897,31.229806");
+            mapAddressBean.setName("环球中心");
+            mapAddressBean.setProvince("浙江省");
+            mapAddressBean.setTownCode("330103006000");
+            mapAddressBean.setTownShip("朝晖街道");
+            mapAddressBean.setIsSelected("1");
+            mapAddressBean.setUserName("王先hao");
+            mapAddressBean.setTel("13252525252");
+            mapAddressBean.setHouseNumber("测试101");
 
-
-            XcxSourceNumBean xcxSourceNumBean = new XcxSourceNumBean();
-            xcxSourceNumBean.setCode("101");
-
-            AreaBean areaBean = new AreaBean();
-            areaBean.setCityId("9699");
-            areaBean.setStreetName("矿区街道");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","xcx.saveXcxSourceNum");
+                param.put("name","memberAddress.saveMemberAddressdByMap");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -63,7 +66,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",xcxSourceNumBean);
+                param.put("data",mapAddressBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

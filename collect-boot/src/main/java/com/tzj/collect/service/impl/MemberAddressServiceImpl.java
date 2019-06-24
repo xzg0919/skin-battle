@@ -3,8 +3,10 @@ package com.tzj.collect.service.impl;
 import java.util.List;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.tzj.collect.api.ali.param.MapAddressBean;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.service.CommunityService;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -233,5 +235,60 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			return "保存地址失败";
 		}
 		return "保存地址成功";
+	}
+
+	@Transactional
+	@Override
+	public String saveMemberAddressdByMap(MapAddressBean mapAddressBean, long memberId) {
+		Integer cityId = -1;
+		Integer areaId = -1;
+		Integer streetId = -1;
+		Integer communityId = -1;
+		Area city = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", mapAddressBean.getCity()).eq("type", 1));
+		if(null!=city){
+			cityId = city.getId().intValue();
+		}
+		Area district = areaService.selectOne(new EntityWrapper<Area>().eq("parent_id", cityId).eq("area_name", mapAddressBean.getDistrict()).eq("type", 2));
+		if(null!=district){
+			areaId = district.getId().intValue();
+		}
+		Area townShip = areaService.selectOne(new EntityWrapper<Area>().eq("parent_id", areaId).eq("area_name", mapAddressBean.getTownShip()).eq("type", 3));
+		if(null!=townShip){
+			streetId = townShip.getId().intValue();
+		}
+		Community community = communityService.selectOne(new EntityWrapper<Community>().eq("area_id", streetId).eq("name_", mapAddressBean.getName()));
+		if(null!=community){
+			communityId = community.getId().intValue();
+		}
+		if("1".equals(mapAddressBean.getIsSelected())){
+			MemberAddress memberAddress1 = this.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberId).eq("city_id",city.getId()));
+			if (null != memberAddress1){
+				memberAddress1.setIsSelected(0);
+				this.updateById(memberAddress1);
+			}
+		}
+		MemberAddress memberAddress = null;
+		//判断是否是修改还是新增
+		if(StringUtils.isNotBlank(mapAddressBean.getId())) {
+			memberAddress = this.selectById(mapAddressBean.getId());
+			if (null == memberAddress){
+				throw new ApiException("更改的地址不存在");
+			}
+		}else {
+			memberAddress = new MemberAddress();
+		}
+		memberAddress.setMemberId(memberId+"");
+		memberAddress.setName(mapAddressBean.getUserName());
+		memberAddress.setTel(mapAddressBean.getTel());
+		memberAddress.setCityId(cityId);
+		memberAddress.setAreaId(areaId);
+		memberAddress.setStreetId(streetId);
+		memberAddress.setCommunityId(communityId);
+		memberAddress.setAddress(mapAddressBean.getAddress());
+		memberAddress.setHouseNumber(mapAddressBean.getHouseNumber());
+		memberAddress.setIsSelected(Integer.parseInt(mapAddressBean.getIsSelected()));
+		this.insertOrUpdate(memberAddress);
+
+		return "操作成功";
 	}
 }

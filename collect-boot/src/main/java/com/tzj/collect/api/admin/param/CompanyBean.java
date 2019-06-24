@@ -34,6 +34,7 @@ public class CompanyBean {
     private Integer streetId;//街道id
 	private Integer countyId;//区县id
 	private Integer cityId;//市id
+	private String isOpenOrder;//是否打开自动开 0关闭 1打开
 
 	public Integer getCityId() {
 		return cityId;
@@ -181,5 +182,13 @@ public class CompanyBean {
 
 	public void setCompanyName(String companyName) {
 		CompanyName = companyName;
+	}
+
+	public String getIsOpenOrder() {
+		return isOpenOrder;
+	}
+
+	public void setIsOpenOrder(String isOpenOrder) {
+		this.isOpenOrder = isOpenOrder;
 	}
 }

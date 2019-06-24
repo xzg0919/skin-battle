@@ -301,4 +301,13 @@ public interface OrderService extends IService<Order> {
     Map<String, Object> getBigOrderListByPhone(OrderBean orderbean);
 
 	Object orderUpdateStatus(String companyId,String orderId);
+
+	/**
+	 * 根据订单id自动派单给具体的回收人员
+	 * @param orderId
+	 * @return
+	 */
+	String orderSendRecycleByOrderId(Integer orderId);
+
+	Object tosendfiveKgOrder(Integer orderId);
 }

@@ -74,6 +74,8 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	
 	public List<Recyclers> getRecyclersLists(@Param("companyId")Integer companyId,@Param("orderId")Integer orderId,@Param("title")Integer title);
 
+	public List<Recyclers> getSendOrderRecyclersList(@Param("companyId")Integer companyId,@Param("orderId")Integer orderId,@Param("title")Integer title);
+
 	/**
 	 * 获取该企业的所有业务经理信息
 	 * @author wangcan
