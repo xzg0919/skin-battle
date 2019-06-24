@@ -19,6 +19,8 @@ public class FlcxResult {
 
     private String parentName;//大分类名称
 
+    private String engName;//英文名称
+
     private List<String> imgUrl;//子分类图片地址
 
     private String describe;//上描述
@@ -99,5 +101,13 @@ public class FlcxResult {
 
     public void setRecover(String recover) {
         this.recover = recover;
+    }
+
+    public String getEngName() {
+        return engName;
+    }
+
+    public void setEngName(String engName) {
+        this.engName = engName;
     }
 }
