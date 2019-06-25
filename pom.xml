@@ -51,7 +51,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <HikariCP.version>2.4.13</HikariCP.version>
         <fastjson.version>1.2.39</fastjson.version>
-        <hufm.version>4.1.1</hufm.version>
+        <hufm.version>4.1.2</hufm.version>
         <mybatisplus.version>2.3.3</mybatisplus.version>
         <skipTests>true</skipTests>
     </properties>

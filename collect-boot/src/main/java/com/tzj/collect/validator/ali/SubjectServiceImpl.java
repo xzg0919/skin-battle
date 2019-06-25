@@ -47,6 +47,9 @@ public class SubjectServiceImpl implements SubjectService{
         authorities.add(ALI_API_COMMON_AUTHORITY);
         subject.setAuthorities(authorities);
 
+        //TODO： 分表后，后面需要取消 User 对象
+
+
         setSubjectCache(token,subject);
 
         return subject;
