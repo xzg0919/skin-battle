@@ -15,7 +15,7 @@ server:
 spring:
   application:
     name: collect
-  # 环境 dev|test|pro   dynamicdb 多数据源配置
+  # 环境 dev|test|pro   dynamicdb 测试多数据源配置               dynamicdb-pro 正式多数据源配置
   profiles:
     active: dynamicdb
   # cache配置
