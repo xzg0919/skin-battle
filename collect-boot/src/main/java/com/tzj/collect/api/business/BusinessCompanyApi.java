@@ -222,4 +222,18 @@ public class BusinessCompanyApi {
 		}
 		return resultList;
 	}
+
+	/**
+	 * 是否打开自定派单
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.company.isOpenOrder", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object isOpenOrder(CompanyBean companyBean) {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return companyService.isOpenOrder(companyBean.getIsOpenOrder(),companyAccount.getCompanyId());
+	}
 }

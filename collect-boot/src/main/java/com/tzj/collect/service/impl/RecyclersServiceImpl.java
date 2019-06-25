@@ -192,6 +192,11 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 		Order order = orderService.selectById(orderId);
 		return recyclersMapper.getRecyclersLists(companyId,orderId,Integer.parseInt(order.getTitle().getValue()+""));
 	}
+	@Override
+	public List<Recyclers> getSendOrderRecyclersList(Integer orderId) {
+		Order order = orderService.selectById(orderId);
+		return recyclersMapper.getSendOrderRecyclersList(order.getCompanyId(),orderId,Integer.parseInt(order.getTitle().getValue()+""));
+	}
 
 	/**
 	 * 获取该企业的所有业务经理信息

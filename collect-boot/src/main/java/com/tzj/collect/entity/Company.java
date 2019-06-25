@@ -29,6 +29,8 @@ public class Company extends DataEntity<Long> {
 
 	private String aliMns;
 
+	private String isOpenOrder;//是否打开自动开 0关闭 1打开
+
 	/**
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示
 	 */
@@ -241,5 +243,13 @@ public class Company extends DataEntity<Long> {
 
 	public void setIotUrl(String iotUrl) {
 		this.iotUrl = iotUrl;
+	}
+
+	public String getIsOpenOrder() {
+		return isOpenOrder;
+	}
+
+	public void setIsOpenOrder(String isOpenOrder) {
+		this.isOpenOrder = isOpenOrder;
 	}
 }

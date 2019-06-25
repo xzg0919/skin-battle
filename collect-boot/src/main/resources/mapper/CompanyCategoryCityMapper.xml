@@ -76,24 +76,20 @@
 			scc.*
 		FROM
 			sb_category scc
-		INNER JOIN sb_company_category_city sccc ON sccc.parent_id = scc.id
+		LEFT JOIN (SELECT sccc.id AS aId,sccc.price AS aprice,sccc.parent_id AS aparentId FROM sb_company_category_city sccc WHERE sccc.company_id = #{companyId} AND sccc.city_id = #{cityId} ) sccc ON sccc.aparentId = scc.id
+		LEFT JOIN (SELECT sc.id AS bId,sc.price AS bprice,sc.parent_id AS bparentId FROM sb_company_category sc WHERE sc.company_id = #{companyId} AND sc.del_flag = 0) sc ON sc.bparentId = scc.id
 		WHERE
 			scc.title = #{title}
 		AND scc.level_ = #{level}
-		AND sccc.company_id = #{companyId}
-		AND sccc.city_id = #{cityId}
-		AND FORMAT(sccc.price, 2) > 0
+		AND(sccc.aprice > 0 OR (sccc.aId is null AND sc.bprice >0))
 		UNION ALL
 		SELECT DISTINCT
 			a.*
 		FROM
 			sb_category a
-		inner JOIN sb_company_category_city b ON a.id = b.parent_id
 		WHERE
 			a.level_ = #{level}
 		AND a.title = #{title}
-		AND b.company_id = #{companyId}
-		AND b.city_id = #{cityId}
 		AND a.unuseful = '1'
 	 </select>
 

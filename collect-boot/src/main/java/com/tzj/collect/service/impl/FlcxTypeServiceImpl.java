@@ -35,4 +35,6 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
         map.put("typeList", flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", 0).eq("level_", 0).eq("parent_id", 0)));
         return map;
     }
+
+
 }

@@ -101,4 +101,14 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 
 		return companyMapper.selectIotUrlByEquipmentCode(cabinetNo);
 	}
+
+	@Transactional
+	@Override
+	public String isOpenOrder(String isOpenOrder, Integer companyId) {
+
+		Company company = this.selectById(companyId);
+		company.setIsOpenOrder(isOpenOrder);
+		this.updateById(company);
+		return "操作成功";
+	}
 }

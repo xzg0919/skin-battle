@@ -143,8 +143,11 @@ public interface RecyclersService extends IService<Recyclers>{
  * @param companyId:企业Id
  * @return
  */
-@DS("slave")
-List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
+	@DS("slave")
+	List<Recyclers> getRecyclersList2(Integer companyId,Integer orderId);
+
+	@DS("slave")
+	List<Recyclers> getSendOrderRecyclersList(Integer orderId);
 
 	/**
 	 * 获取该企业的所有业务经理信息

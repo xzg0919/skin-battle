@@ -47,14 +47,20 @@ public class FiveKgController {
     private AliPayService aliPayService;
     @Autowired
     private AnsycMyslService ansycMyslService;
+    @Autowired
+    private ApplicationInit applicationInit;
 
 
     @RequestMapping(value = "/order/update",method = RequestMethod.POST)
     public String orderUpdate(@RequestBody String body, HttpServletResponse response){
+        String rcketMqConst = RocketMqConst.TOPIC_NAME_RETURN_ORDER_TEST;
+        if("true".equals(applicationInit.getIsMysl())){
+            rcketMqConst = RocketMqConst.TOPIC_NAME_RETURN_ORDER;
+        }
         System.out.println("收到的body-----"+body);
         Notification notification=null;
         try {
-            notification=processMNSMessage(body, RocketMqConst.TOPIC_NAME_RETURN_ORDER);
+            notification=processMNSMessage(body, rcketMqConst);
         } catch (Exception e) {
             //说明接收到的消息有问题，直接丢弃掉
             System.out.println("message有问题:"+e.getMessage());

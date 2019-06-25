@@ -19,6 +19,8 @@ public class FlcxResult {
 
     private String parentName;//大分类名称
 
+    private String engName;//英文名称
+
     private List<String> imgUrl;//子分类图片地址
 
     private String describe;//上描述
@@ -26,6 +28,8 @@ public class FlcxResult {
     private List<Map<String, Object>> nameLists;//小分类名称地址
 
     private String remarks;//后描述
+
+    private String isHarmful;//是否有害；1：有害
 
     public String getParentName() {
         return parentName;
@@ -99,5 +103,21 @@ public class FlcxResult {
 
     public void setRecover(String recover) {
         this.recover = recover;
+    }
+
+    public String getEngName() {
+        return engName;
+    }
+
+    public void setEngName(String engName) {
+        this.engName = engName;
+    }
+
+    public String getIsHarmful() {
+        return isHarmful;
+    }
+
+    public void setIsHarmful(String isHarmful) {
+        this.isHarmful = isHarmful;
     }
 }

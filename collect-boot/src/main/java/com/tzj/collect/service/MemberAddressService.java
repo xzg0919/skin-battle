@@ -2,6 +2,7 @@ package com.tzj.collect.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
+import com.tzj.collect.api.ali.param.MapAddressBean;
 import com.tzj.collect.api.ali.param.MemberAddressBean;
 import com.tzj.collect.entity.MemberAddress;
 
@@ -41,4 +42,6 @@ public interface MemberAddressService extends IService<MemberAddress>{
 	 * @return
 	 */
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean);
+
+	String saveMemberAddressdByMap(MapAddressBean mapAddressBean,long memberId);
 }

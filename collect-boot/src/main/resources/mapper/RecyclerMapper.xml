@@ -163,6 +163,32 @@
 		AND a.is_manager = 1
 		AND d.status_ = '1'
 	</select>
+	<select id="getSendOrderRecyclersList" resultMap="RecycleResultMap" parameterType="Integer">
+		SELECT DISTINCT
+		<include refid="zd"/>
+		FROM
+		sb_order f
+		<if test="title == 1">
+			INNER JOIN sb_recyclers_range_appliance c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		<if test="title == 2">
+			INNER JOIN sb_recyclers_range_household c ON f.street_id = c.street_id AND f.company_id = c.company_id and c.community_id = f.community_id
+		</if>
+		<if test="title == 4">
+			INNER JOIN sb_recyclers_range_big c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		INNER JOIN sb_company_recycler d ON c.recyclers_id = d.recycler_id AND f.company_id = d.company_id
+		INNER JOIN sb_recyclers a ON c.recyclers_id = a.id
+		INNER JOIN sb_recyclers_title e ON f.title = e.title_id AND e.recycle_id = a.id
+		WHERE
+		f.id =  #{orderId}
+		AND c.del_flag = 0
+		AND d.del_flag = 0
+		AND e.del_flag = 0
+		AND f.del_flag = 0
+		AND a.is_manager = 1
+		AND d.status_ = '1'
+	</select>
 	
 	 <resultMap type="com.tzj.collect.entity.Recyclers" id="RecycleResultMap">  
         <id property="id" column="id" />  

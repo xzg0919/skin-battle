@@ -212,19 +212,21 @@ public class OrderApi {
     	//保存订单
     	Map<String,Object> resultMap = orderService.saveOrder(orderbean);
     	//钉钉消息赋值回收公司名称
-    	if (companyId != null && !"".equals(companyId)) {
-			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", companyId));
+		Company company = companyService.selectById(companyId);
+		if(null != company){
+			//判断是否开启自动派单
+			if("1".equals(company.getIsOpenOrder())){
+				orderService.orderSendRecycleByOrderId((Integer) resultMap.get("id"));
+			}
 			orderbean.setCompanyName(company.getName());
 			orderbean.setDingDingUrl(company.getDingDingUrl());
-		}else{
-			throw new ApiException("回收公司异常！！！！！");
+			if("操作成功".equals(resultMap.get("msg")+"")) {
+				if("true".equals(applicationInit.getIsDd())) {
+					//钉钉通知
+					asyncService.notifyDingDingOrderCreate(orderbean);
+				}
+			}
 		}
-    	if("操作成功".equals(resultMap.get("msg")+"")) {
-    		if("true".equals(applicationInit.getIsDd())) {
-    			//钉钉通知
-    			asyncService.notifyDingDingOrderCreate(orderbean);
-    		}
-    	}
     	try {
 			webSocketServer.sendInfo(companyId, "你有新订单了");
 		} catch (Exception e) {
@@ -342,17 +344,19 @@ public class OrderApi {
 		orderbean.setOrderNo(orderNo);
 		Map<String,Object> resultMap = (Map<String,Object>)orderService.XcxSaveOrder(orderbean,member);
 		//钉钉消息赋值回收公司名称
-		if (companyId != null && !"".equals(companyId)) {
-			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", companyId));
+		Company company = companyService.selectById(companyId);
+		if(null != company){
+			//判断是否开启自动派单
+			if("1".equals(company.getIsOpenOrder())){
+				orderService.orderSendRecycleByOrderId((Integer) resultMap.get("id"));
+			}
 			orderbean.setCompanyName(company.getName());
 			orderbean.setDingDingUrl(company.getDingDingUrl());
-		}else{
-			return "回收公司异常";
-		}
-		if("操作成功".equals(resultMap.get("msg")+"")) {
-			if("true".equals(applicationInit.getIsDd())) {
-				//钉钉通知
-				asyncService.notifyDingDingOrderCreate(orderbean);
+			if("操作成功".equals(resultMap.get("msg")+"")) {
+				if("true".equals(applicationInit.getIsDd())) {
+					//钉钉通知
+					asyncService.notifyDingDingOrderCreate(orderbean);
+				}
 			}
 		}
 		try {
@@ -448,10 +452,20 @@ public class OrderApi {
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
 		Map<String,Object> resultMap = (Map<String,Object>)orderService.savefiveKgOrder(orderbean);
-		if("操作成功".equals(resultMap.get("msg")+"")) {
-			if("true".equals(applicationInit.getIsDd())) {
-				//钉钉通知
-				asyncService.notifyDingDingOrderCreate(orderbean);
+		//钉钉消息赋值回收公司名称
+		Company company = companyService.selectById(streeCompanyId);
+		if(null != company){
+			//判断是否开启自动派单
+			if("1".equals(company.getIsOpenOrder())){
+				orderService.tosendfiveKgOrder((Integer) resultMap.get("id"));
+			}
+			orderbean.setCompanyName(company.getName());
+			orderbean.setDingDingUrl(company.getDingDingUrl());
+			if("操作成功".equals(resultMap.get("msg")+"")) {
+				if("true".equals(applicationInit.getIsDd())) {
+					//钉钉通知
+					asyncService.notifyDingDingOrderCreate(orderbean);
+				}
 			}
 		}
 		if("操作成功".equals(resultMap.get("msg")+"")){
