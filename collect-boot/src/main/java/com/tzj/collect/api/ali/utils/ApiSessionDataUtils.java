@@ -14,7 +14,9 @@ public class ApiSessionDataUtils {
         if(subject==null){
             throw new ApiException("request中subject为空，确认此接口有token参数传入！");
         }
-        ApiSessionData apiSessionData= (ApiSessionData) subject.getUser();
+
+        //为了兼容旧版本===
+        ApiSessionData apiSessionData= (ApiSessionData) subject.getNewSessionData();
         return apiSessionData;
     }
 }
