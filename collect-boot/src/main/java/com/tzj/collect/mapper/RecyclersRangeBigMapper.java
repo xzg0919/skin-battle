@@ -32,4 +32,6 @@ public interface RecyclersRangeBigMapper extends BaseMapper<RecyclersRangeBig> {
      * @return
      */
     List<Map<String,Object>> getCommunityRecyclersRange(@Param("streetId")String streetId,@Param("recycleId")String recycleId,@Param("companyId")String companyId);
+
+    Map<String,Object> companyAreaRecyclerRanges(String companyId);
 }

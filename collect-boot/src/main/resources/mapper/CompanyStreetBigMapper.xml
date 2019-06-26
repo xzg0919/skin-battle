@@ -13,4 +13,56 @@
         AND b.del_flag = 0
         AND a.del_flag = 0
     </select>
+    <select id="companyAreaRanges" parameterType="String" resultType="Map">
+        SELECT DISTINCT
+            (SELECT
+            COUNT(1) AS num
+        FROM
+            (
+                SELECT
+                    c.*
+                FROM
+                    sb_company_street_big b
+                INNER JOIN sb_area c ON b.area_id = c.id
+                WHERE
+                    b.company_id = #{companyId}
+                AND b.del_flag = 0
+                GROUP BY
+                    c.parent_id
+            )a ) AS cityNum,
+        (SELECT
+            COUNT(1) AS num
+        FROM
+            (
+                SELECT
+                    *
+                FROM
+                    sb_company_street_big b
+                WHERE
+                    b.company_id = #{companyId}
+                AND b.del_flag = 0
+                GROUP BY
+                    b.area_id
+            )a) AS areaNum,
+        (SELECT
+            COUNT(1) AS num
+        FROM
+            (
+                SELECT
+                    *
+                FROM
+                    sb_company_street_big b
+                WHERE
+                    b.company_id = #{companyId}
+                AND b.del_flag = 0
+                GROUP BY
+                    b.street_id
+            ) a) AS streetNum,
+        0 AS community
+        FROM
+            sb_company a
+        WHERE
+            a.id = #{companyId}
+        AND a.del_flag = 0
+    </select>
 </mapper>

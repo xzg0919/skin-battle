@@ -51,4 +51,9 @@ public class RecyclersRangeBigServiceImpl extends ServiceImpl<RecyclersRangeBigM
     public List<Map<String,Object>> getCommunityRecyclersRange(String streetId, String recycleId, String companyId){
         return recyclersRangeBigMapper.getCommunityRecyclersRange(streetId,recycleId,companyId);
     }
+
+    @Override
+    public Map<String,Object> companyAreaRecyclerRanges(String companyId){
+        return recyclersRangeBigMapper.companyAreaRecyclerRanges(companyId);
+    }
 }

@@ -489,7 +489,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						orderItem.setAmount(item.getAmount());
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
 						if("1".equals(isCash)){
-							amount += item.getAmount()*2;
+							amount += item.getAmount()*10;
 						}else{
 							amount += item.getAmount();
 						}
@@ -512,7 +512,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			OrderItem item = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id", orderbean.getId()).groupBy("order_id"));
 			if (item != null) {
 				Category categorys = categoryService.selectById(item.getCategoryId());
-				amount = categorys.getGreenCount();
+				if("1".equals(isCash)){
+					amount = categorys.getGreenCount()*10;
+				}else {
+					amount = categorys.getGreenCount();
+				}
 			}
 		}
 		System.out.println("回收生活垃圾总重量为 ：" + ApiUtils.privatedoublegetTwoDecimal(amount));

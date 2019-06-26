@@ -5,6 +5,9 @@ import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.entity.CompanyServiceRange;
 
+import java.util.List;
+import java.util.Map;
+
 public interface CompanyServiceMapper extends BaseMapper<CompanyServiceRange>{
 
 	
@@ -20,5 +23,7 @@ public interface CompanyServiceMapper extends BaseMapper<CompanyServiceRange>{
 	*/
 	
 	int selectCompanyServiceByCompanyId(@Param("companyId") long id);
+
+	Map<String,Object> companyAreaRanges(String companyId);
 
 }

@@ -1,11 +1,17 @@
 package com.tzj.collect.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.tzj.collect.entity.CompanyShare;
+import com.tzj.collect.service.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +24,24 @@ import com.tzj.collect.api.business.result.BusinessRecType;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.mapper.CompanyMapper;
-import com.tzj.collect.service.CompanyService;
 
 @Service
 @Transactional(readOnly=true)
 public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> implements CompanyService {
 	@Resource
 	private CompanyMapper companyMapper;
+	@Autowired
+	private RecyclersRangeApplianceService recyclersRangeApplianceService;
+	@Autowired
+	private RecyclersRangeHouseholdService recyclersRangeHouseholdService;
+	@Autowired
+	private RecyclersRangeBigService recyclersRangeBigService;
+	@Autowired
+	private CompanyServiceService companyServiceService;
+	@Autowired
+	private CompanyStreetBigService companyStreetBigService;
+	@Autowired
+	private CompanyStreetApplianceService companyStreetApplianceService;
 
 	
 	/**
@@ -110,5 +127,36 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		company.setIsOpenOrder(isOpenOrder);
 		this.updateById(company);
 		return "操作成功";
+	}
+	@Override
+	public  Object companyAreaRanges(String title,String companyId){
+		Map<String,Object> resutMap = new HashMap<>();
+		Map<String,Object> companyRange = new HashMap<>();
+		Map<String,Object> companyRecycleRange = new HashMap<>();
+		if ("1".equals(title)){
+			companyRange = companyStreetApplianceService.companyAreaRanges(companyId);
+			companyRecycleRange = recyclersRangeApplianceService.companyAreaRecyclerRanges(companyId);
+		}else if("2".equals(title)){
+			companyRange = companyServiceService.companyAreaRanges(companyId);
+			companyRecycleRange = recyclersRangeHouseholdService.companyAreaRecyclerRanges(companyId);
+		}else if("4".equals(title)){
+			companyRange = companyStreetBigService.companyAreaRanges(companyId);
+			companyRecycleRange = recyclersRangeBigService.companyAreaRecyclerRanges(companyId);
+		}
+		if(companyRange.isEmpty()){
+			companyRange.put("cityNum",0);
+			companyRange.put("areaNum",0);
+			companyRange.put("streetNum",0);
+			companyRange.put("communityNum",0);
+		}
+		if(companyRecycleRange.isEmpty()){
+			companyRecycleRange.put("cityNum",0);
+			companyRecycleRange.put("areaNum",0);
+			companyRecycleRange.put("streetNum",0);
+			companyRecycleRange.put("communityNum",0);
+		}
+		resutMap.put("companyRange",companyRange);
+		resutMap.put("companyRecycleRange",companyRecycleRange);
+		return resutMap;
 	}
 }

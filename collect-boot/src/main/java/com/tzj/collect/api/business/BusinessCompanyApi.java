@@ -236,4 +236,40 @@ public class BusinessCompanyApi {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		return companyService.isOpenOrder(companyBean.getIsOpenOrder(),companyAccount.getCompanyId());
 	}
+
+	/**
+	 * 公司开通区域信息
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.company.areaRanges", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object companyAreaRanges(CompanyBean companyBean) {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return companyService.companyAreaRanges(companyBean.getTitle(),companyAccount.getCompanyId().toString());
+	}
+
+	/**
+	 * 公司开通区域信息
+	 * @author wangcan
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.company.getIsOpenOrder", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@DS("slave")
+	public Object getIsOpenOrder() {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		Map<String,Object> resultMap = new HashMap<>();
+		Company company = companyService.selectById(companyAccount.getCompanyId());
+		if (null != company.getIsOpenOrder()){
+			resultMap.put("isOpenOrder",company.getIsOpenOrder());
+		}else {
+			resultMap.put("isOpenOrder",0);
+		}
+		return resultMap;
+	}
 }

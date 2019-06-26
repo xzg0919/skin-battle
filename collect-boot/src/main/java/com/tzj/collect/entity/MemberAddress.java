@@ -2,6 +2,7 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 /**
 *
@@ -10,6 +11,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 * @Author 王灿
 **/
 @TableName("sb_member_address")
+@Data
 public class MemberAddress extends  DataEntity<Long>{
      private Long id;
 	 /**
@@ -84,140 +86,25 @@ public class MemberAddress extends  DataEntity<Long>{
 	 */
 	@TableField(exist = false)
 	private String isFiveKg;
+	/**
+	 * 城市名称
+	 */
+	private String cityName;
+	/**
+	 * 行政区名称
+	 */
+	private String areaName;
+	/**
+	 * 街道名称
+	 */
+	private String streetName;
+	/**
+	 * 小区名称
+	 */
+	private String communityName;
+	/**
+	 * 国际街道编码
+	 */
+	private String townCode;
 
-	public String getIsDigThing() {
-		return isDigThing;
-	}
-
-	public void setIsDigThing(String isDigThing) {
-		this.isDigThing = isDigThing;
-	}
-
-	public String getIsFiveKg() {
-		return isFiveKg;
-	}
-
-	public void setIsFiveKg(String isFiveKg) {
-		this.isFiveKg = isFiveKg;
-	}
-
-	public String getMemberId() {
-		return memberId;
-	}
-
-	public void setMemberId(String memberId) {
-		this.memberId = memberId;
-	}
-
-	public Integer getAreaId() {
-		return areaId;
-	}
-
-	public void setAreaId(Integer areaId) {
-		this.areaId = areaId;
-	}
-
-	public Integer getStreetId() {
-		return streetId;
-	}
-
-	public void setStreetId(Integer streetId) {
-		this.streetId = streetId;
-	}
-
-	public Integer getCommunityId() {
-		return communityId;
-	}
-
-	public void setCommunityId(Integer communityId) {
-		this.communityId = communityId;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getHouseNumber() {
-		return houseNumber;
-	}
-
-	public void setHouseNumber(String houseNumber) {
-		this.houseNumber = houseNumber;
-	}
-
-	public String getTel() {
-		return tel;
-	}
-
-	public void setTel(String tel) {
-		this.tel = tel;
-	}
-
-	public Integer getIsSelected() {
-		return isSelected;
-	}
-
-	public void setIsSelected(Integer isSelected) {
-		this.isSelected = isSelected;
-	}
-	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getCommByUserInput() {
-		return commByUserInput;
-	}
-
-	public void setCommByUserInput(String commByUserInput) {
-		this.commByUserInput = commByUserInput;
-	}
-
-	public Integer getCityId() {
-		return cityId;
-	}
-
-	public void setCityId(Integer cityId) {
-		this.cityId = cityId;
-	}
-
-	public String getIsFixedPoint() {
-		return isFixedPoint;
-	}
-
-	public void setIsFixedPoint(String isFixedPoint) {
-		this.isFixedPoint = isFixedPoint;
-	}
-
-	public String getIsDigital() {
-		return isDigital;
-	}
-
-	public void setIsDigital(String isDigital) {
-		this.isDigital = isDigital;
-	}
-
-	public String getIsHousehold() {
-		return isHousehold;
-	}
-
-	public void setIsHousehold(String isHousehold) {
-		this.isHousehold = isHousehold;
-	}
 }

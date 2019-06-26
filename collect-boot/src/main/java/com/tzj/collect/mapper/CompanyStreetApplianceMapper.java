@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.entity.CompanyStreetAppliance;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+import java.util.Map;
+
 public interface CompanyStreetApplianceMapper extends BaseMapper<CompanyStreetAppliance> {
 
     /**
@@ -14,5 +17,5 @@ public interface CompanyStreetApplianceMapper extends BaseMapper<CompanyStreetAp
      */
     Integer selectStreetApplianceCompanyId(@Param("categoryId") Integer categoryId,@Param("streetId")Integer streetId);
 
-
+    Map<String,Object> companyAreaRanges(String companyId);
 }

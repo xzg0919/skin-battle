@@ -94,4 +94,7 @@ public interface CompanyService  extends IService<Company>{
     String selectIotUrlByEquipmentCode(String cabinetNo);
 
 	String isOpenOrder(String isOpenOrder,Integer companyId);
+
+	@DS("slave")
+	Object companyAreaRanges(String title,String companyId);
 }
