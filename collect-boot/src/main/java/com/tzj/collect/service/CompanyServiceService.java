@@ -4,6 +4,9 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.CompanyServiceRange;
 
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * @Author 王灿
@@ -34,5 +37,8 @@ public interface CompanyServiceService extends IService<CompanyServiceRange>{
  */
 	@DS("slave")
 	CompanyServiceRange selectRangeByCommunityId(Integer delectCommunityId);
+
+	@DS("slave")
+	Map<String,Object> companyAreaRanges(String companyId);
 
 }

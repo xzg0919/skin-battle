@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 回收企业服务范围ServiceImpl
  * @Author 王灿
@@ -33,6 +36,11 @@ public class CompanyServiceServiceImpl extends ServiceImpl<CompanyServiceMapper,
 		EntityWrapper<CompanyServiceRange> wrapp = new EntityWrapper<CompanyServiceRange>();
 		
 		return selectOne(wrapp.eq("community_id", delectCommunityId));
+	}
+
+	@Override
+	public Map<String,Object> companyAreaRanges(String companyId) {
+		return companyServiceMapper.companyAreaRanges(companyId);
 	}
 
 }
