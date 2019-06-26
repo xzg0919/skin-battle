@@ -1,6 +1,5 @@
 package com.tzj.collect.validator.terminal;
 
-import com.tzj.collect.common.util.CacheUtils;
 import com.tzj.collect.entity.EnterpriseTerminal;
 import com.tzj.collect.service.EnterpriseTerminalService;
 import com.tzj.module.api.entity.Subject;

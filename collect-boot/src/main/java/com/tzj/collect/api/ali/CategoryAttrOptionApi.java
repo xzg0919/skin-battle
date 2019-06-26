@@ -1,6 +1,5 @@
 package com.tzj.collect.api.ali;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.entity.CategoryAttr;
 import com.tzj.collect.entity.CategoryAttrOption;

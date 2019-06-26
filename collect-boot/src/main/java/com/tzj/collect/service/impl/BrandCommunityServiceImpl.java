@@ -1,11 +1,8 @@
 package com.tzj.collect.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.BrandCommunity;
-import com.tzj.collect.entity.Company;
 import com.tzj.collect.mapper.BrandCommunityMapper;
-import com.tzj.collect.mapper.CompanyMapper;
 import com.tzj.collect.service.BrandCommunityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

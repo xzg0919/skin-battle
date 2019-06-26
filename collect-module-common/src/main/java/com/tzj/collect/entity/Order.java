@@ -1,16 +1,13 @@
 package com.tzj.collect.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IEnum;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IEnum;
-import com.tzj.collect.api.business.result.ApiUtils;
-
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -412,11 +409,11 @@ public class Order extends DataEntity<Long> {
 
 	public String getPaymentPrice() {
 		if (null != paymentPrice){
-			return ApiUtils.doublegetTwoDecimal(Float.parseFloat(paymentPrice));
+			return ApiStringUtils.doublegetTwoDecimal(Float.parseFloat(paymentPrice));
 		}else if (null != achPrice){
-			return ApiUtils.doublegetTwoDecimal(achPrice.floatValue());
+			return ApiStringUtils.doublegetTwoDecimal(achPrice.floatValue());
 		}
-		return ApiUtils.doublegetTwoDecimal(0f);
+		return ApiStringUtils.doublegetTwoDecimal(0f);
 	}
 
 	public void setPaymentPrice(String paymentPrice) {
@@ -785,7 +782,7 @@ public class Order extends DataEntity<Long> {
 	}
 
 	public String getPrice4Page(){
-		return ApiUtils.doublegetTwoDecimal(price.floatValue());
+		return ApiStringUtils.doublegetTwoDecimal(price.floatValue());
 	}
 
 	public void setPrice(BigDecimal price) {
@@ -1001,7 +998,6 @@ public class Order extends DataEntity<Long> {
 		}
 	}
 
-	@Transactional
 	public String getDate(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(date);

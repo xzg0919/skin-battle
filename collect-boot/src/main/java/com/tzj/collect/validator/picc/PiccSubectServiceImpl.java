@@ -1,8 +1,5 @@
 package com.tzj.collect.validator.picc;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.common.util.CacheUtils;
-import com.tzj.collect.entity.EnterpriseAccount;
 import com.tzj.collect.entity.PiccCompany;
 import com.tzj.collect.service.PiccCompanyService;
 import com.tzj.module.api.entity.Subject;

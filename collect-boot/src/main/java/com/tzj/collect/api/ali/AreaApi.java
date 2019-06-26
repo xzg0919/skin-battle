@@ -13,7 +13,6 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
-import com.tzj.module.easyopen.ApiEncrypter;
 import com.tzj.module.easyopen.exception.ApiException;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;

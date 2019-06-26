@@ -8,7 +8,6 @@ import com.tzj.collect.api.ali.param.CategoryAttrBean;
 import com.tzj.collect.api.ali.result.ClassifyAndMoney;
 import com.tzj.collect.api.business.param.CategoryBean;
 import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
-import com.tzj.collect.api.business.result.ApiUtils;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
 import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.entity.Category;

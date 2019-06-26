@@ -1,6 +1,5 @@
 package com.tzj.collect.validator.business;
 
-import com.tzj.collect.common.util.CacheUtils;
 import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.service.CompanyAccountService;
 import com.tzj.module.api.entity.Subject;

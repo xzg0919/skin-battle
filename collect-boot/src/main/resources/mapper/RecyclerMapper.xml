@@ -190,7 +190,7 @@
 		AND d.status_ = '1'
 	</select>
 	
-	 <resultMap type="com.tzj.collect.entity.Recyclers" id="RecycleResultMap">  
+	 <resultMap type="com.tzj.collect.entity.Recyclers" id="RecycleResultMap">
         <id property="id" column="id" />  
         <result property="name" column="name_" />
         <result property="idCard" column="id_card" />

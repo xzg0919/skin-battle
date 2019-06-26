@@ -1,7 +1,5 @@
 package com.tzj.collect.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.ArrivalTimeLog;
 

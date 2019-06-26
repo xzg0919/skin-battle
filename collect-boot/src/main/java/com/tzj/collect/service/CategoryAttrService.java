@@ -2,7 +2,6 @@ package com.tzj.collect.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
-import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.entity.CategoryAttr;
 
 import java.util.List;

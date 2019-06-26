@@ -5,7 +5,6 @@ import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORIT
 import java.util.LinkedList;
 import java.util.Map;
 
-import com.tzj.collect.common.util.CacheUtils;
 import com.tzj.module.easyopen.util.EhCache2Utils;
 import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;

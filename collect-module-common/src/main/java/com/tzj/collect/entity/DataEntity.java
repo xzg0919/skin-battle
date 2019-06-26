@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.Version;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.tzj.collect.common.constant.DataBaseConstant;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -111,7 +110,6 @@ public abstract class DataEntity<ID> extends AbstractEntity<ID> {
 		this.version = version;
 	}
 
-	@Transactional
 	public String getDate(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(date);

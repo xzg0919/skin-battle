@@ -1,7 +1,5 @@
 package com.tzj.collect.common.util;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.easyopen.ApiContext;

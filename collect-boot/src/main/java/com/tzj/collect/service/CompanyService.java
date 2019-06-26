@@ -3,7 +3,6 @@ package com.tzj.collect.service;
 import java.util.List;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;

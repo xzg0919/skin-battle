@@ -3,7 +3,6 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -286,7 +285,6 @@ public class PiccOrder  extends  DataEntity<Long> {
             return this.value;
         }
     }
-    @Transactional
     public String getDate(Date date) {
         if (null == date) {
             return null;
@@ -294,7 +292,6 @@ public class PiccOrder  extends  DataEntity<Long> {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);
     }
-    @Transactional
     public String getYmdDate(Date date) {
         if (null == date) {
             return null;
@@ -302,4 +299,5 @@ public class PiccOrder  extends  DataEntity<Long> {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(date);
     }
+
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.ali.param.CategoryBean;
@@ -18,6 +17,7 @@ import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.common.websocket.WebSocketServer;
 import com.tzj.collect.api.enterprise.param.EnterpriseCodeBean;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.config.ApplicationInit;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.collect.service.*;
@@ -28,9 +28,6 @@ import com.tzj.module.api.annotation.SignIgnore;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import javax.annotation.Resource;
 
 /**
  * 订单相关api

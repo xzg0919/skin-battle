@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.config.ApplicationInit;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 import com.tzj.module.common.aliyun.mns.Notification;

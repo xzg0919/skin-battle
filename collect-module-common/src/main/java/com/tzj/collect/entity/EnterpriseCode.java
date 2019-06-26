@@ -2,7 +2,6 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -232,7 +231,6 @@ public class EnterpriseCode extends  DataEntity<Long>{
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
-    @Transactional
     public String getDate(Date date) {
         if (null == date) {
             return null;

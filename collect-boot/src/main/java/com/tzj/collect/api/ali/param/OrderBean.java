@@ -1,7 +1,6 @@
 package com.tzj.collect.api.ali.param;
 
 
-import com.baomidou.mybatisplus.annotations.TableField;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.OrderPic;

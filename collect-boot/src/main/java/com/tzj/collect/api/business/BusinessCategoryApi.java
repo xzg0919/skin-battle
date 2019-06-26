@@ -1,7 +1,6 @@
 package com.tzj.collect.api.business;
 
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.business.param.CategoryAttrOptionBean;
 import com.tzj.collect.api.business.param.CategoryBean;
 import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;

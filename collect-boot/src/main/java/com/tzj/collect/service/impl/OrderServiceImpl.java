@@ -6,7 +6,6 @@ import com.alipay.api.domain.ItemOrder;
 import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;

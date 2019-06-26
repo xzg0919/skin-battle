@@ -1,15 +1,16 @@
 package com.tzj.collect.api.ali;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.common.util.MemberUtils;
-import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.collect.entity.Category;
+import com.tzj.collect.entity.Member;
+import com.tzj.collect.entity.MemberAddress;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 

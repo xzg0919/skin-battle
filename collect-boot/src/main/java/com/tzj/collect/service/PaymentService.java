@@ -1,10 +1,8 @@
 package com.tzj.collect.service;
 
-import com.alipay.api.request.AlipayFundTransOrderQueryRequest;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.service.IService;
-import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
 
 public interface PaymentService extends IService<Payment> {

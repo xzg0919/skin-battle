@@ -1,6 +1,5 @@
 package com.tzj.collect.api.business;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 import com.baomidou.dynamic.datasource.annotation.DS;

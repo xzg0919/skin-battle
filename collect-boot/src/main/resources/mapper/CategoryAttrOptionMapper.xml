@@ -20,7 +20,7 @@
 		AND a.del_flag = 0
 		AND b.del_flag = 0
 	</select>
-   <select id="getCategoryAttrOptionList" parameterType="Long" resultType="com.tzj.collect.api.ali.param.CategoryAttrOption">
+   <select id="getCategoryAttrOptionList" parameterType="Long" resultType="com.tzj.collect.entity.CategoryAttrOption">
         SELECT 
 	a.id AS id, 
 	a.name_ AS `name`, 
@@ -39,7 +39,7 @@
 	AND a.del_flag = 0
 	AND b.del_flag = 0
     </select>
-    <select id="getCategoryAttrOptionLists" parameterType="Long" resultType="com.tzj.collect.api.ali.param.CategoryAttrOption">
+    <select id="getCategoryAttrOptionLists" parameterType="Long" resultType="com.tzj.collect.entity.CategoryAttrOption">
       SELECT 
 	a.id AS id, 
 	a.name_ AS `name`, 
@@ -54,7 +54,7 @@
 	AND a.del_flag = 0
     </select>
     
-    <select id="getDigitName" parameterType="int" resultType="CategoryAttrOption">
+    <select id="getDigitName" parameterType="int" resultType="com.tzj.collect.entity.CategoryAttrOption">
 	   <!--  SELECT sca.id,sca.name_  FROM sb_category_attr sca 
 	    LEFT JOIN sb_category sc 
 	    ON sca.category_id = sc.id 
@@ -66,7 +66,7 @@
 		ON scc.`category_id` = sc.`id`
 		WHERE sc.`id`= #{param1} and scc.`company_id` = #{param2}
     </select>
-        <select id="getDigitNameRePlace" parameterType="int" resultType="CategoryAttr">
+        <select id="getDigitNameRePlace" parameterType="int" resultType="com.tzj.collect.entity.CategoryAttr">
 	   <!--  SELECT sca.id,sca.name_  FROM sb_category_attr sca 
 	    LEFT JOIN sb_category sc 
 	    ON sca.category_id = sc.id 

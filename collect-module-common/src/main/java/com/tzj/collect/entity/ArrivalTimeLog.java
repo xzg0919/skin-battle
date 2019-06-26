@@ -3,7 +3,6 @@ package com.tzj.collect.entity;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
@@ -116,7 +115,6 @@ public class ArrivalTimeLog extends DataEntity<Long>{
 	public void setDatePage(String datePage) {
 		this.datePage = datePage;
 	}
-	@Transactional
 	public String getDate(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(date);

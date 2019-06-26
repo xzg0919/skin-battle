@@ -2,7 +2,6 @@ package com.tzj.collect.api.iot;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.api.common.async.AsyncRedis;
 import com.tzj.collect.api.iot.localmap.LatchMap;
@@ -10,9 +9,7 @@ import com.tzj.collect.api.iot.messagecode.MessageCode;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.api.iot.param.IotPostParamBean;
 import com.tzj.collect.common.util.MemberUtils;
-import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.service.AreaService;
 import com.tzj.collect.service.CompanyService;
 import com.tzj.collect.service.MemberService;
 import com.tzj.collect.service.OrderService;
@@ -24,7 +21,6 @@ import io.itit.itf.okhttp.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;

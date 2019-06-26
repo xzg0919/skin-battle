@@ -1,10 +1,8 @@
 package com.tzj.collect.service.impl;
 
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.CompanyStreetBig;
-import com.tzj.collect.mapper.CompanyStreeMapper;
 import com.tzj.collect.mapper.CompanyStreetBigMapper;
 import com.tzj.collect.service.CompanyStreetBigService;
 import org.springframework.beans.factory.annotation.Autowired;

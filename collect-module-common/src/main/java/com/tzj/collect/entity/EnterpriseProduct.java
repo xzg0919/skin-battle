@@ -2,7 +2,6 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -128,7 +127,6 @@ public class EnterpriseProduct extends  DataEntity<Long>{
     }
 
 
-    @Transactional
     public String getDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);

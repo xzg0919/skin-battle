@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.tzj.collect.entity.CompanyCategoryAttrOptionCity;
 import com.tzj.collect.service.CompanyCategoryAttrOptionCityService;
 import org.apache.commons.lang.StringUtils;

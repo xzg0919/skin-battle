@@ -1,8 +1,6 @@
 package com.tzj.collect.api.ali.param;
 
-import com.tzj.collect.api.admin.param.AdminCommunityBean;
 import com.tzj.collect.api.business.param.CommunityBean;
-import com.tzj.collect.entity.Community;
 
 import java.util.List;
 

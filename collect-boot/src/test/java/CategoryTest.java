@@ -1,4 +1,3 @@
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
@@ -7,9 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.ali.param.CategoryAttrBean;
 import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.api.ali.param.OrderBean;
-import com.tzj.collect.api.ali.param.OrderItemBean;
 import com.tzj.collect.api.ali.param.PageBean;
-import com.tzj.collect.entity.OrderPic;
 import com.tzj.module.easyopen.util.ApiUtil;
 
 import io.itit.itf.okhttp.FastHttpClient;

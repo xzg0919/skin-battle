@@ -5,8 +5,6 @@ import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_EXPRIRE;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_CYPTO_KEY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_SECRET_KEY;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.tzj.collect.api.business.param.CompanyAccountBean;

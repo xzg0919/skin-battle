@@ -3,7 +3,6 @@ package com.tzj.collect.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.tzj.collect.controller.admin.param.ResultDataVParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.ali.param.OrderItemBean;
 import com.tzj.collect.api.ali.result.ComCatePrice;
-import com.tzj.collect.entity.OrderItem;
 import com.tzj.collect.entity.OrderItemAch;
 import com.tzj.collect.mapper.OrderItemAchMapper;
 import com.tzj.collect.mapper.OrderMapper;

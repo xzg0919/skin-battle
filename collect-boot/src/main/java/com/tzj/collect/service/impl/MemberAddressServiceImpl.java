@@ -2,7 +2,6 @@ package com.tzj.collect.service.impl;
 
 import java.util.List;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.tzj.collect.api.ali.param.MapAddressBean;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.service.CommunityService;
@@ -15,16 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.ali.param.MemberAddressBean;
-import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.Area;
-import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.MemberAddress;
-import com.tzj.collect.mapper.CompanyServiceMapper;
 import com.tzj.collect.mapper.MemberAddressMapper;
 import com.tzj.collect.service.AreaService;
 import com.tzj.collect.service.MemberAddressService;
-
-import javax.annotation.Resource;
 
 /**
  * 会员地址ServiceImpl

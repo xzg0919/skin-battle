@@ -3,7 +3,6 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
-import com.tzj.collect.api.business.result.ApiUtils;
 
 import java.math.BigDecimal;
 
@@ -220,7 +219,7 @@ public class OrderItem extends  DataEntity<Long>{
 	public String getUnit4Page(){
 		StringBuilder builder = null;
 		builder =  new StringBuilder("￥ ");
-		builder.append(ApiUtils.doublegetTwoDecimal(price));
+		builder.append(ApiStringUtils.doublegetTwoDecimal(price));
 		builder.append("/");
 		builder.append(unit);
 		return builder.toString();

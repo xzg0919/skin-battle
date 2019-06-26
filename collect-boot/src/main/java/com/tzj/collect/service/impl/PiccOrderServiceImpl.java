@@ -1,6 +1,5 @@
 package com.tzj.collect.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -23,11 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-public class PiccOrderServiceImpl extends ServiceImpl<PiccOrderMapper,PiccOrder> implements PiccOrderService {
+public class PiccOrderServiceImpl extends ServiceImpl<PiccOrderMapper, PiccOrder> implements PiccOrderService {
     @Autowired
     private PiccOrderMapper piccOrderMapper;
     @Autowired

@@ -7,8 +7,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
-import com.tzj.collect.api.app.AppTokenApi;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 import com.tzj.module.easyopen.exception.ApiException;

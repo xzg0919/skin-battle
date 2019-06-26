@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.tzj.collect.api.business.param.CategoryBean;
 import com.tzj.collect.api.business.param.CompanyBean;
 import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.common.util.BusinessUtils;

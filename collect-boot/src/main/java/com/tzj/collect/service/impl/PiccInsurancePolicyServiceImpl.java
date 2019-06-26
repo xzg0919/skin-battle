@@ -1,6 +1,5 @@
 package com.tzj.collect.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -21,7 +20,7 @@ import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
-public class PiccInsurancePolicyServiceImpl extends ServiceImpl<PiccInsurancePolicyMapper,PiccInsurancePolicy> implements PiccInsurancePolicyService {
+public class PiccInsurancePolicyServiceImpl extends ServiceImpl<PiccInsurancePolicyMapper, PiccInsurancePolicy> implements PiccInsurancePolicyService {
 
     @Autowired
     private PiccInsurancePolicyMapper piccInsurancePolicyMapper;

@@ -10,7 +10,6 @@ import com.tzj.collect.api.ali.result.ComCatePrice;
 import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
 import com.tzj.collect.api.business.result.CategoryResult;
-import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.CompanyCategory;
 

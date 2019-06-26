@@ -1,6 +1,5 @@
 package com.tzj.collect.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -10,7 +9,6 @@ import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.mapper.CompanyCategoryMapper;
-import com.tzj.collect.mapper.CompanyMapper;
 import com.tzj.collect.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

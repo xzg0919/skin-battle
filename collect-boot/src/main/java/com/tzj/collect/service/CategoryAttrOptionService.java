@@ -8,8 +8,6 @@ import com.tzj.collect.entity.CategoryAttrOption;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 public interface CategoryAttrOptionService  extends IService<CategoryAttrOption>{
 	
 	/**

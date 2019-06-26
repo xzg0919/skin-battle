@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tzj.collect.mapper.CommunityMapper">
 
-	<select id="listareaByCategory" parameterType="int" resultType="Community">
+	<select id="listareaByCategory" parameterType="int" resultType="com.tzj.collect.entity.Community">
 		select sc.* from sb_company_category scc
 		inner join sb_company_service
 		scs
@@ -17,7 +17,7 @@
 		scc.category_id=#{categoryId} and sa.id = #{areaId} ORDER BY  convert(sc.address using gbk)
 	</select>
 
-	<select id="defaultAddress" resultType="Community">
+	<select id="defaultAddress" resultType="com.tzj.collect.entity.Community">
 		select sc.* from
 		sb_company_category scc
 		inner join sb_company_service scs
@@ -30,7 +30,7 @@
 		=#{categoryId}
 		limit 1
 	</select>
-	<select id="getRecByCommId" resultType="Recyclers">
+	<select id="getRecByCommId" resultType="com.tzj.collect.entity.Recyclers">
 		SELECT
 		sr.name_,
 		sr.id_card,
@@ -177,7 +177,7 @@
 	</select>
 
 
-	<select id="list20CommunityByAmapNameNull" resultType="Community">
+	<select id="list20CommunityByAmapNameNull" resultType="com.tzj.collect.entity.Community">
 		SELECT a.*
 			FROM sb_community a
 			WHERE a.amap_name IS NULL

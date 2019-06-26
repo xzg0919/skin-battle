@@ -1,9 +1,6 @@
 package api.ali;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.param.MemberBean;
-import com.tzj.collect.common.util.MemberUtils;
-import com.tzj.collect.entity.Member;
 
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;

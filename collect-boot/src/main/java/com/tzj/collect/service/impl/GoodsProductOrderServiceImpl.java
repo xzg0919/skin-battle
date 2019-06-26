@@ -36,7 +36,7 @@ public class GoodsProductOrderServiceImpl extends ServiceImpl<GoodsProductOrderM
      */
 	@Override
 	@Transactional
-	public Object sendGoodsProduct(Product product, Member member, Point point,MemberAddress memberAddress) {
+	public Object sendGoodsProduct(Product product, Member member, Point point, MemberAddress memberAddress) {
 		//增加实物兑换记录订单
 		GoodsProductOrder goodsProductOrder = new GoodsProductOrder();
 		goodsProductOrder.setUserName(memberAddress.getName());

@@ -34,7 +34,7 @@
 		) comIdRecId ON scc.company_id = comIdRecId.company_id
 
     </select>
-    <select id="selectCompanyListByComm" parameterType="String" resultType="Company"> 
+    <select id="selectCompanyListByComm" parameterType="String" resultType="com.tzj.collect.entity.Company">
 		SELECT
 		DISTINCT
 			sc.name_,
@@ -102,7 +102,7 @@
     </select>
 
 
-	<insert id="insertCompany" parameterType="com.tzj.collect.entity.Company">	
+	<insert id="insertCompany" parameterType="com.tzj.collect.entity.Company">
 		insert into
 		sb_company
 		(name_,company_code,create_date, update_date,
@@ -166,7 +166,7 @@
 
 	</select>
 	 
-	 <resultMap type="com.tzj.collect.entity.Company" id="companyResultMap">  
+	 <resultMap type="com.tzj.collect.entity.Company" id="companyResultMap">
         <id property="id" column="id" />  
 		<result property="name" column="name_" />
 		<result property="companyCode" column="company_code" />

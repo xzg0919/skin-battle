@@ -3,8 +3,6 @@ package com.tzj.collect.entity;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 
@@ -96,7 +94,6 @@ public class PointList extends DataEntity<Long> {
 	public void setMember(Member member) {
 		this.member = member;
 	}
-	@Transactional
 	public String getDate(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(date);

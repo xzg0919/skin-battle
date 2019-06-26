@@ -1,4 +1,4 @@
-package com.tzj.collect.entity;
+package com.tzj.collect.config;
 
 
 import lombok.Data;

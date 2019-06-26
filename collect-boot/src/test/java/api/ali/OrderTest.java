@@ -2,8 +2,6 @@ package api.ali;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.ali.param.*;
-import com.tzj.collect.api.app.param.OrderPayParam;
-import com.tzj.collect.entity.OrderPic;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -11,7 +9,6 @@ import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.*;

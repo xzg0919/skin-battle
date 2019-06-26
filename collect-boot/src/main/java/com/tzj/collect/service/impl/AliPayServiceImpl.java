@@ -9,13 +9,10 @@ import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.RocketMqConst;
-import com.tzj.collect.entity.Category;
-import com.tzj.collect.entity.Order;
 import com.tzj.collect.service.*;
 import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;

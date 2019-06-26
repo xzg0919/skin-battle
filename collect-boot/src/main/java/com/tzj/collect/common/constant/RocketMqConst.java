@@ -6,7 +6,6 @@ import com.aliyun.mns.client.CloudTopic;
 import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.RawTopicMessage;
 import com.aliyun.mns.model.TopicMessage;
-import com.tzj.collect.entity.RocketmqMessage;
 import com.tzj.module.common.aliyun.mns.Notification;
 import com.tzj.module.common.aliyun.mns.XMLUtils;
 import com.tzj.module.common.exception.BusiException;

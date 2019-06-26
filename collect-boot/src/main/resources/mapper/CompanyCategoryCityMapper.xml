@@ -71,7 +71,7 @@
 		ORDER BY sc.code_ ASC;
     </select>
 
-	<select id="topListAppByCity" resultType="Category" parameterType="String">
+	<select id="topListAppByCity" resultType="com.tzj.collect.entity.Category" parameterType="String">
 		SELECT DISTINCT
 			scc.*
 		FROM

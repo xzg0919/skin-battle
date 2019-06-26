@@ -15,25 +15,18 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
-import com.tzj.collect.entity.Area;
-import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.entity.CompanyRecycler;
-import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.service.AreaService;
 import com.tzj.collect.service.CompanyRecyclerService;
 import com.tzj.collect.service.CompanyService;
 import com.tzj.collect.service.RecyclersService;
-import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 @ApiService

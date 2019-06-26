@@ -1,6 +1,5 @@
 package com.tzj.collect.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.ali.param.OrderItemBean;
@@ -9,7 +8,6 @@ import com.tzj.collect.entity.OrderItem;
 import com.tzj.collect.mapper.OrderItemMapper;
 import com.tzj.collect.mapper.OrderMapper;
 import com.tzj.collect.service.OrderItemService;
-import com.tzj.collect.service.OrderService;
 
 import java.util.List;
 import java.util.Map;
