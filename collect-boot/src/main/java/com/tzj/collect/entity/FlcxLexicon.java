@@ -21,8 +21,6 @@ public class FlcxLexicon extends DataEntity<Long> {
     @TableField(value = "name_")
     private String  name;
 
-    private String  engName;//英文名称
-
     private String recover;//平台回收与否（1:回收，0:不回收）,初始值为0
 
 
@@ -51,13 +49,5 @@ public class FlcxLexicon extends DataEntity<Long> {
 
     public void setRecover(String recover) {
         this.recover = recover;
-    }
-
-    public String getEngName() {
-        return engName;
-    }
-
-    public void setEngName(String engName) {
-        this.engName = engName;
     }
 }

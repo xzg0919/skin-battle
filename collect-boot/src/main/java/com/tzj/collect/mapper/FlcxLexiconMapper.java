@@ -2,8 +2,11 @@ package com.tzj.collect.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.api.lexicon.result.FlcxResult;
+import com.tzj.collect.api.lexicon.result.KeywordResult;
 import com.tzj.collect.entity.FlcxLexicon;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
   * @author sgmark@aliyun.com

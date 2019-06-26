@@ -20,6 +20,8 @@ public class FlcxType extends DataEntity<Long> {
     @TableField(value = "name_")
     private String  name;
 
+    private String  engName;//英文名称
+
     private Long parent_id;//所属父类
     @TableField(value = "level_")
     private Integer level;
@@ -86,5 +88,13 @@ public class FlcxType extends DataEntity<Long> {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public String getEngName() {
+        return engName;
+    }
+
+    public void setEngName(String engName) {
+        this.engName = engName;
     }
 }

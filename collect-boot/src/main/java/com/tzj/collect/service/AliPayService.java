@@ -59,4 +59,5 @@ public interface AliPayService {
     AlipayMarketingCardQueryResponse getPassIdUrl(String aliCardNo,String aliUserId);
 
 
+    AlipaySystemOauthTokenResponse flcxToken(String authCode, String appId);
 }

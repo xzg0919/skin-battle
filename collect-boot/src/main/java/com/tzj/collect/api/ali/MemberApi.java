@@ -65,6 +65,18 @@ public class MemberApi {
 	public Object getStaticUserToken(MemberBean memberBean) {
 		return memberService.getStaticUserToken(memberBean.getAuthCode(),memberBean.getCityName());
 	}
+	/**
+	 * 小程序静默授权
+	 * 根据用户授权返回的authCode,获取用户的token
+	 * @author 王灿
+	 * @param
+	 */
+	@Api(name = "member.ali_user_id", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public Object userToken(MemberBean memberBean) {
+		return memberService.userToken(memberBean.getAuthCode());
+	}
     
 	/**
      * 根据用提交的短信验证码进行验证
