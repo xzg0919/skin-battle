@@ -53,4 +53,6 @@ public interface MemberService extends IService<Member>{
     Map memberIsExist(MemberBean memberBean);
     @DS("slave")
     Object getPassIdUrl(Long memberId);
+    @DS("slave")
+    Object userToken(String authCode);
 }

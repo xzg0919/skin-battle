@@ -106,6 +106,12 @@ public class AdminController {
 		return "admin/excel";
 	}
 
+	@RequestMapping("/flcx/excel")
+	public String flcxExcel() {
+		return "admin/flcxExcel";
+	}
+
+
 
 
 	@RequestMapping("/update/rocket")

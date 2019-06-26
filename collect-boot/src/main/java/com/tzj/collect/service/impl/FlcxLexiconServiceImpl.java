@@ -74,4 +74,18 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         flcxRecordsMapper.insert(flcxRecords);
         return map;
     }
+
+
+    /**
+     * 根据关键字查询返回结果满足条件的结果集
+     * @param flcxBean
+     * @return
+     * @throws ApiException
+     */
+    @Transactional(readOnly = false)
+    public Map keySearch(FlcxBean flcxBean) throws ApiException {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("result",flcxLexiconMapper.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).like("name_", flcxBean.getName()+"%")));
+        return map;
+    }
 }

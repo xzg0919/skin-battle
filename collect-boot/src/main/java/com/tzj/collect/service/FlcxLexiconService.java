@@ -17,4 +17,7 @@ import java.util.Map;
 public interface FlcxLexiconService extends IService<FlcxLexicon> {
     @DS("slave")
     Map lexCheck(FlcxBean flcxBean) throws ApiException;
+
+    @DS("slave")
+    Map keySearch(FlcxBean flcxBean) throws ApiException;
 }

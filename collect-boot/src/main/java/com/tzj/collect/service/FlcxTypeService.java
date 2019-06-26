@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.FlcxType;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,4 +16,6 @@ import java.util.Map;
 public interface FlcxTypeService extends IService<FlcxType> {
     @DS("slave")
     Map typeList();
+
+    void inputLinAndType(List<Map<String, String>> mapList);
 }
