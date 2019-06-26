@@ -29,9 +29,9 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
   http:
     multipart:
-      max-file-size: 100MB
       max-request-size: 100MB
       enabled: true
+      max-file-size: 100MB
   # 指定静态资源的路径
   #resources:
   #static-locations: classpath:/static/,classpath:/views/
@@ -97,3 +97,4 @@ logging:
     org.springfromework.web: warn
     org.hibernate: error
     com.tzj: warn
+    com.tzj.collect.mapper: debug

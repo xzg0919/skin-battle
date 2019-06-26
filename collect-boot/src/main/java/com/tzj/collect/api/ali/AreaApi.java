@@ -9,10 +9,7 @@ import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.service.AreaService;
 import com.tzj.collect.service.CommunityService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.ApiEncrypter;
 import com.tzj.module.easyopen.exception.ApiException;
 import net.sourceforge.pinyin4j.PinyinHelper;
@@ -108,7 +105,7 @@ public class AreaApi {
 		//根据行政区名字获取行政区Id
 		Area area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", areaBean.getAreaName()).in("parent_id",areaBean.getCityId()));
 		//返回街道信息
-		return areaService.selectList(new EntityWrapper<Area>().eq("parent_id",area.getId()));
+		return areaService.selectList(new EntityWrapper<Area>().eq("parent_id",area.getId()).eq("del_flag", 0));
 	}
 
 	/**
@@ -183,7 +180,12 @@ public class AreaApi {
 		}
 		return list;
 	}
-
+	@Api(name = "area.update.all", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public String updateAreaAll(){
+		return areaService.updateAreaAll();
+	}
 
 	// 将汉字转换为全拼
 	public  String getPingYin(String src) {

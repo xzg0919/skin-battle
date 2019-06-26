@@ -29,4 +29,6 @@ public interface AreaService  extends IService<Area>{
 	List<Area> selectAreaByCouOrStrOrCom(String county,String street, String village);
 	@DS("slave")
 	List<Area> selectByNameCityId(String streetName,String cityId);
+
+    String updateAreaAll();
 }

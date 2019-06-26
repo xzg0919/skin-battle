@@ -51,4 +51,60 @@
 			a.area_name = #{streetName}
 		AND b.parent_id = #{cityId}
 	</select>
+	<select id="allAreaList" resultType="Map">
+		SELECT
+			aresf.area_name,
+			aresf.id,
+			are.name_,
+			are.`code`,
+			are.zone_code,
+			are.pri_code
+		FROM
+			(
+				SELECT
+					c.id,
+					(
+						SELECT
+							area_name
+						FROM
+							sb_area
+						WHERE
+							id = SUBSTRING_INDEX(
+								SUBSTRING_INDEX(c.parent_ids, '_', 1),
+								'_' ,- 1
+							)
+					) AS 省,
+					(
+						SELECT
+							area_name
+						FROM
+							sb_area
+						WHERE
+							id = SUBSTRING_INDEX(
+								SUBSTRING_INDEX(c.parent_ids, '_', 2),
+								'_' ,- 1
+							)
+					) AS 市,
+					(
+						SELECT
+							area_name
+						FROM
+							sb_area
+						WHERE
+							id = SUBSTRING_INDEX(
+								SUBSTRING_INDEX(c.parent_ids, '_', 3),
+								'_' ,- 1
+							)
+					) AS 区,
+					c.area_name,
+					c.parent_ids
+				FROM
+					sb_area c
+				WHERE
+					c.parent_ids LIKE #{parentId}
+				AND del_flag = 0
+				AND type = 3
+			) aresf
+		RIGHT JOIN areatest are ON are.name_ = aresf.area_name
+	</select>
 </mapper>
