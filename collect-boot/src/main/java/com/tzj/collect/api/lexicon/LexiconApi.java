@@ -63,4 +63,12 @@ public class LexiconApi {
         return flcxRecordsService.topFive();
     }
 
+
+    @Api(name = "keySearch", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Map keySearch(FlcxBean flcxBean)throws ApiException {
+        return flcxLexiconService.keySearch(flcxBean);
+    }
+
 }

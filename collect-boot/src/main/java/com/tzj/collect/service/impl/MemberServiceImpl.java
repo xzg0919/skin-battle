@@ -439,5 +439,19 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		}
 		return resultMap;
 	}
-	
+
+	@Override
+	public Object userToken(String authCode) {
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		String appId = AlipayConst.flcxaAppId;
+		//根据用户授权的具体authCode查询是用户的userid和token
+		AlipaySystemOauthTokenResponse  response = aliPayService.flcxToken(authCode,appId);
+		if(!response.isSuccess()){
+			return "用户授权解析失败";
+		}
+		String userId = response.getUserId();
+		resultMap.put("aliUserId", userId);
+		return resultMap;
+	}
+
 }

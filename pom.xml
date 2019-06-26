@@ -24,6 +24,7 @@
         <module>collect-module-task</module>
         <module>collect-module-umeng</module>
         <module>collect-module-common</module>
+        <module>collect-module-member</module>
     </modules>
 
     <repositories>

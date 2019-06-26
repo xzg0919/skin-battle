@@ -1,5 +1,6 @@
 package com.tzj.collect.api.common.excel;
 
+import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -10,8 +11,13 @@ import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder.BorderSide;
 
 import javax.servlet.http.HttpServletResponse;
 import java.awt.Color;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ExcelUtils {
     public static void exportExcel(HttpServletResponse response, String fileName, ExcelData data) throws Exception {
@@ -145,5 +151,101 @@ public class ExcelUtils {
         style.setBorderColor(BorderSide.LEFT, color);
         style.setBorderColor(BorderSide.RIGHT, color);
         style.setBorderColor(BorderSide.BOTTOM, color);
+    }
+
+    /**
+     * xls文件解析
+     */
+    public static List<Map<String, String>> getDataListByXLSExcel(InputStream inputStream, List<String> keyArray, int startRow) throws Exception {
+        if (inputStream == null) {
+            return null;
+        }
+        List<Map<String, String>> dataList = null;
+        Map<String, String> bean = null;
+        Workbook workbook = null;
+        Sheet sheet = null;
+        Row rowrec = null;
+        String keyName = null;
+        try {
+            workbook = new XSSFWorkbook(inputStream);
+            sheet = workbook.getSheetAt(startRow);
+            int maxNum = sheet.getLastRowNum();
+            dataList = new ArrayList<>(maxNum);
+            for (int row = 1; row < maxNum + 1; row++) {
+                rowrec = sheet.getRow(row);
+                if (rowrec != null) {
+                    short firstCellNum = rowrec.getFirstCellNum();
+                    short lastCellNum = rowrec.getLastCellNum();
+                    bean = new HashMap<>();
+                    if (firstCellNum != lastCellNum) {
+                        for (int i = firstCellNum; i < lastCellNum; i++) {
+                            Cell cell = rowrec.getCell(i);
+                            String value = "";
+                            if (cell != null) {
+                                value = parseExcel(cell);
+                            }
+                            if (i < keyArray.size()) {
+                                keyName = keyArray.get(i);
+                            }
+                            if (keyName != null && !("").equals(keyName) && !("").equals(value)) {
+                                bean.put(keyName, value);
+                            }
+                        }
+                        dataList.add(bean);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception();
+        } finally {
+            if (null != inputStream) {
+                inputStream.close();
+            }
+        }
+        return dataList;
+    }
+    // ==========================================帅气的分割线====================================================
+    private static String parseExcel(Cell cell) {
+        String result = new String();
+        switch (cell.getCellType()) {
+            case HSSFCell.CELL_TYPE_NUMERIC:// 数字类型
+                if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
+                    SimpleDateFormat sdf = null;
+                    if (cell.getCellStyle().getDataFormat() == HSSFDataFormat.getBuiltinFormat("h:mm")) {
+                        sdf = new SimpleDateFormat("HH:mm");
+                    } else {// 日期
+                        sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    }
+                    Date date = cell.getDateCellValue();
+                    result = sdf.format(date);
+                } else if (cell.getCellStyle().getDataFormat() == 58) {
+                    // 处理自定义日期格式：m月d日(通过判断单元格的格式id解决，id的值是58)
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    double value = cell.getNumericCellValue();
+                    Date date = org.apache.poi.ss.usermodel.DateUtil.getJavaDate(value);
+                    result = sdf.format(date);
+                } else {
+                    double value = cell.getNumericCellValue();
+                    CellStyle style = cell.getCellStyle();
+                    DecimalFormat format = new DecimalFormat();
+                    String temp = style.getDataFormatString();
+                    // 单元格设置成常规
+                    if (temp.equals("General")) {
+                        format.applyPattern("#");
+                    }
+                    result = format.format(value);
+                }
+                break;
+            case HSSFCell.CELL_TYPE_STRING:// String类型
+                result = cell.getRichStringCellValue().toString();
+                break;
+            case HSSFCell.CELL_TYPE_BLANK:
+                result = "";
+            default:
+                result = "";
+                break;
+        }
+        return result;
     }
 }

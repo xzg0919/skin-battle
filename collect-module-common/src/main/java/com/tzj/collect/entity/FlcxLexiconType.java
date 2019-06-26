@@ -15,6 +15,11 @@ public class FlcxLexiconType extends DataEntity<Long> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
 
+    private Long areaId;//地区id
+
+    private Long lexiconId;//关键字id
+
+    private Long typeId;//类型id
     /**
      * 回收类型名
      */
@@ -49,5 +54,29 @@ public class FlcxLexiconType extends DataEntity<Long> {
 
     public void setRecover(String recover) {
         this.recover = recover;
+    }
+
+    public Long getAreaId() {
+        return areaId;
+    }
+
+    public void setAreaId(Long areaId) {
+        this.areaId = areaId;
+    }
+
+    public Long getLexiconId() {
+        return lexiconId;
+    }
+
+    public void setLexiconId(Long lexiconId) {
+        this.lexiconId = lexiconId;
+    }
+
+    public Long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Long typeId) {
+        this.typeId = typeId;
     }
 }

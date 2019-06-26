@@ -59,6 +59,30 @@ public class AliPayServiceImpl implements AliPayService{
 		}
 		return response;
 	}
+    public AlipaySystemOauthTokenResponse flcxToken(String userCode,String appId) {
+        System.out.println("-------hua用户信息接口 userCode是："+userCode);
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, appId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
+        AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
+        request.setCode(userCode);
+        request.setGrantType("authorization_code");
+        AlipaySystemOauthTokenResponse response=null;
+        try {
+            response = alipayClient.execute(request);
+            //用户的授权的token
+            System.out.println(response.getAccessToken());
+            //用户的唯一userId
+            System.out.println(response.getUserId());
+        } catch (AlipayApiException e) {
+            //处理异常
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调用用户查询token接口成功");
+        } else {
+            System.out.println("调用用户查询token接口失败");
+        }
+        return response;
+    }
     /**
      * 调用接口查询用户的详细信息
      * @author 王灿
