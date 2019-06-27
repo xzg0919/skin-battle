@@ -180,12 +180,32 @@ public class AreaApi {
 		}
 		return list;
 	}
+	/**	更新地址
+	  * @author sgmark@aliyun.com
+	  * @date 2019/6/27 0027
+	  * @param
+	  * @return
+	  */
 	@Api(name = "area.update.all", version = "1.0")
 	@SignIgnore
 	@AuthIgnore
 	public String updateAreaAll(){
 		return areaService.updateAreaAll();
 	}
+
+	/**
+	  * @author sgmark@aliyun.com
+	  * @date 2019/6/27 0027
+	  * @param
+	  * @return
+	  */
+	@Api(name = "area.update.parent", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public String updateAreaParent(){
+		return areaService.updateAreaParent();
+	}
+
 
 	// 将汉字转换为全拼
 	public  String getPingYin(String src) {
