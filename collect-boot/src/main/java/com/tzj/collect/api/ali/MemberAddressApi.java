@@ -102,17 +102,38 @@ public class MemberAddressApi {
     public Object selectMemberAddress(MemberAddressBean memberAddressBean) {
     	MemberAddress memberAddress = memberAddressService.selectById(memberAddressBean.getId());
     	Map<String,Object> map = new HashMap<String,Object>();
+		String areaName = "";
+		String streeName ="";
+		String cityName = "";
     	if(null!=memberAddress) {
     		//地址区的名称
-    		String areaName = areaService.selectById(memberAddress.getAreaId()).getAreaName();
+			Area area = areaService.selectById(memberAddress.getAreaId());
+			if(null != area ){
+				areaName = area.getAreaName();
+			}else {
+				areaName = memberAddress.getAreaName();
+			}
     		//地址街道名称
-    		String streeName = areaService.selectById(memberAddress.getStreetId()).getAreaName();
-			//地址街道名称
-			String cityName = areaService.selectById(memberAddress.getCityId()).getAreaName();
+			Area street = areaService.selectById(memberAddress.getStreetId());
+			if(null != street ){
+				streeName = street.getAreaName();
+			}else {
+				streeName = memberAddress.getStreetName();
+			}
+			//地址市名称
+			Area city = areaService.selectById(memberAddress.getCityId());
+			if(null != city ){
+				streeName = city.getAreaName();
+			}else {
+				cityName = memberAddress.getCityName();
+			}
     		//具体的某个小区
-			String communityName = null;
+			String communityName = "";
 			if(memberAddress.getCommunityId() == null  || "".equals(memberAddress.getCommunityId()) || "-1".equals(memberAddress.getCommunityId().toString())){
 				communityName = memberAddress.getCommByUserInput();
+				if (StringUtils.isBlank(memberAddress.getCommByUserInput())){
+					communityName = memberAddress.getCommunityName();
+				}
 			}else{
 				communityName = communityService.selectById(memberAddress.getCommunityId()).getName();
 			}

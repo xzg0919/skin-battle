@@ -51,4 +51,108 @@
 			a.area_name = #{streetName}
 		AND b.parent_id = #{cityId}
 	</select>
+	<select id="allAreaList" resultType="Map">
+		SELECT
+			aresf.area_name,
+			aresf.id,
+			are.name_,
+			are.`code`,
+			are.zone_code,
+			are.pri_code
+		FROM
+			(
+				SELECT
+					c.id,
+					(
+						SELECT
+							area_name
+						FROM
+							sb_area
+						WHERE
+							id = SUBSTRING_INDEX(
+								SUBSTRING_INDEX(c.parent_ids, '_', 1),
+								'_' ,- 1
+							)
+					) AS 省,
+					(
+						SELECT
+							area_name
+						FROM
+							sb_area
+						WHERE
+							id = SUBSTRING_INDEX(
+								SUBSTRING_INDEX(c.parent_ids, '_', 2),
+								'_' ,- 1
+							)
+					) AS 市,
+					(
+						SELECT
+							area_name
+						FROM
+							sb_area
+						WHERE
+							id = SUBSTRING_INDEX(
+								SUBSTRING_INDEX(c.parent_ids, '_', 3),
+								'_' ,- 1
+							)
+					) AS 区,
+					c.area_name,
+					c.parent_ids
+				FROM
+					sb_area c
+				WHERE
+					c.parent_ids LIKE #{parentId}
+				AND del_flag = 0
+				AND type = 3
+			) aresf
+		RIGHT JOIN areatest are ON are.name_ = aresf.area_name
+	</select>
+	<select id="selectAreaParent" resultType="Map">
+		SELECT
+			areaInfo.*, saa.parent_id AS alPid
+		FROM
+			sb_area saa
+		RIGHT JOIN (
+			SELECT
+				areaAre.*, saaArea.parent_id AS pId,
+				saaArea.area_name AS alName
+			FROM
+				sb_area saaArea
+			RIGHT JOIN (
+				SELECT
+					idPa.id,
+					idPa.name_,
+					idPa.parent_id,
+					idPa.parent_ids,
+					saa.area_name
+				FROM
+					sb_area saa
+				INNER JOIN (
+					SELECT
+						saa.id,
+						saa.parent_id,
+						saa.parent_ids,
+						area_name AS name_
+					FROM
+						sb_area saa
+					WHERE
+						saa.del_flag = 0
+					AND saa.type = 3
+					AND length(saa.parent_ids) - length(
+						REPLACE (saa.parent_ids, '_', '')
+					) BETWEEN 0 AND 2
+				) idPa ON idPa.parent_id = saa.id
+				WHERE
+					saa.del_flag = 0
+				AND saa.type = 2
+			) areaAre ON areaAre.parent_id = saaArea.id
+			WHERE
+				saaArea.del_flag = 0
+		) areaInfo ON areaInfo.pId = saa.id
+		WHERE
+			saa.type = 1;
+
+
+
+	</select>
 </mapper>

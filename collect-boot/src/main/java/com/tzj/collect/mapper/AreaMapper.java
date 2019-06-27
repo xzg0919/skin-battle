@@ -15,4 +15,8 @@ public interface AreaMapper extends BaseMapper<Area> {
 	Map<String,Object> getAred(String id);
 
 	List<Area> selectByNameCityId(@Param("streetName") String streetName,@Param("cityId") String cityId);
+
+	List<Map<String, String>> allAreaList(@Param("parentId")String parentId);
+
+	List<Map<String, Object>> selectAreaParent();
 }

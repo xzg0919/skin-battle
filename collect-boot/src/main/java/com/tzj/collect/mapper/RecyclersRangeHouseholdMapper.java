@@ -34,4 +34,6 @@ public interface RecyclersRangeHouseholdMapper extends BaseMapper<RecyclersRange
     List<Map<String,Object>> getCommunityRecyclersRange(@Param("streetId")String streetId,@Param("recycleId")String recycleId,@Param("companyId")String companyId);
 
     Integer selectAreaRangeCount(@Param("companyId")String companyId,@Param("recyclerId")String recyclerId);
+
+    Map<String,Object> companyAreaRecyclerRanges(String companyId);
 }

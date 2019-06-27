@@ -35,6 +35,10 @@ public class CompanyBean {
 	private Integer countyId;//区县id
 	private Integer cityId;//市id
 	private String isOpenOrder;//是否打开自动开 0关闭 1打开
+	/**
+	 * 类型1 家电  2生活垃圾   4大件
+	 */
+	private String title;
 
 	public Integer getCityId() {
 		return cityId;
@@ -190,5 +194,13 @@ public class CompanyBean {
 
 	public void setIsOpenOrder(String isOpenOrder) {
 		this.isOpenOrder = isOpenOrder;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }

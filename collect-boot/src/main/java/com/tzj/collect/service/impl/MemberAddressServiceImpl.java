@@ -69,7 +69,11 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
     		if (StringUtils.isBlank(memberAddressBean.getCommunityId()) && StringUtils.isBlank(memberAddressBean.getCommByUserInput())){
 				return "小区不能为空";
 			}
-	    	//判断是否是修改还是新增
+
+			Area area1 = areaService.selectById(memberAddressBean.getAreaId());
+			Area street = areaService.selectById(memberAddressBean.getStreetId());
+			Community community = communityService.selectById(memberAddressBean.getCommunityId());
+			//判断是否是修改还是新增
 	    	if(StringUtils.isNotBlank(memberAddressBean.getId())) {
 	    		MemberAddress memberAddress = this.selectById(memberAddressBean.getId());
 	    		memberAddress.setMemberId(memberAddressBean.getMemberId());
@@ -85,6 +89,12 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	    		memberAddress.setTel(memberAddressBean.getTel());
 	    		memberAddress.setIsSelected(1);
 				memberAddress.setCityId(memberAddressBean.getCityId());
+				memberAddress.setCityName(area.getAreaName());
+				memberAddress.setAreaName(area1.getAreaName());
+				memberAddress.setStreetName(street.getAreaName());
+				if(null != community){
+					memberAddress.setCommunityName(community.getName());
+				}
 	    		this.updateById(memberAddress);
 	    	}else {
 	    		MemberAddress memberAddress = new MemberAddress();
@@ -107,6 +117,12 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	    		memberAddress.setTel(memberAddressBean.getTel());
 	    		memberAddress.setIsSelected(1);
 	    		memberAddress.setCityId(memberAddressBean.getCityId());
+				memberAddress.setCityName(area.getAreaName());
+				memberAddress.setAreaName(area1.getAreaName());
+				memberAddress.setStreetName(street.getAreaName());
+				if(null != community){
+					memberAddress.setCommunityName(community.getName());
+				}
 	    		this.insert(memberAddress);
 	    	}
     	}catch(Exception e) {
@@ -244,24 +260,28 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		Integer areaId = -1;
 		Integer streetId = -1;
 		Integer communityId = -1;
-		Area city = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", mapAddressBean.getCity()).eq("type", 1));
-		if(null!=city){
-			cityId = city.getId().intValue();
-		}
-		Area district = areaService.selectOne(new EntityWrapper<Area>().eq("parent_id", cityId).eq("area_name", mapAddressBean.getDistrict()).eq("type", 2));
-		if(null!=district){
-			areaId = district.getId().intValue();
-		}
-		Area townShip = areaService.selectOne(new EntityWrapper<Area>().eq("parent_id", areaId).eq("area_name", mapAddressBean.getTownShip()).eq("type", 3));
+		Area townShip = areaService.selectOne(new EntityWrapper<Area>().eq("code_", mapAddressBean.getTownCode()).eq("type", 3));
 		if(null!=townShip){
 			streetId = townShip.getId().intValue();
+			Area area = areaService.selectById(townShip.getParentId());
+			cityId = area.getParentId();
+			areaId = area.getId().intValue();
+		}else {
+			Area city = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", mapAddressBean.getCity()).eq("type", 1));
+			if(null!=city){
+				cityId = city.getId().intValue();
+			}
+			Area district = areaService.selectOne(new EntityWrapper<Area>().eq("parent_id", cityId).eq("area_name", mapAddressBean.getDistrict()).eq("type", 2));
+			if(null!=district){
+				areaId = district.getId().intValue();
+			}
 		}
 		Community community = communityService.selectOne(new EntityWrapper<Community>().eq("area_id", streetId).eq("name_", mapAddressBean.getName()));
 		if(null!=community){
 			communityId = community.getId().intValue();
 		}
 		if("1".equals(mapAddressBean.getIsSelected())){
-			MemberAddress memberAddress1 = this.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberId).eq("city_id",city.getId()));
+			MemberAddress memberAddress1 = this.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberId).eq("city_id",cityId));
 			if (null != memberAddress1){
 				memberAddress1.setIsSelected(0);
 				this.updateById(memberAddress1);
@@ -287,6 +307,11 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		memberAddress.setAddress(mapAddressBean.getAddress());
 		memberAddress.setHouseNumber(mapAddressBean.getHouseNumber());
 		memberAddress.setIsSelected(Integer.parseInt(mapAddressBean.getIsSelected()));
+		memberAddress.setCityName(mapAddressBean.getCity());
+		memberAddress.setAreaName(mapAddressBean.getDistrict());
+		memberAddress.setStreetName(mapAddressBean.getTownShip());
+		memberAddress.setCommunityName(mapAddressBean.getName());
+		memberAddress.setTownCode(mapAddressBean.getTownCode());
 		this.insertOrUpdate(memberAddress);
 
 		return "操作成功";

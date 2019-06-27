@@ -50,13 +50,13 @@ public class BusinessOrderApiTest {
 		String api="http://localhost:9090/business/api";
 
 		CompanyBean companyBean = new CompanyBean();
-		companyBean.setIsOpenOrder("0");
+		companyBean.setTitle("4");
 
 
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.company.isOpenOrder");
+		param.put("name","business.company.getIsOpenOrder");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -64,7 +64,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",companyBean);
+		param.put("data",null);
 
 		String jsonStr = JSON.toJSONString(param);
 		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");

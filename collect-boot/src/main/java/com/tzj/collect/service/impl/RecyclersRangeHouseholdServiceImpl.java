@@ -54,4 +54,8 @@ public class RecyclersRangeHouseholdServiceImpl extends ServiceImpl<RecyclersRan
     public Integer selectAreaRangeCount(String companyId,String recyclerId){
         return recyclersRangeHouseholdMapper.selectAreaRangeCount(companyId,recyclerId);
     }
+    @Override
+    public Map<String,Object> companyAreaRecyclerRanges(String companyId){
+        return recyclersRangeHouseholdMapper.companyAreaRecyclerRanges(companyId);
+    }
 }

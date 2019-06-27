@@ -2,9 +2,11 @@ package com.tzj.collect.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
+import com.taobao.api.ApiException;
 import com.tzj.collect.entity.Area;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AreaService  extends IService<Area>{
 	/**
@@ -29,4 +31,10 @@ public interface AreaService  extends IService<Area>{
 	List<Area> selectAreaByCouOrStrOrCom(String county,String street, String village);
 	@DS("slave")
 	List<Area> selectByNameCityId(String streetName,String cityId);
+
+    String updateAreaAll();
+
+	void inputAreaCode(List<Map<String, String>> mapList) throws ApiException;
+
+	String updateAreaParent();
 }

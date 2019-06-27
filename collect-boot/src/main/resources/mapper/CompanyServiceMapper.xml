@@ -10,6 +10,51 @@
 			WHERE
 			 sc.id =#{companyId}
             AND scs.del_flag!='1'
-            
-</select>
+	</select>
+	<select id="companyAreaRanges" parameterType="String" resultType="Map">
+		SELECT DISTINCT
+		(SELECT COUNT(1) FROM(	SELECT
+				c.*
+			FROM
+				sb_company_service a
+			INNER JOIN sb_area b ON a.area_id = b.id
+			INNER JOIN sb_area c ON c.id = b.parent_id
+			WHERE
+				a.company_id = #{companyId}
+			AND a.del_flag = 0
+			GROUP BY
+				c.parent_id) a ) AS cityNum,
+		(SELECT COUNT(1) FROM(	SELECT
+				b.*
+			FROM
+				sb_company_service a
+			INNER JOIN sb_area b ON a.area_id = b.id
+			WHERE
+				a.company_id = #{companyId}
+			AND a.del_flag = 0
+			GROUP BY
+				b.parent_id) a ) AS areaNum,
+		(SELECT COUNT(1) FROM(	SELECT
+				*
+			FROM
+				sb_company_service a
+			WHERE
+				a.company_id = #{companyId}
+			AND a.del_flag = 0
+			GROUP BY
+				a.area_id) a ) AS streetNum,
+		(SELECT COUNT(1) FROM(	SELECT
+				*
+			FROM
+				sb_company_service a
+			WHERE
+				a.company_id = #{companyId}
+			AND a.del_flag = 0
+			GROUP BY
+				a.community_id) a ) AS communityNum
+		FROM
+			sb_company a
+		WHERE
+			a.id = #{companyId}
+	</select>
 </mapper>
