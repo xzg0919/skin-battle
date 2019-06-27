@@ -165,6 +165,84 @@
 		AND sce.equipment_code = #{cabinetNo}
 
 	</select>
+	<select id="getAdminCompanyList" parameterType="Object" resultType="Map">
+		SELECT DISTINCT
+		a.id,
+		a.name_ AS name,
+		a.contacts,
+		a.tel,
+		DATE_FORMAT(
+		a.create_date,
+		'%Y-%m-%d %H:%i:%s'
+		) AS createDate
+		FROM
+		sb_company a
+		<if test="title != null and title !='' ">
+			INNER JOIN sb_company_category b ON a.id = b.company_id
+			INNER JOIN sb_category c ON b.parent_id = c.id
+		</if>
+		WHERE
+		 a.del_flag = 0
+		<if test="title != null and title !='' ">
+			and b.del_flag = 0
+			AND c.title = #{title}
+		</if>
+		<if test="companyName != null and companyName !='' ">
+			AND a.name_ LIKE CONCAT(CONCAT('%',#{companyName}), '%')
+		</if>
+		order by a.create_date
+		LIMIT #{pageStart},#{pageSize}
+	</select>
+
+	<select id="getCompanyTitleNum" resultType="Map">
+		SELECT COUNT(1) AS count,title FROM (
+		SELECT
+			a.company_id,
+			a.title
+		FROM
+			(
+				SELECT
+					a.*, b.title
+				FROM
+					sb_company_category a
+				LEFT JOIN sb_category b ON a.parent_id = b.id
+				WHERE
+					a.del_flag = 0
+			) a
+		GROUP BY
+			a.title,
+			a.company_id
+		ORDER BY
+			a.company_id
+		) a GROUP BY a.title
+		ORDER BY a.title ASC
+	</select>
+	<select id="getAdminCompanyCount" parameterType="Object" resultType="Integer">
+		SELECT COUNT(1) FROM (
+			SELECT DISTINCT
+				a.id,
+				a.name_ AS name,
+				a.contacts,
+				a.tel,
+				DATE_FORMAT(
+				a.create_date,
+				'%Y-%m-%d %H:%i:%s'
+				) AS createDate
+			FROM
+				sb_company a
+			INNER JOIN sb_company_category b ON a.id = b.company_id
+			INNER JOIN sb_category c ON b.parent_id = c.id
+			WHERE
+				b.del_flag = 0
+			and  a.del_flag = 0
+			<if test="title != null and title !='' ">
+				AND c.title = #{title}
+			</if>
+			<if test="companyName != null and companyName !='' ">
+				AND a.name_ LIKE CONCAT(CONCAT('%',#{companyName}), '%')
+			</if>
+		) a
+	</select>
 	 
 	 <resultMap type="com.tzj.collect.entity.Company" id="companyResultMap">  
         <id property="id" column="id" />  

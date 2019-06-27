@@ -155,4 +155,96 @@
 
 
 	</select>
+
+	<select id="adminGetCityList" resultType="Map" parameterType="String">
+		SELECT
+			a.id,
+			CONCAT(b.area_name,'-',a.area_name) AS cityName
+		FROM
+			sb_area a
+		inner JOIN sb_area b ON a.parent_id = b.id
+		WHERE
+			a.type = 1
+		<if test="name != null and name != ''">
+			AND a.area_name LIKE CONCAT(CONCAT('%',#{name}), '%')
+		</if>
+	</select>
+	<select id="adminGetApplianceAreaRange" resultType="Map" parameterType="Integer">
+		SELECT
+			a.id,
+			a.area_name as areaName,
+		(SELECT COUNT(*) FROM ( SELECT * FROM sb_company_street_appliance a WHERE  a.company_id =  #{companyId} AND a.del_flag = 0 ) b WHERE b.area_id = a.id) AS num
+		FROM
+			sb_area a
+		LEFT JOIN (SELECT a.id,a.area_id FROM sb_company_street_appliance a WHERE a.company_id =  #{companyId} GROUP BY a.area_id ) b ON a.id = b.area_id
+		WHERE a.parent_id =  #{cityId}
+	</select>
+	<select id="adminGetBigAreaRange" parameterType="Integer" resultType="Map">
+		SELECT
+			a.id,
+			a.area_name,
+		(SELECT COUNT(*) FROM ( SELECT * FROM sb_company_street_big a WHERE  a.company_id =  #{companyId} AND a.del_flag = 0 ) b WHERE b.area_id = a.id) AS num
+		FROM
+			sb_area a
+		LEFT JOIN (SELECT a.id,a.area_id FROM sb_company_street_big a WHERE a.company_id =  #{companyId} GROUP BY a.area_id ) b ON a.id = b.area_id
+		WHERE a.parent_id = #{cityId}
+	</select>
+
+	<select id="adminGetApplianceStreetRange" resultType="Map" parameterType="Integer">
+		SELECT
+			a.id,
+			a.area_name,
+			IF(b.id is null,'1','2') AS isChooes,
+			IF(c.id is null,'1','2') AS isEdit
+		FROM
+			sb_area a
+		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_appliance a WHERE a.company_id = #{companyId} ) b ON a.id = b.street_id
+		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_appliance a WHERE a.company_id != 1 GROUP BY a.street_id) c ON a.id = c.street_id
+		WHERE a.parent_id = #{areaId}
+	</select>
+
+	<select id="adminGetBigStreetRange" resultType="Map" parameterType="Integer">
+		SELECT
+			a.id,
+			a.area_name,
+			IF(b.id is null,'1','2') AS isChooes,
+			IF(c.id is null,'1','2') AS isEdit
+		FROM
+			sb_area a
+		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_big a WHERE a.company_id = #{companyId} ) b ON a.id = b.street_id
+		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_big a WHERE a.company_id != 1 GROUP BY a.street_id) c ON a.id = c.street_id
+		WHERE a.parent_id = #{areaId}
+	</select>
+	<select id="getHouseRangeList" resultType="Map" parameterType="Integer">
+		SELECT
+			a.id,
+			f.area_name AS cityId,
+			d.area_name AS areaName,
+			c.area_name AS streetName,
+			b.name_ AS communityName
+		FROM
+			sb_company_service a
+		LEFT JOIN sb_community b ON a.community_id = b.id
+		LEFT JOIN sb_area c ON a.area_id = c.id
+		LEFT JOIN sb_area d ON c.parent_id = d.id
+		LEFT JOIN sb_area f ON d.parent_id = f.id
+		WHERE
+			a.company_id = #{companyId}
+		ORDER BY a.create_date
+		LIMIT #{pageStart},#{pageSize}
+	</select>
+	<select id="getHouseRangeCount" resultType="Integer" parameterType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			sb_company_service a
+		LEFT JOIN sb_community b ON a.community_id = b.id
+		LEFT JOIN sb_area c ON a.area_id = c.id
+		LEFT JOIN sb_area d ON c.parent_id = d.id
+		LEFT JOIN sb_area f ON d.parent_id = f.id
+		WHERE
+			a.company_id = #{companyId}
+		ORDER BY a.create_date
+	</select>
+
 </mapper>

@@ -27,4 +27,7 @@ public interface CompanyStreetApplianceService extends IService<CompanyStreetApp
 
     @DS("slave")
     Map<String,Object> companyAreaRanges(String companyId);
+
+    @DS("slave")
+    Map<String,Object> adminCompanyAreaRanges(String companyId);
 }

@@ -1,7 +1,9 @@
 package com.tzj.collect.mapper;
 
 import java.util.List;
+import java.util.Map;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
@@ -64,4 +66,10 @@ public interface CompanyMapper extends BaseMapper<Company>{
 	Company getCompanyWithNotFound(@Param("communityId")Integer communityId,@Param("categoryId")Integer categoryId);
 
     String selectIotUrlByEquipmentCode(@Param("cabinetNo")String cabinetNo);
+
+	List<Map<String,Object>> getCompanyTitleNum();
+
+	List<Map<String,Object>> getAdminCompanyList(@Param("companyName") String companyName,@Param("title")String title,@Param("pageStart")Integer pageStart,@Param("pageSize")Integer pageSize);
+
+	Integer getAdminCompanyCount(@Param("companyName") String companyName,@Param("title")String title);
 }

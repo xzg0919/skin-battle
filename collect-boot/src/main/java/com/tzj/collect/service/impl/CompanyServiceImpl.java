@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.tzj.collect.entity.CompanyShare;
 import com.tzj.collect.service.*;
+import com.tzj.module.api.annotation.AuthIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ import com.tzj.collect.mapper.CompanyMapper;
 public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> implements CompanyService {
 	@Resource
 	private CompanyMapper companyMapper;
+	@Autowired
+	private CompanyAccountService companyAccountService;
 	@Autowired
 	private RecyclersRangeApplianceService recyclersRangeApplianceService;
 	@Autowired
@@ -158,5 +161,81 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		resutMap.put("companyRange",companyRange);
 		resutMap.put("companyRecycleRange",companyRecycleRange);
 		return resutMap;
+	}
+
+	@Override
+	public  Object getAdminCompanyList(String companyName,String title,PageBean pageBean){
+
+		int pageStart = (pageBean.getPageNumber() - 1) * pageBean.getPageSize();
+
+		Map<String,Object> resultMap = new HashMap<>();
+		List<Map<String,Object>> companyTitleList = companyMapper.getCompanyTitleNum();
+		resultMap.put("applianceNum",companyTitleList.get(0).get("count"));
+		resultMap.put("houseNum",companyTitleList.get(1).get("count"));
+		resultMap.put("bigNum",companyTitleList.get(2).get("count"));
+		List<Map<String, Object>> adminCompanyList = companyMapper.getAdminCompanyList(companyName, title,pageStart,pageBean.getPageSize());
+		Integer adminCompanyCount = companyMapper.getAdminCompanyCount(companyName, title);
+		resultMap.put("adminCompanyList",adminCompanyList);
+		resultMap.put("adminCompanyCount",adminCompanyCount);
+		resultMap.put("pageNum",pageBean.getPageNumber());
+		return resultMap;
+	}
+
+	@Transactional
+	@Override
+	public String deleteCompanyById(Integer companyId){
+
+		Company company = this.selectById(companyId);
+		company.setDelFlag("1");
+		this.updateById(company);
+
+		return  "操作成功";
+	}
+	@Override
+	public Object getCompanyDetail(Integer companyId){
+		Company company = this.selectById(companyId);
+		CompanyAccount companyAccount = companyAccountService.selectOne(new EntityWrapper<CompanyAccount>().eq("company_id", companyId));
+		company.setUserName(companyAccount.getUsername());
+		company.setPassword(companyAccount.getPassword());
+		return  company;
+	}
+	@Transactional
+	@Override
+	public Object updateCompanyDetail(CompanyBean companyBean){
+		List<CompanyAccount> companyAccounts = companyAccountService.selectList(new EntityWrapper<CompanyAccount>().eq("username", companyBean.getUserName()).eq("del_flag", 0));
+		if (!companyAccounts.isEmpty() ){
+			return "该用户名已存在，请更换";
+		}
+		Company company = this.selectById(companyBean.getId());
+		CompanyAccount companyAccount = companyAccountService.selectOne(new EntityWrapper<CompanyAccount>().eq("company_id", companyBean.getId()));
+		if(null == company&&null == companyAccount){
+			company = new Company();
+			companyAccount = new CompanyAccount();
+		}
+		company.setName(companyBean.getName());
+		company.setContacts(companyBean.getContacts());
+		company.setTel(companyBean.getTel());
+		company.setAddress(companyBean.getAddress());
+		this.insertOrUpdate(company);
+		companyAccount.setUsername(companyBean.getUserName());
+		companyAccount.setPassword(companyBean.getPassword());
+		companyAccount.setCompanyId(company.getId().intValue());
+		companyAccountService.insertOrUpdate(companyAccount);
+
+		return "操作成功";
+	}
+	@Override
+	public Object adminCompanyRangeById(Integer companyId){
+		Map<String,Object> resultMap = new HashMap<>();
+		Map<String,Object> applianceRange = new HashMap<>();
+		Map<String,Object> houseRange = new HashMap<>();
+		Map<String,Object> bigRange = new HashMap<>();
+		applianceRange = companyStreetApplianceService.adminCompanyAreaRanges(companyId.toString());
+		houseRange = companyServiceService.companyAreaRanges(companyId.toString());
+		bigRange = companyStreetBigService.companyAreaRanges(companyId.toString());
+		resultMap.put("applianceRange",applianceRange);
+		resultMap.put("houseRange",houseRange);
+		resultMap.put("bigRange",bigRange);
+		return  resultMap;
 	}
 }

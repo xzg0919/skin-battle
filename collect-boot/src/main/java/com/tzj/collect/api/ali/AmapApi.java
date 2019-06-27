@@ -1,7 +1,6 @@
 package com.tzj.collect.api.ali;
 
 import com.alibaba.fastjson.JSON;
-import com.taobao.api.ApiException;
 import com.tzj.collect.api.ali.json.AmapRegeoJson;
 import com.tzj.collect.api.ali.json.AmapRoundJson;
 import com.tzj.collect.api.ali.json.PoisBean;
@@ -16,6 +15,7 @@ import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.easyopen.doc.annotation.ApiDoc;
 import com.tzj.module.easyopen.doc.annotation.ApiDocField;
 import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
+import com.tzj.module.easyopen.exception.ApiException;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.lang.Assert;
@@ -67,6 +67,73 @@ public class AmapApi {
     public AmapResult regeo(String location) throws Exception {
 
         Assert.hasLength(location, "请输入当前经纬度");
+
+       return this.getAmap(location);
+
+    }
+
+    @Api(name = "amap.around", version = "1.0", ignoreSign = true)
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    @ApiDocMethod(description = "周边搜索", remark = "关键字可以为空", results = {@ApiDocField(description = "周边地址信息", name = "amapResults", elementClass = AmapResult.class)})
+    public List<AmapResult> around(AmapAroundParam aroundParam) throws Exception {
+
+        Assert.notNull(aroundParam);
+        Assert.hasLength(aroundParam.getLocation(), "请输入当前经纬度");
+        Assert.hasLength(aroundParam.getOffset(), "请输入每页条数");
+        Assert.hasLength(aroundParam.getPage(), "请输入页数");
+
+        ArrayList<AmapResult> amapResults = new ArrayList<>();
+
+        String url = "https://restapi.amap.com/v3/place/around";
+        Response response = FastHttpClient.get().url(url)
+                .addParams("key", AmapConst.AMAP_KEY)
+                .addParams("location", aroundParam.getLocation())
+                .addParams("keywords", StringUtils.isBlank(aroundParam.getSearchKey()) ? "" : aroundParam.getSearchKey())
+                .addParams("offset", aroundParam.getOffset())
+                .addParams("page", aroundParam.getPage())
+                .build().execute();
+
+        String resultJson = response.body().string();
+        if (logger.isDebugEnabled()) {
+            logger.debug(resultJson);
+        }
+
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(resultJson)) {
+            resultJson = resultJson.replaceAll("\n", "");
+            AmapRoundJson amapRoundJson = JSON.parseObject(resultJson, AmapRoundJson.class);
+            if (amapRoundJson != null && "1".equals(amapRoundJson.getStatus())) {
+                if (amapRoundJson.getPois() != null && amapRoundJson.getPois().size() > 0) {
+
+                    for (AmapRoundJson.PoisBean poisBean : amapRoundJson.getPois()) {
+                        AmapResult amapResult = new AmapResult();
+
+                        String name = poisBean.getName();
+                        String address = poisBean.getAddress();
+                        String poisLocation = poisBean.getLocation();
+
+                        amapResult.setName(name);
+                        amapResult.setAddress(address);
+                        amapResult.setLocation(poisLocation);
+
+                        amapResults.add(amapResult);
+                    }
+                }
+            } else {
+                throw new ApiException("调用高德地图服务出错啦！原因：" + amapRoundJson.getInfo());
+            }
+
+        } else {
+            throw new ApiException("调用高德地图服务出错啦！原因：高德API结果返回为空！");
+        }
+
+
+        return amapResults;
+    }
+
+    public static  AmapResult getAmap(String location) throws Exception{
+        if(StringUtils.isBlank(location)){
+            throw new ApiException("经纬度不能为空");
+        }
 
         AmapResult result = new AmapResult();
 
@@ -168,63 +235,5 @@ public class AmapApi {
         }
 
         return result;
-    }
-
-    @Api(name = "amap.around", version = "1.0", ignoreSign = true)
-    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    @ApiDocMethod(description = "周边搜索", remark = "关键字可以为空", results = {@ApiDocField(description = "周边地址信息", name = "amapResults", elementClass = AmapResult.class)})
-    public List<AmapResult> around(AmapAroundParam aroundParam) throws Exception {
-
-        Assert.notNull(aroundParam);
-        Assert.hasLength(aroundParam.getLocation(), "请输入当前经纬度");
-        Assert.hasLength(aroundParam.getOffset(), "请输入每页条数");
-        Assert.hasLength(aroundParam.getPage(), "请输入页数");
-
-        ArrayList<AmapResult> amapResults = new ArrayList<>();
-
-        String url = "https://restapi.amap.com/v3/place/around";
-        Response response = FastHttpClient.get().url(url)
-                .addParams("key", AmapConst.AMAP_KEY)
-                .addParams("location", aroundParam.getLocation())
-                .addParams("keywords", StringUtils.isBlank(aroundParam.getSearchKey()) ? "" : aroundParam.getSearchKey())
-                .addParams("offset", aroundParam.getOffset())
-                .addParams("page", aroundParam.getPage())
-                .build().execute();
-
-        String resultJson = response.body().string();
-        if (logger.isDebugEnabled()) {
-            logger.debug(resultJson);
-        }
-
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(resultJson)) {
-            resultJson = resultJson.replaceAll("\n", "");
-            AmapRoundJson amapRoundJson = JSON.parseObject(resultJson, AmapRoundJson.class);
-            if (amapRoundJson != null && "1".equals(amapRoundJson.getStatus())) {
-                if (amapRoundJson.getPois() != null && amapRoundJson.getPois().size() > 0) {
-
-                    for (AmapRoundJson.PoisBean poisBean : amapRoundJson.getPois()) {
-                        AmapResult amapResult = new AmapResult();
-
-                        String name = poisBean.getName();
-                        String address = poisBean.getAddress();
-                        String poisLocation = poisBean.getLocation();
-
-                        amapResult.setName(name);
-                        amapResult.setAddress(address);
-                        amapResult.setLocation(poisLocation);
-
-                        amapResults.add(amapResult);
-                    }
-                }
-            } else {
-                throw new ApiException("调用高德地图服务出错啦！原因：" + amapRoundJson.getInfo());
-            }
-
-        } else {
-            throw new ApiException("调用高德地图服务出错啦！原因：高德API结果返回为空！");
-        }
-
-
-        return amapResults;
     }
 }

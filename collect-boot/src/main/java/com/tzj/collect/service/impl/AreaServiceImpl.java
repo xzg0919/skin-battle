@@ -1,18 +1,26 @@
 package com.tzj.collect.service.impl;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
-import com.tzj.collect.entity.Area;
+import com.tzj.collect.api.admin.param.CompanyBean;
+import com.tzj.collect.api.ali.AmapApi;
+import com.tzj.collect.api.ali.param.AreaBean;
+import com.tzj.collect.api.ali.param.PageBean;
+import com.tzj.collect.api.ali.result.AmapResult;
+import com.tzj.collect.api.business.param.CommunityBean;
+import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.tzj.collect.entity.*;
 import com.tzj.collect.mapper.AreaMapper;
-import com.tzj.collect.service.AreaService;
+import com.tzj.collect.service.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Resource;
@@ -23,6 +31,14 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 
 	@Resource
 	private AreaMapper mapper;
+	@Autowired
+	private CompanyStreetApplianceService companyStreetApplianceService;
+	@Autowired
+	private CompanyStreetBigService companyStreetBigService;
+	@Autowired
+	private CommunityService communityService;
+	@Autowired
+	private CompanyServiceService companyServiceService;
 	
 	@Override
 	public List<Area> getByArea(int level,String cityId) {
@@ -136,6 +152,151 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 			mapper.updateById(updateArea);
 		});
 		return null;
+	}
+
+	@Override
+	public Object adminGetCityList(String name){
+
+		return mapper.adminGetCityList(name);
+
+	}
+
+	@Override
+	public Object adminGetAreaRange(Integer companyId,Integer cityId,String title){
+		List<Map<String, Object>> resultList = null;
+		List<Map<String, Object>> streetList = null;
+		if ("1".equals(title)) {
+			resultList = mapper.adminGetApplianceAreaRange(companyId,cityId);
+		}else if("4".equals(title)){
+			resultList = mapper.adminGetBigAreaRange(companyId,cityId);
+		}
+			return resultList;
+
+	}
+	@Override
+	public Object adminGetStreetRange(Integer companyId,Integer areaId,String title){
+		List<Map<String, Object>> streetList = null;
+		if ("1".equals(title)) {
+			streetList = mapper.adminGetApplianceStreetRange(companyId,areaId);
+		}else if ("4".equals(title)){
+			streetList = mapper.adminGetBigStreetRange(companyId,areaId);
+		}
+		return streetList;
+	}
+
+	@Transactional
+	@Override
+	public Object updateOrSaveCompanyRange( RecyclersServiceRangeBean recyclersServiceRangeBean){
+		Integer companyId = recyclersServiceRangeBean.getCompanyId();
+
+		//获取所有的区域Id
+		List<AreaBean> areaList = recyclersServiceRangeBean.getAreaList();
+		for (AreaBean areaBean: areaList) {
+			if(null != areaBean){
+				if("1".equals(recyclersServiceRangeBean.getTitle())){
+					if("0".equals(areaBean.getSaveOrDelete())){
+						CompanyStreetAppliance companyStreetAppliance = companyStreetApplianceService.selectOne(new EntityWrapper<CompanyStreetAppliance>().eq("street_id", areaBean.getStreeId()));
+						if(null == companyStreetAppliance){
+							companyStreetAppliance = new CompanyStreetAppliance();
+							companyStreetAppliance.setCompanyId(companyId);
+							companyStreetAppliance.setStreetId(Integer.parseInt(areaBean.getStreeId()));
+							companyStreetAppliance.setAreaId(Integer.parseInt(areaBean.getStreeId()));
+							companyStreetApplianceService.insert(companyStreetAppliance);
+						}
+					}else {
+						companyStreetApplianceService.delete(new EntityWrapper<CompanyStreetAppliance>().eq("company_id",companyId).eq("street_id",areaBean.getStreeId()));
+					}
+				}else if("4".equals(recyclersServiceRangeBean.getTitle())){
+					if("0".equals(areaBean.getSaveOrDelete())){
+						CompanyStreetBig companyStreetBig = companyStreetBigService.selectOne(new EntityWrapper<CompanyStreetBig>().eq("street_id", areaBean.getStreeId()));
+						if(null == companyStreetBig){
+							companyStreetBig = new CompanyStreetBig();
+							companyStreetBig.setCompanyId(companyId);
+							companyStreetBig.setStreetId(Integer.parseInt(areaBean.getStreeId()));
+							companyStreetBig.setAreaId(Integer.parseInt(areaBean.getStreeId()));
+							companyStreetBigService.insert(companyStreetBig);
+						}
+					}else {
+						companyStreetBigService.delete(new EntityWrapper<CompanyStreetBig>().eq("company_id",companyId).eq("street_id",areaBean.getStreeId()));
+					}
+				}
+			}
+		}
+		return  "操作成功";
+	}
+
+	@Override
+	public Object getHouseRangeList(Integer companyId, PageBean pageBean){
+		int pageStart = (pageBean.getPageNumber() - 1) * pageBean.getPageSize();
+		Map<String,Object> resultMap = new HashMap<>();
+		List<Map<String,Object>> houseList = new ArrayList<>();
+		houseList = mapper.getHouseRangeList(companyId,pageStart,pageBean.getPageSize());
+		Integer count = mapper.getHouseRangeCount(companyId);
+		resultMap.put("pageNum",pageBean.getPageNumber());
+		resultMap.put("count",count);
+		resultMap.put("houseList",houseList);
+		return resultMap;
+	}
+
+	@Override
+	@Transactional
+	public Object saveOrUpdateCommunity(Integer companyId,String location)throws Exception{
+
+		AmapResult amap = AmapApi.getAmap(location);
+		CompanyServiceRange companyServiceRange = null;
+		if(null!= amap){
+			Area area = this.selectOne(new EntityWrapper<Area>().eq("code_", amap.getTowncode()).eq("type", 3));
+			if(null==area){
+				throw new Exception("该小区找不到对应的街道");
+			}else {
+				Community community = communityService.selectOne(new EntityWrapper<Community>().eq("area_id", area.getId()).eq("name_", amap.getName()));
+				if(null != community){
+					companyServiceRange = companyServiceService.selectOne(new EntityWrapper<CompanyServiceRange>().eq("company_id", companyId).eq("community_id", community.getId()));
+					if(companyServiceRange != null){
+						throw new Exception("该小区已经有相关企业关联");
+					}else {
+						companyServiceRange = new CompanyServiceRange();
+						companyServiceRange.setCompanyId(companyId.toString());
+						companyServiceRange.setCommunityId(community.getId().intValue());
+						companyServiceRange.setAreaId(community.getAreaId());
+						companyServiceRange.setParentIds(community.getParentIds());
+						companyServiceService.insert(companyServiceRange);
+					}
+				}else {
+					community = new Community();
+					community.setAreaId(area.getId().intValue());
+					community.setParentIds(area.getParentIds());
+					community.setName(amap.getName());
+					community.setAddress(amap.getAddress());
+					community.setLongitude(Double.parseDouble(location.split(",")[0]));
+					community.setLatitude(Double.parseDouble(location.split(",")[1]));
+					communityService.insert(community);
+					companyServiceRange = new CompanyServiceRange();
+					companyServiceRange.setCompanyId(companyId.toString());
+					companyServiceRange.setCommunityId(community.getId().intValue());
+					companyServiceRange.setAreaId(community.getAreaId());
+					companyServiceRange.setParentIds(community.getParentIds());
+					companyServiceService.insert(companyServiceRange);
+				}
+			}
+			amap.getTowncode();
+
+		}
+		return "操作成功";
+	}
+
+	@Override
+	@Transactional
+	public  Object deleteCommunityByIds(List<String>  communityIds){
+		if(!communityIds.isEmpty()){
+			for (String communityId:communityIds){
+				if(StringUtils.isNotBlank(communityId)){
+					communityService.deleteById(Long.parseLong(communityId));
+					companyServiceService.delete(new EntityWrapper<CompanyServiceRange>().eq("community_id",communityId));
+				}
+			}
+		}
+		return "操作成功";
 	}
 
 }

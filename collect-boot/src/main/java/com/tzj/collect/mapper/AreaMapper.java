@@ -19,4 +19,18 @@ public interface AreaMapper extends BaseMapper<Area> {
 	List<Map<String, String>> allAreaList(@Param("parentId")String parentId);
 
 	List<Map<String, Object>> selectAreaParent();
+
+	List<Map<String, Object>> adminGetCityList(@Param("name")String name);
+
+	List<Map<String, Object>> adminGetApplianceAreaRange(@Param("companyId") Integer companyId,@Param("cityId")Integer cityId);
+
+	List<Map<String, Object>> adminGetBigAreaRange(@Param("companyId") Integer companyId,@Param("cityId")Integer cityId);
+
+	List<Map<String, Object>> adminGetApplianceStreetRange(@Param("companyId") Integer companyId,@Param("areaId")Integer areaId);
+
+	List<Map<String, Object>> adminGetBigStreetRange(@Param("companyId") Integer companyId,@Param("areaId")Integer areaId);
+
+	List<Map<String, Object>> getHouseRangeList(@Param("companyId") Integer companyId,@Param("pageStart") Integer pageStart,@Param("pageSize")Integer pageSize);
+
+	Integer getHouseRangeCount(@Param("companyId") Integer companyId);
 }

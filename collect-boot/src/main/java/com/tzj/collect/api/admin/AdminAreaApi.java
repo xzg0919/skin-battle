@@ -5,6 +5,8 @@ import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHOR
 import java.util.List;
 
 import com.tzj.collect.api.admin.param.AdminCommunityBean;
+import com.tzj.collect.api.admin.param.CompanyBean;
+import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.Recyclers;
@@ -16,6 +18,7 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 
+import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -47,7 +50,6 @@ public class AdminAreaApi {
 	/**
 	 * 根据小区id得到回收人员信息
 	 * @author sgmark@aliyun.com
-	 * @param recyclersBean
 	 * @return
 	 */
 	@Api(name = "admin.area.getrecbycommid", version = "1.0")
@@ -82,6 +84,61 @@ public class AdminAreaApi {
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public Integer getCategoryNum(AdminCommunityBean adminCommunityBean) {
 		return companyService.selectCompanyCountByCom(adminCommunityBean.getCommunityId());
+	}
+
+	// 根据所有的城市列表
+	@Api(name = "admin.company.adminGetCityList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object adminGetCityList(CompanyBean companyBean) {
+		return areaService.adminGetCityList(companyBean.getName());
+	}
+
+	// 根据服务商Id和城市Id查询相关的行政区域信息
+	@Api(name = "admin.company.adminGetAreaRange", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object adminGetAreaRange(CompanyBean companyBean) {
+		return areaService.adminGetAreaRange(companyBean.getId().intValue(),companyBean.getCityId(),companyBean.getTitle());
+	}
+	// 根据服务商Id和行政区Id查询相关的街道信息
+	@Api(name = "admin.company.adminGetStreetRange", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object adminGetStreetRange(CompanyBean companyBean) {
+		return areaService.adminGetStreetRange(companyBean.getId().intValue(),companyBean.getAreaId(),companyBean.getTitle());
+	}
+
+	// 根据服务商Id和行政区Id查询相关的街道信息
+	@Api(name = "admin.company.updateOrSaveCompanyRange", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object updateOrSaveCompanyRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+		return areaService.updateOrSaveCompanyRange(recyclersServiceRangeBean);
+	}
+
+	// 根据服务商Id获取生活垃圾小区的列表
+	@Api(name = "admin.company.getHouseRangeList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getHouseRangeList(CompanyBean companyBean) {
+		return areaService.getHouseRangeList(companyBean.getId().intValue(),companyBean.getPageBean());
+	}
+
+	// 根据经纬度保存公司关联地址
+	@Api(name = "admin.company.saveOrUpdateCommunity", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object saveOrUpdateCommunity(CompanyBean companyBean)throws Exception {
+		return areaService.saveOrUpdateCommunity(companyBean.getId().intValue(),companyBean.getLocation());
+	}
+
+	// 根据删除小区信息
+	@Api(name = "admin.company.deleteCommunityByIds", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object deleteCommunityByIds(CompanyBean companyBean)throws Exception {
+		return areaService.deleteCommunityByIds(companyBean.getCommunityIds());
 	}
 
 }

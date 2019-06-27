@@ -3,8 +3,12 @@ package com.tzj.collect.service;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
+import com.tzj.collect.api.admin.param.CompanyBean;
+import com.tzj.collect.api.ali.param.PageBean;
+import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
 import com.tzj.collect.entity.Area;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,4 +41,20 @@ public interface AreaService  extends IService<Area>{
 	void inputAreaCode(List<Map<String, String>> mapList) throws ApiException;
 
 	String updateAreaParent();
+	@DS("slave")
+	Object adminGetCityList(String name);
+
+	@DS("slave")
+	Object adminGetAreaRange(Integer companyId,Integer cityId,String title);
+
+	@DS("slave")
+	Object adminGetStreetRange(Integer companyId,Integer areaId,String title);
+
+	Object updateOrSaveCompanyRange( RecyclersServiceRangeBean recyclersServiceRangeBean);
+	@DS("slave")
+	Object getHouseRangeList(Integer companyId, PageBean pageBean);
+
+	Object saveOrUpdateCommunity(Integer companyId,String location) throws Exception;
+
+	Object deleteCommunityByIds(List<String>  communityIds);
 }

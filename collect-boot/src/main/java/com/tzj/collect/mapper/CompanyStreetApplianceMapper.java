@@ -18,4 +18,6 @@ public interface CompanyStreetApplianceMapper extends BaseMapper<CompanyStreetAp
     Integer selectStreetApplianceCompanyId(@Param("categoryId") Integer categoryId,@Param("streetId")Integer streetId);
 
     Map<String,Object> companyAreaRanges(String companyId);
+
+    Map<String,Object> adminCompanyAreaRanges(String companyId);
 }
