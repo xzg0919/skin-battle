@@ -12,6 +12,7 @@ import com.tzj.module.common.aliyun.mns.Notification;
 import com.tzj.module.common.aliyun.mns.XMLUtils;
 import com.tzj.module.common.exception.BusiException;
 import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -78,6 +79,9 @@ public class FiveKgController {
             return null;
         }
         Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo).eq("del_flag", 0));
+        if (null == order ) {
+            throw new ApiException("订单不存在，order_no是："+orderNo);
+        }
         if("2".equals(orderStatus)){
             if((Order.OrderType.COMPLETE+"").equals(order.getStatus()+"")||(Order.OrderType.CANCEL+"").equals(order.getStatus()+"")||(Order.OrderType.REJECTED+"").equals(order.getStatus()+"")){
                 return null;
@@ -107,7 +111,7 @@ public class FiveKgController {
                     if(null != object.getString("logisticsName")&&StringUtils.isNotBlank(object.getString("logisticsName"))){
                         order.setLogisticsName(object.getString("logisticsName"));
                     }
-                    order.setReceiveTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(object.getString("date")));
+                    order.setReceiveTime(new Date());
                     orderService.updateById(order);
                 }catch (Exception e){
                     e.printStackTrace();
