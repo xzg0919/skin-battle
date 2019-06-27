@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,13 +45,13 @@ public class AmapApi {
      * 更新小区的高德名称
      */
     @Api(name = "amap.update", version = "1.0", ignoreSign = true)
-    public void completeCommunity() throws Exception{
-        List<Community> communityList=communityService.list20CommunityByAmapNameNull();
-        for(Community community:communityList){
-            String longitude=community.getLongitude().toString();
-            String latitude=community.getLatitude().toString();
-            AmapResult amapResult=regeo(longitude+","+latitude);
-            communityService.updateCommunityAmapName(amapResult.getName(),amapResult.getNeighborhood(),amapResult.getFormattedAd(),community.getId());
+    public void completeCommunity() throws Exception {
+        List<Community> communityList = communityService.list20CommunityByAmapNameNull();
+        for (Community community : communityList) {
+            String longitude = community.getLongitude().toString();
+            String latitude = community.getLatitude().toString();
+            AmapResult amapResult = regeo(longitude + "," + latitude);
+            communityService.updateCommunityAmapName(amapResult.getName(), amapResult.getNeighborhood(), amapResult.getFormattedAd(), community.getId());
         }
     }
 
@@ -75,9 +74,9 @@ public class AmapApi {
         Response response = FastHttpClient.get().url(url)
                 .addParams("key", AmapConst.AMAP_KEY)
                 .addParams("location", location)
-                .addParams("extensions","all")
-                .addParams("poitype","120000|120100|120200|120201|120202|120203|120300|120301|120302|120303|120304")
-                .addParams("homeorcorp","1")
+                //.addParams("extensions","all")
+                //.addParams("poitype","120000|120100|120200|120201|120202|120203|120300|120301|120302|120303|120304")
+                //.addParams("homeorcorp","1")
                 .build().execute();
 
         String resultJson = response.body().string();
@@ -132,21 +131,32 @@ public class AmapApi {
                         }
 
                         String name = "";
-
-                        List<PoisBean> poisBeanList=regeocodeBean.getPois();
-                        if(poisBeanList!=null && poisBeanList.size()>0){
-                            name=poisBeanList.get(0).getName();
-                        }
-                        result.setName(name);
-
-                        if (neighborhood!=null && neighborhood.getName() != null && neighborhood.getName().size() > 0) {
-                            String name1 = neighborhood.getName().get(0).toString();
-                            result.setNeighborhood(name1);
+                        if (building != null) {
+                            if (building.getName() != null && building.getName().size() > 0) {
+                                name = building.getName().get(0).toString();
+                                result.setName(name);
+                            }
                         }
 
+                        if (neighborhood != null) {
+                            if (neighborhood.getName() != null && neighborhood.getName().size() > 0) {
+                                String neighborhoodName = neighborhood.getName().get(0).toString();
+                                result.setNeighborhood(neighborhoodName);
 
-                        String name2 = address.substring(address.lastIndexOf(township)+township.length(), address.length());
-                        result.setFormattedAd(name2);
+                                if (org.apache.commons.lang3.StringUtils.isBlank(result.getName())) {
+                                    result.setName(neighborhoodName);
+                                }
+                            }
+                        }
+
+
+                        //还为空，那么截取
+                        String formattedName = address.substring(address.lastIndexOf(township) + township.length(), address.length());
+                        result.setFormattedAd(formattedName);
+                        if (org.apache.commons.lang3.StringUtils.isBlank(result.getName())) {
+                            result.setName(formattedName);
+                        }
+
 
                     }
                 }
