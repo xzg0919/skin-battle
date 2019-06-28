@@ -194,7 +194,7 @@
 		SELECT
 			a.id,
 			a.area_name,
-			IF(b.id is null,'1','2') AS isChooes,
+			IF(b.id is null,'1','2') AS isChoose,
 			IF(c.id is null,'1','2') AS isEdit
 		FROM
 			sb_area a
@@ -207,7 +207,7 @@
 		SELECT
 			a.id,
 			a.area_name,
-			IF(b.id is null,'1','2') AS isChooes,
+			IF(b.id is null,'1','2') AS isChoose,
 			IF(c.id is null,'1','2') AS isEdit
 		FROM
 			sb_area a
