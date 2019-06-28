@@ -17,11 +17,18 @@ import java.util.UUID;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.admin.param.AdminBean;
 import com.tzj.collect.api.admin.param.CompanyBean;
+import com.tzj.collect.api.ali.param.AreaBean;
 import com.tzj.collect.api.ali.param.PageBean;
+import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.tzj.module.api.utils.JwtUtils;
+import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
 
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
+import io.jsonwebtoken.Claims;
+
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
 * @ClassName: AdminApiTest
@@ -31,46 +38,73 @@ import io.itit.itf.okhttp.Response;
 
 public class AdminCompanyApiTest {
 	 public static void main(String[] args) throws Exception {
-	        String api="http://localhost:8080/admin/api";	 
-	        CompanyBean companybean = new CompanyBean();
-//	        PageBean page = new PageBean();
-//	        page.setPageNumber(1);
-//	        page.setPageSize(5);
-//	        companybean.setPageBean(page);
-	        List<Integer> Category_id = new ArrayList<Integer>();
-//	        List<Integer> listcommunityId = new ArrayList<Integer>();
-//	        listcommunityId.add(17);
-	        Category_id.add(1);
-	        Category_id.add(3);
-	        companybean.setCategory_id(Category_id);
-	        companybean.setAreaId(52);
-//	        companybean.setCommunityId(listcommunityId);
-//	        companybean.setCountyId(4);
-//	        companybean.setStreetId(53);
-//	        companybean.setDelectCommunityId(1);
-//	        companybean.setInsertCommunityId(2);
-//	        companybean.setCompanyName("挺之军666");
-//	        companybean.setAddress("浦东新区");
-//	        companybean.setTelphone("13324347551");
-	        companybean.setId((long)12);
+		 String token= JwtUtils.generateToken("1", ADMIN_API_EXPRIRE,ADMIN_API_TOKEN_SECRET_KEY);
+		 String securityToken=JwtUtils.generateEncryptToken(token,ADMIN_API_TOKEN_CYPTO_KEY);
+		 System.out.println("token是 : "+securityToken);
+
+		 String tokenCyptoKey = ADMIN_API_TOKEN_CYPTO_KEY;
+		 String key = CipherTools.initKey(tokenCyptoKey);
+		 String decodeToken = CipherTools.decrypt(securityToken, key);
+		 Claims claims = JwtUtils.getClaimByToken(decodeToken, ADMIN_API_TOKEN_SECRET_KEY);
+		 String subjectStr = claims.getSubject();
+		 System.out.println("反向編譯 token是："+subjectStr);
+
+
+	        String api="http://localhost:9090/admin/api";
+//		 RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
+//		 recyclersServiceRangeBean.setTitle("1");
+//		 recyclersServiceRangeBean.setCompanyId(1);
+//		 List<AreaBean> areaList = new ArrayList<>();
+//		 AreaBean areaBean = new AreaBean();
+//		 areaBean.setAreaId("4282");
+//		 areaBean.setStreeId("4622");
+//		 areaBean.setSaveOrDelete("0");
+//		 AreaBean areaBean1 = new AreaBean();
+//		 areaBean1.setAreaId("4282");
+//		 areaBean1.setStreeId("4621");
+//		 areaBean1.setSaveOrDelete("1");
+//		 AreaBean areaBean2 = new AreaBean();
+//		 areaBean2.setAreaId("4282");
+//		 areaBean2.setStreeId("4623");
+//		 areaBean2.setSaveOrDelete("0");
+//		 AreaBean areaBean3 = new AreaBean();
+//		 areaBean3.setAreaId("4282");
+//		 areaBean3.setStreeId("4624");
+//		 areaBean3.setSaveOrDelete("0");
+//		 areaList.add(areaBean);
+//		 areaList.add(areaBean1);
+//		 areaList.add(areaBean2);
+//		 areaList.add(areaBean3);
+//
+//		 recyclersServiceRangeBean.setAreaList(areaList);
+
+		 CompanyBean companyBean = new CompanyBean();
+		 companyBean.setId((long)1);
+		 companyBean.setPageBean(new PageBean());
+		 companyBean.setName("南京");
+		 companyBean.setLocation("121.46559,31.33092");
+		 List<String> communityIdList = new ArrayList<>();
+		 communityIdList.add("22519");
+		 communityIdList.add("28515");
+		 companyBean.setCommunityIds(communityIdList);
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.company.editorCommunity");
+	        param.put("name","admin.company.deleteCommunityByIds");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
 	        param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-	        param.put("token","F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CERH5SHVK5VFUCPIN3MOJMM2X26FUTCYWSIQUPXLGISYS43FZFB2LZXKU47QBX4MRCZN3JZLEBJCS7S4IBA2CH7QTDQMEZ4ANTEESM6UKRWRO77J2H7BKQLQFUOJRQAOI4AZRQIH46HAHJRN2RIRJH2PKY5INS6HGZXQIMI2JR36WLMNJL6LEEATJRAMH75T2XNQ3IV6SDRLCI4NAX7BHZQBR6LLA");
+	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",companybean);
+	        param.put("data",companyBean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");
 	        param.put("sign",sign);
-
+			 System.out.println("请求的参数是："+JSON.toJSONString(param));
 	        Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
 	        String resultJson=response.body().string();
-	        System.out.println(resultJson);
+	        System.out.println("返回的参数是："+resultJson);
 	    }
 }

@@ -57,9 +57,19 @@ public class RecyclersServiceRangeBean {
      */
     private List<TitleBean> TitleList;
 
+    private Integer companyId;
+
     private String isBigRecycle;
 
     private String title;
+
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Integer companyId) {
+        this.companyId = companyId;
+    }
 
     public String getTitle() {
         return title;

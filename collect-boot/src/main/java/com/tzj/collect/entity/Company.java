@@ -31,6 +31,11 @@ public class Company extends DataEntity<Long> {
 
 	private String isOpenOrder;//是否打开自动开 0关闭 1打开
 
+	@TableField(exist = false)
+	private String userName;   //页面需要的用户名
+	@TableField(exist = false)
+	private String password;   //页面需要的密码
+
 	/**
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示
 	 */
@@ -251,5 +256,21 @@ public class Company extends DataEntity<Long> {
 
 	public void setIsOpenOrder(String isOpenOrder) {
 		this.isOpenOrder = isOpenOrder;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

@@ -249,4 +249,44 @@ public class AdminCompanyApi {
 		}
 		return communityList;
 	}
+
+	// 获取所有的公司信息
+	@Api(name = "admin.company.getAdminCompanyList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getAdminCompanyList(CompanyBean companyBean) {
+		return companyService.getAdminCompanyList(companyBean.getCompanyName(),companyBean.getTitle(),companyBean.getPageBean());
+	}
+
+	// 删除的公司信息
+	@Api(name = "admin.company.deleteCompanyById", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object deleteCompanyById(CompanyBean companyBean) {
+		return companyService.deleteCompanyById(companyBean.getId().intValue());
+	}
+
+	// 根据公司id获取公司信息
+	@Api(name = "admin.company.getCompanyDetail", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getCompanyDetail(CompanyBean companyBean) {
+		return companyService.getCompanyDetail(companyBean.getId().intValue());
+	}
+
+	// 根据公司更新或新增信息
+	@Api(name = "admin.company.updateCompanyDetail", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object updateCompanyDetail(CompanyBean companyBean) {
+		return companyService.updateCompanyDetail(companyBean);
+	}
+	// 根据公司id获取公司服务范围信息
+	@Api(name = "admin.company.adminCompanyRangeById", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object adminCompanyRangeById(CompanyBean companyBean) {
+		return companyService.adminCompanyRangeById(companyBean.getId().intValue());
+	}
+
 }

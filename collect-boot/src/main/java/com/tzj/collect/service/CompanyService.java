@@ -97,4 +97,17 @@ public interface CompanyService  extends IService<Company>{
 
 	@DS("slave")
 	Object companyAreaRanges(String title,String companyId);
+
+	@DS("slave")
+	Object getAdminCompanyList(String companyName,String title,PageBean pageBean);
+
+	String deleteCompanyById(Integer companyId);
+
+	@DS("slave")
+	Object getCompanyDetail(Integer companyId);
+
+	Object updateCompanyDetail(CompanyBean companyBean);
+
+	@DS("slave")
+	Object adminCompanyRangeById(Integer companyId);
 }

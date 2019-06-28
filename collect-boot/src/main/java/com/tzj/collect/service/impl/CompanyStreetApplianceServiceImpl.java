@@ -67,4 +67,9 @@ public class CompanyStreetApplianceServiceImpl extends ServiceImpl<CompanyStreet
     public Map<String,Object> companyAreaRanges(String companyId) {
         return companyStreetApplianceMapper.companyAreaRanges(companyId);
     }
+
+    @Override
+    public Map<String,Object> adminCompanyAreaRanges(String companyId) {
+        return companyStreetApplianceMapper.adminCompanyAreaRanges(companyId);
+    }
 }

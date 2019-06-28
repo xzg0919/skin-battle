@@ -8,9 +8,11 @@
 
 package com.tzj.collect.api.admin.param;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.tzj.collect.api.ali.param.PageBean;
+import lombok.Data;
 
 /**
  * @ClassName: CompanyBean
@@ -18,6 +20,7 @@ import com.tzj.collect.api.ali.param.PageBean;
  * @author:[王池]
  */
 
+@Data
 public class CompanyBean {
 	private Long id;//公司id
 
@@ -39,6 +42,80 @@ public class CompanyBean {
 	 * 类型1 家电  2生活垃圾   4大件
 	 */
 	private String title;
+
+	private String name;
+
+	private String userName;
+
+	private String password;
+
+	private String tel;
+
+	private String contacts;
+
+	private String longitude; // 经度
+
+	private String latitude; // 纬度
+
+	private  String location;
+
+	private List<String> communityIds;
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
+	public String getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(String contacts) {
+		this.contacts = contacts;
+	}
 
 	public Integer getCityId() {
 		return cityId;

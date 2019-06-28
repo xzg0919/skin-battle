@@ -272,6 +272,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		recyclersService.updateById(recyclers);
 		CompanyRecycler companyRecycler = this.selectOne(new EntityWrapper<CompanyRecycler>().eq("company_id", companyId).eq("recycler_id", recycleId).eq("status_", 1));
 		companyRecycler.setStatus("2");
+		companyRecycler.setDelFlag("0");
 		this.updateById(companyRecycler);
 		return "操作成功";
 	}
