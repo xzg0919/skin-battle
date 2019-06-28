@@ -200,7 +200,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 							companyStreetAppliance = new CompanyStreetAppliance();
 							companyStreetAppliance.setCompanyId(companyId);
 							companyStreetAppliance.setStreetId(Integer.parseInt(areaBean.getStreeId()));
-							companyStreetAppliance.setAreaId(Integer.parseInt(areaBean.getStreeId()));
+							companyStreetAppliance.setAreaId(Integer.parseInt(areaBean.getAreaId()));
 							companyStreetApplianceService.insert(companyStreetAppliance);
 						}
 					}else {
@@ -213,7 +213,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 							companyStreetBig = new CompanyStreetBig();
 							companyStreetBig.setCompanyId(companyId);
 							companyStreetBig.setStreetId(Integer.parseInt(areaBean.getStreeId()));
-							companyStreetBig.setAreaId(Integer.parseInt(areaBean.getStreeId()));
+							companyStreetBig.setAreaId(Integer.parseInt(areaBean.getAreaId()));
 							companyStreetBigService.insert(companyStreetBig);
 						}
 					}else {
@@ -245,7 +245,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		AmapResult amap = AmapApi.getAmap(location);
 		CompanyServiceRange companyServiceRange = null;
 		if(null!= amap){
-			Area area = this.selectOne(new EntityWrapper<Area>().eq("code_", amap.getTowncode()).eq("type", 3));
+			Area area = this.selectOne(new EntityWrapper<Area>().eq("code_", amap.getTowncode()));
 			if(null==area){
 				throw new Exception("该小区找不到对应的街道");
 			}else {

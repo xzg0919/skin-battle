@@ -217,7 +217,7 @@
 	</select>
 	<select id="getHouseRangeList" resultType="Map" parameterType="Integer">
 		SELECT
-			a.id,
+			b.id,
 			f.area_name AS cityId,
 			d.area_name AS areaName,
 			c.area_name AS streetName,
