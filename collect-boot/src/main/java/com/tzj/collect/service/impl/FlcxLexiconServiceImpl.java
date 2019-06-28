@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.mybatisplus.enums.SqlLike;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -90,7 +91,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         if (StringUtils.isEmpty(flcxBean.getName())){
             return map;
         }
-        map.put("result",flcxLexiconMapper.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).like("name_", flcxBean.getName()+"%")));
+        map.put("result",flcxLexiconMapper.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).like("name_", flcxBean.getName(), SqlLike.RIGHT)));
         return map;
     }
 }
