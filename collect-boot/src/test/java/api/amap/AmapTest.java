@@ -21,10 +21,10 @@ public class AmapTest extends TestCase {
         String url="https://restapi.amap.com/v3/geocode/regeo";
         Response response= FastHttpClient.get().url(url)
                 .addParams("key",amap_key)
-                .addParams("location","121.442891,31.236803")
-                .addParams("extensions","all")
-                .addParams("poitype","120000|120100|120200|120201|120202|120203|120300|120301|120302|120303")
-                .addParams("homeorcorp","1")
+                .addParams("location","118.895341,28.942751")
+                //.addParams("extensions","all")
+                //.addParams("poitype","120000|120100|120200|120201|120202|120203|120300|120301|120302|120303")
+                //.addParams("homeorcorp","1")
                 .build().execute();
         String result=response.body().string();
         System.out.println(result);
