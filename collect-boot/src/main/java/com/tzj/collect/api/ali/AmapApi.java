@@ -197,13 +197,13 @@ public class AmapApi {
                             result.setCity(city);
                         }
 
-                        String name = "";
+                        /*String name = "";
                         if (building != null) {
                             if (building.getName() != null && building.getName().size() > 0) {
                                 name = building.getName().get(0).toString();
                                 result.setName(name);
                             }
-                        }
+                        }*/
 
                         if (neighborhood != null) {
                             if (neighborhood.getName() != null && neighborhood.getName().size() > 0) {
