@@ -199,7 +199,7 @@
 		FROM
 			sb_area a
 		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_appliance a WHERE a.company_id = #{companyId} ) b ON a.id = b.street_id
-		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_appliance a WHERE a.company_id != 1 GROUP BY a.street_id) c ON a.id = c.street_id
+		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_appliance a WHERE a.company_id != #{companyId} GROUP BY a.street_id) c ON a.id = c.street_id
 		WHERE a.parent_id = #{areaId}
 	</select>
 
@@ -212,7 +212,7 @@
 		FROM
 			sb_area a
 		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_big a WHERE a.company_id = #{companyId} ) b ON a.id = b.street_id
-		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_big a WHERE a.company_id != 1 GROUP BY a.street_id) c ON a.id = c.street_id
+		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_big a WHERE a.company_id != #{companyId} GROUP BY a.street_id) c ON a.id = c.street_id
 		WHERE a.parent_id = #{areaId}
 	</select>
 	<select id="getHouseRangeList" resultType="Map" parameterType="Integer">
