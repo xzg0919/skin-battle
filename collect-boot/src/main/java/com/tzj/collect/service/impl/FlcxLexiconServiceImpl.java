@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +58,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         //记录查询
         flcxRecords.setAliUserId(flcxBean.getAliUserId());
         if (null != flcxResult){
+            flcxResult.setRemarksList(Arrays.asList(flcxResult.getRemarks().split(";")));
             map.put("results", flcxResult);
             map.put("msg", "success");
             flcxRecords.setLexiconAfter(flcxResult.getLexicon());
