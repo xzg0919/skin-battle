@@ -247,11 +247,11 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		if(null!= amap){
 			Area area = this.selectOne(new EntityWrapper<Area>().eq("code_", amap.getTowncode()));
 			if(null==area){
-				throw new Exception("该小区找不到对应的街道");
+				return "该小区找不到对应的街道,该小区属于"+amap.getCity()+"-"+amap.getDistrict()+"-"+amap.getTownship()+"--townCode:"+amap.getTowncode();
 			}else {
 				Community community = communityService.selectOne(new EntityWrapper<Community>().eq("area_id", area.getId()).eq("name_", amap.getName()));
 				if(null != community){
-					companyServiceRange = companyServiceService.selectOne(new EntityWrapper<CompanyServiceRange>().eq("company_id", companyId).eq("community_id", community.getId()));
+					companyServiceRange = companyServiceService.selectOne(new EntityWrapper<CompanyServiceRange>().eq("community_id", community.getId()));
 					if(companyServiceRange != null){
 						throw new Exception("该小区已经有相关企业关联");
 					}else {
