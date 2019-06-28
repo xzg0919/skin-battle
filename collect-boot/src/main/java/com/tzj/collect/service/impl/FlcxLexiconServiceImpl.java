@@ -87,6 +87,9 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
     @Transactional(readOnly = false)
     public Map keySearch(FlcxBean flcxBean) throws ApiException {
         HashMap<String, Object> map = new HashMap<>();
+        if (StringUtils.isEmpty(flcxBean.getName())){
+            return map;
+        }
         map.put("result",flcxLexiconMapper.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).like("name_", flcxBean.getName()+"%")));
         return map;
     }
