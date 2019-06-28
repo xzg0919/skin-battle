@@ -91,7 +91,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         if (StringUtils.isEmpty(flcxBean.getName())){
             return map;
         }
-        map.put("result",flcxLexiconMapper.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).like("name_", flcxBean.getName(), SqlLike.RIGHT)));
+        map.put("result",flcxLexiconMapper.lexCheckCount(flcxBean.getName()+"%"));
         return map;
     }
 }
