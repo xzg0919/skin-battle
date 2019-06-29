@@ -8,7 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.tzj.collect.entity.CompanyShare;
+import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.AuthIgnore;
 import org.apache.commons.lang3.StringUtils;
@@ -22,8 +22,6 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.result.BusinessRecType;
-import com.tzj.collect.entity.Company;
-import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.mapper.CompanyMapper;
 
 @Service
@@ -185,10 +183,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	@Override
 	public String deleteCompanyById(Integer companyId){
 
-		Company company = this.selectById(companyId);
-		company.setDelFlag("1");
-		this.updateById(company);
-
+		companyAccountService.delete(new EntityWrapper<CompanyAccount>().eq("company_id",companyId));
+		this.delete(new EntityWrapper<Company>().eq("id",companyId));
+		companyServiceService.delete(new EntityWrapper<CompanyServiceRange>().eq("company_id",companyId));
+		companyStreetApplianceService.delete(new EntityWrapper<CompanyStreetAppliance>().eq("company_id",companyId));
+		companyStreetBigService.delete(new EntityWrapper<CompanyStreetBig>().eq("company_id",companyId));
 		return  "操作成功";
 	}
 	@Override
@@ -203,11 +202,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	@Override
 	public Object updateCompanyDetail(CompanyBean companyBean){
 		List<CompanyAccount> companyAccounts = companyAccountService.selectList(new EntityWrapper<CompanyAccount>().eq("username", companyBean.getUserName()).eq("del_flag", 0));
-		if (!companyAccounts.isEmpty() ){
-			return "该用户名已存在，请更换";
-		}
 		Company company = this.selectById(companyBean.getId());
 		CompanyAccount companyAccount = companyAccountService.selectOne(new EntityWrapper<CompanyAccount>().eq("company_id", companyBean.getId()));
+		if (!companyAccounts.isEmpty() ){
+			if(!(companyBean.getId().toString()).equals(companyAccounts.get(0).getId().toString())){
+				return "该用户名已存在，请更换";
+			}
+		}
 		if(null == company&&null == companyAccount){
 			company = new Company();
 			companyAccount = new CompanyAccount();

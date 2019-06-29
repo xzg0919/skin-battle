@@ -297,6 +297,8 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		}else {
 			memberAddress = new MemberAddress();
 		}
+		memberAddress.setMapName(mapAddressBean.getMapName());
+		memberAddress.setMapAddress(mapAddressBean.getMapAddress());
 		memberAddress.setMemberId(memberId+"");
 		memberAddress.setName(mapAddressBean.getUserName());
 		memberAddress.setTel(mapAddressBean.getTel());

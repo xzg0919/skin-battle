@@ -105,6 +105,8 @@ public class MemberAddressApi {
 		String areaName = "";
 		String streeName ="";
 		String cityName = "";
+		String mapName = "";
+		String mapAddress= "";
     	if(null!=memberAddress) {
     		//地址区的名称
 			Area area = areaService.selectById(memberAddress.getAreaId());
@@ -123,7 +125,7 @@ public class MemberAddressApi {
 			//地址市名称
 			Area city = areaService.selectById(memberAddress.getCityId());
 			if(null != city ){
-				streeName = city.getAreaName();
+				cityName = city.getAreaName();
 			}else {
 				cityName = memberAddress.getCityName();
 			}
@@ -137,6 +139,8 @@ public class MemberAddressApi {
 			}else{
 				communityName = communityService.selectById(memberAddress.getCommunityId()).getName();
 			}
+			map.put("mapName",memberAddress.getMapName());
+			map.put("mapAddress",memberAddress.getMapAddress());
 			map.put("cityName",cityName);
     		map.put("areaName",areaName);
     		map.put("streeName",streeName);
