@@ -48,4 +48,24 @@ public class AreaExcelController {
         System.out.println(mapList.size());
         return null;
     }
+
+    @RequestMapping("add/inportxls")
+    @ResponseBody
+    public Map<String, Object> addAreaExcelInput(final MultipartFile file)throws ApiException {
+        List<Map<String, String>> mapList = new ArrayList<>();
+        List<Map<String, String>> list = null;
+        List<String> keyArray = Arrays.asList("id","pri","city","area","address","all","code");
+        try {
+            list = ExcelUtils.getDataListByXLSExcel(file.getInputStream(), keyArray, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mapList.addAll(list);
+        //返回保存结果条数
+        mapList.size();
+        mapList = mapList.stream().filter(map -> map.size() > 1).collect(Collectors.toList());
+        areaService.addInputAreaCode(mapList);
+        System.out.println(mapList.size());
+        return null;
+    }
 }

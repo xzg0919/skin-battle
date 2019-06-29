@@ -74,7 +74,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
                 map.put("msg", "empty");
             }
         }
-        flcxRecordsMapper.insert(flcxRecords);
+//        flcxRecordsMapper.insert(flcxRecords);
         return map;
     }
 
@@ -91,7 +91,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         if (StringUtils.isEmpty(flcxBean.getName())){
             return map;
         }
-        map.put("result",flcxLexiconMapper.lexCheckCount(flcxBean.getName()+"%"));
+        map.put("result",flcxLexiconMapper.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).like("name_", flcxBean.getName(), SqlLike.RIGHT)));
         return map;
     }
 }

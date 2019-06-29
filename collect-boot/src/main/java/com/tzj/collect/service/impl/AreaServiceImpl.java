@@ -1,16 +1,13 @@
 package com.tzj.collect.service.impl;
 
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.ali.AmapApi;
 import com.tzj.collect.api.ali.param.AreaBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.ali.result.AmapResult;
-import com.tzj.collect.api.business.param.CommunityBean;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.mapper.AreaMapper;
@@ -20,10 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-
-import javax.annotation.Resource;
 
 @Service
 @Transactional(readOnly=true)
@@ -297,6 +293,74 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 			}
 		}
 		return "操作成功";
+	}
+
+	@Override
+	@Transactional(readOnly = false,rollbackFor = Exception.class)
+	public void addInputAreaCode(List<Map<String, String>> mapList) {
+		mapList.parallelStream().forEach(mapLists->{
+			if (null != mapLists.get("code")) {
+				mapLists.put("code", mapLists.get("code").replace(",", ""));
+				if (null != mapLists.get("code") && mapLists.get("code").length() == 12) {
+					String priCode = mapLists.get("code").substring(0, 2) + "0000";
+					String cityCode = mapLists.get("code").substring(0, 4) + "00";
+					String areaCode = mapLists.get("code").substring(0, 6);
+					String addressCode = mapLists.get("code");
+					Area priArea = this.selectOne(new EntityWrapper<Area>().eq("code_", priCode));
+					if (null == priArea) {
+						//放入省
+						priArea = new Area();
+						priArea.setCode(priCode);
+						priArea.setParentIds("0");
+						priArea.setParentId(0);
+						priArea.setType("0");
+						priArea.setSort_(0);
+						priArea.setAreaName(mapLists.get("pri"));
+						mapper.insert(priArea);
+					}
+					Area cityArea = this.selectOne(new EntityWrapper<Area>().eq("code_", cityCode));
+					if (null == cityArea) {
+						//放入市
+						cityArea = new Area();
+						cityArea.setCode(cityCode);
+						cityArea.setParentIds(priArea.getId() + "_");
+						cityArea.setParentId(priArea.getId().intValue());
+						cityArea.setType("1");
+						cityArea.setSort_(1);
+						cityArea.setAreaName(mapLists.get("city"));
+						mapper.insert(cityArea);
+					}
+					Area areaArea = this.selectOne(new EntityWrapper<Area>().eq("code_", areaCode));
+					if (null == areaArea) {
+						//放入区
+						areaArea = new Area();
+						areaArea.setCode(areaCode);
+						areaArea.setParentIds(priArea.getId() + "_" + cityArea.getId() + "_");
+						areaArea.setParentId(cityArea.getId().intValue());
+						areaArea.setType("2");
+						areaArea.setSort_(2);
+						areaArea.setAreaName(mapLists.get("area"));
+						mapper.insert(areaArea);
+					}
+					Area addressArea = this.selectOne(new EntityWrapper<Area>().eq("code_", addressCode));
+					if (null == addressArea) {
+						//放入街道
+						addressArea = new Area();
+						addressArea.setCode(addressCode);
+						addressArea.setParentIds(priArea.getId() + "_" + cityArea.getId() + "_" + areaArea.getId() + "_");
+						addressArea.setParentId(areaArea.getId().intValue());
+						addressArea.setType("3");
+						addressArea.setSort_(3);
+						addressArea.setAreaName(mapLists.get("address"));
+						mapper.insert(addressArea);
+					} else {
+						return;
+					}
+				}
+			}else {
+				return;
+			}
+		});
 	}
 
 }

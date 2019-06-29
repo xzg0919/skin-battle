@@ -13,16 +13,16 @@ import redis.clients.jedis.JedisPoolConfig;
 @Configuration
 public class RedisConfig {
 
-    @Value("${spring.redis.pool.max-idle}")
+    @Value("${spring.redis.jedis.pool.max-idle}")
     private Integer maxIdle;
 
-    @Value("${spring.redis.pool.min-idle}")
+    @Value("${spring.redis.jedis.pool.min-idle}")
     private Integer minIdle;
 
-    @Value("${spring.redis.pool.max-active}")
+    @Value("${spring.redis.jedis.pool.max-active}")
     private Integer maxTotal;
 
-    @Value("${spring.redis.pool.max-wait}")
+    @Value("${spring.redis.jedis.pool.max-wait}")
     private Integer maxWaitMillis;
 //
 //    @Value("${redis.minEvictableIdleTimeMillis}")
