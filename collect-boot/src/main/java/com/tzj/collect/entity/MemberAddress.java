@@ -106,5 +106,13 @@ public class MemberAddress extends  DataEntity<Long>{
 	 * 国际街道编码
 	 */
 	private String townCode;
+	/**
+	 * 用户保存地图获取名字
+	 */
+	private String mapName;
+	/**
+	 * 用户点击地图地址
+	 */
+	private String mapAddress;
 
 }

@@ -260,7 +260,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		Integer areaId = -1;
 		Integer streetId = -1;
 		Integer communityId = -1;
-		Area townShip = areaService.selectOne(new EntityWrapper<Area>().eq("code_", mapAddressBean.getTownCode()).eq("type", 3));
+		Area townShip = areaService.selectOne(new EntityWrapper<Area>().eq("code_", mapAddressBean.getTownCode()));
 		if(null!=townShip){
 			streetId = townShip.getId().intValue();
 			Area area = areaService.selectById(townShip.getParentId());
@@ -297,6 +297,8 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		}else {
 			memberAddress = new MemberAddress();
 		}
+		memberAddress.setMapName(mapAddressBean.getMapName());
+		memberAddress.setMapAddress(mapAddressBean.getMapAddress());
 		memberAddress.setMemberId(memberId+"");
 		memberAddress.setName(mapAddressBean.getUserName());
 		memberAddress.setTel(mapAddressBean.getTel());

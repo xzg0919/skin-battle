@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.mybatisplus.enums.SqlLike;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +59,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         //记录查询
         flcxRecords.setAliUserId(flcxBean.getAliUserId());
         if (null != flcxResult){
+            flcxResult.setRemarksList(Arrays.asList(flcxResult.getRemarks().split(";")));
             map.put("results", flcxResult);
             map.put("msg", "success");
             flcxRecords.setLexiconAfter(flcxResult.getLexicon());
@@ -71,7 +74,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
                 map.put("msg", "empty");
             }
         }
-        flcxRecordsMapper.insert(flcxRecords);
+//        flcxRecordsMapper.insert(flcxRecords);
         return map;
     }
 
@@ -85,7 +88,10 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
     @Transactional(readOnly = false)
     public Map keySearch(FlcxBean flcxBean) throws ApiException {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("result",flcxLexiconMapper.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).like("name_", flcxBean.getName()+"%")));
+        if (StringUtils.isEmpty(flcxBean.getName())){
+            return map;
+        }
+        map.put("result",flcxLexiconMapper.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).like("name_", flcxBean.getName(), SqlLike.RIGHT)));
         return map;
     }
 }

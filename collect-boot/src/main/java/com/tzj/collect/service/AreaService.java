@@ -57,4 +57,6 @@ public interface AreaService  extends IService<Area>{
 	Object saveOrUpdateCommunity(Integer companyId,String location) throws Exception;
 
 	Object deleteCommunityByIds(List<String>  communityIds);
+
+    void addInputAreaCode(List<Map<String, String>> mapList);
 }

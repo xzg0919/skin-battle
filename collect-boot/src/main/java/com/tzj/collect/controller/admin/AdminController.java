@@ -110,6 +110,10 @@ public class AdminController {
 	public String flcxExcel() {
 		return "admin/flcxExcel";
 	}
+	@RequestMapping("/area/addExcel")
+	public String areaAddExcel() {
+		return "admin/addAreaExcel";
+	}
 
 	@RequestMapping("/area/excel")
 	public String areaExcel() {

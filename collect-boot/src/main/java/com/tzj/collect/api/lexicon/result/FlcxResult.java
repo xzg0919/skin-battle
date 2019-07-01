@@ -28,6 +28,8 @@ public class FlcxResult {
     private List<Map<String, Object>> nameLists;//小分类名称地址
 
     private String remarks;//后描述
+    private List<String> remarksList;//描述拆分
+
 
     private String isHarmful;//是否有害；1：有害
 
@@ -119,5 +121,13 @@ public class FlcxResult {
 
     public void setIsHarmful(String isHarmful) {
         this.isHarmful = isHarmful;
+    }
+
+    public List<String> getRemarksList() {
+        return remarksList;
+    }
+
+    public void setRemarksList(List<String> remarksList) {
+        this.remarksList = remarksList;
     }
 }

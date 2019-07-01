@@ -85,5 +85,24 @@
     <select id="selectNameLists" resultType="com.tzj.collect.entity.FlcxImg" parameterType="String">
         SELECT name_, img_url FROM flcx_img WHERE type_id= #{id}
     </select>
-
+    <select id="lexCheckCount" resultType="Map" parameterType="String">
+--         SELECT
+--             top5.*
+--         FROM
+--             (
+--                 SELECT
+--                     *
+--                 FROM
+--                     flcx_lexicon fl
+--                 WHERE
+--                     fl.name_ LIKE  #{lexiconName}
+--                 LIMIT 0,
+--                 5
+--             ) top5
+--         LEFT JOIN flcx_records fr ON top5.id = fr.lexicons_id
+--         GROUP BY
+--             top5.id
+--         ORDER BY
+--             COUNT(*) DESC
+    </select>
 </mapper>

@@ -22,7 +22,7 @@
     </select>
 
 	<select id="getCategoryAttrOptionByCityId" parameterType="String" resultType="com.tzj.collect.api.ali.param.AliCategoryAttrOptionBean">
-		SELECT
+		SELECT DISCONNECT
 		a.id AS id,
 		a.name_ AS `name`,
 		a.sort_ AS sort,

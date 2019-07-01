@@ -2,11 +2,11 @@ package com.tzj.collect.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.api.lexicon.result.FlcxResult;
-import com.tzj.collect.api.lexicon.result.KeywordResult;
 import com.tzj.collect.entity.FlcxLexicon;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
   * @author sgmark@aliyun.com
@@ -16,4 +16,5 @@ import java.util.List;
   */
 public interface FlcxLexiconMapper extends BaseMapper<FlcxLexicon> {
     FlcxResult lexCheck(@Param("lexiconName") String lexiconName, @Param("typeId") Long typeId);
+    List<Map<String, String>> lexCheckCount(@Param("lexiconName") String lexiconName);
 }

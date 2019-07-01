@@ -57,6 +57,15 @@ public class MapAddressBean {
 
     private String houseNumber;
 
+    /**
+     * 用户保存地图获取名字
+     */
+    private String mapName;
+    /**
+     * 用户点击地图地址
+     */
+    private String mapAddress;
+
 
 
 
