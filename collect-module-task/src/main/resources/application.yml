@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: collect-task
+  #配置MQ
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: password
+    publisher-confirms: false
+
+#热部署配置
+devtools:
+  livereload:
+    enabled: true
+  restart:
+    enabled: true
+    #additional-exclude: views/**
+
+
+#配置日志
+logging:
+  #配置日志文件路径
+  path: /temp/collect-task.log
+  level:
+    org.springfromework.web: warn
+    org.hibernate: error
+    com.tzj: warn
+    com.tzj.collect.mapper: debug

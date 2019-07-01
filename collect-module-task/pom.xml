@@ -11,7 +11,7 @@
 
     <artifactId>collect-module-task</artifactId>
 
-    <description>定时任务模块、单独编译为一个jar包</description>
+    <description>定时任务模块、单独编译为一个jar包以及MQ的监听器</description>
 
     <dependencies>
         <dependency>
