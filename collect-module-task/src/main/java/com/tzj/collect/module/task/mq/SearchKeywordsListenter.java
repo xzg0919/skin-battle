@@ -21,5 +21,14 @@ public class SearchKeywordsListenter implements ChannelAwareMessageListener {
 
         //消息确认
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+
+
+
+
+        //重试，重新进入队列
+        //channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
+
+        //丢弃这条记录
+        //channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
     }
 }
