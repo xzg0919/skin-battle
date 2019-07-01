@@ -57,6 +57,14 @@ spring:
     mode: LEGACYHTML5
     servlet:
       content-type: text/html
+  #配置MQ
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: password
+    publisher-confirms: false
+
 
 #mybatis
 mybatis-plus:
