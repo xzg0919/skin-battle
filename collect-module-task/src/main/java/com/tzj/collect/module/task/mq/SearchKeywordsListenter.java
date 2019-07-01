@@ -17,6 +17,9 @@ public class SearchKeywordsListenter implements ChannelAwareMessageListener {
 
     @Override
     public void onMessage(Message message, Channel channel) throws Exception {
-        logger.info("收到的消息： {}",message.getBody());
+        logger.info("收到的消息： {}",new String(message.getBody()));
+
+        //消息确认
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 }
