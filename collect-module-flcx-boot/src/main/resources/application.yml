@@ -86,7 +86,7 @@ mybatis-plus:
     #逻辑删除配置
     logic-delete-value: 0
     logic-not-delete-value: 1
-    meta-object-handler: com.tzj.collect.common.handler.BaseMetaObjectHandler
+    #meta-object-handler: com.tzj.collect.common.handler.BaseMetaObjectHandler
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
