@@ -1,4 +1,5 @@
-package com.tzj.collect.controller.admin;
+package com.tzj.collect.flcx.controller;
+
 
 import com.tzj.collect.api.common.excel.ExcelUtils;
 import com.tzj.collect.service.FlcxTypeService;

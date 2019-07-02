@@ -1,7 +1,6 @@
 package com.tzj.collect.api.lexicon;
 
-import com.taobao.api.ApiException;
-import com.tzj.collect.api.ali.param.MemberBean;
+
 import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxRecordsService;
@@ -10,8 +9,12 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.easyopen.exception.ApiException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,6 +34,9 @@ public class LexiconApi {
 
     @Resource
     private FlcxRecordsService flcxRecordsService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /** 垃圾分类查询
       * @author sgmark@aliyun.com
@@ -69,6 +75,15 @@ public class LexiconApi {
     @AuthIgnore
     public Map keySearch(FlcxBean flcxBean)throws ApiException {
         return flcxLexiconService.keySearch(flcxBean);
+    }
+
+    @Api(name = "keySearch.save", version = "1.0",ignoreAuth = true,ignoreNonce = true)
+    @SignIgnore
+    public void saveKeySearch() throws ApiException{
+        HashMap<String,String> hashMap=new HashMap<>();
+        hashMap.put("city","上海");
+        hashMap.put("keywords","牛奶");
+        rabbitTemplate.convertAndSend("search_keywords_queue",hashMap);
     }
 
 }

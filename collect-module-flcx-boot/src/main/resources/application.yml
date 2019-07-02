@@ -68,7 +68,7 @@ spring:
 
 #mybatis
 mybatis-plus:
-  mapper-locations: classpath:/mapper/*Mapper.xml
+  mapper-locations: classpath*:/mapper/*Mapper.xml
   #实体扫描，多个package用逗号或者分号分隔
   typeAliasesPackage: com.tzj.collect.entity
   global-config:
@@ -86,7 +86,7 @@ mybatis-plus:
     #逻辑删除配置
     logic-delete-value: 0
     logic-not-delete-value: 1
-    meta-object-handler: com.tzj.collect.common.handler.BaseMetaObjectHandler
+    #meta-object-handler: com.tzj.collect.common.handler.BaseMetaObjectHandler
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
@@ -100,3 +100,12 @@ devtools:
     #additional-exclude: views/**
 
 
+#配置日志
+logging:
+  #配置日志文件路径
+  path: /temp/collect.log
+  level:
+    org.springfromework.web: warn
+    org.hibernate: error
+    com.tzj: info
+    com.tzj.collect.mapper: debug

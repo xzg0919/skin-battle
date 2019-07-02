@@ -25,6 +25,8 @@
         <module>collect-module-umeng</module>
         <module>collect-module-common</module>
         <module>collect-module-member</module>
+        <module>collect-module-flcx</module>
+        <module>collect-module-flcx-boot</module>
     </modules>
 
     <repositories>
@@ -112,6 +114,22 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.9.9</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.9.9</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>2.9.9</version>
             </dependency>
             <!-- JSON -->
 
