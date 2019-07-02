@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.enums.IdType;
  * @create 2019-06-17 16:13
  **/
 @TableName("flcx_type")
-public class FlcxType extends DataEntity<Long> {
+public class FlcxType  {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
     /**
@@ -31,13 +31,13 @@ public class FlcxType extends DataEntity<Long> {
     private String isHarmful;//是否有害；1：有害
 
     private String imgUrl;//分类图片
-   @Override
+
     public Long getId() {
 
         return id;
     }
 
-    @Override
+
     public void setId(Long id) {
         this.id = id;
     }

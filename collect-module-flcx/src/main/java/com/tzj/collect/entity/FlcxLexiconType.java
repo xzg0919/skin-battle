@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.enums.IdType;
  * @create 2019-06-17 16:13
  **/
 @TableName("flcx_lexicon_type")
-public class FlcxLexiconType extends DataEntity<Long> {
+public class FlcxLexiconType  {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
 
@@ -29,13 +29,13 @@ public class FlcxLexiconType extends DataEntity<Long> {
     private String recover;//平台回收与否（1:回收，0:不回收）,初始值为0
 
 
-    @Override
+
     public Long getId() {
 
         return id;
     }
 
-    @Override
+
     public void setId(Long id) {
         this.id = id;
     }

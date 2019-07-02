@@ -1,7 +1,6 @@
 package com.tzj.collect.api.lexicon;
 
-import com.taobao.api.ApiException;
-import com.tzj.collect.api.ali.param.MemberBean;
+
 import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxRecordsService;
@@ -10,6 +9,7 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 

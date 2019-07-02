@@ -6,30 +6,31 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 /**
- * 对应类型
+ * 查询关键字
  * @author sgmark
  * @create 2019-06-17 16:13
  **/
-@TableName("flcx_img")
-public class FlcxImg extends DataEntity<Long> {
+@TableName("flcx_lexicon")
+public class FlcxLexicon  {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
+
     /**
-     * 分类名称
+     * 回收类型名
      */
     @TableField(value = "name_")
     private String  name;
 
-    private Long typeId;//所属父类
+    private String recover;//平台回收与否（1:回收，0:不回收）,初始值为0
 
-    private String imgUrl;//分类图片
-   @Override
+
+
     public Long getId() {
 
         return id;
     }
 
-    @Override
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -42,19 +43,11 @@ public class FlcxImg extends DataEntity<Long> {
         this.name = name;
     }
 
-    public Long getTypeId() {
-        return typeId;
+    public String getRecover() {
+        return recover;
     }
 
-    public void setTypeId(Long typeId) {
-        this.typeId = typeId;
-    }
-
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
+    public void setRecover(String recover) {
+        this.recover = recover;
     }
 }
