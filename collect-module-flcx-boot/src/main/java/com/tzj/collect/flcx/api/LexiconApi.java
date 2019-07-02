@@ -98,6 +98,7 @@ public class LexiconApi {
         flcxBean.setCity("上海");
         flcxBean.setLexiconAfter("测试");
         flcxBean.setLexiconId(1L);
+        flcxBean.setName("ces");
         rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
     }
 }
