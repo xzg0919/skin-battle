@@ -39,9 +39,9 @@ spring:
   redis:
     #open: false  # 是否开启redis缓存  true开启   false关闭
     #database: 0
-    host: 139.224.113.110
+    host: 106.15.72.157 #内网IP 172.19.182.81
     port: 6379
-    password: sb_123456      # 密码（默认为空）
+    password: FeiLei_!@#      # 密码（默认为空）
     timeout: 1000  # 连接超时时长（毫秒）
     jedis:
       pool:
