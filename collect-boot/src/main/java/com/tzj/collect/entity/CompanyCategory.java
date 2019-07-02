@@ -28,6 +28,8 @@ public class CompanyCategory extends  DataEntity<Long> {
     private Company Company;
     
     private Long parentId;//父类id
+
+	private String parentName;//父类id
     
     private String parentIds;//所有父级编号
     
@@ -92,4 +94,11 @@ public class CompanyCategory extends  DataEntity<Long> {
 		this.parentIds = parentIds;
 	}
 
+	public String getParentName() {
+		return parentName;
+	}
+
+	public void setParentName(String parentName) {
+		this.parentName = parentName;
+	}
 }

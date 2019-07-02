@@ -80,6 +80,23 @@
 		AND a.title = #{title}
 		AND b.unuseful = '1'
 	 </select>
+	<select id="getIsOpenCategory" resultType="Map" parameterType="String">
+		SELECT
+			a.title
+		FROM
+			(
+		SELECT
+			a.title,
+			b.b.category_id
+		FROM
+			sb_category a
+			INNER JOIN ( SELECT a.category_id FROM sb_company_category a WHERE a.company_id = #{companyId} ) b ON a.id = b.category_id
+			WHERE a.level_ = 1
+			) a
+		GROUP BY
+			a.title
+
+	</select>
 	 
     
     <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->  

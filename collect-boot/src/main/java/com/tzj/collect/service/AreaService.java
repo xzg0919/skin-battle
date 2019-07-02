@@ -6,6 +6,7 @@ import com.taobao.api.ApiException;
 import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.tzj.collect.controller.admin.param.StreetNameBean;
 import com.tzj.collect.entity.Area;
 
 import java.util.ArrayList;
@@ -57,6 +58,14 @@ public interface AreaService  extends IService<Area>{
 	Object saveOrUpdateCommunity(Integer companyId,String location) throws Exception;
 
 	Object deleteCommunityByIds(List<String>  communityIds);
+
+	List<StreetNameBean> selectStreetList();
+
+	List<StreetNameBean> selectStreetListByName(String name,String code);
+
+	Integer updateStreet(String id,String name,String code);
+
+	Object isOpenCompanyByCategory(String companyId,String isOpen,String title);
 
     void addInputAreaCode(List<Map<String, String>> mapList);
 }

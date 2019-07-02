@@ -2,6 +2,7 @@ package com.tzj.collect.mapper;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -53,6 +54,7 @@ public interface CategoryMapper extends BaseMapper<Category>  {
 	 * @return
 	 */
 	List<Category> topListApps(@Param("level")Integer level,@Param("title")Integer title);
-	
+
+	List<Map<String,Object>> getIsOpenCategory(String companyId);
 	
 }

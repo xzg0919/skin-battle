@@ -7,13 +7,13 @@
 				c.id,
 				c.area_name,
 				IF (b.id IS NULL, 1, 2) AS isChoose,
-			(SELECT COUNT(*) FROM (	SELECT * FROM sb_recyclers_range_big a WHERE a.recyclers_id =  #{recycleId} AND a.company_id =  #{companyId} AND a.del_flag = 0) b WHERE b.area_id = c.id) AS num
+			(SELECT COUNT(1) FROM (	SELECT * FROM sb_recyclers_range_big a WHERE a.recyclers_id =  #{recycleId} AND a.company_id =  #{companyId} AND a.del_flag = 0) b WHERE b.area_id = c.id) AS num
 			FROM
 				sb_company_street_big a
 			INNER JOIN sb_area c ON a.area_id = c.id
 			LEFT JOIN (
 				SELECT
-					*
+					a.id,a.area_id
 				FROM
 					sb_recyclers_range_big a
 				WHERE
@@ -36,7 +36,7 @@
 			FROM
 				(
 			SELECT
-				c.*
+				c.id,c.area_name
 			FROM sb_company_street_big a
 			INNER JOIN sb_area c ON a.street_id = c.id
 			WHERE a.company_id = #{companyId}
@@ -44,7 +44,7 @@
 			)  a
 			LEFT JOIN (
 				SELECT
-					*
+					a.id,a.street_id
 				FROM
 					sb_recyclers_range_big a
 				WHERE
@@ -54,7 +54,7 @@
 			) b ON a.id = b.street_id
 			LEFT JOIN (
 				SELECT
-					*
+					a.id,a.street_id
 				FROM
 					sb_recyclers_range_big a
 				WHERE

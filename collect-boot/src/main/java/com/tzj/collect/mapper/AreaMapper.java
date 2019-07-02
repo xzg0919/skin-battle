@@ -3,6 +3,7 @@ package com.tzj.collect.mapper;
 import java.util.List;
 import java.util.Map;
 
+import com.tzj.collect.controller.admin.param.StreetNameBean;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
@@ -33,4 +34,10 @@ public interface AreaMapper extends BaseMapper<Area> {
 	List<Map<String, Object>> getHouseRangeList(@Param("companyId") Integer companyId,@Param("pageStart") Integer pageStart,@Param("pageSize")Integer pageSize);
 
 	Integer getHouseRangeCount(@Param("companyId") Integer companyId);
+
+	List<StreetNameBean> selectStreetList();
+
+	List<StreetNameBean> selectStreetListByName(@Param("name")String name,@Param("code")String code);
+
+	Integer updateStreet(@Param("id") String id,@Param("name")String name,@Param("code")String code);
 }

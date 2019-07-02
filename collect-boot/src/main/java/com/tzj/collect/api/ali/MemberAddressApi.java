@@ -69,7 +69,7 @@ public class MemberAddressApi {
     public List<MemberAddress> memberAddressList(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
 		Member member = MemberUtils.getMember();
-    	List<MemberAddress> memberAddressList = memberAddressService.memberAddressList(member.getId(),memberAddressBean.getCityId()+"");
+    	List<MemberAddress> memberAddressList = memberAddressService.memberAddressList(member.getId());
     	return memberAddressList;
     }
     /**
@@ -166,7 +166,7 @@ public class MemberAddressApi {
 		if(member==null){
 			return  null;
 		}
-		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", memberAddressBean.getCityId()));
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
 		if(null==memberAddress) {
 			memberAddress =new MemberAddress();
 			memberAddress.setCommunityId(0);
@@ -232,7 +232,7 @@ public class MemberAddressApi {
 		if(!StringUtils.isBlank(memberAddressBean.getId())) {
 			memberAddress = memberAddressService.selectById(memberAddressBean.getId());
 		}else {
-			memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", memberAddressBean.getCityId()));
+			memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
 		}
 		
     	return  memberAddress;
@@ -246,18 +246,11 @@ public class MemberAddressApi {
     @Api(name = "memberAddress.updateIsSelectedAddress", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    public String updateIsSelectedAddress(MemberAddressBean memberAddressBean) {
-    	//获取当前登录的会员
+    public Object updateIsSelectedAddress(MemberAddressBean memberAddressBean) {
+		//获取当前登录的会员
 		Member member = MemberUtils.getMember();
-		MemberAddress memberAddress1 = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_Id", memberAddressBean.getCityId()));
-		if(null != memberAddress1){
-			memberAddress1.setIsSelected(0);
-		}
-		memberAddressService.updateById(memberAddress1);
-		MemberAddress memberAddress = memberAddressService.selectById(memberAddressBean.getId());
-		memberAddress.setIsSelected(1);
-		memberAddressService.updateById(memberAddress);
-		return "success";
+		return memberAddressService.updateIsSelectedAddress(member.getId().toString(),memberAddressBean.getId());
+
     }
 
 	/**
