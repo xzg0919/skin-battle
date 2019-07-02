@@ -38,7 +38,9 @@ public class SearchKeywordsListenter implements ChannelAwareMessageListener {
         flcxRecords.setCity(flcxBean.getCity());    //如果不传，后面通过经纬度查
         flcxRecords.setCreateDate(new Date());
         flcxRecords.setUpdateDate(new Date());
-        //flcxRecords.setLexiconAfter(flcxBean.);
+        flcxRecords.setLexiconAfter(flcxBean.getLexiconAfter());
+        flcxRecords.setLexicons(flcxBean.getName());
+        flcxRecords.setLexiconsId(flcxBean.getLexiconId());
         flcxRecordsService.saveFlcxRecords(flcxRecords);
 
 
