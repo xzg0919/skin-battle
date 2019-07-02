@@ -2,9 +2,10 @@ package com.tzj.collect.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
-import com.taobao.api.ApiException;
+
 import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.entity.FlcxLexicon;
+import com.tzj.module.easyopen.exception.ApiException;
 
 import java.util.Map;
 
