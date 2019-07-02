@@ -227,23 +227,15 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 		Order order = orderService.selectById(categoryBean.getOrderId());
 		Area area = areaService.selectById(order.getAreaId());
 		//如果不为空获取当前公司回收价格
-		if (categoryBean.getCommunityId() != null) {
-			//根据小区Id查询唯一的所属企业
-	    	CompanyServiceRange companyServiceRange = companyServiceService.selectOne(new EntityWrapper<CompanyServiceRange>().eq("community_id", categoryBean.getCommunityId()));
-	    	//Integer companyId = companyService.getCompanyIdByIds(orderbean.getCommunityId(),orderbean.getCategoryParentId());
-	    	if(companyServiceRange != null) {
+		if (order.getCompanyId() != null) {
 	    		//获取当前公司下的回收列表
 				map.put("comIsNull", true);
-				map.put("companyId", companyServiceRange.getCompanyId());
-				priceList = companyCategoryCityService.getOwnnerPriceAppByCity(categoryBean.getId().toString(),companyServiceRange.getCompanyId(),area.getParentId().toString());
+				map.put("companyId", order.getCompanyId());
+				priceList = companyCategoryCityService.getOwnnerPriceAppByCity(categoryBean.getId().toString(),order.getCompanyId().toString(),area.getParentId().toString());
 				if (priceList.isEmpty()) {
-					priceList = this.getOwnnerPriceApp(categoryBean, Integer.parseInt(companyServiceRange.getCompanyId()));
+					priceList = this.getOwnnerPriceApp(categoryBean, order.getCompanyId());
 				}
-	    	}else{
-	    		//获取平均价格
-	    		map.put("comIsNull", false);
-	    		priceList = this.getAvgPriceApp(categoryBean);
-	    	}
+
 		}else{
 			//获取平均价格
     		map.put("comIsNull", false);
