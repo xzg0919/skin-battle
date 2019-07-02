@@ -3,7 +3,7 @@ package com.tzj.collect.service.impl;
 import com.baomidou.mybatisplus.enums.SqlLike;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.taobao.api.ApiException;
+
 import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.api.lexicon.result.FlcxResult;
 import com.tzj.collect.entity.FlcxEggshell;
@@ -13,6 +13,7 @@ import com.tzj.collect.mapper.FlcxLexiconMapper;
 import com.tzj.collect.mapper.FlcxRecordsMapper;
 import com.tzj.collect.service.FlcxEggshellService;
 import com.tzj.collect.service.FlcxLexiconService;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
