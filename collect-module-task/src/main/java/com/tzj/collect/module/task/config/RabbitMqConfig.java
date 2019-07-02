@@ -34,7 +34,7 @@ public class RabbitMqConfig {
         SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer(connectionFactory);
         simpleMessageListenerContainer.addQueues(queueConfig.searchKeywordsQueue());
         simpleMessageListenerContainer.setExposeListenerChannel(true);
-        simpleMessageListenerContainer.setMaxConcurrentConsumers(5);
+        simpleMessageListenerContainer.setMaxConcurrentConsumers(1);
         simpleMessageListenerContainer.setConcurrentConsumers(1);
         simpleMessageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL); //设置确认模式手工确认
         simpleMessageListenerContainer.setMessageListener(searchKeywordsListenter);
