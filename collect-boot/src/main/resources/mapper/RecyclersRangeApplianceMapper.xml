@@ -9,20 +9,20 @@
 			IF (b.id IS NULL, 1, 2) AS isChoose,
 			(SELECT COUNT(*) FROM (	SELECT * FROM sb_recyclers_range_appliance a WHERE a.recyclers_id =  #{recycleId} AND a.company_id =  #{companyId} AND a.del_flag = 0) b WHERE b.area_id = c.id) AS num
 			FROM
-				(SELECT d.* FROM
+				(SELECT d.id,d.parent_id,d.area_name FROM
 				sb_company_service a
 				LEFT JOIN sb_area c ON a.area_id = c.id
 				LEFT JOIN sb_area d ON c.parent_id = d.id
 				WHERE a.company_id = #{companyId}
 				UNION
-				SELECT c.* FROM
+				SELECT c.id,c.parent_id,c.area_name FROM
 					sb_company_street_appliance a
 				INNER JOIN sb_area c ON a.area_id = c.id
 				WHERE a.company_id = #{companyId}
 				) c
 			LEFT JOIN (
 				SELECT
-					*
+					a.id,a.area_id
 				FROM
 					sb_recyclers_range_appliance a
 				WHERE
@@ -42,19 +42,19 @@
 			IF (c.id IS NULL, 1, 2) AS isEdit,
 				0 AS num
 			FROM
-				(SELECT c.* FROM
+				(SELECT c.id,c.area_name FROM
 				sb_company_service a
 				LEFT JOIN sb_area c ON a.area_id = c.id
 				WHERE a.company_id = #{companyId} AND c.parent_id = #{areaId}
 				UNION
-				SELECT c.* FROM
+				SELECT c.id,c.area_name FROM
 					sb_company_street_appliance a
 				INNER JOIN sb_area c ON a.street_id = c.id
 				WHERE a.company_id = #{companyId} AND c.parent_id = #{areaId}
 				)  a
 			LEFT JOIN (
 				SELECT
-					*
+					a.id,a.street_id
 				FROM
 					sb_recyclers_range_appliance a
 				WHERE
@@ -64,7 +64,7 @@
 			) b ON a.id = b.street_id
 			LEFT JOIN (
 				SELECT
-					*
+					a.id,a.street_id
 				FROM
 					sb_recyclers_range_appliance a
 				WHERE

@@ -26,7 +26,7 @@ public interface MemberAddressService extends IService<MemberAddress>{
      * @return 
      */
 	@DS("slave")
-	public List<MemberAddress> memberAddressList(long memberId,String cityId);
+	public List<MemberAddress> memberAddressList(long memberId);
 	/**
 	 * 用户删除地址时，如果是删除默认地址，自动将余下任意一条地址设置为默认地址
 	 * @author wangcan
@@ -44,4 +44,17 @@ public interface MemberAddressService extends IService<MemberAddress>{
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean);
 
 	String saveMemberAddressdByMap(MapAddressBean mapAddressBean,long memberId);
+
+	/**
+	 * 小获取用户的默认地址
+	 * @author 王灿
+	 * @param
+	 * @return
+	 */
+	@DS("slave")
+	public MemberAddress getMemberAdderssByMemberId(String memberId);
+
+	Object updateIsSelectedAddress(String memberId,String id);
+	@DS("slave")
+	String getMemberAddressById(String id);
 }

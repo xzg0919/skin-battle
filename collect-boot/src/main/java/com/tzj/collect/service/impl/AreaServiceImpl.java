@@ -1,14 +1,17 @@
 package com.tzj.collect.service.impl;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
+import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.ali.AmapApi;
 import com.tzj.collect.api.ali.param.AreaBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.ali.result.AmapResult;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.tzj.collect.controller.admin.param.StreetNameBean;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.mapper.AreaMapper;
 import com.tzj.collect.service.*;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -27,6 +31,16 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 
 	@Resource
 	private AreaMapper mapper;
+	@Autowired
+	private CategoryAttrOptionService categoryAttrOptionService;
+	@Autowired
+	private CategoryService categoryService;
+	@Autowired
+	private CategoryAttrService categoryAttrService;
+	@Autowired
+	private CompanyCategoryService companyCategoryService;
+	@Autowired
+	private CompanyCategoryAttrOptionService companyCategoryAttrOptionService;
 	@Autowired
 	private CompanyStreetApplianceService companyStreetApplianceService;
 	@Autowired
@@ -249,7 +263,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 				if(null != community){
 					companyServiceRange = companyServiceService.selectOne(new EntityWrapper<CompanyServiceRange>().eq("community_id", community.getId()));
 					if(companyServiceRange != null){
-						throw new Exception("该小区已经有相关企业关联");
+						return  "该小区已经有相关企业关联";
 					}else {
 						companyServiceRange = new CompanyServiceRange();
 						companyServiceRange.setCompanyId(companyId.toString());
@@ -295,6 +309,84 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		return "操作成功";
 	}
 
+	public List<StreetNameBean> selectStreetList(){
+		return mapper.selectStreetList();
+	}
+
+	public List<StreetNameBean> selectStreetListByName(String name,String code){
+		return mapper.selectStreetListByName(name,code);
+	}
+
+	@Transactional
+	public Integer updateStreet(String id,String name,String code){
+		return mapper.updateStreet(id,name,code);
+	}
+
+	@Transactional
+	@Override
+	public Object isOpenCompanyByCategory(String companyId, String isOpen,String title) {
+		List<Category> categoryList = null;
+		List<CategoryAttrOption> attrOptionList = null;
+		if ("1".equals(title)){
+			categoryList = categoryService.selectList(new EntityWrapper<Category>().eq("title", 1).eq("level_", 1));
+			attrOptionList = categoryAttrOptionService.selectList(new EntityWrapper<CategoryAttrOption>().le("id", 1000));
+		}else if("2".equals(title)){
+			categoryList = categoryService.selectList(new EntityWrapper<Category>().eq("title", 2).eq("level_", 1));
+		}
+		else if("4".equals(title)){
+			categoryList = categoryService.selectList(new EntityWrapper<Category>().eq("title", 4).eq("level_", 1));
+			attrOptionList = categoryAttrOptionService.selectList(new EntityWrapper<CategoryAttrOption>().ge("id", 1000));
+		}
+		CompanyCategory companyCategory = null;
+		CompanyCategoryAttrOption companyCategoryAttrOption = null;
+		if("0".equals(isOpen)){
+			if(null!=categoryList && !categoryList.isEmpty()){
+				for (Category category: categoryList) {
+					companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", companyId).eq("category_id", category.getId()));
+					if(null==companyCategory){
+						companyCategory = new CompanyCategory();
+						companyCategory.setCategoryId(category.getId().toString());
+						companyCategory.setParentId(category.getParentId().longValue());
+						Category parentCategory = categoryService.selectById(category.getParentId());
+						companyCategory.setParentName(parentCategory.getName());
+						companyCategory.setParentIds(category.getParentIds());
+						companyCategory.setCompanyId(companyId);
+						companyCategory.setPrice(category.getMarketPrice().floatValue());
+						companyCategory.setUnit(category.getUnit());
+						companyCategoryService.insert(companyCategory);
+					}
+				}
+			}
+			if(null!=attrOptionList && !attrOptionList.isEmpty()){
+				for (CategoryAttrOption categoryAttrOption:attrOptionList) {
+					companyCategoryAttrOption = companyCategoryAttrOptionService.selectOne(new EntityWrapper<CompanyCategoryAttrOption>().eq("company_id",companyId).eq("category_attr_option_id",categoryAttrOption.getId()));
+					if(null == companyCategoryAttrOption){
+						companyCategoryAttrOption = new CompanyCategoryAttrOption();
+						companyCategoryAttrOption.setCompanyId(Long.parseLong(companyId));
+						companyCategoryAttrOption.setCategoryAttrOptionId(categoryAttrOption.getId());
+						companyCategoryAttrOption.setAttrOptionPrice(categoryAttrOption.getPrice());
+						companyCategoryAttrOption.setSpecialPrice(new BigDecimal("20"));
+						companyCategoryAttrOptionService.insert(companyCategoryAttrOption);
+					}
+				}
+
+			}
+		}else {
+			if(null!=categoryList && !categoryList.isEmpty()){
+				for (Category category: categoryList) {
+					companyCategoryService.delete(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",category.getId()));
+				}
+			}
+			if(null!=attrOptionList && !attrOptionList.isEmpty()){
+				for (CategoryAttrOption categoryAttrOption:attrOptionList) {
+					companyCategoryAttrOptionService.delete(new EntityWrapper<CompanyCategoryAttrOption>().eq("company_id",companyId).eq("category_attr_option_id",categoryAttrOption.getId()));
+				}
+			}
+		}
+
+
+		return "操作成功";
+	}
 	@Override
 	@Transactional(readOnly = false,rollbackFor = Exception.class)
 	public void addInputAreaCode(List<Map<String, String>> mapList) {

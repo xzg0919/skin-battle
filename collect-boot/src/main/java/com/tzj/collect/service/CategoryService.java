@@ -140,6 +140,7 @@ public interface CategoryService extends IService<Category> {
 	 */
 	@DS("slave")
 	Map<String, Object> getDigitalDetail(CategoryBean categoryBean, String string);
-	
 
+	@DS("slave")
+	List<Map<String,Object>> getIsOpenCategory(String companyId);
 }

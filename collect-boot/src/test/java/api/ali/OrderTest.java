@@ -35,7 +35,7 @@ public class OrderTest {
                 System.out.println("反向編譯 token是："+subjectStr);
 
                 //String api="http://open.mayishoubei.com/ali/api";
-                String api="http://localhost:9090/ali/api";
+                String api="http://dog.mayishoubei.com:9090/ali/api";
 
                 String  location = "121.446438,30.915836";
 

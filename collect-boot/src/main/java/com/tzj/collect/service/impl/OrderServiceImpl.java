@@ -388,8 +388,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return flag;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(0==Double.parseDouble("0.8"));
+	public static void main(String[] args) throws Exception {
+
+		System.out.println(new SimpleDateFormat("yyyy-MM-dd").parse("2019-07-01"));
+
 	}
 
 	/**

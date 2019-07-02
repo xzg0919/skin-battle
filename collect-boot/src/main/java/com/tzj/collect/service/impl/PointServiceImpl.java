@@ -45,7 +45,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 		//获取用户能量流水信息
 		List<PointList> inPointList = pointListService.selectList(new EntityWrapper<PointList>().eq("member_id", memberId).eq("del_flag", 0).ge("point", 1).eq("type", 0).orderBy("create_date",false));
 		List<PointList> outPointList = pointListService.selectList(new EntityWrapper<PointList>().eq("member_id", memberId).eq("del_flag", 0).le("point", -1).eq("type", 1).orderBy("create_date",false));
-		resultMap.put("point",point.getPoint());
+		resultMap.put("point",null != point?point.getPoint():0);
 		resultMap.put("inPointList",inPointList);
 		resultMap.put("outPointList",outPointList);
 		return resultMap;

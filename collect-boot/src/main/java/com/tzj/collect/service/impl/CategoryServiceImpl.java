@@ -346,6 +346,11 @@ public class CategoryServiceImpl  extends  ServiceImpl< CategoryMapper, Category
 	}
 
 
+	@Override
+	public List<Map<String,Object>> getIsOpenCategory(String companyId){
+		return categoryMapper.getIsOpenCategory(companyId);
+	}
+
 
 
 }

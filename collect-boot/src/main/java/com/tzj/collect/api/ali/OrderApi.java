@@ -71,6 +71,8 @@ public class OrderApi {
 	private CompanyStreetApplianceService companyStreetApplianceService;
 	@Autowired
 	private CompanyCategoryService companyCategoryService;
+	@Autowired
+	private AreaService areaService;
 	
 
 	/**
@@ -188,7 +190,7 @@ public class OrderApi {
     	orderbean.setGreenCode(member.getGreenCode());
     	orderbean.setAliUserId(member.getAliUserId());
     	//查询用户的默认地址
-    	MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderbean.getCityId()));
+    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
     	if(memberAddress==null) {
     		return "您暂未添加回收地址";
     	}
@@ -202,6 +204,7 @@ public class OrderApi {
 		if (StringUtils.isBlank(companyId)){
 			return "该区域暂无回收企业";
 		}
+		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString()));
     	orderbean.setCompanyId(Integer.parseInt(companyId));
     	orderbean.setLevel(level);
     	orderbean.setCommunityId(communityId);
@@ -247,7 +250,7 @@ public class OrderApi {
     public Object getCompanyByIds(OrderBean orderbean){
     	Member member = MemberUtils.getMember();
     	//查询用户的默认地址
-    	MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderbean.getCityId()));
+    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
     	if(memberAddress==null) {
     		return "您暂未添加回收地址";
     	}
@@ -316,7 +319,7 @@ public class OrderApi {
 	public Object XcxSaveOrder(OrderBean orderbean){
 		Member member = MemberUtils.getMember();
 		//查询用户的默认地址
-		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderbean.getCityId()));
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
 		if(memberAddress==null) {
 			return "您暂未添加回收地址";
 		}
@@ -339,6 +342,7 @@ public class OrderApi {
 		orderbean.setCommunityId(communityId);
 		orderbean.setAreaId(Integer.parseInt(areaId));
 		orderbean.setStreetId(memberAddress.getStreetId());
+		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString()));
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
@@ -424,7 +428,7 @@ public class OrderApi {
 	public Object savefiveKgOrder(OrderBean orderbean){
 		//获取当前登录的会员
 		Member member = MemberUtils.getMember();
-		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderbean.getCityId()));
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
 		if(memberAddress==null) {
 			return "您暂未添加回收地址";
 		}
@@ -448,6 +452,7 @@ public class OrderApi {
 		orderbean.setCommunityId(communityId);
 		orderbean.setAreaId(Integer.parseInt(areaId));
 		orderbean.setStreetId(memberAddress.getStreetId());
+		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString()));
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
@@ -504,7 +509,7 @@ public class OrderApi {
 		orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
 		orderbean.setAliUserId(member.getAliUserId());
 		//查询用户的默认地址
-		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderbean.getCityId()));
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
 		if(memberAddress==null) {
 			return "您暂未添加回收地址";
 		}
@@ -523,6 +528,7 @@ public class OrderApi {
 		orderbean.setCommunityId(communityId);
 		orderbean.setStreetId(memberAddress.getStreetId());
 		orderbean.setAreaId(Integer.parseInt(areaId));
+		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString()));
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);

@@ -117,7 +117,7 @@ public class ProductApi {
 			//获取当前登录的会员
 			Member member = MemberUtils.getMember();
 			//获取用户默认地址
-			MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()));
+			MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
 			resultMap.put("memberAddress", memberAddress);
 		}catch (Exception e){
 
@@ -251,7 +251,7 @@ public class ProductApi {
     	MemberAddress memberAddress = null;
     	if(StringUtils.isBlank(productBean.getUserName())||StringUtils.isBlank(productBean.getMobile())||StringUtils.isBlank(productBean.getAddress())) {
     		//获取用户默认地址
-    		memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", productBean.getCityId()));
+    		memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
     	}else {
     		//根据条件查看地址是否存在
     		memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("name_", productBean.getUserName()).eq("tel", productBean.getMobile()).eq("address_", productBean.getAddress()).eq("del_flag", "0"));

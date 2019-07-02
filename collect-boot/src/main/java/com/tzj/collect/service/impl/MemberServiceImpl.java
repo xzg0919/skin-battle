@@ -411,11 +411,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		String userId = response.getUserId();
 		//查询用户是否存在
 		Member member = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", userId));
-		if(member==null||StringUtils.isBlank(member.getAliCardNo())||StringUtils.isBlank(member.getLinkName())){
-			resultMap.put("token",null);
-			return resultMap;
-		}
-		if(StringUtils.isBlank(member.getName())||StringUtils.isBlank(member.getMobile())){
+		if(member==null||StringUtils.isBlank(member.getAliCardNo())){
 			resultMap.put("token",null);
 			return resultMap;
 		}

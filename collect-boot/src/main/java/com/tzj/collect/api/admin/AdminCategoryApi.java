@@ -9,6 +9,7 @@ import java.util.Map;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.admin.param.CategoryAttrBean;
 import com.tzj.collect.api.admin.param.CategoryBean;
+import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.admin.param.CompanyCategoryBean;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.CategoryAttr;
@@ -236,5 +237,6 @@ public class AdminCategoryApi {
     	
     	return statu;
     }
+
     
 }	
