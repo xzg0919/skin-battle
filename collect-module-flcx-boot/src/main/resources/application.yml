@@ -107,5 +107,5 @@ logging:
   level:
     org.springfromework.web: warn
     org.hibernate: error
-    com.tzj: warn
+    com.tzj: info
     com.tzj.collect.mapper: debug
