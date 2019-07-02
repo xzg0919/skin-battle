@@ -24,7 +24,7 @@
 
     <insert id="insert" parameterType="FlcxRecords">
         insert into ${tableName}
-        (lexicons,lexicon_after,lexicons_id,ali_user_id,city)
+        (lexicons,lexicon_after,lexicons_id,ali_user_id,city,create_date,update_date)
         values
         (
         #{flcxRecords.lexicons},
