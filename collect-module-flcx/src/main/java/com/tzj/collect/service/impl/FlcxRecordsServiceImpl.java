@@ -53,6 +53,7 @@ public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxR
     }
 
     @Override
+    @Transactional
     public void saveFlcxRecords(FlcxRecords flcxRecords) {
         //分表保存入Mysql
         Date date=new Date();
