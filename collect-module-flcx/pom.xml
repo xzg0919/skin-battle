@@ -10,9 +10,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>collect-module-flcx</artifactId>
-    <description>分类查询的Service以及Mapper模块</description>
+    <description>分类查询的公用模块</description>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <!-- mybatis-plus begin -->
         <dependency>
             <groupId>com.baomidou</groupId>
