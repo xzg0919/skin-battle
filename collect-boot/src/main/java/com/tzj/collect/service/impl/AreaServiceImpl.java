@@ -298,6 +298,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	@Override
 	@Transactional(readOnly = false,rollbackFor = Exception.class)
 	public void addInputAreaCode(List<Map<String, String>> mapList) {
+		List<String> data = new ArrayList<>();
 		mapList.parallelStream().forEach(mapLists->{
 			if (null != mapLists.get("code")) {
 				mapLists.put("code", mapLists.get("code").replace(",", ""));
@@ -354,12 +355,16 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 						addressArea.setAreaName(mapLists.get("address"));
 						mapper.insert(addressArea);
 					} else {
+						data.add(addressArea.getAreaName() + ":" + addressArea.getCode() + "-----------------" + mapLists.get("address") + ":" + addressCode);
 						return;
 					}
 				}
 			}else {
 				return;
 			}
+		});
+		data.stream().forEach(s -> {
+			System.out.println(s);
 		});
 	}
 
