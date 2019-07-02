@@ -1,9 +1,12 @@
 package com.tzj.collect.api.lexicon.param;
 
+import lombok.Data;
+
 /**
  * @author sgmark
  * @create 2019-06-19 10:31
  **/
+@Data
 public class FlcxBean {
 
     private String name;//查询名称
@@ -12,27 +15,9 @@ public class FlcxBean {
 
     private String aliUserId;//用户id
 
-    public String getName() {
-        return name;
-    }
+    private String city;    //城市
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String longitude;   //经度
 
-    public String getAliUserId() {
-        return aliUserId;
-    }
-
-    public void setAliUserId(String aliUserId) {
-        this.aliUserId = aliUserId;
-    }
-
-    public Long getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Long typeId) {
-        this.typeId = typeId;
-    }
+    private String latitude;    //纬度
 }

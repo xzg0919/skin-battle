@@ -35,9 +35,6 @@ public class LexiconApi {
     @Resource
     private FlcxRecordsService flcxRecordsService;
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
     /** 垃圾分类查询
       * @author sgmark@aliyun.com
       * @date 2019/6/19 0019
@@ -77,13 +74,5 @@ public class LexiconApi {
         return flcxLexiconService.keySearch(flcxBean);
     }
 
-    @Api(name = "keySearch.save", version = "1.0",ignoreAuth = true,ignoreNonce = true)
-    @SignIgnore
-    public void saveKeySearch() throws ApiException{
-        HashMap<String,String> hashMap=new HashMap<>();
-        hashMap.put("city","上海");
-        hashMap.put("keywords","牛奶");
-        rabbitTemplate.convertAndSend("search_keywords_queue",hashMap);
-    }
 
 }

@@ -15,6 +15,8 @@ import com.tzj.collect.service.FlcxEggshellService;
 import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,9 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
 
     @Resource
     private FlcxEggshellService flcxEggshellService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Transactional(readOnly = false)
     public Map lexCheck(FlcxBean flcxBean) throws ApiException {
@@ -75,7 +80,10 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
                 map.put("msg", "empty");
             }
         }
-//        flcxRecordsMapper.insert(flcxRecords);
+
+        //发送MQ消息
+        rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
+
         return map;
     }
 
