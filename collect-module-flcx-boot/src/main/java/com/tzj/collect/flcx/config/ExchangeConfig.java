@@ -1,4 +1,4 @@
-package com.tzj.collect.config;
+package com.tzj.collect.flcx.config;
 
 
 import org.springframework.amqp.core.DirectExchange;

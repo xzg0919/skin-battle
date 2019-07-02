@@ -1,4 +1,4 @@
-package com.tzj.collect.api.lexicon;
+package com.tzj.collect.flcx.api;
 
 
 import com.tzj.collect.api.lexicon.param.FlcxBean;
