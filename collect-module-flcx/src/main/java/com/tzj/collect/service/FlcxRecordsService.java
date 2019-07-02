@@ -14,4 +14,6 @@ import java.util.Map;
   */
 public interface FlcxRecordsService extends IService<FlcxRecords> {
     Map topFive();
+
+    void saveFlcxRecords(FlcxRecords flcxRecords);
 }

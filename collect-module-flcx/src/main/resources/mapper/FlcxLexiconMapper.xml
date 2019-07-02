@@ -121,6 +121,8 @@
             `lexicons_id` int(11) DEFAULT NULL COMMENT '结果名称id',
             `ali_user_id` varchar(20) DEFAULT NULL COMMENT '阿里用户id',
             `city` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '城市',
+            `create_date` datetime NOT NULL COMMENT '创建时间',
+            `update_date` datetime NOT NULL COMMENT '更新时间',
             PRIMARY KEY (`id`)
         )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='查询记录流水'
     </update>
@@ -134,7 +136,9 @@
         #{flcxRecords.lexicon_after},
         #{flcxRecords.lexicons_id},
         #{flcxRecords.ali_user_id},
-        #{flcxRecords.city}
+        #{flcxRecords.city},
+        #{flcxRecords.create_date},
+        #{flcxRecords.update_date}
         )
     </insert>
 

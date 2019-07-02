@@ -6,6 +6,7 @@ import com.tzj.collect.entity.FlcxRecords;
 import com.tzj.collect.entity.FlcxType;
 import com.tzj.collect.mapper.FlcxRecordsMapper;
 import com.tzj.collect.mapper.FlcxTypeMapper;
+import com.tzj.collect.module.common.shard.ShardTableHelper;
 import com.tzj.collect.service.FlcxRecordsService;
 import com.tzj.collect.service.FlcxTypeService;
 import org.springframework.stereotype.Service;
@@ -49,5 +50,16 @@ public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxR
         flcxRecordsList.add(flcxRecords);
         map.put("typeList", flcxRecordsList);
         return map;
+    }
+
+    @Override
+    public void saveFlcxRecords(FlcxRecords flcxRecords) {
+        //分表保存入Mysql
+        Date date=new Date();
+        String tableName= ShardTableHelper.getTableNameByDay("flcx_records",date);
+        if(flcxRecordsMapper.existTable(tableName)<=0){
+            flcxRecordsMapper.createNewTable(tableName);
+        }
+        flcxRecordsMapper.insert(tableName,flcxRecords);
     }
 }

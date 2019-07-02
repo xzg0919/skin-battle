@@ -1,8 +1,12 @@
 package com.tzj.collect.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+
+import java.util.Date;
 
 /**
  * 查询关键字记录
@@ -73,6 +77,28 @@ public class FlcxRecords  {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    @TableField(value = "create_date")
+    private Date createDate; // 创建日期
+
+    @TableField(value = "update_date")
+    private Date updateDate; // 更新日期
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 }
 
