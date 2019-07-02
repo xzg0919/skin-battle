@@ -149,6 +149,11 @@
                 <artifactId>collect-module-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>collect-module-flcx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- 收呗模块包 -->
 
 
