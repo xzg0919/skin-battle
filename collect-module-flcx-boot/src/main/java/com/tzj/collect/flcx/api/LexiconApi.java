@@ -2,6 +2,7 @@ package com.tzj.collect.flcx.api;
 
 
 import com.tzj.collect.api.lexicon.param.FlcxBean;
+import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxRecords;
 import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxRecordsService;
@@ -11,12 +12,15 @@ import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 关键字搜索
@@ -38,6 +42,12 @@ public class LexiconApi {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+    @Api(name = "lex.check.before", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Map keySearchInRedis(){
+        return flcxLexiconService.keySearchInRedis(null);
+    }
 
     /** 垃圾分类查询
       * @author sgmark@aliyun.com
@@ -85,7 +95,13 @@ public class LexiconApi {
     @SignIgnore
     @AuthIgnore
     public Map keySearch(FlcxBean flcxBean)throws ApiException {
-        return flcxLexiconService.keySearch(flcxBean);
+        List<FlcxLexicon> flcxLexiconList = flcxLexiconService.keySearch("allCatch");
+        Map<String,Object> map = new HashMap<>();
+        if (StringUtils.isBlank(flcxBean.getName())){
+            return map;
+        }
+        map.put("result", flcxLexiconList.stream().filter(flcxLexicon -> flcxLexicon.getName().contains(flcxBean.getName())).limit(5).collect(Collectors.toList()));
+        return map;
     }
 
 
