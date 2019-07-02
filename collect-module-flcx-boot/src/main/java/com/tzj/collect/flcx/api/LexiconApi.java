@@ -2,6 +2,7 @@ package com.tzj.collect.flcx.api;
 
 
 import com.tzj.collect.api.lexicon.param.FlcxBean;
+import com.tzj.collect.entity.FlcxRecords;
 import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxRecordsService;
 import com.tzj.collect.service.FlcxTypeService;
@@ -35,6 +36,9 @@ public class LexiconApi {
     @Resource
     private FlcxRecordsService flcxRecordsService;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     /** 垃圾分类查询
       * @author sgmark@aliyun.com
       * @date 2019/6/19 0019
@@ -45,7 +49,17 @@ public class LexiconApi {
     @SignIgnore
     @AuthIgnore
     public Map lexCheck(FlcxBean flcxBean)throws ApiException {
-        return flcxLexiconService.lexCheck(flcxBean);
+        //发送MQ消息
+        Map map = flcxLexiconService.lexCheck(flcxBean);
+        if (null != map && null != map.get("flcxRecords")){
+            FlcxRecords flcxRecords = (FlcxRecords) map.get("flcxRecords");
+            flcxBean.setLexicon(flcxBean.getName());
+            flcxBean.setCity(flcxBean.getCity());
+            flcxBean.setLexiconAfter(flcxRecords.getLexiconAfter());
+            flcxBean.setLexiconId(flcxRecords.getLexiconsId());
+            rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
+        }
+        return map;
     }
     /** 大分类列表
       * @author sgmark@aliyun.com
