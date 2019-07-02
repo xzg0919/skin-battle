@@ -3,6 +3,7 @@ package com.tzj.collect.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxRecords;
+import org.apache.ibatis.annotations.Param;
 
 /**
   * @author sgmark@aliyun.com
@@ -11,4 +12,7 @@ import com.tzj.collect.entity.FlcxRecords;
   * @return 
   */
 public interface FlcxRecordsMapper extends BaseMapper<FlcxRecords> {
+    int existTable(String tableName);
+    int createNewTable(@Param("tableName")String tableName);
+    int insert(@Param("tableName")String tableName,@Param("flcxRecords")FlcxRecords flcxRecords);
 }

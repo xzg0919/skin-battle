@@ -22,6 +22,8 @@ public class FlcxRecords  {
 
     private String aliUserId;//阿里会员id
 
+    private String city;    //城市
+
 
     public Long getId() {
 
@@ -65,5 +67,12 @@ public class FlcxRecords  {
         this.lexiconAfter = lexiconAfter;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 }
 
