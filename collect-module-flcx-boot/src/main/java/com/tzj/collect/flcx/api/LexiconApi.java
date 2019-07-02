@@ -88,7 +88,7 @@ public class LexiconApi {
         return flcxLexiconService.keySearch(flcxBean);
     }
 
-    @Api(name = "test", version = "1.0")
+    /*@Api(name = "test", version = "1.0")
     @SignIgnore
     @AuthIgnore
     public void test()throws ApiException {
@@ -100,5 +100,5 @@ public class LexiconApi {
         flcxBean.setLexiconId(1L);
         flcxBean.setName("ces");
         rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
-    }
+    }*/
 }
