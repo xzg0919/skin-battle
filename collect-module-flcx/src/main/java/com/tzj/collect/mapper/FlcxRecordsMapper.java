@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
   * @return 
   */
 public interface FlcxRecordsMapper extends BaseMapper<FlcxRecords> {
-    int existTable(String tableName);
-    int createNewTable(@Param("tableName")String tableName);
-    int insert(@Param("tableName")String tableName,@Param("flcxRecords")FlcxRecords flcxRecords);
+    int existTable(@Param("tableName") String tableName);
+    int createNewTable(@Param("tableName") String tableName);
+    int insert(@Param("tableName") String tableName,@Param("flcxRecords") FlcxRecords flcxRecords);
 }

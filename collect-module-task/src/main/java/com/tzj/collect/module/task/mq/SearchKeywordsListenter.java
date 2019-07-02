@@ -29,20 +29,25 @@ public class SearchKeywordsListenter implements ChannelAwareMessageListener {
     @Override
     public void onMessage(Message message, Channel channel) throws Exception {
 
-        String jsonMessage = new String(message.getBody(), "UTF-8");
-        FlcxBean flcxBean = JSON.parseObject(jsonMessage, FlcxBean.class);
+        try {
+            String jsonMessage = new String(message.getBody(), "UTF-8");
+            FlcxBean flcxBean = JSON.parseObject(jsonMessage, FlcxBean.class);
 
-        //把接收到的消息，保存到数据库
-        FlcxRecords flcxRecords=new FlcxRecords();
-        flcxRecords.setAliUserId(flcxBean.getAliUserId());
-        flcxRecords.setCity(flcxBean.getCity());    //如果不传，后面通过经纬度查
-        flcxRecords.setCreateDate(new Date());
-        flcxRecords.setUpdateDate(new Date());
-        flcxRecords.setLexiconAfter(flcxBean.getLexiconAfter());
-        flcxRecords.setLexicons(flcxBean.getName());
-        flcxRecords.setLexiconsId(flcxBean.getLexiconId());
-        flcxRecordsService.saveFlcxRecords(flcxRecords);
-
+            //把接收到的消息，保存到数据库
+            FlcxRecords flcxRecords = new FlcxRecords();
+            flcxRecords.setAliUserId(flcxBean.getAliUserId());
+            flcxRecords.setCity(flcxBean.getCity());    //如果不传，后面通过经纬度查
+            flcxRecords.setCreateDate(new Date());
+            flcxRecords.setUpdateDate(new Date());
+            flcxRecords.setLexiconAfter(flcxBean.getLexiconAfter());
+            flcxRecords.setLexicons(flcxBean.getName());
+            flcxRecords.setLexiconsId(flcxBean.getLexiconId());
+            flcxRecordsService.saveFlcxRecords(flcxRecords);
+        }catch (Exception e){
+            //不管成功不成功，此条数据都丢弃
+            e.printStackTrace();
+        }
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 
 
 
