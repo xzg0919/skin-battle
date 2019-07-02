@@ -141,4 +141,10 @@ public class AdminAreaApi {
 		return areaService.deleteCommunityByIds(companyBean.getCommunityIds());
 	}
 
+	@Api(name = "admin.company.isOpenCompanyByCategory", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object isOpenCompanyByCategory(CompanyBean companyBean)throws Exception {
+		return areaService.isOpenCompanyByCategory(companyBean.getId().toString(),companyBean.getIsOpen(),companyBean.getTitle());
+	}
 }

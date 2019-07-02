@@ -246,5 +246,32 @@
 			a.company_id = #{companyId}
 		ORDER BY a.create_date
 	</select>
+	
+	<select id="selectStreetList" resultType="com.tzj.collect.controller.admin.param.StreetNameBean">
+		SELECT
+			a.id,
+			a.street_name as streetName,
+			a.street_code as streetCode,
+			a.towcode
+		FROM
+			sb_testme a
+		WHERE a.street_code is null or a.street_code = '';
+	</select>
+
+	<select id="selectStreetListByName" parameterType="String" resultType="com.tzj.collect.controller.admin.param.StreetNameBean">
+		SELECT
+			a.id,
+			a.h_street_name as streetName,
+			a.h_street_code as streetCode
+		FROM
+			sb_testss a
+		WHERE
+			a.h_street_name = #{name}
+		and a.h_street_code like CONCAT(#{code},'%')
+	</select>
+<update id="updateStreet" parameterType="String">
+	update sb_testme set street_code = #{code} where id = #{id} and street_name = #{name}
+</update>
+
 
 </mapper>

@@ -3,7 +3,6 @@ package com.tzj.collect.controller.admin;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.common.excel.ExcelUtils;
 import com.tzj.collect.service.AreaService;
-import com.tzj.collect.service.FlcxTypeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;

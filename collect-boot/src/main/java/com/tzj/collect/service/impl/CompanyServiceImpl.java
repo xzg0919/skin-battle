@@ -40,6 +40,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	@Autowired
 	private CompanyServiceService companyServiceService;
 	@Autowired
+	private CategoryService categoryService;
+	@Autowired
 	private CompanyStreetBigService companyStreetBigService;
 	@Autowired
 	private CompanyStreetApplianceService companyStreetApplianceService;
@@ -168,9 +170,24 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 
 		Map<String,Object> resultMap = new HashMap<>();
 		List<Map<String,Object>> companyTitleList = companyMapper.getCompanyTitleNum();
-		resultMap.put("applianceNum",companyTitleList.get(0).get("count"));
-		resultMap.put("houseNum",companyTitleList.get(1).get("count"));
-		resultMap.put("bigNum",companyTitleList.get(2).get("count"));
+		String applianceNum = "0";
+		String houseNum = "0";
+		String bigNum = "0";
+		if(null != companyTitleList&&!companyTitleList.isEmpty()){
+			for (Map map:companyTitleList ) {
+				if("1".equals(map.get("title").toString())){
+					applianceNum = map.get("count").toString();
+				}else if("2".equals(map.get("title").toString())){
+					houseNum = map.get("count").toString();
+				}else if("4".equals(map.get("title").toString())){
+					bigNum = map.get("count").toString();
+				}
+			}
+		}
+			resultMap.put("applianceNum",applianceNum);
+			resultMap.put("houseNum",houseNum);
+			resultMap.put("bigNum",bigNum);
+
 		List<Map<String, Object>> adminCompanyList = companyMapper.getAdminCompanyList(companyName, title,pageStart,pageBean.getPageSize());
 		Integer adminCompanyCount = companyMapper.getAdminCompanyCount(companyName, title);
 		resultMap.put("adminCompanyList",adminCompanyList);
@@ -231,9 +248,29 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		Map<String,Object> applianceRange = new HashMap<>();
 		Map<String,Object> houseRange = new HashMap<>();
 		Map<String,Object> bigRange = new HashMap<>();
+		String isOpen = "1";
 		applianceRange = companyStreetApplianceService.adminCompanyAreaRanges(companyId.toString());
 		houseRange = companyServiceService.companyAreaRanges(companyId.toString());
 		bigRange = companyStreetBigService.companyAreaRanges(companyId.toString());
+
+		applianceRange.put("isOpen", isOpen);
+		houseRange.put("isOpen", isOpen);
+		bigRange.put("isOpen", isOpen);
+
+		List<Map<String, Object>> resuleList = categoryService.getIsOpenCategory(companyId.toString());
+		if(null != resuleList && !resuleList.isEmpty()) {
+			for (Map map : resuleList) {
+				resultMap = new HashMap<>();
+				if ("1".equals(map.get("title").toString())) {
+					applianceRange.put("isOpen","0");
+				} else if ("2".equals(map.get("title").toString())) {
+					houseRange.put("isOpen", "0");
+				} else if ("4".equals(map.get("title").toString())) {
+					bigRange.put("isOpen", "0");
+				}
+			}
+		}
+
 		resultMap.put("applianceRange",applianceRange);
 		resultMap.put("houseRange",houseRange);
 		resultMap.put("bigRange",bigRange);

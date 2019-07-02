@@ -1,13 +1,10 @@
 package com.tzj.collect.module.task.config;
 
 
-import com.tzj.collect.module.task.mq.SearchKeywordsListenter;
-import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfig {
-
     public static final String EXCHANGE = "laji_search";
 
     public static final String SEARCH_KEYWORDS_QUEUE_ROUTE = "search_keywords_queue_route";
@@ -26,9 +22,6 @@ public class RabbitMqConfig {
 
     @Autowired
     private ExchangeConfig exchangeConfig;
-
-    @Autowired
-    private SearchKeywordsListenter searchKeywordsListenter;
 
     /**
      * 连接工厂
@@ -60,18 +53,5 @@ public class RabbitMqConfig {
     public MessageConverter jsonMessageConverter(){
         return new Jackson2JsonMessageConverter();
     }
-
-    @Bean
-    public SimpleMessageListenerContainer searchKeywordsListenterContainer(){
-        SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer(connectionFactory);
-        simpleMessageListenerContainer.addQueues(queueConfig.searchKeywordsQueue());
-        simpleMessageListenerContainer.setExposeListenerChannel(true);
-        simpleMessageListenerContainer.setMaxConcurrentConsumers(5);
-        simpleMessageListenerContainer.setConcurrentConsumers(1);
-        simpleMessageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL); //设置确认模式手工确认
-        simpleMessageListenerContainer.setMessageListener(searchKeywordsListenter);
-        return simpleMessageListenerContainer;
-    }
-
 
 }

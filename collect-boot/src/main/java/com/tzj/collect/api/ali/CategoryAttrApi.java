@@ -49,7 +49,7 @@ public class CategoryAttrApi {
 		//查询用户的默认地址
 		Member member = MemberUtils.getMember();
 		System.out.println("------memberId参数是 ："+member.getId()+"------category参数是 ："+categoryBean.getId()+"-------cityId是 ："+categoryBean.getCityId());
-		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id",categoryBean.getCityId()));
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
     	if(memberAddress==null) {
     		//根据分类id取得所有分类属性
     		return categoryAttrService.getCategoryAttrListss(categoryBean.getId());

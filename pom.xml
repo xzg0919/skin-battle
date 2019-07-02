@@ -25,6 +25,8 @@
         <module>collect-module-umeng</module>
         <module>collect-module-common</module>
         <module>collect-module-member</module>
+        <module>collect-module-flcx</module>
+        <module>collect-module-flcx-boot</module>
     </modules>
 
     <repositories>
@@ -54,6 +56,7 @@
         <fastjson.version>1.2.39</fastjson.version>
         <hufm.version>4.1.2</hufm.version>
         <mybatisplus.version>2.3.3</mybatisplus.version>
+        <druid.version>1.1.18</druid.version>
         <skipTests>true</skipTests>
     </properties>
 
@@ -147,9 +150,20 @@
                 <artifactId>collect-module-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>collect-module-flcx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- 收呗模块包 -->
 
-
+            <!-- 连接池 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <!-- 连接池 -->
 
         </dependencies>
     </dependencyManagement>

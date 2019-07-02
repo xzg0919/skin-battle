@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.enums.IdType;
  * @create 2019-06-17 16:13
  **/
 @TableName("flcx_eggshell")
-public class FlcxEggshell extends DataEntity<Long> {
+public class FlcxEggshell {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
     /**
@@ -23,13 +23,13 @@ public class FlcxEggshell extends DataEntity<Long> {
     @TableField(value = "describe_")
     private String describe;//彩蛋描述
 
-   @Override
+
     public Long getId() {
 
         return id;
     }
 
-    @Override
+
     public void setId(Long id) {
         this.id = id;
     }

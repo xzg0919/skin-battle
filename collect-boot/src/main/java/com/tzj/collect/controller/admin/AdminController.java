@@ -1,5 +1,10 @@
 package com.tzj.collect.controller.admin;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +15,10 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.ali.json.AmapRegeoJson;
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.ali.param.OrderItemBean;
 import com.tzj.collect.api.common.excel.ExcelData;
@@ -18,6 +26,8 @@ import com.tzj.collect.api.common.excel.ExcelUtils;
 import com.tzj.collect.api.common.websocket.AppWebSocketServer;
 import com.tzj.collect.api.common.websocket.WebSocketServer;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
+import com.tzj.collect.controller.admin.param.CityBean;
+import com.tzj.collect.controller.admin.param.StreetNameBean;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.Company;
@@ -43,6 +53,8 @@ import com.tzj.collect.service.MemberService;
 import com.tzj.collect.service.OrderService;
 import com.tzj.collect.service.RocketmqMessageService;
 
+import com.tzj.module.easyopen.exception.ApiException;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -118,6 +130,104 @@ public class AdminController {
 	@RequestMapping("/area/excel")
 	public String areaExcel() {
 		return "admin/areaExcel";
+	}
+
+	@RequestMapping("/updateStreet")
+	public String updateStreet() {
+		List<StreetNameBean> list = areaService.selectStreetList();
+		if (list.isEmpty()){
+			throw new ApiException("查无数据");
+		}
+		for (StreetNameBean streetNameBean: list
+			 ) {
+			List<StreetNameBean> streetNameBeans = areaService.selectStreetListByName(streetNameBean.getStreetName(),streetNameBean.getTowcode());
+			if(streetNameBeans.size() == 1){
+				areaService.updateStreet(streetNameBean.getId(),streetNameBean.getStreetName().trim(),streetNameBeans.get(0).getStreetCode().trim());
+			}
+		}
+		return "操作成功";
+	}
+
+
+
+	@RequestMapping("/out/excel")
+	public void outExcel(String page,HttpServletResponse response)throws Exception {
+		String url = "https://restapi.amap.com/v3/config/district";
+		String param = "key=43d675a28f264a241bd878df2c420176&subdistrict=4&page="+page;
+		String s = this.sendGet(url, param);
+		JSONObject object = JSON.parseObject(s);
+		Object districts = object.get("districts");
+
+		ExcelData data = new ExcelData();
+		data.setName("以旧换新信息数据");
+		//添加表头
+		List<String> titles = new ArrayList<>();
+		//for(String title: excelInfo.getNames())
+		titles.add("省");
+		titles.add("citycode");
+		titles.add("adcode");
+		titles.add("市");
+		titles.add("citycode");
+		titles.add("adcode");
+		titles.add("区");
+		titles.add("citycode");
+		titles.add("adcode");
+		titles.add("街道");
+		titles.add("citycode");
+		titles.add("adcode");
+		data.setTitles(titles);
+		//添加列
+		List<List<Object>> rows = new ArrayList();
+		List<Object> row = null;
+		List<Object> objList= (List<Object>) JSONArray.fromObject(districts);
+		for ( Object objects:objList) {
+			CityBean cityBean=(CityBean)JSONObject.parseObject(objects.toString(), CityBean.class);
+			System.out.println(cityBean.getCitycode());
+			System.out.println(cityBean.getAdcode());
+			System.out.println(cityBean.getName());
+			List<CityBean> districts1 = cityBean.getDistricts();
+			for (CityBean cityBean1:districts1){
+				System.out.println(cityBean1.getCitycode());
+				System.out.println(cityBean1.getAdcode());
+				System.out.println(cityBean1.getName());
+				List<CityBean> districts2 = cityBean1.getDistricts();
+				for (CityBean cityBean2:districts2){
+					System.out.println(cityBean2.getCitycode());
+					System.out.println(cityBean2.getAdcode());
+					System.out.println(cityBean2.getName());
+					List<CityBean> districts3 = cityBean2.getDistricts();
+					for (CityBean cityBean3:districts3){
+						System.out.println(cityBean3.getCitycode());
+						System.out.println(cityBean3.getAdcode());
+						System.out.println(cityBean3.getName());
+						List<CityBean> districts4 = cityBean3.getDistricts();
+						for (CityBean cityBean4:districts4){
+							System.out.println(cityBean4.getCitycode());
+							System.out.println(cityBean4.getAdcode());
+							System.out.println(cityBean4.getName());
+							row=new ArrayList();
+							row.add(cityBean1.getName());
+							row.add(cityBean1.getCitycode());
+							row.add(cityBean1.getAdcode());
+							row.add(cityBean2.getName());
+							row.add(cityBean2.getCitycode());
+							row.add(cityBean2.getAdcode());
+							row.add(cityBean3.getName());
+							row.add(cityBean3.getCitycode());
+							row.add(cityBean3.getAdcode());
+							row.add(cityBean4.getName());
+							row.add(cityBean4.getCitycode());
+							row.add(cityBean4.getAdcode());
+							rows.add(row);
+						}
+					}
+				}
+			}
+		}
+		data.setRows(rows);
+		SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+		String fileName=fdate.format(new Date())+".xlsx";
+		ExcelUtils.exportExcel(response, fileName, data);
 	}
 
 
@@ -254,7 +364,7 @@ public class AdminController {
 	@RequestMapping("/ceMemberAddress")
 	public @ResponseBody Object ceMemberAddress() throws Exception {
 
-		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", 8401).eq("city_id", "737"));
+		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", 8401));
 		if(null==memberAddress) {
 			memberAddress =new MemberAddress();
 			memberAddress.setCommunityId(0);
@@ -362,7 +472,7 @@ public class AdminController {
 
 		Member member = memberService.selectById(8401);
 		//查询用户的默认地址
-		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()).eq("city_id", orderBean.getCityId()));
+		MemberAddress memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", member.getId()));
 		if(memberAddress==null) {
 			return "您暂未添加回收地址";
 		}
@@ -432,5 +542,48 @@ public class AdminController {
 	private MemberService memberService;
 	@Autowired
 	private CompanyCategoryService priceService;
-
+	public static String sendGet(String url, String param) {
+		String result = "";
+		BufferedReader in = null;
+		try {
+			String urlNameString = url + "?" + param;
+			URL realUrl = new URL(urlNameString);
+			// 打开和URL之间的连接
+			URLConnection connection = realUrl.openConnection();
+			// 设置通用的请求属性
+			connection.setRequestProperty("accept", "*/*");
+			connection.setRequestProperty("connection", "Keep-Alive");
+			connection.setRequestProperty("user-agent",
+					"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+			// 建立实际的连接
+			connection.connect();
+			// 获取所有响应头字段
+			Map<String, List<String>> map = connection.getHeaderFields();
+			// 遍历所有的响应头字段
+			for (String key : map.keySet()) {
+				System.out.println(key + "--->" + map.get(key));
+			}
+			// 定义 BufferedReader输入流来读取URL的响应
+			in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String line;
+			while ((line = in.readLine()) != null) {
+				result += line;
+			}
+		} catch (Exception e) {
+			System.out.println("发送GET请求出现异常！" + e);
+			e.printStackTrace();
+		}
+		// 使用finally块来关闭输入流
+		finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		return result;
+	}
 }

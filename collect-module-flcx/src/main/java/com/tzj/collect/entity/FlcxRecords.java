@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.enums.IdType;
  * @create 2019-06-17 16:13
  **/
 @TableName("flcx_records")
-public class FlcxRecords extends DataEntity<Long> {
+public class FlcxRecords  {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
 
@@ -22,13 +22,13 @@ public class FlcxRecords extends DataEntity<Long> {
 
     private String aliUserId;//阿里会员id
 
-    @Override
+
     public Long getId() {
 
         return id;
     }
 
-    @Override
+
     public void setId(Long id) {
         this.id = id;
     }

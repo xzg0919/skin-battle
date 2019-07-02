@@ -2,6 +2,7 @@ package com.tzj.collect.service.impl;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.tzj.collect.api.ali.param.MapAddressBean;
 import com.tzj.collect.entity.Community;
@@ -48,7 +49,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      */ 
     @Transactional(readOnly=false)
 	public String saveMemberAddress(MemberAddressBean memberAddressBean) {
-		MemberAddress memberAddress1 = this.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberAddressBean.getMemberId()).eq("city_id", memberAddressBean.getCityId()));
+		MemberAddress memberAddress1 = this.getMemberAdderssByMemberId(memberAddressBean.getMemberId());
 		if (null != memberAddress1){
 			memberAddress1.setIsSelected(0);
 			this.updateById(memberAddress1);
@@ -139,8 +140,8 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      * @return 
      */
 	@Override
-	public List<MemberAddress> memberAddressList(long memberId,String cityId) {
-		return this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("member_id", memberId).eq("city_id", cityId).orderBy("is_selected", false));
+	public List<MemberAddress> memberAddressList(long memberId) {
+		return this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("member_id", memberId).orderBy("is_selected", false));
 	}
 	
 	/**
@@ -158,10 +159,10 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
     	this.updateById(memberAddress);
     	Integer cityId = memberAddress.getCityId();
     	//查询用户的默认地址
-    	MemberAddress memberAddress2 = this.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected",1).eq("del_flag", 0).eq("member_id", memberId).eq("city_id",cityId));
+    	MemberAddress memberAddress2 = this.getMemberAdderssByMemberId(memberId+"");
     	if(memberAddress2 == null) {
     		//查询用户所有的余下地址
-    		List<MemberAddress> MemberAddressList = this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("member_id", memberId).eq("city_id", cityId).orderBy("create_date", false));
+    		List<MemberAddress> MemberAddressList = this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("member_id", memberId).orderBy("create_date", false));
     		if(!MemberAddressList.isEmpty()) {
     			MemberAddress memberAddresss = MemberAddressList.get(0);
     			memberAddresss.setIsSelected(1);
@@ -181,7 +182,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean) {
 		String isSelected = memberAddressBean.getIsSelected();
 		//判断是否将地址设置为默认
-		MemberAddress memberAddres = this.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberAddressBean.getMemberId()).eq("city_id", memberAddressBean.getCityId()));
+		MemberAddress memberAddres = this.getMemberAdderssByMemberId(memberAddressBean.getMemberId());
 		if(memberAddres==null){
 			isSelected = "1";
 		}else{
@@ -256,6 +257,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	@Transactional
 	@Override
 	public String saveMemberAddressdByMap(MapAddressBean mapAddressBean, long memberId) {
+		System.out.println("用户开始新增地址了"+JSON.toJSONString(mapAddressBean));
 		Integer cityId = -1;
 		Integer areaId = -1;
 		Integer streetId = -1;
@@ -281,7 +283,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			communityId = community.getId().intValue();
 		}
 		if("1".equals(mapAddressBean.getIsSelected())){
-			MemberAddress memberAddress1 = this.selectOne(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberId).eq("city_id",cityId));
+			MemberAddress memberAddress1 = this.getMemberAdderssByMemberId(memberId+"");
 			if (null != memberAddress1){
 				memberAddress1.setIsSelected(0);
 				this.updateById(memberAddress1);
@@ -317,5 +319,48 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		this.insertOrUpdate(memberAddress);
 
 		return "操作成功";
+	}
+
+	@Override
+	public MemberAddress getMemberAdderssByMemberId(String memberId) {
+		MemberAddress memberAddress = null;
+		List<MemberAddress> memberAddressesList = this.selectList(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberId));
+		if (!memberAddressesList.isEmpty()){
+			memberAddress = memberAddressesList.get(0);
+		}
+		return memberAddress;
+	}
+	@Transactional
+	@Override
+	public Object updateIsSelectedAddress(String memberId,String id){
+		MemberAddress memberAddress1 = this.getMemberAdderssByMemberId(memberId);
+		if(null != memberAddress1){
+			memberAddress1.setIsSelected(0);
+		}
+		this.updateById(memberAddress1);
+		MemberAddress memberAddress = this.selectById(id);
+		memberAddress.setIsSelected(1);
+		this.updateById(memberAddress);
+		return "success";
+	}
+
+	@Override
+	public String getMemberAddressById(String id){
+		MemberAddress memberAddress = this.selectById(id);
+		String cityName = memberAddress.getCityName()==null?"":memberAddress.getCityName();
+		if(org.apache.commons.lang3.StringUtils.isBlank(cityName)){
+			Area city = areaService.selectById(memberAddress.getCityId());
+			if(null != city){
+				cityName = city.getAreaName();
+			}
+		}
+		String areaName = memberAddress.getAreaName()==null?"":memberAddress.getAreaName();
+		if(org.apache.commons.lang3.StringUtils.isBlank(areaName)){
+			Area area = areaService.selectById(memberAddress.getStreetId());
+			if(null != area){
+				areaName = area.getAreaName();
+			}
+		}
+		return cityName+areaName+memberAddress.getAddress()+memberAddress.getHouseNumber();
 	}
 }

@@ -79,17 +79,12 @@ public class AdminCompanyApiTest {
 //		 recyclersServiceRangeBean.setAreaList(areaList);
 
 		 CompanyBean companyBean = new CompanyBean();
-		 companyBean.setId((long)1);
-		 companyBean.setPageBean(new PageBean());
-		 companyBean.setName("南京");
-		 companyBean.setLocation("121.46559,31.33092");
-		 List<String> communityIdList = new ArrayList<>();
-		 communityIdList.add("22519");
-		 communityIdList.add("28515");
-		 companyBean.setCommunityIds(communityIdList);
+		 companyBean.setId((long)41);
+		 companyBean.setTitle("4");
+		 companyBean.setIsOpen("0");
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.company.deleteCommunityByIds");
+	        param.put("name","admin.company.isOpenCompanyByCategory");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
