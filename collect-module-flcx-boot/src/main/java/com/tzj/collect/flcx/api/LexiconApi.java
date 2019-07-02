@@ -88,5 +88,16 @@ public class LexiconApi {
         return flcxLexiconService.keySearch(flcxBean);
     }
 
-
+    @Api(name = "test", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public void test()throws ApiException {
+        FlcxBean flcxBean = new FlcxBean();
+        flcxBean.setAliUserId("12345678");
+        flcxBean.setLexicon("测试");
+        flcxBean.setCity("上海");
+        flcxBean.setLexiconAfter("测试");
+        flcxBean.setLexiconId(1L);
+        rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
+    }
 }

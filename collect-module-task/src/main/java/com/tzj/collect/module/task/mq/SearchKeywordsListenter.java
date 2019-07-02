@@ -45,9 +45,9 @@ public class SearchKeywordsListenter implements ChannelAwareMessageListener {
             flcxRecordsService.saveFlcxRecords(flcxRecords);
         }catch (Exception e){
             //不管成功不成功，此条数据都丢弃
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            e.printStackTrace();
         }
-
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 
 
 

@@ -21,7 +21,7 @@ public class SendMQTest extends TestCase {
     @Test
     public void testSendMsg() throws Exception{
         String resultJson= ApiUtils.createCommonParam(TestConst.appid,TestConst.gateway,
-                "keySearch.save",null,null,null);
+                "test",null,null,null);
         System.out.println(resultJson);
     }
 }
