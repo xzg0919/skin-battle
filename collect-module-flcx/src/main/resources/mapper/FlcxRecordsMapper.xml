@@ -28,12 +28,12 @@
         values
         (
         #{flcxRecords.lexicons},
-        #{flcxRecords.lexicon_after},
-        #{flcxRecords.lexicons_id},
-        #{flcxRecords.ali_user_id},
+        #{flcxRecords.lexiconAfter},
+        #{flcxRecords.lexiconsId},
+        #{flcxRecords.aliUserId},
         #{flcxRecords.city},
-        #{flcxRecords.create_date},
-        #{flcxRecords.update_date}
+        #{flcxRecords.createDate},
+        #{flcxRecords.updateDate}
         )
     </insert>
 

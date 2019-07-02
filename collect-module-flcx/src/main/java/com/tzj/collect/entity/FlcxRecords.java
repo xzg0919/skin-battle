@@ -20,10 +20,13 @@ public class FlcxRecords  {
 
     private String lexicons;//搜索关键字(模糊搜索，存的就是搜索前的值)
 
+    @TableField(value = "lexicon_after")
     private String lexiconAfter;//返回结果
 
+    @TableField(value = "lexicons_id")
     private Long lexiconsId;//关键字id
 
+    @TableField(value = "ali_user_id")
     private String aliUserId;//阿里会员id
 
     private String city;    //城市
