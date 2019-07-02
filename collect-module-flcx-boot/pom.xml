@@ -128,5 +128,17 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-flcx</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+
+
     </dependencies>
 </project>
