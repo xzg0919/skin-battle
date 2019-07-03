@@ -128,7 +128,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
     public Map lexCheckByType(FlcxBean flcxBean) {
         HashMap<String, Object> map = new HashMap<>();
         //根据名称从redis取出结果集
-        Boolean object = null;
+        Boolean object = false;
         if (!StringUtils.isBlank(flcxBean.getName())){
             object = redisUtil.hasKey(flcxBean.getName());
         }

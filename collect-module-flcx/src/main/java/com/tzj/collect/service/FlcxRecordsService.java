@@ -5,6 +5,7 @@ import com.tzj.collect.entity.FlcxRecords;
 import com.tzj.collect.entity.FlcxType;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,8 +15,10 @@ import java.util.Map;
   * @return 
   */
 public interface FlcxRecordsService extends IService<FlcxRecords> {
-    Map topFive();
+    Map topFive(String topFive);
 
     @Transactional
     void saveFlcxRecords(FlcxRecords flcxRecords);
+
+    List<Map<String, Object>> selectRecordsCountList();
 }

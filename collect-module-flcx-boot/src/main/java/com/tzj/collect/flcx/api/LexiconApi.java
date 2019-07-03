@@ -1,7 +1,7 @@
 package com.tzj.collect.flcx.api;
 
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxRecords;
@@ -11,17 +11,13 @@ import com.tzj.collect.service.FlcxTypeService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +41,9 @@ public class LexiconApi {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Api(name = "lex.check.before", version = "1.0")
     @AuthIgnore
     public Map keySearchInRedis(){
@@ -67,6 +66,7 @@ public class LexiconApi {
         }
         Map map = flcxLexiconService.lexCheck(flcxBean);
         if (StringUtils.isBlank(flcxBean.getName())){
+            //发送MQ消息
             return map;
         }
         if (null != map && null != map.get("flcxRecords")){
@@ -75,9 +75,9 @@ public class LexiconApi {
             flcxBean.setCity(flcxBean.getCity());
             flcxBean.setLexiconAfter(flcxRecords.getLexiconAfter());
             flcxBean.setLexiconId(flcxRecords.getLexiconsId());
-            //发送MQ消息
-            rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
         }
+        //发送MQ消息
+        rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
         return map;
     }
     /** 大分类列表
@@ -113,8 +113,8 @@ public class LexiconApi {
         flcxRecords.setLexiconAfter("塑料袋");
         flcxRecordsList.add(flcxRecords);
         map.put("typeList", flcxRecordsList);
-        return map;
-//        return flcxRecordsService.topFive();
+//        return map;
+        return flcxRecordsService.topFive("topFive");
     }
 
 
@@ -126,21 +126,14 @@ public class LexiconApi {
         if (StringUtils.isBlank(flcxBean.getName())){
             return map;
         }
-        map.put("result", flcxLexiconList.stream().filter(flcxLexicon -> flcxLexicon.getName().contains(flcxBean.getName())).limit(5).collect(Collectors.toList()));
+        flcxLexiconList = flcxLexiconList.stream().filter(flcxLexicon -> flcxLexicon.getName().contains(flcxBean.getName())).collect(Collectors.toList());
+        //匹配redis
+        List<Map<String, Object>> objectMap =  redisUtil.mget(flcxLexiconList.stream().map(FlcxLexicon::getName).collect(Collectors.toList()));
+        //排序取前五的值
+        map.put("result", objectMap.stream().sorted(Comparator.comparing(LexiconApi::comparingByValue).reversed()).limit(5).collect(Collectors.toList()));
         return map;
     }
-
-    /*@Api(name = "test", version = "1.0")
-    @SignIgnore
-    @AuthIgnore
-    public void test()throws ApiException {
-        FlcxBean flcxBean = new FlcxBean();
-        flcxBean.setAliUserId("12345678");
-        flcxBean.setLexicon("测试");
-        flcxBean.setCity("上海");
-        flcxBean.setLexiconAfter("测试");
-        flcxBean.setLexiconId(1L);
-        flcxBean.setName("ces");
-        rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
-    }*/
+    private static Integer comparingByValue(Map<String, Object> map){
+        return (Integer) map.get("value");
+    }
 }

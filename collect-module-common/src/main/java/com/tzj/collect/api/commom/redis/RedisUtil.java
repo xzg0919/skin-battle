@@ -1,9 +1,6 @@
 package com.tzj.collect.api.commom.redis;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.*;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -12,11 +9,9 @@ import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
 import java.io.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Component
@@ -692,5 +687,23 @@ public class RedisUtil {
             }
             return null;
         }
+    }
+    /** 根据多个key取值
+      * @author sgmark@aliyun.com
+      * @date 2019/7/3 0003
+      * @param 
+      * @return 
+      */
+    public List<Map<String, Object>> mget(List<String> stringList){
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        AtomicInteger i = new AtomicInteger();
+        redisTemplate.opsForValue().multiGet(stringList).stream().forEach(redisTemplateReturn ->{
+            Map<String, Object> map = new HashMap<>();
+            map.put("value", Integer.parseInt(redisTemplateReturn.toString()));
+            map.put("name", stringList.get(i.get()));
+            mapList.add(map);
+            i.getAndIncrement();
+        });
+        return mapList;
     }
 }

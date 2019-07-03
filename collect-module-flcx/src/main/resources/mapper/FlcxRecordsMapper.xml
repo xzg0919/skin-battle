@@ -18,10 +18,10 @@
             `city` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '城市',
             `create_date` datetime NOT NULL COMMENT '创建时间',
             `update_date` datetime NOT NULL COMMENT '更新时间',
-            PRIMARY KEY (`id`)
+            PRIMARY KEY (`id`),
+            KEY `index_lexiconsId` (`lexicons_id`) USING BTREE
         )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='查询记录流水'
     </update>
-
     <insert id="insert" parameterType="FlcxRecords">
         insert into ${tableName}
         (lexicons,lexicon_after,lexicons_id,ali_user_id,city,create_date,update_date)
@@ -36,6 +36,32 @@
         #{flcxRecords.updateDate}
         )
     </insert>
+    <select id="topFive" resultType="Map" parameterType="String">
+        SELECT
+            fl.lexicons as lexiconAfter,
+            COUNT(1) AS count_
+        FROM
+            ${tableName} fl
+        WHERE
+            fl.lexicon_after IS NOT NULL
+        GROUP BY
+            fl.lexicons_id
+        ORDER BY
+            count_ DESC
+        LIMIT 0, 7;
+    </select>
+    <select id="selectRecordsCountList" resultType="Map" parameterType="String">
+        SELECT
+            fll.name_,
+            COUNT(1) AS count_
+        FROM
+            flcx_lexicon fll
+        LEFT JOIN ${tableName} frl ON fll.id = frl.lexicons_id
+        WHERE
+            fll.del_flag = 0
+        GROUP BY
+            fll.id;
+    </select>
 
 
 </mapper>
