@@ -31,5 +31,9 @@
     <!-- 随机数缓存 -->
     <cache name="noceCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000"
            timeToIdleSeconds="300" timeToLiveSeconds="300" eternal="false" overflowToDisk="true" memoryStoreEvictionPolicy="FIFO" />
+    <!-- 查询缓存 -->
+    <cache name="lexCheckMap" maxElementsInMemory="20000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+    <!-- 查询缓存词库 -->
+    <cache name="lexCheckList" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
 
 </ehcache>

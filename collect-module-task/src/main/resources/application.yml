@@ -2,10 +2,10 @@ spring:
   application:
     name: collect-task
   profiles:
-    active: dynamicdb-pro
+    active: dynamicdb
   #配置MQ
   rabbitmq:
-    host: 106.15.72.157 #内网IP 172.19.182.81
+    host: 127.0.0.1 #内网IP 172.19.182.81
     port: 5672
     username: rabbitadmin
     password: FeiLei@123
@@ -13,7 +13,7 @@ spring:
   redis:
     #open: false  # 是否开启redis缓存  true开启   false关闭
     #database: 0
-    host: 106.15.72.157 #内网IP 172.19.182.81
+    host: 127.0.0.1 #内网IP 172.19.182.81
     port: 6379
     password: FeiLei_!@#      # 密码（默认为空）
     timeout: 1000  # 连接超时时长（毫秒）

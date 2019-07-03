@@ -21,20 +21,8 @@ spring:
       primary: master #设置默认的数据源或者数据源组,默认值即为master,如果你主从默认下主库的名称就是master可不定义此项。
       datasource:
         master:
-          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          username: sb_admin
-          password: shoubei_123
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          #driver-class-name: com.mysql.jdbc.Driver
-        slave_1:
-          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          username: sb_admin
-          password: shoubei_123
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          #driver-class-name: com.mysql.jdbc.Driver
-        slave_2:
-          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          username: sb_admin
-          password: shoubei_123
+          url: jdbc:mysql://rm-uf6405043t8sk1tbe.mysql.rds.aliyuncs.com/flzn?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          username: zhinan_admin
+          password: Fenlei@zhinan
           driver-class-name: com.mysql.cj.jdbc.Driver
           #driver-class-name: com.mysql.jdbc.Driver
