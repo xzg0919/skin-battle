@@ -5,7 +5,7 @@ server:
         max-threads: 1000
         max-connections: 2000
     #    min-spare-threads: 30
-    port: 9090
+    port: 9003
     #context-path: /collect
     jetty:
       acceptors: 2
@@ -20,9 +20,9 @@ spring:
       max-file-size: 100MB
   application:
     name: collect
-  # 环境 dev|test|pro   dynamicdb 测试多数据源配置               dynamicdb-pro 正式多数据源配置
+  # 环境 dev|test|pro   dynamicdb 正式多数据源配置               dynamicdb-pro 测试多数据源配置
   profiles:
-    active: dynamicdb-pro
+    active: dynamicdb
   # cache配置
   cache:
     type: ehcache
@@ -39,7 +39,7 @@ spring:
   redis:
     #open: false  # 是否开启redis缓存  true开启   false关闭
     #database: 0
-    host: 106.15.72.157 #内网IP 172.19.182.81 外网IP 106.15.72.157
+    host: 172.19.182.81 #内网IP 172.19.182.81 外网IP 106.15.72.157
     port: 6379
     password: FeiLei_!@#      # 密码（默认为空）
     timeout: 1000  # 连接超时时长（毫秒）
@@ -59,7 +59,7 @@ spring:
       content-type: text/html
   #配置MQ
   rabbitmq:
-    host: 106.15.72.157 #内网IP 172.19.182.81 外网IP 106.15.72.157
+    host: 172.19.182.81 #内网IP 172.19.182.81 外网IP 106.15.72.157
     port: 5672
     username: rabbitadmin
     password: FeiLei@123
@@ -108,4 +108,4 @@ logging:
     org.springfromework.web: warn
     org.hibernate: error
     com.tzj: info
-    com.tzj.collect.mapper: debug
+#    com.tzj.collect.mapper: debug

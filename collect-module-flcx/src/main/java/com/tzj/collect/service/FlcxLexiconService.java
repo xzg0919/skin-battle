@@ -7,6 +7,7 @@ import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.module.easyopen.exception.ApiException;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,7 +19,10 @@ import java.util.Map;
 public interface FlcxLexiconService extends IService<FlcxLexicon> {
     @DS("slave")
     Map lexCheck(FlcxBean flcxBean) throws ApiException;
-
     @DS("slave")
-    Map keySearch(FlcxBean flcxBean) throws ApiException;
+    List<FlcxLexicon> keySearch(String flcxString) throws ApiException;
+    @DS("slave")
+    Map keySearchInRedis(FlcxBean flcxBean);
+    @DS("slave")
+    Map lexCheckByType(FlcxBean flcxBean);
 }

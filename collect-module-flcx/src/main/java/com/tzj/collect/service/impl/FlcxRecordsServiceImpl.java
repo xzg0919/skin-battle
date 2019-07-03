@@ -30,26 +30,7 @@ public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxR
 
     @Override
     public Map topFive() {
-        HashMap<String, Object> map = new HashMap<>();
-//        map.put("typeList", flcxRecordsMapper.selectList(new EntityWrapper<FlcxRecords>().eq("del_flag", 0).isNotNull("lexicon_after").groupBy("lexicon_after").setSqlSelect("count(1) as count_, lexicon_after").orderBy("count_", false).last("limit 0, 5")));
-        List<FlcxRecords> flcxRecordsList = new ArrayList<>();
-        FlcxRecords flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("面膜");
-        flcxRecordsList.add(flcxRecords);
-        flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("瓜子壳 ");
-        flcxRecordsList.add(flcxRecords);
-        flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("医用棉签 ");
-        flcxRecordsList.add(flcxRecords);
-        flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("虾壳");
-        flcxRecordsList.add(flcxRecords);
-        flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("塑料袋");
-        flcxRecordsList.add(flcxRecords);
-        map.put("typeList", flcxRecordsList);
-        return map;
+       return null;
     }
 
     @Override

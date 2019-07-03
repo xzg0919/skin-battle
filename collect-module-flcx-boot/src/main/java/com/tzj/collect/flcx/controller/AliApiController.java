@@ -15,7 +15,7 @@ import java.util.Map;
 import static com.tzj.collect.flcx.constant.TokenConst.*;
 
 @Controller
-@RequestMapping(value = "/ali/api")
+@RequestMapping(value = "/app/api")
 public class AliApiController extends ApiController {
     @Resource(name="apiNonceServiceImpl")
     private NoceService noceService;

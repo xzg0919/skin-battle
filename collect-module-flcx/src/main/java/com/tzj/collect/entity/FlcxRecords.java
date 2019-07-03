@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Date;
  * @create 2019-06-17 16:13
  **/
 @TableName("flcx_records")
-public class FlcxRecords  {
+public class FlcxRecords implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
 

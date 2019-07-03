@@ -5,13 +5,15 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
+import java.io.Serializable;
+
 /**
  * 对应类型
  * @author sgmark
  * @create 2019-06-17 16:13
  **/
 @TableName("flcx_type")
-public class FlcxType  {
+public class FlcxType implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
     /**

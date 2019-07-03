@@ -1,5 +1,6 @@
 package com.tzj.collect.api.lexicon.result;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -7,7 +8,7 @@ import java.util.Map;
  * @author sgmark
  * @create 2019-06-19 10:39
  **/
-public class FlcxResult {
+public class FlcxResult implements Serializable {
 
     private Long id;
 
