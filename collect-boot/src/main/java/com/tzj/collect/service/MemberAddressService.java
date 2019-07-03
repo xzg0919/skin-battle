@@ -57,4 +57,11 @@ public interface MemberAddressService extends IService<MemberAddress>{
 	Object updateIsSelectedAddress(String memberId,String id);
 	@DS("slave")
 	String getMemberAddressById(String id);
+
+	@DS("slave")
+	List<MemberAddressBean> selectMemberAddressByCommunityId();
+
+	Object updateMemberAddress(String id,String communityId);
+
+	Object MemberAddressUpdateStreetId();
 }

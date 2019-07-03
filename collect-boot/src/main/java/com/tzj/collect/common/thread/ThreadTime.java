@@ -2,7 +2,10 @@ package com.tzj.collect.common.thread;
 
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.ali.param.MemberAddressBean;
+import com.tzj.collect.entity.MemberAddress;
 import com.tzj.collect.entity.Payment;
+import com.tzj.collect.service.MemberAddressService;
 import com.tzj.collect.service.PaymentService;
 import groovy.util.logging.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,8 @@ import java.util.List;
 public class ThreadTime {
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private MemberAddressService memberAddressService;
 
     /**
      * 定时任务。定时执行回收人员支付完成，单钱未转账到用户支付宝
@@ -23,6 +28,21 @@ public class ThreadTime {
     @Scheduled(cron = "0 0/2 * * * ?")
     public void startPaymentExecute(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new PaymentThread(paymentService)));
+    }
+    /**
+     * 定时任务。定时执行更新新的小区进入更新用户地址信息
+     */
+    @Scheduled(cron = "0 0 0/2 * * ?")
+    public void startUpdateMemberAddress(){
+        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new MemberAddressUpdate(memberAddressService)));
+    }
+
+    /**
+     * 定时任务。定时执行更新新的街道进入更新用户街道地址信息
+     */
+    @Scheduled(cron = "0 0 0/2 * * ?")
+    public void startUpdateMemberAddressByStreetId(){
+        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new MemberAddressUpdateByStreetId(memberAddressService)));
     }
 
 }
@@ -50,5 +70,35 @@ class PaymentThread implements Runnable{
                 }
             }
         }
+    }
+}
+class MemberAddressUpdate implements Runnable{
+
+    private MemberAddressService memberAddressService;
+
+    public MemberAddressUpdate(MemberAddressService memberAddressService){
+        this.memberAddressService = memberAddressService;
+    }
+    @Override
+    public void run() {
+        List<MemberAddressBean> memberAddressesList = memberAddressService.selectMemberAddressByCommunityId();
+        if(null != memberAddressesList&&!memberAddressesList.isEmpty()){
+            for (MemberAddressBean memberAddressBean:memberAddressesList){
+                memberAddressService.updateMemberAddress(memberAddressBean.getId(),memberAddressBean.getCommunityId() );
+            }
+        }
+    }
+}
+
+class MemberAddressUpdateByStreetId implements Runnable{
+
+    private MemberAddressService memberAddressService;
+
+    public MemberAddressUpdateByStreetId(MemberAddressService memberAddressService){
+        this.memberAddressService = memberAddressService;
+    }
+    @Override
+    public void run() {
+        memberAddressService.MemberAddressUpdateStreetId();
     }
 }
