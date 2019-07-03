@@ -356,11 +356,49 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		}
 		String areaName = memberAddress.getAreaName()==null?"":memberAddress.getAreaName();
 		if(org.apache.commons.lang3.StringUtils.isBlank(areaName)){
-			Area area = areaService.selectById(memberAddress.getStreetId());
+			Area area = areaService.selectById(memberAddress.getAreaId());
 			if(null != area){
 				areaName = area.getAreaName();
 			}
 		}
-		return cityName+areaName+memberAddress.getAddress()+memberAddress.getHouseNumber();
+		String streetName = memberAddress.getStreetName()==null?"":memberAddress.getStreetName();
+		if(org.apache.commons.lang3.StringUtils.isBlank(streetName)){
+			Area area = areaService.selectById(memberAddress.getStreetId());
+			if(null != area){
+				streetName = area.getAreaName();
+			}
+		}
+		return cityName+areaName+streetName+memberAddress.getAddress()+memberAddress.getHouseNumber();
+	}
+
+	@Override
+	public List<MemberAddressBean> selectMemberAddressByCommunityId(){
+		return memberAddressMapper.selectMemberAddressByCommunityId();
+	}
+	@Transactional
+	@Override
+	public Object updateMemberAddress(String id,String communityId){
+
+		MemberAddress memberAddress = this.selectById(id);
+		if(null != memberAddress){
+			memberAddress.setCommunityId(Integer.parseInt(communityId));
+			this.updateById(memberAddress);
+		}
+		return "操作成功";
+	}
+	@Transactional
+	@Override
+	public Object MemberAddressUpdateStreetId(){
+		List<MemberAddressBean> memberAddressList = memberAddressMapper.selectMemberAddressBystreetId();
+		if (null != memberAddressList&&!memberAddressList.isEmpty()){
+			for (MemberAddressBean memberAddressBean: memberAddressList) {
+				MemberAddress memberAddress = this.selectById(memberAddressBean.getId());
+				if(null != memberAddress){
+					memberAddress.setStreetId(Integer.parseInt(memberAddressBean.getStreetId()));
+					this.updateById(memberAddress);
+				}
+			}
+		}
+		return "操作成功";
 	}
 }

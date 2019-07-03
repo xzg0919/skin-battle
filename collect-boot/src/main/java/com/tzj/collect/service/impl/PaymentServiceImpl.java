@@ -123,29 +123,29 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     public static void main(String[] args) {
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
-        request.setBizContent("{" +
-                "\"out_biz_no\":\""+9978+"\"" +
-                //"\"order_id\":\"20160627110070001502260006780837\"" +
-                "  }");
-        AlipayFundTransOrderQueryResponse response = null;
-        try {
-            response = alipayClient.execute(request);
-        } catch (AlipayApiException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        if(response.isSuccess()){
-            System.out.println("调用成功");
-        } else {
-            System.out.println("调用失败");
-        }
-        System.out.println(response.getBody());
+//        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+//        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
+//        request.setBizContent("{" +
+//                "\"out_biz_no\":\""+9978+"\"" +
+//                //"\"order_id\":\"20160627110070001502260006780837\"" +
+//                "  }");
+//        AlipayFundTransOrderQueryResponse response = null;
+//        try {
+//            response = alipayClient.execute(request);
+//        } catch (AlipayApiException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        if(response.isSuccess()){
+//            System.out.println("调用成功");
+//        } else {
+//            System.out.println("调用失败");
+//        }
+//        System.out.println(response.getBody());
 
 //        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
 //        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
-//        String tradeNo = "2019051822001429961039969802";
+//        String tradeNo = "20190624174741561944";
 //        AlipayTradeQueryModel model = new AlipayTradeQueryModel();
 //        model.setOutTradeNo(tradeNo);
 //        model.setTradeNo(tradeNo);
@@ -163,6 +163,32 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 //            System.out.println("调用查询交易接口失败 : "+response.getBody());
 //        }
 //        System.out.println(response.getBody());
+
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+
+        String sn = "20190624174741561944";
+        String subject = "垃圾分类回收订单(收呗):" + sn;
+
+        model.setBody(subject);
+        model.setSubject(subject);
+        model.setOutTradeNo(sn);
+        model.setTimeoutExpress("15d");
+        ExtendParams extendParams = new ExtendParams();
+        extendParams.setSysServiceProviderId("2017011905224137");
+        model.setExtendParams(extendParams);
+        model.setTotalAmount("10");
+        model.setProductCode("QUICK_MSECURITY_PAY");
+        request.setBizModel(model);
+        request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay");
+        try {
+            //这里和普通的接口调用不同，使用的是sdkExecute
+            AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+            System.out.println(response.getBody());
+        } catch (AlipayApiException e) {
+            throw new ApiException("系统异常：" + e.getErrMsg());
+        }
     }
 
     /**

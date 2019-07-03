@@ -162,6 +162,13 @@ public class FileUploadServiceImpl implements FileUploadService {
            fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveLargeFile);
            fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveLargeFile);
            fileBean.setOriginal(fileUpload.getImageDomain()+"/"+saveLargeFile);
+
+            //上传到OSS后，删除临时文件
+            try{
+                tempFile.delete();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
            
            fileBeanList.add(fileBean);
     	}
@@ -285,6 +292,14 @@ public class FileUploadServiceImpl implements FileUploadService {
         fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveOriginalFile);
         fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveOriginalFile);
         fileBean.setOriginal(fileUpload.getImageDomain()+"/"+saveOriginalFile);
+
+        //上传到OSS后，删除临时文件
+        try{
+            tempFile.delete();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         return fileBean;
     }
 
