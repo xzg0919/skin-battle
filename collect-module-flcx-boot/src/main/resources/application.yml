@@ -51,8 +51,8 @@ spring:
         min-idle: 5       # 连接池中的最小空闲连接
   thymeleaf:
     cache: false
-    prefix: classpath:/templates/
-    suffix: .html
+    prefix: classpath:/template/
+    suffix: .ftl
     encoding: UTF-8
     mode: LEGACYHTML5
     servlet:
@@ -108,4 +108,4 @@ logging:
     org.springfromework.web: warn
     org.hibernate: error
     com.tzj: info
-#    com.tzj.collect.mapper: debug
+    com.tzj.collect.mapper: debug

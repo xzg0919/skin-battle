@@ -1,8 +1,10 @@
 package com.tzj.collect.flcx.controller;
 
 
-import com.tzj.collect.api.common.excel.ExcelUtils;
+import com.tzj.collect.api.commom.excel.ExcelUtils;
 import com.tzj.collect.service.FlcxTypeService;
+import com.tzj.module.easyopen.ApiConfig;
+import com.tzj.module.easyopen.support.ApiController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,7 +25,7 @@ import java.util.stream.Collectors;
  **/
 @Controller
 @RequestMapping("flcx")
-public class FlcxExcelController {
+public class FlcxExcelController  extends ApiController{
 
     @Resource
     private FlcxTypeService flcxTypeService;
@@ -50,5 +52,10 @@ public class FlcxExcelController {
         flcxTypeService.inputLinAndType(mapList);
         System.out.println(mapList.size());
         return null;
+    }
+
+    @Override
+    protected void initApiConfig(ApiConfig apiConfig) {
+
     }
 }

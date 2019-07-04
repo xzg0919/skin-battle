@@ -1,4 +1,4 @@
-package com.tzj.collect.api.common.excel;
+package com.tzj.collect.api.commom.excel;
 
 import java.io.Serializable;
 import java.util.List;

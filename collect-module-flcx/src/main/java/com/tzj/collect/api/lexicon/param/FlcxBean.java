@@ -26,4 +26,8 @@ public class FlcxBean {
     private String longitude;   //经度
 
     private String latitude;    //纬度
+
+    private String imageUrl;//图片链接地址
+
+    private String speechText;//语音文字
 }

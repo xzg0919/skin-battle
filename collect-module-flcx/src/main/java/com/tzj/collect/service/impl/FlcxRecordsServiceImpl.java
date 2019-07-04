@@ -43,7 +43,7 @@ public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxR
         List flcxRecordsList = null;
         if (null != object){
             flcxRecordsList = (List<Map<String, Object>>)object;
-            redisUtil.set("flcxTopFive", flcxRecordsList, 1);
+//            redisUtil.set("flcxTopFive", flcxRecordsList, 1);
         }else {
             String tableName = "flcx_records" + "_" + LocalDate.now().minusDays(1).toString().replace("-", "");
             //生成前一天查询量前五的数据放入缓存
@@ -52,7 +52,7 @@ public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxR
             }else {
                 flcxRecordsList = flcxRecordsMapper.topFive(tableName);
                 //放入缓存 12小时
-                redisUtil.set("flcxTopFive", flcxRecordsList, 12*60*60);
+                redisUtil.set("flcxTopFive", flcxRecordsList, 24*60*60-1);
             }
         }
         map.put("typeList", flcxRecordsList);

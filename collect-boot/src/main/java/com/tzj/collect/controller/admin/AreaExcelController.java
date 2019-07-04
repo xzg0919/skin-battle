@@ -1,7 +1,7 @@
 package com.tzj.collect.controller.admin;
 
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.common.excel.ExcelUtils;
+import com.tzj.collect.api.commom.excel.ExcelUtils;
 import com.tzj.collect.service.AreaService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

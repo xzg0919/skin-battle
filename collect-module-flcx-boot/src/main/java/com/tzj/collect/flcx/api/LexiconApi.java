@@ -1,10 +1,13 @@
 package com.tzj.collect.flcx.api;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.AlipayResponse;
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxRecords;
+import com.tzj.collect.service.AliFlcxService;
 import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxRecordsService;
 import com.tzj.collect.service.FlcxTypeService;
@@ -41,6 +44,10 @@ public class LexiconApi {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Resource
+    private AliFlcxService aliFlcxService;
+
+
     @Autowired
     private RedisUtil redisUtil;
 
@@ -59,18 +66,30 @@ public class LexiconApi {
     @Api(name = "lex.check", version = "1.0")
     @AuthIgnore
     public Map lexCheck(FlcxBean flcxBean)throws ApiException {
-        if (null == flcxBean.getName()){
-            return  flcxLexiconService.lexCheckByType(flcxBean);
+        final Map<String, Object>[] map = new Map[]{new HashMap<>()};
+        if(StringUtils.isNotBlank(flcxBean.getSpeechText()) || StringUtils.isNotBlank(flcxBean.getImageUrl())){
+            //语音搜索或者图片搜索
+            AlipayResponse alipayResponse = aliFlcxService.returnTypeByPicOrVoice( flcxBean.getImageUrl(), flcxBean.getSpeechText());
+            if(null != alipayResponse && alipayResponse.getBody().contains("key_words")){
+                List<Map<String, Object>> returnListMap = new ArrayList<>();
+                returnListMap = (List<Map<String, Object>>) ((Map<String, Object>) JSONObject.parse(alipayResponse.getBody())).get("key_words");
+                returnListMap.stream().forEach(returnList -> {
+                    flcxBean.setName(returnList.get("key_word").toString());
+                    map[0] = flcxLexiconService.lexCheckByType(flcxBean);
+                    if (!"empty".equals(map[0].get("msg"))){
+                        return;
+                    }
+                });
+            }
         }else if (StringUtils.isEmpty(flcxBean.getName())){
-            return new HashMap();
+            //根据typeId查询
+            return  flcxLexiconService.lexCheckByType(flcxBean);
+        }else {
+            //根据名称查询
+            map[0] = flcxLexiconService.lexCheck(flcxBean);
         }
-        Map map = flcxLexiconService.lexCheck(flcxBean);
-        if (StringUtils.isBlank(flcxBean.getName())){
-            //发送MQ消息
-            return map;
-        }
-        if (null != map && null != map.get("flcxRecords")){
-            FlcxRecords flcxRecords = (FlcxRecords) map.get("flcxRecords");
+        if (null != map[0] && null != map[0].get("flcxRecords")){
+            FlcxRecords flcxRecords = (FlcxRecords) map[0].get("flcxRecords");
             flcxBean.setLexicon(flcxBean.getName());
             flcxBean.setCity(flcxBean.getCity());
             flcxBean.setLexiconAfter(flcxRecords.getLexiconAfter());
@@ -78,7 +97,7 @@ public class LexiconApi {
         }
         //发送MQ消息
         rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
-        return map;
+        return map[0];
     }
     /** 大分类列表
       * @author sgmark@aliyun.com
@@ -118,6 +137,12 @@ public class LexiconApi {
     }
 
 
+    /** 关键字模糊查询
+      * @author sgmark@aliyun.com
+      * @date 2019/7/4 0004
+      * @param
+      * @return
+      */
     @Api(name = "keySearch", version = "1.0")
     @AuthIgnore
     public Map keySearch(FlcxBean flcxBean)throws ApiException {
@@ -136,4 +161,5 @@ public class LexiconApi {
     private static Integer comparingByValue(Map<String, Object> map){
         return (Integer) map.get("value");
     }
+
 }
