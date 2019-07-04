@@ -3,11 +3,7 @@ package com.tzj.collect.api.ali;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -73,6 +69,8 @@ public class OrderApi {
 	private CompanyCategoryService companyCategoryService;
 	@Autowired
 	private AreaService areaService;
+	@Autowired
+	private CompanyStreetHouseService companyStreetHouseService;
 	
 
 	/**
@@ -216,20 +214,28 @@ public class OrderApi {
     	Map<String,Object> resultMap = orderService.saveOrder(orderbean);
     	//钉钉消息赋值回收公司名称
 		Company company = companyService.selectById(companyId);
-		if(null != company){
-			//判断是否开启自动派单
-			if("1".equals(company.getIsOpenOrder())){
-				orderService.orderSendRecycleByOrderId((Integer) resultMap.get("id"));
-			}
-			orderbean.setCompanyName(company.getName());
-			orderbean.setDingDingUrl(company.getDingDingUrl());
-			if("操作成功".equals(resultMap.get("msg")+"")) {
-				if("true".equals(applicationInit.getIsDd())) {
-					//钉钉通知
-					asyncService.notifyDingDingOrderCreate(orderbean);
+			if(null != company){
+				//判断是否开启自动派单
+				try{
+					if("1".equals(company.getIsOpenOrder())){
+						orderService.orderSendRecycleByOrderId(Integer.parseInt(resultMap.get("id")+""));
+					}
+				}catch (Exception e){
+					e.printStackTrace();
+				}
+				orderbean.setCompanyName(company.getName());
+				orderbean.setDingDingUrl(company.getDingDingUrl());
+				try{
+					if("操作成功".equals(resultMap.get("msg")+"")) {
+						if("true".equals(applicationInit.getIsDd())) {
+							//钉钉通知
+							asyncService.notifyDingDingOrderCreate(orderbean);
+						}
+					}
+				}catch (Exception e){
+					e.printStackTrace();
 				}
 			}
-		}
     	try {
 			webSocketServer.sendInfo(companyId, "你有新订单了");
 		} catch (Exception e) {
@@ -330,13 +336,10 @@ public class OrderApi {
 		String level = "";
 		String areaId = memberAddress.getAreaId().toString();
 		//根据分类Id和小区Id查询所属企业
-		Company companys = priceService.selectCompany(category.getParentId(),communityId);
-		if(companys == null) {
+		companyId = companyStreetHouseService.selectStreetHouseceCompanyId(category.getParentId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
+		if(StringUtils.isBlank(companyId)) {
 			return "该区域暂无回收企业";
-		}else {
-			companyId = companys.getId().toString();
 		}
-		//Integer companyId = companyService.getCompanyIdByIds(orderbean.getCommunityId(),orderbean.getCategoryParentId());
 		orderbean.setCompanyId(Integer.parseInt(companyId));
 		orderbean.setLevel(level);
 		orderbean.setCommunityId(communityId);
@@ -351,16 +354,24 @@ public class OrderApi {
 		Company company = companyService.selectById(companyId);
 		if(null != company){
 			//判断是否开启自动派单
-			if("1".equals(company.getIsOpenOrder())){
-				orderService.orderSendRecycleByOrderId((Integer) resultMap.get("id"));
+			try{
+				if("1".equals(company.getIsOpenOrder())){
+					orderService.orderSendRecycleByOrderId(Integer.parseInt(resultMap.get("id")+""));
+				}
+			}catch (Exception e){
+				e.printStackTrace();
 			}
 			orderbean.setCompanyName(company.getName());
 			orderbean.setDingDingUrl(company.getDingDingUrl());
-			if("操作成功".equals(resultMap.get("msg")+"")) {
-				if("true".equals(applicationInit.getIsDd())) {
-					//钉钉通知
-					asyncService.notifyDingDingOrderCreate(orderbean);
+			try{
+				if("操作成功".equals(resultMap.get("msg")+"")) {
+					if("true".equals(applicationInit.getIsDd())) {
+						//钉钉通知
+						asyncService.notifyDingDingOrderCreate(orderbean);
+					}
 				}
+			}catch (Exception e){
+				e.printStackTrace();
 			}
 		}
 		try {
@@ -460,17 +471,25 @@ public class OrderApi {
 		//钉钉消息赋值回收公司名称
 		Company company = companyService.selectById(streeCompanyId);
 		if(null != company){
-			//判断是否开启自动派单
-			if("1".equals(company.getIsOpenOrder())){
-				orderService.tosendfiveKgOrder((Integer) resultMap.get("id"));
+			try{
+				//判断是否开启自动派单
+				if("1".equals(company.getIsOpenOrder())){
+					orderService.tosendfiveKgOrder(Integer.parseInt(resultMap.get("id")+"") );
+				}
+			}catch (Exception e){
+				e.printStackTrace();
 			}
 			orderbean.setCompanyName(company.getName());
 			orderbean.setDingDingUrl(company.getDingDingUrl());
-			if("操作成功".equals(resultMap.get("msg")+"")) {
-				if("true".equals(applicationInit.getIsDd())) {
-					//钉钉通知
-					asyncService.notifyDingDingOrderCreate(orderbean);
+			try{
+				if("操作成功".equals(resultMap.get("msg")+"")) {
+					if("true".equals(applicationInit.getIsDd())) {
+						//钉钉通知
+						asyncService.notifyDingDingOrderCreate(orderbean);
+					}
 				}
+			}catch (Exception e){
+				e.printStackTrace();
 			}
 		}
 		if("操作成功".equals(resultMap.get("msg")+"")){

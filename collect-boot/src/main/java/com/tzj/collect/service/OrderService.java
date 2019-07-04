@@ -310,4 +310,6 @@ public interface OrderService extends IService<Order> {
 	String orderSendRecycleByOrderId(Integer orderId);
 
 	Object tosendfiveKgOrder(Integer orderId);
+
+	Object selectOrderByMonth(String memberId);
 }

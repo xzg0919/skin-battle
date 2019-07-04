@@ -45,6 +45,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	private CompanyStreetBigService companyStreetBigService;
 	@Autowired
 	private CompanyStreetApplianceService companyStreetApplianceService;
+	@Autowired
+	private CompanyStreetHouseService companyStreetHouseService;
+	@Autowired
+	private RecyclersRangeHouseService recyclersRangeHouseService;
 
 	
 	/**
@@ -140,6 +144,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 			companyRange = companyStreetApplianceService.companyAreaRanges(companyId);
 			companyRecycleRange = recyclersRangeApplianceService.companyAreaRecyclerRanges(companyId);
 		}else if("2".equals(title)){
+//			companyRange = companyStreetHouseService.companyAreaRanges(companyId);
+//			companyRecycleRange = recyclersRangeHouseService.companyAreaRecyclerRanges(companyId);
 			companyRange = companyServiceService.companyAreaRanges(companyId);
 			companyRecycleRange = recyclersRangeHouseholdService.companyAreaRecyclerRanges(companyId);
 		}else if("4".equals(title)){
@@ -250,8 +256,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		Map<String,Object> bigRange = new HashMap<>();
 		String isOpen = "1";
 		applianceRange = companyStreetApplianceService.adminCompanyAreaRanges(companyId.toString());
-		houseRange = companyServiceService.companyAreaRanges(companyId.toString());
 		bigRange = companyStreetBigService.companyAreaRanges(companyId.toString());
+		houseRange = companyStreetHouseService.adminCompanyAreaRanges(companyId.toString());
 
 		applianceRange.put("isOpen", isOpen);
 		houseRange.put("isOpen", isOpen);

@@ -8,6 +8,7 @@ import com.taobao.api.ApiException;
 import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.ali.AmapApi;
 import com.tzj.collect.api.ali.param.AreaBean;
+import com.tzj.collect.api.ali.param.MemberAddressBean;
 import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.api.ali.result.AmapResult;
 import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
@@ -49,6 +50,10 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	private CommunityService communityService;
 	@Autowired
 	private CompanyServiceService companyServiceService;
+	@Autowired
+	private MemberAddressService memberAddressService;
+	@Autowired
+	private CompanyStreetHouseService companyStreetHouseService;
 	
 	@Override
 	public List<Area> getByArea(int level,String cityId) {
@@ -174,11 +179,12 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	@Override
 	public Object adminGetAreaRange(Integer companyId,Integer cityId,String title){
 		List<Map<String, Object>> resultList = null;
-		List<Map<String, Object>> streetList = null;
 		if ("1".equals(title)) {
 			resultList = mapper.adminGetApplianceAreaRange(companyId,cityId);
 		}else if("4".equals(title)){
 			resultList = mapper.adminGetBigAreaRange(companyId,cityId);
+		}else if("2".equals(title)){
+			resultList = mapper.adminGetHouseAreaRange(companyId,cityId);
 		}
 			return resultList;
 
@@ -190,6 +196,8 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 			streetList = mapper.adminGetApplianceStreetRange(companyId,areaId);
 		}else if ("4".equals(title)){
 			streetList = mapper.adminGetBigStreetRange(companyId,areaId);
+		}else if ("2".equals(title)){
+			streetList = mapper.adminGetHouseStreetRange(companyId,areaId);
 		}
 		return streetList;
 	}
@@ -228,6 +236,19 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 						}
 					}else {
 						companyStreetBigService.delete(new EntityWrapper<CompanyStreetBig>().eq("company_id",companyId).eq("street_id",areaBean.getStreeId()));
+					}
+				}else if("2".equals(recyclersServiceRangeBean.getTitle())){
+					if("0".equals(areaBean.getSaveOrDelete())){
+						CompanyStreetHouse companyStreetHouse = companyStreetHouseService.selectOne(new EntityWrapper<CompanyStreetHouse>().eq("street_id", areaBean.getStreeId()));
+						if(null == companyStreetHouse){
+							companyStreetHouse = new CompanyStreetHouse();
+							companyStreetHouse.setCompanyId(companyId);
+							companyStreetHouse.setStreetId(Integer.parseInt(areaBean.getStreeId()));
+							companyStreetHouse.setAreaId(Integer.parseInt(areaBean.getAreaId()));
+							companyStreetHouseService.insert(companyStreetHouse);
+						}
+					}else {
+						companyStreetHouseService.delete(new EntityWrapper<CompanyStreetHouse>().eq("company_id",companyId).eq("street_id",areaBean.getStreeId()));
 					}
 				}
 			}
@@ -289,7 +310,13 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 					companyServiceService.insert(companyServiceRange);
 				}
 			}
-			amap.getTowncode();
+
+			List<MemberAddressBean> memberAddressesList = memberAddressService.selectMemberAddressByCommunityId();
+			if(null != memberAddressesList&&!memberAddressesList.isEmpty()){
+				for (MemberAddressBean memberAddressBean:memberAddressesList){
+					memberAddressService.updateMemberAddress(memberAddressBean.getId(),memberAddressBean.getCommunityId() );
+				}
+			}
 
 		}
 		return "操作成功";

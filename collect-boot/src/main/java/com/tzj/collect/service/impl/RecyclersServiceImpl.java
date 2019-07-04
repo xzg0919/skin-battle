@@ -78,6 +78,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 	private RecyclerCompanyService recyclerCompanyService;
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private RecyclersRangeHouseService recyclersRangeHouseService;
     /**
      * 根据手机号查询回收人员
      * @param mobile
@@ -329,24 +331,37 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
                         recyclersRangeApplianceService.delete(new EntityWrapper<RecyclersRangeAppliance>().eq("recyclers_id",recyclersServiceRangeBean.getRecycleId()).eq("company_id",companyId).eq("street_id",areaBean.getStreeId()).eq("area_id",areaBean.getAreaId()));
                     }
                 }else if("2".equals(recyclersServiceRangeBean.getTitle())){
-                    List<CommunityBean> communityIdList = areaBean.getCommunityIdList();
-                    for (CommunityBean communityBean:communityIdList){
-                        if(null != communityBean){
-                            if("0".equals(communityBean.getSaveOrDelete())){
-                                RecyclersRangeHousehold recyclersRangeHouseholds = recyclersRangeHouseholdService.selectOne(new EntityWrapper<RecyclersRangeHousehold>().eq("recyclers_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("community_id", communityBean.getCommunityId()).eq("street_id", areaBean.getStreeId()));
-                                if(null == recyclersRangeHouseholds){
-                                    RecyclersRangeHousehold recyclersRangeHousehold = new RecyclersRangeHousehold();
-                                    recyclersRangeHousehold.setCompanyId(companyId);
-                                    recyclersRangeHousehold.setRecyclersId(Integer.parseInt(recyclersServiceRangeBean.getRecycleId()));
-                                    recyclersRangeHousehold.setStreetId(Integer.parseInt(areaBean.getStreeId()));
-                                    recyclersRangeHousehold.setCommunityId(Integer.parseInt(communityBean.getCommunityId()));
-                                    recyclersRangeHouseholdService.insert(recyclersRangeHousehold);
-                                }
-                            }else {
-                                recyclersRangeHouseholdService.delete(new EntityWrapper<RecyclersRangeHousehold>().eq("recyclers_id",recyclersServiceRangeBean.getRecycleId()).eq("company_id",companyId).eq("community_id",communityBean.getCommunityId()).eq("street_id",areaBean.getStreeId()));
-                            }
-                        }
-                    }
+//                    List<CommunityBean> communityIdList = areaBean.getCommunityIdList();
+//                    for (CommunityBean communityBean:communityIdList){
+//                        if(null != communityBean){
+//                            if("0".equals(communityBean.getSaveOrDelete())){
+//                                RecyclersRangeHousehold recyclersRangeHouseholds = recyclersRangeHouseholdService.selectOne(new EntityWrapper<RecyclersRangeHousehold>().eq("recyclers_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("community_id", communityBean.getCommunityId()).eq("street_id", areaBean.getStreeId()));
+//                                if(null == recyclersRangeHouseholds){
+//                                    RecyclersRangeHousehold recyclersRangeHousehold = new RecyclersRangeHousehold();
+//                                    recyclersRangeHousehold.setCompanyId(companyId);
+//                                    recyclersRangeHousehold.setRecyclersId(Integer.parseInt(recyclersServiceRangeBean.getRecycleId()));
+//                                    recyclersRangeHousehold.setStreetId(Integer.parseInt(areaBean.getStreeId()));
+//                                    recyclersRangeHousehold.setCommunityId(Integer.parseInt(communityBean.getCommunityId()));
+//                                    recyclersRangeHouseholdService.insert(recyclersRangeHousehold);
+//                                }
+//                            }else {
+//                                recyclersRangeHouseholdService.delete(new EntityWrapper<RecyclersRangeHousehold>().eq("recyclers_id",recyclersServiceRangeBean.getRecycleId()).eq("company_id",companyId).eq("community_id",communityBean.getCommunityId()).eq("street_id",areaBean.getStreeId()));
+//                            }
+//                        }
+//                    }
+					if("0".equals(areaBean.getSaveOrDelete())){
+						RecyclersRangeHouse recyclersRangeHouse = recyclersRangeHouseService.selectOne(new EntityWrapper<RecyclersRangeHouse>().eq("recyclers_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("street_id", areaBean.getStreeId()).eq("area_id", areaBean.getAreaId()));
+						if(null == recyclersRangeHouse){
+							recyclersRangeHouse = new RecyclersRangeHouse();
+							recyclersRangeHouse.setCompanyId(companyId);
+							recyclersRangeHouse.setRecyclersId(Integer.parseInt(recyclersServiceRangeBean.getRecycleId()));
+							recyclersRangeHouse.setStreetId(Integer.parseInt(areaBean.getStreeId()));
+							recyclersRangeHouse.setAreaId(areaBean.getAreaId());
+							recyclersRangeHouseService.insert(recyclersRangeHouse);
+						}
+					}else {
+						recyclersRangeHouseService.delete(new EntityWrapper<RecyclersRangeHouse>().eq("recyclers_id",recyclersServiceRangeBean.getRecycleId()).eq("company_id",companyId).eq("street_id",areaBean.getStreeId()).eq("area_id",areaBean.getAreaId()));
+					}
                 }else if("4".equals(recyclersServiceRangeBean.getTitle())){
                     if("0".equals(areaBean.getSaveOrDelete())){
                         RecyclersRangeBig recyclersRangeBigs = recyclersRangeBigService.selectOne(new EntityWrapper<RecyclersRangeBig>().eq("recyclers_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("street_id", areaBean.getStreeId()).eq("area_id", areaBean.getAreaId()));
@@ -406,9 +421,15 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 			resultMap.put("areaList",areaList);
 			return resultMap;
 		}else if("2".equals(title)){
-			areaList = ( List<Map<String,Object>>)recyclersRangeHouseholdService.getStreeRecyclersRange(areaId, recycleId, companyId.toString());
+//			areaList = ( List<Map<String,Object>>)recyclersRangeHouseholdService.getStreeRecyclersRange(areaId, recycleId, companyId.toString());
+//			for (Map<String, Object> map:areaList){
+//				communityList = recyclersRangeHouseholdService.getCommunityRecyclersRange(map.get("id").toString(), recycleId, companyId.toString());
+//				map.put("communityList",communityList);
+//			}
+//			resultMap.put("areaList",areaList);
+			areaList = ( List<Map<String,Object>>)recyclersRangeHouseService.getStreeRecyclersRange(areaId, recycleId, companyId.toString());
 			for (Map<String, Object> map:areaList){
-				communityList = recyclersRangeHouseholdService.getCommunityRecyclersRange(map.get("id").toString(), recycleId, companyId.toString());
+				communityList = recyclersRangeHouseService.getCommunityRecyclersRange(map.get("id").toString(), recycleId, companyId.toString());
 				map.put("communityList",communityList);
 			}
 			resultMap.put("areaList",areaList);
@@ -484,7 +505,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper,Recyclers>
 		if("4".equals(recyclersServiceRangeBean.getTitle())){
 			areaList = ( List<Map<String,Object>>)recyclersRangeBigService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
 		}else if("2".equals(recyclersServiceRangeBean.getTitle())){
-			areaList = ( List<Map<String,Object>>)recyclersRangeHouseholdService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
+			//areaList = ( List<Map<String,Object>>)recyclersRangeHouseholdService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
+			areaList = ( List<Map<String,Object>>)recyclersRangeHouseService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
 		}else if ("1".equals(recyclersServiceRangeBean.getTitle())){
 			areaList = ( List<Map<String,Object>>)recyclersRangeApplianceService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
 		}

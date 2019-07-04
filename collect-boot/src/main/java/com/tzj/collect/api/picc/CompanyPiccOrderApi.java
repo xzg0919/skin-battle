@@ -1,7 +1,7 @@
 package com.tzj.collect.api.picc;
 
 import com.tzj.collect.api.ali.param.PiccOrderBean;
-import com.tzj.collect.common.redis.RedisUtil;
+import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.PiccCompanyUtils;
 import com.tzj.collect.entity.PiccCompany;
 import com.tzj.collect.entity.PiccOrder;

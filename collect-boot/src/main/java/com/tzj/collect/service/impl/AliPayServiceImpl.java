@@ -228,66 +228,25 @@ public class AliPayServiceImpl implements AliPayService{
     }
 
     public static void main(String[] args) throws Exception{
-        String targetCardNo = "collect00000000000000771466";
-        Date openDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2019-02-25 17:11:05");
-        String point = "20";
-        String vip = null;
-        String appId = "2018060660292753";
-        String bizContent = "{";
-        String usefullDate[] = getUsefullDates(openDate);
-        if(null != point && point.contains("-"))
-        {
-            point = "0";
-        }
-        bizContent = bizContent
-                + "\"target_card_no\":\""
-                + targetCardNo
-                + "\","
-                + "\"target_card_no_type\":\"BIZ_CARD\","
-                + "\"occur_time\":\""
-                + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                + "\","
-                + "\"card_info\":{"
-                + "\"open_date\":\""
-                + usefullDate[0]
-                + "\","
-                + "\"valid_date\":\""
-                + usefullDate[1]
-                + "\",";
-        if(!StringUtils.isBlank(vip))
-        {
-            bizContent = bizContent
-                    + "\"level\":\""
-                    + vip
-                    + "\",";
-        }
-        bizContent = bizContent
-                + "\"point\":\""
-                + point
-                + "\","
-                + "\"balance\":\"0\""
-                + "},"
-                + "\"ext_info\":\"\\\"\\\"\""
-                + "}";
-        try
-        {
-            AlipayMarketingCardUpdateRequest request = new AlipayMarketingCardUpdateRequest();
-            request.setBizContent(bizContent);
-            AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
-            AlipayMarketingCardUpdateResponse response = alipayClient.execute(request);
-            if(!response.isSuccess())
-            {
-                System.out.println("更新会员卡积分失败");
-                DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                        ,Thread.currentThread().getStackTrace()[1].getMethodName(),"更新会员卡积分失败",
-                        RocketMqConst.DINGDING_ERROR,response.getBody());
-            }else {
-                System.out.println("更新会员卡积分成功");
-            }
-        }
-        catch (AlipayApiException e)
-        {
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, "2018060660292753", AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+        AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
+        request.setCode("c5de4d7a5b4642129b326e0aab49OX50");
+        request.setGrantType("authorization_code");
+        AlipaySystemOauthTokenResponse response=null;
+        try {
+            response = alipayClient.execute(request);
+            //用户的授权的token
+            System.out.println(response.getAccessToken());
+            //用户的唯一userId
+            System.out.println(response.getUserId());
+        } catch (AlipayApiException e) {
+            //处理异常
             e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调用用户查询token接口成功");
+        } else {
+            System.out.println("调用用户查询token接口失败");
         }
     }
     
