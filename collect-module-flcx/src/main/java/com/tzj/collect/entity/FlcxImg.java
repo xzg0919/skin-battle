@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @create 2019-06-17 16:13
  **/
 @TableName("flcx_img")
-public class FlcxImg implements Serializable {
+public class FlcxImg extends DataEntity<Long>{
 
 
 

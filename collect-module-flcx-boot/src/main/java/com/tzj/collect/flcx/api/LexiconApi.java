@@ -1,20 +1,20 @@
 package com.tzj.collect.flcx.api;
 
 
-import com.alibaba.fastjson.JSONObject;
-import com.alipay.api.AlipayResponse;
+import com.alipay.api.domain.KeyWordDTO;
+import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxRecords;
-import com.tzj.collect.service.AliFlcxService;
-import com.tzj.collect.service.FlcxLexiconService;
-import com.tzj.collect.service.FlcxRecordsService;
-import com.tzj.collect.service.FlcxTypeService;
+import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
+import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
+import com.tzj.module.easyopen.file.FileBase64Param;
+import com.tzj.module.easyopen.file.FileBean;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +34,16 @@ public class LexiconApi {
 
     @Resource
     private FlcxLexiconService flcxLexiconService;
-
     @Resource
     private FlcxTypeService flcxTypeService;
-
     @Resource
     private FlcxRecordsService flcxRecordsService;
-
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
     @Resource
     private AliFlcxService aliFlcxService;
-
+    @Resource
+    private FlcxFileUploadService fileUploadService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -66,16 +63,27 @@ public class LexiconApi {
     @Api(name = "lex.check", version = "1.0")
     @AuthIgnore
     public Map lexCheck(FlcxBean flcxBean)throws ApiException {
+        Boolean isAr = false;
+        String imageUrl = "";
         final Map<String, Object>[] map = new Map[]{new HashMap<>()};
-        if(StringUtils.isNotBlank(flcxBean.getSpeechText()) || StringUtils.isNotBlank(flcxBean.getImageUrl())){
+        if(StringUtils.isNotBlank(flcxBean.getSpeechText()) || StringUtils.isNotBlank(flcxBean.getImageUrl()) || StringUtils.isNotBlank(flcxBean.getImageUrlAR())){
+            if (StringUtils.isNotBlank(flcxBean.getImageUrl())){
+                imageUrl = flcxBean.getImageUrl();
+                isAr = false;
+            }else if (StringUtils.isNotBlank(flcxBean.getImageUrlAR())){
+                imageUrl = flcxBean.getImageUrlAR();
+                isAr = true;
+            }
             //语音搜索或者图片搜索
-            AlipayResponse alipayResponse = aliFlcxService.returnTypeByPicOrVoice( flcxBean.getImageUrl(), flcxBean.getSpeechText());
-            if(null != alipayResponse && alipayResponse.getBody().contains("key_words")){
-                List<Map<String, Object>> returnListMap = new ArrayList<>();
-                returnListMap = (List<Map<String, Object>>) ((Map<String, Object>) JSONObject.parse(alipayResponse.getBody())).get("key_words");
-                returnListMap.stream().forEach(returnList -> {
-                    flcxBean.setName(returnList.get("key_word").toString());
-                    map[0] = flcxLexiconService.lexCheckByType(flcxBean);
+            AlipayIserviceCognitiveClassificationWasteQueryResponse alipayResponse = aliFlcxService.returnTypeByPicOrVoice(imageUrl, flcxBean.getSpeechText());
+            if(null != alipayResponse && null != alipayResponse.getKeyWords()){
+                List<KeyWordDTO> returnListMap = alipayResponse.getKeyWords();
+                Boolean finalIsAr = isAr;
+                returnListMap.stream().sorted(Comparator.comparing(KeyWordDTO::getScore).reversed()).forEach(returnList -> {
+                    flcxBean.setName(returnList.getKeyWord());
+                    Map returnMap = flcxLexiconService.lexCheckByType(flcxBean);
+                    returnMap.put("isAr", finalIsAr);
+                    map[0] = returnMap;
                     if (!"empty".equals(map[0].get("msg"))){
                         return;
                     }
@@ -160,6 +168,19 @@ public class LexiconApi {
     }
     private static Integer comparingByValue(Map<String, Object> map){
         return (Integer) map.get("value");
+    }
+
+
+    /**
+     * 上传文件0
+     */
+    @Api(name = "util.uploadImage", version = "1.0")
+    @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
+    @AuthIgnore
+    public List<FileBean> uploadImage(FileBase64Param file){
+        List<FileBase64Param> files=new ArrayList<>();
+        files.add(file);
+        return fileUploadService.uploadImage(files);
     }
 
 }

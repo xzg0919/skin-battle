@@ -55,7 +55,10 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
             }else {
                 flcxLexicon.setRecover("0");
             }
+
             try {
+                flcxLexicon.setCreateDate(new Date());
+                flcxLexicon.setUpdateDate(new Date());
                 flcxLexiconMapper.insert(flcxLexicon);
             }catch (Exception e){
                 e.printStackTrace();
@@ -69,6 +72,8 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
                         FlcxLexiconType flcxLexiconType = new FlcxLexiconType();
                         flcxLexiconType.setLexiconId(flcxLexicon.getId());
                         flcxLexiconType.setTypeId(flcxType.getId());
+                        flcxLexiconType.setCreateDate(new Date());
+                        flcxLexiconType.setUpdateDate(new Date());
                         flcxLexiconTypeMapper.insert(flcxLexiconType);
                     }
                 });

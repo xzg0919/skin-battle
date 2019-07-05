@@ -12,7 +12,7 @@
     <script src="/js/index.js"></script>
 </head>
 <body>
-<form action="http://localhost:9090/flcx/inportxls" method="post" enctype="multipart/form-data">
+<form action="http://localhost:9003/flcx/inportxls" method="post" enctype="multipart/form-data">
      <input type="file" name="file" /></br>
      <input type="submit"  value="保存"/>
 </form>

@@ -30,7 +30,7 @@ public class FlcxJob {
     /**
      * 定时任务。（每天一点）
      */
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 40 0 * * ?")
     public void flcxExecute(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new flcxThread(flcxRecordsService, redisUtil)));
     }

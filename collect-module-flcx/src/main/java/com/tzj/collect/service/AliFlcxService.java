@@ -1,11 +1,11 @@
 package com.tzj.collect.service;
 
-import com.alipay.api.AlipayResponse;
+import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
 
 /**
  * @author sgmark
  * @create 2019-07-04 15:21
  **/
 public interface AliFlcxService {
-    AlipayResponse returnTypeByPicOrVoice(String picUrl, String voiceString);
+     AlipayIserviceCognitiveClassificationWasteQueryResponse returnTypeByPicOrVoice(String picUrl, String voiceString);
 }

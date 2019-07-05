@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @create 2019-06-17 16:13
  **/
 @TableName("flcx_lexicon")
-public class FlcxLexicon implements Serializable {
+public class FlcxLexicon extends DataEntity<Long> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
 

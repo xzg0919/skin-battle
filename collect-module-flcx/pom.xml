@@ -60,9 +60,9 @@
         </dependency>
         <!-- 官方maven库 -->
         <dependency>
-            <groupId>com.alipay.sdk</groupId>
-            <artifactId>alipay-sdk-java</artifactId>
-            <version>3.7.73.ALL</version>
+            <groupId>com.alipay</groupId>
+            <artifactId>alipay-sdk</artifactId>
+            <version>3.7.118.ALL</version>
         </dependency>
     </dependencies>
 </project>

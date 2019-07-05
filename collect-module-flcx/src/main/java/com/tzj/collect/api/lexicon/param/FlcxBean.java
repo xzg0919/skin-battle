@@ -29,5 +29,7 @@ public class FlcxBean {
 
     private String imageUrl;//图片链接地址
 
+    private String imageUrlAR;//Ar图片地址
+
     private String speechText;//语音文字
 }

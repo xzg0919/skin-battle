@@ -15,7 +15,7 @@ import java.util.Date;
  * @create 2019-06-17 16:13
  **/
 @TableName("flcx_records")
-public class FlcxRecords implements Serializable {
+public class FlcxRecords extends DataEntity<Long>{
     @TableId(value = "id", type = IdType.AUTO)
     private Long id ;
 
