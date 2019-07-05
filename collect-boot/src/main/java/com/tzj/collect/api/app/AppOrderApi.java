@@ -2,8 +2,8 @@ package com.tzj.collect.api.app;
 
 import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.app.result.AppOrderResult;
+import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
-import com.tzj.collect.common.redis.RedisUtil;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;

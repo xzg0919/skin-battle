@@ -26,12 +26,13 @@ import com.tzj.collect.api.business.param.BOrderBean;
 import com.tzj.collect.api.business.param.CompanyBean;
 import com.tzj.collect.api.business.result.ApiUtils;
 import com.tzj.collect.api.business.result.CancelResult;
+import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.api.common.async.AsyncRedis;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.AlipayConst;
-import com.tzj.collect.common.redis.RedisUtil;
 import com.tzj.collect.common.util.PushUtils;
+import com.tzj.collect.common.util.SnUtils;
 import com.tzj.collect.common.util.ToolUtils;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
@@ -2703,16 +2704,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 	@Override
 	public String isUserOrder(String memberId){
-		List<Order> initOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "0,1").eq("is_read", 0));
-		List<Order> alreadyOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 2).eq("is_read", 0));
-		List<Order> completeOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 3).eq("is_read", 0));
-		List<Order> cancleOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "4,5").eq("is_read", 0));
-		Map<String,Object> orderMap = new HashMap<>();
-		orderMap.put("initOrder",initOrder.size());
-		orderMap.put("alreadyOrder",alreadyOrder.size());
-		orderMap.put("completeOrder",completeOrder.size());
-		orderMap.put("cancleOrder",cancleOrder.size());
-		return JSON.toJSONString(orderMap);
+//		List<Order> initOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "0,1").eq("is_read", 0));
+//		List<Order> alreadyOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 2).eq("is_read", 0));
+//		List<Order> completeOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 3).eq("is_read", 0));
+//		List<Order> cancleOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "4,5").eq("is_read", 0));
+//		Map<String,Object> orderMap = new HashMap<>();
+//		orderMap.put("initOrder",initOrder.size());
+//		orderMap.put("alreadyOrder",alreadyOrder.size());
+//		orderMap.put("completeOrder",completeOrder.size());
+//		orderMap.put("cancleOrder",cancleOrder.size());
+//		return JSON.toJSONString(orderMap);
+		return null;
 	}
 
 	@Override
@@ -2864,6 +2866,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			Order order = this.selectById(orderId);
 			order.setRecyclerId(sendOrderRecyclersList.get(0).getId().intValue());
 			order.setStatus(OrderType.TOSEND);
+			order.setDistributeTime(new Date());
 			this.updateById(order);
 		}
 		return "操作成功";
@@ -2906,6 +2909,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			e.printStackTrace();
 		}
 		return "操作成功";
+	}
+
+	@Override
+	public Object selectOrderByMonth(String memberId){
+		String startMonth = SnUtils.getNowYearMonth()+"-01 00:00:01";
+		String endMonth = SnUtils.getNowYearMonth()+"-31 23:59:59";
+		return null;
 	}
 
 }

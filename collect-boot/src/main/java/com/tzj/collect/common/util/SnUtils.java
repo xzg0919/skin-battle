@@ -50,5 +50,11 @@ public class SnUtils {
 		return tel;
 	}
 
+	// 获取本月是哪一月
+	public static String getNowYearMonth() {
+		Date date = new Date();
+		String dates = new SimpleDateFormat("yyyy-MM").format(date);
+		return dates;
+	}
 	
 }

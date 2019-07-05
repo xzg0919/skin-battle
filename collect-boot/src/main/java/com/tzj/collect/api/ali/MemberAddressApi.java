@@ -41,6 +41,8 @@ public class MemberAddressApi {
 	private CompanyStreetBigService companyStreetBigService;
 	@Autowired
 	private CompanyStreetApplianceService companyStreetApplianceService;
+	@Autowired
+	private CompanyStreetHouseService companyStreetHouseService;
 
 	/**
      * 保存用户的新增地址/修改后保存的地址
@@ -186,8 +188,9 @@ public class MemberAddressApi {
 		}
 		//判断地址是否有公司回收六废
 		//根据分类Id和小区Id查询所属企业
-		Company companys = companyCategoryService.selectCompany(25,communityId);
-		if(null != companys){
+		String companyId = companyStreetHouseService.selectStreetHouseceCompanyId(25, memberAddress.getStreetId(), memberAddress.getCommunityId());
+		//Company companys = companyCategoryService.selectCompany(25,communityId);
+		if(!StringUtils.isBlank(companyId)){
 			memberAddress.setIsHousehold("Y");
 		}else{
 			memberAddress.setIsHousehold("N");

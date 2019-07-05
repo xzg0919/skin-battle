@@ -146,7 +146,7 @@
 			INNER JOIN sb_recyclers_range_appliance c ON f.street_id = c.street_id AND f.company_id = c.company_id
 		</if>
 		<if test="title == 2">
-			INNER JOIN sb_recyclers_range_household c ON f.street_id = c.street_id AND f.company_id = c.company_id and c.community_id = f.community_id
+			INNER JOIN sb_recyclers_range_house c ON f.street_id = c.street_id AND f.company_id = c.company_id
 		</if>
 		<if test="title == 4">
 			INNER JOIN sb_recyclers_range_big c ON f.street_id = c.street_id AND f.company_id = c.company_id
@@ -172,7 +172,7 @@
 			INNER JOIN sb_recyclers_range_appliance c ON f.street_id = c.street_id AND f.company_id = c.company_id
 		</if>
 		<if test="title == 2">
-			INNER JOIN sb_recyclers_range_household c ON f.street_id = c.street_id AND f.company_id = c.company_id and c.community_id = f.community_id
+			INNER JOIN sb_recyclers_range_house c ON f.street_id = c.street_id AND f.company_id = c.company_id
 		</if>
 		<if test="title == 4">
 			INNER JOIN sb_recyclers_range_big c ON f.street_id = c.street_id AND f.company_id = c.company_id
