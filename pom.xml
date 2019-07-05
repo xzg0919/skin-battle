@@ -171,6 +171,14 @@
             </dependency>
             <!-- 连接池 -->
 
+            <!-- alipay-sdk -->
+            <dependency>
+                <groupId>com.alipay</groupId>
+                <artifactId>alipay-sdk</artifactId>
+                <version>3.7.118.ALL</version>
+            </dependency>
+            <!-- alipay-sdk -->
+
         </dependencies>
     </dependencyManagement>
 
