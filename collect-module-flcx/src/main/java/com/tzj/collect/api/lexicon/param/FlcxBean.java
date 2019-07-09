@@ -41,4 +41,6 @@ public class FlcxBean {
     private String feedbackRubbish;// 反馈名称
 
     private String actionType;//反馈结果
+
+    private  PageBean pageBean;
 }

@@ -1,8 +1,15 @@
 package com.tzj.collect.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.tzj.collect.api.lexicon.param.FlcxEggshellBean;
 import com.tzj.collect.entity.FlcxEggshell;
 import com.tzj.collect.entity.FlcxLexiconType;
+import com.tzj.module.api.annotation.Api;
+import com.tzj.module.easyopen.exception.ApiException;
+
+import java.util.Map;
 
 /**
   * @author sgmark@aliyun.com
@@ -11,4 +18,51 @@ import com.tzj.collect.entity.FlcxLexiconType;
   * @return 
   */
 public interface FlcxEggshellService extends IService<FlcxEggshell> {
+
+    /**
+     * 根据关键字搜索彩蛋 支持模糊查询
+     * @param flcxEggshellBean
+     * @return
+     * @throws ApiException
+     */
+    @DS("slave")
+    public Page<FlcxEggshell> searchEggshellByKey(FlcxEggshellBean flcxEggshellBean);
+
+
+    /**
+     * 新增彩蛋
+     * @param flcxEggshellBean
+     * @return
+     * @throws ApiException
+     */
+    public Map addEggShell (FlcxEggshellBean flcxEggshellBean);
+
+    /**
+     * 新增彩蛋
+     * @param flcxEggshellBean
+     * @return
+     * @throws ApiException
+     */
+    @DS("slave")
+    public boolean isExistEggShell (FlcxEggshellBean flcxEggshellBean);
+
+
+    /**
+     * 修改彩蛋
+     * @param flcxEggshellBean
+     * @return
+     * @throws ApiException
+     */
+    public Map updateEggShell (FlcxEggshellBean flcxEggshellBean);
+
+
+    /**
+     * 删除彩蛋
+     * @param flcxEggshellBean
+     * @return
+     * @throws ApiException
+     */
+    public Map deleteEggShell (FlcxEggshellBean flcxEggshellBean);
+
+
 }

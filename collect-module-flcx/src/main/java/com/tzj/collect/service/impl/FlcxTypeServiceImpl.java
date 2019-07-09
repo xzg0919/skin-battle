@@ -3,6 +3,7 @@ package com.tzj.collect.service.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.api.lexicon.param.FlcxTypeBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxLexiconType;
 import com.tzj.collect.entity.FlcxType;
@@ -11,8 +12,14 @@ import com.tzj.collect.mapper.FlcxLexiconTypeMapper;
 import com.tzj.collect.mapper.FlcxTypeMapper;
 import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxTypeService;
+import com.tzj.module.api.annotation.Api;
+import com.tzj.module.api.annotation.AuthIgnore;
+import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.easyopen.exception.ApiException;
+import org.apache.poi.util.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -81,5 +88,47 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
         });
     }
 
+
+
+    /**
+     * 根据层级获取该层级的所有分类
+     * @param typeBean
+     * @return
+     * @throws ApiException
+     */
+    @Override
+    public Map listAllByType(FlcxTypeBean typeBean){
+        //默认返回第一层级别
+        if(StringUtils.isEmpty(typeBean.getLevel())){
+            return typeList();
+        }
+        //具体返回某一个层级的所有类型
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("typeList", flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", typeBean.getLevel()).eq("level_", 0).eq("parent_id", 0)));
+        return map;
+    }
+
+
+    /**
+     * 根据分类上级id查询 所有子分类
+     * @param typeBean
+     * @return
+     * @throws ApiException
+     */
+    @Override
+    public Map findTypeByParent(FlcxTypeBean typeBean){
+        //具体返回某一个层级的所有类型
+        HashMap<String, Object> map = new HashMap<>();
+
+        //默认返回第一层级别
+        if(StringUtils.isEmpty(typeBean.getParentId())){
+            map.put("msg","error");
+            return map;
+        }
+        map.put("typeList", flcxTypeMapper.selectList
+                (new EntityWrapper<FlcxType>().eq("del_flag", 0).
+                        eq("parent_id", typeBean.getParentId())));
+        return map;
+    }
 
 }
