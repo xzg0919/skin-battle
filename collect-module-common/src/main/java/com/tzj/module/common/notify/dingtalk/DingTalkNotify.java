@@ -62,14 +62,16 @@ public class DingTalkNotify {
         at.put("isAtAll",atAll);
         message.put("at", at);
 
-        try {
-            Response response = FastHttpClient.post().url(webhook).addHeader("Content-Type", "application/json").body(JSON.toJSONString(message)).build().execute();
-            String resultJson = response.body().string();
+        new Thread(() -> {
+            try {
+                Response response = FastHttpClient.post().url(webhook).addHeader("Content-Type", "application/json").body(JSON.toJSONString(message)).build().execute();
+                String resultJson = response.body().string();
 
-            logger.info("钉钉：" + resultJson);
-        } catch (Exception e) {
-            logger.info("钉钉消息发送异常:" + e.getMessage());
-        }
+                logger.info("钉钉：" + resultJson);
+            } catch (Exception e) {
+                logger.info("钉钉消息发送异常:" + e.getMessage());
+            }
+        });
     }
 
 
