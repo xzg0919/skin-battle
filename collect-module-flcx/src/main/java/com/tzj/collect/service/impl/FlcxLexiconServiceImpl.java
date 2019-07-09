@@ -11,6 +11,7 @@ import com.tzj.collect.entity.FlcxRecords;
 import com.tzj.collect.mapper.FlcxLexiconMapper;
 import com.tzj.collect.service.FlcxEggshellService;
 import com.tzj.collect.service.FlcxLexiconService;
+import com.tzj.collect.service.FlcxRecordsService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,8 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
     private FlcxLexiconMapper flcxLexiconMapper;
     @Resource
     private FlcxEggshellService flcxEggshellService;
+    @Resource
+    private FlcxRecordsService flcxRecordsService;
     @Autowired
     private RedisUtil redisUtil;
 
@@ -119,7 +122,12 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         flcxEggshellList.stream().forEach(flcxEggshell -> {
             redisUtil.set(flcxEggshell.getLexicon(), 1);
         });
-        System.out.println();
+        List<Map<String, Object>> mapList = flcxRecordsService.selectRecordsCountList();
+        //记录昨天查询总数放入redis
+        mapList.stream().forEach(lists -> {
+            redisUtil.set(lists.get("name_").toString(), lists.get("count_"));
+        });
+        System.out.println("跟新完成");
         return map;
     }
 

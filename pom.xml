@@ -178,7 +178,6 @@
                 <version>3.7.119.ALL</version>
             </dependency>
             <!-- alipay-sdk -->
-
         </dependencies>
     </dependencyManagement>
 

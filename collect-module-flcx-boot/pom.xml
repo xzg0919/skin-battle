@@ -140,7 +140,10 @@
             <groupId>com.tzj</groupId>
             <artifactId>collect-module-common</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.alipay</groupId>
+            <artifactId>alipay-sdk</artifactId>
+        </dependency>
 
     </dependencies>
 

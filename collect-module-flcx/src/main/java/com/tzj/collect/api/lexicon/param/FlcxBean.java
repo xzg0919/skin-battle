@@ -1,6 +1,7 @@
 package com.tzj.collect.api.lexicon.param;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author sgmark
@@ -32,4 +33,12 @@ public class FlcxBean {
     private String imageUrlAR;//Ar图片地址
 
     private String speechText;//语音文字
+
+    private MultipartFile headImg;//图片文件
+
+    private String traceId;//反馈id
+
+    private String feedbackRubbish;// 反馈名称
+
+    private String actionType;//反馈结果
 }

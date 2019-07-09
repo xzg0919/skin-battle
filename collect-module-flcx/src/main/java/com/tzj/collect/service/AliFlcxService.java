@@ -1,5 +1,6 @@
 package com.tzj.collect.service;
 
+import com.alipay.api.response.AlipayIserviceCognitiveClassificationFeedbackSyncResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
 
 /**
@@ -8,4 +9,6 @@ import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryRe
  **/
 public interface AliFlcxService {
      AlipayIserviceCognitiveClassificationWasteQueryResponse returnTypeByPicOrVoice(String picUrl, String voiceString);
+
+    AlipayIserviceCognitiveClassificationFeedbackSyncResponse lexCheckFeedBack(String traceId, String imageUrl, String feedbackRubbish, String actionType);
 }

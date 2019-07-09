@@ -2,6 +2,7 @@ package com.tzj.collect.flcx.api;
 
 
 import com.alipay.api.domain.KeyWordDTO;
+import com.alipay.api.response.AlipayIserviceCognitiveClassificationFeedbackSyncResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.api.lexicon.param.FlcxBean;
@@ -13,7 +14,6 @@ import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
-import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -74,20 +74,35 @@ public class LexiconApi {
                 imageUrl = flcxBean.getImageUrlAR();
                 isAr = true;
             }
+            //语音先经过自己系统匹配
+            if(StringUtils.isNotBlank(flcxBean.getSpeechText())){
+
+            }
             //语音搜索或者图片搜索
             AlipayIserviceCognitiveClassificationWasteQueryResponse alipayResponse = aliFlcxService.returnTypeByPicOrVoice(imageUrl, flcxBean.getSpeechText());
             if(null != alipayResponse && null != alipayResponse.getKeyWords()){
                 List<KeyWordDTO> returnListMap = alipayResponse.getKeyWords();
                 Boolean finalIsAr = isAr;
+                String finalImageUrl = imageUrl;
                 returnListMap.stream().sorted(Comparator.comparing(KeyWordDTO::getScore).reversed()).forEach(returnList -> {
                     flcxBean.setName(returnList.getKeyWord());
-                    Map returnMap = flcxLexiconService.lexCheckByType(flcxBean);
-                    returnMap.put("isAr", finalIsAr);
+                    Map returnMap =  flcxLexiconService.lexCheck(flcxBean);
+                    returnMap.put("isAr", finalIsAr.booleanValue());
+                    returnMap.put("traceId", alipayResponse.getTraceId());
+                    returnMap.put("imageUrl", finalImageUrl);
+                    returnMap.put("name", returnList.getKeyWord());
                     map[0] = returnMap;
-                    if (!"empty".equals(map[0].get("msg"))){
+                    if (!"empty".equals(returnMap.get("msg"))){
                         return;
                     }
                 });
+            }else {
+                //图片未识别
+                map[0].put("isAr", isAr);
+                map[0].put("traceId", alipayResponse.getTraceId());
+                map[0].put("imageUrl", flcxBean.getImageUrl());
+                map[0].put("name", "这是什么ai也不知道呀");
+                return map[0];
             }
         }else if (StringUtils.isEmpty(flcxBean.getName())){
             //根据typeId查询
@@ -107,6 +122,41 @@ public class LexiconApi {
         rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
         return map[0];
     }
+    /**
+     *  反馈回流
+      * @author sgmark@aliyun.com
+      * @date 2019/7/8 0008
+      * @param
+      * @return
+      */
+    @Api(name = "lex.feed.back", version = "1.0")
+    @AuthIgnore
+    public Map lexCheckFeedBack(FlcxBean flcxBean)throws ApiException {
+        String name = flcxBean.getName();
+        String aliuserId = flcxBean.getAliUserId();
+        AlipayIserviceCognitiveClassificationFeedbackSyncResponse alipayIserviceCognitiveClassificationFeedbackSyncResponse = null;
+        if (StringUtils.isBlank(flcxBean.getTraceId())){
+            throw new ApiException("缺少回流id");
+        }else {
+            alipayIserviceCognitiveClassificationFeedbackSyncResponse = aliFlcxService.lexCheckFeedBack(flcxBean.getTraceId(), flcxBean.getImageUrl(), flcxBean.getName(), flcxBean.getActionType());
+        }
+        flcxBean = new FlcxBean();
+        flcxBean.setName(name);
+        flcxBean.setAliUserId(aliuserId);
+        Map<String, Object> map = flcxLexiconService.lexCheck(flcxBean);
+        if ("empty".equals(map.get("msg"))){
+            map.put("code", "1");
+        }else {
+            map.put("code", "0");
+        }
+        if(alipayIserviceCognitiveClassificationFeedbackSyncResponse.isSuccess()){
+            map.put("msg", "success");
+        }else {
+            map.put("msg", "error");
+        }
+        return map;
+    }
+
     /** 大分类列表
       * @author sgmark@aliyun.com
       * @date 2019/6/20 0020
@@ -123,23 +173,23 @@ public class LexiconApi {
     public Map topFive()throws ApiException {
         HashMap<String, Object> map = new HashMap<>();
 //        map.put("typeList", flcxRecordsMapper.selectList(new EntityWrapper<FlcxRecords>().eq("del_flag", 0).isNotNull("lexicon_after").groupBy("lexicon_after").setSqlSelect("count(1) as count_, lexicon_after").orderBy("count_", false).last("limit 0, 5")));
-        List<FlcxRecords> flcxRecordsList = new ArrayList<>();
-        FlcxRecords flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("面膜");
-        flcxRecordsList.add(flcxRecords);
-        flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("瓜子壳 ");
-        flcxRecordsList.add(flcxRecords);
-        flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("医用棉签 ");
-        flcxRecordsList.add(flcxRecords);
-        flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("虾壳");
-        flcxRecordsList.add(flcxRecords);
-        flcxRecords = new FlcxRecords();
-        flcxRecords.setLexiconAfter("塑料袋");
-        flcxRecordsList.add(flcxRecords);
-        map.put("typeList", flcxRecordsList);
+//        List<FlcxRecords> flcxRecordsList = new ArrayList<>();
+//        FlcxRecords flcxRecords = new FlcxRecords();
+//        flcxRecords.setLexiconAfter("面膜");
+//        flcxRecordsList.add(flcxRecords);
+//        flcxRecords = new FlcxRecords();
+//        flcxRecords.setLexiconAfter("瓜子壳 ");
+//        flcxRecordsList.add(flcxRecords);
+//        flcxRecords = new FlcxRecords();
+//        flcxRecords.setLexiconAfter("医用棉签 ");
+//        flcxRecordsList.add(flcxRecords);
+//        flcxRecords = new FlcxRecords();
+//        flcxRecords.setLexiconAfter("虾壳");
+//        flcxRecordsList.add(flcxRecords);
+//        flcxRecords = new FlcxRecords();
+//        flcxRecords.setLexiconAfter("塑料袋");
+//        flcxRecordsList.add(flcxRecords);
+//        map.put("typeList", flcxRecordsList);
 //        return map;
         return flcxRecordsService.topFive("topFive");
     }
@@ -177,10 +227,8 @@ public class LexiconApi {
     @Api(name = "util.uploadImage", version = "1.0")
     @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
     @AuthIgnore
-    public List<FileBean> uploadImage(FileBase64Param file){
-        List<FileBase64Param> files=new ArrayList<>();
-        files.add(file);
-        return fileUploadService.uploadImage(files);
+    public FileBean uploadImage(FlcxBean flcxBean){
+        return fileUploadService.handleUploadField("",flcxBean.getHeadImg());
     }
 
 }
