@@ -32,4 +32,6 @@ public class FlcxBean {
     private String imageUrlAR;//Ar图片地址
 
     private String speechText;//语音文字
+
+    private  PageBean pageBean;
 }
