@@ -1,9 +1,11 @@
 package com.tzj.collect.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 
 import com.tzj.collect.api.lexicon.param.FlcxBean;
+import com.tzj.collect.api.lexicon.param.FlcxLexiconBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.module.easyopen.exception.ApiException;
 
@@ -25,4 +27,53 @@ public interface FlcxLexiconService extends IService<FlcxLexicon> {
     Map keySearchInRedis(FlcxBean flcxBean);
     @DS("slave")
     Map lexCheckByType(FlcxBean flcxBean);
+
+    /**
+     * 根据关键字搜索 支持模糊查询
+     * @param flcxBean
+     * @return
+     * @throws ApiException
+     */
+    @DS("slave")
+    Page searchByName(FlcxBean flcxBean);
+
+
+    /**
+     * 新增词库关键词
+     * @param flcxLexiconBean
+     * @return
+     * @throws ApiException
+     */
+    public Map addFlcxLexiconBean (FlcxLexiconBean flcxLexiconBean);
+
+
+    /**
+     * 判断是否已经存在该关键字
+     * @param flcxLexiconBean
+     * @return
+     * @throws ApiException
+     */
+    @DS("slave")
+    public boolean isExistFlcxLexicon (FlcxLexiconBean flcxLexiconBean);
+
+
+    /**
+     * 删除关键字
+     * @param flcxLexiconBean
+     * @return
+     * @throws ApiException
+     */
+    public Map deleteFlcxLexicon (FlcxLexiconBean flcxLexiconBean);
+
+
+    /**
+     * 修改关键字 如果传入了typeIds 说明需要修改类型 否则默认不修改
+     * @param flcxLexiconBean
+     * @return
+     * @throws ApiException
+     */
+    public Map updateFlcxLexicon (FlcxLexiconBean flcxLexiconBean);
+
+
+
 }
