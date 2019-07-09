@@ -41,7 +41,20 @@ public class AliFlcxServiceImpl implements AliFlcxService {
         }
         return execute;
     }
-
+    public  void returnTypeVoice(String voiceString) {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
+        AlipayIserviceCognitiveClassificationWasteQueryRequest request = new AlipayIserviceCognitiveClassificationWasteQueryRequest();
+        AlipayIserviceCognitiveClassificationWasteQueryResponse execute = null;
+        try {
+            BizContent bizContent = new BizContent();
+            bizContent.setCognition_content(voiceString);
+            bizContent.setCognition_type("SpeechText");
+            request.setBizContent(JSON.toJSONString(bizContent));
+            execute = alipayClient.execute(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public AlipayIserviceCognitiveClassificationFeedbackSyncResponse lexCheckFeedBack(String traceId, String imageUrl, String feedbackRubbish, String actionType) {
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
@@ -55,7 +68,7 @@ public class AliFlcxServiceImpl implements AliFlcxService {
             }
             bizContent.setTrace_id(traceId);
             bizContent.setFeedback_rubbish(feedbackRubbish);
-            bizContent.setAction_type(StringUtils.isBlank(actionType) || "feedback_rectify".equals(actionType) ? "feedback_rectify": "feedback_disagree");//修正或忽略
+            bizContent.setAction_type(StringUtils.isBlank(actionType) || "feedback_rectify".equals(actionType) ? "feedback_rectify": actionType);//修正或忽略
             request.setBizContent(JSON.toJSONString(bizContent));
             execute = alipayClient.execute(request);
         } catch (Exception e) {

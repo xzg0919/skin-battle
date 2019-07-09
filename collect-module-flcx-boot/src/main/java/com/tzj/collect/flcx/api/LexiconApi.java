@@ -76,7 +76,8 @@ public class LexiconApi {
             }
             //语音先经过自己系统匹配
             if(StringUtils.isNotBlank(flcxBean.getSpeechText())){
-
+                //本地有返回异步调用阿里接口
+                aliFlcxService.returnTypeVoice(flcxBean.getSpeechText());
             }
             //语音搜索或者图片搜索
             AlipayIserviceCognitiveClassificationWasteQueryResponse alipayResponse = aliFlcxService.returnTypeByPicOrVoice(imageUrl, flcxBean.getSpeechText());
