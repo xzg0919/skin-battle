@@ -77,7 +77,17 @@ public class LexiconApi {
             //语音先经过自己系统匹配
             if(StringUtils.isNotBlank(flcxBean.getSpeechText())){
                 //本地有返回异步调用阿里接口
-                aliFlcxService.returnTypeVoice(flcxBean.getSpeechText());
+                flcxBean.setName(flcxBean.getSpeechText());
+                Map localMap = flcxLexiconService.lexCheck(flcxBean);
+                if (!"empty".equals(localMap.get("msg"))){
+                    localMap.put("isAr", isAr);
+                    localMap.put("traceId", "");
+//                    localMap.put("imageUrl", finalImageUrl);
+                    localMap.put("name", flcxBean.getName());
+                    map[0] = localMap;
+                    new Thread(()->aliFlcxService.returnTypeVoice(flcxBean.getSpeechText()));
+                    return map[0];
+                }
             }
             //语音搜索或者图片搜索
             AlipayIserviceCognitiveClassificationWasteQueryResponse alipayResponse = aliFlcxService.returnTypeByPicOrVoice(imageUrl, flcxBean.getSpeechText());
@@ -91,9 +101,15 @@ public class LexiconApi {
                     returnMap.put("isAr", finalIsAr.booleanValue());
                     returnMap.put("traceId", alipayResponse.getTraceId());
                     returnMap.put("imageUrl", finalImageUrl);
-                    returnMap.put("name", returnList.getKeyWord());
+                    returnMap.put("name", "unknown".equals(returnList.getKeyWord())? "这是什么ai也不知道呀": returnList.getKeyWord());
                     map[0] = returnMap;
-                    if (!"empty".equals(returnMap.get("msg"))){
+                    if (!"empty".equals(returnMap.get("msg")) || "EasterEgg ".equals(returnList.getCategory())){
+                        //支付宝彩蛋
+                        if ("EasterEgg ".equals(returnList.getCategory())){
+                            returnMap.put("msg", "eggshell");
+                            returnMap.put("describe", returnList.getKeyWord());
+                            map[0] = returnMap;
+                        }
                         return;
                     }
                 });
@@ -133,6 +149,7 @@ public class LexiconApi {
     @Api(name = "lex.feed.back", version = "1.0")
     @AuthIgnore
     public Map lexCheckFeedBack(FlcxBean flcxBean)throws ApiException {
+        Map<String, Object> map = new HashMap<>();
         String name = flcxBean.getName();
         String aliuserId = flcxBean.getAliUserId();
         AlipayIserviceCognitiveClassificationFeedbackSyncResponse alipayIserviceCognitiveClassificationFeedbackSyncResponse = null;
@@ -141,14 +158,16 @@ public class LexiconApi {
         }else {
             alipayIserviceCognitiveClassificationFeedbackSyncResponse = aliFlcxService.lexCheckFeedBack(flcxBean.getTraceId(), flcxBean.getImageUrl(), flcxBean.getName(), flcxBean.getActionType());
         }
-        flcxBean = new FlcxBean();
-        flcxBean.setName(name);
-        flcxBean.setAliUserId(aliuserId);
-        Map<String, Object> map = flcxLexiconService.lexCheck(flcxBean);
-        if ("empty".equals(map.get("msg"))){
-            map.put("code", "1");
-        }else {
-            map.put("code", "0");
+        if (!StringUtils.isBlank(name)){
+            flcxBean = new FlcxBean();
+            flcxBean.setName(name);
+            flcxBean.setAliUserId(aliuserId);
+            map = flcxLexiconService.lexCheck(flcxBean);
+            if ("empty".equals(map.get("msg"))){
+                map.put("code", "1");
+            }else {
+                map.put("code", "0");
+            }
         }
         if(alipayIserviceCognitiveClassificationFeedbackSyncResponse.isSuccess()){
             map.put("msg", "success");
@@ -231,5 +250,7 @@ public class LexiconApi {
     public FileBean uploadImage(FlcxBean flcxBean){
         return fileUploadService.handleUploadField("",flcxBean.getHeadImg());
     }
+
+
 
 }
