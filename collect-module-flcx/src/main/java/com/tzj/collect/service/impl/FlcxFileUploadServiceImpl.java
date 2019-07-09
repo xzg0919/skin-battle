@@ -281,9 +281,6 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
             }
         }
 
-
-
-
         String savePath = "collect/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
         String saveOriginalFile=savePath+"/original_" + uuid + "." +extensionName;
 
@@ -299,7 +296,6 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
         }catch (Exception e){
             e.printStackTrace();
         }
-
         return fileBean;
     }
 

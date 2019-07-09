@@ -1,8 +1,7 @@
 package api.ali;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.api.ali.param.PageBean;
@@ -12,13 +11,14 @@ import com.tzj.module.easyopen.util.ApiUtil;
 
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @Author 胡方明（12795880@qq.com）
  **/
 public class UtilApiTest {
     public static void main(String[] args) throws Exception {
-        String api="http://localhost:8080/ali/api";
+        String api="http://localhost:9003/app/api";
 
 //        OkHttpClient client = new OkHttpClient();
 //
@@ -49,8 +49,8 @@ public class UtilApiTest {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        
-        
+
+
         BOrderBean bOrderBean = new BOrderBean();
         bOrderBean.setCommunityId(1);
         bOrderBean.setCompanyId(1);
@@ -73,22 +73,49 @@ public class UtilApiTest {
 
         bOrderBean.setId(12);
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","business.order.updateOdrerStatus");
+        param.put("name","lex.check.before");
         param.put("version","1.0");  
         param.put("format","json");
-        param.put("app_key","app_id_3");
-        param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-        param.put("token","F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CERH5SHVK5VFUCPIWVF7FTVZNCPSETCYWSIQUPXLGOFKMADQBRNAD3WA5QFHLLJYVHVHWSUDMQVNDVCVRZE4RUOLVUQBC63GQI4DTF5WKH7UBKDWL4LFJSOLLQZCZPOSELKKAZNC6HPFVSBUHIJPEBR2CYXGOWNFEBSK7U6QDXV3ZGNUG5G776EEZFAQNUU2B5LGKS42BZE7BIVVAX7BHZQBR6LLA");
+        param.put("app_key","app_id_1");
+        param.put("timestamp", System.currentTimeMillis());
+//        param.put("token","F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CERH5SHVK5VFUCPIWVF7FTVZNCPSETCYWSIQUPXLGOFKMADQBRNAD3WA5QFHLLJYVHVHWSUDMQVNDVCVRZE4RUOLVUQBC63GQI4DTF5WKH7UBKDWL4LFJSOLLQZCZPOSELKKAZNC6HPFVSBUHIJPEBR2CYXGOWNFEBSK7U6QDXV3ZGNUG5G776EEZFAQNUU2B5LGKS42BZE7BIVVAX7BHZQBR6LLA");
         //param.put("sign","111");
-        param.put("nonce", UUID.randomUUID().toString());
-        param.put("data",bOrderBean);
+        param.put("nonce", UUID.randomUUID());
+        param.put("data","{\"traceId\":\"4d448d6c65d145c690443c5fdd950953\",\"aliUserId\":\"15225253338\",\"name\":\"朱园圆\"}");
         
         String jsonStr = JSON.toJSONString(param);
-        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");
+        System.out.println(jsonStr);
+        String sign = buildSign(JSON.parseObject(jsonStr), "sign_key_11223344");
+//        System.out.println(sign);
         param.put("sign", sign);
-
+//        System.out.println("app_key=app_id_1&data={\"aliUserId\":\"15225253338\",\"name\":\"瓜子壳\"}&format=json&name=lex.check&nonce=99b0a3ed-99c1-53ca-b113-b7811aa2a2c81562179558291&timestamp=1562179558291&version=1.0sign_key_11223344");
+        System.out.println(ApiUtil.md5("app_key=app_id_1&data={\"aliUserId\":\"15225-253338\",\"name\":\"\"}&format=json&name=lex.check&nonce=99b0a3ed-99c1-53ca-b113-b7811aa2a2c81562341804411&timestamp=1562341804411&version=1.0sign_key_11223344"));
+//        System.out.println(JSON.toJSONString(param));
         Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
         String resultJson=response.body().string();
         System.out.println(resultJson);
+    }
+
+    public static String buildSign(Map<String, ?> paramsMap, String secret) throws IOException {
+        Set<String> keySet = paramsMap.keySet();
+        List<String> paramNames = new ArrayList(keySet);
+        Collections.sort(paramNames);
+        List<String> list = new ArrayList();
+        Iterator var5 = paramNames.iterator();
+
+        String paramName;
+        while(var5.hasNext()) {
+            paramName = (String)var5.next();
+            String value = paramsMap.get(paramName).toString();
+            if (StringUtils.isNotEmpty(paramName) && StringUtils.isNotEmpty(value)) {
+                list.add(paramName + "=" + (value != null ? value : ""));
+            }
+        }
+
+        String source = StringUtils.join(list, "&") + secret;
+        System.out.println(source);
+        paramName = ApiUtil.md5(source);
+        System.out.println("02da1943e498347f99e201e48ea68209".equalsIgnoreCase("02DA1943E498347F99E201E48EA68209"));
+        return paramName;
     }
 }

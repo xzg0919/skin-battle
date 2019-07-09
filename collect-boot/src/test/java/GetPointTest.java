@@ -4,37 +4,45 @@ import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.module.easyopen.util.ApiUtil;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.UUID;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GetPointTest {
-	public static void main(String[] args) throws Exception {
-        String api="http://localhost:8080/ali/api";
-        PageBean pageBean=new PageBean();
-        pageBean.setPageNumber(1);
-        pageBean.setPageSize(20);
+    public static void main(String[] args) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("name", "ZK");
+        map.put("age", 1);
 
-        CategoryBean categorybean = new CategoryBean();
-        categorybean.setId(2);
-        HashMap<String,Object> param=new HashMap<>();
-        param.put("name","categoryAttr.listCategoryAttrs");
-        param.put("version","1.0");  
-        param.put("format","json");
-        param.put("app_key","app_id_1");
-        param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-        param.put("token","3F3TEMH74565Q5QORHNPE76UZM6VT4JPWVV4OPUNTGAXLLRLC6B5GYU3LW34YHVNOEFL2LXPVT24UAJWCBI7NJ42KSYJ2KXG2OVQSA6ZMU4VMMCLQUKIRXAWTX2BD3K6MDOZDBJ4Q62CYGOB7DVAUP4CYQAHL3JSQRIG7P2UO77IZBN7W3E4RZK42VEEUWCHGAZLS7LGRB4EVIIYSQVYYSGAETEUZC4JUVVV2UDRKIOBGXURUGYCOGKTBVFLZYU2QFPF2G4I7DVNKBWCOFWBQDLZLJYEDSPIL6T46KLPZ4O2ZIFJROTQ");
-        //param.put("sign","111");
-        param.put("nonce", UUID.randomUUID().toString());
-        param.put("data",categorybean);
+        Map<String, Object> map2 = new HashMap<String, Object>();
+        map2.put("name", "ZA");
+        map2.put("age", 2);
 
-        String jsonStr=JSON.toJSONString(param);
-        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");
-        param.put("sign",sign);
+        Map<String, Object> map3 = new HashMap<String, Object>();
+        map3.put("name", "CX");
+        map3.put("age", 1);
 
-        Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
-        String resultJson=response.body().string();
-        System.out.println(resultJson);
+        Map<String, Object> map4 = new HashMap<String, Object>();
+        map4.put("name", "CX");
+        map4.put("age", 1);
+
+        List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+        list.add(map);
+        list.add(map2);
+        list.add(map3);
+        list.add(map4);
+
+        // 排序代码如下
+        List<Map<String, Object>> collect = list.stream().sorted(Comparator.comparing(GetPointTest::comparingByAge).reversed())
+                .collect(Collectors.toList());
+        collect.stream().forEach(System.out::println);
+    }
+
+    private static Integer comparingByAge(Map<String, Object> map){
+        return (Integer) map.get("age");
     }
 }
