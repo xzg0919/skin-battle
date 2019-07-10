@@ -100,8 +100,8 @@ public class AliFlcxServiceImpl implements AliFlcxService {
     }
 
     public static void main(String[] args) {
-        System.out.println(pe("http://osssqt.oss-cn-shanghai.aliyuncs.com/flcx/slj/sfsc.png", "2f0325d44cb94cbd869c2f3fba854000", "易拉罐"));
-//        System.out.println(re("http://osssqt.oss-cn-shanghai.aliyuncs.com/flcx/slj/sfsc.png", "").getTraceId());
+//        System.out.println(pe("http://osssqt.oss-cn-shanghai.aliyuncs.com/flcx/slj/sfsc.png", "2f0325d44cb94cbd869c2f3fba854000", "易拉罐"));
+        System.out.println(re("", "家电").getTraceId());
     }
 
     public static AlipayIserviceCognitiveClassificationWasteQueryResponse re(String picUrl, String voiceString){
@@ -117,14 +117,7 @@ public class AliFlcxServiceImpl implements AliFlcxService {
                 bizContent.setCognition_content(voiceString);
                 bizContent.setCognition_type("SpeechText");
             }
-            request.setBizContent("{" +
-                    "\"biz_code\":\"isv\"," +
-                    "\"cognition_type\":\"ImageUrl\"," +
-                    "\"cognition_content\":\"http://mdn.alipay.com/wsdk/file?fileid=A*YN87RK6Dm4gAAAAAAAAAAAAAAUMnAA\"," +
-                    "\"longitude\":\"121.4411213954\"," +
-                    "\"latitude\":\"31.2121751783\"," +
-                    "\"city_code\":\"city\"" +
-                    "  }");
+            request.setBizContent(JSON.toJSONString(bizContent));
             execute = alipayClient.execute(request);
         } catch (Exception e) {
             e.printStackTrace();

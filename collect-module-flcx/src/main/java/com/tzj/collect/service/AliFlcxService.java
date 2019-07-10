@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Async;
  **/
 public interface AliFlcxService {
      AlipayIserviceCognitiveClassificationWasteQueryResponse returnTypeByPicOrVoice(String picUrl, String voiceString);
-     @Async
+
      void returnTypeVoice(String voiceString);
 
      AlipayIserviceCognitiveClassificationFeedbackSyncResponse lexCheckFeedBack(String traceId, String imageUrl, String feedbackRubbish, String actionType);
