@@ -310,6 +310,8 @@ public interface OrderService extends IService<Order> {
 	String orderSendRecycleByOrderId(Integer orderId);
 
 	Object tosendfiveKgOrder(Integer orderId);
+	@DS("slave")
+	Boolean selectOrderByImprisonRule(String aliUserId,String title,Integer orderNum,Integer dateNum);
 
-	Object selectOrderByMonth(String memberId);
+	Object recallOrder(Integer orderId,Long recyclerId);
 }

@@ -400,9 +400,15 @@ public class AppRecyclersApi {
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	@DS("slave")
-	public Object getRecycleSon(){
+	public Object getRecycleSon(RecyclersBean recyclersBean){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
-		return recyclersService.selectList(new EntityWrapper<Recyclers>().eq("parents_id",recycler.getId()).eq("del_flag",0));
+		EntityWrapper<Recyclers> wrapper = new EntityWrapper<>();
+			wrapper.eq("parents_id",recycler.getId());
+			wrapper.eq("del_flag",0);
+			if(StringUtils.isNotBlank(recyclersBean.getName())){
+				wrapper.like("name_",recyclersBean.getName());
+			}
+		return recyclersService.selectList(wrapper);
 	}
 	/**
 	 * 获得当前回收人员的经理信息

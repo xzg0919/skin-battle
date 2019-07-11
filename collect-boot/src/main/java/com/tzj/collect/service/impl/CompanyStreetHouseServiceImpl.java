@@ -50,4 +50,10 @@ public class CompanyStreetHouseServiceImpl extends ServiceImpl<CompanyStreetHous
     public Map<String,Object> companyAreaRanges(String companyId) {
         return companyStreetHouseMapper.companyAreaRanges(companyId);
     }
+
+    @Override
+    public Integer selectStreetHouseceCompanyId(Integer categoryId, Integer streetId) {
+
+        return companyStreetHouseMapper.selectStreetHouseCompanyId(categoryId, streetId);
+    }
 }
