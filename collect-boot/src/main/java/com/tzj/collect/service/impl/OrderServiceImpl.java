@@ -389,12 +389,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return flag;
 	}
 
-	public static void main(String[] args) throws Exception {
-
-		System.out.println(new SimpleDateFormat("yyyy-MM-dd").parse("2019-07-01"));
-
-	}
-
 	/**
 	 * @param
 	 * @return List<Order>
@@ -2011,7 +2005,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			listMapObject.add(mapListMap);
 		}
 		resultMap.put("listMapObject", listMapObject);
-		resultMap.put("achAmount", achAmount);
+		try{
+			resultMap.put("achAmount",new DecimalFormat("#.00").format(achAmount));
+		}catch(Exception e){
+			resultMap.put("achAmount",achAmount);
+		}
 		return resultMap;
 	}
 
@@ -2912,10 +2910,36 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
-	public Object selectOrderByMonth(String memberId){
-		String startMonth = SnUtils.getNowYearMonth()+"-01 00:00:01";
-		String endMonth = SnUtils.getNowYearMonth()+"-31 23:59:59";
-		return null;
+	public Boolean selectOrderByImprisonRule(String aliUserId,String title,Integer orderNum,Integer dateNum){
+		Boolean isImprisonRule = false;
+		Date endDate = new Date();
+		Date startDate = ToolUtils.RmDateByNow(endDate,dateNum-1);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		List<Order> orders = this.selectList(new EntityWrapper<Order>().eq("ali_user_id", aliUserId).eq("title", title).between("create_date", sdf.format(startDate)+" 00:00:01", sdf.format(endDate)+" 23:59:59"));
+		if(orders.size() >= orderNum){
+			isImprisonRule = true;
+		}
+		return isImprisonRule;
 	}
+
+
+	public Object recallOrder(Integer orderId,Long recyclerId){
+		Order order = this.selectById(orderId);
+		if (null == order) {
+			return "未找到该订单 id：" + orderId;
+		}
+		order.setRecyclerId(recyclerId.intValue());
+		order.setStatus(OrderType.TOSEND);
+		boolean b = this.updateById(order);
+		if (!b) {
+			return "转派失败";
+		}
+		Recyclers recyclers = recyclersService.selectById(recyclerId);
+		PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
+
+		return "操作成功";
+	}
+
+
 
 }

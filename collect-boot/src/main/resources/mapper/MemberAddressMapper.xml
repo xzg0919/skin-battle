@@ -11,8 +11,8 @@
 		LEFT JOIN sb_member_address b ON a.area_id = b.street_id
 		AND  a.name_ = b.community_name
 		WHERE
-			b.community_id = - 1
-		AND b.del_flag = 1
+			b.community_id = -1
+		AND b.del_flag = 0
 	</select>
 	<select id="selectMemberAddressBystreetId" resultType="com.tzj.collect.api.ali.param.MemberAddressBean">
 		SELECT
@@ -23,7 +23,7 @@
 		LEFT JOIN sb_area b ON a.town_code = b.code_
 		WHERE
 			a.street_id = - 1
-		AND a.del_flag = 1
+		AND a.del_flag = 0
 		AND b.id IS NOT NULL
 	</select>
 

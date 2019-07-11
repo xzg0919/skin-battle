@@ -92,7 +92,7 @@
 				WHERE a.company_id = #{companyId}
 				UNION
 				SELECT c.id,c.parent_id,c.area_name FROM
-					sb_recyclers_range_house a
+					sb_company_street_house a
 				INNER JOIN sb_area c ON a.area_id = c.id
 				WHERE a.company_id = #{companyId}
 				) c
@@ -123,7 +123,7 @@
 				WHERE a.company_id = #{companyId} AND c.parent_id = #{areaId}
 				UNION
 				SELECT c.id,c.area_name FROM
-					sb_recyclers_range_house a
+					sb_company_street_house a
 				INNER JOIN sb_area c ON a.street_id = c.id
 				WHERE a.company_id = #{companyId} AND c.parent_id = #{areaId}
 				)  a

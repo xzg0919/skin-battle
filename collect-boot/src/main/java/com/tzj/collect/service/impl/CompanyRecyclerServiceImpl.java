@@ -46,6 +46,8 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	private RecyclersRangeBigService recyclersRangeBigService;
 	@Autowired
 	private CompanyStreetBigService companyStreetBigService;
+	@Autowired
+	private RecyclersRangeHouseService recyclersRangeHouseService;
 
 	@Override
 	public List<Company> selectCompanyByRecyclerId(String recyclerId) {
@@ -323,14 +325,22 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 				streetNum = recyclersRangeBigStreet.size();
 			}
 		}else if("2".equals(title)){
-			areaNum = recyclersRangeHouseholdService.selectAreaRangeCount(companyId, recyclerId);
-			List<RecyclersRangeHousehold> recyclersRangeHouseholds = recyclersRangeHouseholdService.selectList(new EntityWrapper<RecyclersRangeHousehold>().eq("company_id", companyId).eq("recyclers_id", recyclerId).groupBy("street_id"));
-			if (!recyclersRangeHouseholds.isEmpty()){
-				streetNum = recyclersRangeHouseholds.size();
+//			areaNum = recyclersRangeHouseholdService.selectAreaRangeCount(companyId, recyclerId);
+//			List<RecyclersRangeHousehold> recyclersRangeHouseholds = recyclersRangeHouseholdService.selectList(new EntityWrapper<RecyclersRangeHousehold>().eq("company_id", companyId).eq("recyclers_id", recyclerId).groupBy("street_id"));
+//			if (!recyclersRangeHouseholds.isEmpty()){
+//				streetNum = recyclersRangeHouseholds.size();
+//			}
+//			List<RecyclersRangeHousehold> recyclersRangeHouseholdsCommunity = recyclersRangeHouseholdService.selectList(new EntityWrapper<RecyclersRangeHousehold>().eq("company_id", companyId).eq("recyclers_id", recyclerId));
+//			if (!recyclersRangeHouseholdsCommunity.isEmpty()){
+//				communityNum = recyclersRangeHouseholdsCommunity.size();
+//			}
+			List<RecyclersRangeHouse> recyclersRangeHouseliances = recyclersRangeHouseService.selectList(new EntityWrapper<RecyclersRangeHouse>().eq("company_id", companyId).eq("recyclers_id", recyclerId).groupBy("area_id"));
+			if (!recyclersRangeHouseliances.isEmpty()){
+				areaNum = recyclersRangeHouseliances.size();
 			}
-			List<RecyclersRangeHousehold> recyclersRangeHouseholdsCommunity = recyclersRangeHouseholdService.selectList(new EntityWrapper<RecyclersRangeHousehold>().eq("company_id", companyId).eq("recyclers_id", recyclerId));
-			if (!recyclersRangeHouseholdsCommunity.isEmpty()){
-				communityNum = recyclersRangeHouseholdsCommunity.size();
+			List<RecyclersRangeHouse> recyclersRangeAppliancesStreet = recyclersRangeHouseService.selectList(new EntityWrapper<RecyclersRangeHouse>().eq("company_id", companyId).eq("recyclers_id", recyclerId));
+			if (!recyclersRangeAppliancesStreet.isEmpty()){
+				streetNum = recyclersRangeAppliancesStreet.size();
 			}
 		}else if("1".equals(title)){
 			List<RecyclersRangeAppliance> recyclersRangeAppliances = recyclersRangeApplianceService.selectList(new EntityWrapper<RecyclersRangeAppliance>().eq("company_id", companyId).eq("recyclers_id", recyclerId).groupBy("area_id"));

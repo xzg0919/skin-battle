@@ -63,7 +63,7 @@ public class ProductApi {
     	wrapper.eq("goods_type", 0);
     	wrapper.like("districts_id", productBean.getCityId());
     	//wrapper.eq("districts_id", productBean.getCityId());
-    	wrapper.orderBy("binding_quantity", true);
+    	wrapper.orderBy("create_date", false);
        return productService.selectList(wrapper);
     }
     /**
@@ -82,12 +82,12 @@ public class ProductApi {
     	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     	wrapper.le("pick_start_date", df.format(date));
     	wrapper.ge("pick_end_date", df.format(date));
-    	wrapper.ge("binding_point", 1);
+    	//wrapper.ge("binding_point", 1);
     	wrapper.eq("del_flag", 0);
     	wrapper.eq("goods_type", 0);
     	wrapper.like("districts_id", productBean.getCityId());
     	//wrapper.eq("districts_id", productBean.getCityId());
-    	wrapper.orderBy("binding_quantity", true);
+    	wrapper.orderBy("create_date", false);
        return productService.selectList(wrapper);
     }
     /**
@@ -164,47 +164,48 @@ public class ProductApi {
     		}
     		
     	}
-    	String param = "productId="+productBean.getId()+"&userAliId="+member.getAliUserId();
-    	System.out.println("给用户发券的参数:"+param);
-    	//调用给用户发券接口
-    	String body = PostTool.postB(ToolUtils.greenH5, param);
-    	Object obj = JSONObject.parse(body);
-    	Map<String,Object> resultMap = (Map<String,Object>)obj;
-    	//判断发券是否成功
-    	if(StringUtils.isNotBlank(body)&&(resultMap.get("flag")!=null)&&!"0".equals(resultMap.get("flag"))) {
-    		//发券失败
-    		return resultMap.get("msg");
-    	}else {
-    		//发券成功时......更新已兑换数量+1
-    		product.setBindingQuantity(product.getBindingQuantity()+1);
-    		productService.updateById(product);
-    		//用户剩余积分
-    		double remainPoint=0;
-    		if(point!=null) {
-    			remainPoint = point.getRemainPoint()-((double)product.getBindingPoint());
-    			//扣除用户本地积分
-    			point.setRemainPoint(remainPoint);
-    			pointService.updateById(point);
-    		}
-    		System.out.println("给用户发券扣除的积分是 ："+product.getBindingPoint() + "----剩余point是 : "+remainPoint+"");
-    		//给用户增加会员卡积分
-    		try {
-    		//给用户会员卡扣除相应积分
-			aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), remainPoint+"", null,member.getAppId());
-    		}catch(Exception e) {
-    			System.out.println("扣除用户积分失败---------------");
-    		}
-			//增加相应的积分记录
-			if(product.getBindingPoint()!=0) {
-				PointList pointList =new  PointList();
-				pointList.setMemberId(Integer.parseInt(member.getId().toString()));
-				pointList.setPoint("-"+product.getBindingPoint());
-				pointList.setType("1");
-				pointList.setDocumentNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000));
-				pointList.setDescrb(product.getBrand());
-				pointListService.insert(pointList);
+    	if(productBean.getId().length()>2){
+			String param = "productId="+productBean.getId()+"&userAliId="+member.getAliUserId();
+			System.out.println("给用户发券的参数:"+param);
+			//调用给用户发券接口
+			String body = PostTool.postB(ToolUtils.greenH5, param);
+			Object obj = JSONObject.parse(body);
+			Map<String,Object> resultMap = (Map<String,Object>)obj;
+			//判断发券是否成功
+			if(StringUtils.isNotBlank(body)&&(resultMap.get("flag")!=null)&&!"0".equals(resultMap.get("flag"))) {
+				//发券失败
+				return resultMap.get("msg");
 			}
-    	}
+		}
+		//发券成功时......更新已兑换数量+1
+		product.setBindingQuantity(product.getBindingQuantity()+1);
+		productService.updateById(product);
+		//用户剩余积分
+		double remainPoint=0;
+		if(point!=null) {
+			remainPoint = point.getRemainPoint()-((double)product.getBindingPoint());
+			//扣除用户本地积分
+			point.setRemainPoint(remainPoint);
+			pointService.updateById(point);
+		}
+		System.out.println("给用户发券扣除的积分是 ："+product.getBindingPoint() + "----剩余point是 : "+remainPoint+"");
+		//给用户增加会员卡积分
+		try {
+		//给用户会员卡扣除相应积分
+		aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), remainPoint+"", null,member.getAppId());
+		}catch(Exception e) {
+			System.out.println("扣除用户积分失败---------------");
+		}
+		//增加相应的积分记录
+		if(product.getBindingPoint()!=0) {
+			PointList pointList =new  PointList();
+			pointList.setMemberId(Integer.parseInt(member.getId().toString()));
+			pointList.setPoint("-"+product.getBindingPoint());
+			pointList.setType("1");
+			pointList.setDocumentNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000));
+			pointList.setDescrb(product.getBrand());
+			pointListService.insert(pointList);
+		}
        return "领券成功,请到支付宝卡包查看!";
     }
     
