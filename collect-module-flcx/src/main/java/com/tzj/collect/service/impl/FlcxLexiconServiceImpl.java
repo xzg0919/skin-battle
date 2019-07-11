@@ -107,10 +107,11 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         HashMap<String, Object> map = new HashMap<>();
         List<FlcxLexicon> flcxLexiconList = this.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0));
         List<FlcxEggshell> flcxEggshellList = flcxEggshellService.selectList(new EntityWrapper<FlcxEggshell>().eq("del_flag", 0));
-        flcxLexiconList.stream().forEach(flcxLexicon -> {
+        flcxLexiconList.parallelStream().forEach(flcxLexicon -> {
             redisUtil.set(flcxLexicon.getName(), 1);
+            System.out.println(flcxLexicon.getName());
         });
-        flcxEggshellList.stream().forEach(flcxEggshell -> {
+        flcxEggshellList.parallelStream().forEach(flcxEggshell -> {
             redisUtil.set(flcxEggshell.getLexicon(), 1);
         });
         System.out.println();
