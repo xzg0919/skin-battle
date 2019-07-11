@@ -96,29 +96,66 @@ public class LexiconApi {
                 Boolean finalIsAr = isAr;
                 String finalImageUrl = imageUrl;
                 returnListMap.stream().sorted(Comparator.comparing(KeyWordDTO::getScore).reversed()).forEach(returnList -> {
-                    flcxBean.setName(returnList.getKeyWord());
-                    Map returnMap =  flcxLexiconService.lexCheck(flcxBean);
-                    returnMap.put("isAr", finalIsAr.booleanValue());
-                    returnMap.put("traceId", alipayResponse.getTraceId());
-                    returnMap.put("imageUrl", finalImageUrl);
-                    returnMap.put("name", "unknown".equals(returnList.getKeyWord())? "这是什么ai也不知道呀": returnList.getKeyWord());
-                    map[0] = returnMap;
-                    if (!"empty".equals(returnMap.get("msg")) || "EasterEgg ".equals(returnList.getCategory())){
-                        //支付宝彩蛋
+                    Map returnMap = null;
+                    if (StringUtils.isNotEmpty(returnList.getKeyWord()) && !"unknown".equals(returnList.getKeyWord())){
+                        flcxBean.setName(returnList.getKeyWord());
+                        returnMap = flcxLexiconService.lexCheck(flcxBean);
+                        returnMap.put("isAr", finalIsAr.booleanValue());
+                        returnMap.put("traceId", alipayResponse.getTraceId());
+                        returnMap.put("imageUrl", finalImageUrl);
+//                        if ("unknown".equals(returnList.getKeyWord())){
+//                            returnMap.put("isKnow", "N");
+//                            returnMap.put("name", "这是什么AI也不知道呀");
+//                        }else {
+//                            returnMap.put("name", returnList.getKeyWord());
+//                        }
+                        map[0] = returnMap;
+                    }else if(StringUtils.isNotEmpty(returnList.getCategory())){
+                        switch (returnList.getCategory()){
+                            case "harmful":flcxBean.setName("这个可能是有害垃圾哦"); break;
+                            case "recoverable":flcxBean.setName("这个可能是可回收物哦"); break;
+                            case "kitchen":flcxBean.setName("这个可能是湿垃圾哦"); break;
+                            case "dry":flcxBean.setName("这个可能是干垃圾哦"); break;
+                            default :
+                        }
                         if ("EasterEgg ".equals(returnList.getCategory())){
                             returnMap.put("msg", "eggshell");
                             returnMap.put("describe", returnList.getKeyWord());
                             map[0] = returnMap;
+                            return;
                         }
+                        returnMap = new HashMap();
+                        returnMap = flcxLexiconService.lexCheck(flcxBean);
+                        returnMap.put("isAr", finalIsAr.booleanValue());
+                        returnMap.put("traceId", alipayResponse.getTraceId());
+                        returnMap.put("imageUrl", finalImageUrl);
+                        map[0] = returnMap;
                         return;
+
+                    }else {
+                        //语音未识别
+                        if (StringUtils.isNotBlank(flcxBean.getSpeechText())){
+                            map[0].put("msg", "empty");
+                            return;
+                        }
+                        //图片未识别
+                        returnMap = new HashMap();
+                        returnMap.put("isKnow", "N");
+                        returnMap.put("isAr", finalIsAr.booleanValue());
+                        returnMap.put("traceId", alipayResponse.getTraceId());
+                        returnMap.put("imageUrl", flcxBean.getImageUrl());
+                        returnMap.put("name", "这是什么AI也不知道呀");
+                        map[0] = returnMap;
+                        return ;
                     }
                 });
             }else {
                 //图片未识别
                 map[0].put("isAr", isAr);
+                map[0].put("isKnow", "N");
                 map[0].put("traceId", alipayResponse.getTraceId());
                 map[0].put("imageUrl", flcxBean.getImageUrl());
-                map[0].put("name", "这是什么ai也不知道呀");
+                map[0].put("name", "这是什么AI也不知道呀");
                 return map[0];
             }
         }else if (StringUtils.isEmpty(flcxBean.getName())){
@@ -127,6 +164,7 @@ public class LexiconApi {
         }else {
             //根据名称查询
             map[0] = flcxLexiconService.lexCheck(flcxBean);
+            map[0].remove("imageUrl");
         }
         if (null != map[0] && null != map[0].get("flcxRecords")){
             FlcxRecords flcxRecords = (FlcxRecords) map[0].get("flcxRecords");
@@ -170,9 +208,9 @@ public class LexiconApi {
             }
         }
         if(alipayIserviceCognitiveClassificationFeedbackSyncResponse.isSuccess()){
-            map.put("msg", "success");
+            map.put("message", "success");
         }else {
-            map.put("msg", "error");
+            map.put("message", "error");
         }
         return map;
     }
