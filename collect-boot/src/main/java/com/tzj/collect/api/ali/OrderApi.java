@@ -71,6 +71,10 @@ public class OrderApi {
 	private AreaService areaService;
 	@Autowired
 	private CompanyStreetHouseService companyStreetHouseService;
+	@Autowired
+	private ImprisonMemberService imprisonMemberService;
+	@Autowired
+	private ImprisonRuleService imprisonRuleService;
 	
 
 	/**
@@ -183,7 +187,27 @@ public class OrderApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object createOrder(OrderBean orderbean) throws ApiException{
     	Member member = MemberUtils.getMember();
-    	//根据当前登录的会员，获取姓名、绿账号和阿里userId
+		Map<String,Object> resultMap = null;
+		Boolean isImprisonMember = false;
+		Boolean isImprisonRule = false;
+
+		isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(),"1");
+		if(isImprisonMember){
+			resultMap = new HashMap<>();
+			resultMap.put("type",5);
+			resultMap.put("msg","近期下单次数过多，系统检测异常，如有疑问请联系客服");
+			resultMap.put("code",5);
+			return resultMap;
+		}
+		isImprisonRule = imprisonRuleService.isImprisonRuleByAliUserId(member.getAliUserId(),"1");
+		if (isImprisonRule){
+			resultMap = new HashMap<>();
+			resultMap.put("type",5);
+			resultMap.put("msg","近期下单次数过多，系统检测异常，如有疑问请联系客服");
+			resultMap.put("code",5);
+			return resultMap;
+		}
+		//根据当前登录的会员，获取姓名、绿账号和阿里userId
     	orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
     	orderbean.setGreenCode(member.getGreenCode());
     	orderbean.setAliUserId(member.getAliUserId());
@@ -211,7 +235,7 @@ public class OrderApi {
     	String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
     	orderbean.setOrderNo(orderNo);
     	//保存订单
-    	Map<String,Object> resultMap = orderService.saveOrder(orderbean);
+    	 resultMap = orderService.saveOrder(orderbean);
     	//钉钉消息赋值回收公司名称
 		Company company = companyService.selectById(companyId);
 			if(null != company){
@@ -284,8 +308,8 @@ public class OrderApi {
 			companyId = companyId1.toString();
 		}else {
 			//根据分类Id和小区Id查询所属企业
-			Company companys = companyCategoryService.selectCompany(orderbean.getCategoryId(),memberAddress.getCommunityId());
-			if(null==companys){
+			companyId = companyStreetHouseService.selectStreetHouseceCompanyId(orderbean.getCategoryId(), memberAddress.getStreetId(),memberAddress.getCommunityId());
+			if(StringUtils.isBlank(companyId)){
 				//判断该地址是否回收5公斤废纺衣物
 				Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(orderbean.getCategoryId(), memberAddress.getStreetId());
 				if(null==streeCompanyId){
@@ -293,8 +317,6 @@ public class OrderApi {
 				}else {
 					companyId = streeCompanyId+"";
 				}
-			}else {
-				companyId = companys.getId().toString();
 			}
 		}
 		Company company1 = companyService.selectById(companyId);
@@ -436,9 +458,28 @@ public class OrderApi {
 	@Api(name = "order.savefiveKgOrder", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	public Object savefiveKgOrder(OrderBean orderbean){
+	public Object savefiveKgOrder(OrderBean orderbean) throws Exception{
 		//获取当前登录的会员
 		Member member = MemberUtils.getMember();
+		Map<String,Object> resultMap = null;
+		Boolean isImprisonMember = false;
+		Boolean isImprisonRule = false;
+		isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(),"3");
+		if(isImprisonMember){
+			resultMap = new HashMap<>();
+			resultMap.put("type",5);
+			resultMap.put("msg","近期下单次数过多，系统检测异常，如有疑问请联系客服");
+			resultMap.put("code",5);
+			return resultMap;
+		}
+		isImprisonRule = imprisonRuleService.isImprisonRuleByAliUserId(member.getAliUserId(),"3");
+		if (isImprisonRule){
+			resultMap = new HashMap<>();
+			resultMap.put("type",5);
+			resultMap.put("msg","近期下单次数过多，系统检测异常，如有疑问请联系客服");
+			resultMap.put("code",5);
+			return resultMap;
+		}
 		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
 		if(memberAddress==null) {
 			return "您暂未添加回收地址";
@@ -467,7 +508,7 @@ public class OrderApi {
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
-		Map<String,Object> resultMap = (Map<String,Object>)orderService.savefiveKgOrder(orderbean);
+		 resultMap = (Map<String,Object>)orderService.savefiveKgOrder(orderbean);
 		//钉钉消息赋值回收公司名称
 		Company company = companyService.selectById(streeCompanyId);
 		if(null != company){

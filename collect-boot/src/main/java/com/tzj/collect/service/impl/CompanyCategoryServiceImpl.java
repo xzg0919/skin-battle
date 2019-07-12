@@ -56,6 +56,8 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	private OrderService orderService;
 	@Autowired
 	private AreaService areaService;
+	@Autowired
+	private CompanyStreetHouseService companyStreetHouseService;
 
 
 	/**
@@ -107,7 +109,42 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 					noPriceList = this.getAvgNoPrice(categoryBean);
 				}
 			}else if("rubbish".equals(categoryBean.getType())){
-				if(null!=company){
+				if(company == null) {
+					//根据分类Id和小区id去公海查询相关企业
+					Integer companyId1 = companyStreetHouseService.selectStreetHouseceCompanyId(categoryBean.getId(), categoryBean.getStreeId());
+					if(companyId1==null) {
+						//判断该地址是否回收5公斤废纺衣物
+						Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(categoryBean.getId(), categoryBean.getStreeId());
+						if ("45".equals(categoryBean.getId().toString())&&null != streeCompanyId){
+							category.setIcon("http://images.sqmall.top/collect/20190412/original_2d560942-7a1f-4c95-9721-b19cb892ac4f.jpg");
+							category.setRecNotes("1.废旧衣物指无污染、无霉变的各类纺织品，包含衣服、鞋子、纺织包袋、床上用品和织物类家具用品；," +
+									"2.衣服包含毛衣、大衣、T恤和衬衫等；," +
+									"3.鞋子包含运动鞋、皮鞋和帆布鞋等；," +
+									"4.纺织包袋包含手提包、皮包和电脑包等；," +
+									"5.床上用品包含床单、被套和枕套等；," +
+									"6.织物类家居用品包含窗帘、地毯、毛巾、浴巾和桌布等;," +
+									"7.当日晚8点后预约，可预约时间最早为次日上午；," +
+									"8.预约完成后，回收人员会在预约时间段电话联系您，确认具体的上门时间，免费上门收取废旧衣物.," +
+									"提示：," +
+									"1.邮管局规定各快递公司全面推进实名制寄件，回收人员上门收件时可能需要您配合出示身份证件，望您理解;," +
+									"2.废旧衣物积累到5kg及以上可进行预约，需要您亲自打包好，这样可以减少上门回收的时间，方便回收人员称重.");
+							priceList = this.getOwnnerPrice(categoryBean,streeCompanyId);
+							noPriceList = this.getOwnnerNoPrice(categoryBean,streeCompanyId);
+						}else{
+							priceList = this.getAvgPrice(categoryBean);
+							noPriceList = this.getAvgNoPrice(categoryBean);
+						}
+					}else {
+						//根据相关城市id 和企业id 查询相关的分类列表
+						priceList = companyCategoryCityService.getOwnnerPriceBycityId(categoryBean.getId().toString(), companyId1.toString(),categoryBean.getCityId());
+						noPriceList = companyCategoryCityService.getOwnnerNoPriceBycityId(categoryBean.getId().toString(), companyId1.toString(),categoryBean.getCityId());
+						if(priceList.isEmpty()&&noPriceList.isEmpty()){
+							//如果该区域没有配置城市，则获取该公司的公共价格
+							priceList = this.getOwnnerPrice(categoryBean, companyId1);
+							noPriceList = this.getOwnnerNoPrice(categoryBean,companyId1);
+						}
+					}
+				}else {
 					//根据小区Id查询小区信息
 					Community community  = communityService.selectById(categoryBean.getCommunityId());
 					//判断该小区是否免费
@@ -123,28 +160,6 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 							priceList = this.getOwnnerPrice(categoryBean, Integer.parseInt(company.getId().toString()));
 							noPriceList = this.getOwnnerNoPrice(categoryBean,Integer.parseInt(company.getId().toString()));
 						}
-					}
-				}else {
-					//判断该地址是否回收5公斤废纺衣物
-					Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(categoryBean.getId(), categoryBean.getStreeId());
-					if ("45".equals(categoryBean.getId().toString())&&null != streeCompanyId){
-						category.setIcon("http://images.sqmall.top/collect/20190412/original_2d560942-7a1f-4c95-9721-b19cb892ac4f.jpg");
-						category.setRecNotes("1.废旧衣物指无污染、无霉变的各类纺织品，包含衣服、鞋子、纺织包袋、床上用品和织物类家具用品；," +
-								"2.衣服包含毛衣、大衣、T恤和衬衫等；," +
-								"3.鞋子包含运动鞋、皮鞋和帆布鞋等；," +
-								"4.纺织包袋包含手提包、皮包和电脑包等；," +
-								"5.床上用品包含床单、被套和枕套等；," +
-								"6.织物类家居用品包含窗帘、地毯、毛巾、浴巾和桌布等;," +
-								"7.当日晚8点后预约，可预约时间最早为次日上午；," +
-								"8.预约完成后，回收人员会在预约时间段电话联系您，确认具体的上门时间，免费上门收取废旧衣物.," +
-								"提示：," +
-								"1.邮管局规定各快递公司全面推进实名制寄件，回收人员上门收件时可能需要您配合出示身份证件，望您理解;," +
-								"2.废旧衣物积累到5kg及以上可进行预约，需要您亲自打包好，这样可以减少上门回收的时间，方便回收人员称重.");
-						priceList = this.getOwnnerPrice(categoryBean,streeCompanyId);
-						noPriceList = this.getOwnnerNoPrice(categoryBean,streeCompanyId);
-					}else{
-						priceList = this.getAvgPrice(categoryBean);
-						noPriceList = this.getAvgNoPrice(categoryBean);
 					}
 				}
 			}

@@ -212,6 +212,19 @@ public class AppOrderApi {
 		return "操作成功";
 	}
 
+	/**
+	 * 回收经理撤销订单
+	 * @author 王灿
+	 * @return
+	 */
+	@Api(name = "app.order.recallOrder", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object recallOrder(OrderBean orderBean) {
+		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
+		return orderService.recallOrder(orderBean.getId(),recycler.getId());
+	}
+
 
 }
 

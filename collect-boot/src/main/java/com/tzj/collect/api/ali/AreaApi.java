@@ -160,7 +160,7 @@ public class AreaApi {
 	@DS("slave")
 	public Object getCityAreaList(){
 		//获取上海的所有行政区
-		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", 737).eq("del_flag", 0));
+		List<Area> areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", 11214).eq("del_flag", 0));
 		List<Map<String,Object >> list = new ArrayList<>();
 		Map<String,Object > map = null;
 		for (Area area: areaList) {

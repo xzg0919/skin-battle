@@ -16,4 +16,7 @@ public interface CompanyStreetHouseService extends IService<CompanyStreetHouse> 
     Map<String,Object> adminCompanyAreaRanges(String companyId);
     @DS("slave")
     Map<String,Object> companyAreaRanges(String companyId);
+
+    @DS("slave")
+    Integer selectStreetHouseceCompanyId(Integer categoryId, Integer streetId);
 }
