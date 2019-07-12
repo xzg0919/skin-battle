@@ -177,6 +177,14 @@ public class LexiconApi {
         rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
         return map[0];
     }
+
+    @SignIgnore
+    @AuthIgnore
+    @Api(name = "lex.check.test", version = "1.0")
+    public Map  lexCheckTest(FlcxBean flcxBean){
+        return this.lexCheck(flcxBean);
+    }
+
     /**
      *  反馈回流
       * @author sgmark@aliyun.com
@@ -252,6 +260,12 @@ public class LexiconApi {
         return flcxRecordsService.topFive("topFive");
     }
 
+    @Api(name = "type.top5.test", version = "1.0")
+    @AuthIgnore
+    @SignIgnore
+    public Map topFiveTest()throws ApiException {
+        return  this.topFive();
+    }
 
     /** 关键字模糊查询
       * @author sgmark@aliyun.com
