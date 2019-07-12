@@ -43,4 +43,6 @@ public class FlcxBean {
     private String actionType;//反馈结果
 
     private  PageBean pageBean;
+
+    private boolean notCount = false;
 }
