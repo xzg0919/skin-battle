@@ -175,7 +175,7 @@ public class LexiconApi {
             flcxBean.setLexiconId(flcxRecords.getLexiconsId());
         }
         //发送MQ消息
-        if(!flcxBean.isNotCount())
+        if(!flcxBean.getName().contains("这个可能"))
             rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
         return map[0];
     }
