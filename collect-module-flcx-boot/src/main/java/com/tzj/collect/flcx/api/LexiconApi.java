@@ -111,6 +111,7 @@ public class LexiconApi {
 //                        }
                         map[0] = returnMap;
                     }else if(StringUtils.isNotEmpty(returnList.getCategory())){
+                        flcxBean.setNotCount(true);
                         switch (returnList.getCategory()){
                             case "harmful":flcxBean.setName("这个可能是有害垃圾哦"); break;
                             case "recoverable":flcxBean.setName("这个可能是可回收物哦"); break;
@@ -174,7 +175,8 @@ public class LexiconApi {
             flcxBean.setLexiconId(flcxRecords.getLexiconsId());
         }
         //发送MQ消息
-        rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
+        if(!flcxBean.isNotCount())
+            rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
         return map[0];
     }
     /**
