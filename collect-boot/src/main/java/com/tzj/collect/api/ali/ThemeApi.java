@@ -3,11 +3,10 @@ package com.tzj.collect.api.ali;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.ProductBean;
+import com.tzj.collect.core.service.XcxThemeContentService;
+import com.tzj.collect.core.service.XcxThemeService;
 import com.tzj.collect.entity.XcxTheme;
 import com.tzj.collect.entity.XcxThemeContent;
-import com.tzj.collect.service.XcxThemeContentService;
-import com.tzj.collect.service.XcxThemeService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;

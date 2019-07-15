@@ -1,18 +1,14 @@
 package com.tzj.collect.api.common.async;
 
-import java.util.Hashtable;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.api.iot.IotApi;
 import com.tzj.collect.api.iot.localmap.LatchMap;
-import com.tzj.collect.service.OrderService;
-import com.tzj.collect.service.RecyclersService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.util.Hashtable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 异步调用
@@ -25,10 +21,10 @@ public class AsyncRedis {
 
     @Autowired
     private RedisUtil redisUtil;
-    @Autowired
-    private RecyclersService recyclersService;
-    @Autowired
-    private OrderService orderService;
+//    @Autowired
+//    private RecyclersService recyclersService;
+//    @Autowired
+//    private OrderService orderService;
 
 
     @Async
@@ -74,8 +70,8 @@ public class AsyncRedis {
      * @param
      * @return
      */
-    @Async
-    public void saveOrRemoveOrderIdAndTimeFromRedis(Long orderId, Long recId, Long time, String saveOrRemove){
+//    @Async
+//    public void saveOrRemoveOrderIdAndTimeFromRedis(Long orderId, Long recId, Long time, String saveOrRemove){
 //        System.out.println("------------------------" + Thread.currentThread().getName() + "--------------------------");
 //        Hashtable<String, Object> orderRevertListMap = null;
 //        if (null != redisUtil.get("orderRevertListMap")){
@@ -108,15 +104,15 @@ public class AsyncRedis {
 //            redisUtil.set("orderRevertListMap", orderRevertListMap, 5400);//最长存值一个半小时(1.5*60*60)
 //        }
 
-    }
+//    }
     /** 派单时保存至redis，回收员接单时从redis移除，待接单状态下超过一个小时回退至平台或者管理员处
      * @author sgmark@aliyun.com
      * @date 2019/5/10 0010
      * @param
      * @return
      */
-    @Async
-    public void pollingFromRedis(){
+//    @Async
+//    public void pollingFromRedis(){
 //        Object orderRevertIsRunning =  redisUtil.get("orderRevertIsRunning");
 //        if (null != orderRevertIsRunning){
 //            Boolean isRunning = (Boolean) orderRevertIsRunning;
@@ -155,14 +151,14 @@ public class AsyncRedis {
 //                e.printStackTrace();
 //            }
 //        }while (null != redisUtil.get("orderRevertIsRunning") && true == (Boolean) redisUtil.get("orderRevertIsRunning"));
-    }
+//    }
     /** 处理业务代码，订单回退到平台或者回退到回收经理处
       * @author sgmark@aliyun.com
       * @date 2019/5/13 0013
       * @param
       * @return
       */
-    public void orderFallBack(List<Hashtable<String, Object>> orderList){
+//    public void orderFallBack(List<Hashtable<String, Object>> orderList){
 //        orderList.stream().forEach(orderIdTable -> {
 //            Long recId = null;
 //            Long orderId = null;
@@ -193,6 +189,6 @@ public class AsyncRedis {
 //                e.getCause();
 //            }
 //        });
-    }
+//    }
 
 }

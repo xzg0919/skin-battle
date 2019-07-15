@@ -1,19 +1,5 @@
 package com.tzj.collect.api.app;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
-
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.ZhimaCustomerCertificationCertifyResponse;
@@ -22,26 +8,21 @@ import com.alipay.api.response.ZhimaCustomerCertificationQueryResponse;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.tzj.collect.api.ali.param.PageBean;
-import com.tzj.collect.api.app.param.RecyclersBean;
-import com.tzj.collect.api.app.param.RecyclersLoginBean;
-import com.tzj.collect.api.app.param.ScoreAppBean;
-import com.tzj.collect.api.app.param.TimeBean;
-import com.tzj.collect.api.app.result.AppCompany;
-import com.tzj.collect.api.app.result.AppOrderResult;
-import com.tzj.collect.api.app.result.AppScoreResult;
 import com.tzj.collect.api.common.MyX509TrustManager;
 import com.tzj.collect.common.util.RecyclersUtils;
+import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.app.RecyclersBean;
+import com.tzj.collect.core.param.app.RecyclersLoginBean;
+import com.tzj.collect.core.param.app.ScoreAppBean;
+import com.tzj.collect.core.param.app.TimeBean;
+import com.tzj.collect.core.result.app.AppCompany;
+import com.tzj.collect.core.result.app.AppOrderResult;
+import com.tzj.collect.core.result.app.AppScoreResult;
+import com.tzj.collect.core.service.*;
+import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.OrderEvaluation;
 import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.AliPayService;
-import com.tzj.collect.service.CompanyRecyclerService;
-import com.tzj.collect.service.MessageService;
-import com.tzj.collect.service.OrderEvaluationService;
-import com.tzj.collect.service.OrderService;
-import com.tzj.collect.service.RecyclersService;
-import com.tzj.collect.service.impl.FileUploadServiceImpl;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -53,9 +34,21 @@ import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
 import com.tzj.module.easyopen.file.FileUploadService;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 /**
  * 回收人员api
@@ -277,9 +270,8 @@ public class AppRecyclersApi {
 	@Api(name = "recycler.getrecbyid", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
-	public com.tzj.collect.api.admin.param.RecyclersBean getRecEvaById() {
-		com.tzj.collect.api.admin.param.RecyclersBean recyclersBean = recyclersService
-				.getRecEvaById(getRecycler().getId().toString());
+	public com.tzj.collect.core.param.admin.RecyclersBean getRecEvaById() {
+		com.tzj.collect.core.param.admin.RecyclersBean recyclersBean = recyclersService.getRecEvaById(getRecycler().getId().toString());
 		return recyclersBean;
 	}
 

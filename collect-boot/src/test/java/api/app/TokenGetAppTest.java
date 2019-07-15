@@ -1,24 +1,20 @@
 package api.app;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_EXPRIRE;
-import static com.tzj.collect.common.constant.TokenConst.APP_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.APP_API_TOKEN_SECRET_KEY;
+import com.alibaba.fastjson.JSON;
+import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.result.app.AppCompany;
+import com.tzj.module.api.utils.JwtUtils;
+import com.tzj.module.common.utils.security.CipherTools;
+import com.tzj.module.easyopen.util.ApiUtil;
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
+import io.jsonwebtoken.Claims;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.param.CategoryBean;
-import com.tzj.collect.api.ali.param.OrderBean;
-import com.tzj.collect.api.app.result.AppCompany;
-import com.tzj.module.api.utils.JwtUtils;
-import com.tzj.module.common.utils.security.CipherTools;
-import com.tzj.module.easyopen.util.ApiUtil;
-
-import io.itit.itf.okhttp.FastHttpClient;
-import io.itit.itf.okhttp.Response;
-import io.jsonwebtoken.Claims;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  *

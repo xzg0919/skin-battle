@@ -1,6 +1,7 @@
 package com.tzj.collect.api;
 
-import com.tzj.collect.api.ali.param.MessageBean;
+
+import com.tzj.collect.core.param.ali.MessageBean;
 
 /**
  * 短信接口

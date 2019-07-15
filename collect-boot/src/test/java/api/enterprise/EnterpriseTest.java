@@ -1,7 +1,7 @@
 package api.enterprise;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.enterprise.param.EnterpriseTerminalBean;
+import com.tzj.collect.core.param.enterprise.EnterpriseTerminalBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;

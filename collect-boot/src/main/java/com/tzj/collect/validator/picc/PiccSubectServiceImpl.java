@@ -1,10 +1,7 @@
 package com.tzj.collect.validator.picc;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.common.util.CacheUtils;
-import com.tzj.collect.entity.EnterpriseAccount;
+import com.tzj.collect.core.service.PiccCompanyService;
 import com.tzj.collect.entity.PiccCompany;
-import com.tzj.collect.service.PiccCompanyService;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.util.EhCache2Utils;
@@ -15,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.PICC_API_COMMON_AUTHORITY;
 
 @Service("piccSubectServiceImpl")
 public class PiccSubectServiceImpl implements SubjectService {

@@ -2,10 +2,10 @@ package com.tzj.collect.api.enterprise;
 
 
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.enterprise.param.EnterpriseCodeBean;
 import com.tzj.collect.common.util.EnterpriseUtils;
+import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
+import com.tzj.collect.core.service.EnterpriseCodeService;
 import com.tzj.collect.entity.EnterpriseAccount;
-import com.tzj.collect.service.EnterpriseCodeService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;

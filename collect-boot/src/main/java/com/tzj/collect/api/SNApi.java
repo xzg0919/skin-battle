@@ -1,8 +1,8 @@
 package com.tzj.collect.api;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.tzj.collect.core.service.SNService;
 import com.tzj.collect.entity.SN;
-import com.tzj.collect.service.SNService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;

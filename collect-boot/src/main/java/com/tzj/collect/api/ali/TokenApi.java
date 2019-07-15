@@ -1,9 +1,10 @@
 package com.tzj.collect.api.ali;
 
-import com.tzj.collect.api.ali.param.MemberBean;
-import com.tzj.collect.api.param.TokenBean;
+
+import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.service.MemberService;
+import com.tzj.collect.param.TokenBean;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;

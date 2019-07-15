@@ -1,26 +1,18 @@
 package com.tzj.collect.api.admin;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_EXPRIRE;
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_TOKEN_SECRET_KEY;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.tzj.collect.api.admin.param.AdminBean;
-import com.tzj.collect.api.param.TokenBean;
+import com.tzj.collect.core.param.admin.AdminBean;
+import com.tzj.collect.core.service.AdminService;
 import com.tzj.collect.entity.Admin;
-import com.tzj.collect.service.AdminService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.collect.param.TokenBean;
+import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.ApiContext;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 @ApiService
 public class AdminTokenApi {

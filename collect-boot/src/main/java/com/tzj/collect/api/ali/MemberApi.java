@@ -1,19 +1,17 @@
 package com.tzj.collect.api.ali;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.service.MemberService;
-import com.tzj.collect.service.MessageService;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -27,7 +25,7 @@ public class MemberApi {
 	@Autowired
 	private MemberService memberService;
 	@Autowired
-	private MessageService MessageService;
+	private com.tzj.collect.core.service.MessageService MessageService;
 	@Autowired
 	private XcxWebSocketServer xcxWebSocketServer;
 	

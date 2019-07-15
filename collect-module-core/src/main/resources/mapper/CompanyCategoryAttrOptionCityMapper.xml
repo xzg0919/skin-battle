@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.CompanyCategoryAttrOptionCityMapper">
+
+    <select id="selectComCityCateAttOptPrice" parameterType="String" resultType="com.tzj.collect.api.business.result.BusinessCategoryResult">
+      SELECT
+			acao.id AS attOptionId,
+			acao.name_ AS attOptionName,
+			sccao.id AS comOptPriceId,
+			sccao.attr_option_price AS comOptPrice,
+			acao.is_special AS isSpecial,
+			sccao.special_price AS specialPrice
+		FROM
+			sb_category_attr_option acao
+		LEFT JOIN sb_company_category_attr_option_city sccao ON sccao.category_attr_option_id = acao.id
+		WHERE
+			acao.del_flag = 0
+        AND acao.category_attr_id =  #{categoryAttrId}
+        AND sccao.del_flag = 0
+        AND sccao.company_id = #{companyId}
+        AND sccao.city_id = #{cityid};
+    </select>
+
+	<select id="getCategoryAttrOptionByCityId" parameterType="String" resultType="com.tzj.collect.core.param.ali.AliCategoryAttrOptionBean">
+		SELECT DISTINCT
+		a.id AS id,
+		a.name_ AS `name`,
+		a.sort_ AS sort,
+		if(a.is_special = '1',CONCAT('P',b.special_price), b.attr_option_price) AS price,
+		a.category_attr_id AS categoryAttrId,
+		a.is_special AS isSpecial,
+		b.special_price AS specialPrice
+		FROM
+		sb_category_attr_option a
+		LEFT JOIN sb_company_category_attr_option_city b ON a.id = b.category_attr_option_id
+		WHERE
+		a.id = #{optionId}
+		AND b.attr_option_price IS NOT NULL
+		AND b.company_id = #{companyId}
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		AND b.city_id = #{cityId}
+	</select>
+
+
+</mapper>

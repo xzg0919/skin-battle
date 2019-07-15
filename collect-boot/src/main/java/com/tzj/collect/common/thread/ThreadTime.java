@@ -3,23 +3,18 @@ package com.tzj.collect.common.thread;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.MemberAddressBean;
-import com.tzj.collect.api.common.PostTool;
 import com.tzj.collect.common.constant.MD5;
-import com.tzj.collect.entity.MemberAddress;
+import com.tzj.collect.core.param.ali.MemberAddressBean;
+import com.tzj.collect.core.service.MemberAddressService;
+import com.tzj.collect.core.service.PaymentService;
 import com.tzj.collect.entity.Payment;
-import com.tzj.collect.service.MemberAddressService;
-import com.tzj.collect.service.PaymentService;
 import groovy.util.logging.Slf4j;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
-import net.sf.json.JSONString;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 

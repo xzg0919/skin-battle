@@ -1,12 +1,11 @@
 package com.tzj.collect.api.ali;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.core.service.CategoryAttrOptionService;
+import com.tzj.collect.core.service.CompanyServiceService;
 import com.tzj.collect.entity.CategoryAttr;
 import com.tzj.collect.entity.CategoryAttrOption;
 import com.tzj.collect.entity.CompanyServiceRange;
-import com.tzj.collect.service.CategoryAttrOptionService;
-import com.tzj.collect.service.CompanyServiceService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;

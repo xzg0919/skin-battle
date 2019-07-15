@@ -1,12 +1,14 @@
 package com.tzj.collect.api.ali;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.MapAddressBean;
-import com.tzj.collect.api.ali.param.MemberAddressBean;
 import com.tzj.collect.common.util.MemberUtils;
-import com.tzj.collect.entity.*;
-import com.tzj.collect.service.*;
+import com.tzj.collect.core.param.ali.MapAddressBean;
+import com.tzj.collect.core.param.ali.MemberAddressBean;
+import com.tzj.collect.core.service.*;
+import com.tzj.collect.entity.Area;
+import com.tzj.collect.entity.Community;
+import com.tzj.collect.entity.Member;
+import com.tzj.collect.entity.MemberAddress;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;

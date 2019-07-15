@@ -1,12 +1,12 @@
 package com.tzj.collect.api.ali;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.OrderBean;
-import com.tzj.collect.api.ali.param.OrderEvaluationBean;
+import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.ali.OrderEvaluationBean;
+import com.tzj.collect.core.service.OrderEvaluationService;
+import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderEvaluation;
-import com.tzj.collect.service.OrderEvaluationService;
-import com.tzj.collect.service.OrderService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -21,7 +21,7 @@ import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORIT
  **/
 @ApiService
 public class OrderEvaluationApi {
-	  
+
 	@Autowired
 	private OrderEvaluationService orderEvaluationService;
 	@Autowired
@@ -34,7 +34,7 @@ public class OrderEvaluationApi {
 	 @Api(name = "evaluation.getEvaluationByOrder", version = "1.0")
 	 @SignIgnore
 	 @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	 public OrderEvaluation getEvaluationByOrder(OrderBean order){   
+	 public OrderEvaluation getEvaluationByOrder(OrderBean order){
 		 return orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", order.getId()));
 		
 	 }

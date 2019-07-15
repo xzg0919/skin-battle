@@ -1,18 +1,17 @@
 package com.tzj.collect.api.business;
 
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.business.param.CategoryAttrOptionBean;
-import com.tzj.collect.api.business.param.CategoryBean;
-import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
-import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.core.param.business.CategoryBean;
+import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
+import com.tzj.collect.core.result.business.CategoryResult;
+import com.tzj.collect.core.service.CategoryService;
+import com.tzj.collect.core.service.CompanyCategoryAttrOptionService;
+import com.tzj.collect.core.service.CompanyCategoryService;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Category.CategoryType;
 import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.service.CategoryService;
-import com.tzj.collect.service.CompanyCategoryAttrOptionService;
-import com.tzj.collect.service.CompanyCategoryService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;

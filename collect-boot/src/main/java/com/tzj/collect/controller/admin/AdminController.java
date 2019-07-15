@@ -1,63 +1,32 @@
 package com.tzj.collect.controller.admin;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.OrderBean;
-import com.tzj.collect.api.ali.param.OrderItemBean;
 import com.tzj.collect.api.commom.excel.ExcelData;
 import com.tzj.collect.api.commom.excel.ExcelUtils;
 import com.tzj.collect.api.common.websocket.AppWebSocketServer;
 import com.tzj.collect.api.common.websocket.WebSocketServer;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
-import com.tzj.collect.controller.admin.param.CityBean;
-import com.tzj.collect.controller.admin.param.StreetNameBean;
-import com.tzj.collect.entity.Category;
-import com.tzj.collect.entity.Community;
-import com.tzj.collect.entity.Company;
-import com.tzj.collect.entity.EnterpriseCode;
-import com.tzj.collect.entity.Member;
-import com.tzj.collect.entity.MemberAddress;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.OrderPic;
-import com.tzj.collect.service.AliPayService;
-import com.tzj.collect.service.AnsycMyslService;
-import com.tzj.collect.service.AreaService;
-import com.tzj.collect.service.AsyncService;
-import com.tzj.collect.service.CategoryService;
-import com.tzj.collect.service.CommunityService;
-import com.tzj.collect.service.CompanyCategoryService;
-import com.tzj.collect.service.CompanyService;
-import com.tzj.collect.service.CompanyStreeService;
-import com.tzj.collect.service.CompanyStreetApplianceService;
-import com.tzj.collect.service.CompanyStreetBigService;
-import com.tzj.collect.service.EnterpriseCodeService;
-import com.tzj.collect.service.MemberAddressService;
-import com.tzj.collect.service.MemberService;
-import com.tzj.collect.service.OrderService;
-import com.tzj.collect.service.RocketmqMessageService;
-
-import com.tzj.module.easyopen.exception.ApiException;
+import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.ali.OrderItemBean;
+import com.tzj.collect.core.param.business.CityBean;
+import com.tzj.collect.core.service.*;
+import com.tzj.collect.entity.*;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 @RequestMapping("admin")
@@ -129,24 +98,6 @@ public class AdminController {
 	public String areaExcel() {
 		return "admin/areaExcel";
 	}
-
-	@RequestMapping("/updateStreet")
-	public String updateStreet() {
-		List<StreetNameBean> list = areaService.selectStreetList();
-		if (list.isEmpty()){
-			throw new ApiException("查无数据");
-		}
-		for (StreetNameBean streetNameBean: list
-			 ) {
-			List<StreetNameBean> streetNameBeans = areaService.selectStreetListByName(streetNameBean.getStreetName(),streetNameBean.getTowcode());
-			if(streetNameBeans.size() == 1){
-				areaService.updateStreet(streetNameBean.getId(),streetNameBean.getStreetName().trim(),streetNameBeans.get(0).getStreetCode().trim());
-			}
-		}
-		return "操作成功";
-	}
-
-
 
 	@RequestMapping("/out/excel")
 	public void outExcel(String page,HttpServletResponse response)throws Exception {

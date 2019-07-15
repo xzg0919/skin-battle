@@ -2,7 +2,6 @@ package com.tzj.collect.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.FlcxLexiconType;
-import com.tzj.collect.entity.FlcxType;
 
 /**
   * @author sgmark@aliyun.com

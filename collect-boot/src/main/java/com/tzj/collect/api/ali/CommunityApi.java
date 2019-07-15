@@ -1,23 +1,21 @@
 package com.tzj.collect.api.ali;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.tzj.collect.api.ali.param.AreaBean;
-import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.AreaBean;
+import com.tzj.collect.core.param.ali.CategoryBean;
+import com.tzj.collect.core.service.CommunityService;
+import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order;
-import com.tzj.collect.service.CommunityService;
-import com.tzj.collect.service.OrderService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

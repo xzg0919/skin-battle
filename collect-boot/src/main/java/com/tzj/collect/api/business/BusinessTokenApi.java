@@ -1,28 +1,18 @@
 package com.tzj.collect.api.business;
 
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_EXPRIRE;
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_SECRET_KEY;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.tzj.collect.api.business.param.CompanyAccountBean;
-import com.tzj.collect.api.param.TokenBean;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.core.param.business.CompanyAccountBean;
+import com.tzj.collect.core.service.CompanyAccountService;
 import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.service.CompanyAccountService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.collect.param.TokenBean;
+import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 @ApiService
 public class BusinessTokenApi {

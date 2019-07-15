@@ -1,11 +1,11 @@
 package com.tzj.collect.api.ali;
 
-import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.service.PointListService;
+import com.tzj.collect.core.service.PointService;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Point;
-import com.tzj.collect.service.PointListService;
-import com.tzj.collect.service.PointService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -26,7 +26,7 @@ public class PointApi {
 	@Autowired
 	private PointService pointService;
 	@Autowired
-	private PointListService pointListService; 
+	private PointListService pointListService;
 	
 	/** 
      * 根据类型获取积分流水列表 分页

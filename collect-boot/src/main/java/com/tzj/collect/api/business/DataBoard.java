@@ -1,26 +1,24 @@
 package com.tzj.collect.api.business;
 
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
-
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.tzj.collect.api.business.param.CategoryBean;
-import com.tzj.collect.api.business.param.CompanyBean;
-import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.core.param.business.CompanyBean;
+import com.tzj.collect.core.result.business.CategoryResult;
+import com.tzj.collect.core.service.CategoryService;
+import com.tzj.collect.core.service.CommunityService;
+import com.tzj.collect.core.service.OrderLogService;
+import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.service.CategoryService;
-import com.tzj.collect.service.CommunityService;
-import com.tzj.collect.service.OrderLogService;
-import com.tzj.collect.service.OrderService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.Map;
+
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 /**
  * 20180316
@@ -41,8 +39,7 @@ public class DataBoard {
 	/**
 	 * 数据看板的订单数据
 	 * @author 王灿
-	 * @param orderBean
-	 * @return 
+	 * @return
 	 * 
 	*/
 	 @Api(name = "business.dataBoard.orderData", version = "1.0")
@@ -55,8 +52,7 @@ public class DataBoard {
 	 /**
 	 * 回收物明细
 	 * @author 王灿
-	 * @param orderBean
-	 * @return 
+	 * @return
 	 * 
 	*/
 	 @Api(name = "business.dataBoard.category", version = "1.0")
@@ -69,8 +65,7 @@ public class DataBoard {
 	 /**
 	 * 回收服务范围
 	 * @author 王灿
-	 * @param orderBean
-	 * @return 
+	 * @return
 	 * 
 	*/
 	 @Api(name = "business.dataBoard.community", version = "1.0")
@@ -84,8 +79,7 @@ public class DataBoard {
 	 /**
 	 * 数据看板折线图
 	 * @author 王灿
-	 * @param orderBean
-	 * @return 
+	 * @return
 	 * 
 	*/
 	 @Api(name = "business.dataBoard.brokenLine", version = "1.0")

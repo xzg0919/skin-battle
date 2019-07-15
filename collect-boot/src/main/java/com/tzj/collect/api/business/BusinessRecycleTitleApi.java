@@ -1,9 +1,8 @@
 package com.tzj.collect.api.business;
 
 
-import com.tzj.collect.api.business.param.BusinessRecyclerBean;
-import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
-import com.tzj.collect.service.RecyclersTitleService;
+import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
+import com.tzj.collect.core.service.RecyclersTitleService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;

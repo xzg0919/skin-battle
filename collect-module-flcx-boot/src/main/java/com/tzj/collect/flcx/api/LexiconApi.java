@@ -111,7 +111,6 @@ public class LexiconApi {
 //                        }
                         map[0] = returnMap;
                     }else if(StringUtils.isNotEmpty(returnList.getCategory())){
-                        flcxBean.setNotCount(true);
                         switch (returnList.getCategory()){
                             case "harmful":flcxBean.setName("这个可能是有害垃圾哦"); break;
                             case "recoverable":flcxBean.setName("这个可能是可回收物哦"); break;
@@ -175,18 +174,9 @@ public class LexiconApi {
             flcxBean.setLexiconId(flcxRecords.getLexiconsId());
         }
         //发送MQ消息
-        if(!flcxBean.getName().contains("这个可能"))
-            rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
+        rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
         return map[0];
     }
-
-    @SignIgnore
-    @AuthIgnore
-    @Api(name = "lex.check.test", version = "1.0")
-    public Map  lexCheckTest(FlcxBean flcxBean){
-        return this.lexCheck(flcxBean);
-    }
-
     /**
      *  反馈回流
       * @author sgmark@aliyun.com
@@ -262,12 +252,6 @@ public class LexiconApi {
         return flcxRecordsService.topFive("topFive");
     }
 
-    @Api(name = "type.top5.test", version = "1.0")
-    @AuthIgnore
-    @SignIgnore
-    public Map topFiveTest()throws ApiException {
-        return  this.topFive();
-    }
 
     /** 关键字模糊查询
       * @author sgmark@aliyun.com

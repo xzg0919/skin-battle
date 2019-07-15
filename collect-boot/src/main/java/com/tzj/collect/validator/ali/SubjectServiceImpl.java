@@ -1,8 +1,7 @@
 package com.tzj.collect.validator.ali;
 
-import com.tzj.collect.common.util.CacheUtils;
+import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.service.MemberService;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.util.EhCache2Utils;

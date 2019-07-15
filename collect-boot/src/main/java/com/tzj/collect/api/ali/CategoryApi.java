@@ -2,14 +2,14 @@ package com.tzj.collect.api.ali;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.AliCategoryAttrOptionBean;
-import com.tzj.collect.api.ali.param.CategoryAttrBean;
-import com.tzj.collect.api.ali.param.CategoryBean;
-import com.tzj.collect.api.ali.result.ClassifyAndMoney;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.AliCategoryAttrOptionBean;
+import com.tzj.collect.core.param.ali.CategoryAttrBean;
+import com.tzj.collect.core.param.ali.CategoryBean;
+import com.tzj.collect.core.result.ali.ClassifyAndMoney;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
-import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -21,9 +21,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * 分类相关api

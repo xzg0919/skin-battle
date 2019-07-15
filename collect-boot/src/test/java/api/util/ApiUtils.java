@@ -1,7 +1,7 @@
 package api.util;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.param.TokenBean;
+import com.tzj.module.common.api.TokenBean;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import org.apache.commons.lang3.StringUtils;

@@ -64,5 +64,11 @@
             <artifactId>alipay-sdk</artifactId>
             <version>3.7.119.ALL</version>
         </dependency>
+        <!-- API 框架 -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+        </dependency>
     </dependencies>
 </project>

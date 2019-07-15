@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.CompanyRecyclerMapper">
+	
+	<select id="selectCompanyByRecyclerId" parameterType="String" resultType="Company"> 
+		SELECT
+			sc.*
+		FROM
+			sb_company sc
+		INNER JOIN (
+			SELECT
+				scr.company_id
+			FROM
+				sb_company_recycler scr
+			LEFT JOIN sb_recyclers sr ON scr.recycler_id = sr.id WHERE  scr.status_='1'
+		AND sr.id = #{recyclerId}
+		) scrs ON scrs.company_id = sc.id
+    </select> 
+
+	<select id="selectRecycleByCompanyId" parameterType="long" resultType="java.lang.Integer">
+			 SELECT
+				count(*)
+			FROM
+				sb_company_recycler scr
+			LEFT JOIN sb_company sc ON scr.company_id = sc.id
+			WHERE
+				scr.status_ = '1'
+			    AND sc.id =#{companyId}
+	            AND sc.del_flag='0' 
+	</select>
+
+
+	<select id="getRecyclerCompanyStatus" resultType="com.tzj.collect.core.result.app.AppCompany">
+		SELECT
+			sc.name_ as comName,
+			sc.id,
+			scr.status_
+		FROM
+			sb_company sc
+		INNER JOIN sb_company_recycler scr ON sc.id = scr.company_id
+		WHERE
+			scr.recycler_id = #{recyclerId}
+	</select>
+	
+	 <select id="findIdCard" resultType="Recyclers" parameterType="com.tzj.collect.core.param.business.BusinessRecyclerBean">
+	         SELECT
+	         sr.id,
+		sr.id_card_obv,
+		sr.id_card_rev
+	FROM
+		sb_recyclers sr
+	INNER JOIN sb_company_recycler scr ON sr.id = scr.recycler_id
+	WHERE
+		scr.status_ = '0'
+	AND scr.company_id = #{recyclerBean.companyId}
+	AND scr.recycler_id = #{recyclerBean.id}
+     </select>
+     
+     <select id="getCurrComList" resultType="com.tzj.collect.core.result.app.AppCompany" parameterType="com.tzj.collect.core.param.app.RecyclersBean">
+     	SELECT
+			sc.id,
+			sc.name_ AS comName,
+			sc.tel,
+			scrsc.status_ AS status
+		FROM
+			(
+				SELECT
+					scr.company_id,
+					scr.status_
+				FROM
+					sb_company_recycler scr
+				WHERE
+				    scr.recycler_id = #{recyclerBean.id}
+			) scrsc INNER  JOIN sb_company sc ON sc.id = scrsc.company_id
+		ORDER BY scrsc.status_ ASC LIMIT #{startSize} , #{pageSize}
+     </select>
+     <select id="getCurrComCount" resultType="Integer" parameterType="com.tzj.collect.core.param.app.RecyclersBean">
+     	SELECT
+			COUNT(*)
+		FROM
+			(
+				SELECT
+					scr.company_id,
+					scr.status_
+				FROM
+					sb_company_recycler scr
+				WHERE
+				scr.recycler_id = #{recyclerBean.id}
+			) scrsc INNER  JOIN sb_company sc ON sc.id = scrsc.company_id
+     </select>
+     <select id="getNotEnterComList" resultType="com.tzj.collect.core.result.app.AppCompany" parameterType="com.tzj.collect.core.param.app.RecyclersBean">
+     	SELECT
+			sc.name_ AS comName,
+			sc.id AS id,
+			IF (cr.status_ = 1, 1, 0) AS status
+		FROM
+			sb_company sc
+		LEFT JOIN (
+			SELECT
+				*
+			FROM
+				sb_company_recycler
+			WHERE
+				recycler_id = #{recyclerBean.id}
+		) cr ON sc.id = cr.company_id
+		WHERE
+			sc.name_ like  CONCAT('%',#{recyclerBean.name},'%')
+		LIMIT #{startSize} , #{pageSize}
+
+     </select>
+     
+     <select id="getNotEnterComCount" resultType="Integer" parameterType="com.tzj.collect.core.param.app.RecyclersBean">
+     SELECT
+		SUM(temCount) AS countNum
+	FROM
+		(
+			SELECT
+				COUNT(*) AS temCount
+			FROM
+				sb_company sc
+			WHERE
+				sc.id NOT IN (
+					SELECT
+						scr.company_id
+					FROM
+						sb_company_recycler scr
+					WHERE
+						scr.recycler_id = #{recyclerBean.id}
+				)
+			UNION ALL
+				SELECT
+					COUNT(*) AS temCount
+				FROM
+					sb_company_recycler scr
+				INNER JOIN sb_company sc ON sc.id = scr.company_id
+				WHERE
+					scr.recycler_id = #{recyclerBean.id}
+				AND scr.status_ = '2'
+		) AS teb
+     </select>
+     
+     <select id="getComCateList" resultType="com.tzj.collect.core.result.app.AppCompany" parameterType="com.tzj.collect.core.param.app.RecyclersBean">
+     	SELECT
+		DISTINCT
+			sccco.company_id AS id,
+			sc.name_ AS cateName
+		FROM
+			(
+				SELECT
+					scc.category_id,
+					scc.company_id
+				FROM
+					sb_company_category scc
+				WHERE
+					scc.del_flag = '0'
+					AND  scc.company_id IN
+			<foreach collection="recyclerBean.comIdsList" index="index" item="item" open="(" separator="," close=")">  
+	        	#{item}  
+	   		</foreach>
+			) sccco
+		LEFT JOIN sb_category sc ON sc.id = sccco.category_id
+     </select>
+     
+     <select id="getgetSearchCompanyRecyclerList" resultType="com.tzj.collect.core.param.business.BusinessRecyclerBean"  parameterType="com.tzj.collect.core.param.business.BusinessRecyclerBean">
+    	select  sr.id ,sr.name_ as recyclerName,sr.id_card as idCard,sr.tel as telephone,scr.del_flag as delflag from  sb_company_recycler  scr
+        inner join  sb_recyclers sr
+        on sr.id=scr.recycler_id
+        inner join  sb_company sc
+		on sc.id = scr.company_id
+		where scr.status_='1' and sc.id= #{recyclerBean.companyId}
+       <if test="recyclerBean.recyclerName != null and recyclerBean.recyclerName!='' ">  
+         and  sr.name_ =#{recyclerBean.recyclerName}
+       </if>
+       
+         <if test="recyclerBean.idCard != null and recyclerBean.idCard!='' ">  
+         and  sr.id_card =#{recyclerBean.idCard}
+       </if>
+       ORDER BY scr.update_date desc
+     
+     </select>
+	<select id="getCompanyRange" resultType="Map" parameterType="Integer">
+		SELECT * from (SELECT DISTINCT
+			d.id,
+			CONCAT(f.area_name,'-',d.area_name) AS area_name
+		FROM
+			sb_company_service a
+		INNER JOIN sb_area b ON a.area_id = b.id
+		LEFT JOIN sb_area c ON b.parent_id = c.id
+		LEFT JOIN sb_area d ON c.parent_id = d.id
+		LEFT JOIN sb_area f ON d.parent_id = f.id
+		WHERE
+			a.company_id = #{companyId}
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		AND c.del_flag = 0
+		AND d.del_flag = 0) aa
+		union
+		SELECT * from(
+		SELECT DISTINCT
+			c.id,
+			CONCAT( d.area_name, '-', c.area_name ) AS area_name
+		FROM
+			sb_company_street_appliance a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		LEFT JOIN sb_area c ON b.parent_id = c.id
+		LEFT JOIN sb_area d ON d.id = c.parent_id
+		WHERE
+			a.company_id = #{companyId}
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		AND c.del_flag = 0)cc
+			union
+		SELECT * from(
+		SELECT DISTINCT
+			c.id,
+			CONCAT( d.area_name, '-', c.area_name ) AS area_name
+		FROM
+			sb_company_street_house a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		LEFT JOIN sb_area c ON b.parent_id = c.id
+		LEFT JOIN sb_area d ON d.id = c.parent_id
+		WHERE
+			a.company_id = #{companyId}
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		AND c.del_flag = 0)cc
+	</select>
+
+	<select id="getBigCompanyRange" resultType="Map" parameterType="Integer">
+		SELECT * from(
+		SELECT DISTINCT
+			c.id,
+			CONCAT( d.area_name, '-', c.area_name ) AS area_name
+		FROM
+			sb_company_street_big a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		LEFT JOIN sb_area c ON b.parent_id = c.id
+		LEFT JOIN sb_area d ON d.id = c.parent_id
+		WHERE
+			a.company_id = #{companyId}
+		AND a.del_flag = 0
+		AND b.del_flag = 0
+		AND c.del_flag = 0)cc
+	</select>
+     
+</mapper>

@@ -8,25 +8,18 @@
 
 package api.admin;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.admin.param.AdminBean;
-import com.tzj.collect.api.admin.param.CompanyBean;
-import com.tzj.collect.api.ali.param.AreaBean;
-import com.tzj.collect.api.ali.param.PageBean;
-import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
-
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.UUID;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
