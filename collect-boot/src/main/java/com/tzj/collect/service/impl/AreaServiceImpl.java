@@ -1,11 +1,9 @@
 package com.tzj.collect.service.impl;
 
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.admin.param.CompanyBean;
 import com.tzj.collect.api.ali.AmapApi;
 import com.tzj.collect.api.ali.param.AreaBean;
 import com.tzj.collect.api.ali.param.MemberAddressBean;
@@ -54,6 +52,12 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	private MemberAddressService memberAddressService;
 	@Autowired
 	private CompanyStreetHouseService companyStreetHouseService;
+	@Autowired
+	private RecyclersRangeHouseService recyclersRangeHouseService;
+	@Autowired
+	private RecyclersRangeApplianceService recyclersRangeApplianceService;
+	@Autowired
+	private RecyclersRangeBigService recyclersRangeBigService;
 	
 	@Override
 	public List<Area> getByArea(int level,String cityId) {
@@ -222,6 +226,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 							companyStreetApplianceService.insert(companyStreetAppliance);
 						}
 					}else {
+						recyclersRangeApplianceService.delete(new EntityWrapper<RecyclersRangeAppliance>().eq("street_id",areaBean.getStreeId()));
 						companyStreetApplianceService.delete(new EntityWrapper<CompanyStreetAppliance>().eq("company_id",companyId).eq("street_id",areaBean.getStreeId()));
 					}
 				}else if("4".equals(recyclersServiceRangeBean.getTitle())){
@@ -235,6 +240,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 							companyStreetBigService.insert(companyStreetBig);
 						}
 					}else {
+						recyclersRangeBigService.delete(new EntityWrapper<RecyclersRangeBig>().eq("street_id",areaBean.getStreeId()));
 						companyStreetBigService.delete(new EntityWrapper<CompanyStreetBig>().eq("company_id",companyId).eq("street_id",areaBean.getStreeId()));
 					}
 				}else if("2".equals(recyclersServiceRangeBean.getTitle())){
@@ -248,6 +254,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 							companyStreetHouseService.insert(companyStreetHouse);
 						}
 					}else {
+						recyclersRangeHouseService.delete(new EntityWrapper<RecyclersRangeHouse>().eq("street_id",areaBean.getStreeId()));
 						companyStreetHouseService.delete(new EntityWrapper<CompanyStreetHouse>().eq("company_id",companyId).eq("street_id",areaBean.getStreeId()));
 					}
 				}

@@ -1819,9 +1819,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 			order.setUpdateDate(new Date());
 			order.setIsRead("0");
-			order.setRecyclerId(null);
+			order.setRecyclerId(0);
 			order.setStatus(OrderType.INIT);
-			order.setCancelReason("");
+			order.setCancelReason("订单回调");
+			order.setCancelTime(new Date());
 			orderLog.setOpStatusAfter(OrderType.INIT.name());
 			orderLog.setOp("订单回调");
 			orderLog.setOrderId(Integer.parseInt(order.getId().toString()));

@@ -6,16 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-
-import com.baomidou.dynamic.datasource.annotation.DS;
-import com.tzj.collect.api.app.AppTokenApi;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.app.param.RecyclersBean;
@@ -40,8 +36,6 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	private OrderService orderService;
 	@Autowired
 	private RecyclersRangeApplianceService recyclersRangeApplianceService;
-	@Autowired
-	private RecyclersRangeHouseholdService recyclersRangeHouseholdService;
 	@Autowired
 	private RecyclersRangeBigService recyclersRangeBigService;
 	@Autowired
@@ -264,7 +258,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 			}else {
 				recyclersTitleService.delete(new EntityWrapper<RecyclersTitle>().eq("recycle_id",recycleId).in("title_id","1,2"));
 				recyclersRangeApplianceService.delete(new EntityWrapper<RecyclersRangeAppliance>().eq("recyclers_id",recycleId).eq("company_id",companyId));
-				recyclersRangeHouseholdService.delete(new EntityWrapper<RecyclersRangeHousehold>().eq("recyclers_id",recycleId).eq("company_id",companyId));
+				recyclersRangeHouseService.delete(new EntityWrapper<RecyclersRangeHouse>().eq("recyclers_id",recycleId).eq("company_id",companyId));
 			}
 		}
 		recyclers.setIsManager("0");
