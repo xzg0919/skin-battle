@@ -23,20 +23,18 @@ public interface OrderMapper extends BaseMapper<Order> {
 	/**
      * 根据会员Id 获取未完成的订单列表
      * @author 王灿
-     * @param  memberId : 会员Id（主键）
      * @return List<Order>
      */
-	List<Order> getUncompleteList(long memberId);
+	List<Order> getUncompleteList(@Param("aliUserId")String aliUserId);
 	
 	/**
      * 获取会员的订单列表 分页
      * @author 王灿
-     * @param memberId :会员表主键
      * @param sizeStart : 第几条开始
      * @param size : 共多少条
      * @return
      */
-	List<Order> getOrderlist(@Param("memberId") int memberId, @Param("status") int status, @Param("sizeStart") int sizeStart, @Param("size") int size);
+	List<Order> getOrderlist(@Param("aliUserId")String aliUserId, @Param("status") int status, @Param("sizeStart") int sizeStart, @Param("size") int size);
 
 	 /**
      * 根据订单id获取订单详情

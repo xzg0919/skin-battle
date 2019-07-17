@@ -1,14 +1,11 @@
 package com.tzj.collect.api.ali;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.service.CommunityService;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Community;
-import com.tzj.collect.entity.Member;
-import com.tzj.collect.entity.Order;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -58,27 +55,6 @@ public class CommunityApi {
     	return communityService.listareaByCategory(categoryBean.getId(),categoryBean.getAreaId());
     }
     
-    /**
-     * 根据最近一次订单的地址，取出该地址。并且判断传入分类是否在该地址支持服务
-     * @param 
-     * @return
-     */
-    @Api(name = "community.defaultAddress", version = "1.0")
-    @SignIgnore
-    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    public Community defaultAddress(CategoryBean categoryBean){
-    	Member  member  = MemberUtils.getMember();
-    	Order order= orderService.getLastestOrderByMember(Integer.parseInt(member.getId()+""));
-    	if(order !=null ){
-    		Community community=communityService.defaultAddress(order.getCommunityId(), categoryBean.getId());
-    		if(community==null)
-        		return new Community(false);
-        	else
-        		community.setIsExist(true);
-    		return  community;
-    	}
-    	return  new Community(false);
-    }
     /**
      * 根据小区Id查询小区定点信息
      * @author 王灿

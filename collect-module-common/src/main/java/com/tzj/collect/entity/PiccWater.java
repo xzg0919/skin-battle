@@ -3,11 +3,13 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 /**
  * 保险订单
  */
 @TableName("sb_picc_water")
+@Data
 public class PiccWater extends  DataEntity<Long> {
 
     private Long id ;
@@ -15,7 +17,10 @@ public class PiccWater extends  DataEntity<Long> {
      * 会员Id
      */
     private Integer memberId;
-
+    /**
+     * 阿里user_id 用户唯一标识
+     */
+    private String aliUserId;
     /**
      * 是否领取 0未领取
      */

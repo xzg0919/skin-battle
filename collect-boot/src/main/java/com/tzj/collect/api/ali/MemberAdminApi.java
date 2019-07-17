@@ -45,12 +45,7 @@ public class MemberAdminApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object memberAdmin() {
         Member member = MemberUtils.getMember();
-        try {
-            xcxWebSocketServer.pushXcxDetail(member.getId().toString(),"user", orderService.isUserOrder(member.getId().toString()));
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return memberService.memberAdmin(member.getId().intValue());
+        return memberService.memberAdmin(member.getAliUserId());
     }
 
     /**保险Id查询保险详情和用户保单的信息
@@ -63,6 +58,6 @@ public class MemberAdminApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object insuranceDetal(PiccInsurancePolicyBean piccInsurancePolicyBean) {
         Member member = MemberUtils.getMember();
-        return piccInsurancePolicyService.insuranceDetal(member.getId().intValue(),Integer.parseInt(piccInsurancePolicyBean.getId()));
+        return piccInsurancePolicyService.insuranceDetal(member.getAliUserId(),Integer.parseInt(piccInsurancePolicyBean.getId()));
     }
 }

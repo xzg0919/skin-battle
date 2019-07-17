@@ -24,7 +24,6 @@ public class SubjectServiceImpl implements SubjectService{
     private CacheManager cacheManager;
 
     //@Autowired
-    //private MemberService memberService;
 
     @Override
     public Subject getSubjectByTokenSubject(String token,String key, Map<String, Object> map) {

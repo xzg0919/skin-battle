@@ -15,6 +15,8 @@ public class MemberAddressBean {
 	  * 会员id
 	  */
 	 private String memberId;
+
+	 private String aliUserId;
 	 /**
 	  * 区域Id
 	  */

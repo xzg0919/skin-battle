@@ -18,6 +18,10 @@ public class MemberAddress extends  DataEntity<Long>{
 	  * 会员id
 	  */
 	 private String memberId;
+	/**
+	 * 阿里user_id 用户唯一标识
+	 */
+	private String aliUserId;
 	 /**
 	  * 区域Id
 	  */

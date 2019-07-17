@@ -22,7 +22,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("96533", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("8401", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -34,7 +34,8 @@ public class OrderTest {
                 System.out.println("反向編譯 token是："+subjectStr);
 
                 //String api="http://open.mayishoubei.com/ali/api";
-                String api="http://dog.mayishoubei.com:9090/ali/api";
+                //String api="http://dog.mayishoubei.com:9090/ali/api";
+                 String api="http://localhost:9090/ali/api";
 
                 String  location = "121.446438,30.915836";
 
@@ -57,7 +58,7 @@ public class OrderTest {
 
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","memberAddress.saveMemberAddressdByMap");
+                param.put("name","member.testMember");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -65,7 +66,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",mapAddressBean);
+                param.put("data",null);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

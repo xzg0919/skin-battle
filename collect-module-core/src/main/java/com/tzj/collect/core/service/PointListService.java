@@ -11,11 +11,10 @@ public interface PointListService  extends IService<PointList>{
 	/**
 	 * 根据会员ID查询用户的积分流水
 	 * @category 王灿
-	 * @param memberId
 	 * @param pageBean
 	 * @return PointList
 	 */
 	@DS("slave")
-	List<Object>  getPointListByType(long memberId, PageBean pageBean);
+	List<Object>  getPointListByType(String aliUserId, PageBean pageBean);
 	
 }

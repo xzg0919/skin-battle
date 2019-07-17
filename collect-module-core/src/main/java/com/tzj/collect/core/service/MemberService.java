@@ -48,11 +48,38 @@ public interface MemberService extends IService<Member>{
      * @param
      */
     @DS("slave")
-    Object memberAdmin(Integer memberId);
+    Object memberAdmin(String aliUserId);
     @DS("slave")
     Map memberIsExist(MemberBean memberBean);
     @DS("slave")
-    Object getPassIdUrl(Long memberId);
+    Object getPassIdUrl(String aliUserId);
     @DS("slave")
     Object userToken(String authCode);
+    /**
+     * 根据阿里UserId查询唯一数据
+     * @param aliUserId
+     * @return
+     */
+    @DS("slave")
+    Member selectMemberByAliUserId(String aliUserId);
+
+    /**
+     * 根据阿里UserId更新相关数据
+     * @param member
+     * @return
+     */
+    Integer updateMemberByAliUserId(Member member);
+
+    /**
+     * 根据新增一条会员数据
+     * @param member
+     * @return
+     */
+    Integer insertMember(Member member);
+    /**
+     * 更新或插入会员数据
+     * @param member
+     * @return
+     */
+    Integer inserOrUpdatetMember(Member member);
 }

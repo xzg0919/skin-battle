@@ -9,10 +9,10 @@
 			id = #{orderId}
 	</update>
 	
-	<select id="getUncompleteList" parameterType="long" resultMap="OrderResultMap">  
-        SELECT <include refid="zd"/>,c.parent_id AS categoryId FROM sb_order a  LEFT JOIN sb_category c ON a.category_id = c.id WHERE a.member_id = #{memberId} AND a.del_flag = '0' AND a.status_ IN (0,1,2)  ORDER BY a.create_date DESC
+	<select id="getUncompleteList" parameterType="String" resultMap="OrderResultMap">
+        SELECT <include refid="zd"/>,c.parent_id AS categoryId FROM sb_order a  LEFT JOIN sb_category c ON a.category_id = c.id WHERE a.ali_user_id = #{aliUserId} AND a.del_flag = '0' AND a.status_ IN (0,1,2)  ORDER BY a.create_date DESC
     </select> 
-    <select id="getOrderlist" parameterType="int" resultMap="OrderResultMap">
+    <select id="getOrderlist" parameterType="Object" resultMap="OrderResultMap">
 		SELECT
 		<include refid="zd"/>, d.price AS paymentPrice,
 		c.parent_id AS categoryId
@@ -21,7 +21,7 @@
 		LEFT JOIN sb_category c ON a.category_id = c.id
 		LEFT JOIN sb_payment d ON a.order_no = d.order_sn
 		WHERE
-		a.member_id = #{memberId}
+		a.ali_user_id = #{aliUserId}
 		AND a.del_flag = '0'
 		<if test="status != -1">
 			<choose>

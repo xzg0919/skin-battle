@@ -42,7 +42,7 @@ public class PointApi {
         //接口里面获取  Member 的例子
         Member member= MemberUtils.getMember();
         //获取用户积分流水表
-        List<Object> pointLists = pointListService.getPointListByType(member.getId(),pageBean); 	
+        List<Object> pointLists = pointListService.getPointListByType(member.getAliUserId(),pageBean);
     	return pointLists; 
     }
 	
@@ -60,7 +60,7 @@ public class PointApi {
     public Point getPoint(){
         //接口里面获取  Member 的例子
         Member member= MemberUtils.getMember();
-    	Point points = pointService.getPoint(member.getId());
+    	Point points = pointService.getPoint(member.getAliUserId());
     	return points;
     }
 
@@ -77,7 +77,7 @@ public class PointApi {
     public Object getPointLists(){
         //接口里面获取  Member 的例子
         Member member= MemberUtils.getMember();
-        return pointService.getPointLists(member.getId());
+        return pointService.getPointLists(member.getAliUserId());
     }
 	
 	

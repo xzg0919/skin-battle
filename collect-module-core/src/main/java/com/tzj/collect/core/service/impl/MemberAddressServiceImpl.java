@@ -42,7 +42,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      */ 
     @Transactional(readOnly=false)
 	public String saveMemberAddress(MemberAddressBean memberAddressBean) {
-		MemberAddress memberAddress1 = this.getMemberAdderssByMemberId(memberAddressBean.getMemberId());
+		MemberAddress memberAddress1 = this.getMemberAdderssByAliUserId(memberAddressBean.getMemberId());
 		if (null != memberAddress1){
 			memberAddress1.setIsSelected(0);
 			this.updateById(memberAddress1);
@@ -70,7 +70,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			//判断是否是修改还是新增
 	    	if(StringUtils.isNotBlank(memberAddressBean.getId())) {
 	    		MemberAddress memberAddress = this.selectById(memberAddressBean.getId());
-	    		memberAddress.setMemberId(memberAddressBean.getMemberId());
+	    		memberAddress.setAliUserId(memberAddressBean.getAliUserId());
 	    		memberAddress.setName(memberAddressBean.getName());
 	    		memberAddress.setAreaId(Integer.parseInt(memberAddressBean.getAreaId()));
 	    		memberAddress.setStreetId(Integer.parseInt(memberAddressBean.getStreetId()));
@@ -92,7 +92,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	    		this.updateById(memberAddress);
 	    	}else {
 	    		MemberAddress memberAddress = new MemberAddress();
-	    		memberAddress.setMemberId(memberAddressBean.getMemberId());
+	    		memberAddress.setAliUserId(memberAddressBean.getAliUserId());
 	    		memberAddress.setName(memberAddressBean.getName());
 	    		memberAddress.setAreaId(Integer.parseInt(memberAddressBean.getAreaId()));
 	    		memberAddress.setStreetId(Integer.parseInt(memberAddressBean.getStreetId()));
@@ -133,8 +133,8 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      * @return 
      */
 	@Override
-	public List<MemberAddress> memberAddressList(long memberId) {
-		return this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("member_id", memberId).orderBy("is_selected", false));
+	public List<MemberAddress> memberAddressList(String aliUserId) {
+		return this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("ali_user_id", aliUserId).orderBy("is_selected", false));
 	}
 	
 	/**
@@ -145,17 +145,14 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	 */
 	@Transactional
 	@Override
-	public String deleteByMemberId(String memberAddressId,long memberId) {
-		//根据地址Id查询地址信息
-		MemberAddress memberAddress =this.selectById(memberAddressId);
-    	memberAddress.setDelFlag("1");
-    	this.updateById(memberAddress);
-    	Integer cityId = memberAddress.getCityId();
+	public String deleteByMemberId(String memberAddressId,String aliUserId) {
+		//删除
+    	this.deleteById(memberAddressId);
     	//查询用户的默认地址
-    	MemberAddress memberAddress2 = this.getMemberAdderssByMemberId(memberId+"");
+    	MemberAddress memberAddress2 = this.getMemberAdderssByAliUserId(aliUserId);
     	if(memberAddress2 == null) {
     		//查询用户所有的余下地址
-    		List<MemberAddress> MemberAddressList = this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("member_id", memberId).orderBy("create_date", false));
+    		List<MemberAddress> MemberAddressList = this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("ali_user_id", aliUserId).orderBy("create_date", false));
     		if(!MemberAddressList.isEmpty()) {
     			MemberAddress memberAddresss = MemberAddressList.get(0);
     			memberAddresss.setIsSelected(1);
@@ -175,7 +172,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean) {
 		String isSelected = memberAddressBean.getIsSelected();
 		//判断是否将地址设置为默认
-		MemberAddress memberAddres = this.getMemberAdderssByMemberId(memberAddressBean.getMemberId());
+		MemberAddress memberAddres = this.getMemberAdderssByAliUserId(memberAddressBean.getAliUserId());
 		if(memberAddres==null){
 			isSelected = "1";
 		}else{
@@ -249,7 +246,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 
 	@Transactional
 	@Override
-	public String saveMemberAddressdByMap(MapAddressBean mapAddressBean, long memberId) {
+	public String saveMemberAddressdByMap(MapAddressBean mapAddressBean, String aliUserId) {
 		System.out.println("用户开始新增地址了"+JSON.toJSONString(mapAddressBean));
 		Integer cityId = -1;
 		Integer areaId = -1;
@@ -276,7 +273,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			communityId = community.getId().intValue();
 		}
 		if("1".equals(mapAddressBean.getIsSelected())){
-			MemberAddress memberAddress1 = this.getMemberAdderssByMemberId(memberId+"");
+			MemberAddress memberAddress1 = this.getMemberAdderssByAliUserId(aliUserId);
 			if (null != memberAddress1){
 				memberAddress1.setIsSelected(0);
 				this.updateById(memberAddress1);
@@ -294,7 +291,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		}
 		memberAddress.setMapName(mapAddressBean.getMapName());
 		memberAddress.setMapAddress(mapAddressBean.getMapAddress());
-		memberAddress.setMemberId(memberId+"");
+		memberAddress.setAliUserId(aliUserId);
 		memberAddress.setName(mapAddressBean.getUserName());
 		memberAddress.setTel(mapAddressBean.getTel());
 		memberAddress.setCityId(cityId);
@@ -315,9 +312,9 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	}
 
 	@Override
-	public MemberAddress getMemberAdderssByMemberId(String memberId) {
+	public MemberAddress getMemberAdderssByAliUserId(String aliUserId) {
 		MemberAddress memberAddress = null;
-		List<MemberAddress> memberAddressesList = this.selectList(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("member_id", memberId));
+		List<MemberAddress> memberAddressesList = this.selectList(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("ali_user_id", aliUserId));
 		if (!memberAddressesList.isEmpty()){
 			memberAddress = memberAddressesList.get(0);
 		}
@@ -325,8 +322,8 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	}
 	@Transactional
 	@Override
-	public Object updateIsSelectedAddress(String memberId,String id){
-		MemberAddress memberAddress1 = this.getMemberAdderssByMemberId(memberId);
+	public Object updateIsSelectedAddress(String aliUserId,String id){
+		MemberAddress memberAddress1 = this.getMemberAdderssByAliUserId(aliUserId);
 		if(null != memberAddress1){
 			memberAddress1.setIsSelected(0);
 		}

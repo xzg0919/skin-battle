@@ -34,8 +34,7 @@ public class SubjectServiceImpl implements SubjectService{
         if(subjectCache!=null){
             return subjectCache;
         }
-
-        Member member=memberService.selectById(Long.parseLong(key));
+        Member member = memberService.selectMemberByAliUserId(key);
 
         Subject subject=new Subject();
         subject.setId(member.getId().toString());

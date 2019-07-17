@@ -60,9 +60,6 @@ public class AppOrderApi {
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String,Object> getOrderList(OrderBean orderbean){
 		orderbean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
-		//orderbean.setRecyclerId(1);
-		//Member member = MemberUtils.getMember();
-		//PageBean page = orderbean.getPagebean();
 		Map<String,Object> pageOrder = orderService.getAppOrderList(orderbean);
 		return pageOrder;
 	}
@@ -87,9 +84,6 @@ public class AppOrderApi {
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public AppOrderResult getOrderDetails(OrderBean orderbean){
 		orderbean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
-		//orderbean.setRecyclerId(1);
-		//Member member = MemberUtils.getMember();
-		//PageBean page = orderbean.getPagebean();
 		AppOrderResult pageOrder = orderService.getOrderDetails(orderbean);
 		return pageOrder;
 	}

@@ -58,7 +58,7 @@ public class MemberAddressApi {
     public String saveMemberAddress(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
 		Member member = MemberUtils.getMember();
-		memberAddressBean.setMemberId(member.getId().toString());
+		memberAddressBean.setAliUserId(member.getAliUserId());
     	return memberAddressService.saveMemberAddress(memberAddressBean);
     }
     /**
@@ -73,7 +73,7 @@ public class MemberAddressApi {
     public List<MemberAddress> memberAddressList(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
 		Member member = MemberUtils.getMember();
-    	List<MemberAddress> memberAddressList = memberAddressService.memberAddressList(member.getId());
+    	List<MemberAddress> memberAddressList = memberAddressService.memberAddressList(member.getAliUserId());
     	return memberAddressList;
     }
     /**
@@ -91,7 +91,7 @@ public class MemberAddressApi {
     	 */
     	//获取当前登录的会员
     	Member member = MemberUtils.getMember();
-    	return memberAddressService.deleteByMemberId(memberAddressBean.getId(),member.getId());
+    	return memberAddressService.deleteByMemberId(memberAddressBean.getId(),member.getAliUserId());
     }
     /**
      * 根据地址Id查询具体地址
@@ -170,7 +170,7 @@ public class MemberAddressApi {
 		if(member==null){
 			return  null;
 		}
-		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
 		if(null==memberAddress) {
 			memberAddress =new MemberAddress();
 			memberAddress.setCommunityId(0);
@@ -237,7 +237,7 @@ public class MemberAddressApi {
 		if(!StringUtils.isBlank(memberAddressBean.getId())) {
 			memberAddress = memberAddressService.selectById(memberAddressBean.getId());
 		}else {
-			memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+			memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
 		}
 		
     	return  memberAddress;
@@ -254,7 +254,7 @@ public class MemberAddressApi {
     public Object updateIsSelectedAddress(MemberAddressBean memberAddressBean) {
 		//获取当前登录的会员
 		Member member = MemberUtils.getMember();
-		return memberAddressService.updateIsSelectedAddress(member.getId().toString(),memberAddressBean.getId());
+		return memberAddressService.updateIsSelectedAddress(member.getAliUserId(),memberAddressBean.getId());
 
     }
 
@@ -270,7 +270,7 @@ public class MemberAddressApi {
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean) {
 		//获取当前登录的会员
 		Member member = MemberUtils.getMember();
-		memberAddressBean.setMemberId(member.getId().toString());
+		memberAddressBean.setAliUserId(member.getAliUserId());
 		return memberAddressService.saveMemberAddressd(memberAddressBean);
 	}
 
@@ -286,7 +286,7 @@ public class MemberAddressApi {
 	public String saveMemberAddressdByMap(MapAddressBean mapAddressBean) {
 		//获取当前登录的会员
 		Member member = MemberUtils.getMember();
-		return memberAddressService.saveMemberAddressdByMap(mapAddressBean,member.getId());
+		return memberAddressService.saveMemberAddressdByMap(mapAddressBean,member.getAliUserId());
 	}
     
 }

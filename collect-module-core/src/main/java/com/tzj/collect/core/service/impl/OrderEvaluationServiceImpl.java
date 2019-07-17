@@ -65,7 +65,7 @@ public class OrderEvaluationServiceImpl extends ServiceImpl<OrderEvaluationMappe
 		   orderEvaluation.setOrderId(orderEvaluationBean.getOrderId());
 		   orderEvaluation.setRecyclerId(order.getRecyclerId());
 		   orderEvaluation.setScore(orderEvaluationBean.getScore());
-		   orderEvaluation.setMemberId(MemberUtils.getMember().getId().intValue());
+		   orderEvaluation.setAliUserId(order.getAliUserId());
 		   orderEvaluation.setContent(orderEvaluationBean.getContent()==null ? "" :orderEvaluationBean.getContent());
 		   orderEvaluation.setDelFlag("0");	
 		   this.insert(orderEvaluation);

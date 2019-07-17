@@ -8,11 +8,10 @@ public interface PointService  extends IService<Point> {
 	/**
 	 * 获取积分值接口   
 	 * @author 王灿
-	 * @param memberId 会员主键
 	 * @return Point
 	 */
 	@DS("slave")
-	Point getPoint(long memberId);
+	Point getPoint(String aliUserId);
 	@DS("slave")
-	Object getPointLists(long memberId);
+	Object getPointLists(String aliUserId);
 }

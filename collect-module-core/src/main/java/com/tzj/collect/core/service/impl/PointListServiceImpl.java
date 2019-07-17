@@ -25,22 +25,21 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
 	/**
 	 * 根据会员ID查询用户的积分流水
 	 * @category 王灿
-	 * @param memberId
 	 * @param pageBean
 	 * @return PointList
 	 */
 	@Override
 	@DS("slave")
-	public List<Object> getPointListByType(long memberId, PageBean pageBean) {
+	public List<Object> getPointListByType(String aliUserId, PageBean pageBean) {
 		//获取用户积分表
-        Point points = pointService.getPoint(memberId);
+        Point points = pointService.getPoint(aliUserId);
         double point = 0;
         double remainPoint = 0;
         if(points !=null) {
         	point = points.getPoint();
         	remainPoint = points.getRemainPoint();
         }
-        List<PointList> pointLists = this.selectList(new EntityWrapper<PointList>().eq("member_id", memberId).eq("del_flag", "0").orderBy("create_date", false));
+        List<PointList> pointLists = this.selectList(new EntityWrapper<PointList>().eq("ali_user_id", aliUserId).eq("del_flag", "0").orderBy("create_date", false));
         List<Object> resultList = new ArrayList<Object>(); 
     	resultList.add(point);
     	resultList.add(pointLists);

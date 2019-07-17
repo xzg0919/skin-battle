@@ -37,12 +37,12 @@ public class PiccOrderServiceImpl extends ServiceImpl<PiccOrderMapper, PiccOrder
 
     @Transactional
     @Override
-    public String insertPiccOrder(long memberId, PiccOrderBean piccOrderBean) throws ApiException{
+    public String insertPiccOrder(String aliUserId, PiccOrderBean piccOrderBean) throws ApiException{
         //根据保险单Id查询保单相关信息
         PiccInsurancePolicy piccInsurancePolicy = piccInsurancePolicyService.selectById(piccOrderBean.getInsuranceId());
 
         PiccOrder piccOrder = new PiccOrder();
-        piccOrder.setMemberId((int)memberId);
+        piccOrder.setAliUserId(aliUserId);
         piccOrder.setMemberName(piccOrderBean.getMemberName());
         piccOrder.setMemberTel(piccOrderBean.getMemberTel());
         piccOrder.setMemberAddress(piccOrderBean.getMemberAddress());
@@ -225,12 +225,12 @@ public class PiccOrderServiceImpl extends ServiceImpl<PiccOrderMapper, PiccOrder
 
     @Transactional
     @Override
-    public String updatePiccWater(Integer memberId, Integer piccWaterId) {
+    public String updatePiccWater(String aliUserId, Integer piccWaterId) {
         Date date = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Integer pointCount = 0;
         if (piccWaterId == 0) {
-            List<PiccWater> piccWaterList = piccWaterService.selectList(new EntityWrapper<PiccWater>().eq("member_id", memberId).eq("del_flag", 0).eq("status_", 0).ge("point_count", 1));
+            List<PiccWater> piccWaterList = piccWaterService.selectList(new EntityWrapper<PiccWater>().eq("ali_user_id", aliUserId).eq("del_flag", 0).eq("status_", 0).ge("point_count", 1));
             if (!piccWaterList.isEmpty()){
                 for (PiccWater piccWater:piccWaterList){
                     piccWater.setStatus("1");
@@ -246,7 +246,7 @@ public class PiccOrderServiceImpl extends ServiceImpl<PiccOrderMapper, PiccOrder
 
         }
 
-        PiccOrder piccOrder = this.selectOne(new EntityWrapper<PiccOrder>().eq("status_", 2).eq("del_flag", 0).eq("member_id", memberId).ge("pick_end_time", df.format(date)));
+        PiccOrder piccOrder = this.selectOne(new EntityWrapper<PiccOrder>().eq("status_", 2).eq("del_flag", 0).eq("ali_user_id", aliUserId).ge("pick_end_time", df.format(date)));
         if (null!=piccOrder&&piccOrder.getInitPrice()<piccOrder.getUnderwritingPrice()){
             if (piccOrder.getInitPrice()+pointCount<=piccOrder.getUnderwritingPrice()){
                 piccOrder.setInitPrice(piccOrder.getInitPrice()+pointCount);

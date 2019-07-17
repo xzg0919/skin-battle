@@ -27,14 +27,14 @@ public interface MemberAddressService extends IService<MemberAddress>{
      * @return 
      */
 	@DS("slave")
-	public List<MemberAddress> memberAddressList(long memberId);
+	public List<MemberAddress> memberAddressList(String aliUserId);
 	/**
 	 * 用户删除地址时，如果是删除默认地址，自动将余下任意一条地址设置为默认地址
 	 * @author wangcan
 	 * @param memberAddressId : 地址id
 	 * @return
 	 */
-	public String deleteByMemberId(String memberAddressId, long memberId);
+	public String deleteByMemberId(String memberAddressId, String aliUserId);
 
 	/**
 	 * 小程序保存用户的新增地址
@@ -44,7 +44,7 @@ public interface MemberAddressService extends IService<MemberAddress>{
 	 */
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean);
 
-	String saveMemberAddressdByMap(MapAddressBean mapAddressBean, long memberId);
+	String saveMemberAddressdByMap(MapAddressBean mapAddressBean, String aliUserId);
 
 	/**
 	 * 小获取用户的默认地址
@@ -53,9 +53,9 @@ public interface MemberAddressService extends IService<MemberAddress>{
 	 * @return
 	 */
 	@DS("slave")
-	public MemberAddress getMemberAdderssByMemberId(String memberId);
+	public MemberAddress getMemberAdderssByAliUserId(String aliUserId);
 
-	Object updateIsSelectedAddress(String memberId, String id);
+	Object updateIsSelectedAddress(String aliUserId, String id);
 	@DS("slave")
 	String getMemberAddressById(String id);
 

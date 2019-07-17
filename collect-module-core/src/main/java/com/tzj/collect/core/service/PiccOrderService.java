@@ -14,7 +14,7 @@ import java.util.Map;
 
 public interface PiccOrderService extends IService<PiccOrder> {
 
-    String insertPiccOrder(long memberId, PiccOrderBean piccOrderBean)throws ApiException;
+    String insertPiccOrder(String aliUserId, PiccOrderBean piccOrderBean)throws ApiException;
 
     String deletePiccOrderList(String piccOrderIds);
     @DS("slave")
@@ -28,7 +28,7 @@ public interface PiccOrderService extends IService<PiccOrder> {
 
     Object addPiccOrderExcel(PiccCompany piccCompany, List<PiccOrder> piccOrderList);
 
-    String updatePiccWater(Integer memberId, Integer piccWaterId);
+    String updatePiccWater(String aliUserId, Integer piccWaterId);
 
     void outPiccOrderExcel(HttpServletResponse response, PiccOrderBean piccOrderBean) throws Exception;
 }

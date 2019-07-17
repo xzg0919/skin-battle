@@ -37,7 +37,7 @@ public class PiccOrderApi {
     public String insertPiccOrder(PiccOrderBean piccOrderBean) throws ApiException {
         Member member = MemberUtils.getMember();
         //查询该用户是否有保单
-        List<PiccOrder> piccOrderList = piccOrderService.selectList(new EntityWrapper<PiccOrder>().eq("member_id", member.getId()).eq("del_flag", 0).eq("insurance_id", piccOrderBean.getInsuranceId()));
+        List<PiccOrder> piccOrderList = piccOrderService.selectList(new EntityWrapper<PiccOrder>().eq("ali_user_id", member.getAliUserId()).eq("del_flag", 0).eq("insurance_id", piccOrderBean.getInsuranceId()));
         if (piccOrderList != null) {
             for (PiccOrder piccOrder:piccOrderList) {
                 if (piccOrder.getStatus().getValue() != PiccOrder.PiccOrderType.NOOPEN.getValue()){
@@ -45,7 +45,7 @@ public class PiccOrderApi {
                 }
             }
         }
-        return piccOrderService.insertPiccOrder(member.getId(),piccOrderBean);
+        return piccOrderService.insertPiccOrder(member.getAliUserId(),piccOrderBean);
     }
 
     /**
@@ -63,7 +63,7 @@ public class PiccOrderApi {
         if(StringUtils.isBlank(piccWaterId)){
             piccWaterId = "0";
         }
-        return piccOrderService.updatePiccWater(member.getId().intValue(),Integer.parseInt(piccOrderBean.getId()));
+        return piccOrderService.updatePiccWater(member.getAliUserId(),Integer.parseInt(piccOrderBean.getId()));
     }
 
 }

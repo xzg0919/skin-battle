@@ -48,8 +48,8 @@ public class CategoryAttrApi {
     public Object getCategoryAttrList(CategoryBean categoryBean){
 		//查询用户的默认地址
 		Member member = MemberUtils.getMember();
-		System.out.println("------memberId参数是 ："+member.getId()+"------category参数是 ："+categoryBean.getId()+"-------cityId是 ："+categoryBean.getCityId());
-		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+		System.out.println("------memberId参数是 ："+member.getAliUserId()+"------category参数是 ："+categoryBean.getId()+"-------cityId是 ："+categoryBean.getCityId());
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
     	if(memberAddress==null) {
     		//根据分类id取得所有分类属性
     		return categoryAttrService.getCategoryAttrListss(categoryBean.getId());

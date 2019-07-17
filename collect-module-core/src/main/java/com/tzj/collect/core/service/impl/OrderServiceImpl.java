@@ -127,30 +127,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Autowired
 	private AreaService areaService;
 
-	@Override
-	public Order getLastestOrderByMember(Integer memberId) {
-		return selectOne(new EntityWrapper<Order>().eq("member_id", memberId).orderBy("complete_date", false).last("LIMIT 1"));
-	}
-
 	/**
 	 * 获取会员的订单列表 分页
 	 *
-	 * @param memberId :会员表主键
 	 * @param num      : 第几页
 	 * @param size     : 共多少条
 	 * @return
 	 * @author 王灿
 	 */
 	@Override
-	public Map<String, Object> getOrderlist(long memberId,Integer status, int num, int size) {
+	public Map<String, Object> getOrderlist(String aliUserId,Integer status, int num, int size) {
 		EntityWrapper<Order> wrapper = new EntityWrapper<Order>();
-		wrapper.eq("member_id", memberId);
+		wrapper.eq("ali_user_id", aliUserId);
 		wrapper.eq("del_flag", "0");
 		wrapper.orderBy("create_date", false);
 		wrapper.eq("status_",status);
 		int i = this.selectCount(wrapper);
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<Order> listOrder = orderMapper.getOrderlist((int) memberId,status, (num - 1) * size, size);
+		List<Order> listOrder = orderMapper.getOrderlist(aliUserId,status, (num - 1) * size, size);
 		listOrder = this.createName4Ali(listOrder);
 		map.put("pageNum", num);
 		map.put("count", i);
@@ -518,14 +512,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Page<Order> getOrderPage(String status, PageBean page) {
 		Page<Order> pages = new Page<Order>(page.getPageNumber(), page.getPageSize());
 		EntityWrapper<Order> wrapper = new EntityWrapper<Order>();
-		//wrapper.eq("member_id", memberId);
 		wrapper.in("status_", status);
 		return this.selectPage(pages, wrapper);
 	}
 
 	@Override
-	public List<Order> getUncompleteList(long memberId) {
-		List<Order> orderList = orderMapper.getUncompleteList(memberId);
+	public List<Order> getUncompleteList(String aliUserId) {
+		List<Order> orderList = orderMapper.getUncompleteList(aliUserId);
 		orderList = this.createName4Ali(orderList);
 		return orderList;
 	}
@@ -940,7 +933,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//只给瓶子增加能量，为峰会使用bottlesCount.get().toString()
 		this.updateCansForestIot(order, member.getAliUserId(), Float.valueOf(bottlesCount.get()).longValue(), "cans");
 		//增加平台积分
-		this.updateMemberPoint(order.getMemberId(), order.getOrderNo(),order.getGreenCount(), "智能回收箱投放");
+		this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(),order.getGreenCount(), "智能回收箱投放");
 		return map;
 	}
 
@@ -1742,7 +1735,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderLog.setOpStatusAfter("COMPLETE");
 					orderLog.setOp("已完成");
 
-					this.updateMemberPoint(order.getMemberId(), order.getOrderNo(), orderBean.getAmount(),descrb);
+					this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
 
 					break;
 				case "2":// 已接单
@@ -1790,9 +1783,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 			order.setUpdateDate(new Date());
 			order.setIsRead("0");
-			order.setRecyclerId(null);
+			order.setRecyclerId(0);
 			order.setStatus(OrderType.INIT);
-			order.setCancelReason("");
+			order.setCancelReason("订单回调");
+			order.setCancelTime(new Date());
 			orderLog.setOpStatusAfter(OrderType.INIT.name());
 			orderLog.setOp("订单回调");
 			orderLog.setOrderId(Integer.parseInt(order.getId().toString()));
@@ -1807,18 +1801,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	/**
-	 * @param memberId:用户Id
 	 * @param OrderNo:订单编号
 	 * @author 王灿
 	 */
-	public void updateMemberPoint(Integer memberId, String OrderNo, double amount,String descrb) {
+	public void updateMemberPoint(String aliUserId, String OrderNo, double amount,String descrb) {
 		DecimalFormat df   = new DecimalFormat("######0.00");
 		amount = Double.parseDouble(df.format(amount));
 
-		Point points = pointService.getPoint(memberId);
+		Point points = pointService.getPoint(aliUserId);
 		if (points == null) {
 			points = new Point();
-			points.setMemberId(memberId);
+			points.setAliUserId(aliUserId);
 			points.setPoint(amount);
 			points.setRemainPoint(amount);
 			pointService.insert(points);
@@ -1829,14 +1822,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		//给用户增加会员卡积分
 		try {
-			Member member = memberService.selectById(memberId);
+			Member member = memberService.selectMemberByAliUserId(aliUserId);
 			System.out.println("给用户增加的积分是 ：" + amount + "----point: " +Double.parseDouble(df.format(points.getPoint()))+ "");
 			aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), Double.parseDouble(df.format(points.getPoint())) + "", null, member.getAppId());
 		} catch (Exception e) {
 			System.out.println("给用户增加积分失败---------------");
 		}
 		PointList pointList = new PointList();
-		pointList.setMemberId(memberId);
+		pointList.setAliUserId(aliUserId);
 		pointList.setPoint(amount + "");
 		pointList.setType("0");
 		pointList.setDocumentNo(OrderNo);
@@ -1844,7 +1837,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		pointListService.insert(pointList);
 		//记录用户picc能量
 		PiccWater piccWater = new PiccWater();
-		piccWater.setMemberId(memberId);
+		piccWater.setAliUserId(aliUserId);
 		piccWater.setStatus("0");
 		piccWater.setPointCount((int)amount);
 		piccWater.setDescrb(descrb);
@@ -2213,7 +2206,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setGreenCount(amount);
 		this.updateById(order);
 		//给用户增加积分
-		this.updateMemberPoint(order.getMemberId(), order.getOrderNo(), amount,"定点回收物");
+		this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), amount,"定点回收物");
 
 		if (orderBean.getPrice().compareTo(BigDecimal.ZERO)==0){
 			//给用户增加蚂蚁能量
@@ -2671,20 +2664,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return orderMapper.oneDayorderNum(streetId);
 	}
 
-	@Override
-	public String isUserOrder(String memberId){
-//		List<Order> initOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "0,1").eq("is_read", 0));
-//		List<Order> alreadyOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 2).eq("is_read", 0));
-//		List<Order> completeOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).eq("status_", 3).eq("is_read", 0));
-//		List<Order> cancleOrder = orderService.selectList(new EntityWrapper<Order>().eq("member_id", memberId).in("status_", "4,5").eq("is_read", 0));
-//		Map<String,Object> orderMap = new HashMap<>();
-//		orderMap.put("initOrder",initOrder.size());
-//		orderMap.put("alreadyOrder",alreadyOrder.size());
-//		orderMap.put("completeOrder",completeOrder.size());
-//		orderMap.put("cancleOrder",cancleOrder.size());
-//		return JSON.toJSONString(orderMap);
-		return null;
-	}
 
 	@Override
 	public OrderBean myslOrderData(String orderId) {

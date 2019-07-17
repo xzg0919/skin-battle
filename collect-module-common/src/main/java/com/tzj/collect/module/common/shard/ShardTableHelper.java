@@ -18,7 +18,7 @@ public class ShardTableHelper {
     public static String getTableNameByModeling(String tableName,Long shardSource,int modeling){
         long num=shardSource%modeling;
         StringBuffer sb=new StringBuffer();
-        sb.append(tableName).append("_").append(num);
+        sb.append(tableName).append(num);
         return sb.toString();
     }
 

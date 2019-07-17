@@ -12,5 +12,5 @@ public interface PiccInsurancePolicyService extends IService<PiccInsurancePolicy
      @DS("slave")
      Object getInsurancePolicy(long piccCompanyId);
      @DS("slave")
-     Object insuranceDetal(Integer memberId, Integer insuranceId);
+     Object insuranceDetal(String aliUserId, Integer insuranceId);
 }

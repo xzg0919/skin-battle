@@ -154,7 +154,7 @@ public class FiveKgController {
                     orderPicAch.setSmallPic(orderPic.getSmallPic());
                     orderPicAchService.insert(orderPicAch);
                     //给用户增加积分
-                    orderService.updateMemberPoint(order.getMemberId(), order.getOrderNo(), order.getGreenCount(),"生活垃圾");
+                    orderService.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), order.getGreenCount(),"生活垃圾");
                     //给用户增加蚂蚁能量
                     OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
                 }

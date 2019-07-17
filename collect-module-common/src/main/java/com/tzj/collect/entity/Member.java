@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import lombok.Data;
 
 import java.util.Date;
 
@@ -14,6 +15,7 @@ import java.util.Date;
  * @Author 王灿
  **/
 @TableName("sb_member")
+@Data
 public class Member extends  DataEntity<Long>{
     private static final long serialVersionUID = -6405467088491154588L;
     @TableId(value = "id", type = IdType.AUTO)
@@ -89,151 +91,7 @@ public class Member extends  DataEntity<Long>{
      */
     private String picUrl;
 
+    @TableField(exist = false)
+    private String tableName;
 
-    public String getLinkName() {
-        return linkName;
-    }
-
-    public void setLinkName(String linkName) {
-        this.linkName = linkName;
-    }
-
-    public String getPicUrl() {
-        return picUrl;
-    }
-
-    public void setPicUrl(String picUrl) {
-        this.picUrl = picUrl;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getIsCertified() {
-        return isCertified;
-    }
-
-    public void setIsCertified(String isCertified) {
-        this.isCertified = isCertified;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getIsShowDialog() {
-		return isShowDialog;
-	}
-
-	public void setIsShowDialog(String isShowDialog) {
-		this.isShowDialog = isShowDialog;
-	}
-
-	public String getIdCard() {
-        return idCard;
-    }
-
-    public void setIdCard(String idCard) {
-        this.idCard = idCard;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getGreenCode() {
-        return greenCode;
-    }
-
-    public void setGreenCode(String greenCode) {
-        this.greenCode = greenCode;
-    }
-
-    public String getAliUserId() {
-        return aliUserId;
-    }
-
-    public void setAliUserId(String aliUserId) {
-        this.aliUserId = aliUserId;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getMobile() {
-		return mobile;
-	}
-
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
-	}
-
-	public String getCardNo() {
-		return cardNo;
-	}
-
-	public void setCardNo(String cardNo) {
-		this.cardNo = cardNo;
-	}
-
-	public String getAliCardNo() {
-		return aliCardNo;
-	}
-
-	public void setAliCardNo(String aliCardNo) {
-		this.aliCardNo = aliCardNo;
-	}
-
-	public Date getOpenCardDate() {
-		return openCardDate;
-	}
-
-	public void setOpenCardDate(Date openCardDate) {
-		this.openCardDate = openCardDate;
-	}
-    
 }

@@ -54,13 +54,13 @@ public class AppOrderPayApi {
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 
         Payment payment=paymentService.selectByOrderSn(order.getOrderNo());
-        Member member = memberService.selectById(order.getMemberId());
+
         if(payment==null){
             payment=new Payment();
             payment.setOrderSn(order.getOrderNo());
             payment.setPrice(orderPayParam.getPrice());
             payment.setRecyclersId(recyclers.getId());
-            payment.setAliUserId(member.getAliUserId());
+            payment.setAliUserId(order.getAliUserId());
             payment.setStatus(Payment.STATUS_UNPAY);
             paymentService.insert(payment);
         }else{

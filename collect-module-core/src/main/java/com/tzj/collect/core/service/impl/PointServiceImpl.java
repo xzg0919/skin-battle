@@ -29,22 +29,22 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 	 */
 	@Override
 	@DS("slave")
-	public Point getPoint(long memberId) {
+	public Point getPoint(String aliUserId) {
 		EntityWrapper entityWrapper = new EntityWrapper<Point>();
-				entityWrapper.eq("member_id", memberId);
+				entityWrapper.eq("ali_user_id", aliUserId);
 				entityWrapper.eq("del_flag", "0");
 		return this.selectOne(entityWrapper);
 	}
 
 	@Override
 	@DS("slave")
-	public Object getPointLists(long memberId) {
+	public Object getPointLists(String aliUserId) {
 		Map<String,Object> resultMap = new HashMap<>();
 		//获取用户能量信息
-		Point point = this.selectOne(new EntityWrapper<Point>().eq("member_id", memberId).eq("del_flag", "0"));
+		Point point = this.selectOne(new EntityWrapper<Point>().eq("ali_user_id", aliUserId).eq("del_flag", "0"));
 		//获取用户能量流水信息
-		List<PointList> inPointList = pointListService.selectList(new EntityWrapper<PointList>().eq("member_id", memberId).eq("del_flag", 0).ge("point", 1).eq("type", 0).orderBy("create_date",false));
-		List<PointList> outPointList = pointListService.selectList(new EntityWrapper<PointList>().eq("member_id", memberId).eq("del_flag", 0).le("point", -1).eq("type", 1).orderBy("create_date",false));
+		List<PointList> inPointList = pointListService.selectList(new EntityWrapper<PointList>().eq("ali_user_id", aliUserId).eq("del_flag", 0).ge("point", 1).eq("type", 0).orderBy("create_date",false));
+		List<PointList> outPointList = pointListService.selectList(new EntityWrapper<PointList>().eq("ali_user_id", aliUserId).eq("del_flag", 0).le("point", -1).eq("type", 1).orderBy("create_date",false));
 		resultMap.put("point",null != point?point.getPoint():0);
 		resultMap.put("inPointList",inPointList);
 		resultMap.put("outPointList",outPointList);

@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.common.utils.AlipayConst;
+import com.tzj.collect.common.utils.TableNameUtils;
 import com.tzj.collect.core.mapper.MemberMapper;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.collect.module.common.shard.ShardTableHelper;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,9 @@ import static com.tzj.collect.common.constant.TokenConst.*;
 @Service
 @Transactional(readOnly = true)
 public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> implements MemberService {
+
+	@Autowired
+	private MemberMapper memberMapper;
 	@Autowired
 	private AliPayService aliPayService;
 	@Autowired
@@ -49,7 +54,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
     @Override
     public Member findMemberByAliId(String aliMemberId) {
-        return selectOne(new EntityWrapper<Member>().eq("ali_user_id", aliMemberId));
+        return this.selectMemberByAliUserId(aliMemberId);
     }
 
     @Transactional
@@ -60,7 +65,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         member.setGreenCode(memberBean.getGreenSn());
         member.setIdCard(memberBean.getCertNo());
         member.setName(memberBean.getUserName());
-        this.insert(member);
+        this.insertMember(member);
         return member;
     }
     /**
@@ -128,7 +133,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 //			return "用户授权信息解析失败";
 //		}
 		//查询用户是否存在
-		Member member = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", userId));
+		Member member = this.selectMemberByAliUserId(userId);
 		//外部会员卡号
 		String cardNo = new SimpleDateFormat("yyyyMMdd").format(new Date())+ "000" +String.valueOf((int)((Math.random()*9+1)*100000)) ;
 		//用户会员卡号(阿里返回)
@@ -185,7 +190,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			}
 			member.setCardNo(cardNo);
 			member.setAppId(appId);
-			this.insert(member);
+			this.insertMember(member);
 		}else {
 			member.setAliUserId(userId);
 			if ("XCX".equals(source)){
@@ -207,7 +212,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			//判断是否给用户发过会员卡
 			if(StringUtils.isBlank(member.getAliCardNo())) {
 				//获取用户积分数据
-				Point piont = pointService.getPoint(member.getId());
+				Point piont = pointService.getPoint(member.getAliUserId());
 				String points = "0";
 				if(piont!=null) {
 					points = piont.getPoint()+"";
@@ -225,13 +230,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 				member.setCardNo(cardNo);
 				member.setAppId(appId);
 			}
-			this.updateById(member);
+			this.updateMemberByAliUserId(member);
 		}
 		
-		resultMap.put("id", member.getId());
+		resultMap.put("id", member.getAliUserId());
 		if(StringUtils.isNotBlank(member.getMobile())||"XCX".equals(source)) {
 			resultMap.put("mobile", "1");
-			String token= JwtUtils.generateToken(member.getId().toString(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+			String token= JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
 			String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
 			System.out.println("token:"+securityToken);
 			resultMap.put("member", member);
@@ -264,12 +269,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			return "用户授权信息解析失败";
 		}
 		//查询用户是否存在
-		Member member = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", userId));
+		Member member = this.selectMemberByAliUserId(userId);
 		if(member==null) {
 			return "系统目前暂无此用户";
 		}
 		Map<String,Object> map = new HashMap<String,Object>();
-		String token= JwtUtils.generateToken(member.getId().toString(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+		String token= JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
 		String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
 		System.out.println("用户的token是:"+securityToken);
 			Area area = null;
@@ -286,14 +291,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			map.put("token", securityToken);
 		return map;
 	}
-
 	/**
 	 * 获取会员个人中心的相关数据
 	 * @author 王灿
 	 * @param
 	 */
 	@Override
-	public Object memberAdmin(Integer memberId) {
+	public Object memberAdmin(String aliUserId) {
 		Map<String,Object> resultMap = new HashMap<>();
 		String isPiccInsurance = "NO";
 		String isPiccWater = "NO";
@@ -302,7 +306,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		String title = null;
 		String defeatMsg = "";
 		//查询该用户是否有保单
-		PiccOrder piccOrder = piccOrderService.selectOne(new EntityWrapper<PiccOrder>().eq("member_id", memberId).eq("del_flag", 0).in("status_","0,2,4"));
+		PiccOrder piccOrder = piccOrderService.selectOne(new EntityWrapper<PiccOrder>().eq("ali_user_id", aliUserId).eq("del_flag", 0).in("status_","0,2,4"));
 		if (null != piccOrder){
 			if(piccOrder.getStatus().getValue() == PiccOrder.PiccOrderType.OPENING.getValue()){
 				isPiccInsurance = "YES";
@@ -310,13 +314,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 				isPiccInsurance = "ING";
 			}
 		}else{
-			List<PiccOrder> piccOrderList = piccOrderService.selectList(new EntityWrapper<PiccOrder>().eq("member_id", memberId).eq("del_flag", 0).eq("status_", "1").orderBy("create_date", false));
+			List<PiccOrder> piccOrderList = piccOrderService.selectList(new EntityWrapper<PiccOrder>().eq("ali_user_id", aliUserId).eq("del_flag", 0).eq("status_", "1").orderBy("create_date", false));
 			if(null != piccOrderList&&!piccOrderList.isEmpty()){
 				defeatMsg = piccOrderList.get(0).getCancelReason();
 			}
 		}
 		//判断是否有保额待领取
-		PiccWater piccWater = piccWaterService.selectOne(new EntityWrapper<PiccWater>().eq("member_id", memberId).eq("del_flag", 0).eq("status_", 0).ge("point_count", 1));
+		PiccWater piccWater = piccWaterService.selectOne(new EntityWrapper<PiccWater>().eq("ali_user_id", aliUserId).eq("del_flag", 0).eq("status_", 0).ge("point_count", 1));
 		if(null!= piccWater){
 			isPiccWater = "YES";
 		}
@@ -327,9 +331,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			title = piccInsurancePolicy.get(0).getTitle();
 		}
 		//查询用户的绿色能量
-		Point point = pointService.selectOne(new EntityWrapper<Point>().eq("member_id", memberId).eq("del_flag", 0));
-
-		Member member = this.selectById(memberId);
+		Point point = pointService.selectOne(new EntityWrapper<Point>().eq("ali_user_id", aliUserId).eq("del_flag", 0));
+		Member member = this.selectMemberByAliUserId(aliUserId);
 		if ( null != point){
 			greenCount = point.getPoint();
 			resultMap.put("greenCount",greenCount);
@@ -363,13 +366,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			return map;
 		}
 	}
-
-	public static void main(String[] args) throws  Exception{
-
-		Thread.sleep(100);
-		System.out.println(PiccOrder.PiccOrderType.RECEIVE.getValue());
-	}
-
 	/**
 	 *  小程序静默授权
 	 * 根据用户授权返回的authCode,获取用户的token
@@ -405,12 +401,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		String accessToken = response.getAccessToken();
 		String userId = response.getUserId();
 		//查询用户是否存在
-		Member member = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", userId));
+		Member member = this.selectMemberByAliUserId(userId);
 		if(member==null||StringUtils.isBlank(member.getAliCardNo())){
 			resultMap.put("token",null);
 			return resultMap;
 		}
-		String token= JwtUtils.generateToken(member.getId().toString(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+		String token= JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
 		String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
 		System.out.println("token:"+securityToken);
 		resultMap.put("token", securityToken);
@@ -422,8 +418,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	}
 
 	@Override
-	public Object getPassIdUrl(Long memberId)  {
-		Member member = this.selectById(memberId);
+	public Object getPassIdUrl(String aliUserId)  {
+		Member member = this.selectMemberByAliUserId(aliUserId);
 		AlipayMarketingCardQueryResponse response = aliPayService.getPassIdUrl(member.getAliCardNo(), member.getAliUserId());
 		Map<String,Object> resultMap = new HashMap<>();
 		if (response.isSuccess()){
@@ -448,6 +444,37 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		String userId = response.getUserId();
 		resultMap.put("aliUserId", userId);
 		return resultMap;
+	}
+	@Override
+	public Member selectMemberByAliUserId(String aliUserId) {
+		String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
+		return memberMapper.selectMemberByAliUserId(aliUserId,memberName);
+	}
+
+	@Override
+	@Transactional
+	public Integer updateMemberByAliUserId(Member member) {
+		String memberTableName = TableNameUtils.getMemberTableName(member);
+		member.setTableName(memberTableName);
+		return memberMapper.updateMemberByAliUserId(member);
+	}
+
+	@Override
+	@Transactional
+	public Integer insertMember(Member member) {
+		String memberTableName = TableNameUtils.getMemberTableName(member);
+		member.setTableName(memberTableName);
+		return memberMapper.insertMember(member);
+	}
+
+	@Override
+	@Transactional
+	public Integer inserOrUpdatetMember(Member member) {
+		if(StringUtils.isBlank(member.getAliUserId())){
+			return this.insertMember(member);
+		}else {
+			return this.updateMemberByAliUserId(member);
+		}
 	}
 
 }

@@ -84,7 +84,7 @@ public class OrderApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<Order> orderUnfinishlist() {
     	Member member = MemberUtils.getMember();
-    	List<Order> list = orderService.getUncompleteList(member.getId());
+    	List<Order> list = orderService.getUncompleteList(member.getAliUserId());
        return list;
     }
     
@@ -108,7 +108,7 @@ public class OrderApi {
 		//获取当前登录的会员信息
     	Member member = MemberUtils.getMember();
     	//根据会员ID回去订单列表
-    	Map<String,Object> map = orderService.getOrderlist(member.getId(),status,pageBean.getPageNumber(),pageBean.getPageSize());
+    	Map<String,Object> map = orderService.getOrderlist(member.getAliUserId(),status,pageBean.getPageNumber(),pageBean.getPageSize());
     	return map;
     }
     
@@ -208,7 +208,7 @@ public class OrderApi {
     	orderbean.setGreenCode(member.getGreenCode());
     	orderbean.setAliUserId(member.getAliUserId());
     	//查询用户的默认地址
-    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
     	if(memberAddress==null) {
     		return "您暂未添加回收地址";
     	}
@@ -276,7 +276,7 @@ public class OrderApi {
     public Object getCompanyByIds(OrderBean orderbean){
     	Member member = MemberUtils.getMember();
     	//查询用户的默认地址
-    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
     	if(memberAddress==null) {
     		return "您暂未添加回收地址";
     	}
@@ -343,7 +343,7 @@ public class OrderApi {
 	public Object XcxSaveOrder(OrderBean orderbean){
 		Member member = MemberUtils.getMember();
 		//查询用户的默认地址
-		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
 		if(memberAddress==null) {
 			return "您暂未添加回收地址";
 		}
@@ -476,7 +476,7 @@ public class OrderApi {
 			resultMap.put("code",5);
 			return resultMap;
 		}
-		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
 		if(memberAddress==null) {
 			return "您暂未添加回收地址";
 		}
@@ -565,7 +565,7 @@ public class OrderApi {
 		orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
 		orderbean.setAliUserId(member.getAliUserId());
 		//查询用户的默认地址
-		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
 		if(memberAddress==null) {
 			return "您暂未添加回收地址";
 		}

@@ -96,7 +96,7 @@ public class MemberApi {
     	}
     	memberService.updateById(member);
     	Map<String,Object> map = new HashMap<String,Object>();
-    	String token= JwtUtils.generateToken(member.getId().toString(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+    	String token= JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
     	String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
     	System.out.println("token:"+securityToken);
 		map.put("token", securityToken);
@@ -104,29 +104,7 @@ public class MemberApi {
     }
     
  
-//    /**
-//     * 修改弹框状态
-//     * @param memberBean
-//     * @return
-//     */
-//    public String updateShowDialog(MemberBean memberBean) {
-//		return memberService.updateShowDialog(memberBean);
-//	}  
-    /**
-     * 修改弹框状态
-     * @author 
-     * @param 
-     */
-    @Api(name = "member.updateShowDialog", version = "1.0")
-    @SignIgnore
-    public String updateShowDialog() {
-    	//获取当前登录的会员
-    	Member member = MemberUtils.getMember();
-    	member.setIsShowDialog("1");
-		Member member1 = memberService.selectById(member.getId());
-		memberService.updateById(member1);
-		return "success";
-    }
+
 	/**
 	 * 返回用户信息
 	 * @author
@@ -158,7 +136,27 @@ public class MemberApi {
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getPassIdUrl() {
 		Member member = MemberUtils.getMember();
-		return memberService.getPassIdUrl(member.getId());
+		return memberService.getPassIdUrl(member.getAliUserId());
 	}
 
+	@Api(name = "member.testMember", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object testMember() {
+		Member member = MemberUtils.getMember();
+		Member member1 = memberService.selectMemberByAliUserId(member.getAliUserId());
+		System.out.println(member1.getOpenCardDate());
+		member1.setAliUserId("123456");
+		memberService.insertMember(member1);
+		member1.setName("测试");
+		memberService.updateMemberByAliUserId(member1);
+		member1.setMobile("12345678911");
+		memberService.inserOrUpdatetMember(member1);
+		memberService.inserOrUpdatetMember(new Member());
+		return "操作成功";
+	}
+
+	public static void main(String[] args) {
+		System.out.println(Long.parseLong("123456")%40);
+	}
 }

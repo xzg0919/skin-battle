@@ -113,7 +113,7 @@ public class CategoryApi {
 		//获取所有分类的集合
 		String [] OptionPrice = categoryAttrOptionPrice.split(",");
 		//查询用户的默认地址
-    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
     	if(memberAddress==null) {
     		return "该区域暂无回收企业";
     	}
@@ -220,7 +220,6 @@ public class CategoryApi {
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object categoryHouseTwoList(CategoryBean categoryBean){
-		Member member = MemberUtils.getMember();
 		return priceService.categoryHouseTwoList(categoryBean);
 
 	}
@@ -285,9 +284,9 @@ public class CategoryApi {
 			String key = CipherTools.initKey(tokenCyptoKey);
 			String decodeToken = CipherTools.decrypt(token, key);
 			Claims claims = JwtUtils.getClaimByToken(decodeToken, ALI_API_TOKEN_SECRET_KEY);
-			String memberId = claims.getSubject();
+			String aliUserId = claims.getSubject();
 			//获取当前用户的默认地址
-			MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(memberId);
+			MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
 			if(memberAddress==null){
 				return "暂未添加回收地址";
 			}

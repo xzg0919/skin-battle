@@ -117,7 +117,7 @@ public class ProductApi {
 			//获取当前登录的会员
 			Member member = MemberUtils.getMember();
 			//获取用户默认地址
-			MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+			MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
 			resultMap.put("memberAddress", memberAddress);
 		}catch (Exception e){
 
@@ -150,7 +150,7 @@ public class ProductApi {
     	//获取当前登录的会员
     	Member member = MemberUtils.getMember();
     	//查询用户积分
-    	Point point = pointService.getPoint(member.getId());
+    	Point point = pointService.getPoint(member.getAliUserId());
     	//查询此券需要消耗多少能量兑换
     	Product product = productService.selectById(productBean.getId());
     	//判断是否需要积分兑换
@@ -199,7 +199,7 @@ public class ProductApi {
 		//增加相应的积分记录
 		if(product.getBindingPoint()!=0) {
 			PointList pointList =new  PointList();
-			pointList.setMemberId(Integer.parseInt(member.getId().toString()));
+			pointList.setAliUserId(member.getAliUserId());
 			pointList.setPoint("-"+product.getBindingPoint());
 			pointList.setType("1");
 			pointList.setDocumentNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000));
@@ -221,7 +221,7 @@ public class ProductApi {
     	//获取当前登录的会员
     	Member member = MemberUtils.getMember();
     	//查询用户积分
-    	Point point = pointService.getPoint(member.getId());
+    	Point point = pointService.getPoint(member.getAliUserId());
     	//查询此券需要消耗多少能量兑换
     	Product product = productService.selectById(productBean.getId());
     	//判断是否需要积分兑换
@@ -245,14 +245,14 @@ public class ProductApi {
 			e.printStackTrace();
 		} 
     	//查询用户是否兑换过此商品
-    	int count = goodsProductOrderService.selectCount(new EntityWrapper<GoodsProductOrder>().eq("member_id", member.getId()).eq("product_id", productBean.getId()));
+    	int count = goodsProductOrderService.selectCount(new EntityWrapper<GoodsProductOrder>().eq("ali_user_id", member.getAliUserId()).eq("product_id", productBean.getId()));
     	if(count >= Integer.parseInt(product.getPickLimitTotal())) {
     		return "您兑换超出限制，不可再兑换了";
     	}
     	MemberAddress memberAddress = null;
     	if(StringUtils.isBlank(productBean.getUserName())||StringUtils.isBlank(productBean.getMobile())||StringUtils.isBlank(productBean.getAddress())) {
     		//获取用户默认地址
-    		memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+    		memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
     	}else {
     		//根据条件查看地址是否存在
     		memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("name_", productBean.getUserName()).eq("tel", productBean.getMobile()).eq("address_", productBean.getAddress()).eq("del_flag", "0"));

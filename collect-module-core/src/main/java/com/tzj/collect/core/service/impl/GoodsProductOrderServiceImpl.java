@@ -43,7 +43,6 @@ public class GoodsProductOrderServiceImpl extends ServiceImpl<GoodsProductOrderM
 		goodsProductOrder.setMobile(memberAddress.getTel());
 		goodsProductOrder.setAddress(memberAddress.getAddress());
 		goodsProductOrder.setProductId(product.getId());
-		goodsProductOrder.setMemberId(Integer.parseInt(member.getId().toString()));
 		goodsProductOrder.setAliUserId(member.getAliUserId());
 		goodsProductOrder.setProductName(product.getBrand());
 		goodsProductOrder.setProductUrl(product.getImg());
@@ -71,7 +70,7 @@ public class GoodsProductOrderServiceImpl extends ServiceImpl<GoodsProductOrderM
 		//增加相应的积分记录
 		if(product.getBindingPoint()!=0) {
 			PointList pointList =new  PointList();
-			pointList.setMemberId(Integer.parseInt(member.getId().toString()));
+			pointList.setAliUserId(member.getAliUserId());
 			pointList.setPoint("-"+product.getBindingPoint());
 			pointList.setType("1");
 			pointList.setDocumentNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000));

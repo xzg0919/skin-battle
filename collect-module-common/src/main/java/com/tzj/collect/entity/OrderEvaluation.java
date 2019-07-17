@@ -2,6 +2,7 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 /**
  *
@@ -10,6 +11,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
  * @Author 王灿
  **/
 @TableName("sb_order_evaluation")
+@Data
 public class OrderEvaluation extends  DataEntity<Long>{
     /**
 	 * 
@@ -44,6 +46,8 @@ public class OrderEvaluation extends  DataEntity<Long>{
      * 评论内容
      */
     private  String content;
+
+    private String aliUserId;
 
     @Override
     public Long getId() {

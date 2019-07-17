@@ -26,19 +26,17 @@ import java.util.Map;
  **/
 public interface OrderService extends IService<Order> {
 
-	@DS("slave")
-	Order getLastestOrderByMember(Integer memberId);
+
 	
 	/**
      * 获取会员的订单列表 分页
      * @author 王灿
-     * @param memberId :会员表主键
      * @param num : 第几页
      * @param size : 共多少条
      * @return
      */
 	@DS("slave")
-	Map<String,Object> getOrderlist(long memberId, Integer status, int num, int size);
+	Map<String,Object> getOrderlist(String aliUserId, Integer status, int num, int size);
 
 	 /**
      * 下单接口
@@ -61,11 +59,10 @@ public interface OrderService extends IService<Order> {
 	 /**
      * 根据会员Id 获取未完成的订单列表
      * @author 王灿
-     * @param  memberId : 会员Id（主键）
      * @return List<Order>
      */
 	 @DS("slave")
-	List<Order> getUncompleteList(long memberId);
+	List<Order> getUncompleteList(String aliUserId);
 
 	 /**
      * 根据订单id获取订单详情
@@ -259,7 +256,7 @@ public interface OrderService extends IService<Order> {
 	 */
 	Map<String,Object> saveBigThingOrder(OrderBean orderbean) throws ApiException;
 
-	 void updateMemberPoint(Integer memberId, String OrderNo, double amount, String descrb);
+	 void updateMemberPoint(String aliUserId, String OrderNo, double amount, String descrb);
 
 	@DS("slave")
 	Map<String, Object> getOrderListsDistribute(BOrderBean orderBean, PageBean pageBean);
@@ -287,8 +284,6 @@ public interface OrderService extends IService<Order> {
 	List<Map<String,Object>> sevenDayorderNum(String streetId);
 	@DS("slave")
 	List<Map<String,Object>> oneDayorderNum(String streetId);
-	@DS("slave")
-	public String isUserOrder(String memberId);
 
 	//解析该订单的数据成蚂蚁森林结构MyslData
 	OrderBean myslOrderData(String orderId);

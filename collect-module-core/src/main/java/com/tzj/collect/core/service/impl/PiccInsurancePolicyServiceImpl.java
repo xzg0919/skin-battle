@@ -113,15 +113,15 @@ public class PiccInsurancePolicyServiceImpl extends ServiceImpl<PiccInsurancePol
     }
 
     @Override
-    public Object insuranceDetal(Integer memberId, Integer insuranceId) {
+    public Object insuranceDetal(String aliUserId, Integer insuranceId) {
         //根据保单ID查询保单信息
         PiccInsurancePolicy piccInsurancePolicy = this.selectById(insuranceId);
         List<PiccInsurancePolicyContent> contentList = piccInsurancePolicyContentService.selectList(new EntityWrapper<PiccInsurancePolicyContent>().eq("insurance_id", insuranceId).eq("del_flag", 0));
         List<PiccInsurancePolicyAgreement> agreementList = piccInsurancePolicyAgreementService.selectList(new EntityWrapper<PiccInsurancePolicyAgreement>().eq("insurance_id", insuranceId).eq("del_flag", 0));
         //查询用户保单对应的信息
-        PiccOrder piccOrder = piccOrderService.selectOne(new EntityWrapper<PiccOrder>().eq("insurance_id", insuranceId).eq("member_id", memberId).eq("status_", 2).eq("del_flag", 0));
+        PiccOrder piccOrder = piccOrderService.selectOne(new EntityWrapper<PiccOrder>().eq("insurance_id", insuranceId).eq("ali_user_id", aliUserId).eq("status_", 2).eq("del_flag", 0));
         //查询用户存在未领取的环保能量
-        List<PiccWater> piccWaterList = piccWaterService.selectList(new EntityWrapper<PiccWater>().eq("member_id", memberId).eq("del_flag", 0).eq("status_", 0).ge("point_count", 1).last(" LIMIT 0,6"));
+        List<PiccWater> piccWaterList = piccWaterService.selectList(new EntityWrapper<PiccWater>().eq("ali_user_id", aliUserId).eq("del_flag", 0).eq("status_", 0).ge("point_count", 1).last(" LIMIT 0,6"));
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("piccInsurancePolicy",piccInsurancePolicy);
         resultMap.put("contentList",contentList);

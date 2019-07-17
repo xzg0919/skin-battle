@@ -3,6 +3,7 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -13,6 +14,7 @@ import java.util.Date;
  * 保险订单
  */
 @TableName("sb_picc_order")
+@Data
 public class PiccOrder  extends  DataEntity<Long> {
 
     private Long id ;
@@ -21,6 +23,10 @@ public class PiccOrder  extends  DataEntity<Long> {
      * 会员Id
      */
     private Integer memberId;
+    /**
+     * 阿里user_id 用户唯一标识
+     */
+    private String aliUserId;
     /**
      * 投保单Id
      */

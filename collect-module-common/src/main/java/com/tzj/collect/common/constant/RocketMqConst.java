@@ -42,7 +42,6 @@ public class RocketMqConst {
         CloudTopic topic = client.getTopicRef(topicName);
         try {
             TopicMessage msg = new RawTopicMessage() ; //可以使用TopicMessage结构，选择不进行Base64加密
-            //String jsonStr="{\"aliUId\":null,\"member_id\":\"330227\",\"user_code\":\"010031357626\",\"level\":\"2\",\"name\":\"hhh\",\"valid_level_time\":\"2019-12-31 23:59:59\"}";
             msg.setMessageBody(param);
             //msg.setMessageTag("filterTag"); //设置该条发布消息的filterTag
             msg = topic.publishMessage(msg);
