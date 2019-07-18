@@ -909,7 +909,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setTitle(Order.TitleType.IOTORDER);
 		order.setStatus(OrderType.COMPLETE);
 		order.setPrice(BigDecimal.ZERO);
-		this.insert(order);
 
 		//保存id至redis，跳转到订单详情页面
 		try {
@@ -921,7 +920,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 			String iotMemberId = "iot_member_id_" + member.getId();
 //            System.out.println(parentLists.stream().allMatch(parentList -> parentList.getItemList().stream().allMatch(itemList -> itemList.getQuantity() != 0.0)));
-			if (parentLists.isEmpty() || parentLists.stream().anyMatch(parentList -> parentList.getItemList().stream().anyMatch(itemList -> itemList.getQuantity() == 0.0))){//打开箱门，并没投递任何东西
+			if (parentLists.stream().anyMatch(parentList -> parentList.getItemList().stream().anyMatch(itemList -> itemList.getQuantity() == 0.0))){//打开箱门，并没投递任何东西
 				hashTable.put(iotMemberId, "empty");
                 redisUtil.set("iotMap", hashTable);
 				map.put("order_no", order.getOrderNo());
@@ -929,6 +928,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				map.put("msg", "empty");
                 return map;
 			}else {
+				this.insert(order);
 				hashTable.put(iotMemberId, order.getId()+"");
 			}
 			redisUtil.set("iotMap", hashTable);
@@ -2925,20 +2925,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
 	public Object recallOrder(Integer orderId,Long recyclerId){
+		String status = "5";
+		String recrcleTel = "";
 		Order order = this.selectById(orderId);
-		if (null == order) {
-			return "未找到该订单 id：" + orderId;
+		if((OrderType.TOSEND+"").equals(order.getStatus()+"")||(Order.OrderType.ALREADY+"").equals(order.getStatus()+"")) {
+			Recyclers recyclers = recyclersService.selectById(recyclerId);
+			Recyclers recycler = recyclersService.selectById(order.getRecyclerId());
+			recrcleTel = recycler.getTel();
+			if (null == order) {
+				return "未找到该订单 id：" + orderId;
+			}
+			order.setRecyclerId(recyclerId.intValue());
+			order.setStatus(OrderType.TOSEND);
+			boolean b = this.updateById(order);
+			if (!b) {
+				return "转派失败";
+			}
+			PushUtils.getAcsResponse(recrcleTel, status, order.getTitle().getValue() + "");
+			PushUtils.getAcsResponse(recyclers.getTel(), order.getStatus().getValue() + "", order.getTitle().getValue() + "");
+			return "操作成功";
+		}else {
+			return "订单已完成或已取消，不可操作";
 		}
-		order.setRecyclerId(recyclerId.intValue());
-		order.setStatus(OrderType.TOSEND);
-		boolean b = this.updateById(order);
-		if (!b) {
-			return "转派失败";
-		}
-		Recyclers recyclers = recyclersService.selectById(recyclerId);
-		PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
-
-		return "操作成功";
 	}
 
 

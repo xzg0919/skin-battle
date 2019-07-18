@@ -155,9 +155,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	public String deleteByMemberId(String memberAddressId,long memberId) {
 		//根据地址Id查询地址信息
 		MemberAddress memberAddress =this.selectById(memberAddressId);
-    	memberAddress.setDelFlag("1");
-    	this.updateById(memberAddress);
-    	Integer cityId = memberAddress.getCityId();
+    	this.deleteById(memberAddress);
     	//查询用户的默认地址
     	MemberAddress memberAddress2 = this.getMemberAdderssByMemberId(memberId+"");
     	if(memberAddress2 == null) {
