@@ -2874,20 +2874,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
 	public Object recallOrder(Integer orderId,Long recyclerId){
+		String status = "5";
+		String recrcleTel = "";
 		Order order = this.selectById(orderId);
-		if (null == order) {
-			return "未找到该订单 id：" + orderId;
+		if((OrderType.TOSEND+"").equals(order.getStatus()+"")||(Order.OrderType.ALREADY+"").equals(order.getStatus()+"")) {
+			Recyclers recyclers = recyclersService.selectById(recyclerId);
+			Recyclers recycler = recyclersService.selectById(order.getRecyclerId());
+			recrcleTel = recycler.getTel();
+			if (null == order) {
+				return "未找到该订单 id：" + orderId;
+			}
+			order.setRecyclerId(recyclerId.intValue());
+			order.setStatus(OrderType.TOSEND);
+			boolean b = this.updateById(order);
+			if (!b) {
+				return "转派失败";
+			}
+			PushUtils.getAcsResponse(recrcleTel, status, order.getTitle().getValue() + "");
+			PushUtils.getAcsResponse(recyclers.getTel(), order.getStatus().getValue() + "", order.getTitle().getValue() + "");
+			return "操作成功";
+		}else {
+			return "订单已完成或已取消，不可操作";
 		}
-		order.setRecyclerId(recyclerId.intValue());
-		order.setStatus(OrderType.TOSEND);
-		boolean b = this.updateById(order);
-		if (!b) {
-			return "转派失败";
-		}
-		Recyclers recyclers = recyclersService.selectById(recyclerId);
-		PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
-
-		return "操作成功";
 	}
 
 
