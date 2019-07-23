@@ -91,7 +91,7 @@ public class RecyclersBean {
 	public void setPageBean(PageBean pageBean) {
 		this.pageBean = pageBean;
 	}
-	
+
 	public String getStatus() {
 		return status;
 	}
