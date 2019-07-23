@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.core.param.ali.MapAddressBean;
 import com.tzj.collect.core.param.ali.MemberAddressBean;
+import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.MemberAddress;
 
 import java.util.List;
@@ -65,4 +66,38 @@ public interface MemberAddressService extends IService<MemberAddress>{
 	Object updateMemberAddress(String id, String communityId);
 
 	Object MemberAddressUpdateStreetId();
+	/**
+	 * 根据阿里UserId查询唯一数据
+	 * @return
+	 */
+	@DS("slave")
+	List<MemberAddress> selectMemberAddressByAliUserId(MemberAddress memberAddress);
+	/**
+	 * 根据阿里UserId查询唯一数据
+	 * @return
+	 */
+	@DS("slave")
+	MemberAddress selectMemberAddressByAliUserIdOne(MemberAddress memberAddress);
+	/**
+	 * 根据阿里UserId删除唯一数据
+	 * @return
+	 */
+	Integer deleteMemberAddressByAliUserId(MemberAddress memberAddress);
+
+	/**
+	 * 根据阿里UserId更新相关数据
+	 * @return
+	 */
+	Integer updateMemberAddressByAliUserId(MemberAddress memberAddress);
+
+	/**
+	 * 根据新增一条会员数据
+	 * @return
+	 */
+	Integer insertMemberAddress(MemberAddress memberAddress);
+	/**
+	 * 更新或插入会员数据
+	 * @return
+	 */
+	Integer inserOrUpdatetMemberAddress(MemberAddress memberAddress);
 }

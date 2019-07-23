@@ -33,7 +33,13 @@ public class ThreadTime {
     public void startPaymentExecute(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new PaymentThread(paymentService)));
     }
-
+    /**
+     * 定时任务。定时执行更新新的街道进入更新用户小区地址信息
+     */
+    @Scheduled(cron = "0 0 0/2 * * ?")
+    public void startUpdateMemberAddressByCommunityId(){
+        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new MemberAddressUpdate(memberAddressService)));
+    }
     /**
      * 定时任务。定时执行更新新的街道进入更新用户街道地址信息
      */

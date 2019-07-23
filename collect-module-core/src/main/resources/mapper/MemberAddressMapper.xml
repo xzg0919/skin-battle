@@ -26,10 +26,360 @@
 		AND a.del_flag = 0
 		AND b.id IS NOT NULL
 	</select>
-
-
-
-
+	<select id="selectMemberAddress" parameterType="com.tzj.collect.entity.MemberAddress" resultType="com.tzj.collect.entity.MemberAddress">
+		SELECT
+			*
+		FROM
+			${memberAddress.tableName}
+		WHERE
+			1=1
+		<if test="memberAddress.id != null ">
+			AND id = #{memberAddress.id}
+		</if>
+		<if test="memberAddress.aliUserId != null and memberAddress.aliUserId != ''">
+			AND	ali_user_id = #{memberAddress.aliUserId}
+		</if>
+		<if test="memberAddress.memberId != null ">
+			AND member_id = #{memberAddress.memberId}
+		</if>
+		<if test="memberAddress.townCode != null and memberAddress.townCode != ''">
+			AND town_code = #{memberAddress.townCode}
+		</if>
+		<if test="memberAddress.cityId != null ">
+			AND city_id = #{memberAddress.cityId}
+		</if>
+		<if test="memberAddress.areaId != null ">
+			AND area_id = #{memberAddress.areaId}
+		</if>
+		<if test="memberAddress.streetId != null ">
+			AND street_id = #{memberAddress.streetId}
+		</if>
+		<if test="memberAddress.communityId != null ">
+			AND community_id = #{memberAddress.communityId}
+		</if>
+		<if test="memberAddress.commByUserInput != null and memberAddress.idCard != ''">
+			AND comm_by_user_input = #{memberAddress.commByUserInput}
+		</if>
+		<if test="memberAddress.address != null and memberAddress.address != ''">
+			AND address_ = #{memberAddress.address}
+		</if>
+		<if test="memberAddress.houseNumber != null and memberAddress.houseNumber != ''">
+			AND house_number = #{memberAddress.houseNumber}
+		</if>
+		<if test="memberAddress.tel != null and memberAddress.tel != ''">
+			AND tel = #{memberAddress.tel}
+		</if>
+		<if test="memberAddress.isSelected != null ">
+			AND is_selected = #{memberAddress.isSelected}
+		</if>
+		<if test="memberAddress.delFlag != null and memberAddress.delFlag != ''">
+			AND del_flag = #{memberAddress.delFlag}
+		</if>
+		<if test="memberAddress.name != null and memberAddress.name != ''">
+			AND name_ = #{memberAddress.name}
+		</if>
+		<if test="memberAddress.cityName != null and memberAddress.cityName != ''">
+			AND city_name = #{memberAddress.cityName}
+		</if>
+		<if test="memberAddress.areaName != null and memberAddress.areaName != ''">
+			AND area_name = #{memberAddress.areaName}
+		</if>
+		<if test="memberAddress.streetName != null and memberAddress.streetName != ''">
+			AND street_name = #{memberAddress.streetName}
+		</if>
+		<if test="memberAddress.communityName != null and memberAddress.communityName != ''">
+			AND community_name = #{memberAddress.communityName}
+		</if>
+		<if test="memberAddress.mapName != null and memberAddress.mapName != ''">
+			AND map_name = #{memberAddress.mapName}
+		</if>
+		<if test="memberAddress.mapAddress != null and memberAddress.mapAddress != ''">
+			AND map_address = #{memberAddress.mapAddress}
+		</if>
+	</select>
+	<delete id="deleteMemberAddressByAliUserId" parameterType="com.tzj.collect.entity.MemberAddress">
+		DELETE
+		FROM
+			${memberAddress.tableName}
+		WHERE
+			1 = 1
+		<if test="memberAddress.id != null ">
+			AND id = #{memberAddress.id}
+		</if>
+		<if test="memberAddress.aliUserId != null and memberAddress.aliUserId != ''">
+			AND	ali_user_id = #{memberAddress.aliUserId}
+		</if>
+		<if test="memberAddress.memberId != null ">
+			AND member_id = #{memberAddress.memberId}
+		</if>
+		<if test="memberAddress.townCode != null and memberAddress.townCode != ''">
+			AND town_code = #{memberAddress.townCode}
+		</if>
+		<if test="memberAddress.cityId != null ">
+			AND city_id = #{memberAddress.cityId}
+		</if>
+		<if test="memberAddress.areaId != null ">
+			AND area_id = #{memberAddress.areaId}
+		</if>
+		<if test="memberAddress.streetId != null ">
+			AND street_id = #{memberAddress.streetId}
+		</if>
+		<if test="memberAddress.communityId != null ">
+			AND community_id = #{memberAddress.communityId}
+		</if>
+		<if test="memberAddress.commByUserInput != null and memberAddress.commByUserInput != ''">
+			AND comm_by_user_input = #{memberAddress.commByUserInput}
+		</if>
+		<if test="memberAddress.address != null and memberAddress.address != ''">
+			AND address_ = #{memberAddress.address}
+		</if>
+		<if test="memberAddress.houseNumber != null and memberAddress.houseNumber != ''">
+			AND house_number = #{memberAddress.houseNumber}
+		</if>
+		<if test="memberAddress.tel != null and memberAddress.tel != ''">
+			AND tel = #{memberAddress.tel}
+		</if>
+		<if test="memberAddress.isSelected != null ">
+			AND is_selected = #{memberAddress.isSelected}
+		</if>
+		<if test="memberAddress.delFlag != null and memberAddress.delFlag != ''">
+			AND del_flag = #{memberAddress.delFlag}
+		</if>
+		<if test="memberAddress.name != null and memberAddress.name != ''">
+			AND name_ = #{memberAddress.name}
+		</if>
+		<if test="memberAddress.version != null ">
+			AND version_ = #{memberAddress.version}
+		</if>
+		<if test="memberAddress.cityName != null and memberAddress.cityName != ''">
+			AND city_name = #{memberAddress.cityName}
+		</if>
+		<if test="memberAddress.areaName != null and memberAddress.areaName != ''">
+			AND area_name = #{memberAddress.areaName}
+		</if>
+		<if test="memberAddress.streetName != null and memberAddress.streetName != ''">
+			AND street_name = #{memberAddress.streetName}
+		</if>
+		<if test="memberAddress.communityName != null and memberAddress.communityName != ''">
+			AND community_name = #{memberAddress.communityName}
+		</if>
+		<if test="memberAddress.mapName != null and memberAddress.mapName != ''">
+			AND map_name = #{memberAddress.mapName}
+		</if>
+		<if test="memberAddress.mapAddress != null and memberAddress.mapAddress != ''">
+			AND map_address = #{memberAddress.mapAddress}
+		</if>
+	</delete>
+	<update id="updateMemberAddressByAliUserId" parameterType="com.tzj.collect.entity.MemberAddress">
+		UPDATE ${memberAddress.tableName}
+		set
+		<if test="memberAddress.id != null ">
+			 id = #{memberAddress.id},
+		</if>
+		<if test="memberAddress.aliUserId != null and memberAddress.aliUserId != ''">
+			ali_user_id = #{memberAddress.aliUserId},
+		</if>
+		<if test="memberAddress.memberId != null ">
+			member_id = #{memberAddress.memberId},
+		</if>
+		<if test="memberAddress.townCode != null and memberAddress.townCode != ''">
+			town_code = #{memberAddress.townCode},
+		</if>
+		<if test="memberAddress.cityId != null ">
+			city_id = #{memberAddress.cityId},
+		</if>
+		<if test="memberAddress.areaId != null ">
+			area_id = #{memberAddress.areaId},
+		</if>
+		<if test="memberAddress.streetId != null ">
+			street_id = #{memberAddress.streetId},
+		</if>
+		<if test="memberAddress.communityId != null ">
+			community_id = #{memberAddress.communityId},
+		</if>
+		<if test="memberAddress.commByUserInput != null and memberAddress.commByUserInput != ''">
+			comm_by_user_input = #{memberAddress.commByUserInput},
+		</if>
+		<if test="memberAddress.address != null and memberAddress.address != ''">
+			address_ = #{memberAddress.address},
+		</if>
+		<if test="memberAddress.houseNumber != null and memberAddress.houseNumber != ''">
+			house_number = #{memberAddress.houseNumber},
+		</if>
+		<if test="memberAddress.tel != null and memberAddress.tel != ''">
+			tel = #{memberAddress.tel},
+		</if>
+		<if test="memberAddress.isSelected != null ">
+			is_selected = #{memberAddress.isSelected},
+		</if>
+		<if test="memberAddress.delFlag != null and memberAddress.delFlag != ''">
+			del_flag = #{memberAddress.delFlag},
+		</if>
+		<if test="memberAddress.name != null and memberAddress.name != ''">
+			name_ = #{memberAddress.name},
+		</if>
+		<if test="memberAddress.version != null ">
+			version_ = #{memberAddress.version},
+		</if>
+		<if test="memberAddress.cityName != null and memberAddress.cityName != ''">
+			city_name = #{memberAddress.cityName},
+		</if>
+		<if test="memberAddress.areaName != null and memberAddress.areaName != ''">
+			area_name = #{memberAddress.areaName},
+		</if>
+		<if test="memberAddress.streetName != null and memberAddress.streetName != ''">
+			street_name = #{memberAddress.streetName},
+		</if>
+		<if test="memberAddress.communityName != null and memberAddress.communityName != ''">
+			community_name = #{memberAddress.communityName},
+		</if>
+		<if test="memberAddress.mapName != null and memberAddress.mapName != ''">
+			map_name = #{memberAddress.mapName},
+		</if>
+		<if test="memberAddress.mapAddress != null and memberAddress.mapAddress != ''">
+			map_address = #{memberAddress.mapAddress},
+		</if>
+			update_date = NOW()
+		WHERE
+			id = #{memberAddress.id}
+	</update>
+	<insert id="insertMemberAddress" parameterType="com.tzj.collect.entity.MemberAddress">
+		INSERT INTO ${memberAddress.tableName} (
+		<if test="memberAddress.aliUserId != null and memberAddress.aliUserId != ''">
+			ali_user_id,
+		</if>
+		<if test="memberAddress.memberId != null ">
+			member_id,
+		</if>
+		<if test="memberAddress.townCode != null and memberAddress.townCode != ''">
+			town_code,
+		</if>
+		<if test="memberAddress.cityId != null ">
+			city_id,
+		</if>
+		<if test="memberAddress.areaId != null ">
+			area_id,
+		</if>
+		<if test="memberAddress.streetId != null ">
+			street_id,
+		</if>
+		<if test="memberAddress.communityId != null ">
+			community_id,
+		</if>
+		<if test="memberAddress.commByUserInput != null and memberAddress.commByUserInput != ''">
+			comm_by_user_input,
+		</if>
+		<if test="memberAddress.address != null and memberAddress.address != ''">
+			address_,
+		</if>
+		<if test="memberAddress.houseNumber != null and memberAddress.houseNumber != ''">
+			house_number,
+		</if>
+		<if test="memberAddress.tel != null and memberAddress.tel != ''">
+			tel,
+		</if>
+		<if test="memberAddress.isSelected != null ">
+			is_selected,
+		</if>
+		<if test="memberAddress.delFlag != null and memberAddress.delFlag != ''">
+			del_flag,
+		</if>
+		<if test="memberAddress.name != null and memberAddress.name != ''">
+			name_,
+		</if>
+		<if test="memberAddress.version != null ">
+			version_,
+		</if>
+		<if test="memberAddress.cityName != null and memberAddress.cityName != ''">
+			city_name,
+		</if>
+		<if test="memberAddress.areaName != null and memberAddress.areaName != ''">
+			area_name,
+		</if>
+		<if test="memberAddress.streetName != null and memberAddress.streetName != ''">
+			street_name,
+		</if>
+		<if test="memberAddress.communityName != null and memberAddress.communityName != ''">
+			community_name,
+		</if>
+		<if test="memberAddress.mapName != null and memberAddress.mapName != ''">
+			map_name,
+		</if>
+		<if test="memberAddress.mapAddress != null and memberAddress.mapAddress != ''">
+			map_address,
+		</if>
+			create_date,
+			update_date
+			)
+			VALUES
+				(
+		<if test="memberAddress.aliUserId != null and memberAddress.aliUserId != ''">
+			#{memberAddress.aliUserId},
+		</if>
+		<if test="memberAddress.memberId != null ">
+			#{memberAddress.memberId},
+		</if>
+		<if test="memberAddress.townCode != null and memberAddress.townCode != ''">
+			#{memberAddress.townCode},
+		</if>
+		<if test="memberAddress.cityId != null ">
+			#{memberAddress.cityId},
+		</if>
+		<if test="memberAddress.areaId != null ">
+			#{memberAddress.areaId},
+		</if>
+		<if test="memberAddress.streetId != null ">
+			#{memberAddress.streetId},
+		</if>
+		<if test="memberAddress.communityId != null ">
+			#{memberAddress.communityId},
+		</if>
+		<if test="memberAddress.commByUserInput != null and memberAddress.commByUserInput != ''">
+			#{memberAddress.commByUserInput},
+		</if>
+		<if test="memberAddress.address != null and memberAddress.address != ''">
+			#{memberAddress.address},
+		</if>
+		<if test="memberAddress.houseNumber != null and memberAddress.houseNumber != ''">
+			#{memberAddress.houseNumber},
+		</if>
+		<if test="memberAddress.tel != null and memberAddress.tel != ''">
+			#{memberAddress.tel},
+		</if>
+		<if test="memberAddress.isSelected != null ">
+			#{memberAddress.isSelected},
+		</if>
+		<if test="memberAddress.delFlag != null and memberAddress.delFlag != ''">
+			#{memberAddress.delFlag},
+		</if>
+		<if test="memberAddress.name != null and memberAddress.name != ''">
+			#{memberAddress.name},
+		</if>
+		<if test="memberAddress.version != null ">
+			#{memberAddress.version},
+		</if>
+		<if test="memberAddress.cityName != null and memberAddress.cityName != ''">
+			#{memberAddress.cityName},
+		</if>
+		<if test="memberAddress.areaName != null and memberAddress.areaName != ''">
+			#{memberAddress.areaName},
+		</if>
+		<if test="memberAddress.streetName != null and memberAddress.streetName != ''">
+			#{memberAddress.streetName},
+		</if>
+		<if test="memberAddress.communityName != null and memberAddress.communityName != ''">
+			#{memberAddress.communityName},
+		</if>
+		<if test="memberAddress.mapName != null and memberAddress.mapName != ''">
+			#{memberAddress.mapName},
+		</if>
+		<if test="memberAddress.mapAddress != null and memberAddress.mapAddress != ''">
+			#{memberAddress.mapAddress},
+		</if>
+			NOW(),
+			NOW()
+			)
+	</insert>
 
 
 

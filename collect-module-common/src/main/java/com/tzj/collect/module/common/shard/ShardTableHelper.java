@@ -18,6 +18,9 @@ public class ShardTableHelper {
     public static String getTableNameByModeling(String tableName,Long shardSource,int modeling){
         long num=shardSource%modeling;
         StringBuffer sb=new StringBuffer();
+        if (num <= 9){
+            sb.append(tableName).append(0).append(num);
+        }
         sb.append(tableName).append(num);
         return sb.toString();
     }

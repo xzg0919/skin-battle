@@ -138,25 +138,4 @@ public class MemberApi {
 		Member member = MemberUtils.getMember();
 		return memberService.getPassIdUrl(member.getAliUserId());
 	}
-
-	@Api(name = "member.testMember", version = "1.0")
-	@SignIgnore
-	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	public Object testMember() {
-		Member member = MemberUtils.getMember();
-		Member member1 = memberService.selectMemberByAliUserId(member.getAliUserId());
-		System.out.println(member1.getOpenCardDate());
-		member1.setAliUserId("123456");
-		memberService.insertMember(member1);
-		member1.setName("测试");
-		memberService.updateMemberByAliUserId(member1);
-		member1.setMobile("12345678911");
-		memberService.inserOrUpdatetMember(member1);
-		memberService.inserOrUpdatetMember(new Member());
-		return "操作成功";
-	}
-
-	public static void main(String[] args) {
-		System.out.println(Long.parseLong("123456")%40);
-	}
 }

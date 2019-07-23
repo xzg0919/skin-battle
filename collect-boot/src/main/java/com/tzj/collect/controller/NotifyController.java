@@ -2,6 +2,8 @@ package com.tzj.collect.controller;
 
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.common.thread.NewThreadPoorExcutor;
+import com.tzj.collect.common.thread.sendGreenOrderThread;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.EnterpriseCode;
@@ -38,9 +40,9 @@ public class NotifyController {
     @Autowired
     private EnterpriseCodeService enterpriseCodeService;
     @Autowired
-    private AliPayService aliPayService;
+    private AreaService areaService;
     @Autowired
-    private AnsycMyslService ansycMyslService;
+    private OrderItemAchService orderItemAchService;
 
 
     /**
@@ -124,6 +126,13 @@ public class NotifyController {
                     if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
                         OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+                    }
+					try {
+                        if ("上海市".startsWith(order.getAddress())){
+                            NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                     if(null != order&&order.getIsScan().equals("0")){
                         //修改订单状态

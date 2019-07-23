@@ -22,7 +22,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("8401", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088212854989662", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -40,25 +40,25 @@ public class OrderTest {
                 String  location = "121.446438,30.915836";
 
             MapAddressBean mapAddressBean = new MapAddressBean();
-            mapAddressBean.setId("92477");
-            mapAddressBean.setAdcCode("330103");
-            mapAddressBean.setAddress("浙江省杭州市下城区朝晖街道环球中心西湖文化广场");
-            mapAddressBean.setCity("杭州市");
-            mapAddressBean.setCityCode("0571");
-            mapAddressBean.setDistrict("下城区");
-            mapAddressBean.setLocation("121.451897,31.229806");
-            mapAddressBean.setName("环球中心");
-            mapAddressBean.setProvince("浙江省");
-            mapAddressBean.setTownCode("330103006000");
-            mapAddressBean.setTownShip("朝晖街道");
-            mapAddressBean.setIsSelected("1");
-            mapAddressBean.setUserName("王先hao");
-            mapAddressBean.setTel("13252525252");
-            mapAddressBean.setHouseNumber("测试101");
+            mapAddressBean.setId("7");
+//            mapAddressBean.setAdcCode("330103");
+//            mapAddressBean.setAddress("浙江省杭州市下城区朝晖街道环球中心西湖文化广场");
+//            mapAddressBean.setCity("杭州市");
+//            mapAddressBean.setCityCode("0571");
+//            mapAddressBean.setDistrict("下城区");
+//            mapAddressBean.setLocation("121.451897,31.229806");
+//            mapAddressBean.setName("环球中心");
+//            mapAddressBean.setProvince("浙江省");
+//            mapAddressBean.setTownCode("330103006000");
+//            mapAddressBean.setTownShip("朝晖街道");
+//            mapAddressBean.setIsSelected("1");
+//            mapAddressBean.setUserName("王先hao");
+//            mapAddressBean.setTel("13252525252");
+//            mapAddressBean.setHouseNumber("测试101");
 
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","member.testMember");
+                param.put("name","memberAddress.testMemberAddress");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -66,7 +66,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",null);
+                param.put("data",mapAddressBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

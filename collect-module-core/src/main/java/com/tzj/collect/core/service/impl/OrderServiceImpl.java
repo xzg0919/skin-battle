@@ -11,6 +11,8 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.common.constant.AlipayConst;
+import com.tzj.collect.common.thread.NewThreadPoorExcutor;
+import com.tzj.collect.common.thread.sendGreenOrderThread;
 import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
@@ -370,6 +372,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					//给用户增加蚂蚁能量
 					OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
 				}
+			try {
+				if ("上海市".startsWith(order.getAddress())){
+					NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
+				}
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 		}
 		return flag;
 	}

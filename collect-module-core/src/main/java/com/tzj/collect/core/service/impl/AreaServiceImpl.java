@@ -317,14 +317,6 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 					companyServiceService.insert(companyServiceRange);
 				}
 			}
-
-			List<MemberAddressBean> memberAddressesList = memberAddressService.selectMemberAddressByCommunityId();
-			if(null != memberAddressesList&&!memberAddressesList.isEmpty()){
-				for (MemberAddressBean memberAddressBean:memberAddressesList){
-					memberAddressService.updateMemberAddress(memberAddressBean.getId(),memberAddressBean.getCommunityId() );
-				}
-			}
-
 		}
 		return "操作成功";
 	}

@@ -3,6 +3,7 @@ package com.tzj.collect.core.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.common.utils.TableNameUtils;
 import com.tzj.collect.core.mapper.MemberAddressMapper;
 import com.tzj.collect.core.param.ali.MapAddressBean;
 import com.tzj.collect.core.param.ali.MemberAddressBean;
@@ -12,6 +13,7 @@ import com.tzj.collect.core.service.MemberAddressService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.MemberAddress;
+import com.tzj.collect.module.common.shard.ShardTableHelper;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -390,5 +392,61 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			}
 		}
 		return "操作成功";
+	}
+	@Override
+	public List<MemberAddress> selectMemberAddressByAliUserId(MemberAddress memberAddress) {
+		return (List<MemberAddress>)this.selectMemberAddress(memberAddress,false);
+	}
+	@Override
+	public MemberAddress selectMemberAddressByAliUserIdOne(MemberAddress memberAddress) {
+		return (MemberAddress)this.selectMemberAddress(memberAddress,true);
+	}
+
+	@Override
+	@Transactional
+	public Integer deleteMemberAddressByAliUserId(MemberAddress memberAddress) {
+		String memberAddressTableName = TableNameUtils.getMemberAddressTableName(memberAddress);
+		memberAddress.setTableName(memberAddressTableName);
+		return memberAddressMapper.deleteMemberAddressByAliUserId(memberAddress);
+	}
+
+	@Override
+	@Transactional
+	public Integer updateMemberAddressByAliUserId(MemberAddress memberAddress) {
+		String memberAddressTableName = TableNameUtils.getMemberAddressTableName(memberAddress);
+		memberAddress.setTableName(memberAddressTableName);
+		return memberAddressMapper.updateMemberAddressByAliUserId(memberAddress);
+	}
+
+	@Override
+	@Transactional
+	public Integer insertMemberAddress(MemberAddress memberAddress) {
+		String memberAddressTableName = TableNameUtils.getMemberAddressTableName(memberAddress);
+		memberAddress.setTableName(memberAddressTableName);
+		return memberAddressMapper.insertMemberAddress(memberAddress);
+	}
+
+	@Override
+	@Transactional
+	public Integer inserOrUpdatetMemberAddress(MemberAddress memberAddress) {
+		if(null == memberAddress.getId()){
+			return this.insertMemberAddress(memberAddress);
+		}else {
+			return this.updateMemberAddressByAliUserId(memberAddress);
+		}
+	}
+
+	public Object selectMemberAddress(MemberAddress memberAddress,boolean isSelectOne) {
+		String memberAddressTableName = TableNameUtils.getMemberAddressTableName(memberAddress);
+		memberAddress.setTableName(memberAddressTableName);
+		List<MemberAddress> memberAddressList = memberAddressMapper.selectMemberAddress(memberAddress);
+		if (memberAddressList.isEmpty()){
+			return null;
+		}
+		if (isSelectOne){
+			return memberAddressList.get(0);
+		}else {
+			return memberAddressList;
+		}
 	}
 }

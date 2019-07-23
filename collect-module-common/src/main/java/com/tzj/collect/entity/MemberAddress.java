@@ -119,4 +119,7 @@ public class MemberAddress extends  DataEntity<Long>{
 	 */
 	private String mapAddress;
 
+	@TableField(exist = false)
+	private String tableName;
+
 }
