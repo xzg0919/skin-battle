@@ -33,42 +33,14 @@ import java.util.*;
 public class AdminController {
 
 	@Autowired
-	private WebSocketServer webSocketServer;
-	@Autowired
 	private EnterpriseCodeService enterpriseCodeService;
-	@Autowired
-	private AliPayService aliPayService;
 	@Autowired
 	private OrderService orderService;
 	@Autowired
-	private AnsycMyslService ansycMyslService;
-
-	@Autowired
-	private AppWebSocketServer appWebSocketServer;
-	@Autowired
 	private XcxWebSocketServer xcxWebSocketServer;
 	@Autowired
-	private RocketmqMessageService rocketmqMessageService;
-	@Autowired
-	private CompanyService companyService;
-	@Autowired
-	private AreaService areaService;
-	@Autowired
 	private AsyncService asyncService;
-	@Autowired
-	private CompanyCategoryService companyCategoryService;
-	@Autowired
-	private MemberAddressService memberAddressService;
-	@Autowired
-	private CommunityService communityService;
-	@Autowired
-	private  CompanyStreeService companyStreeService;
-	@Autowired
-	private CompanyStreetBigService companyStreetBigService;
-	@Autowired
-	private CategoryService categoryService;
-	@Autowired
-	private CompanyStreetApplianceService companyStreetApplianceService;
+
 
 	@RequestMapping("/addExcel")
 	public String addExcel() {

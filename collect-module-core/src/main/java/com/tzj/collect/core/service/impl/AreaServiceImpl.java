@@ -49,8 +49,6 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	@Autowired
 	private CompanyServiceService companyServiceService;
 	@Autowired
-	private MemberAddressService memberAddressService;
-	@Autowired
 	private CompanyStreetHouseService companyStreetHouseService;
 	@Autowired
 	private RecyclersRangeHouseService recyclersRangeHouseService;

@@ -44,10 +44,10 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      */ 
     @Transactional(readOnly=false)
 	public String saveMemberAddress(MemberAddressBean memberAddressBean) {
-		MemberAddress memberAddress1 = this.getMemberAdderssByAliUserId(memberAddressBean.getMemberId());
+		MemberAddress memberAddress1 = this.getMemberAdderssByAliUserId(memberAddressBean.getAliUserId());
 		if (null != memberAddress1){
 			memberAddress1.setIsSelected(0);
-			this.updateById(memberAddress1);
+			this.updateMemberAddressByAliUserId(memberAddress1);
 		}
     	try {
     		if(StringUtils.isBlank(memberAddressBean.getName())) {
@@ -71,7 +71,10 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			Community community = communityService.selectById(memberAddressBean.getCommunityId());
 			//判断是否是修改还是新增
 	    	if(StringUtils.isNotBlank(memberAddressBean.getId())) {
-	    		MemberAddress memberAddress = this.selectById(memberAddressBean.getId());
+	    		MemberAddress memberAddressc = new MemberAddress();
+				memberAddressc.setId(Long.parseLong(memberAddressBean.getId()));
+				memberAddressc.setAliUserId(memberAddressBean.getAliUserId());
+				MemberAddress memberAddress = this.selectMemberAddressByAliUserIdOne(memberAddressc);
 	    		memberAddress.setAliUserId(memberAddressBean.getAliUserId());
 	    		memberAddress.setName(memberAddressBean.getName());
 	    		memberAddress.setAreaId(Integer.parseInt(memberAddressBean.getAreaId()));
@@ -91,7 +94,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				if(null != community){
 					memberAddress.setCommunityName(community.getName());
 				}
-	    		this.updateById(memberAddress);
+				this.updateMemberAddressByAliUserId(memberAddress);
 	    	}else {
 	    		MemberAddress memberAddress = new MemberAddress();
 	    		memberAddress.setAliUserId(memberAddressBean.getAliUserId());
@@ -119,7 +122,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				if(null != community){
 					memberAddress.setCommunityName(community.getName());
 				}
-	    		this.insert(memberAddress);
+				this.insertMemberAddress(memberAddress);
 	    	}
     	}catch(Exception e) {
     		e.printStackTrace();
@@ -136,7 +139,10 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      */
 	@Override
 	public List<MemberAddress> memberAddressList(String aliUserId) {
-		return this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("ali_user_id", aliUserId).orderBy("is_selected", false));
+		MemberAddress memberAddress = new MemberAddress();
+		memberAddress.setAliUserId(aliUserId);
+		memberAddress.setDelFlag("0");
+		return this.selectMemberAddressByAliUserId(memberAddress);
 	}
 	
 	/**
@@ -149,16 +155,22 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	@Override
 	public String deleteByMemberId(String memberAddressId,String aliUserId) {
 		//删除
-    	this.deleteById(memberAddressId);
+		MemberAddress delete = new MemberAddress();
+			delete.setId(Long.parseLong(memberAddressId));
+			delete.setAliUserId(aliUserId);
+		this.deleteMemberAddressByAliUserId(delete);
     	//查询用户的默认地址
     	MemberAddress memberAddress2 = this.getMemberAdderssByAliUserId(aliUserId);
     	if(memberAddress2 == null) {
     		//查询用户所有的余下地址
-    		List<MemberAddress> MemberAddressList = this.selectList(new EntityWrapper<MemberAddress>().eq("del_flag", 0).eq("ali_user_id", aliUserId).orderBy("create_date", false));
+			MemberAddress selete = new MemberAddress();
+				selete.setAliUserId(aliUserId);
+				selete.setDelFlag("0");
+			List<MemberAddress> MemberAddressList = this.selectMemberAddressByAliUserId(selete);
     		if(!MemberAddressList.isEmpty()) {
     			MemberAddress memberAddresss = MemberAddressList.get(0);
-    			memberAddresss.setIsSelected(1);
-    			this.updateById(memberAddresss);
+    				memberAddresss.setIsSelected(1);
+    			this.updateMemberAddressByAliUserId(memberAddresss);
     		}
     	}
 		return "success";
@@ -197,8 +209,12 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 
 			//判断是否是修改还是新增
 			if(StringUtils.isNotBlank(memberAddressBean.getId())) {
-				MemberAddress memberAddress = this.selectById(memberAddressBean.getId());
+				MemberAddress selete = new MemberAddress();
+					selete.setId(Long.parseLong(memberAddressBean.getId()));
+					selete.setAliUserId(memberAddressBean.getAliUserId());
+				MemberAddress memberAddress = this.selectMemberAddressByAliUserIdOne(selete);
 				memberAddress.setMemberId(memberAddressBean.getMemberId());
+				memberAddress.setAliUserId(memberAddressBean.getAliUserId());
 				memberAddress.setName(memberAddressBean.getName());
 				memberAddress.setTel(memberAddressBean.getTel());
 				memberAddress.setAreaId(Integer.parseInt(areas.getId().toString()));
@@ -211,14 +227,15 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				memberAddress.setHouseNumber(memberAddressBean.getHouseNumber());
 				memberAddress.setIsSelected(Integer.parseInt(isSelected));
 				memberAddress.setCityId(memberAddressBean.getCityId());
-				this.updateById(memberAddress);
+				this.updateMemberAddressByAliUserId(memberAddress);
 			}else {
 				if (null!=memberAddres){
 					memberAddres.setIsSelected(0);
-					this.updateById(memberAddres);
+					this.updateMemberAddressByAliUserId(memberAddres);
 				}
 				MemberAddress memberAddress = new MemberAddress();
 				memberAddress.setMemberId(memberAddressBean.getMemberId());
+				memberAddress.setAliUserId(memberAddressBean.getAliUserId());
 				memberAddress.setName(memberAddressBean.getName());
 				memberAddress.setTel(memberAddressBean.getTel());
 				memberAddress.setAreaId(Integer.parseInt(areas.getId().toString()));
@@ -237,7 +254,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				memberAddress.setHouseNumber(memberAddressBean.getHouseNumber());
 				memberAddress.setIsSelected(1);
 				memberAddress.setCityId(memberAddressBean.getCityId());
-				this.insert(memberAddress);
+				this.insertMemberAddress(memberAddress);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -278,13 +295,16 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			MemberAddress memberAddress1 = this.getMemberAdderssByAliUserId(aliUserId);
 			if (null != memberAddress1){
 				memberAddress1.setIsSelected(0);
-				this.updateById(memberAddress1);
+				this.updateMemberAddressByAliUserId(memberAddress1);
 			}
 		}
 		MemberAddress memberAddress = null;
 		//判断是否是修改还是新增
 		if(StringUtils.isNotBlank(mapAddressBean.getId())) {
-			memberAddress = this.selectById(mapAddressBean.getId());
+			MemberAddress select = new MemberAddress();
+				select.setId(Long.parseLong(mapAddressBean.getId()));
+				select.setAliUserId(aliUserId);
+			memberAddress = this.selectMemberAddressByAliUserIdOne(select);
 			if (null == memberAddress){
 				throw new ApiException("更改的地址不存在");
 			}
@@ -308,15 +328,18 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		memberAddress.setStreetName(mapAddressBean.getTownShip());
 		memberAddress.setCommunityName(mapAddressBean.getName());
 		memberAddress.setTownCode(mapAddressBean.getTownCode());
-		this.insertOrUpdate(memberAddress);
-
+		this.inserOrUpdatetMemberAddress(memberAddress);
 		return "操作成功";
 	}
 
 	@Override
 	public MemberAddress getMemberAdderssByAliUserId(String aliUserId) {
+		MemberAddress select = new MemberAddress();
+			select.setDelFlag("0");
+			select.setAliUserId(aliUserId);
+			select.setIsSelected(1);
+		List<MemberAddress> memberAddressesList = this.selectMemberAddressByAliUserId(select);
 		MemberAddress memberAddress = null;
-		List<MemberAddress> memberAddressesList = this.selectList(new EntityWrapper<MemberAddress>().eq("is_selected", 1).eq("del_flag", 0).eq("ali_user_id", aliUserId));
 		if (!memberAddressesList.isEmpty()){
 			memberAddress = memberAddressesList.get(0);
 		}
@@ -329,16 +352,22 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		if(null != memberAddress1){
 			memberAddress1.setIsSelected(0);
 		}
-		this.updateById(memberAddress1);
-		MemberAddress memberAddress = this.selectById(id);
+		this.updateMemberAddressByAliUserId(memberAddress1);
+		MemberAddress select = new MemberAddress();
+			select.setAliUserId(aliUserId);
+			select.setId(Long.parseLong(id));
+		MemberAddress memberAddress = this.selectMemberAddressByAliUserIdOne(select);
 		memberAddress.setIsSelected(1);
-		this.updateById(memberAddress);
+		this.updateMemberAddressByAliUserId(memberAddress);
 		return "success";
 	}
 
 	@Override
-	public String getMemberAddressById(String id){
-		MemberAddress memberAddress = this.selectById(id);
+	public String getMemberAddressById(String id,String aliUserId){
+		MemberAddress select = new MemberAddress();
+			select.setId(Long.parseLong(id));
+			select.setAliUserId(aliUserId);
+		MemberAddress memberAddress = this.selectMemberAddressByAliUserIdOne(select);
 		String cityName = memberAddress.getCityName()==null?"":memberAddress.getCityName();
 		if(org.apache.commons.lang3.StringUtils.isBlank(cityName)){
 			Area city = areaService.selectById(memberAddress.getCityId());
@@ -361,37 +390,6 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			}
 		}
 		return cityName+areaName+streetName+memberAddress.getAddress()+memberAddress.getHouseNumber();
-	}
-
-	@Override
-	public List<MemberAddressBean> selectMemberAddressByCommunityId(){
-		return memberAddressMapper.selectMemberAddressByCommunityId();
-	}
-	@Transactional
-	@Override
-	public Object updateMemberAddress(String id,String communityId){
-
-		MemberAddress memberAddress = this.selectById(id);
-		if(null != memberAddress){
-			memberAddress.setCommunityId(Integer.parseInt(communityId));
-			this.updateById(memberAddress);
-		}
-		return "操作成功";
-	}
-	@Transactional
-	@Override
-	public Object MemberAddressUpdateStreetId(){
-		List<MemberAddressBean> memberAddressList = memberAddressMapper.selectMemberAddressBystreetId();
-		if (null != memberAddressList&&!memberAddressList.isEmpty()){
-			for (MemberAddressBean memberAddressBean: memberAddressList) {
-				MemberAddress memberAddress = this.selectById(memberAddressBean.getId());
-				if(null != memberAddress){
-					memberAddress.setStreetId(Integer.parseInt(memberAddressBean.getStreetId()));
-					this.updateById(memberAddress);
-				}
-			}
-		}
-		return "操作成功";
 	}
 	@Override
 	public List<MemberAddress> selectMemberAddressByAliUserId(MemberAddress memberAddress) {

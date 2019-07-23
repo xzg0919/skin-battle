@@ -104,13 +104,15 @@ public class MemberAddressApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
     public Object selectMemberAddress(MemberAddressBean memberAddressBean) {
-    	MemberAddress memberAddress = memberAddressService.selectById(memberAddressBean.getId());
+		Member member = MemberUtils.getMember();
+		MemberAddress select = new MemberAddress();
+			select.setId(Long.parseLong(memberAddressBean.getId()));
+			select.setAliUserId(member.getAliUserId());
+		MemberAddress memberAddress = memberAddressService.selectMemberAddressByAliUserIdOne(select);
     	Map<String,Object> map = new HashMap<String,Object>();
 		String areaName = "";
 		String streeName ="";
 		String cityName = "";
-		String mapName = "";
-		String mapAddress= "";
     	if(null!=memberAddress) {
     		//地址区的名称
 			Area area = areaService.selectById(memberAddress.getAreaId());
@@ -233,9 +235,12 @@ public class MemberAddressApi {
     public MemberAddress getMemberAddressById(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
     	Member member = MemberUtils.getMember();
-    	MemberAddress memberAddress = null; 
+    	MemberAddress memberAddress = null;
 		if(!StringUtils.isBlank(memberAddressBean.getId())) {
-			memberAddress = memberAddressService.selectById(memberAddressBean.getId());
+			MemberAddress select = new MemberAddress();
+				select.setAliUserId(member.getAliUserId());
+				select.setId(Long.parseLong(memberAddressBean.getId()));
+			memberAddress = memberAddressService.selectMemberAddressByAliUserIdOne(select);
 		}else {
 			memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
 		}

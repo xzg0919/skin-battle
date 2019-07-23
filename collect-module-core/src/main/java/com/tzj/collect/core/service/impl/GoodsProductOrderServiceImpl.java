@@ -24,8 +24,6 @@ public class GoodsProductOrderServiceImpl extends ServiceImpl<GoodsProductOrderM
 	private AliPayService aliPayService;
 	@Autowired
 	private PointListService pointListService;
-	@Autowired
-	private MemberAddressService memberAddressService;
 	
 	/**
      * 给用户发放实物

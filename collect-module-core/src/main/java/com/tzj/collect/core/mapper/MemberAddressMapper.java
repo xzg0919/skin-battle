@@ -12,11 +12,6 @@ import java.util.List;
  **/
 public interface MemberAddressMapper extends BaseMapper<MemberAddress>{
 
-
-    List<MemberAddressBean> selectMemberAddressByCommunityId();
-
-    List<MemberAddressBean> selectMemberAddressBystreetId();
-
     List<MemberAddress> selectMemberAddress(@Param("memberAddress") MemberAddress memberAddress);
 
     Integer deleteMemberAddressByAliUserId(@Param("memberAddress") MemberAddress memberAddress);

@@ -58,14 +58,7 @@ public interface MemberAddressService extends IService<MemberAddress>{
 
 	Object updateIsSelectedAddress(String aliUserId, String id);
 	@DS("slave")
-	String getMemberAddressById(String id);
-
-	@DS("slave")
-	List<MemberAddressBean> selectMemberAddressByCommunityId();
-
-	Object updateMemberAddress(String id, String communityId);
-
-	Object MemberAddressUpdateStreetId();
+	String getMemberAddressById(String id,String aliUserId);
 	/**
 	 * 根据阿里UserId查询唯一数据
 	 * @return

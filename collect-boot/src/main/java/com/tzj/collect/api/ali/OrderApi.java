@@ -222,7 +222,7 @@ public class OrderApi {
 		if (StringUtils.isBlank(companyId)){
 			return "该区域暂无回收企业";
 		}
-		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString()));
+		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(),member.getAliUserId()));
     	orderbean.setCompanyId(Integer.parseInt(companyId));
     	orderbean.setLevel(level);
     	orderbean.setCommunityId(communityId);
@@ -363,7 +363,7 @@ public class OrderApi {
 		orderbean.setCommunityId(communityId);
 		orderbean.setAreaId(Integer.parseInt(areaId));
 		orderbean.setStreetId(memberAddress.getStreetId());
-		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString()));
+		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(),member.getAliUserId()));
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
@@ -500,7 +500,7 @@ public class OrderApi {
 		orderbean.setCommunityId(communityId);
 		orderbean.setAreaId(Integer.parseInt(areaId));
 		orderbean.setStreetId(memberAddress.getStreetId());
-		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString()));
+		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(),member.getAliUserId()));
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);
@@ -584,7 +584,7 @@ public class OrderApi {
 		orderbean.setCommunityId(communityId);
 		orderbean.setStreetId(memberAddress.getStreetId());
 		orderbean.setAreaId(Integer.parseInt(areaId));
-		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString()));
+		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(),member.getAliUserId()));
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
 		orderbean.setOrderNo(orderNo);

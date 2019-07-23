@@ -255,7 +255,12 @@ public class ProductApi {
     		memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
     	}else {
     		//根据条件查看地址是否存在
-    		memberAddress = memberAddressService.selectOne(new EntityWrapper<MemberAddress>().eq("name_", productBean.getUserName()).eq("tel", productBean.getMobile()).eq("address_", productBean.getAddress()).eq("del_flag", "0"));
+			MemberAddress select = new MemberAddress();
+				select.setName(productBean.getUserName());
+				select.setTel(productBean.getMobile());
+				select.setAddress(productBean.getAddress());
+				select.setDelFlag("0");
+    		memberAddress = memberAddressService.selectMemberAddressByAliUserIdOne(select);
     	}
     	if(memberAddress==null) {
     		return "您暂未添加收货信息";
