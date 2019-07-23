@@ -3,7 +3,6 @@ package com.tzj.collect.common.thread;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.common.constant.MD5;
 import com.tzj.collect.core.param.ali.MemberAddressBean;
 import com.tzj.collect.core.service.MemberAddressService;
 import com.tzj.collect.core.service.PaymentService;
