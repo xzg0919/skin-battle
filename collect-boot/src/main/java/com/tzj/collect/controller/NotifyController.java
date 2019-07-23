@@ -14,14 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
+import com.tzj.collect.common.thread.NewThreadPoorExcutor;
+import com.tzj.collect.common.thread.sendGreenOrderThread;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.Order;
+import com.tzj.collect.entity.OrderItemAch;
 import com.tzj.collect.entity.Payment;
-import com.tzj.collect.service.AliPayService;
-import com.tzj.collect.service.AnsycMyslService;
-import com.tzj.collect.service.EnterpriseCodeService;
-import com.tzj.collect.service.OrderService;
-import com.tzj.collect.service.PaymentService;
+import com.tzj.collect.service.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +43,9 @@ public class NotifyController {
     @Autowired
     private EnterpriseCodeService enterpriseCodeService;
     @Autowired
-    private AliPayService aliPayService;
+    private AreaService areaService;
     @Autowired
-    private AnsycMyslService ansycMyslService;
+    private OrderItemAchService orderItemAchService;
 
 
     /**
@@ -130,6 +129,13 @@ public class NotifyController {
                     if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
                         OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+                    }
+                    try {
+                        if ("上海市".startsWith(order.getAddress())){
+                            NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                     if(null != order&&order.getIsScan().equals("0")){
                         //修改订单状态

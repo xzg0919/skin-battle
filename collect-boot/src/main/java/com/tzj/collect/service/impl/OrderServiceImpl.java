@@ -31,6 +31,8 @@ import com.tzj.collect.api.common.async.AsyncRedis;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.api.iot.param.IotParamBean;
 import com.tzj.collect.common.constant.AlipayConst;
+import com.tzj.collect.common.thread.NewThreadPoorExcutor;
+import com.tzj.collect.common.thread.sendGreenOrderThread;
 import com.tzj.collect.common.util.PushUtils;
 import com.tzj.collect.common.util.SnUtils;
 import com.tzj.collect.common.util.ToolUtils;
@@ -381,10 +383,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if("1".equals(order.getIsCash())||0==Double.parseDouble(orderbean.getAchPrice())) {
 			//修改订单状态
 			this.modifyOrderSta(orderbean);
-				if("1".equals(order.getIsMysl())){
-					//给用户增加蚂蚁能量
-					OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+			if("1".equals(order.getIsMysl())){
+				//给用户增加蚂蚁能量
+				OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+			}
+			try {
+				if ("上海市".startsWith(order.getAddress())){
+					NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
 				}
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 		}
 		return flag;
 	}
