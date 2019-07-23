@@ -373,7 +373,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
 				}
 			try {
-				if ("上海市".startsWith(order.getAddress())){
+				if (order.getAddress().startsWith("上海市")){
 					NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
 				}
 			}catch (Exception e){
