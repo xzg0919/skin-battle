@@ -185,7 +185,7 @@ public class IotApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> longPulling(){
         Member member = MemberUtils.getMember();
-        String iotMemId = "iot_member_id_"+ member.getId();
+        String iotMemId = "iot_member_id_"+ member.getAliUserId();
         Long date = null;
         HashMap<String, Object> result = new HashMap<>();
         date = System.currentTimeMillis();

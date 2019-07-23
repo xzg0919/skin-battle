@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.common.utils.AlipayConst;
 import com.tzj.collect.common.utils.TableNameUtils;
+import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.MemberMapper;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.service.*;
@@ -135,7 +136,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		//查询用户是否存在
 		Member member = this.selectMemberByAliUserId(userId);
 		//外部会员卡号
-		String cardNo = new SimpleDateFormat("yyyyMMdd").format(new Date())+ "000" +String.valueOf((int)((Math.random()*9+1)*100000)) ;
+		String cardNo = ToolUtils.getIdCardByAliUserId(userId);
 		//用户会员卡号(阿里返回)
 		String aliCardNo=null;
 		//用户会员开卡时间

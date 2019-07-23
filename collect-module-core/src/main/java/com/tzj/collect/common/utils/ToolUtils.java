@@ -1,8 +1,10 @@
 package com.tzj.collect.common.utils;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class ToolUtils {
 	public static final String categoryName = "五废";
@@ -64,5 +66,14 @@ public class ToolUtils {
 			e.printStackTrace();
 		}
 		return new Date();
+	}
+
+	public static String getAliUserIdByOrderNo(String orderNo){
+		long s = (Long.parseLong(orderNo.substring(4))+99)/2-99;
+		return s+"";
+	}
+	public static String getIdCardByAliUserId(String AliUserId){
+		Long s = (Long.parseLong(AliUserId)+(long)99)*2-99;
+		return LocalDate.now().getYear()+""+s;
 	}
 }

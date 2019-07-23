@@ -2,6 +2,7 @@ package com.tzj.collect.api.app;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
@@ -36,10 +37,9 @@ public class AppMemberApi {
     @AuthIgnore
 	@DS("slave")
     public Object getMemberByCard(MemberBean memberBean) {
-    	Map<String,Object> resultMap = new HashMap<String,Object>(); 
-    	EntityWrapper wrapper = new EntityWrapper<Member>();
-    	wrapper.eq("card_no", memberBean.getCardNo());
-    	Member member = memberService.selectOne(wrapper);
+    	Map<String,Object> resultMap = new HashMap<String,Object>();
+		String aliUserId = ToolUtils.getAliUserIdByOrderNo(memberBean.getCardNo());
+    	Member member = memberService.selectMemberByAliUserId(aliUserId);
     	if(member==null) {
     		resultMap.put("code", "500");
     		resultMap.put("member", "该卡号不存在");

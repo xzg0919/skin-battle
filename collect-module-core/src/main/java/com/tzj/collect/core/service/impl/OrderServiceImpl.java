@@ -861,9 +861,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
 		order.setOrderNo(orderNo);
-        EntityWrapper<Member> entity =  new EntityWrapper<>();
-        entity.eq("card_no", iotParamBean.getMemberId()).eq("del_flag", 0);
-		Member member = memberService.selectOne(entity);
+        //EntityWrapper<Member> entity =  new EntityWrapper<>();
+        //entity.eq("card_no", iotParamBean.getMemberId()).eq("del_flag", 0);
+		//entity.eq("card_no", iotParamBean.getMemberId()).eq("del_flag", 0);
+		String aliUserId = ToolUtils.getAliUserIdByOrderNo(iotParamBean.getMemberId());
+		Member member = memberService.selectMemberByAliUserId(aliUserId);
+		//Member member = memberService.selectOne(entity);
         if (member == null){
         	throw new ApiException("当前用户不是我们系统会员");
 		}
@@ -912,7 +915,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}else {
 				hashTable = (Hashtable<String, String>)redisUtil.get("iotMap");
 			}
-			String iotMemberId = "iot_member_id_" + member.getId();
+			String iotMemberId = "iot_member_id_" + member.getAliUserId();
 //            System.out.println(parentLists.stream().allMatch(parentList -> parentList.getItemList().stream().allMatch(itemList -> itemList.getQuantity() != 0.0)));
 			if (parentLists.isEmpty() || parentLists.stream().anyMatch(parentList -> parentList.getItemList().stream().anyMatch(itemList -> itemList.getQuantity() == 0.0))){//打开箱门，并没投递任何东西
 				hashTable.put(iotMemberId, "empty");
@@ -2119,7 +2122,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//根据回收人员信息查询所属关联公司
 		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclers.getId()).eq("status_", "1"));
 		//获取用户的详细信息
-		Member member = memberService.selectById(orderBean.getMemberId());
+		Member member = memberService.selectMemberByAliUserId(orderBean.getAliUserId());
 		if (member == null) {
 			System.out.println(orderBean.getMemberId() + "    查不到此用户");
 			return "暂无此用户";
