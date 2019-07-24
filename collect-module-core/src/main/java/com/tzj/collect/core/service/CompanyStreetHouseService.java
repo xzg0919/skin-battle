@@ -19,4 +19,10 @@ public interface CompanyStreetHouseService extends IService<CompanyStreetHouse> 
 
     @DS("slave")
     Integer selectStreetHouseceCompanyId(Integer categoryId, Integer streetId);
+	
+	@DS("slave")
+    Object getAreaStreetList(long companyId,String cityName,String areaName,Integer starts,Integer ends);
+
+    @DS("slave")
+    Object getAreaStreetCount(long companyId,String cityName,String areaName);
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
 import com.tzj.collect.common.utils.AmapUtil;
 import com.tzj.collect.core.mapper.AreaMapper;
+import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.MemberAddressBean;
 import com.tzj.collect.core.param.ali.PageBean;
@@ -483,5 +484,26 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 			System.out.println(s);
 		});
 	}
-
+	@Override
+	public Object getAreaStreetList(CompanyBean companyBean) {
+		PageBean pageBean = companyBean.getPageBean();
+		Integer starts = (pageBean.getPageNumber()-1)*pageBean.getPageSize();
+		Map<String,Object> resultMap =new HashMap<>();
+		Object areaStreetList = null;
+		Object count = null;
+		if ("1".equals(companyBean.getTitle())){
+			areaStreetList = companyStreetApplianceService.getAreaStreetList(companyBean.getId(), companyBean.getCityName(), companyBean.getAreaName(), starts, pageBean.getPageSize());
+			count = companyStreetApplianceService.getAreaStreetCount(companyBean.getId(), companyBean.getCityName(), companyBean.getAreaName());
+		}else if ("2".equals(companyBean.getTitle())){
+			areaStreetList = companyStreetHouseService.getAreaStreetList(companyBean.getId(), companyBean.getCityName(), companyBean.getAreaName(), starts, pageBean.getPageSize());
+			count = companyStreetHouseService.getAreaStreetCount(companyBean.getId(), companyBean.getCityName(), companyBean.getAreaName());
+		}else if ("4".equals(companyBean.getTitle())){
+			areaStreetList = companyStreetBigService.getAreaStreetList(companyBean.getId(), companyBean.getCityName(), companyBean.getAreaName(), starts, pageBean.getPageSize());
+			count = companyStreetBigService.getAreaStreetCount(companyBean.getId(), companyBean.getCityName(), companyBean.getAreaName());
+		}
+		resultMap.put("count",count);
+		resultMap.put("areaStreetList",areaStreetList);
+		resultMap.put("pageNum",pageBean.getPageNumber());
+		return resultMap;
+	}
 }

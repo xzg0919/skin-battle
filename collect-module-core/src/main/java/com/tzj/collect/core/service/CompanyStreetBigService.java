@@ -12,4 +12,9 @@ public interface CompanyStreetBigService  extends IService<CompanyStreetBig> {
 
     @DS("slave")
     Map<String,Object> companyAreaRanges(String companyId);
+	
+	@DS("slave")
+    Object getAreaStreetList(long companyId,String cityName,String areaName,Integer starts,Integer ends);
+    @DS("slave")
+    Object getAreaStreetCount(long companyId,String cityName,String areaName);
 }

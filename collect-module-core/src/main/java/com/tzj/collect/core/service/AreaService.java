@@ -3,6 +3,7 @@ package com.tzj.collect.core.service;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
+import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.param.business.StreetNameBean;
@@ -66,4 +67,6 @@ public interface AreaService  extends IService<Area>{
 	Object isOpenCompanyByCategory(String companyId, String isOpen, String title);
 
     void addInputAreaCode(List<Map<String, String>> mapList);
+	
+	Object getAreaStreetList(CompanyBean companyBean);
 }

@@ -29,4 +29,13 @@ public class CompanyStreetBigServiceImpl extends ServiceImpl<CompanyStreetBigMap
     public Map<String,Object> companyAreaRanges(String companyId) {
         return companyStreetBigMapper.companyAreaRanges(companyId);
     }
+	@Override
+    public Object getAreaStreetList(long companyId, String cityName, String areaName, Integer starts, Integer ends) {
+        return companyStreetBigMapper.getAreaStreetList(companyId,cityName,areaName,starts,ends);
+    }
+
+    @Override
+    public Object getAreaStreetCount(long companyId, String cityName, String areaName) {
+        return companyStreetBigMapper.getAreaStreetCount(companyId,cityName,areaName);
+    }
 }

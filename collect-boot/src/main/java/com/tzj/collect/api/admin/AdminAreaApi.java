@@ -147,4 +147,13 @@ public class AdminAreaApi {
 	public Object isOpenCompanyByCategory(CompanyBean companyBean)throws Exception {
 		return areaService.isOpenCompanyByCategory(companyBean.getId().toString(),companyBean.getIsOpen(),companyBean.getTitle());
 	}
+	/*
+	 *根据公司Id和类型查询所属街道列表
+	 */
+	@Api(name = "admin.company.getAreaStreetList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getAreaStreetList(CompanyBean companyBean)throws Exception {
+		return areaService.getAreaStreetList(companyBean);
+	}
 }
