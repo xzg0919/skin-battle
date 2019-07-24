@@ -20,4 +20,8 @@ public interface CompanyStreetApplianceMapper extends BaseMapper<CompanyStreetAp
     Map<String,Object> companyAreaRanges(String companyId);
 
     Map<String,Object> adminCompanyAreaRanges(String companyId);
+
+    List<Map<String,Object>> getAreaStreetList(@Param("companyId") long companyId,@Param("cityName") String cityName,@Param("areaName") String areaName,@Param("starts") Integer starts,@Param("ends") Integer ends);
+
+    Integer getAreaStreetCount(@Param("companyId") long companyId,@Param("cityName") String cityName,@Param("areaName") String areaName);
 }

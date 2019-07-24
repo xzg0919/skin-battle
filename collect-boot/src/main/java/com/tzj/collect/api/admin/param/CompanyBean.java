@@ -63,6 +63,10 @@ public class CompanyBean {
 
 	private List<String> communityIds;
 
+	private String cityName;
+
+	private String areaName;
+
 	public String getLongitude() {
 		return longitude;
 	}
@@ -131,7 +135,7 @@ public class CompanyBean {
 		return streetId;
 	}
 
-	
+
 	public void setStreetId(Integer streetId) {
 		this.streetId = streetId;
 	}
@@ -160,55 +164,26 @@ public class CompanyBean {
 		return insertCommunityId;
 	}
 
-
-	
-	/**
-	* @param paramtheparamthe{bare_field_name} to set
-	*/
-	
 	public void setInsertCommunityId(Integer insertCommunityId) {
 		this.insertCommunityId = insertCommunityId;
 	}
 
-
-	
-	/**
-	* @return delectCommunityId
-	*/
-	
 	public Integer getDelectCommunityId() {
 		return delectCommunityId;
 	}
 
-
-	
-	/**
-	* @param paramtheparamthe{bare_field_name} to set
-	*/
-	
 	public void setDelectCommunityId(Integer delectCommunityId) {
 		this.delectCommunityId = delectCommunityId;
 	}
-
 
 	public Integer getAreaId() {
 		return areaId;
 	}
 
-	
-	/**
-	* @return communityId
-	*/
-	
 	public List<Integer> getCommunityId() {
 		return communityId;
 	}
 
-	
-	/**
-	* @param paramtheparamthe{bare_field_name} to set
-	*/
-	
 	public void setCommunityId(List<Integer> communityId) {
 		this.communityId = communityId;
 	}

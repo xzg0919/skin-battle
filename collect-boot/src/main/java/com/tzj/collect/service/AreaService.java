@@ -68,4 +68,6 @@ public interface AreaService  extends IService<Area>{
 	Object isOpenCompanyByCategory(String companyId,String isOpen,String title);
 
     void addInputAreaCode(List<Map<String, String>> mapList);
+
+    Object getAreaStreetList(CompanyBean companyBean);
 }

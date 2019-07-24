@@ -56,4 +56,13 @@ public class CompanyStreetHouseServiceImpl extends ServiceImpl<CompanyStreetHous
 
         return companyStreetHouseMapper.selectStreetHouseCompanyId(categoryId, streetId);
     }
+    @Override
+    public Object getAreaStreetList(long companyId, String cityName, String areaName, Integer starts, Integer ends) {
+        return companyStreetHouseMapper.getAreaStreetList(companyId,cityName,areaName,starts,ends);
+    }
+
+    @Override
+    public Object getAreaStreetCount(long companyId, String cityName, String areaName) {
+        return companyStreetHouseMapper.getAreaStreetCount(companyId,cityName,areaName);
+    }
 }
