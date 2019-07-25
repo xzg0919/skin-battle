@@ -1,6 +1,7 @@
 package com.tzj.collect.service;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -143,4 +144,6 @@ public interface CategoryService extends IService<Category> {
 
 	@DS("slave")
 	List<Map<String,Object>> getIsOpenCategory(String companyId);
+	@DS("slave")
+	BigDecimal getPrice(Long memberId,long categoryId,String type,String categoryAttrOptionIds);
 }

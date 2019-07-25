@@ -3,22 +3,18 @@
 <mapper namespace="com.tzj.collect.mapper.CategoryAttrOptionMapper">
 	<select id="getCategoryAttrOptionById" parameterType="Long" resultType="com.tzj.collect.api.ali.param.AliCategoryAttrOptionBean">
 		SELECT
-		a.id AS id,
-		a.name_ AS `name`,
-		a.sort_ AS sort,
-		if(a.is_special = '1',CONCAT('P',b.special_price), b.attr_option_price) AS price,
-		a.category_attr_id AS categoryAttrId,
-		a.is_special AS isSpecial,
-		b.special_price AS specialPrice
+			a.id AS id,
+			a.name_ AS `name`,
+			a.sort_ AS sort,
+			if(a.is_special = '1',CONCAT('P',20), a.price) AS price,
+			a.category_attr_id AS categoryAttrId,
+			a.is_special AS isSpecial,
+			20 AS specialPrice
 		FROM
-		sb_category_attr_option a
-		LEFT JOIN sb_company_category_attr_option b ON a.id = b.category_attr_option_id
+			sb_category_attr_option a
 		WHERE
-		a.id = #{id}
-		AND b.attr_option_price IS NOT NULL
-		AND b.company_id = #{companyId}
+			a.id = #{id}
 		AND a.del_flag = 0
-		AND b.del_flag = 0
 	</select>
    <select id="getCategoryAttrOptionList" parameterType="Long" resultType="com.tzj.collect.api.ali.param.CategoryAttrOption">
         SELECT 

@@ -14,12 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.ali.param.OrderBean;
+import com.tzj.collect.api.common.MiniTemplatemessageUtil;
 import com.tzj.collect.common.thread.NewThreadPoorExcutor;
 import com.tzj.collect.common.thread.sendGreenOrderThread;
-import com.tzj.collect.entity.EnterpriseCode;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.OrderItemAch;
-import com.tzj.collect.entity.Payment;
+import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +44,10 @@ public class NotifyController {
     private AreaService areaService;
     @Autowired
     private OrderItemAchService orderItemAchService;
+    @Autowired
+    private AsyncService asyncService;
+    @Autowired
+    private RecyclersService recyclersService;
 
 
     /**
@@ -131,9 +133,15 @@ public class NotifyController {
                         OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
                     }
                     try {
-                        if (order.getAddress().startsWith("上海市")){
+                        if (order.getAddress().startsWith("上海市")&&(Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){
                             NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
                         }
+//                        if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+//                            asyncService.sendOpenAppMini(payment.getAliUserId(),payment.getTradeNo(), MiniTemplatemessageUtil.payTemplateId,MiniTemplatemessageUtil.page,payment.getOrderSn(),"已支付",payment.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+//                        }else {
+//                            Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+//                            asyncService.sendOpenAppMini(recyclers.getAliUserId(),payment.getTradeNo(), MiniTemplatemessageUtil.payTemplateId,MiniTemplatemessageUtil.page,payment.getOrderSn(),"已支付",payment.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+//                        }
                     }catch (Exception e){
                         e.printStackTrace();
                     }

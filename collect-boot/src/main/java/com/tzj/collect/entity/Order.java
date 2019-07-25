@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
 import com.tzj.collect.api.business.result.ApiUtils;
 
+import lombok.Data;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @TableName("sb_order")
+@Data
 public class Order extends DataEntity<Long> {
 	private Long id;
 	/**
@@ -200,6 +202,8 @@ public class Order extends DataEntity<Long> {
 	private String orderRemarks;
 
 	private String isRisk;
+
+	private String formId;
 
 	/**
 	 * 是否待支付

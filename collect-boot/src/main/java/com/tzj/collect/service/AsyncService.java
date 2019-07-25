@@ -57,7 +57,6 @@ public interface AsyncService {
      * @param moblie : 向具体某个手机号发送短信
      * @param temlateCode : SMS_142151759
      * @param code : 回收人员名称
-     * @param dizhi : 回收人员手机号
      * @param productName : 企业名称
      */
     @Async
@@ -65,4 +64,6 @@ public interface AsyncService {
                           final String code,final String productName);
     @Async
     void notifyDingDingOrderCreate(String toString, boolean b, String recruitDingDing);
+    @Async
+    void sendOpenAppMini(String aliUserId, String formId, String templateId,String page,String value1,String value2,String value3);
 }
