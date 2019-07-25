@@ -1,4 +1,4 @@
-package com.tzj.collect.api.common;
+package com.tzj.collect.common.utils;
 
 public class MiniTemplatemessageUtil {
 
