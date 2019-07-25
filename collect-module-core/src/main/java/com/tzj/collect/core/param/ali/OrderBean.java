@@ -4,6 +4,7 @@ package com.tzj.collect.core.param.ali;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.OrderPic;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.List;
  * @author Michael_Wang
  *
  */
+@Data
 public class OrderBean {
 	//用来储存订单描述
 	private String remarks;
@@ -224,6 +226,8 @@ public class OrderBean {
 	private String isRisk;
 
 	private String myslParam;
+	
+	private String formId;
 
 	public String getMyslParam() {
 		return myslParam;

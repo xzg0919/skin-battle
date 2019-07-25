@@ -3,6 +3,7 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import java.util.Date;
  *
  */
 @TableName("sb_order")
+@Data
 public class Order extends DataEntity<Long> {
 	private Long id;
 	/**
@@ -197,6 +199,8 @@ public class Order extends DataEntity<Long> {
 	private String orderRemarks;
 
 	private String isRisk;
+	
+	private String formId;
 
 	/**
 	 * 是否待支付

@@ -96,9 +96,9 @@ public class sendGreenOrderThread implements Runnable {
         body.put("communityName",street.getAreaName());
         body.put("committeeCode",street.getCode());
         body.put("committeeName",street.getAreaName());
-        body.put("streetCode",street.getAreaName());
-        body.put("streetName",street.getCode());
-        body.put("areaCode",area.getCode());
+		body.put("streetCode",street.getCode());
+        body.put("streetName",street.getAreaName());
+        body.put("areaCode",area.getCode()+"000000");
         body.put("areaName",area.getAreaName());
         body.put("totalWeight",totalWeight);
         body.put("orderActualPoints",order.getGreenCount());

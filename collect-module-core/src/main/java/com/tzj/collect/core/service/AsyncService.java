@@ -64,4 +64,6 @@ public interface AsyncService {
                                final String code, final String productName);
     @Async
     void notifyDingDingOrderCreate(String toString, boolean b, String recruitDingDing);
+	@Async
+    void sendOpenAppMini(String aliUserId, String formId, String templateId,String page,String value1,String value2,String value3);
 }

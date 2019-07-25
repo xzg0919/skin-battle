@@ -1,10 +1,17 @@
 package com.tzj.collect.core.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayOpenAppMiniTemplatemessageSendModel;
+import com.alipay.api.request.AlipayOpenAppMiniTemplatemessageSendRequest;
+import com.alipay.api.response.AlipayOpenAppMiniTemplatemessageSendResponse;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
+import com.tzj.collect.api.commom.constant.AlipayConst;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.AsyncService;
@@ -151,6 +158,31 @@ public class AsyncServiceImpl implements AsyncService {
             e.printStackTrace();
         }
     }
-
+	@Override
+    @Async
+    public void sendOpenAppMini(String aliUserId, String formId, String templateId, String page, String value1, String value2, String value3) {
+        AlipayClient alipayClient =new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+        AlipayOpenAppMiniTemplatemessageSendRequest request =new AlipayOpenAppMiniTemplatemessageSendRequest();
+        AlipayOpenAppMiniTemplatemessageSendModel model = new AlipayOpenAppMiniTemplatemessageSendModel();
+            model.setToUserId(aliUserId);
+            model.setFormId(formId);
+            model.setUserTemplateId(templateId);
+            model.setPage(page);
+            model.setData("{\"keyword1\" :{\"value\":\""+value1+"\"},\"keyword2\" :{\"value\":\""+value2+"\"},\"keyword3\" :{\"value\":\""+value3+"\"}}");
+        System.out.println(JSON.toJSONString(model));
+        request.setBizModel(model);
+        AlipayOpenAppMiniTemplatemessageSendResponse response = null;
+        try{
+            response = alipayClient.execute(request);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        }else{
+            System.out.println("调用失败");
+        }
+        System.out.println(response.getBody());
+    }
 
 }

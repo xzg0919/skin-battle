@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.api.common.MiniTemplatemessageUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.thread.NewThreadPoorExcutor;
 import com.tzj.collect.common.thread.sendGreenOrderThread;
@@ -164,6 +165,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Transactional
 	@Override
 	public Map<String,Object> saveOrder(OrderBean orderbean) {
+		//查询价格
+		BigDecimal price = categoryService.getPrice(orderbean.getAliUserId(),orderbean.getCategoryId(),"DIGITAL",orderbean.getOrderItemBean().getCategoryAttrOppIds());
 		Map<String,Object> resultMap = new HashMap<>();
 		boolean flag = false;
 		//获取分类的所有父类编号
@@ -206,12 +209,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setCategoryId(orderbean.getCategoryId());
 			order.setCategoryParentIds(orderbean.getCategoryParentIds());
 			order.setIsMysl(orderbean.getIsMysl());
-			BigDecimal price = new BigDecimal("0");
-			if(price.compareTo(orderbean.getPrice())==1){
-				order.setPrice(price);
-			}else{
-				order.setPrice(orderbean.getPrice());
-			}
+			order.setPrice(price);
 			order.setUnit(orderbean.getUnit());
 			order.setQty(orderbean.getQty());
 			order.setLevel(orderbean.getLevel());
@@ -239,6 +237,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					order.setEnterpriseCode(orderbean.getEnterpriseCode());
 				}
 			}
+			order.setFormId(orderbean.getFormId());
 			flag = this.insert(order);
 			//更新券码信息
 			if(null!=enterpriseCode){
@@ -373,7 +372,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
 				}
 			try {
-				if (order.getAddress().startsWith("上海市")){
+				if (order.getAddress().startsWith("上海市")&&(Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){
 					NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
 				}
 			}catch (Exception e){
@@ -1746,9 +1745,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					flag = orderService.updateById(order);
 					orderLog.setOpStatusAfter("COMPLETE");
 					orderLog.setOp("已完成");
-
 					this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
-
+					try {
+						if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+							asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","大件回收");
+						}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+							asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","家电回收");
+						}else {
+							asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","生活垃圾");
+						}
+					}catch (Exception e){
+						e.printStackTrace();
+					}
 					break;
 				case "2":// 已接单
 					if ("1".equals(order.getStatus().getValue().toString())) {
@@ -1770,6 +1778,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						}
 						//異步刪除redis裡面派單id
 //						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
+					}
+					try {
+						if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+							asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已接单","大件回收");
+						}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+							asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已接单","家电回收");
+						}else {
+							asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已接单","生活垃圾");
+						}
+					}catch (Exception e){
+						e.printStackTrace();
 					}
 					break;
 				default:
@@ -2319,6 +2338,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			} else {
 				order.setIsCash("0");
 			}
+			order.setFormId(orderBean.getFormId());
 			this.insert(order);
 			System.out.println(order.getId());
 			//储存图片链接
@@ -2410,7 +2430,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setAliUserId(orderBean.getAliUserId());
 			order.setTitle(Order.TitleType.FIVEKG);
 			order.setCompanyId(orderBean.getCompanyId());
-
 			order.setExpressAmount(new BigDecimal(orderBean.getQty()));
 			order.setAddress(orderBean.getAddress());
 			order.setFullAddress(orderBean.getFullAddress());
@@ -2418,6 +2437,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setLinkMan(orderBean.getLinkMan());
 			order.setQty(orderBean.getQty());
 			order.setRemarks(orderBean.getRemarks());
+			order.setFormId(orderBean.getFormId());
 			this.insert(order);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2486,6 +2506,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 */
 	@Override
 	public Map<String,Object> saveBigThingOrder(OrderBean orderbean) throws com.taobao.api.ApiException{
+		//查询价格
+		BigDecimal price = categoryService.getPrice(orderbean.getAliUserId(),orderbean.getCategoryId(),"BIGTHING",orderbean.getOrderItemBean().getCategoryAttrOppIds());
 		Map<String,Object> resultMap = new HashMap<>();
 		//获取分类的所有父类编号
 		Category category =  categoryService.selectById(orderbean.getCategoryId());
@@ -2514,12 +2536,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setCategoryParentIds(orderbean.getCategoryParentIds());
 			order.setIsMysl(orderbean.getIsMysl());
 			order.setAchPrice(new BigDecimal("0"));
-			BigDecimal price = new BigDecimal("0");
-			if(price.compareTo(orderbean.getPrice())==1){
-				order.setPrice(price);
-			}else{
-				order.setPrice(orderbean.getPrice());
-			}
+			order.setPrice(price);
 			order.setUnit("个");
 			order.setQty(1);
 			order.setLevel(orderbean.getLevel());
@@ -2541,6 +2558,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					order.setEnterpriseCode(orderbean.getEnterpriseCode());
 				}
 			}
+			order.setFormId(orderbean.getFormId());
 			this.insert(order);
 			//更新券码信息
 			if(null!=enterpriseCode){

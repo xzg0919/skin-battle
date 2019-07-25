@@ -11,6 +11,7 @@ import com.tzj.collect.core.result.business.CategoryResult;
 import com.tzj.collect.entity.Category;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -143,4 +144,6 @@ public interface CategoryService extends IService<Category> {
 
 	@DS("slave")
 	List<Map<String,Object>> getIsOpenCategory(String companyId);
+	@DS("slave")
+	BigDecimal getPrice(String aliUserId, long categoryId, String type, String categoryAttrOptionIds);
 }
