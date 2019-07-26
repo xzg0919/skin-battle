@@ -205,6 +205,8 @@ public class Order extends DataEntity<Long> {
 
 	private String formId;
 
+	private BigDecimal priceT;
+
 	/**
 	 * 是否待支付
 	 * @return
