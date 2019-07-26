@@ -238,6 +238,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				}
 			}
 			order.setFormId(orderbean.getFormId());
+			order.setPriceT(orderbean.getPrice());
 			flag = this.insert(order);
 			//更新券码信息
 			if(null!=enterpriseCode){
@@ -2570,6 +2571,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				}
 			}
 			order.setFormId(orderbean.getFormId());
+			order.setPriceT(orderbean.getPrice());
 			this.insert(order);
 			//更新券码信息
 			if(null!=enterpriseCode){
