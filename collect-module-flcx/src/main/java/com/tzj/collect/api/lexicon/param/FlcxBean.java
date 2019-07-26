@@ -10,9 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class FlcxBean {
 
-    private String name;//查询名称
+    private Long cityId = 0L;//城市id(查询参数)(第一版默认上海)
 
-    private Long typeId = 0L;//类型id
+    private String cityName = "";//城市名称(查询参数)
+
+    private Long typeId = 0L;//类型id(查询参数)
+
+    private String name = "";//查询名称(查询参数)
 
     private String lexicon;//查询结果关键字
 
@@ -45,4 +49,5 @@ public class FlcxBean {
     private  PageBean pageBean;
 
     private boolean notCount = false;
+
 }

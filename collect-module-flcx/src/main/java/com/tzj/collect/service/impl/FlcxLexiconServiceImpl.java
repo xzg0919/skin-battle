@@ -47,11 +47,11 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
 
 
     @Transactional(readOnly = false)
-    @Cacheable(value = "lexCheckMap" , key = "#flcxBean.name", sync = true)
+    @Cacheable(value = "lexCheckMap" , key = "#flcxBean.cityName + '_'+ #flcxBean.cityId + '_' + #flcxBean.name + '_' + #flcxBean.typeId",   sync = true)
     public Map lexCheck(FlcxBean flcxBean) throws ApiException {
         HashMap<String, Object> map = new HashMap<>();
         //根据名称从redis取出结果集
-        Boolean object = null;
+        Boolean object = false;
         if (!StringUtils.isBlank(flcxBean.getName())){
             object = redisUtil.hasKey(flcxBean.getName());
         }
@@ -69,11 +69,16 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
                 flcxRecords.setLexicons(flcxBean.getName());
             }
 
-            FlcxResult flcxResult = flcxLexiconMapper.lexCheck(flcxBean.getName(), flcxBean.getTypeId());
+            FlcxResult flcxResult = flcxLexiconMapper.lexCheck(flcxBean.getName(), flcxBean.getTypeId(), flcxBean.getCityName(), flcxBean.getCityId());
             //记录查询
             flcxRecords.setAliUserId(flcxBean.getAliUserId());
             if (null != flcxResult){
                 flcxResult.setRemarksList(Arrays.asList(flcxResult.getRemarks().split(";")));
+                Set<String> nameSet = new HashSet<>();
+                flcxResult.getImgUrlAfter().stream().forEach(imgAfter ->{
+                    nameSet.add(imgAfter.get("name_"));
+                });
+                flcxResult.setParentName(nameSet.toString().replace("[", "").replace("]", "").replace(",", "/").replace("null", ""));
                 map.put("results", flcxResult);
                 map.put("msg", "success");
                 flcxRecords.setLexiconAfter(flcxResult.getLexicon());
@@ -118,56 +123,56 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         return map;
     }
 
-    @Override
-    @Cacheable(value = "lexCheckMap" , key = "#flcxBean.typeId", sync = true)
-    public Map lexCheckByType(FlcxBean flcxBean) {
-        HashMap<String, Object> map = new HashMap<>();
-        //根据名称从redis取出结果集
-        Boolean object = false;
-        if (!StringUtils.isBlank(flcxBean.getName())){
-            object = redisUtil.hasKey(flcxBean.getName());
-        }
-        Map<String, Object> resultMap = null;
-        if (true == object|| flcxBean.getTypeId()> 0){
-            FlcxRecords flcxRecords = new FlcxRecords();
-            if (StringUtils.isEmpty(flcxBean.getName()) && flcxBean.getTypeId() == 0 || StringUtils.isEmpty(flcxBean.getAliUserId())){
-                throw new ApiException("参数错误");
-            }
-            if (null == flcxBean.getName() || StringUtils.isEmpty(flcxBean.getName()) || flcxBean.getTypeId() != 0){
-                flcxBean.setName("");
-                flcxRecords.setLexicons(flcxBean.getTypeId().toString());
-            }else {
-                flcxBean.setTypeId(0L);
-                flcxRecords.setLexicons(flcxBean.getName());
-            }
-
-            FlcxResult flcxResult = flcxLexiconMapper.lexCheck(flcxBean.getName(), flcxBean.getTypeId());
-            //记录查询
-            flcxRecords.setAliUserId(flcxBean.getAliUserId());
-            if (null != flcxResult){
-                flcxResult.setRemarksList(Arrays.asList(flcxResult.getRemarks().split(";")));
-                map.put("results", flcxResult);
-                map.put("msg", "success");
-                flcxRecords.setLexiconAfter(flcxResult.getLexicon());
-                flcxRecords.setLexiconsId(flcxResult.getLexiconId());
-            }else {
-                //搜索是否存在彩蛋
-                FlcxEggshell flcxEggshell = flcxEggshellService.selectOne(new EntityWrapper<FlcxEggshell>().eq("del_flag", 0).eq("lexicon_", flcxBean.getName()));
-                if (null != flcxEggshell){
-                    map.put("msg", "eggshell");
-                    map.put("describe", flcxEggshell.getDescribe());
-                }else {
-                    map.put("msg", "empty");
-                }
-            }
-            map.put("flcxRecords", flcxRecords);
-            //把最后的结果放入redis
-            return map;
-        }else {
-            map.put("msg", "empty");
-            return map;
-        }
-    }
+//    @Override
+//    @Cacheable(value = "lexCheckMap" , key = "#flcxBean.typeId", sync = true)
+//    public Map lexCheckByType(FlcxBean flcxBean) {
+//        HashMap<String, Object> map = new HashMap<>();
+//        //根据名称从redis取出结果集
+//        Boolean object = false;
+//        if (!StringUtils.isBlank(flcxBean.getName())){
+//            object = redisUtil.hasKey(flcxBean.getName());
+//        }
+//        Map<String, Object> resultMap = null;
+//        if (true == object|| flcxBean.getTypeId()> 0){
+//            FlcxRecords flcxRecords = new FlcxRecords();
+//            if (StringUtils.isEmpty(flcxBean.getName()) && flcxBean.getTypeId() == 0 || StringUtils.isEmpty(flcxBean.getAliUserId())){
+//                throw new ApiException("参数错误");
+//            }
+//            if (null == flcxBean.getName() || StringUtils.isEmpty(flcxBean.getName()) || flcxBean.getTypeId() != 0){
+//                flcxBean.setName("");
+//                flcxRecords.setLexicons(flcxBean.getTypeId().toString());
+//            }else {
+//                flcxBean.setTypeId(0L);
+//                flcxRecords.setLexicons(flcxBean.getName());
+//            }
+//
+//            FlcxResult flcxResult = flcxLexiconMapper.lexCheck(flcxBean.getName(), flcxBean.getTypeId());
+//            //记录查询
+//            flcxRecords.setAliUserId(flcxBean.getAliUserId());
+//            if (null != flcxResult){
+//                flcxResult.setRemarksList(Arrays.asList(flcxResult.getRemarks().split(";")));
+//                map.put("results", flcxResult);
+//                map.put("msg", "success");
+//                flcxRecords.setLexiconAfter(flcxResult.getLexicon());
+//                flcxRecords.setLexiconsId(flcxResult.getLexiconId());
+//            }else {
+//                //搜索是否存在彩蛋
+//                FlcxEggshell flcxEggshell = flcxEggshellService.selectOne(new EntityWrapper<FlcxEggshell>().eq("del_flag", 0).eq("lexicon_", flcxBean.getName()));
+//                if (null != flcxEggshell){
+//                    map.put("msg", "eggshell");
+//                    map.put("describe", flcxEggshell.getDescribe());
+//                }else {
+//                    map.put("msg", "empty");
+//                }
+//            }
+//            map.put("flcxRecords", flcxRecords);
+//            //把最后的结果放入redis
+//            return map;
+//        }else {
+//            map.put("msg", "empty");
+//            return map;
+//        }
+//    }
 
     /**
      * 根据关键字搜索 支持模糊查询

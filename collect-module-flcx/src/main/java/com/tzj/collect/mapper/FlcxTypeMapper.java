@@ -2,6 +2,10 @@ package com.tzj.collect.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.entity.FlcxType;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
   * @author sgmark@aliyun.com
@@ -10,4 +14,5 @@ import com.tzj.collect.entity.FlcxType;
   * @return 
   */
 public interface FlcxTypeMapper extends BaseMapper<FlcxType> {
+    List<Map<String, Object>> typeList(@Param("cityName")String city, @Param("cityId")String cityId);
 }

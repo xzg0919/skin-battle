@@ -25,8 +25,8 @@ public interface FlcxLexiconService extends IService<FlcxLexicon> {
     List<FlcxLexicon> keySearch(String flcxString) throws ApiException;
     @DS("slave")
     Map keySearchInRedis(FlcxBean flcxBean);
-    @DS("slave")
-    Map lexCheckByType(FlcxBean flcxBean);
+//    @DS("slave")
+//    Map lexCheckByType(FlcxBean flcxBean);
 
     /**
      * 根据关键字搜索 支持模糊查询

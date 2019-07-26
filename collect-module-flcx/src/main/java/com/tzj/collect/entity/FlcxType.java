@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import lombok.Data;
 
 import java.io.Serializable;
 
@@ -24,9 +25,11 @@ public class FlcxType extends DataEntity<Long>{
 
     private String  engName;//英文名称
 
-    private Long parent_id;//所属父类
+    private Long parentId;//所属父类
     @TableField(value = "level_")
     private Integer level;
+    @TableField(value = "sort_")
+    private Integer sort;// 排序
 
     private String describe;//描述
 
@@ -39,6 +42,13 @@ public class FlcxType extends DataEntity<Long>{
         return id;
     }
 
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -50,14 +60,6 @@ public class FlcxType extends DataEntity<Long>{
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Long getParent_id() {
-        return parent_id;
-    }
-
-    public void setParent_id(Long parent_id) {
-        this.parent_id = parent_id;
     }
 
     public Integer getLevel() {
@@ -98,5 +100,13 @@ public class FlcxType extends DataEntity<Long>{
 
     public void setEngName(String engName) {
         this.engName = engName;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 }

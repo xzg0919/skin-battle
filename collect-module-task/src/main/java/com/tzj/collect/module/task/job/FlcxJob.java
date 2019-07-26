@@ -2,6 +2,7 @@ package com.tzj.collect.module.task.job;
 
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.module.task.job.thread.NewThreadPoorExcutor;
+import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxRecordsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +25,15 @@ public class FlcxJob {
 
     @Resource
     private FlcxRecordsService flcxRecordsService;
+    @Resource
+    private FlcxLexiconService flcxLexiconService;
     @Autowired
     private RedisUtil redisUtil;
     protected final static Logger logger = LoggerFactory.getLogger(FlcxJob.class);
     /**
      * 定时任务。（每天一点）
      */
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 38 14 * * ?")
     public void flcxExecute(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new flcxThread(flcxRecordsService, redisUtil)));
     }
@@ -44,6 +47,9 @@ public class FlcxJob {
         }
         @Override
         public void run() {
+            logger.info("我打算更新redis中词库--------------------------------");
+            System.out.println("我打算更新redis中词库--------------------------------");
+            flcxLexiconService.keySearchInRedis(null);
             //每天查询数据库记录，更新
             logger.info("我打算更新redis中词库使用次数--------------------------------");
             System.out.println("我打算更新redis中词库使用次数--------------------------------");

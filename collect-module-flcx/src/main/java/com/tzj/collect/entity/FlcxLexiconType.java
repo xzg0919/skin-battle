@@ -25,7 +25,7 @@ public class FlcxLexiconType  extends DataEntity<Long> {
 
     private Long typeId;//类型id
 
-
+    private Long parentId;//类型父级id
 
     public Long getId() {
 
