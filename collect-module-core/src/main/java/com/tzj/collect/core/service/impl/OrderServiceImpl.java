@@ -1746,6 +1746,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderLog.setOpStatusAfter("COMPLETE");
 					orderLog.setOp("已完成");
 					this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
+					Recyclers recyclers1 = recyclersService.selectById(order.getRecyclerId());
+					if (!"1".equals(recyclers1.getIsManager())) {
+						//阿里云推送
+						Recyclers recyclers = recyclersService.selectById(recyclers1.getParentsId());
+						PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
+					}
 					try {
 						if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
 							asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","大件回收");
@@ -1778,6 +1784,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						}
 						//異步刪除redis裡面派單id
 //						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
+					}
+					if (!"1".equals(recyclers.getIsManager())) {
+						//阿里云推送
+						Recyclers recyclerss = recyclersService.selectById(recyclers.getParentsId());
+						PushUtils.getAcsResponse(recyclerss.getTel(),"2",order.getTitle().getValue()+"");
 					}
 					try {
 						if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){

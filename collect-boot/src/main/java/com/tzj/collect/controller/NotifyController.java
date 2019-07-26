@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.thread.NewThreadPoorExcutor;
 import com.tzj.collect.common.thread.sendGreenOrderThread;
 import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
+import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.EnterpriseCode;
@@ -132,6 +133,10 @@ public class NotifyController {
                     if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
                         OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+					}
+                    Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+                    if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                        PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
                     }
 					try {
                         if (order.getAddress().startsWith("上海市")&&(Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){

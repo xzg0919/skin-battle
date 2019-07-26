@@ -362,6 +362,7 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 		BigDecimal price = null;
 		//获取当前用户的默认地址
 		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
+		System.out.println("memberAddressId 是："+memberAddress.getId()+"分类Id："+categoryId+"预估价格的Ids ："+categoryAttrOptionIds);
 		if(memberAddress==null){
 			throw new com.tzj.module.easyopen.exception.ApiException("暂未添加回收地址");
 		}
@@ -372,10 +373,10 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 			//根据小区Id，分类id和街道id 查询相关企业
 			companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(category.getParentId(),memberAddress.getStreetId(),memberAddress.getCommunityId());
 			if(StringUtils.isBlank(companyId)) {
-				throw new com.tzj.module.easyopen.exception.ApiException("该区域暂无服务");
+				throw new com.tzj.module.easyopen.exception.ApiException("该区域暂无服务: memberAddressId:"+memberAddress.getId()+"---分类Id："+category.getParentId()+"--------街道Id："+memberAddress.getStreetId()+"-----小区Id： "+memberAddress.getCommunityId());
 			}
 		}else if ("BIGTHING".equals(type)){
-			Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(78,memberAddress.getStreetId());
+			Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(category.getParentId(),memberAddress.getStreetId());
 			if(null==streetBigCompanyId) {
 				throw new com.tzj.module.easyopen.exception.ApiException("该区域暂无服务");
 			}
