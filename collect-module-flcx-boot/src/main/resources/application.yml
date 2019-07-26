@@ -108,4 +108,4 @@ logging:
     org.springfromework.web: warn
     org.hibernate: error
     com.tzj: info
-#    com.tzj.collect.mapper: debug
+    com.tzj.collect.mapper: debug

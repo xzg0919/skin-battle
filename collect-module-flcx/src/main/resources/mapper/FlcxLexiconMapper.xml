@@ -6,44 +6,37 @@
         SELECT DISTINCT
             ftt.*, recFllFlt.`recover`,
             recFllFlt.name_ AS lexiconName,
-            recFllFlt.lexicon_id
+            recFllFlt.lexicon_id,
+            #{cityId} AS cityId,
+            #{cityName} AS cityName
         FROM
             flcx_type ftt
         INNER JOIN (
             SELECT
-                fllFlt.lexicon_id,
-                ftt.parent_id,
-                fllFlt.`recover`,
-                fllFlt.name_
+                fll.id AS lexicon_id,
+                fll.name_,
+                fll.parent_id,
+                fll.`recover`
             FROM
-                flcx_type ftt
-            RIGHT JOIN (
-                SELECT
-                    fll.id AS lexicon_id,
-                    fll.name_,
-                    flt.type_id,
-                    fll.`recover`
-                FROM
-                    flcx_lexicon fll
-                INNER JOIN flcx_lexicon_type flt ON fll.id = flt.lexicon_id
-                WHERE
-                    fll.del_flag = 0
-                AND flt.del_flag = 0
-                AND fll.name_ =  #{lexiconName}
-            ) fllFlt ON ftt.id = fllFlt.type_id
+                flcx_lexicon fll
+            WHERE
+                fll.del_flag = 0
+            AND fll.name_ = #{lexiconName}
         ) recFllFlt ON recFllFlt.parent_id = ftt.id
         WHERE
             ftt.del_flag = 0
         UNION
-            SELECT
-                ftt.*, CASE WHEN id=2 THEN '1' ELSE '0' END AS `recover`,
-                '' AS lexiconName,
-                '' AS lexicon_id
-            FROM
-                flcx_type ftt
-            WHERE
-                del_flag = 0
-            AND ftt.id =  #{typeId}
+        SELECT
+            ftt.*, CASE WHEN id=2 THEN '1' ELSE '0' END AS `recover`,
+            '' AS lexiconName,
+            '' AS lexicon_id,
+            #{cityId} AS cityId,
+            #{cityName} AS cityName
+        FROM
+            flcx_type ftt
+        WHERE
+            del_flag = 0
+        AND ftt.id =  #{typeId}
     </select>
     <select id="selectImgUrl" resultType="String" parameterType="Map">
         SELECT
@@ -65,8 +58,42 @@
             AND fll.name_ = #{lexiconName}
         </if>
         ) fllFlt ON ftt.id = fllFlt.type_id  AND ftt.parent_id =  #{id}
-
     </select>
+
+    <select id="selectImgUrlAfter" resultType="Map" parameterType="Map">
+        SELECT
+          distinct
+          ftt.name_,
+          ftt.img_url
+        FROM
+          flcx_type ftt
+        INNER JOIN (
+            SELECT
+              fll.name_,
+              fct.type_id
+            FROM
+              flcx_lexicon fll
+            INNER  JOIN flcx_city_type fct ON fll.parent_id = fct.parent_id
+            WHERE
+              fll.del_flag = 0
+            AND fct.del_flag = 0
+            <if test="lexiconName != ''" >
+                AND fll.name_ = #{lexiconName}
+            </if>
+            AND fct.area_id IN (
+                SELECT
+                    id AS id
+                FROM
+                  flcx_city
+                WHERE
+                 city_name = #{cityName}
+                UNION
+                SELECT
+                  #{cityId} AS id
+                )
+        ) fllFlt ON ftt.id = fllFlt.type_id  AND ftt.parent_id =  #{id}
+    </select>
+
     <resultMap id="getCheckMap" type="com.tzj.collect.api.lexicon.result.FlcxResult">
         <result property="parentName" column="name_" />
         <result property="lexicon" column="lexiconName"/>
@@ -75,7 +102,11 @@
                     select="selectImgUrl" column="{lexiconName=lexiconName, id=id}">
             <result property="imgUrl" column="img_url" />
         </collection>
-
+        <collection property="imgUrlAfter" javaType="ArrayList" ofType="Map"
+                    select="selectImgUrlAfter" column="{lexiconName=lexiconName, id=id, cityId=cityId, cityName=cityName}">
+            <result property="imgUrl" column="img_url" />
+            <result property="name" column="name_" />
+        </collection>
         <collection property="nameLists" javaType="ArrayList" ofType="Map"
                     select="selectNameLists" column="id">
             <result property="imgUrl" column="img_url" />

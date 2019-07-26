@@ -1,8 +1,8 @@
 package com.tzj.collect.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.api.lexicon.param.FlcxTypeBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxLexiconType;
@@ -10,13 +10,9 @@ import com.tzj.collect.entity.FlcxType;
 import com.tzj.collect.mapper.FlcxLexiconMapper;
 import com.tzj.collect.mapper.FlcxLexiconTypeMapper;
 import com.tzj.collect.mapper.FlcxTypeMapper;
-import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxTypeService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
-import org.apache.poi.util.StringUtil;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -44,9 +40,10 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
     private FlcxLexiconTypeMapper flcxLexiconTypeMapper;
 
     @Override
-    public Map typeList() {
+    @Cacheable(value = "typeListMap" , key = "#flcxBean.cityName + '_'+ #flcxBean.cityId",   sync = true)
+    public Map typeList(FlcxBean flcxBean) {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("typeList", flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", 0).eq("level_", 0).eq("parent_id", 0)));
+        map.put("typeList", flcxTypeMapper.typeList(flcxBean.getCityName(), flcxBean.getCityId().toString()));
         return map;
     }
 
@@ -62,7 +59,11 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
             }else {
                 flcxLexicon.setRecover("0");
             }
-
+            flcxTypes.stream().forEach(flcxType ->{
+                if (map.get("type").contains(flcxType.getName())){
+                    flcxLexicon.setParentId(flcxType.getParentId());
+                }
+            });
             try {
                 flcxLexicon.setCreateDate(new Date());
                 flcxLexicon.setUpdateDate(new Date());
@@ -79,6 +80,7 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
                         FlcxLexiconType flcxLexiconType = new FlcxLexiconType();
                         flcxLexiconType.setLexiconId(flcxLexicon.getId());
                         flcxLexiconType.setTypeId(flcxType.getId());
+                        flcxLexiconType.setParentId(flcxType.getParentId());
                         flcxLexiconType.setCreateDate(new Date());
                         flcxLexiconType.setUpdateDate(new Date());
                         flcxLexiconTypeMapper.insert(flcxLexiconType);
@@ -99,12 +101,13 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
     @Override
     public Map listAllByType(FlcxTypeBean typeBean){
         //默认返回第一层级别
+        HashMap<String, Object> map = new HashMap<>();
         if(StringUtils.isEmpty(typeBean.getLevel())){
-            return typeList();
+            map.put("typeList", flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", 0).eq("level_", 0).eq("parent_id", 0)));
+            return map;
         }
         //具体返回某一个层级的所有类型
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("typeList", flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", typeBean.getLevel()).eq("level_", 0).eq("parent_id", 0)));
+        map.put("typeList", flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", typeBean.getLevel()).eq("level_", typeBean.getLevel())));
         return map;
     }
 

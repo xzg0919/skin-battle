@@ -1,10 +1,13 @@
 package com.tzj.collect.flcx.api;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.domain.KeyWordDTO;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationFeedbackSyncResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
+import com.tzj.collect.api.commom.constant.AmapConst;
 import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.api.lexicon.json.AmapRegeoJson;
 import com.tzj.collect.api.lexicon.param.FlcxBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxRecords;
@@ -15,11 +18,14 @@ import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBean;
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,7 +68,18 @@ public class LexiconApi {
       */
     @Api(name = "lex.check", version = "1.0")
     @AuthIgnore
-    public Map lexCheck(FlcxBean flcxBean)throws ApiException {
+    public Map lexCheck(FlcxBean flcxBean)throws Exception {
+        String cityName = flcxBean.getCityName();
+        //没传城市，只有经纬度
+        if (StringUtils.isNotEmpty(cityName) || flcxBean.getCityId() != 0){
+            //有传值撒都不干
+            flcxBean.setCityName("杭州市".equals(flcxBean.getCityName()) ? "杭州市" : "上海市");
+        }else if(StringUtils.isNotEmpty(flcxBean.getLatitude()) && StringUtils.isNotEmpty(flcxBean.getLongitude())){
+            flcxBean.setCityName("杭州市".equals(this.cityByLocation(flcxBean).get("city").toString()) ? "杭州市" : "上海市");
+        }else if (StringUtils.isEmpty(flcxBean.getCity())&& flcxBean.getCityId() == 0){
+            flcxBean.setCityName("上海市");
+            flcxBean.setCityId(1L);
+        }
         Boolean isAr = false;
         String imageUrl = "";
         final Map<String, Object>[] map = new Map[]{new HashMap<>()};
@@ -97,19 +114,14 @@ public class LexiconApi {
                 String finalImageUrl = imageUrl;
                 returnListMap.stream().sorted(Comparator.comparing(KeyWordDTO::getScore).reversed()).forEach(returnList -> {
                     Map returnMap = null;
-                    if (StringUtils.isNotEmpty(returnList.getKeyWord()) && !"unknown".equals(returnList.getKeyWord())){
+                    if (StringUtils.isNotEmpty(returnList.getKeyWord())){
                         flcxBean.setName(returnList.getKeyWord());
                         returnMap = flcxLexiconService.lexCheck(flcxBean);
                         returnMap.put("isAr", finalIsAr.booleanValue());
                         returnMap.put("traceId", alipayResponse.getTraceId());
                         returnMap.put("imageUrl", finalImageUrl);
-//                        if ("unknown".equals(returnList.getKeyWord())){
-//                            returnMap.put("isKnow", "N");
-//                            returnMap.put("name", "这是什么AI也不知道呀");
-//                        }else {
-//                            returnMap.put("name", returnList.getKeyWord());
-//                        }
                         map[0] = returnMap;
+                        return;
                     }else if(StringUtils.isNotEmpty(returnList.getCategory())){
                         flcxBean.setNotCount(true);
                         switch (returnList.getCategory()){
@@ -125,7 +137,6 @@ public class LexiconApi {
                             map[0] = returnMap;
                             return;
                         }
-                        returnMap = new HashMap();
                         returnMap = flcxLexiconService.lexCheck(flcxBean);
                         returnMap.put("isAr", finalIsAr.booleanValue());
                         returnMap.put("traceId", alipayResponse.getTraceId());
@@ -159,9 +170,6 @@ public class LexiconApi {
                 map[0].put("name", "这是什么AI也不知道呀");
                 return map[0];
             }
-        }else if (StringUtils.isEmpty(flcxBean.getName())){
-            //根据typeId查询
-            return  flcxLexiconService.lexCheckByType(flcxBean);
         }else {
             //根据名称查询
             map[0] = flcxLexiconService.lexCheck(flcxBean);
@@ -176,14 +184,16 @@ public class LexiconApi {
         }
         //发送MQ消息
         if(!flcxBean.getName().contains("这个可能"))
+            //赋值城市
+            flcxBean.setCity(flcxBean.getCityName());
             rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
         return map[0];
     }
 
     @SignIgnore
     @AuthIgnore
-    @Api(name = "lex.check.test", version = "1.0")
-    public Map  lexCheckTest(FlcxBean flcxBean){
+    @Api(name = "lex.check.test", version = "1.0", ignoreTimestamp = true, ignoreNonce = true)
+    public Map  lexCheckTest(FlcxBean flcxBean) throws Exception{
         return this.lexCheck(flcxBean);
     }
 
@@ -233,36 +243,26 @@ public class LexiconApi {
       */
     @Api(name = "type.list", version = "1.0")
     @AuthIgnore
-    public Map typeList()throws ApiException {
-        return flcxTypeService.typeList();
+    public Map typeList(FlcxBean flcxBean)throws Exception {
+        //首次根据定位获取当前城市大分类名称（切换城市再改）
+        if (StringUtils.isNotEmpty(flcxBean.getCityName()) || flcxBean.getCityId() != 0){
+            //有传值撒都不干
+            flcxBean.setCityName("杭州市".equals(flcxBean.getCityName()) ? "杭州市" : "上海市");
+        }else if(StringUtils.isNotEmpty(flcxBean.getLatitude()) && StringUtils.isNotEmpty(flcxBean.getLongitude())){
+            flcxBean.setCityName("杭州市".equals(this.cityByLocation(flcxBean).get("city").toString()) ? "杭州市" : "上海市");
+        }else if (StringUtils.isEmpty(flcxBean.getCity())&& flcxBean.getCityId() == 0){
+            flcxBean.setCityName("上海市");
+            flcxBean.setCityId(1L);
+        }
+        return flcxTypeService.typeList(flcxBean);
     }
     @Api(name = "type.top5", version = "1.0")
     @AuthIgnore
     public Map topFive()throws ApiException {
-        HashMap<String, Object> map = new HashMap<>();
-//        map.put("typeList", flcxRecordsMapper.selectList(new EntityWrapper<FlcxRecords>().eq("del_flag", 0).isNotNull("lexicon_after").groupBy("lexicon_after").setSqlSelect("count(1) as count_, lexicon_after").orderBy("count_", false).last("limit 0, 5")));
-//        List<FlcxRecords> flcxRecordsList = new ArrayList<>();
-//        FlcxRecords flcxRecords = new FlcxRecords();
-//        flcxRecords.setLexiconAfter("面膜");
-//        flcxRecordsList.add(flcxRecords);
-//        flcxRecords = new FlcxRecords();
-//        flcxRecords.setLexiconAfter("瓜子壳 ");
-//        flcxRecordsList.add(flcxRecords);
-//        flcxRecords = new FlcxRecords();
-//        flcxRecords.setLexiconAfter("医用棉签 ");
-//        flcxRecordsList.add(flcxRecords);
-//        flcxRecords = new FlcxRecords();
-//        flcxRecords.setLexiconAfter("虾壳");
-//        flcxRecordsList.add(flcxRecords);
-//        flcxRecords = new FlcxRecords();
-//        flcxRecords.setLexiconAfter("塑料袋");
-//        flcxRecordsList.add(flcxRecords);
-//        map.put("typeList", flcxRecordsList);
-//        return map;
         return flcxRecordsService.topFive("topFive");
     }
 
-    @Api(name = "type.top5.test", version = "1.0")
+    @Api(name = "type.top5.test", version = "1.0", ignoreTimestamp = true, ignoreNonce = true)
     @AuthIgnore
     @SignIgnore
     public Map topFiveTest()throws ApiException {
@@ -305,6 +305,37 @@ public class LexiconApi {
         return fileUploadService.handleUploadField("",flcxBean.getHeadImg());
     }
 
+    /** 根据定位获取城市
+      * @author sgmark@aliyun.com
+      * @date 2019/7/16 0016
+      * @return
+      */
+    @Api(name = "city.location", version = "1.0")
+    @AuthIgnore
+    public Map cityByLocation(FlcxBean flcxBean) throws Exception{
+        Map<String, Object> resultMap = new HashMap<>();
+        String url = "https://restapi.amap.com/v3/geocode/regeo";
+        Response response = null;
+        response = FastHttpClient.get().url(url)
+                .addParams("key", AmapConst.AMAP_KEY)
+                .addParams("location", flcxBean.getLongitude() + "," + flcxBean.getLatitude())
+                .build().execute();
+        String resultJson = response.body().string();
+
+        if (StringUtils.isNotEmpty(resultJson))
+            resultJson = resultJson.replaceAll("\n", "");
+
+        AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
+        if (amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0){
+            resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString());
+        }else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())){
+            //定位没找到城市
+            resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getProvince());
+        }else {
+            resultMap.put("city", "");
+        }
+        return resultMap;
+    }
 
 
 }

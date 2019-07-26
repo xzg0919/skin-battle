@@ -25,7 +25,7 @@ public class FlcxLexicon extends DataEntity<Long> {
 
     private String recover;//平台回收与否（1:回收，0:不回收）,初始值为0
 
-
+    private Long parentId;//类型父级id
 
     public Long getId() {
 
@@ -51,5 +51,13 @@ public class FlcxLexicon extends DataEntity<Long> {
 
     public void setRecover(String recover) {
         this.recover = recover;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 }
