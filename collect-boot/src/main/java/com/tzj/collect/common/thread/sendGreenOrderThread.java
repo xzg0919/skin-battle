@@ -73,7 +73,7 @@ public class sendGreenOrderThread implements Runnable {
         });
 
         //String jiuyuUrl="https://recycletest.greenfortune.sh.cn/reclaim/api/twoNet/receiveRecycleOrderData";
-        String jiuyuUrl="http://10.100.9.61/reclaim/api/recyclePlatform/";
+        String jiuyuUrl="http://180.153.19.76/reclaim/api/twoNet/receiveRecycleOrderData";
 
         String reqCode = "30004";
         head.put("reqTime",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -91,6 +91,7 @@ public class sendGreenOrderThread implements Runnable {
         body.put("detailAddress",order.getAddress());
         body.put("orderCreateUserPhone",order.getTel());
         body.put("orderReceiveName","上海铸乾信息科技有限公司");
+        body.put("companyName","上海铸乾信息科技有限公司");
         body.put("orderReceivePhone","02180394620");
         body.put("communityCode",street.getCode());
         body.put("communityName",street.getAreaName());

@@ -17,6 +17,7 @@ import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.api.common.MiniTemplatemessageUtil;
 import com.tzj.collect.common.thread.NewThreadPoorExcutor;
 import com.tzj.collect.common.thread.sendGreenOrderThread;
+import com.tzj.collect.common.util.PushUtils;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.service.*;
 
@@ -132,13 +133,18 @@ public class NotifyController {
                         //给用户增加蚂蚁能量
                         OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
                     }
+                    Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+                    if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                        PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
+                    }
                     try {
                         if (order.getAddress().startsWith("上海市")&&(Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){
                             NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
                         }
 //                        if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
 //                            asyncService.sendOpenAppMini(payment.getAliUserId(),payment.getTradeNo(), MiniTemplatemessageUtil.payTemplateId,MiniTemplatemessageUtil.page,payment.getOrderSn(),"已支付",payment.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-//                        }else {
+//                        }
+//                        else {
 //                            Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 //                            asyncService.sendOpenAppMini(recyclers.getAliUserId(),payment.getTradeNo(), MiniTemplatemessageUtil.payTemplateId,MiniTemplatemessageUtil.page,payment.getOrderSn(),"已支付",payment.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 //                        }
@@ -184,5 +190,16 @@ public class NotifyController {
             return "failure";
         }
         return "success";
+    }
+    /**
+     * 支付宝支付通知
+     * @return
+     */
+    @RequestMapping("/getOrderTest")
+    public @ResponseBody
+    Object getOrderTest(String orderId) {
+        Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", "20190715171915765857").eq("del_flag", 0));
+        //NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,Integer.parseInt(orderId))));
+        return  order;
     }
 }

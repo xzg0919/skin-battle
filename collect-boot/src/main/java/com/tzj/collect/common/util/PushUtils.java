@@ -46,6 +46,16 @@ public class PushUtils {
             body= PushConst.APP_CODE_06_MESSAGE;
             code= PushConst.APP_CODE_06;
             message= PushConst.APP_CODE_06_MESSAGE;
+        }else if ("2".equals(status)){
+            channel= "2000";
+            body= PushConst.APP_CODE_20_MESSAGE;
+            code= PushConst.APP_CODE_20;
+            message= PushConst.APP_CODE_20_MESSAGE;
+        }else if ("3".equals(status)){
+            channel= "2000";
+            body= PushConst.APP_CODE_20_MESSAGE;
+            code= PushConst.APP_CODE_20;
+            message= PushConst.APP_CODE_20_MESSAGE;
         }
         if ("4".equals(title)){
             aliYunAppId = Const.APP_ID_3;

@@ -71,7 +71,7 @@ public class DingTalkNotify {
             } catch (Exception e) {
                 logger.info("钉钉消息发送异常:" + e.getMessage());
             }
-        });
+        }).start();
     }
 
 
