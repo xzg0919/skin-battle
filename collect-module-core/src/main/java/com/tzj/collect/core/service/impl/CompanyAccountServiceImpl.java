@@ -8,6 +8,7 @@ import com.tzj.collect.core.service.CompanyAccountService;
 import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.param.TokenBean;
 import com.tzj.module.api.utils.JwtUtils;
+import com.tzj.module.api.utils.SignUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,7 @@ public class CompanyAccountServiceImpl extends ServiceImpl<CompanyAccountMapper,
 		        String securityToken = JwtUtils.generateEncryptToken(token, BUSINESS_API_TOKEN_CYPTO_KEY);
 		        TokenBean tokenBean = new TokenBean();
 		        tokenBean.setExpire(BUSINESS_API_EXPRIRE);
+				tokenBean.setSignKey(SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY));
 		        tokenBean.setToken(securityToken);
 				return tokenBean;
 			}

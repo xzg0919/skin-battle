@@ -32,7 +32,6 @@ public class BusinessLoginApi {
 		return accountService.login(accountBean);
 	}
 	@Api(name = "business.company.current", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Company selectCurrent() {
 		// 接口里面获取 CompanyAccount 的例子
