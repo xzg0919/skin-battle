@@ -1,12 +1,9 @@
 package com.tzj.collect.api.business;
 
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_EXPRIRE;
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_SECRET_KEY;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
-import javax.servlet.http.HttpServletRequest;
 
+import com.tzj.module.api.utils.SignUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.tzj.collect.api.business.param.CompanyAccountBean;
@@ -47,6 +44,7 @@ public class BusinessTokenApi {
         TokenBean tokenBean = new TokenBean();
         tokenBean.setExpire(BUSINESS_API_EXPRIRE);
         tokenBean.setToken(securityToken);
+        tokenBean.setSignKey(SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY));
         return tokenBean;
         }else{
         	  throw new ApiException("用户名或者密码错误!");
