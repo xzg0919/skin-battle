@@ -33,7 +33,6 @@ public class BusinessArrivalTimeLogApi {
      * @return
      */
 	 @Api(name = "business.getArrivalTimeLogList", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	 @DS("slave")
 	 public Object getArrivalTimeLogList(ArrivalTimeLogBean arrivalTimeLogBean){

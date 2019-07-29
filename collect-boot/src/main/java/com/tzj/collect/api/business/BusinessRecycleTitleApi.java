@@ -26,7 +26,6 @@ public class BusinessRecycleTitleApi {
      * @return
      */
     @Api(name = "business.title.getRecyclerTitleList", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
     public List<Map<String, Object>> getRecyclerTitleList(RecyclersServiceRangeBean recyclersServiceRangeBean){
 

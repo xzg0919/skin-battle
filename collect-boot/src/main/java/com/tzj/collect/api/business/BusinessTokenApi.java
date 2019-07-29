@@ -8,6 +8,7 @@ import com.tzj.collect.param.TokenBean;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;
+import com.tzj.module.api.utils.SignUtils;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import static com.tzj.collect.common.constant.TokenConst.*;
 public class BusinessTokenApi {
 	@Autowired
 	private CompanyAccountService companyAccountService;
-	
+
     /**
      * 回收企业获取token
      * 忽略token验证，需要sign签名验证
@@ -32,12 +33,13 @@ public class BusinessTokenApi {
        //判断用户名和密码
     	CompanyAccount companyAccount = companyAccountService.selectByUsername(companyAccountBean.getUsername(),companyAccountBean.getPassword());
         if(companyAccount!=null){
-        String token = JwtUtils.generateToken(companyAccount.getId().toString(), BUSINESS_API_EXPRIRE, BUSINESS_API_TOKEN_SECRET_KEY);
-        String securityToken = JwtUtils.generateEncryptToken(token, BUSINESS_API_TOKEN_CYPTO_KEY);
-        TokenBean tokenBean = new TokenBean();
-        tokenBean.setExpire(BUSINESS_API_EXPRIRE);
-        tokenBean.setToken(securityToken);
-        return tokenBean;
+            String token = JwtUtils.generateToken(companyAccount.getId().toString(), BUSINESS_API_EXPRIRE, BUSINESS_API_TOKEN_SECRET_KEY);
+            String securityToken = JwtUtils.generateEncryptToken(token, BUSINESS_API_TOKEN_CYPTO_KEY);
+            TokenBean tokenBean = new TokenBean();
+            tokenBean.setExpire(BUSINESS_API_EXPRIRE);
+            tokenBean.setSignKey(SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY));
+            tokenBean.setToken(securityToken);
+            return tokenBean;
         }else{
         	  throw new ApiException("用户名或者密码错误!");
         }

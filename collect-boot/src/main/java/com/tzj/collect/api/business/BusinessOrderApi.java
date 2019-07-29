@@ -51,7 +51,6 @@ public class BusinessOrderApi {
 	 * 
 	*/
 	 @Api(name = "business.order.getOrderLists", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderLists(BOrderBean orderBean)
 	{	//获取分页数据
@@ -67,7 +66,6 @@ public class BusinessOrderApi {
 	  * @return
 	  */
 	@Api(name = "business.order.getOrderListsDistribute", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderListsDistribute(BOrderBean orderBean)
 	{	//获取分页数据
@@ -83,7 +81,6 @@ public class BusinessOrderApi {
 	 * 
 	*/
 	 @Api(name = "business.order.getOrderCounts", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderCounts(BOrderBean orderBean){
 		 	//根据各种状态查询相订单表相关的条数
@@ -98,7 +95,6 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	 @Api(name = "business.order.getOrderDetail", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String,Object> getOrderDetail(BOrderBean bOrderBean){
 		 int orderId = bOrderBean.getId();
@@ -113,7 +109,6 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	 @Api(name = "business.order.getInitDetail", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String,Object> getInitDetail(BOrderBean bOrderBean){
 		 int orderId = bOrderBean.getId();
@@ -143,7 +138,6 @@ public class BusinessOrderApi {
 		 * @return
 		 */
 		 @Api(name = "business.order.getRecyclersList", version = "1.0")
-		 @SignIgnore
 		 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 		 public List<Recyclers> getRecyclersList2(BOrderBean bOrderBean){
 			 List<Recyclers> list =  recyclersService.getRecyclersList2(bOrderBean.getCompanyId(),bOrderBean.getId());
@@ -157,7 +151,6 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	 @Api(name = "business.order.getreccanrea", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	 public CancelResult getRecCanReaLog(OrderBean OrderBean){
 		 return logService.selectCancel(OrderBean);
@@ -170,7 +163,6 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	 @Api(name = "business.order.updateOdrerStatus", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public String updateOdrerStatus(BOrderBean orderbean) {
 		 //订单id 
@@ -191,7 +183,6 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	@Api(name = "business.order.callback", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public String callbackForground(OrderBean orderbean) {
 		return orderService.callbackForGround(orderbean);
@@ -203,7 +194,6 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	@Api(name = "business.order.cancleOdrer", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public String cancleOdrer(BOrderBean orderbean) {
 		Order order = orderService.selectById(orderbean.getId());
@@ -228,7 +218,6 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	@Api(name = "order.tosendfiveKgOrder", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object tosendfiveKgOrder(OrderBean orderbean){
 		return  orderService.tosendfiveKgOrder(orderbean.getId());
@@ -241,7 +230,6 @@ public class BusinessOrderApi {
 	  * @return
 	  */
 	@Api(name = "order.test", version = "1.0")
-	@SignIgnore
 	@AuthIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	@DS("slave")
@@ -260,7 +248,6 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	@Api(name = "business.order.updateStatus", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object orderUpdateStatus(BOrderBean bOrderBean){
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
