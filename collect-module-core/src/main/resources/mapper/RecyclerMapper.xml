@@ -102,7 +102,7 @@
 					srccomm.recyclerId = #{recyclerId}
 			) srcsc ON srcsc.communityId = sc.id
 		) commId ON commId.area_id = countyStreet.streetId
-	</select> 
+	</select>
 	<select id="getCommNumByRecId" resultType="java.lang.Integer">
 		SELECT
 			COUNT(sc.id) AS commNum
@@ -160,8 +160,17 @@
 		AND d.del_flag = 0
 		AND e.del_flag = 0
 		AND f.del_flag = 0
-		AND a.is_manager = 1
+		AND d.is_manager = 1
 		AND d.status_ = '1'
+		<if test="title == 1">
+			AND d.type_ = '1'
+		</if>
+		<if test="title == 2">
+			AND d.type_ = '1'
+		</if>
+		<if test="title == 4">
+			AND d.type_ = '4'
+		</if>
 	</select>
 	<select id="getSendOrderRecyclersList" resultMap="RecycleResultMap" parameterType="Integer">
 		SELECT DISTINCT
@@ -186,10 +195,39 @@
 		AND d.del_flag = 0
 		AND e.del_flag = 0
 		AND f.del_flag = 0
-		AND a.is_manager = 1
+		AND d.is_manager = 1
 		AND d.status_ = '1'
+		<if test="title == 1">
+			AND d.type_ = '1'
+		</if>
+		<if test="title == 2">
+			AND d.type_ = '1'
+		</if>
+		<if test="title == 4">
+			AND d.type_ = '4'
+		</if>
 	</select>
-	
+	<select id="getRecycleSon" parameterType="Object" resultType="com.tzj.collect.entity.Recyclers">
+		SELECT
+			b.*
+		FROM
+			sb_company_recycler a
+		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		WHERE
+			a.parents_id = #{recyclerId}
+		<choose>
+			<when test=" isBigRecycle == 'Y'.toString() ">
+				AND a.type_ = '4'
+			</when>
+			<otherwise>
+				AND a.type_ = '1'
+			</otherwise>
+		</choose>
+		<if test="recyclerName != null and recyclerName != ''">
+			AND b.name_ like CONCAT('%',CONCAT(#{recyclerName},'%'))
+		</if>
+	</select>
+
 	 <resultMap type="com.tzj.collect.entity.Recyclers" id="RecycleResultMap">
         <id property="id" column="id" />  
         <result property="name" column="name_" />
@@ -257,15 +295,14 @@
 	FROM
 		sb_recyclers sr
 	INNER JOIN sb_company_recycler scr ON sr.id = scr.recycler_id
-	 LEFT JOIN sb_recyclers_title srt ON sr.id = srt.recycle_id
 	WHERE
 		scr.status_ = '0' and scr.company_id= #{companyId}
 		 <choose>
 			 <when test=" isBigRecycle == 'Y'.toString() ">
-				 and srt.title_id = 4
+				 and scr.type_ = '4'
 			 </when>
 			 <otherwise>
-				 AND srt.title_id is null
+				 and scr.type_ = '1'
 			 </otherwise>
 		 </choose>
       ORDER BY scr.id
@@ -276,28 +313,26 @@
 			a.company_id,
 			b.id,
 			b.name_,
-			b.is_manager,
+			a.is_manager,
 			c.area_name,
 			d.area_name AS provinceName
 		FROM
 			sb_company_recycler a
 		INNER JOIN sb_recyclers b ON a.recycler_id = b.id
-		LEFT JOIN sb_area c ON b.city = c.id
-		 <choose>
-			 <when test=" isBigRecycle == 'Y'.toString() ">
-				 INNER JOIN sb_recyclers_title srt ON srt.recycle_id = b.id
-			 </when>
-		 </choose>
-		LEFT JOIN sb_area d ON b.province = d.id
+		LEFT JOIN sb_area c ON a.city = c.id
+		LEFT JOIN sb_area d ON a.province = d.id
 		WHERE
 			a.del_flag = 0
 		AND a.company_id = #{companyId}
 		AND a.status_ = 1
-		AND b.is_manager = 1
+		AND a.is_manager = 1
 		 <choose>
 			 <when test=" isBigRecycle == 'Y'.toString() ">
-				 and srt.title_id = 4
+				 and a.type_ = '4'
 			 </when>
+			 <otherwise>
+				 and a.type_ = '1'
+			 </otherwise>
 		 </choose>
 	 </select>
     	<select id="getAreaRecyclersRange" parameterType="String" resultType="Map">
@@ -343,28 +378,23 @@
 			SELECT
 				b.id,
 				b.name_,
-				b.city AS cityId,
-				b.province AS provinceId,
+				a.city AS cityId,
+				a.province AS provinceId,
 				CONCAT(d.area_name,'-',c.area_name) AS area_name,
 				IF(a.del_flag=0,"A","B") AS delFlag,
-				srt.title_id AS titleId,
-				CONCAT(IF(g.NUMS is NULL,0,g.NUMS ),'/',e.areaNum) AS areaNum,
 				IF(f.recycleNum is NULL,0,f.recycleNum) AS recycleNum
 			FROM
 				sb_company_recycler a
 			INNER JOIN sb_recyclers b ON a.recycler_id = b.id
-			LEFT JOIN sb_recyclers_title srt ON srt.recycle_id = b.id
-			LEFT JOIN sb_area c ON c.id = b.city
-			LEFT JOIN sb_area d ON d.id = b.province
-			LEFT JOIN (SELECT e.parent_id,count(*) AS areaNum FROM sb_area e GROUP BY e.parent_id) AS e ON e.parent_id = b.city
-			LEFT JOIN (SELECT a.parents_id ,COUNT(*) AS recycleNum FROM sb_recyclers a INNER JOIN sb_company_recycler b ON a.id = b.recycler_id WHERE a.del_flag = 0 and b.del_flag = 0 and b.status_ = 1 AND b.company_id = #{companyId} GROUP BY a.parents_id) f ON f.parents_id = b.id
-			LEFT JOIN (SELECT a.recyclers_id,COUNT(*) AS NUMS FROM (SELECT a.recyclers_id,a.area_parents_id  FROM sb_recyclers_service_range a LEFT JOIN sb_recyclers b ON a.recyclers_id = b.id WHERE a.del_flag = 0 AND b.del_flag = 0 GROUP BY a.area_parents_id,a.recyclers_id) a GROUP BY a.recyclers_id) g ON g.recyclers_id = b.id
+			LEFT JOIN sb_area c ON c.id = a.city
+			LEFT JOIN sb_area d ON d.id = a.province
+			LEFT JOIN (SELECT b.parents_id ,COUNT(*) AS recycleNum FROM  sb_company_recycler b WHERE b.del_flag = 0 and b.status_ = 1 AND b.company_id = #{companyId} GROUP BY b.parents_id) f ON f.parents_id = b.id
 			WHERE
 				 a.company_id = #{companyId}
 			AND a.status_ = 1
-			AND b.is_manager = '1'
+			AND a.is_manager = '1'
 			<if test="cityId != null and cityId != ''">
-				AND b.city = #{cityId}
+				AND a.city = #{cityId}
 			</if>
 			<if test="recycleName != null and recycleName != ''">
 				AND b.name_ = #{recycleName}
@@ -374,34 +404,31 @@
 			</if>
 			<choose>
 				<when test=" isBigRecycle == 'Y'.toString() ">
-					and srt.title_id = 4
+					and a.type_ = '4'
 				</when>
 				<otherwise>
-					and (srt.title_id is null OR srt.title_id in (1,2,3))
+					and a.type_ = '1'
 				</otherwise>
 			</choose>
 			GROUP BY b.id
 			LIMIT #{pageStartCount},#{pageSize}
 		</select>
 	<select id="getRangeRecyclersListCount" resultType="int" parameterType="Object">
-select count(*) from (
+select count(1) from (
 		SELECT
-			b.id
+		count(1)
 		FROM
 		sb_company_recycler a
 		INNER JOIN sb_recyclers b ON a.recycler_id = b.id
-		LEFT JOIN sb_recyclers_title srt ON srt.recycle_id = b.id
-		LEFT JOIN sb_area c ON c.id = b.city
-		LEFT JOIN sb_area d ON d.id = b.province
-		LEFT JOIN (SELECT e.parent_id,count(*) AS areaNum FROM sb_area e GROUP BY e.parent_id) AS e ON e.parent_id = b.city
-		LEFT JOIN (SELECT a.parents_id ,COUNT(*) AS recycleNum FROM sb_recyclers a INNER JOIN sb_company_recycler b ON a.id = b.recycler_id WHERE a.del_flag = 0 and b.del_flag = 0 and b.status_ = 1 GROUP BY a.parents_id) f ON f.parents_id = b.id
-		LEFT JOIN (SELECT a.recyclers_id,COUNT(*) AS NUMS FROM (SELECT a.recyclers_id,a.area_parents_id  FROM sb_recyclers_service_range a LEFT JOIN sb_recyclers b ON a.recyclers_id = b.id WHERE a.del_flag = 0 AND b.del_flag = 0 GROUP BY a.area_parents_id,a.recyclers_id) a GROUP BY a.recyclers_id) g ON g.recyclers_id = b.id
+		LEFT JOIN sb_area c ON c.id = a.city
+		LEFT JOIN sb_area d ON d.id = a.province
+		LEFT JOIN (SELECT b.parents_id ,COUNT(*) AS recycleNum FROM  sb_company_recycler b WHERE b.del_flag = 0 and b.status_ = 1 AND b.company_id = #{companyId} GROUP BY b.parents_id) f ON f.parents_id = b.id
 		WHERE
-		   a.company_id = #{companyId}
+		a.company_id = #{companyId}
 		AND a.status_ = 1
-		AND b.is_manager = '1'
+		AND a.is_manager = '1'
 		<if test="cityId != null and cityId != ''">
-			AND b.city = #{cityId}
+			AND a.city = #{cityId}
 		</if>
 		<if test="recycleName != null and recycleName != ''">
 			AND b.name_ = #{recycleName}
@@ -411,10 +438,10 @@ select count(*) from (
 		</if>
 		<choose>
 			<when test=" isBigRecycle == 'Y'.toString() ">
-				and srt.title_id = 4
+				and a.type_ = '4'
 			</when>
 			<otherwise>
-				and (srt.title_id is null OR srt.title_id in (1,2,3))
+				and a.type_ = '1'
 			</otherwise>
 		</choose>
 		GROUP BY b.id
@@ -445,21 +472,19 @@ select count(*) from (
 		FROM
 			sb_recyclers srr
 		LEFT JOIN sb_company_recycler scr ON srr.id = scr.recycler_id
-		<choose>
-			<when test=" isBigRecycle == 'Y'.toString() ">
-				INNER JOIN  sb_recyclers_title srt ON srt.recycle_id = srr.id
-			</when>
-		</choose>
 		WHERE
 			srr.del_flag = 0
 		AND scr.del_flag = 0
-		AND srr.parents_id = #{recycleId}
+		AND scr.parents_id = #{recycleId}
 		AND scr.company_id = #{companyId}
 		AND scr.status_ = 1
 		<choose>
 			<when test=" isBigRecycle == 'Y'.toString() ">
-				and srt.title_id = 4
+				and scr.type_ = '4'
 			</when>
+			<otherwise>
+				and scr.type_ = '1'
+			</otherwise>
 		</choose>
 
 	</select>

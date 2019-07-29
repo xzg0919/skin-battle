@@ -49,6 +49,8 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 
 
 	List<AppCompany> getCurrComList(@Param("recyclerBean") RecyclersBean recyclersBean, @Param("startSize") int startSize, @Param("pageSize") int pageSize);
+
+	List<AppCompany> getBigCurrcomList(@Param("recyclerBean") RecyclersBean recyclersBean, @Param("startSize") int startSize, @Param("pageSize") int pageSize);
 	
 	Integer getCurrComCount(@Param("recyclerBean") RecyclersBean recyclersBean);
 

@@ -7,6 +7,7 @@ import com.alipay.api.response.ZhimaCustomerCertificationInitializeResponse;
 import com.alipay.api.response.ZhimaCustomerCertificationQueryResponse;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.tzj.collect.api.common.MyX509TrustManager;
 import com.tzj.collect.common.util.RecyclersUtils;
@@ -21,6 +22,7 @@ import com.tzj.collect.core.result.app.AppScoreResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.collect.entity.Company;
+import com.tzj.collect.entity.CompanyRecycler;
 import com.tzj.collect.entity.OrderEvaluation;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.module.api.annotation.Api;
@@ -291,6 +293,22 @@ public class AppRecyclersApi {
 		return map;
 
 	}
+	/**
+	 * 我的公司（状态申请中或者已入驻）
+	 *
+	 * @author sgmark@aliyun.com
+	 * @param recyclersBean
+	 * @return
+	 */
+	@Api(name = "recycler.getBigCurrcom", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String, Object> getBigCurrcomList(RecyclersBean recyclersBean) {
+		recyclersBean.setId(this.getRecycler().getId());
+		Map<String, Object> map = companyRecyclerService.getBigCurrcomList(recyclersBean);
+		return map;
+
+	}
 
 	/**
 	 * 添加公司列表（状态未入驻 或者 已拒绝）
@@ -391,16 +409,9 @@ public class AppRecyclersApi {
 	@Api(name = "app.recycler.getRecycleSon", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
-	@DS("slave")
 	public Object getRecycleSon(RecyclersBean recyclersBean){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
-		EntityWrapper<Recyclers> wrapper = new EntityWrapper<>();
-			wrapper.eq("parents_id",recycler.getId());
-			wrapper.eq("del_flag",0);
-			if(StringUtils.isNotBlank(recyclersBean.getName())){
-				wrapper.like("name_",recyclersBean.getName());
-			}
-		return recyclersService.selectList(wrapper);
+		return recyclersService.getRecycleSon(recycler.getId(),recyclersBean);
 	}
 	/**
 	 * 获得当前回收人员的经理信息
@@ -408,13 +419,20 @@ public class AppRecyclersApi {
 	@Api(name = "app.recycler.getRecycleDetails", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
-	public Object getRecycleDetails(){
+	public Object getRecycleDetails(RecyclersBean recyclersBean){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
-		if(recycler==null|| recycler.getParentsId()==null){
+		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recycler.getId()).eq("status_", "1");
+				if("Y".equals(recyclersBean.getIsBigRecycle())){
+					wrapper.eq("type_","4");
+				}else {
+					wrapper.eq("type_","4");
+				}
+		List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(wrapper);
+		if(companyRecyclerList.isEmpty()){
 			return "暂无信息";
 		}
-		List<Map<String,Object>> recycleList = recyclersService.getRecycleDetails(recycler.getParentsId());
-		Recyclers recyclers = recyclersService.selectById(recycler.getParentsId());
+		List<Map<String,Object>> recycleList = recyclersService.getRecycleDetails(companyRecyclerList.get(0).getParentsId());
+		Recyclers recyclers = recyclersService.selectById(companyRecyclerList.get(0).getParentsId());
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("recyclers",recyclers);
 		resultMap.put("areaList",recycleList);

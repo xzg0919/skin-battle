@@ -7,6 +7,7 @@ import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.commom.redis.RedisUtil;
@@ -1679,6 +1680,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOrderId(orderBean.getId());
 		String descrb = "";
 		Order order = orderService.selectById(orderBean.getId());
+		Recyclers recycler = recyclersService.selectById(order.getRecyclerId());
+		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1");
+		if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+			wrapper.eq("type_","4");
+		}else {
+			wrapper.eq("type_","1");
+		}
+		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
 		if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){
 			Category category = categoryService.selectById(order.getCategoryId());
 			descrb = category.getName();
@@ -1695,19 +1704,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (orderBean.getStatus() != null && !"".equals(orderBean.getStatus())) {
 			switch (orderBean.getStatus()) {
 				case "6"://已取消任务
-					Recyclers recycler = recyclersService.selectById(order.getRecyclerId());
 					if ("1".equals(order.getStatus().getValue().toString())) {
 						//判断是否是回收经理还是回收人员取消订单
-						if ("1".equals(recycler.getIsManager())) {
+						if ("1".equals(companyRecycler.getIsManager())) {
 							//是经理
 							order.setRecyclerId(0);
 							order.setStatus(OrderType.INIT);
 						} else {
 							//是下属回收人员
 							order.setStatus(OrderType.TOSEND);
-							order.setRecyclerId(recycler.getParentsId());
+							order.setRecyclerId(companyRecycler.getParentsId());
 							//阿里云推送
-							Recyclers recyclers = recyclersService.selectById(recycler.getParentsId());
+							Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
 							PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 						}
 					} else {
@@ -1747,10 +1755,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderLog.setOpStatusAfter("COMPLETE");
 					orderLog.setOp("已完成");
 					this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
-					Recyclers recyclers1 = recyclersService.selectById(order.getRecyclerId());
-					if (!"1".equals(recyclers1.getIsManager())) {
+					if (!"1".equals(companyRecycler.getIsManager())) {
 						//阿里云推送
-						Recyclers recyclers = recyclersService.selectById(recyclers1.getParentsId());
+						Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
 						PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
 					}
 					try {
@@ -1786,9 +1793,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						//異步刪除redis裡面派單id
 //						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
 					}
-					if (!"1".equals(recyclers.getIsManager())) {
+					if (!"1".equals(companyRecycler.getIsManager())) {
 						//阿里云推送
-						Recyclers recyclerss = recyclersService.selectById(recyclers.getParentsId());
+						Recyclers recyclerss = recyclersService.selectById(companyRecycler.getParentsId());
 						PushUtils.getAcsResponse(recyclerss.getTel(),"2",order.getTitle().getValue()+"");
 					}
 					try {

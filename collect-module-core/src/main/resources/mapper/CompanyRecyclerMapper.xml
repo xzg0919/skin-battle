@@ -71,6 +71,26 @@
 					sb_company_recycler scr
 				WHERE
 				    scr.recycler_id = #{recyclerBean.id}
+				AND scr.type_ = '1'
+			) scrsc INNER  JOIN sb_company sc ON sc.id = scrsc.company_id
+		ORDER BY scrsc.status_ ASC LIMIT #{startSize} , #{pageSize}
+     </select>
+	<select id="getBigCurrcomList" resultType="com.tzj.collect.core.result.app.AppCompany" parameterType="com.tzj.collect.core.param.app.RecyclersBean">
+     	SELECT
+			sc.id,
+			sc.name_ AS comName,
+			sc.tel,
+			scrsc.status_ AS status
+		FROM
+			(
+				SELECT
+					scr.company_id,
+					scr.status_
+				FROM
+					sb_company_recycler scr
+				WHERE
+				    scr.recycler_id = #{recyclerBean.id}
+				AND scr.type_ = '4'
 			) scrsc INNER  JOIN sb_company sc ON sc.id = scrsc.company_id
 		ORDER BY scrsc.status_ ASC LIMIT #{startSize} , #{pageSize}
      </select>

@@ -55,14 +55,7 @@ public class Recyclers extends DataEntity<Long> {
 
  	private String password;
 
-	//是否企业经理 1 经理 0 普通员工
-	private String isManager = "0";
-	//回收经理所在城市
-	private Integer city;
-	//回收人员所在省份
-	private Integer  province;
-	//属于哪位业务经理 业务经理为空
-	private Integer parentsId;
+
 	//芝麻认证码
 	private String bizNo;
 	//是否芝麻实名 0未实名 1实名
@@ -108,38 +101,6 @@ public class Recyclers extends DataEntity<Long> {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public String getIsManager() {
-		return isManager;
-	}
-
-	public void setIsManager(String isManager) {
-		this.isManager = isManager;
-	}
-
-	public Integer getCity() {
-		return city;
-	}
-
-	public void setCity(Integer city) {
-		this.city = city;
-	}
-
-	public Integer getProvince() {
-		return province;
-	}
-
-	public void setProvince(Integer province) {
-		this.province = province;
-	}
-
-	public Integer getParentsId() {
-		return parentsId;
-	}
-
-	public void setParentsId(Integer parentsId) {
-		this.parentsId = parentsId;
 	}
 
 	public Integer getCompanyCount() {

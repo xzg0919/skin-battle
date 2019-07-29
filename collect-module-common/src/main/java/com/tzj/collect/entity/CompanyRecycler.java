@@ -2,6 +2,7 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 /**
  * 回收人员和企业关联表
@@ -14,6 +15,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
  * @author:[王池][wjc2013481273@163.com]
  */
 @TableName("sb_company_recycler")
+@Data
 public class CompanyRecycler extends DataEntity<Long> {
 	
 	private static final long serialVersionUID = 1L;
@@ -22,41 +24,15 @@ public class CompanyRecycler extends DataEntity<Long> {
 	private Integer companyId;// 回收企业id
 	@TableField(value = "status_")
 	private String status = "0";// 状态 0申请 1入住2拒绝
+	@TableField(value = "type_")
+	private String type = "0";//申请的类型 1家电生活垃圾  4大件
 
-	public Integer getRecyclerId() {
-		return recyclerId;
-	}
+	private String isManager;//是否企业经理 1 经理 0 普通员工
 
-	public void setRecyclerId(Integer recyclerId) {
-		this.recyclerId = recyclerId;
-	}
+	private Integer city;//回收经理所在城市
 
-	public Integer getCompanyId() {
-		return companyId;
-	}
+	private Integer province;//回收人员所在省份
 
-	public void setCompanyId(Integer companyId) {
-		this.companyId = companyId;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	@Override
-	public Long getId() {
-
-		return id;
-	}
-
-	@Override
-	public void setId(Long id) {
-		this.id = id;
-
-	}
+	private Integer parentsId;//属于哪位业务经理 业务经理为空
 
 }

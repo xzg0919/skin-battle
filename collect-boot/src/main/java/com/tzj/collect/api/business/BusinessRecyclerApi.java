@@ -54,32 +54,7 @@ public class BusinessRecyclerApi {
 	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getRecyclerList(BusinessRecyclerBean recyclerBean){
-		
-		List< BusinessRecyclerBean> BusinessRecyclerBeanList  = companyRecyclerService.getgetSearchCompanyRecyclerList(recyclerBean);
-		
-		// 刚开始的页面为第一页
-		if(recyclerBean.getPage()==null){
-			PageBean page = new PageBean();
-			page.setPageNumber(1);
-			page.setPageSize(10);
-			recyclerBean.setPage(page);			
-		}
-		// list的大小
-		int count = BusinessRecyclerBeanList.size();
-		// 每页的开始数
-		int starCount = (recyclerBean.getPage().getPageNumber()-1)*recyclerBean.getPage().getPageSize();
-		// 设置总页数
-		int totalPage = (count % recyclerBean.getPage().getPageSize() == 0 ? count / recyclerBean.getPage().getPageSize() : count / recyclerBean.getPage().getPageSize() + 1);
-		//每页显示的list数据
-		recyclerBean.setDataList(BusinessRecyclerBeanList.subList(starCount,count-starCount > recyclerBean.getPage().getPageSize() ? starCount+recyclerBean.getPage().getPageSize() : count));
-		
-		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("count", count);
-		result.put("dataList", recyclerBean.getDataList());
-		result.put("current", recyclerBean.getPage().getPageNumber());
-		result.put("totalPage", totalPage);
-		return result;
-		
+		return null;
 	}
 	/**
 	 * 查看回收人员的回收范围
@@ -274,48 +249,8 @@ public class BusinessRecyclerApi {
 	public Object saveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) throws Exception{
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		String result = recycleService.saveRecyclersRange(recyclersServiceRangeBean,companyAccount.getCompanyId()).toString();
-			String api="http://172.19.182.58:9090/business/api";
-			try{
-				if("172.19.182.58".equals(InetAddress.getLocalHost().getHostAddress())){
-					api = "http://172.19.182.59:9090/business/api";
-				}
-				HashMap<String,Object> param=new HashMap<>();
-				param.put("name","business.recycle.sendMessage");
-				param.put("version","1.0");
-				param.put("format","json");
-				param.put("app_key","app_id_3");
-				param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-				param.put("nonce", UUID.randomUUID().toString());
-				param.put("data",recyclersServiceRangeBean);
-				String jsonStr = JSON.toJSONString(param);
-				String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");
-				param.put("sign", sign);
-				System.out.println("请求的参数是 ："+JSON.toJSONString(param));
-				Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
-				String resultJson=response.body().string();
-				System.out.println("返回的参数是 ："+resultJson);
-			}catch (Exception e){
-				System.out.println("同意回收人员时，给另一台推送消息失败");
-			}
 			return result;
 	}
-	/**
-	 * 保存业务经理，和下属回收人员的信息()
-	 * @author wangcan
-	 * @param
-	 * @return
-	 */
-	@Api(name = "business.recycle.sendMessage", version = "1.0")
-	@SignIgnore
-	@AuthIgnore
-	public void sendMessage(RecyclersServiceRangeBean recyclersServiceRangeBean) {
-		try {
-			appWebSocketServer.sendInfo(recyclersServiceRangeBean.getRecycleId().toString(), "你是回收经理");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	/**
 	 * 保存业务经理更改区域信息(废弃)
 	 * @author wangcan

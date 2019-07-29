@@ -74,6 +74,9 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	@DS("slave")
 	 Map<String,Object> getCurrComList(RecyclersBean recyclersBean);
 
+	@DS("slave")
+	Map<String,Object> getBigCurrcomList(RecyclersBean recyclersBean);
+
 	/**
 	 * 添加公司(未申请或者被拒绝公司列表)
 	 * @param recyclersBean

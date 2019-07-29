@@ -217,4 +217,6 @@ public interface RecyclersService extends IService<Recyclers>{
 	List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId, String isBigRecycle);
 	@DS("slave")
 	Object getAreaRecyclersRangeList(RecyclersServiceRangeBean recyclersServiceRangeBean, String companyId);
+	@DS("slave")
+	Object getRecycleSon(Long recyclerId, com.tzj.collect.core.param.app.RecyclersBean recyclersBean);
 }

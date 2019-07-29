@@ -14,6 +14,7 @@ package com.tzj.collect.core.service.impl;
 
 import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
@@ -223,7 +224,13 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
 		//根据回收人员Id查询回收人员信息
 		Recyclers recyclers = recyclerService.selectById(recyclersServiceRangeBean.getRecycleId());
 		//根据企业Id和回收人员Id获取关联信息表
-		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_","0"));
+		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_", "0");
+		if("Y".equals(recyclersServiceRangeBean.getIsBigRecycle())){
+			wrapper.eq("type_","4");
+		}else {
+			wrapper.eq("type_","1");
+		}
+		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
 		if (companyRecycler==null||recyclers==null){
 			return "查询不到该回收人员申请信息";
 		}
@@ -240,30 +247,17 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
 			if (ManagerRecyclers==null){
 				return "查询不到传入的经理信息";
 			}
-			recyclers.setIsManager("0");
-			recyclers.setCity(ManagerRecyclers.getCity());
-			recyclers.setProvince(ManagerRecyclers.getProvince());
-			recyclers.setParentsId(ManagerRecyclers.getId().intValue());
-			recyclerService.updateById(recyclers);
+			companyRecycler.setIsManager("0");
+			companyRecycler.setParentsId(ManagerRecyclers.getId().intValue());
 			companyRecycler.setStatus("1");
 			companyRecyclerService.updateById(companyRecycler);
 			return "操作成功";
 		}
 		//同意该回收人员是回收经理
 		if("0".equals(recyclersServiceRangeBean.getIsEnable())){
-			recyclerCompanyService.selectOne(new EntityWrapper<RecyclerCompany>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_","0").eq("title",recyclersServiceRangeBean.getTitle()));
-			//根据市级id查询具体信息
-//			Area area = areaService.selectById(recyclersServiceRangeBean.getCityId());
-//			if(area==null){
-//				return "传入的市级id不对";
-//			}
-			recyclers.setIsManager("1");
-//			recyclers.setCity(area.getId().intValue());
-//			recyclers.setProvince(area.getParentId());
-			recyclerService.updateById(recyclers);
+			companyRecycler.setIsManager("1");
 			companyRecycler.setStatus("1");
 			companyRecyclerService.updateById(companyRecycler);
-
 			RecyclersTitle recyclersTitle = new RecyclersTitle();
 			recyclersTitle.setRecycleId(Integer.parseInt(recyclersServiceRangeBean.getRecycleId()));
 			recyclersTitle.setTitleId(Integer.parseInt(recyclersServiceRangeBean.getTitle()));
@@ -287,17 +281,27 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
 	@Transactional
 	@Override
 	public Object updateOrSaveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean,Integer companyId){
-		//根据回收人员Id查询回收人员信息
-		Recyclers recyclers = recyclerService.selectById(recyclersServiceRangeBean.getRecycleId());
+		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_", "1");
+		CompanyRecycler companyRecycler = null;
+		if("1".equals(recyclersServiceRangeBean.getTitle())||"2".equals(recyclersServiceRangeBean.getTitle())){
+			wrapper.eq("type_","1");
+			companyRecycler = companyRecyclerService.selectOne(wrapper);
+		}else if("4".equals(recyclersServiceRangeBean.getTitle())){
+			wrapper.eq("type_","4");
+			companyRecycler = companyRecyclerService.selectOne(wrapper);
+		}
 		//根据市级id查询具体信息
 		Area area = areaService.selectById(recyclersServiceRangeBean.getCityId());
 		if(area==null){
 			return "传入的市级id不对";
 		}
-		recyclers.setIsManager("1");
-		recyclers.setCity(area.getId().intValue());
-		recyclers.setProvince(area.getParentId());
-		recyclerService.updateById(recyclers);
+		if(null == companyRecycler){
+			return "查询不到该回收人员的入住信息";
+		}
+		companyRecycler.setIsManager("1");
+		companyRecycler.setCity(area.getId().intValue());
+		companyRecycler.setProvince(area.getParentId());
+		companyRecyclerService.updateById(companyRecycler);
 		//获取所有的区域Id
 		List<AreaBean> areaList = recyclersServiceRangeBean.getAreaList();
 		for (AreaBean areaBean: areaList) {
@@ -317,24 +321,6 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
                         recyclersRangeApplianceService.delete(new EntityWrapper<RecyclersRangeAppliance>().eq("recyclers_id",recyclersServiceRangeBean.getRecycleId()).eq("company_id",companyId).eq("street_id",areaBean.getStreeId()).eq("area_id",areaBean.getAreaId()));
                     }
                 }else if("2".equals(recyclersServiceRangeBean.getTitle())){
-//                    List<CommunityBean> communityIdList = areaBean.getCommunityIdList();
-//                    for (CommunityBean communityBean:communityIdList){
-//                        if(null != communityBean){
-//                            if("0".equals(communityBean.getSaveOrDelete())){
-//                                RecyclersRangeHousehold recyclersRangeHouseholds = recyclersRangeHouseholdService.selectOne(new EntityWrapper<RecyclersRangeHousehold>().eq("recyclers_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("community_id", communityBean.getCommunityId()).eq("street_id", areaBean.getStreeId()));
-//                                if(null == recyclersRangeHouseholds){
-//                                    RecyclersRangeHousehold recyclersRangeHousehold = new RecyclersRangeHousehold();
-//                                    recyclersRangeHousehold.setCompanyId(companyId);
-//                                    recyclersRangeHousehold.setRecyclersId(Integer.parseInt(recyclersServiceRangeBean.getRecycleId()));
-//                                    recyclersRangeHousehold.setStreetId(Integer.parseInt(areaBean.getStreeId()));
-//                                    recyclersRangeHousehold.setCommunityId(Integer.parseInt(communityBean.getCommunityId()));
-//                                    recyclersRangeHouseholdService.insert(recyclersRangeHousehold);
-//                                }
-//                            }else {
-//                                recyclersRangeHouseholdService.delete(new EntityWrapper<RecyclersRangeHousehold>().eq("recyclers_id",recyclersServiceRangeBean.getRecycleId()).eq("company_id",companyId).eq("community_id",communityBean.getCommunityId()).eq("street_id",areaBean.getStreeId()));
-//                            }
-//                        }
-//                    }
 					if("0".equals(areaBean.getSaveOrDelete())){
 						RecyclersRangeHouse recyclersRangeHouse = recyclersRangeHouseService.selectOne(new EntityWrapper<RecyclersRangeHouse>().eq("recyclers_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("street_id", areaBean.getStreeId()).eq("area_id", areaBean.getAreaId()));
 						if(null == recyclersRangeHouse){
@@ -501,5 +487,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
 		resultMap.put("recyclerTitleList",recyclerTitleList);
 		resultMap.put("areaList",areaList);
 		return resultMap;
+	}
+
+	@Override
+	public Object getRecycleSon(Long recyclerId, com.tzj.collect.core.param.app.RecyclersBean recyclersBean) {
+		return recyclersMapper.getRecycleSon(recyclerId,recyclersBean.getIsBigRecycle(),recyclersBean.getName());
 	}
 }

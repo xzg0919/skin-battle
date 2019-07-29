@@ -631,8 +631,11 @@
 	FROM
 		sb_recyclers a
 	LEFT JOIN sb_order b ON a.id = b.recycler_id
+	LEFT JOIN sb_company_recycler c ON a.id = c.recycler_id
 	WHERE
-		a.parents_id = #{recyclerId}
+		c.parents_id = #{recyclerId}
+	AND c.type_ = '1'
+	AND c.status_ = 1
 	AND b.title != 4
 	AND b.status_ in (1,2)
 	AND a.del_flag = 0
@@ -693,7 +696,7 @@
 			a.id AS recyclerId,
 			a.name_ AS recyclerName,
 			a.tel AS recyclerMobile,
-			a.is_manager AS isManager,
+			d.is_manager AS isManager,
 			a.ali_user_id as aliUserId,
 			b.id,
 			b.title,
@@ -719,8 +722,11 @@
 			sb_recyclers a
 		LEFT JOIN sb_order b ON a.id = b.recycler_id
 		LEFT JOIN sb_category c ON c.id = b.category_id
+		LEFT JOIN sb_company_recycler d ON a.id = d.recycler_id
 		WHERE
-			a.parents_id = #{recycleId}
+			d.parents_id = #{recycleId}
+		AND d.type_ = '4'
+		AND d.status_ = 1
 		AND b.title = 4
 		AND b.status_ in (1,2)
 		AND a.del_flag = 0
@@ -749,7 +755,6 @@
 		a.id AS recyclerId,
 		a.name_ AS recyclerName,
 		a.tel AS recyclerMobile,
-		a.is_manager AS isManager,
 		a.ali_user_id as aliUserId,
 		b.id,
 		b.title,
