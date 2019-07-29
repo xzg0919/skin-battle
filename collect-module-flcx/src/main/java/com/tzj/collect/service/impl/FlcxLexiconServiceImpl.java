@@ -68,8 +68,11 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
                 flcxBean.setTypeId(0L);
                 flcxRecords.setLexicons(flcxBean.getName());
             }
-
-            FlcxResult flcxResult = flcxLexiconMapper.lexCheck(flcxBean.getName(), flcxBean.getTypeId(), flcxBean.getCityName(), flcxBean.getCityId());
+            //先查特殊表中类型
+            FlcxResult flcxResult = flcxLexiconMapper.lexCheckSpecial(flcxBean.getName(), flcxBean.getTypeId(), flcxBean.getCityName(), flcxBean.getCityId());
+            if (null == flcxResult){
+                flcxResult = flcxLexiconMapper.lexCheck(flcxBean.getName(), flcxBean.getTypeId(), flcxBean.getCityName(), flcxBean.getCityId());
+            }
             //记录查询
             flcxRecords.setAliUserId(flcxBean.getAliUserId());
             if (null != flcxResult){

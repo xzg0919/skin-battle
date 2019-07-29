@@ -29,6 +29,8 @@ public class FlcxResult implements Serializable {
 
     private List<Map<String, String>> imgUrlAfter;//子分类图片地址(改)
 
+    private List<Map<String, String>> imgUrlAfterSpecial;//子分类图片地址(特殊)
+
     private String describe;//上描述
 
     private List<Map<String, Object>> nameLists;//小分类名称地址

@@ -88,6 +88,7 @@ public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxR
       * @return 
       */
     public String  createTableNameByDay(String tableName){
+        System.out.println( LocalDate.now().minusDays(1).toString().replace("-", ""));
         return  tableName + "_" + LocalDate.now().minusDays(1).toString().replace("-", "");
     }
 }

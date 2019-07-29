@@ -38,6 +38,77 @@
             del_flag = 0
         AND ftt.id =  #{typeId}
     </select>
+
+    <select id="lexCheckSpecial" resultMap="getCheckMapSpecial">
+        SELECT DISTINCT
+            ftt.*, recFllFlt.`recover`,
+            recFllFlt.name_ AS lexiconName,
+            recFllFlt.lexicon_id,
+            #{cityId} AS cityId,
+            #{cityName} AS cityName
+        FROM
+            flcx_type ftt
+        INNER JOIN (
+            SELECT
+                fllInfo.lexicon_id,
+                fllInfo.name_,
+                fllInfo.`recover`,
+                IFNULL(
+                    flt.parent_id,
+                    fllInfo.parent_id
+                ) AS parent_id
+            FROM
+                (
+                    SELECT
+                        fll.id AS lexicon_id,
+                        fll.name_,
+                        fll.parent_id,
+                        fll.`recover`
+                    FROM
+                        flcx_lexicon fll
+                    WHERE
+                        fll.del_flag = 0
+                    AND fll.name_ = #{lexiconName}
+                ) fllInfo
+            LEFT JOIN flcx_lexicon_type flt ON flt.lexicon_id = fllInfo.lexicon_id
+            WHERE
+                flt.area_id IN (
+                    SELECT
+                        id AS id
+                    FROM
+                        flcx_city
+                    WHERE
+                        city_name = #{cityName}
+                    UNION
+                        SELECT
+                            id AS id
+                        FROM
+                            flcx_city
+                        WHERE
+                            id = #{cityId}
+                )
+        ) recFllFlt ON recFllFlt.parent_id = ftt.id
+        WHERE
+            ftt.del_flag = 0
+        UNION
+            SELECT
+                ftt.*, CASE
+            WHEN id = 2 THEN
+                '1'
+            ELSE
+                '0'
+            END AS `recover`,
+            '' AS lexiconName,
+            '' AS lexicon_id,
+            #{cityId} AS cityId,
+            #{cityName} AS cityName
+        FROM
+            flcx_type ftt
+        WHERE
+            del_flag = 0
+        AND ftt.id = #{typeId}
+
+    </select>
     <select id="selectImgUrl" resultType="String" parameterType="Map">
         SELECT
         distinct
@@ -113,6 +184,27 @@
             <result property="name" column="name_"/>
         </collection>
     </resultMap>
+
+    <resultMap id="getCheckMapSpecial" type="com.tzj.collect.api.lexicon.result.FlcxResult">
+        <result property="parentName" column="name_" />
+        <result property="lexicon" column="lexiconName"/>
+        <result property="lexiconId" column="lexicon_id"/>
+        <collection property="imgUrl" javaType="ArrayList" ofType="Map"
+                    select="selectImgUrl" column="{lexiconName=lexiconName, id=id}">
+            <result property="imgUrl" column="img_url" />
+        </collection>
+        <collection property="imgUrlAfter" javaType="ArrayList" ofType="Map"
+                    select="selectImgUrlAfter" column="{lexiconName=lexiconName, id=id, cityId=cityId, cityName=cityName}">
+            <result property="imgUrl" column="img_url" />
+            <result property="name" column="name_" />
+        </collection>
+        <collection property="nameLists" javaType="ArrayList" ofType="Map"
+                    select="selectNameLists" column="id">
+            <result property="imgUrl" column="img_url" />
+            <result property="name" column="name_"/>
+        </collection>
+    </resultMap>
+
     <select id="selectNameLists" resultType="com.tzj.collect.entity.FlcxImg" parameterType="String">
         SELECT name_, img_url FROM flcx_img WHERE type_id= #{id}
     </select>

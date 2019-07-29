@@ -33,7 +33,7 @@ public class FlcxJob {
     /**
      * 定时任务。（每天一点）
      */
-    @Scheduled(cron = "0 38 14 * * ?")
+    @Scheduled(cron = "0 0 21 * * ?")
     public void flcxExecute(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new flcxThread(flcxRecordsService, redisUtil)));
     }
@@ -55,7 +55,7 @@ public class FlcxJob {
             System.out.println("我打算更新redis中词库使用次数--------------------------------");
             List<Map<String, Object>> mapList = flcxRecordsService.selectRecordsCountList();
             //记录昨天查询总数放入redis
-            mapList.stream().forEach(map -> {
+            mapList.parallelStream().forEach(map -> {
                 redisUtil.set(map.get("name_").toString(), map.get("count_"));
             });
         }

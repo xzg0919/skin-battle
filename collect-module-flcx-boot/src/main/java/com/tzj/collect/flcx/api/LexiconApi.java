@@ -183,10 +183,11 @@ public class LexiconApi {
             flcxBean.setLexiconId(flcxRecords.getLexiconsId());
         }
         //发送MQ消息
-        if(!flcxBean.getName().contains("这个可能"))
+        if(!flcxBean.getName().contains("这个可能") && StringUtils.isNotEmpty(flcxBean.getName())){
             //赋值城市
             flcxBean.setCity(flcxBean.getCityName());
             rabbitTemplate.convertAndSend("search_keywords_queue",flcxBean);
+        }
         return map[0];
     }
 
@@ -312,7 +313,7 @@ public class LexiconApi {
       */
     @Api(name = "city.location", version = "1.0")
     @AuthIgnore
-    public Map cityByLocation(FlcxBean flcxBean) throws Exception{
+    public Map cityByLocation(FlcxBean flcxBean) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         String url = "https://restapi.amap.com/v3/geocode/regeo";
         Response response = null;
@@ -321,16 +322,17 @@ public class LexiconApi {
                 .addParams("location", flcxBean.getLongitude() + "," + flcxBean.getLatitude())
                 .build().execute();
         String resultJson = response.body().string();
-
-        if (StringUtils.isNotEmpty(resultJson))
+        if (StringUtils.isNotEmpty(resultJson)){
             resultJson = resultJson.replaceAll("\n", "");
-
-        AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
-        if (amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0){
-            resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString());
-        }else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())){
-            //定位没找到城市
-            resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getProvince());
+            AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
+            if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
+                resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString());
+            } else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())) {
+                //定位没找到城市
+                resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getProvince());
+            } else {
+                resultMap.put("city", "");
+            }
         }else {
             resultMap.put("city", "");
         }
