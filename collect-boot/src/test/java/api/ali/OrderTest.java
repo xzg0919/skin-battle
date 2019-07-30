@@ -58,7 +58,7 @@ public class OrderTest {
 
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","memberAddress.testMemberAddress");
+                param.put("name","memberAddress.memberAddressList");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");

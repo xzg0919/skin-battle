@@ -32,7 +32,6 @@ public class PiccOrderApi {
      * @return List<Order>:未完成的订单列表
      */
     @Api(name = "piccOrder.insertPiccOrder", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String insertPiccOrder(PiccOrderBean piccOrderBean) throws ApiException {
         Member member = MemberUtils.getMember();
@@ -55,7 +54,6 @@ public class PiccOrderApi {
      * @return List<Order>:未完成的订单列表
      */
     @Api(name = "piccOrder.updatePiccWater", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String updatePiccWater(PiccOrderBean piccOrderBean) throws ApiException {
         Member member = MemberUtils.getMember();

@@ -107,7 +107,6 @@ public class AppTokenApi {
      * @return
      */
     @Api(name = "app.token.flush", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public TokenBean flushToken() {
 
@@ -131,7 +130,6 @@ public class AppTokenApi {
      * @return
      */
     @Api(name = "app.token.getAuthUrl", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public String getAuthUrl() throws Exception {
         String targetId = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
@@ -147,7 +145,6 @@ public class AppTokenApi {
      * @return
      */
     @Api(name = "app.token.getAuthCode", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public String getAuthCode(RecyclersBean recyclersBean) throws com.taobao.api.ApiException {
         Recyclers recycler = RecyclersUtils.getRecycler();

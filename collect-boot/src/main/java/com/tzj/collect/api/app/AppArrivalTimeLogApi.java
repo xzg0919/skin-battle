@@ -33,7 +33,6 @@ public class AppArrivalTimeLogApi {
      * @return
      */
 	 @Api(name = "app.sendArrivalTimeLog", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	 public String sendArrivalTimeLog(ArrivalTimeLogBean arrivalTimeLogBean){
 		//获取订单Id
@@ -52,7 +51,6 @@ public class AppArrivalTimeLogApi {
      * @return
      */
 	 @Api(name = "app.getArrivalTimeLogList", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	 @DS("slave")
 	 public Object getArrivalTimeLogList(ArrivalTimeLogBean arrivalTimeLogBean){

@@ -43,7 +43,6 @@ public class CategoryAttrApi {
      * @return List<CategoryAttr>
      */
 	@Api(name = "categoryAttr.listCategoryAttrs", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getCategoryAttrList(CategoryBean categoryBean){
 		//查询用户的默认地址

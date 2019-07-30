@@ -80,7 +80,6 @@ public class IotApi {
 //    }
 
     @Api(name = "iot.scan", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> iotScan(IotPostParamBean iotPostParamBean)throws Exception{
         Map map = new HashMap();
@@ -181,7 +180,6 @@ public class IotApi {
       * @return
       */
     @Api(name = "iot.long.pulling", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> longPulling(){
         Member member = MemberUtils.getMember();

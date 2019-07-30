@@ -92,7 +92,6 @@ public class AppRecyclersApi {
 	 */
 
 	@Api(name = "app.recycler.changeStatus", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public String changeStatus(RecyclersBean recyclersBean) {
 		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
@@ -115,7 +114,6 @@ public class AppRecyclersApi {
 	 * 返回当前回收人员
 	 */
 	@Api(name = "app.recycler.current", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getCurrenAppRecycler() {
@@ -130,7 +128,6 @@ public class AppRecyclersApi {
 	 * 回收人员的评价
 	 */
 	@Api(name = "app.recycler.evaluation", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Page<OrderEvaluation> getRecyclerOrderEvaluation(RecyclersBean recyclersBean) {
 		Page<OrderEvaluation> page = orderEvaluationService.selectEvalByRecyclePage(this.getRecycler().getId(),
@@ -142,7 +139,6 @@ public class AppRecyclersApi {
 	 * 保存第一步接口 姓名 性别 以及地址 必传
 	 */
 	@Api(name = "app.recycler.save1", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object save1(RecyclersBean recyclersBean) {
 		System.out.println("回收人员的姓名是+："+recyclersBean.getName()+"性别是："+recyclersBean.getSex()+"省份正号是"+recyclersBean.getIdCard()+"地址是："+recyclersBean.getAddress());
@@ -168,7 +164,6 @@ public class AppRecyclersApi {
 	 * 
 	 */
 	@Api(name = "app.recycler.save2", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object save2(RecyclersBean recyclersBean) {
 		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
@@ -205,7 +200,6 @@ public class AppRecyclersApi {
 	 * 
 	 */
 	@Api(name = "app.recycler.companies", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public List<Company> getRecyclerCompany() {
 		List<Company> list = companyRecyclerService.selectCompanyByRecyclerId(this.getRecycler().getId().toString());
@@ -219,7 +213,6 @@ public class AppRecyclersApi {
 	 * @return
 	 */
 	@Api(name = "app.recycler.comstatus", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public String getRecyclerCompanyStatus() {
 		Map<String, String> map = new HashMap<>();
@@ -270,7 +263,6 @@ public class AppRecyclersApi {
 	 * @return
 	 */
 	@Api(name = "recycler.getrecbyid", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public com.tzj.collect.core.param.admin.RecyclersBean getRecEvaById() {
 		com.tzj.collect.core.param.admin.RecyclersBean recyclersBean = recyclersService.getRecEvaById(getRecycler().getId().toString());
@@ -285,7 +277,6 @@ public class AppRecyclersApi {
 	 * @return
 	 */
 	@Api(name = "recycler.getcurrcom", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> getCurrComList(RecyclersBean recyclersBean) {
 		recyclersBean.setId(this.getRecycler().getId());
@@ -301,7 +292,6 @@ public class AppRecyclersApi {
 	 * @return
 	 */
 	@Api(name = "recycler.getBigCurrcom", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> getBigCurrcomList(RecyclersBean recyclersBean) {
 		recyclersBean.setId(this.getRecycler().getId());
@@ -318,7 +308,6 @@ public class AppRecyclersApi {
 	 * @return
 	 */
 	@Api(name = "recycler.getnotentry", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> getNotEnterComList(RecyclersBean recyclersBean) {
 		recyclersBean.setId(this.getRecycler().getId());
@@ -331,7 +320,6 @@ public class AppRecyclersApi {
 	 * @return
 	 */
 	@Api(name = "recycler.insertcomrec", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public boolean insertComRecByComIds(AppCompany appCompanys) {
 		return companyRecyclerService.insertComRecByComIds(appCompanys, this.getRecycler().getId());
@@ -342,7 +330,6 @@ public class AppRecyclersApi {
 	 * @return
 	 */
 	@Api(name = "recycler.deleteCompanyRecycle", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object deleteCompanyRecycle(AppCompany appCompanys) {
 		Recyclers recycler = RecyclersUtils.getRecycler();
@@ -353,7 +340,6 @@ public class AppRecyclersApi {
 	 * 获得当前回收人员数据
 	 */
 	@Api(name = "app.recycler.getrecord", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public AppOrderResult getRecord(TimeBean timeBean) {
 		timeBean.setRecyclerId(this.getRecycler().getId().toString());
@@ -364,7 +350,6 @@ public class AppRecyclersApi {
 	 * 获得当前回收人员评价列表及汇总
 	 */
 	@Api(name = "app.recycler.getscore", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public AppScoreResult getScore(ScoreAppBean scoreAppBean) {
 		scoreAppBean.setRecyclerId(this.getRecycler().getId().toString());
@@ -407,7 +392,6 @@ public class AppRecyclersApi {
 	 * 获得当前回收人员经理的所有下属回人员
 	 */
 	@Api(name = "app.recycler.getRecycleSon", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getRecycleSon(RecyclersBean recyclersBean){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
@@ -417,7 +401,6 @@ public class AppRecyclersApi {
 	 * 获得当前回收人员的经理信息
 	 */
 	@Api(name = "app.recycler.getRecycleDetails", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getRecycleDetails(RecyclersBean recyclersBean){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
@@ -442,7 +425,6 @@ public class AppRecyclersApi {
 	 * 上传身份证图片
 	 */
 	@Api(name = "util.aliUploadImage", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object aliUploadImage(PageBean param){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
@@ -490,7 +472,6 @@ public class AppRecyclersApi {
 	 * 芝麻认证开始
 	 */
 	@Api(name = "app.recycler.certify", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object certify(){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
@@ -502,7 +483,6 @@ public class AppRecyclersApi {
 	 * 返回芝麻认证
 	 */
 	@Api(name = "app.recycler.getCertifyUrl", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getCertifyUrl(){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
@@ -521,7 +501,6 @@ public class AppRecyclersApi {
 	 * 返回芝麻认证
 	 */
 	@Api(name = "app.recycler.updatRecycleReal", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object updatRecycleReal(RecyclersBean recyclersBean){
 		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
@@ -534,7 +513,6 @@ public class AppRecyclersApi {
 	 * 返回回收人员的密码
 	 */
 	@Api(name = "app.recycler.getPassword", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getPassword(){
@@ -553,7 +531,6 @@ public class AppRecyclersApi {
 	 * 新增、修改回收人员的密码
 	 */
 	@Api(name = "app.recycler.updatePassword", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object updatePassword(RecyclersBean recyclersBean){
 		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
@@ -568,7 +545,6 @@ public class AppRecyclersApi {
 	 * 更新回收人员的头像
 	 */
 	@Api(name = "app.recycler.updateHeadPicUrl", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object updateHeadPicUrl(RecyclersBean recyclersBean){
 		if(StringUtils.isBlank(recyclersBean.getHeadPicUrl())){
@@ -583,7 +559,6 @@ public class AppRecyclersApi {
 	 * 增加回收人员的支付宝号码
 	 */
 	@Api(name = "app.recycler.updateRecycleAccount", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object updateRecycleAccount(RecyclersBean recyclersBean){
 		if(StringUtils.isBlank(recyclersBean.getAliAccountNumber())){
@@ -598,7 +573,6 @@ public class AppRecyclersApi {
 	 * 增加回收人员的支付宝号码
 	 */
 	@Api(name = "app.recycler.getCheckPassword", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getCheckPassword(RecyclersBean recyclersBean) throws ApiException{
@@ -613,7 +587,6 @@ public class AppRecyclersApi {
 	 * 增加回收人员的支付宝号码
 	 */
 	@Api(name = "app.recycler.updateMobile", version = "1.0")
-	@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object updateMobile(RecyclersLoginBean recyclersLoginBean) throws ApiException{
 		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());

@@ -80,7 +80,6 @@ public class OrderApi {
      * @return List<Order>:未完成的订单列表
      */
     @Api(name = "order.unfinishlist", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<Order> orderUnfinishlist() {
     	Member member = MemberUtils.getMember();
@@ -95,7 +94,6 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.orderlist", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String,Object> orderlist(OrderBean orderBean){
 		Integer status = null;
@@ -120,7 +118,6 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.detail", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String,Object> getOrderDetail(OrderBean orderbean){
     	Map<String,Object> map = orderService.selectDetail(orderbean);
@@ -135,7 +132,6 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.cancel", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String cancelOrder(OrderBean orderbean){
     	Order order = orderService.selectById(orderbean.getId());
@@ -159,7 +155,6 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.completeOrder", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String completeOrder(OrderBean orderbean){
     	Order order = orderService.selectById(orderbean.getId());
@@ -179,7 +174,6 @@ public class OrderApi {
      * @throws ApiException 
      */
     @Api(name = "order.create", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object createOrder(OrderBean orderbean) throws ApiException{
     	Member member = MemberUtils.getMember();
@@ -271,7 +265,6 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.getCompanyByIds", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getCompanyByIds(OrderBean orderbean){
     	Member member = MemberUtils.getMember();
@@ -326,7 +319,6 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.getprice", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> getPrice(CategoryBean categoryBean) {
 		return priceService.getPrice(categoryBean); 
@@ -338,7 +330,6 @@ public class OrderApi {
 	 * @return
 	 */
 	@Api(name = "order.XcxSaveOrder", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object XcxSaveOrder(OrderBean orderbean){
 		Member member = MemberUtils.getMember();
@@ -419,7 +410,6 @@ public class OrderApi {
 	 * @return
 	 */
 	@Api(name = "order.isEnterpriseCodeByCode", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object isEnterpriseCodeByCode(EnterpriseCodeBean enterpriseCodeBean){
 		EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", enterpriseCodeBean.getCode()).eq("del_flag", 0));
@@ -452,7 +442,6 @@ public class OrderApi {
 	 * @return
 	 */
 	@Api(name = "order.savefiveKgOrder", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object savefiveKgOrder(OrderBean orderbean) throws Exception{
 		//获取当前登录的会员
@@ -541,7 +530,6 @@ public class OrderApi {
 		}
 	}
 	@Api(name = "order.updateForest", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object updateForest(OrderBean orderbean){
 		//给用户增加蚂蚁能量
@@ -557,7 +545,6 @@ public class OrderApi {
 	 * @throws ApiException
 	 */
 	@Api(name = "order.saveBigThingOrder", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object saveBigThingOrder(OrderBean orderbean) throws ApiException{
 		Member member = MemberUtils.getMember();

@@ -131,7 +131,6 @@ public class ProductApi {
      * @param 
      */
     @Api(name = "product.getProductDetail", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getProductDetail(ProductBean productBean) {
     	
@@ -144,7 +143,6 @@ public class ProductApi {
      * @param 
      */
     @Api(name = "product.sendVoucher", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object sendVoucher(ProductBean productBean) {
     	//获取当前登录的会员
@@ -215,7 +213,6 @@ public class ProductApi {
      * @param 
      */
     @Api(name = "product.sendGoodsProduct", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object sendGoodsProduct(ProductBean productBean) {
     	//获取当前登录的会员

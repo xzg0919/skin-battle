@@ -21,7 +21,6 @@ public class VersionApi {
 	private VersionService versionService;
 	
 	@Api(name = "app.apk.appVersion", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> getAppVersion(VersionBean version){
 		

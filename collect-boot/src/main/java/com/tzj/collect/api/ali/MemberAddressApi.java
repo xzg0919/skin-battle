@@ -53,7 +53,6 @@ public class MemberAddressApi {
      * @return 
      */
     @Api(name = "memberAddress.saveMemberAddress", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String saveMemberAddress(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
@@ -68,7 +67,6 @@ public class MemberAddressApi {
      * @return 
      */
     @Api(name = "memberAddress.memberAddressList", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<MemberAddress> memberAddressList(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
@@ -83,7 +81,6 @@ public class MemberAddressApi {
      * @return 
      */
     @Api(name = "memberAddress.delectMemberAddress", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String delectMemberAddress(MemberAddressBean memberAddressBean) {
     	/**
@@ -100,7 +97,6 @@ public class MemberAddressApi {
      * @return 
      */
     @Api(name = "memberAddress.selectMemberAddress", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
     public Object selectMemberAddress(MemberAddressBean memberAddressBean) {
@@ -164,7 +160,6 @@ public class MemberAddressApi {
      * @return 
      */
     @Api(name = "memberAddress.memberAddress", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public MemberAddress memberAddress(MemberAddressBean memberAddressBean) {
     	//获取当前登录的会员
@@ -229,7 +224,6 @@ public class MemberAddressApi {
      * @return 
      */
     @Api(name = "memberAddress.getMemberAddressById", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
     public MemberAddress getMemberAddressById(MemberAddressBean memberAddressBean) {
@@ -254,7 +248,6 @@ public class MemberAddressApi {
      * @return 
      */
     @Api(name = "memberAddress.updateIsSelectedAddress", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object updateIsSelectedAddress(MemberAddressBean memberAddressBean) {
 		//获取当前登录的会员
@@ -270,7 +263,6 @@ public class MemberAddressApi {
 	 * @return
 	 */
 	@Api(name = "memberAddress.saveMemberAddressd", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean) {
 		//获取当前登录的会员
@@ -286,7 +278,6 @@ public class MemberAddressApi {
 	 * @return
 	 */
 	@Api(name = "memberAddress.saveMemberAddressdByMap", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public String saveMemberAddressdByMap(MapAddressBean mapAddressBean) {
 		//获取当前登录的会员

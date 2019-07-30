@@ -2,6 +2,7 @@ package api.app;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.result.app.AppCompany;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -42,15 +43,14 @@ public class TokenGetAppTest {
 				 orderBean.setId(8941);
 		 orderBean.setAchPrice("0.0");
 
-		 AppCompany appCompanys = new AppCompany();
-		 appCompanys.setComIds("1");
-		 appCompanys.setId("1");
+		 OrderBean orderbean = new OrderBean();
+		 orderBean.setPagebean(new PageBean());
 
 
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "recycler.deleteCompanyRecycle");
+	        param.put("name", "app.order.list.phone");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -58,7 +58,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", appCompanys);
+	        param.put("data", orderBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

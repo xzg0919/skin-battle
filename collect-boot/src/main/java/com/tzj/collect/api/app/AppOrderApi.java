@@ -56,7 +56,6 @@ public class AppOrderApi {
 	 * 根据订单传来的状态获取订单列表
 	 */
 	@Api(name = "app.order.getorderlist", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String,Object> getOrderList(OrderBean orderbean){
 		orderbean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
@@ -67,7 +66,6 @@ public class AppOrderApi {
 	 * 根据订单传来的状态获取订单列表
 	 */
 	@Api(name = "app.order.list.phone", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String,Object> getOrderListByPhone(OrderBean orderbean){
 		orderbean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
@@ -80,7 +78,6 @@ public class AppOrderApi {
 	 * @return
 	 */
 	@Api(name = "app.order.getorderdetails", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public AppOrderResult getOrderDetails(OrderBean orderbean){
 		orderbean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
@@ -92,7 +89,6 @@ public class AppOrderApi {
 	 * 根据orderId 或者orderNo 修改 订单修改上门时间
 	 */
 	@Api(name = "app.order.modify", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public boolean modify(OrderBean orderBean){
 		orderBean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
@@ -104,7 +100,6 @@ public class AppOrderApi {
 	 * @return
 	 */
 	@Api(name = "app.order.modifyallsta", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public boolean modifyOrderSta(OrderBean orderBean){
 		orderBean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
@@ -116,7 +111,6 @@ public class AppOrderApi {
 	 * @return
 	 */
 	@Api(name = "app.order.savebyrecy", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public boolean saveByRecy(OrderBean orderBean) {
 		System.out.println("进完成接口了");
@@ -130,7 +124,6 @@ public class AppOrderApi {
 	 * @return
 	 */
 	@Api(name = "app.order.saveOrderByCardNo", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object saveOrderByCardNo(OrderBean orderBean) {
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
@@ -143,7 +136,6 @@ public class AppOrderApi {
 	 * @return
 	 */
 	@Api(name = "app.order.distributeOrder", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object distributeOrder(OrderBean orderBean) {
 		return orderService.distributeOrder(orderBean.getId(),orderBean.getRecyclerId());
@@ -154,7 +146,6 @@ public class AppOrderApi {
 	 * @return
 	 */
 	@Api(name = "app.order.distributeOrderList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object distributeOrderList() {
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
@@ -186,7 +177,6 @@ public class AppOrderApi {
 	 * @return
 	 */
 	@Api(name = "app.order.pullCollectMoney", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object pullCollectMoney(OrderBean orderBean) {
 		Order order = orderService.selectById(orderBean.getId());
@@ -212,7 +202,6 @@ public class AppOrderApi {
 	 * @return
 	 */
 	@Api(name = "app.order.recallOrder", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object recallOrder(OrderBean orderBean) {
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());

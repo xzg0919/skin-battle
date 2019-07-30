@@ -75,7 +75,6 @@ public class TokenApi {
      * @return
      */
     @Api(name = "token.flush", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     @ApiDocMethod(description = "刷新token", results = {
             @ApiDocField(name = "tokenBean", description = "token对象", dataType = DataType.OBJECT, beanClass = TokenBean.class)
@@ -105,7 +104,6 @@ public class TokenApi {
      * @return
      */
     @Api(name = "green.token.get", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     @ApiDocMethod(description = "刷新token", results = {
             @ApiDocField(name = "tokenBean", description = "token对象", dataType = DataType.OBJECT, beanClass = TokenBean.class)

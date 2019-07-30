@@ -37,7 +37,6 @@ public class CommunityApi {
      * @return
      */
     @Api(name = "community.areaCommunity", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<Community> areaCommunity(AreaBean area){
     	return communityService.areaCommunity(area.getId());
@@ -49,7 +48,6 @@ public class CommunityApi {
      * @return
      */
     @Api(name = "community.listareaByCategory", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<Community> listareaByCategory(CategoryBean categoryBean){
     	return communityService.listareaByCategory(categoryBean.getId(),categoryBean.getAreaId());
@@ -62,7 +60,6 @@ public class CommunityApi {
      * @return
      */
     @Api(name = "community.getCommunity", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
     public Object getCommunity(CategoryBean categoryBean){

@@ -132,7 +132,6 @@ public class MemberApi {
 		}
 	}
 	@Api(name = "member.getPassIdUrl", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getPassIdUrl() {
 		Member member = MemberUtils.getMember();

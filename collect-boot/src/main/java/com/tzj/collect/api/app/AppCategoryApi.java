@@ -50,7 +50,6 @@ public class AppCategoryApi {
      * @return
      */
 	 @Api(name = "app.category.getOneCategoryList", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	 public List<Category> getOneCategoryList(CategoryBean categoryBean){
 		 Order order = orderService.selectById(categoryBean.getOrderId());
@@ -82,7 +81,6 @@ public class AppCategoryApi {
      * @return
      */
 	 @Api(name = "app.category.getTowCategoryList", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	 public  Map<String, Object> getTowCategoryList(CategoryBean categoryBean){
 //		 if (categoryBean.getTitle().equals(CategoryType.DIGITAL.name())) {
@@ -99,7 +97,6 @@ public class AppCategoryApi {
 	 * @return
 	 */
 	@Api(name = "app.category.getHouseOneCategoryList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public List<Category> getHouseOneCategoryList(){
 			//取得六废的一级分类
@@ -111,7 +108,6 @@ public class AppCategoryApi {
 	 * @return
 	 */
 	@Api(name = "app.category.getHouseTwoCategoryList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getHouseTwoCategoryList(CategoryBean categoryBean){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
