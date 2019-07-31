@@ -38,7 +38,6 @@ public class AppOrderPayApi {
     private RecyclersService recyclersService;
 
     @Api(name = "app.order.pay", version = "1.0")
-    @SignIgnore
     @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
     public String orderPay(OrderPayParam orderPayParam) {
 

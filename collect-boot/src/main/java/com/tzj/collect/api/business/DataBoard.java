@@ -43,7 +43,6 @@ public class DataBoard {
 	 * 
 	*/
 	 @Api(name = "business.dataBoard.orderData", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderData(CompanyBean companyBean) {
 		 Map<String, Object> map = orderLogService.getOrderData(companyBean.getId(),companyBean.getStartTime());
@@ -56,7 +55,6 @@ public class DataBoard {
 	 * 
 	*/
 	 @Api(name = "business.dataBoard.category", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<CategoryResult> getCategoryData(CompanyBean companyBean) {
 		 List<CategoryResult> list = categoryService.getCategoryData(companyBean.getId());
@@ -69,7 +67,6 @@ public class DataBoard {
 	 * 
 	*/
 	 @Api(name = "business.dataBoard.community", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<Area> getCommunityData(CompanyBean companyBean) {
 		 List<Area> list = communityService.getCommunityData(companyBean.getId());
@@ -83,7 +80,6 @@ public class DataBoard {
 	 * 
 	*/
 	 @Api(name = "business.dataBoard.brokenLine", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<Map<String,Object>> getBrokenLineData(CompanyBean companyBean) {
 		 CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();

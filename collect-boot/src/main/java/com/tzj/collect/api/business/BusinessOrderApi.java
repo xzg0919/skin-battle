@@ -116,21 +116,6 @@ public class BusinessOrderApi {
 		 Map<String,Object> resultMap = orderService.getInitDetail(orderId);
 		return resultMap;
 	}
-	 
-//	 /**
-//	 * 根据企业Id和分类Id 获取回收人员列表
-//	 * @author 王灿
-//	 * @param
-//	 * @return
-//	 */
-//	 @Api(name = "business.order.getRecyclersList", version = "1.0")
-//	 @SignIgnore
-//	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-//	 public List<Recyclers> getRecyclersList(BOrderBean bOrderBean){
-//		 List<Recyclers> list =  recyclersService.getRecyclersList(bOrderBean.getCompanyId(),bOrderBean.getCategoryId());
-//		 return list;
-//	 }
-	 
 	 /**
 		 * 根据企业Id和分类Id 获取回收人员列表
 		 * @author 王灿
