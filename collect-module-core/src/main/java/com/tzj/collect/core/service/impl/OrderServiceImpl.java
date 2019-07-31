@@ -2158,7 +2158,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public Object saveOrderByCardNo(OrderBean orderBean, Recyclers recyclers) {
 		//根据回收人员信息查询所属关联公司
-		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclers.getId()).eq("status_", "1"));
+		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclers.getId()).eq("status_", "1").eq("type_","1"));
 		//获取用户的详细信息
 		Member member = memberService.selectMemberByAliUserId(orderBean.getAliUserId());
 		if (member == null) {
