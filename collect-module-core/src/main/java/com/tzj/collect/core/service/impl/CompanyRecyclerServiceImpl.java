@@ -67,8 +67,8 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	}
 
 	@Override
-	public List<AppCompany> getRecyclerCompanyStatus(String recId) {
-		return mapper.getRecyclerCompanyStatus(recId);
+	public List<AppCompany> getRecyclerCompanyStatus(String recId,String isBigRecycle) {
+		return mapper.getRecyclerCompanyStatus(recId,isBigRecycle);
 	}
 
 	/**

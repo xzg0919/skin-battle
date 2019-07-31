@@ -116,11 +116,20 @@ public class AppRecyclersApi {
 	@Api(name = "app.recycler.current", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	@DS("slave")
-	public Object getCurrenAppRecycler() {
+	public Object getCurrenAppRecycler(RecyclersBean recyclersBean) {
 		Recyclers recyclers = recyclersService.selectById(this.getRecycler().getId());
-		// System.out.println(recyclers.toString());
-
-		// return JSON.toJSONString(recyclers);
+		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("status_", "1").eq("recycler_id", recyclers.getId()).eq("is_manager",'1');
+		if("Y".equals(recyclersBean.getIsBigRecycle())){
+			wrapper.eq("type_","4");
+		}else {
+			wrapper.eq("type_","1");
+		}
+		List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(wrapper);
+		if (!companyRecyclerList.isEmpty()){
+			recyclers.setIsManager(companyRecyclerList.get(0).getIsManager());
+		}else {
+			recyclers.setIsManager("0");
+		}
 		return recyclers;
 	}
 
@@ -214,7 +223,7 @@ public class AppRecyclersApi {
 	 */
 	@Api(name = "app.recycler.comstatus", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
-	public String getRecyclerCompanyStatus() {
+	public String getRecyclerCompanyStatus(RecyclersBean recyclersBean) {
 		Map<String, String> map = new HashMap<>();
 		// 检查信息是否完整 不完整返回false
 		Recyclers recyclers = recyclersService.selectById(this.getRecycler().getId());
@@ -228,7 +237,7 @@ public class AppRecyclersApi {
 			map.put("sta", "isReal");// 资料未芝麻实名
 			return JSON.toJSONString(map);
 		}
-		List<AppCompany> list = companyRecyclerService.getRecyclerCompanyStatus(recyclers.getId().toString());
+		List<AppCompany> list = companyRecyclerService.getRecyclerCompanyStatus(recyclers.getId().toString(),recyclersBean.getIsBigRecycle());
 		String fail = "";
 		map.put("failName", "");
 		if (list.size() > 0) {

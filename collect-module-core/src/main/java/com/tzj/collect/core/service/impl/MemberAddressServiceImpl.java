@@ -340,7 +340,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			select.setIsSelected(1);
 		List<MemberAddress> memberAddressesList = this.selectMemberAddressByAliUserId(select);
 		MemberAddress memberAddress = null;
-		if (!memberAddressesList.isEmpty()){
+		if (null!=memberAddressesList&&!memberAddressesList.isEmpty()){
 			memberAddress = memberAddressesList.get(0);
 		}
 		return memberAddress;

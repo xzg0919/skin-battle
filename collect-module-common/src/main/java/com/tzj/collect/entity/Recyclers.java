@@ -14,6 +14,7 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 /**
  * @ClassName: SbRecyclers
@@ -24,6 +25,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
  * @author:[王池][wjc2013481273@163.com]
  */
 @TableName("sb_recyclers")
+@Data
 public class Recyclers extends DataEntity<Long> {
 	private Long id;// 编号
 	@TableField(value = "name_")
@@ -70,6 +72,8 @@ public class Recyclers extends DataEntity<Long> {
 	private String aliAccountNumber;
 
 	private String aliUserId;
+	@TableField(exist = false)
+	private String isManager;
 
 	public String getAliUserId() {
 		return aliUserId;

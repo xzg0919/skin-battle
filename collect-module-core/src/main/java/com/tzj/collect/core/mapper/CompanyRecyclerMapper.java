@@ -34,7 +34,7 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 	
 	int selectRecycleByCompanyId(@Param("companyId") long id);
 	
-	List<AppCompany> getRecyclerCompanyStatus(@Param("recyclerId") String recId);
+	List<AppCompany> getRecyclerCompanyStatus(@Param("recyclerId") String recId,@Param("isBigRecycle") String isBigRecycle);
 
 	/**
 	 * 查看该公司下的回收人员的身份证信息

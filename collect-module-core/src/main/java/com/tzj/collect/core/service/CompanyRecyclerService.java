@@ -39,7 +39,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	 * @return 
 	 */
 	@DS("slave")
-	List<AppCompany> getRecyclerCompanyStatus(String recId);
+	List<AppCompany> getRecyclerCompanyStatus(String recId,String isBigRecycle);
 
 	/**
 	 * 根据公司id和回收人员ida查找关联的回收人员
