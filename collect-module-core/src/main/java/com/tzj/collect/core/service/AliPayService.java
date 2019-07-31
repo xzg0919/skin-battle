@@ -1,6 +1,7 @@
 package com.tzj.collect.core.service;
 
 import com.alipay.api.response.*;
+import com.tzj.collect.entity.Member;
 
 import java.util.Date;
 import java.util.Map;
@@ -30,6 +31,8 @@ public interface AliPayService {
      */
 	public Map<String,Object> send(String accessToken, String userId,
                                    String cardNo, String point, String templateId, String balance, String vip, String appId);
+	//删除会员卡
+    public void deleteCard(Member member);
 	/**
      * <p>Discription:[更改会员积分]</p>
      * @author:[王灿]

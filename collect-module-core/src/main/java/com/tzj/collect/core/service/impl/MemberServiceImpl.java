@@ -1,5 +1,11 @@
 package com.tzj.collect.core.service.impl;
 
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayMarketingCardDeleteModel;
+import com.alipay.api.domain.Data;
+import com.alipay.api.request.AlipayMarketingCardDeleteRequest;
+import com.alipay.api.response.AlipayMarketingCardDeleteResponse;
 import com.alipay.api.response.AlipayMarketingCardQueryResponse;
 import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.alipay.api.response.AlipayUserInfoShareResponse;
@@ -128,11 +134,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			return "用户授权信息解析失败";
 			}
 		}
-		//调用接口查询用户的详细信息
-//		AlipayUserInfoShareResponse userResponse= aliPayService.selectUser(accessToken,appId);
-//		if(!userResponse.isSuccess()){
-//			return "用户授权信息解析失败";
-//		}
 		//查询用户是否存在
 		Member member = this.selectMemberByAliUserId(userId);
 		//外部会员卡号
@@ -407,13 +408,38 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			resultMap.put("token",null);
 			return resultMap;
 		}
+		;
+		if(!userId.equals(ToolUtils.getAliUserIdByOrderNo(member.getCardNo()))){
+			//删除会员卡
+			aliPayService.deleteCard(member);
+			//外部会员卡号
+			String cardNo = ToolUtils.getIdCardByAliUserId(userId);
+			//获取用户积分数据
+			Point piont = pointService.getPoint(member.getAliUserId());
+			String points = "0";
+			if(piont!=null) {
+				points = piont.getPoint()+"";
+			}
+			//给用户发放会员卡
+			Map<String, Object> map = aliPayService.send(accessToken, userId, cardNo, points, AlipayConst.template_id, "0", null,appId);
+			String aliCardNo = map.get("bizCardNo")==null?null:map.get("bizCardNo").toString();
+			Date openCardDate = (Date)map.get("openDate");
+			member.setAliCardNo(aliCardNo);
+			try {
+				member.setOpenCardDate(openCardDate==null?openCardDate:new Date());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			member.setCardNo(cardNo);
+			member.setAppId(appId);
+		}
 		String token= JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
 		String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
 		System.out.println("token:"+securityToken);
 		resultMap.put("token", securityToken);
 		//更新会员登录时间
 		member.setUpdateDate(new Date());
-		this.updateById(member);
+		this.updateMemberByAliUserId(member);
 		resultMap.put("member",member);
 		return resultMap;
 	}

@@ -10,6 +10,7 @@ import com.alipay.api.response.*;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.core.service.*;
+import com.tzj.collect.entity.Member;
 import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,6 +192,29 @@ public class AliPayServiceImpl implements AliPayService {
         }
         return returnMap;
     }
+    //删除会员卡
+    public void deleteCard(Member member){
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", member.getAppId(), AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+        AlipayMarketingCardDeleteRequest request = new AlipayMarketingCardDeleteRequest();
+        AlipayMarketingCardDeleteModel model = new AlipayMarketingCardDeleteModel();
+        model.setOutSerialNo(UUID.randomUUID().toString());
+        model.setTargetCardNo(member.getAliCardNo());
+        model.setTargetCardNoType("BIZ_CARD");
+        model.setReasonCode("CANCEL");
+        request.setBizModel(model);
+        AlipayMarketingCardDeleteResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+        }
+    }
+
     /**
      * <p>Discription:[会员卡有效期，十年]</p>
      * @author:[王灿][yanghuan1937@aliyun.com] 

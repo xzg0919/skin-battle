@@ -101,7 +101,7 @@ public class ProductOrderController {
 		goodsProductOrderService.updateById(goodsProductOrder);
 		//发送接单短信
 		asyncService.sendOrderProduct("垃圾分类回收", goodsProductOrder.getMobile(), "SMS_142949225",goodsProductOrder.getProductName(), orderCompany, orderNum);
-		return "redirect:getProductOrderList";
+		return "redirect:getProduct/orderLists";
 	}
 	/**
 	 * 商品列表
