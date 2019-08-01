@@ -40,7 +40,7 @@
 	a.id AS id, 
 	a.name_ AS `name`, 
 	a.sort_ AS sort, 
-	if(a.is_special = '1',CONCAT('P',20), a.price) AS price, 
+	a.price AS price,
 	a.category_attr_id AS categoryAttrId, 
 	a.is_special AS isSpecial 
 	FROM 

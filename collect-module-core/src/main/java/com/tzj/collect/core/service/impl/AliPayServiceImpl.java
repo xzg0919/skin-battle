@@ -200,7 +200,7 @@ public class AliPayServiceImpl implements AliPayService {
         model.setOutSerialNo(UUID.randomUUID().toString());
         model.setTargetCardNo(member.getAliCardNo());
         model.setTargetCardNoType("BIZ_CARD");
-        model.setReasonCode("CANCEL");
+        model.setReasonCode("USER_UNBUND");
         request.setBizModel(model);
         AlipayMarketingCardDeleteResponse response = null;
         try {

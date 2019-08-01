@@ -40,7 +40,6 @@ public interface CategoryAttrOptionService  extends IService<CategoryAttrOption>
      * 根据分类属性的Id(categoryAttrId)查询有关所有的分类选项信息
      * @author 王灿
      * @param   categoryAttrId : 分类属性Id
-     * @param   companyId : 企业ID
      * @return List<CategoryAttrOption> : 有关所有的分类选项信息
      */
 	@DS("slave")
