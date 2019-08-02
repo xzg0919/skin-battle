@@ -93,5 +93,7 @@ public class Member extends  DataEntity<Long>{
 
     @TableField(exist = false)
     private String tableName;
+    //渠道Id
+    private String channelId;
 
 }

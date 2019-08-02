@@ -284,6 +284,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOpStatusAfter("INIT");
 		orderLog.setOp("待接单");
 		flag = orderLogService.insert(orderLog);
+		try {
+			if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","大件回收");
+			}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","家电回收");
+			}else {
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","生活垃圾");
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 
 		if (flag) {
 			resultMap.put("msg","操作成功");
@@ -1475,6 +1486,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				}catch (Exception e){
 					e.printStackTrace();
 				}
+				try {
+					if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+						asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已取消","大件回收");
+					}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+						asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已取消","家电回收");
+					}else {
+						asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已取消","生活垃圾");
+					}
+				}catch (Exception e){
+					e.printStackTrace();
+				}
 				break;
 			case "ALREADY":
 				order.setStatus(OrderType.ALREADY);
@@ -2409,7 +2431,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOpStatusAfter("INIT");
 		orderLog.setOp("待接单");
 		orderLogService.insert(orderLog);
-
+		try {
+			if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","大件回收");
+			}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","家电回收");
+			}else {
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","生活垃圾");
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		resultMap.put("msg","操作成功");
 		resultMap.put("code",0);
 		resultMap.put("id",order.getId());
@@ -2510,7 +2542,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOpStatusAfter("INIT");
 		orderLog.setOp("待接单");
 		orderLogService.insert(orderLog);
-
+		try {
+			if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","大件回收");
+			}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","家电回收");
+			}else {
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","生活垃圾");
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		resultMap.put("msg","操作成功");
 		resultMap.put("code",0);
 		resultMap.put("id",order.getId());
@@ -2638,6 +2680,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOpStatusAfter("INIT");
 		orderLog.setOp("待接单");
 		orderLogService.insert(orderLog);
+		try {
+			if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","大件回收");
+			}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","家电回收");
+			}else {
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","生活垃圾");
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		resultMap.put("msg","操作成功");
 		resultMap.put("id",orderId);
 		resultMap.put("code",0);

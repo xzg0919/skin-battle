@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
 import com.tzj.collect.config.ApplicationInit;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
@@ -50,7 +51,8 @@ public class FiveKgController {
     private AnsycMyslService ansycMyslService;
     @Autowired
     private ApplicationInit applicationInit;
-
+    @Autowired
+    private AsyncService asyncService;
 
     @RequestMapping(value = "/order/update",method = RequestMethod.POST)
     public String orderUpdate(@RequestBody String body, HttpServletResponse response){
@@ -116,7 +118,17 @@ public class FiveKgController {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
+                try {
+                    if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                        asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已接单","大件回收");
+                    }else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+                        asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已接单","家电回收");
+                    }else {
+                        asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已接单","生活垃圾");
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             return null;
         }else if ("3".equals(orderStatus)){
             //订单完成
@@ -161,6 +173,17 @@ public class FiveKgController {
             }catch (Exception e){
                 e.printStackTrace();
             }
+            try {
+                if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","大件回收");
+                }else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","家电回收");
+                }else {
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","生活垃圾");
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             return null;
         }else if ("4".equals(orderStatus)){
             if((Order.OrderType.COMPLETE+"").equals(order.getStatus()+"")){
@@ -172,6 +195,17 @@ public class FiveKgController {
                 order.setCancelReason(object.getString("remarks"));
                 order.setCancelTime(new Date());
                 orderService.updateById(order);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            try {
+                if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已取消","大件回收");
+                }else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已取消","家电回收");
+                }else {
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已取消","生活垃圾");
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }

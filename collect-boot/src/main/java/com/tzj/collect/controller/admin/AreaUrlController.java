@@ -41,7 +41,7 @@ public class AreaUrlController {
 
 
     @RequestMapping("/toXcxIndex")
-    public  String toXcxIndex(String outUrl,String areaId, String companyId, String communityId, ModelMap model, String urlParam, String id, String type){
+    public  String toXcxIndex(String outUrl,String areaId, String companyId, String communityId, ModelMap model, String urlParam, String id, String type,String channelId){
         RegionCity regionCity = null;
         if ("Y".equals(outUrl)){
             regionCity = new RegionCity();
@@ -53,7 +53,7 @@ public class AreaUrlController {
         if(StringUtils.isNotBlank(urlParam)&&StringUtils.isNotBlank(id)&&StringUtils.isNotBlank(type)){
             String getqRcode = null;
             regionCity = new RegionCity();
-            String xcxUri = UtilsController.getXcxUri(urlParam, id, type);
+            String xcxUri = UtilsController.getXcxUri(urlParam, id, type,channelId);
             try {
                 String localPath = System.getProperty("java.io.tmpdir")+ "/local.jpg";
                 AreaUrlController.downloadFile(xcxUri, localPath);

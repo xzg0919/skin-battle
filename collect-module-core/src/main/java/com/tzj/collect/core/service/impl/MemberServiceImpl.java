@@ -455,6 +455,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		return resultMap;
 	}
 	@Override
+	@Transactional
+	public String saveChannelId(String aliUserId,String channelId){
+		Member member = this.selectMemberByAliUserId(aliUserId);
+		if (null!= member){
+			member.setChannelId(channelId);
+			this.updateMemberByAliUserId(member);
+		}
+		return "操作成功";
+	}
+
+	@Override
 	public Member selectMemberByAliUserId(String aliUserId) {
 		String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
 		return memberMapper.selectMemberByAliUserId(aliUserId,memberName);

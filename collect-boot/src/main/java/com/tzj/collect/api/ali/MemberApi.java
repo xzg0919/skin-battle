@@ -137,4 +137,16 @@ public class MemberApi {
 		Member member = MemberUtils.getMember();
 		return memberService.getPassIdUrl(member.getAliUserId());
 	}
+	//保存用户的来源
+	/**
+	 * 获取会员个人中心的相关数据
+	 * @author 王灿
+	 * @param
+	 */
+	@Api(name = "member.saveChannelId", version = "1.0")
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object saveChannel(MemberBean memberBean) {
+		Member member = MemberUtils.getMember();
+		return memberService.saveChannelId(member.getAliUserId(),memberBean.getChannelId());
+	}
 }

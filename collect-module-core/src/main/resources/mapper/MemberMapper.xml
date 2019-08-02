@@ -67,6 +67,9 @@
 	<if test="member.picUrl != null and member.picUrl != ''">
 		a.pic_url = #{member.picUrl},
 	</if>
+	<if test="member.channelId != null and member.channelId != ''">
+		a.channel_id = #{member.channelId},
+	</if>
 		a.update_date = NOW()
 	WHERE
 		a.ali_user_id = #{member.aliUserId}
@@ -133,6 +136,9 @@
 		<if test="member.picUrl != null and member.picUrl != ''">
 			pic_url,
 		</if>
+		<if test="member.channelId != null and member.channelId != ''">
+			channel_id,
+		</if>
 			create_date,
 			update_date
 		)
@@ -197,6 +203,9 @@
 		</if>
 		<if test="member.picUrl != null and member.picUrl != ''">
 			#{member.picUrl},
+		</if>
+		<if test="member.channelId != null and member.channelId != ''">
+			#{member.channelId},
 		</if>
 			NOW(),
 			NOW()

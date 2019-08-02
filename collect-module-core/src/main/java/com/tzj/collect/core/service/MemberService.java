@@ -82,4 +82,6 @@ public interface MemberService extends IService<Member>{
      * @return
      */
     Integer inserOrUpdatetMember(Member member);
+
+    String saveChannelId(String aliUserId,String channelId);
 }

@@ -1,11 +1,13 @@
 package com.tzj.collect.core.param.ali;
 
 import com.tzj.module.easyopen.doc.annotation.ApiDocField;
+import lombok.Data;
 
 /**
  * 传进来的一些会员信息
  * @Author 胡方明（12795880@qq.com）
  **/
+@Data
 public class MemberBean {
 	private String id;
 
@@ -34,6 +36,8 @@ public class MemberBean {
 	private String memberId;
 	private String type;
 	private String message;
+
+	private String channelId;
 
 	public String getMemberId() {
 		return memberId;

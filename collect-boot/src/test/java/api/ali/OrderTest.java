@@ -2,6 +2,7 @@ package api.ali;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.ali.MapAddressBean;
+import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -55,18 +56,20 @@ public class OrderTest {
 //            mapAddressBean.setUserName("王先hao");
 //            mapAddressBean.setTel("13252525252");
 //            mapAddressBean.setHouseNumber("测试101");
+            MemberBean memberBean = new MemberBean();
+            memberBean.setChannelId("18375336389");
 
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","memberAddress.memberAddress");
+                param.put("name","member.saveChannelId");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
-                param.put("timestamp", "1564477734124");
-                param.put("token","3F3TEMH74565Q5QORHNPE76UZM6VT4JPWVV4OPUNTGAXLLRLC6B5GYU3LW34YHVNOEFL2LXPVT24VVHUSAVURD6DYOPXOA4E3QOVNZIQI4THTY2RGNCYJ23R2CDMCSECBPPNUIPERGLXIU373TQR3WN5D2MU2FP5UTXCOMWTHMQYP5GIEYCN5OHCPIKCMSYVFNWZ7IUQJ32E4TPJLB6IQNODB7ZYRPTYBHUF4F7OFBDBKXRJBNCHNVH3OAEC3G7EPGLI5NFZ3W3BTH4LSEQQ3NV5JFUCTAS6TNU6TF7TK6U35X5IPI54WSQTWMRJVFSJYSMD5UXHZ5P5G");
+                param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
+                param.put("token",securityToken);
                 //param.put("sign","111");
-                param.put("nonce", "c3c0b328-6ef0-42b8-8085-843e684b81f71564477734124");
-                param.put("data","{\"cityId\":13136}");
+                param.put("nonce", UUID.randomUUID().toString());
+                param.put("data",memberBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");
