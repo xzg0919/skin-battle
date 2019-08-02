@@ -58,11 +58,10 @@
             <artifactId>spring-boot-actuator</artifactId>
             <version>1.5.3.RELEASE</version>
         </dependency>
-        <!-- 官方maven库 -->
         <dependency>
             <groupId>com.alipay</groupId>
             <artifactId>alipay-sdk</artifactId>
-            <version>3.7.119.ALL</version>
+            <version>${alipay-sdk.version}</version>
         </dependency>
     </dependencies>
 </project>

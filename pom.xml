@@ -59,6 +59,7 @@
         <mybatisplus.version>2.3.3</mybatisplus.version>
         <druid.version>1.1.18</druid.version>
         <skipTests>true</skipTests>
+        <alipay-sdk.version>3.7.151.ALL</alipay-sdk.version>
     </properties>
 
     <dependencyManagement>
@@ -171,14 +172,6 @@
                 <version>${druid.version}</version>
             </dependency>
             <!-- 连接池 -->
-
-            <!-- alipay-sdk -->
-            <dependency>
-                <groupId>com.alipay</groupId>
-                <artifactId>alipay-sdk</artifactId>
-                <version>3.7.119.ALL</version>
-            </dependency>
-            <!-- alipay-sdk -->
         </dependencies>
     </dependencyManagement>
 

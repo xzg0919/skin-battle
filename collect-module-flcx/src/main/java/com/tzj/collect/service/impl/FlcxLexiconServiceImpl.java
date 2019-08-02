@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.alipay.api.AlipayApiException;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -43,7 +44,8 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
     private RedisUtil redisUtil;
     @Resource
     private FlcxLexiconTypeService flcxLexiconTypeService;
-
+    @Resource
+    private AliFlcxService aliFlcxService;
 
 
     @Transactional(readOnly = false)
@@ -97,9 +99,16 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
                 }
             }
             map.put("flcxRecords", flcxRecords);
-            //把最后的结果放入redis
             return map;
         }else {
+            //词库里没找到，上传至标注平台
+            new Thread(()->{
+                try{
+                    aliFlcxService.lexTagging(flcxBean.getName(), "isv", flcxBean.getCityName());
+                }catch (AlipayApiException e){
+                    //发钉钉消息
+                }
+            });
             map.put("msg", "empty");
             return map;
         }

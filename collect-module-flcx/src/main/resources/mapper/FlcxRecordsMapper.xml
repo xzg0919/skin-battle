@@ -45,7 +45,7 @@
         WHERE
             fl.lexicon_after IS NOT NULL
         GROUP BY
-            fl.lexicons_id
+            fl.lexicons
         ORDER BY
             count_ DESC
         LIMIT 0, 7;

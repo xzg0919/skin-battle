@@ -1,8 +1,8 @@
 package com.tzj.collect.service;
 
+import com.alipay.api.AlipayApiException;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationFeedbackSyncResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
-import org.springframework.scheduling.annotation.Async;
 
 /**
  * @author sgmark
@@ -14,4 +14,6 @@ public interface AliFlcxService {
      void returnTypeVoice(String voiceString);
 
      AlipayIserviceCognitiveClassificationFeedbackSyncResponse lexCheckFeedBack(String traceId, String imageUrl, String feedbackRubbish, String actionType);
+     //异步上传至标注平台
+     void lexTagging(String lexName, String bizCode, String cityName) throws AlipayApiException;
 }

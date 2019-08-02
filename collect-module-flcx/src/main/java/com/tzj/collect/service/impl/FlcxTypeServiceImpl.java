@@ -7,6 +7,7 @@ import com.tzj.collect.api.lexicon.param.FlcxTypeBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxLexiconType;
 import com.tzj.collect.entity.FlcxType;
+import com.tzj.collect.mapper.FlcxCityMapper;
 import com.tzj.collect.mapper.FlcxLexiconMapper;
 import com.tzj.collect.mapper.FlcxLexiconTypeMapper;
 import com.tzj.collect.mapper.FlcxTypeMapper;
@@ -15,6 +16,7 @@ import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -39,11 +41,23 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
     @Resource
     private FlcxLexiconTypeMapper flcxLexiconTypeMapper;
 
+    @Resource
+    private FlcxCityMapper flcxCityMapper;
+
     @Override
     @Cacheable(value = "typeListMap" , key = "#flcxBean.cityName + '_'+ #flcxBean.cityId",   sync = true)
     public Map typeList(FlcxBean flcxBean) {
         HashMap<String, Object> map = new HashMap<>();
+        //分类展示列表
         map.put("typeList", flcxTypeMapper.typeList(flcxBean.getCityName(), flcxBean.getCityId().toString()));
+        //提供单位及联合发布
+        Map<String, Object> synProMap = flcxCityMapper.synPro(flcxBean.getCityName(), flcxBean.getCityId().toString());
+        if (CollectionUtils.isEmpty(synProMap)){
+            synProMap.put("provider", "归属地专业管理部门");
+            synProMap.put("syndication", "浙江省长三角循环经济技术研究院");
+            synProMap.put("remarks", "生活垃圾分类同时包括：大件垃圾、建筑装修垃圾。");
+        }
+        map.put("synPro", synProMap);
         return map;
     }
 
@@ -71,22 +85,22 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
             }catch (Exception e){
                 e.printStackTrace();
             }
-            String[] stringSet = map.get("type").split("/");
-            List<String> stringList = Arrays.asList(stringSet);
-            //保存类型
-            stringList.stream().forEach(string -> {
-                flcxTypes.stream().forEach(flcxType -> {
-                    if (flcxType.getName().equals(string)){
-                        FlcxLexiconType flcxLexiconType = new FlcxLexiconType();
-                        flcxLexiconType.setLexiconId(flcxLexicon.getId());
-                        flcxLexiconType.setTypeId(flcxType.getId());
-                        flcxLexiconType.setParentId(flcxType.getParentId());
-                        flcxLexiconType.setCreateDate(new Date());
-                        flcxLexiconType.setUpdateDate(new Date());
-                        flcxLexiconTypeMapper.insert(flcxLexiconType);
-                    }
-                });
-            });
+//            String[] stringSet = map.get("type").split("/");
+//            List<String> stringList = Arrays.asList(stringSet);
+//            //保存类型
+//            stringList.stream().forEach(string -> {
+//                flcxTypes.stream().forEach(flcxType -> {
+//                    if (flcxType.getName().equals(string)){
+//                        FlcxLexiconType flcxLexiconType = new FlcxLexiconType();
+//                        flcxLexiconType.setLexiconId(flcxLexicon.getId());
+//                        flcxLexiconType.setTypeId(flcxType.getId());
+//                        flcxLexiconType.setParentId(flcxType.getParentId());
+//                        flcxLexiconType.setCreateDate(new Date());
+//                        flcxLexiconType.setUpdateDate(new Date());
+//                        flcxLexiconTypeMapper.insert(flcxLexiconType);
+//                    }
+//                });
+//            });
         });
     }
 

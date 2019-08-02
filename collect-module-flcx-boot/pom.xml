@@ -143,8 +143,8 @@
         <dependency>
             <groupId>com.alipay</groupId>
             <artifactId>alipay-sdk</artifactId>
+            <version>${alipay-sdk.version}</version>
         </dependency>
-
     </dependencies>
 
 

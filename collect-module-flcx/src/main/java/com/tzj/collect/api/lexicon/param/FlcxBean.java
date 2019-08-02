@@ -1,7 +1,10 @@
 package com.tzj.collect.api.lexicon.param;
 
+import com.baomidou.mybatisplus.enums.IEnum;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.Serializable;
 
 /**
  * @author sgmark
@@ -50,4 +53,26 @@ public class FlcxBean {
 
     private boolean notCount = false;
 
+    private SourceType sourceType = SourceType.isv;//默认小程序
+
+    /** 调用来源
+      * @author sgmark@aliyun.com
+      * @date 2019/7/29 0029
+      * @param
+      * @return
+      */
+    public enum SourceType implements IEnum {
+        isv(0), // 小程序
+        ar_isv(1), // ar
+        assistant_isv(2);//助手
+        private int value;
+
+        SourceType(final int value) {
+            this.value = value;
+        }
+
+        public Serializable getValue() {
+            return this.value;
+        }
+    }
 }

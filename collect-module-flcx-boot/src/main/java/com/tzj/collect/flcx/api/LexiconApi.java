@@ -173,7 +173,13 @@ public class LexiconApi {
         }else {
             //根据名称查询
             map[0] = flcxLexiconService.lexCheck(flcxBean);
-            map[0].remove("imageUrl");
+            //移除缓存内容
+            if (map[0].containsKey("imageUrl")){
+                map[0].remove("imageUrl");
+            }
+            if (map[0].containsKey("traceId")){
+                map[0].remove("traceId");
+            }
         }
         if (null != map[0] && null != map[0].get("flcxRecords")){
             FlcxRecords flcxRecords = (FlcxRecords) map[0].get("flcxRecords");
@@ -324,14 +330,18 @@ public class LexiconApi {
         String resultJson = response.body().string();
         if (StringUtils.isNotEmpty(resultJson)){
             resultJson = resultJson.replaceAll("\n", "");
-            AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
-            if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
-                resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString());
-            } else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())) {
-                //定位没找到城市
-                resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getProvince());
-            } else {
-                resultMap.put("city", "");
+            try {
+                AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
+                if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
+                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString());
+                } else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())) {
+                    //定位没找到城市
+                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getProvince());
+                } else {
+                    resultMap.put("city", "");
+                }
+            }catch (Exception e){
+                System.out.println("=============异常抛出来咯："+resultJson+"============");
             }
         }else {
             resultMap.put("city", "");

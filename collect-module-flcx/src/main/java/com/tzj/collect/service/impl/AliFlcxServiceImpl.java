@@ -1,11 +1,14 @@
 package com.tzj.collect.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.AlipayResponse;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayIserviceCognitiveClassificationCategorySyncRequest;
 import com.alipay.api.request.AlipayIserviceCognitiveClassificationFeedbackSyncRequest;
 import com.alipay.api.request.AlipayIserviceCognitiveClassificationWasteQueryRequest;
+import com.alipay.api.response.AlipayIserviceCognitiveClassificationCategorySyncResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationFeedbackSyncResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
 import com.tzj.collect.api.commom.constant.AlipayConst;
@@ -99,9 +102,20 @@ public class AliFlcxServiceImpl implements AliFlcxService {
         private String action_type;
     }
 
-    public static void main(String[] args) {
-//        System.out.println(pe("http://osssqt.oss-cn-shanghai.aliyuncs.com/flcx/slj/sfsc.png", "2f0325d44cb94cbd869c2f3fba854000", "易拉罐"));
-        System.out.println(re("http://osssqt.oss-cn-shanghai.aliyuncs.com/flcx/slj/sfsc.png", "").getTraceId());
+    public static void main(String[] args)throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
+        AlipayIserviceCognitiveClassificationWasteQueryRequest request = new AlipayIserviceCognitiveClassificationWasteQueryRequest();
+        AlipayIserviceCognitiveClassificationWasteQueryResponse execute = null;
+        try {
+            BizContent bizContent = new BizContent();
+            bizContent.setCognition_content("卡片纸很漂亮");
+            bizContent.setCognition_type("SpeechText");
+            request.setBizContent(JSON.toJSONString(bizContent));
+            execute = alipayClient.execute(request);
+            System.out.println(execute);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static AlipayIserviceCognitiveClassificationWasteQueryResponse re(String picUrl, String voiceString){
@@ -152,5 +166,30 @@ public class AliFlcxServiceImpl implements AliFlcxService {
             e.printStackTrace();
         }
         return execute;
+    }
+
+    /** 上传至支付宝标注平台
+      * @author sgmark@aliyun.com
+      * @date 2019/7/30 0030
+      * @param
+      * @return
+      */
+    public void lexTagging(String lexName, String bizCode, String cityName) throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
+        AlipayIserviceCognitiveClassificationCategorySyncRequest  request = new AlipayIserviceCognitiveClassificationCategorySyncRequest();
+        request.setBizContent("{" +
+                "\"biz_code\":\"" + bizCode + "\"," +
+                " \"rubbish_list\":[{" +
+                " \"key_word\":\"" + lexName + "\"," +
+                "\"category\":\"dry\"" +
+                " }]," +
+                "\"city_code\":\""+cityName+"\"" +
+                " }");
+        AlipayIserviceCognitiveClassificationCategorySyncResponse response = alipayClient.execute(request);
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+        }
     }
 }

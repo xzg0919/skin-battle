@@ -18,5 +18,4 @@ public interface FlcxLexiconMapper extends BaseMapper<FlcxLexicon> {
 
     FlcxResult lexCheck(@Param("lexiconName") String lexiconName, @Param("typeId") Long typeId, @Param("cityName")String cityName, @Param("cityId")Long cityId);
     FlcxResult lexCheckSpecial(@Param("lexiconName") String lexiconName, @Param("typeId") Long typeId, @Param("cityName")String cityName, @Param("cityId")Long cityId);
-    List<Map<String, String>> lexCheckCount(@Param("lexiconName") String lexiconName);
 }
