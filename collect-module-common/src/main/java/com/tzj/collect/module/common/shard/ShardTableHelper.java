@@ -20,8 +20,9 @@ public class ShardTableHelper {
         StringBuffer sb=new StringBuffer();
         if (num <= 9){
             sb.append(tableName).append(0).append(num);
+        }else {
+            sb.append(tableName).append(num);
         }
-        sb.append(tableName).append(num);
         return sb.toString();
     }
 

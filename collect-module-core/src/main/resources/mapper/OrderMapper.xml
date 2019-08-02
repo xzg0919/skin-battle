@@ -184,14 +184,16 @@
 			so.company_id,
 			so.is_cash,
 			so.order_remarks,
-			sr.is_manager
+			bb.is_manager as isManager
 		FROM
 			 sb_order so
 		LEFT JOIN sb_category sc ON so.category_id = sc.id
 		LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
+		LEFT JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id
 		WHERE
 			so.del_flag = '0'
-			and  so.title != 4
+		and  so.title != 4
+		AND  bb.type_ = 1
 			<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 				AND so.recycler_id = #{orderBean.recyclerId}
 			</if>
@@ -770,6 +772,7 @@
 		b.order_remarks as orderRemarks,
 		c.name_ AS categoryName,
 		c.icon AS icon,
+		bb.is_manager as  isManager,
 		date_format(b.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
 		CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'am','上午',IF(b.arrival_period = 'pm','下午',CONCAT(' ',b.arrival_period))))AS arrivalTime,
 		date_format(b.cancel_time,'%Y-%m-%d %H:%i:%S')AS cancelTime,
@@ -781,9 +784,11 @@
 		sb_order b
 		LEFT JOIN sb_recyclers a ON a.id = b.recycler_id
 		LEFT JOIN sb_category c ON c.id = b.category_id
+		LEFT JOIN sb_company_recycler bb ON bb.recycler_id = b.recycler_id AND bb.company_id = b.company_id
 		WHERE
 		b.recycler_id = #{recycleId}
 		AND b.title = 4
+		AND bb.type_ = 4
 		<choose>
 			<when test="status == 4">
 				and (b.status_ = 4 or b.status_ = 5)

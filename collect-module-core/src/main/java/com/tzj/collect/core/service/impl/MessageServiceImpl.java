@@ -46,14 +46,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 		EntityWrapper<Message> wrapper = new EntityWrapper<>();
 		wrapper.eq("tel", tel);
 		Message message = messageService.selectOne(wrapper);
-		Const const2 = new Const();
 		if (message == null ) {
 			message = new Message();
 		}
 		message.setUpdateDate(new Date());
 		message.setTel(tel);
 		message.setMessageCode(MessageServiceImpl.getCode());
-		message.setValidity(const2.getExctime());
+		message.setValidity(300);
 		boolean flag = this.insertOrUpdate(message);
 		if (flag) {
 			AlidayuService.sendMessage("蚂蚁收呗", tel, "SMS_59045026", message.getMessageCode());

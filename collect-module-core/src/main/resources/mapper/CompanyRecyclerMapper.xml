@@ -53,16 +53,13 @@
 	
 	 <select id="findIdCard" resultType="Recyclers" parameterType="com.tzj.collect.core.param.business.BusinessRecyclerBean">
 	         SELECT
-	         sr.id,
-		sr.id_card_obv,
-		sr.id_card_rev
-	FROM
-		sb_recyclers sr
-	INNER JOIN sb_company_recycler scr ON sr.id = scr.recycler_id
-	WHERE
-		scr.status_ = '0'
-	AND scr.company_id = #{recyclerBean.companyId}
-	AND scr.recycler_id = #{recyclerBean.id}
+				 sr.id,
+			sr.id_card_obv,
+			sr.id_card_rev
+		FROM
+			sb_recyclers sr
+		WHERE
+		  sr.id = #{recyclerBean.id}
      </select>
      
      <select id="getCurrComList" resultType="com.tzj.collect.core.result.app.AppCompany" parameterType="com.tzj.collect.core.param.app.RecyclersBean">
