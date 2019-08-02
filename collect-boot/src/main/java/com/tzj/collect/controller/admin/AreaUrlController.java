@@ -50,7 +50,7 @@ public class AreaUrlController {
             model.addAttribute("url","https://qr.alipay.com/s6x08110vnu8n4tl0po9w92");
             return "admin/xcxIndex";
         }
-        if(StringUtils.isNotBlank(urlParam)&&StringUtils.isNotBlank(id)&&StringUtils.isNotBlank(type)){
+        if((StringUtils.isNotBlank(urlParam)&&StringUtils.isNotBlank(id)&&StringUtils.isNotBlank(type))||StringUtils.isNotBlank(urlParam)&&StringUtils.isNotBlank(channelId)){
             String getqRcode = null;
             regionCity = new RegionCity();
             String xcxUri = UtilsController.getXcxUri(urlParam, id, type,channelId);
