@@ -304,7 +304,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 				if(!companyRecyclerList.isEmpty()){
 					throw  new ApiException("还有下属回收人员，无法删除");
 				}
-				recyclersTitleService.delete(new EntityWrapper<RecyclersTitle>().eq("recycle_id",recycleId).eq("title_id",4));
+				recyclersTitleService.delete(new EntityWrapper<RecyclersTitle>().eq("recycle_id",recycleId).eq("title_id","4"));
 				recyclersRangeBigService.delete(new EntityWrapper<RecyclersRangeBig>().eq("recyclers_id",recycleId).eq("company_id",companyId));
 			}else {
 				wrapper1.eq("type_","1");

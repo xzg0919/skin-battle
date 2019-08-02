@@ -3,7 +3,7 @@
 <mapper namespace="com.tzj.collect.core.mapper.RecyclersTitleMapper">
 
 <select id="getRecyclerTitleList" parameterType="String" resultType="Map">
-SELECT
+SELECT DISTINCT
 	a.id AS titleId,
 	a.name_ AS titleName,
 	IF (c.id IS NULL, 1, 2) AS isChoose

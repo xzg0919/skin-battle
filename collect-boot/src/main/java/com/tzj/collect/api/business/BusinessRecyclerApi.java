@@ -3,6 +3,7 @@ package com.tzj.collect.api.business;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.tzj.collect.api.common.websocket.AppWebSocketServer;
 import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.core.param.ali.PageBean;
@@ -172,9 +173,16 @@ public class BusinessRecyclerApi {
 			companyRecyclerService.update(companyRecycler, new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId()));
 		   break;
 		case "2" :
-			companyRecycler.setStatus(applyStatus);//拒绝
-			companyRecycler.setUpdateDate(Calendar.getInstance().getTime());
-			companyRecyclerService.update(companyRecycler, new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId()));
+			Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId());
+			if ("Y".equals(recyclerBean.getIsBigRecycle())){
+				wrapper.eq("type_","4");
+			}else {
+				wrapper.eq("type_","1");
+			}
+			CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(wrapper);
+			companyRecycler1.setStatus("2");//拒绝
+			companyRecycler1.setUpdateDate(Calendar.getInstance().getTime());
+			companyRecyclerService.updateById(companyRecycler1);
 		   break;
 		default :
 			msg="请传入正确的状态";
