@@ -2,20 +2,17 @@ package com.tzj.collect.api.iot;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.api.common.async.AsyncRedis;
 import com.tzj.collect.api.iot.localmap.LatchMap;
 import com.tzj.collect.api.iot.messagecode.MessageCode;
-import com.tzj.collect.api.iot.param.IotParamBean;
-import com.tzj.collect.api.iot.param.IotPostParamBean;
 import com.tzj.collect.common.util.MemberUtils;
-import com.tzj.collect.entity.Area;
+import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.param.iot.IotParamBean;
+import com.tzj.collect.core.param.iot.IotPostParamBean;
+import com.tzj.collect.core.service.CompanyService;
+import com.tzj.collect.core.service.MemberService;
+import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.service.AreaService;
-import com.tzj.collect.service.CompanyService;
-import com.tzj.collect.service.MemberService;
-import com.tzj.collect.service.OrderService;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -24,7 +21,6 @@ import io.itit.itf.okhttp.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -84,7 +80,6 @@ public class IotApi {
 //    }
 
     @Api(name = "iot.scan", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> iotScan(IotPostParamBean iotPostParamBean)throws Exception{
         Map map = new HashMap();
@@ -185,11 +180,10 @@ public class IotApi {
       * @return
       */
     @Api(name = "iot.long.pulling", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> longPulling(){
         Member member = MemberUtils.getMember();
-        String iotMemId = "iot_member_id_"+ member.getId();
+        String iotMemId = "iot_member_id_"+ member.getAliUserId();
         Long date = null;
         HashMap<String, Object> result = new HashMap<>();
         date = System.currentTimeMillis();

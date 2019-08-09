@@ -1,12 +1,12 @@
 package com.tzj.collect.api.app;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.CategoryBean;
-import com.tzj.collect.api.ali.result.ComCatePrice;
 import com.tzj.collect.common.util.RecyclersUtils;
+import com.tzj.collect.core.param.ali.CategoryBean;
+import com.tzj.collect.core.result.ali.ComCatePrice;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
-import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -50,7 +50,6 @@ public class AppCategoryApi {
      * @return
      */
 	 @Api(name = "app.category.getOneCategoryList", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	 public List<Category> getOneCategoryList(CategoryBean categoryBean){
 		 Order order = orderService.selectById(categoryBean.getOrderId());
@@ -79,12 +78,9 @@ public class AppCategoryApi {
 	 /**
      * 根据一级分类id取得所有二级分类
      * @author wangcan 
-     * @param  communityId : 小区Id
-     * @param 	id : 一级分类的主键
      * @return
      */
 	 @Api(name = "app.category.getTowCategoryList", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	 public  Map<String, Object> getTowCategoryList(CategoryBean categoryBean){
 //		 if (categoryBean.getTitle().equals(CategoryType.DIGITAL.name())) {
@@ -101,7 +97,6 @@ public class AppCategoryApi {
 	 * @return
 	 */
 	@Api(name = "app.category.getHouseOneCategoryList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public List<Category> getHouseOneCategoryList(){
 			//取得六废的一级分类
@@ -110,12 +105,9 @@ public class AppCategoryApi {
 	 /**
 	 * 根据六废的一级分类取得二级分类
 	 * @author wangcan
-	 * @param title : 分类属性
-	 * @param level : 分类级别
 	 * @return
 	 */
 	@Api(name = "app.category.getHouseTwoCategoryList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getHouseTwoCategoryList(CategoryBean categoryBean){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());

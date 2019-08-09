@@ -3,37 +3,26 @@ package com.tzj.collect.api.business;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.tzj.collect.api.admin.param.AdminCommunityBean;
-import com.tzj.collect.api.admin.param.CompanyBean;
-import com.tzj.collect.api.admin.param.RecyclersBean;
-import com.tzj.collect.api.business.param.CompanyAccountBean;
-import com.tzj.collect.api.business.result.BusinessRecType;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.core.param.admin.AdminCommunityBean;
+import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.admin.RecyclersBean;
+import com.tzj.collect.core.param.business.CompanyAccountBean;
+import com.tzj.collect.core.result.business.BusinessRecType;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
-import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
-import com.tzj.collect.entity.Area;
-import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.entity.CompanyRecycler;
-import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.AreaService;
-import com.tzj.collect.service.CompanyRecyclerService;
-import com.tzj.collect.service.CompanyService;
-import com.tzj.collect.service.RecyclersService;
-import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 @ApiService
@@ -57,7 +46,6 @@ public class BusinessCompanyApi {
 	 */
 	@Api(name = "business.company.search", version = "1.0")
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	@SignIgnore
 	public Page<Recyclers> getRecPageByIds(CompanyAccountBean companyAccountBean) {
 		String recyclerIds = "";
 		List<CompanyRecycler> comRecyclersList = comRecService.selectRecByComId(companyAccountBean.getId());
@@ -123,7 +111,6 @@ public class BusinessCompanyApi {
 	 * @return
 	 */
 	@Api(name = "business.company.getCompanyRange", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getCompanyRange() {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -136,9 +123,8 @@ public class BusinessCompanyApi {
 	 * @return
 	 */
 	@Api(name = "business.company.getCompanyRange.code", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public Object getCompanyRangeByCode(com.tzj.collect.api.business.param.CompanyBean companyBean) {
+	public Object getCompanyRangeByCode(com.tzj.collect.core.param.business.CompanyBean companyBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		//要查找的关键字 companyBean.name
 		List<Map<String,Object>> mapList = (List<Map<String, Object>>) comRecService.getCompanyRange(companyAccount.getCompanyId());
@@ -146,7 +132,6 @@ public class BusinessCompanyApi {
 	}
 
 //	@Api(name = "iot.area.iot", version = "1.0")
-//	@SignIgnore
 //	@AuthIgnore
 ////	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 //	public void  updateArea(){
@@ -178,7 +163,6 @@ public class BusinessCompanyApi {
 	 * @return
 	 */
 	@Api(name = "business.company.getBigCompanyRange", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getBigCompanyRange() {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -191,7 +175,6 @@ public class BusinessCompanyApi {
 	 * @return
 	 */
 	@Api(name = "business.company.getAreasById", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getAreasById(CompanyBean companyBean) {
@@ -206,7 +189,6 @@ public class BusinessCompanyApi {
 	 * @return
 	 */
 	@Api(name = "business.company.getStreetByAreaId", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getStreetByAreaId(CompanyBean companyBean) {
@@ -230,7 +212,6 @@ public class BusinessCompanyApi {
 	 * @return
 	 */
 	@Api(name = "business.company.isOpenOrder", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object isOpenOrder(CompanyBean companyBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -244,7 +225,6 @@ public class BusinessCompanyApi {
 	 * @return
 	 */
 	@Api(name = "business.company.areaRanges", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object companyAreaRanges(CompanyBean companyBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -258,7 +238,6 @@ public class BusinessCompanyApi {
 	 * @return
 	 */
 	@Api(name = "business.company.getIsOpenOrder", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getIsOpenOrder() {

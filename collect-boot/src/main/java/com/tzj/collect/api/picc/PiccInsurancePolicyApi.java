@@ -1,14 +1,14 @@
 package com.tzj.collect.api.picc;
 
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.picc.param.PiccInsurancePolicyBean;
 import com.tzj.collect.common.util.PiccCompanyUtils;
+import com.tzj.collect.core.param.picc.PiccInsurancePolicyBean;
+import com.tzj.collect.core.service.PiccInsurancePolicyAgreementService;
+import com.tzj.collect.core.service.PiccInsurancePolicyContentService;
+import com.tzj.collect.core.service.PiccInsurancePolicyService;
 import com.tzj.collect.entity.PiccCompany;
 import com.tzj.collect.entity.PiccInsurancePolicyAgreement;
 import com.tzj.collect.entity.PiccInsurancePolicyContent;
-import com.tzj.collect.service.PiccInsurancePolicyAgreementService;
-import com.tzj.collect.service.PiccInsurancePolicyContentService;
-import com.tzj.collect.service.PiccInsurancePolicyService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;

@@ -1,20 +1,18 @@
 package com.tzj.collect.validator.app;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
-
-import java.util.LinkedList;
-import java.util.Map;
-
-import com.tzj.collect.common.util.CacheUtils;
+import com.tzj.collect.core.service.RecyclersService;
+import com.tzj.collect.entity.Recyclers;
+import com.tzj.module.api.entity.Subject;
+import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.util.EhCache2Utils;
 import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.RecyclersService;
-import com.tzj.module.api.entity.Subject;
-import com.tzj.module.api.service.SubjectService;
+import java.util.LinkedList;
+import java.util.Map;
+
+import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 /**
  * @Author 胡方明（12795880@qq.com）

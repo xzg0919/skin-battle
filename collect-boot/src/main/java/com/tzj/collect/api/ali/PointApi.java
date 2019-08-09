@@ -1,11 +1,11 @@
 package com.tzj.collect.api.ali;
 
-import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.service.PointListService;
+import com.tzj.collect.core.service.PointService;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Point;
-import com.tzj.collect.service.PointListService;
-import com.tzj.collect.service.PointService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -26,7 +26,7 @@ public class PointApi {
 	@Autowired
 	private PointService pointService;
 	@Autowired
-	private PointListService pointListService; 
+	private PointListService pointListService;
 	
 	/** 
      * 根据类型获取积分流水列表 分页
@@ -36,13 +36,12 @@ public class PointApi {
      */
     @Api(name = "point.getPointListByType", version = "1.0")
     //@AuthIgnore //这个api忽略token验证
-    @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<Object> getPointListByType(PageBean pageBean){
         //接口里面获取  Member 的例子
         Member member= MemberUtils.getMember();
         //获取用户积分流水表
-        List<Object> pointLists = pointListService.getPointListByType(member.getId(),pageBean); 	
+        List<Object> pointLists = pointListService.getPointListByType(member.getAliUserId(),pageBean);
     	return pointLists; 
     }
 	
@@ -55,12 +54,11 @@ public class PointApi {
      */
     @Api(name = "point.getPoint", version = "1.0")
     //@AuthIgnore //这个api忽略token验证
-    @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Point getPoint(){
         //接口里面获取  Member 的例子
         Member member= MemberUtils.getMember();
-    	Point points = pointService.getPoint(member.getId());
+    	Point points = pointService.getPoint(member.getAliUserId());
     	return points;
     }
 
@@ -72,12 +70,11 @@ public class PointApi {
      */
     @Api(name = "point.getPointLists", version = "1.0")
     //@AuthIgnore //这个api忽略token验证
-    @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getPointLists(){
         //接口里面获取  Member 的例子
         Member member= MemberUtils.getMember();
-        return pointService.getPointLists(member.getId());
+        return pointService.getPointLists(member.getAliUserId());
     }
 	
 	

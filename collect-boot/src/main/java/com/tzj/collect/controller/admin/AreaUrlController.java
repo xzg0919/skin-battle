@@ -1,19 +1,18 @@
 package com.tzj.collect.controller.admin;
 
 
-
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import com.tzj.collect.core.service.AreaService;
+import com.tzj.collect.core.service.CommunityService;
+import com.tzj.collect.core.service.RegionCityService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.RegionCity;
-import com.tzj.collect.service.AreaService;
-import com.tzj.collect.service.CommunityService;
-import com.tzj.collect.service.RegionCityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,7 +41,7 @@ public class AreaUrlController {
 
 
     @RequestMapping("/toXcxIndex")
-    public  String toXcxIndex(String outUrl,String areaId, String companyId, String communityId, ModelMap model, String urlParam, String id, String type){
+    public  String toXcxIndex(String outUrl,String areaId, String companyId, String communityId, ModelMap model, String urlParam, String id, String type,String channelId){
         RegionCity regionCity = null;
         if ("Y".equals(outUrl)){
             regionCity = new RegionCity();
@@ -51,10 +50,10 @@ public class AreaUrlController {
             model.addAttribute("url","https://qr.alipay.com/s6x08110vnu8n4tl0po9w92");
             return "admin/xcxIndex";
         }
-        if(StringUtils.isNotBlank(urlParam)&&StringUtils.isNotBlank(id)&&StringUtils.isNotBlank(type)){
+        if((StringUtils.isNotBlank(urlParam)&&StringUtils.isNotBlank(id)&&StringUtils.isNotBlank(type))||StringUtils.isNotBlank(urlParam)&&StringUtils.isNotBlank(channelId)){
             String getqRcode = null;
             regionCity = new RegionCity();
-            String xcxUri = UtilsController.getXcxUri(urlParam, id, type);
+            String xcxUri = UtilsController.getXcxUri(urlParam, id, type,channelId);
             try {
                 String localPath = System.getProperty("java.io.tmpdir")+ "/local.jpg";
                 AreaUrlController.downloadFile(xcxUri, localPath);

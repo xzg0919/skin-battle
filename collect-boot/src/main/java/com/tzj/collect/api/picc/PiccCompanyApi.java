@@ -2,9 +2,9 @@ package com.tzj.collect.api.picc;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.picc.param.PiccCompanyBean;
+import com.tzj.collect.core.param.picc.PiccCompanyBean;
+import com.tzj.collect.core.service.PiccCompanyService;
 import com.tzj.collect.entity.PiccCompany;
-import com.tzj.collect.service.PiccCompanyService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.PICC_API_EXPRIRE;
-import static com.tzj.collect.common.constant.TokenConst.PICC_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.PICC_API_TOKEN_SECRET_KEY;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 @ApiService
 public class PiccCompanyApi {

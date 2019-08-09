@@ -1,30 +1,25 @@
 package com.tzj.collect.api.admin;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
-
-import java.util.Calendar;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.tzj.collect.api.admin.param.AdminCommunityBean;
-import com.tzj.collect.api.admin.param.CompanyBean;
-import com.tzj.collect.api.ali.param.PageBean;
 import com.tzj.collect.common.util.SnUtils;
+import com.tzj.collect.core.param.admin.AdminCommunityBean;
+import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.CompanyCategory;
 import com.tzj.collect.entity.CompanyServiceRange;
-import com.tzj.collect.service.CommunityService;
-import com.tzj.collect.service.CompanyCategoryService;
-import com.tzj.collect.service.CompanyRecyclerService;
-import com.tzj.collect.service.CompanyService;
-import com.tzj.collect.service.CompanyServiceService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Calendar;
+import java.util.List;
+
+import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 @ApiService
 public class AdminCompanyApi {
@@ -190,7 +185,6 @@ public class AdminCompanyApi {
 	* @Description: 【】
 	* @date 2018年3月21日 下午5:21:00
 	* @author:[王池][wjc2013481273@163.com]
-	* @param     参数
 	* @return void    返回类型
 	* @throws
 	 */

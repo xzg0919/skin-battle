@@ -1,16 +1,16 @@
 package com.tzj.collect.controller.admin;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.OrderBean;
-import com.tzj.collect.api.ali.param.PiccOrderBean;
 import com.tzj.collect.api.commom.excel.ExcelData;
 import com.tzj.collect.api.commom.excel.ExcelUtils;
-import com.tzj.collect.api.enterprise.param.EnterpriseCodeBean;
 import com.tzj.collect.common.util.SnUtils;
+import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.ali.PiccOrderBean;
+import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.OrderItem;
 import com.tzj.collect.entity.OrderItemAch;
-import com.tzj.collect.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -48,7 +48,7 @@ public class OutExcelController {
      * @throws Exception
      */
     @RequestMapping("/outEnterpriseCodeExcel")
-    public void  outEnterpriseCodeExcel(HttpServletResponse response,EnterpriseCodeBean enterpriseCodeBean) throws Exception{
+    public void  outEnterpriseCodeExcel(HttpServletResponse response, EnterpriseCodeBean enterpriseCodeBean) throws Exception{
         List<Map<String, Object>> list = enterpriseCodeService.outEnterpriseCodeExcel(enterpriseCodeBean, Integer.parseInt(enterpriseCodeBean.getId()));
         ExcelData data = new ExcelData();
         data.setName("以旧换新信息数据");
@@ -142,7 +142,7 @@ public class OutExcelController {
      * @throws Exception
      */
     @RequestMapping("/outPiccOrderExcel")
-    public void outPiccOrderExcel(HttpServletResponse response,PiccOrderBean piccOrderBean)throws Exception {
+    public void outPiccOrderExcel(HttpServletResponse response, PiccOrderBean piccOrderBean)throws Exception {
 
         piccOrderService.outPiccOrderExcel(response,piccOrderBean);
     }
@@ -154,7 +154,7 @@ public class OutExcelController {
      * @throws Exception
      */
     @RequestMapping("/outOrderExcel")
-    public void outOrderExcel(HttpServletResponse response,OrderBean orderBean)throws Exception {
+    public void outOrderExcel(HttpServletResponse response, OrderBean orderBean)throws Exception {
         List<Map<String, Object>> list = orderService.outOrderExcel(orderBean.getId(),orderBean.getType(), orderBean.getStartTime(), orderBean.getEndTime());
         //添加表头
         List<String> titles = new ArrayList<>();

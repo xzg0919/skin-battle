@@ -4,10 +4,12 @@ package com.tzj.collect.controller.admin;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.OrderBean;
 import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
+import com.tzj.collect.config.ApplicationInit;
+import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
-import com.tzj.collect.service.*;
 import com.tzj.module.common.aliyun.mns.Notification;
 import com.tzj.module.common.aliyun.mns.XMLUtils;
 import com.tzj.module.common.exception.BusiException;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,7 +51,8 @@ public class FiveKgController {
     private AnsycMyslService ansycMyslService;
     @Autowired
     private ApplicationInit applicationInit;
-
+    @Autowired
+    private AsyncService asyncService;
 
     @RequestMapping(value = "/order/update",method = RequestMethod.POST)
     public String orderUpdate(@RequestBody String body, HttpServletResponse response){
@@ -116,7 +118,17 @@ public class FiveKgController {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
+                try {
+                    if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                        asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已接单","大件回收");
+                    }else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+                        asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已接单","家电回收");
+                    }else {
+                        asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已接单","生活垃圾");
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             return null;
         }else if ("3".equals(orderStatus)){
             //订单完成
@@ -154,9 +166,20 @@ public class FiveKgController {
                     orderPicAch.setSmallPic(orderPic.getSmallPic());
                     orderPicAchService.insert(orderPicAch);
                     //给用户增加积分
-                    orderService.updateMemberPoint(order.getMemberId(), order.getOrderNo(), order.getGreenCount(),"生活垃圾");
+                    orderService.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), order.getGreenCount(),"生活垃圾");
                     //给用户增加蚂蚁能量
                     OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            try {
+                if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","大件回收");
+                }else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","家电回收");
+                }else {
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","生活垃圾");
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -172,6 +195,17 @@ public class FiveKgController {
                 order.setCancelReason(object.getString("remarks"));
                 order.setCancelTime(new Date());
                 orderService.updateById(order);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            try {
+                if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已取消","大件回收");
+                }else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已取消","家电回收");
+                }else {
+                    asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已取消","生活垃圾");
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }

@@ -1,8 +1,8 @@
 package api.picc;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.param.PageBean;
-import com.tzj.collect.api.ali.param.PiccOrderBean;
+import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.ali.PiccOrderBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;

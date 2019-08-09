@@ -3,7 +3,7 @@ package api.amap;
 import api.util.ApiUtils;
 import api.util.TestConst;
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.param.AmapAroundParam;
+import com.tzj.collect.core.param.ali.AmapAroundParam;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import junit.framework.TestCase;

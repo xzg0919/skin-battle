@@ -3,22 +3,17 @@ package com.tzj.collect.common.thread;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.MemberAddressBean;
-import com.tzj.collect.api.common.PostTool;
-import com.tzj.collect.common.constant.MD5;
-import com.tzj.collect.common.constant.MD5Util;
-import com.tzj.collect.entity.*;
-import com.tzj.collect.service.*;
+import com.tzj.collect.core.param.ali.MemberAddressBean;
+import com.tzj.collect.core.service.MemberAddressService;
+import com.tzj.collect.core.service.PaymentService;
+import com.tzj.collect.entity.Payment;
 import groovy.util.logging.Slf4j;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
-import net.sf.json.JSONString;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -27,9 +22,6 @@ import java.util.*;
 public class ThreadTime {
     @Autowired
     private PaymentService paymentService;
-    @Autowired
-    private MemberAddressService memberAddressService;
-
     /**
      * 定时任务。定时执行回收人员支付完成，单钱未转账到用户支付宝
      */
@@ -37,20 +29,7 @@ public class ThreadTime {
     public void startPaymentExecute(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new PaymentThread(paymentService)));
     }
-    /**
-     * 定时任务。定时执行更新新的街道进入更新用户小区地址信息
-     */
-    @Scheduled(cron = "0 0 0/2 * * ?")
-    public void startUpdateMemberAddressByCommunityId(){
-        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new MemberAddressUpdate(memberAddressService)));
-    }
-    /**
-     * 定时任务。定时执行更新新的街道进入更新用户街道地址信息
-     */
-    @Scheduled(cron = "0 0 0/2 * * ?")
-    public void startUpdateMemberAddressByStreetId(){
-        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new MemberAddressUpdateByStreetId(memberAddressService)));
-    }
+
 
 }
 class PaymentThread implements Runnable{
@@ -77,35 +56,5 @@ class PaymentThread implements Runnable{
                 }
             }
         }
-    }
-}
-class MemberAddressUpdate implements Runnable{
-
-    private MemberAddressService memberAddressService;
-
-    public MemberAddressUpdate(MemberAddressService memberAddressService){
-        this.memberAddressService = memberAddressService;
-    }
-    @Override
-    public void run() {
-        List<MemberAddressBean> memberAddressesList = memberAddressService.selectMemberAddressByCommunityId();
-        if(null != memberAddressesList&&!memberAddressesList.isEmpty()){
-            for (MemberAddressBean memberAddressBean:memberAddressesList){
-                memberAddressService.updateMemberAddress(memberAddressBean.getId(),memberAddressBean.getCommunityId() );
-            }
-        }
-    }
-}
-
-class MemberAddressUpdateByStreetId implements Runnable{
-
-    private MemberAddressService memberAddressService;
-
-    public MemberAddressUpdateByStreetId(MemberAddressService memberAddressService){
-        this.memberAddressService = memberAddressService;
-    }
-    @Override
-    public void run() {
-        memberAddressService.MemberAddressUpdateStreetId();
     }
 }

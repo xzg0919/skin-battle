@@ -3,16 +3,17 @@ package com.tzj.collect.api.business;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.PageBean;
-import com.tzj.collect.api.business.param.BusinessRecyclerBean;
-import com.tzj.collect.api.business.param.RecyclerServiceBean;
-import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.tzj.collect.api.common.websocket.AppWebSocketServer;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.business.BusinessRecyclerBean;
+import com.tzj.collect.core.param.business.RecyclerServiceBean;
+import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.entity.CompanyRecycler;
 import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.util.ApiUtil;
 import io.itit.itf.okhttp.FastHttpClient;
@@ -51,35 +52,9 @@ public class BusinessRecyclerApi {
 	* @throws
 	 */
 	 @Api(name = "business.search.getRecyclerList", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getRecyclerList(BusinessRecyclerBean recyclerBean){
-		
-		List< BusinessRecyclerBean> BusinessRecyclerBeanList  = companyRecyclerService.getgetSearchCompanyRecyclerList(recyclerBean);
-		
-		// 刚开始的页面为第一页
-		if(recyclerBean.getPage()==null){
-			PageBean page = new PageBean();
-			page.setPageNumber(1);
-			page.setPageSize(10);
-			recyclerBean.setPage(page);			
-		}
-		// list的大小
-		int count = BusinessRecyclerBeanList.size();
-		// 每页的开始数
-		int starCount = (recyclerBean.getPage().getPageNumber()-1)*recyclerBean.getPage().getPageSize();
-		// 设置总页数
-		int totalPage = (count % recyclerBean.getPage().getPageSize() == 0 ? count / recyclerBean.getPage().getPageSize() : count / recyclerBean.getPage().getPageSize() + 1);
-		//每页显示的list数据
-		recyclerBean.setDataList(BusinessRecyclerBeanList.subList(starCount,count-starCount > recyclerBean.getPage().getPageSize() ? starCount+recyclerBean.getPage().getPageSize() : count));
-		
-		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("count", count);
-		result.put("dataList", recyclerBean.getDataList());
-		result.put("current", recyclerBean.getPage().getPageNumber());
-		result.put("totalPage", totalPage);
-		return result;
-		
+		return null;
 	}
 	/**
 	 * 查看回收人员的回收范围
@@ -91,7 +66,6 @@ public class BusinessRecyclerApi {
 	* @return List<RecyclerServiceBean>    返回类型
 	 */
 	 @Api(name = "business.search.recyclerServiceList", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<RecyclerServiceBean> recyclerServiceList(BusinessRecyclerBean recyclerBean){
 		
@@ -108,7 +82,6 @@ public class BusinessRecyclerApi {
 	* @return int    返回类型
 	 */
 	 @Api(name = "business.search.getRecyclerServiceListCount", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public int getRecyclerServiceListCount(BusinessRecyclerBean recyclerBean){
 	
@@ -125,7 +98,6 @@ public class BusinessRecyclerApi {
 	* @return Map<String,Object>    返回类型
 	 */
 	 @Api(name = "business.search.getRecyclersById", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getRecyclersById(BusinessRecyclerBean recyclerBean){
 		Recyclers recycler = recycleService.getRecyclersById(recyclerBean);
@@ -145,7 +117,6 @@ public class BusinessRecyclerApi {
 	* @return String    返回类型
 	 */
 	 @Api(name = "business.search.editorDelflag", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public String editorDelflag(BusinessRecyclerBean recyclerBean){		
 		 CompanyRecycler companyRecycler = companyRecyclerService.getCompanyRecyclerByRecyclerId(recyclerBean.getId());
@@ -175,7 +146,6 @@ public class BusinessRecyclerApi {
 	* @return List<Recyclers>    返回类型
 	 */
 	 @Api(name = "business.search.getRecyclersApply", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<Recyclers> getRecyclersApply(BusinessRecyclerBean recyclerBean){
 		
@@ -191,7 +161,6 @@ public class BusinessRecyclerApi {
 	* @return String    返回类型
 	 */
 	 @Api(name = "business.search.editorStatus", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public String editorStatus(BusinessRecyclerBean recyclerBean){
 		CompanyRecycler companyRecycler = companyRecyclerService.getCompanyRecycler(recyclerBean);
@@ -204,9 +173,16 @@ public class BusinessRecyclerApi {
 			companyRecyclerService.update(companyRecycler, new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId()));
 		   break;
 		case "2" :
-			companyRecycler.setStatus(applyStatus);//拒绝
-			companyRecycler.setUpdateDate(Calendar.getInstance().getTime());
-			companyRecyclerService.update(companyRecycler, new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId()));
+			Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId());
+			if ("Y".equals(recyclerBean.getIsBigRecycle())){
+				wrapper.eq("type_","4");
+			}else {
+				wrapper.eq("type_","1");
+			}
+			CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(wrapper);
+			companyRecycler1.setStatus("2");//拒绝
+			companyRecycler1.setUpdateDate(Calendar.getInstance().getTime());
+			companyRecyclerService.updateById(companyRecycler1);
 		   break;
 		default :
 			msg="请传入正确的状态";
@@ -224,7 +200,6 @@ public class BusinessRecyclerApi {
 	* @return Recyclers    返回类型
 	 */
 	 @Api(name = "business.search.findIdCard", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Recyclers findIdCard(BusinessRecyclerBean recyclerBean){
 		
@@ -238,7 +213,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.getRecyclers", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getRecyclers(BusinessRecyclerBean recyclerBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -255,7 +229,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.updateOrSaveRecyclersRange", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object updateOrSaveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) throws Exception{
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -269,53 +242,12 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.saveRecyclersRange", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object saveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) throws Exception{
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		String result = recycleService.saveRecyclersRange(recyclersServiceRangeBean,companyAccount.getCompanyId()).toString();
-			String api="http://172.19.182.58:9090/business/api";
-			try{
-				if("172.19.182.58".equals(InetAddress.getLocalHost().getHostAddress())){
-					api = "http://172.19.182.59:9090/business/api";
-				}
-				HashMap<String,Object> param=new HashMap<>();
-				param.put("name","business.recycle.sendMessage");
-				param.put("version","1.0");
-				param.put("format","json");
-				param.put("app_key","app_id_3");
-				param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-				param.put("nonce", UUID.randomUUID().toString());
-				param.put("data",recyclersServiceRangeBean);
-				String jsonStr = JSON.toJSONString(param);
-				String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");
-				param.put("sign", sign);
-				System.out.println("请求的参数是 ："+JSON.toJSONString(param));
-				Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
-				String resultJson=response.body().string();
-				System.out.println("返回的参数是 ："+resultJson);
-			}catch (Exception e){
-				System.out.println("同意回收人员时，给另一台推送消息失败");
-			}
 			return result;
 	}
-	/**
-	 * 保存业务经理，和下属回收人员的信息()
-	 * @author wangcan
-	 * @param
-	 * @return
-	 */
-	@Api(name = "business.recycle.sendMessage", version = "1.0")
-	@SignIgnore
-	@AuthIgnore
-	public void sendMessage(RecyclersServiceRangeBean recyclersServiceRangeBean) {
-		try {
-			appWebSocketServer.sendInfo(recyclersServiceRangeBean.getRecycleId().toString(), "你是回收经理");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	/**
 	 * 保存业务经理更改区域信息(废弃)
 	 * @author wangcan
@@ -323,7 +255,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.updateRecyclersRange", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object updateRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -336,7 +267,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.getAreaRecyclersRange", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getAreaRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -349,7 +279,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.getStreeRecyclersRange", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getStreeRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -363,7 +292,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.getRecyclersList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getRecyclersList(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -377,7 +305,6 @@ public class BusinessRecyclerApi {
 	 * @updateBy sgmark@aliyun.com(根据公司找当前下属回收人员)
 	 */
 	@Api(name = "business.recycle.getSunRecyclersList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<Recyclers> getSunRecyclersList(RecyclersServiceRangeBean recyclerBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -394,7 +321,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.getRecyclersDetails", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getRecyclersDetails(RecyclersServiceRangeBean recyclersServiceRangeBean) {
@@ -410,7 +336,6 @@ public class BusinessRecyclerApi {
 	  * @return
 	  */
 	@Api(name = "business.recycle.del", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object recyclersDel(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -424,7 +349,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.isDelete", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object recycleIsDelete(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -439,7 +363,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.delete", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object recycleDelete(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
@@ -453,7 +376,6 @@ public class BusinessRecyclerApi {
 	 * @return
 	 */
 	@Api(name = "business.recycle.getRecycleRangeByTitle", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getRecycleRangeByTitle(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();

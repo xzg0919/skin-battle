@@ -1,20 +1,19 @@
 package com.tzj.collect.api.app;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.baomidou.dynamic.datasource.annotation.DS;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.MemberBean;
+import com.tzj.collect.common.utils.ToolUtils;
+import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.service.MemberService;
-import com.tzj.collect.service.MessageService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 会员用户相关Api
@@ -26,7 +25,7 @@ public class AppMemberApi {
 	@Autowired
 	private MemberService memberService;
 	@Autowired
-	private MessageService MessageService;
+	private com.tzj.collect.core.service.MessageService MessageService;
 	
 	/**
      * 根据用户会员卡的卡号查询用户的信息
@@ -37,11 +36,10 @@ public class AppMemberApi {
     @SignIgnore 
     @AuthIgnore
 	@DS("slave")
-    public Object getMemberByCard(MemberBean memberBean) { 
-    	Map<String,Object> resultMap = new HashMap<String,Object>(); 
-    	EntityWrapper wrapper = new EntityWrapper<Member>();
-    	wrapper.eq("card_no", memberBean.getCardNo());
-    	Member member = memberService.selectOne(wrapper);
+    public Object getMemberByCard(MemberBean memberBean) {
+    	Map<String,Object> resultMap = new HashMap<String,Object>();
+		String aliUserId = ToolUtils.getAliUserIdByOrderNo(memberBean.getCardNo());
+    	Member member = memberService.selectMemberByAliUserId(aliUserId);
     	if(member==null) {
     		resultMap.put("code", "500");
     		resultMap.put("member", "该卡号不存在");

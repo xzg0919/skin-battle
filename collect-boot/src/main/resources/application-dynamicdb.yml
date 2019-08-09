@@ -21,29 +21,29 @@ spring:
       primary: master #设置默认的数据源或者数据源组,默认值即为master,如果你主从默认下主库的名称就是master可不定义此项。
       datasource:
         master:
-          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          username: sb_admin
-          password: shoubei_123
-          #url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          #username: devuser
-          #password: dev123456@1
+          #url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          #username: sb_admin
+          #password: shoubei_123
+          url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          username: devuser
+          password: dev123456@1
           driver-class-name: com.mysql.cj.jdbc.Driver
           #driver-class-name: com.mysql.jdbc.Driver
         slave_1:
-          url: jdbc:mysql://rr-uf68jtqx8eo2ce0ew.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          username: sb_admin
-          password: shoubei_123
-          #url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          #username: devuser
-          #password: dev123456@1
+          #url: jdbc:mysql://rr-uf68jtqx8eo2ce0ew.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          #username: sb_admin
+          #password: shoubei_123
+          url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          username: devuser
+          password: dev123456@1
           driver-class-name: com.mysql.cj.jdbc.Driver
           #driver-class-name: com.mysql.jdbc.Driver
         slave_2:
-          url: jdbc:mysql://rr-uf6xun0k65f3i09n4.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          username: sb_admin
-          password: shoubei_123
-          #url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          #username: devuser
-          #password: dev123456@1
+          #url: jdbc:mysql://rr-uf6xun0k65f3i09n4.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          #username: sb_admin
+          #password: shoubei_123
+          url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          username: devuser
+          password: dev123456@1
           driver-class-name: com.mysql.cj.jdbc.Driver
           #driver-class-name: com.mysql.jdbc.Driver

@@ -1,19 +1,17 @@
 package com.tzj.collect.api.app;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.tzj.collect.api.app.param.MessageBean;
-import com.tzj.collect.service.MessageService;
+import com.tzj.collect.core.param.app.MessageBean;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @ApiService
 public class AppMessageApi {
 	
 	@Autowired
-	private MessageService MessageService;
+	private com.tzj.collect.core.service.MessageService MessageService;
 	/**
 	 * 得到code
 	 * @return

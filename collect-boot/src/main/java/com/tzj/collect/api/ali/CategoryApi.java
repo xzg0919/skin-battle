@@ -2,14 +2,14 @@ package com.tzj.collect.api.ali;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.AliCategoryAttrOptionBean;
-import com.tzj.collect.api.ali.param.CategoryAttrBean;
-import com.tzj.collect.api.ali.param.CategoryBean;
-import com.tzj.collect.api.ali.result.ClassifyAndMoney;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.AliCategoryAttrOptionBean;
+import com.tzj.collect.core.param.ali.CategoryAttrBean;
+import com.tzj.collect.core.param.ali.CategoryBean;
+import com.tzj.collect.core.result.ali.ClassifyAndMoney;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
-import com.tzj.collect.service.*;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -21,9 +21,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * 分类相关api
@@ -66,7 +64,6 @@ public class CategoryApi {
      * @return
      */
 	 @Api(name = "category.listTop", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	 public List<Category> toplist(CategoryBean categoryBean){
 		Serializable title = null;
@@ -85,7 +82,6 @@ public class CategoryApi {
      * @return
      */
 	 @Api(name = "category.listchild", version = "1.0")
-	 @SignIgnore
 	 @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	 public  Map<String, Object> childlist(CategoryBean categoryBean){
 //		 if (categoryBean.getTitle().equals(CategoryType.DIGITAL.name())) {
@@ -103,7 +99,6 @@ public class CategoryApi {
      * @return BigDecimal : 预估价格
      */
 	@Api(name = "categoryAttr.computeValue", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object computeValue(CategoryAttrBean categoryAttrBean){
 		Member member = MemberUtils.getMember();
@@ -115,7 +110,7 @@ public class CategoryApi {
 		//获取所有分类的集合
 		String [] OptionPrice = categoryAttrOptionPrice.split(",");
 		//查询用户的默认地址
-    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+    	MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
     	if(memberAddress==null) {
     		return "该区域暂无回收企业";
     	}
@@ -171,7 +166,6 @@ public class CategoryApi {
      * @return BigDecimal : 预估价格
      */
 	@Api(name = "category.communityBycompany", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object communityBycompany(CategoryAttrBean categoryAttrBean){
 		//分类Id
@@ -219,10 +213,8 @@ public class CategoryApi {
 	 * @return
 	 */
 	@Api(name = "category.categoryHouseTwoList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object categoryHouseTwoList(CategoryBean categoryBean){
-		Member member = MemberUtils.getMember();
 		return priceService.categoryHouseTwoList(categoryBean);
 
 	}
@@ -285,7 +277,7 @@ public class CategoryApi {
 			String decodeToken = CipherTools.decrypt(token, key);
 			Claims claims = JwtUtils.getClaimByToken(decodeToken, ALI_API_TOKEN_SECRET_KEY);
 			String memberId = claims.getSubject();
-			price = categoryService.getPrice(Long.parseLong(memberId),categoryId,categoryAttrBean.getType(),categoryAttrBean.getCategoryAttrOptionids());
+			price = categoryService.getPrice(memberId,categoryId,categoryAttrBean.getType(),categoryAttrBean.getCategoryAttrOptionids());
 		}
 		return price;
 	}

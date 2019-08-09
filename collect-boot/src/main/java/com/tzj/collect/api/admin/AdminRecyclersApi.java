@@ -1,20 +1,19 @@
 package com.tzj.collect.api.admin;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.fastjson.JSONObject;
-import com.tzj.collect.api.admin.param.RecyclersBean;
+import com.tzj.collect.core.param.admin.RecyclersBean;
+import com.tzj.collect.core.service.CompanyRecyclerService;
+import com.tzj.collect.core.service.RecyclersService;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.CompanyRecyclerService;
-import com.tzj.collect.service.RecyclersService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 /**
  * 

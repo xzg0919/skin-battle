@@ -2,11 +2,11 @@ package com.tzj.collect.api.ali;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.ali.param.PiccOrderBean;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.PiccOrderBean;
+import com.tzj.collect.core.service.PiccOrderService;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.PiccOrder;
-import com.tzj.collect.service.PiccOrderService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -32,12 +32,11 @@ public class PiccOrderApi {
      * @return List<Order>:未完成的订单列表
      */
     @Api(name = "piccOrder.insertPiccOrder", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String insertPiccOrder(PiccOrderBean piccOrderBean) throws ApiException {
         Member member = MemberUtils.getMember();
         //查询该用户是否有保单
-        List<PiccOrder> piccOrderList = piccOrderService.selectList(new EntityWrapper<PiccOrder>().eq("member_id", member.getId()).eq("del_flag", 0).eq("insurance_id", piccOrderBean.getInsuranceId()));
+        List<PiccOrder> piccOrderList = piccOrderService.selectList(new EntityWrapper<PiccOrder>().eq("ali_user_id", member.getAliUserId()).eq("del_flag", 0).eq("insurance_id", piccOrderBean.getInsuranceId()));
         if (piccOrderList != null) {
             for (PiccOrder piccOrder:piccOrderList) {
                 if (piccOrder.getStatus().getValue() != PiccOrder.PiccOrderType.NOOPEN.getValue()){
@@ -45,7 +44,7 @@ public class PiccOrderApi {
                 }
             }
         }
-        return piccOrderService.insertPiccOrder(member.getId(),piccOrderBean);
+        return piccOrderService.insertPiccOrder(member.getAliUserId(),piccOrderBean);
     }
 
     /**
@@ -55,7 +54,6 @@ public class PiccOrderApi {
      * @return List<Order>:未完成的订单列表
      */
     @Api(name = "piccOrder.updatePiccWater", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String updatePiccWater(PiccOrderBean piccOrderBean) throws ApiException {
         Member member = MemberUtils.getMember();
@@ -63,7 +61,7 @@ public class PiccOrderApi {
         if(StringUtils.isBlank(piccWaterId)){
             piccWaterId = "0";
         }
-        return piccOrderService.updatePiccWater(member.getId().intValue(),Integer.parseInt(piccOrderBean.getId()));
+        return piccOrderService.updatePiccWater(member.getAliUserId(),Integer.parseInt(piccOrderBean.getId()));
     }
 
 }

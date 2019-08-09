@@ -1,8 +1,8 @@
 package com.tzj.collect.api.app;
 
-import com.tzj.collect.api.app.param.VersionBean;
+import com.tzj.collect.core.param.app.VersionBean;
+import com.tzj.collect.core.service.VersionService;
 import com.tzj.collect.entity.ApkVersion;
-import com.tzj.collect.service.VersionService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -21,7 +21,6 @@ public class VersionApi {
 	private VersionService versionService;
 	
 	@Api(name = "app.apk.appVersion", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> getAppVersion(VersionBean version){
 		

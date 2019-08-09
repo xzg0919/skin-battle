@@ -1,8 +1,7 @@
 package com.tzj.collect.validator.business;
 
-import com.tzj.collect.common.util.CacheUtils;
+import com.tzj.collect.core.service.CompanyAccountService;
 import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.service.CompanyAccountService;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.util.EhCache2Utils;

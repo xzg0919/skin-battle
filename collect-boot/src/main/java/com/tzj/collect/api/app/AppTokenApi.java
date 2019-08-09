@@ -1,29 +1,15 @@
 package com.tzj.collect.api.app;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.APP_API_EXPRIRE;
-import static com.tzj.collect.common.constant.TokenConst.APP_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.APP_API_TOKEN_SECRET_KEY;
-
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.app.param.RecyclersBean;
-import com.tzj.collect.api.app.param.RecyclersLoginBean;
-import com.tzj.collect.api.param.TokenBean;
 import com.tzj.collect.common.util.RecyclersUtils;
+import com.tzj.collect.core.param.app.RecyclersBean;
+import com.tzj.collect.core.param.app.RecyclersLoginBean;
+import com.tzj.collect.core.service.MessageService;
+import com.tzj.collect.core.service.RecyclersService;
+import com.tzj.collect.core.service.RecyclersTitleService;
 import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.MessageService;
-import com.tzj.collect.service.RecyclersService;
-import com.tzj.collect.service.RecyclersTitleService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.collect.param.TokenBean;
+import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.ApiContext;
@@ -32,9 +18,15 @@ import com.tzj.module.easyopen.doc.annotation.ApiDoc;
 import com.tzj.module.easyopen.doc.annotation.ApiDocField;
 import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
 import com.tzj.module.easyopen.exception.ApiException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * token api
@@ -115,7 +107,6 @@ public class AppTokenApi {
      * @return
      */
     @Api(name = "app.token.flush", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public TokenBean flushToken() {
 
@@ -139,7 +130,6 @@ public class AppTokenApi {
      * @return
      */
     @Api(name = "app.token.getAuthUrl", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public String getAuthUrl() throws Exception {
         String targetId = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
@@ -155,7 +145,6 @@ public class AppTokenApi {
      * @return
      */
     @Api(name = "app.token.getAuthCode", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public String getAuthCode(RecyclersBean recyclersBean) throws com.taobao.api.ApiException {
         Recyclers recycler = RecyclersUtils.getRecycler();

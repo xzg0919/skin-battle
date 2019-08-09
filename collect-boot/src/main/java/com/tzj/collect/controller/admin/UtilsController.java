@@ -9,6 +9,7 @@ import com.alipay.api.request.AlipayOpenAppQrcodeCreateRequest;
 import com.alipay.api.response.AlipayOpenAppQrcodeCreateResponse;
 import com.tzj.collect.common.constant.AlipayConst;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,15 +20,26 @@ public class UtilsController {
     @RequestMapping("/get/xcxUrl")
     public String getXcxUrl(String urlParam, String id, String type){
         System.out.println("---------"+urlParam+"-------"+id+"-------"+type);
-        return    UtilsController.getXcxUri(urlParam,id,type);
+        return    UtilsController.getXcxUri(urlParam,id,type,"");
     }
-    public static String getXcxUri(String urlParam, String id, String type){
+    public static String getXcxUri(String urlParam, String id, String type,String channelId){
         System.out.println("---------"+urlParam+"-------"+id+"-------"+type);
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
         AlipayOpenAppQrcodeCreateRequest request = new AlipayOpenAppQrcodeCreateRequest();
         AlipayOpenAppQrcodeCreateModel model = new AlipayOpenAppQrcodeCreateModel();
         model.setUrlParam(urlParam);
-        model.setQueryParam("id="+id+"&type="+type);
+        String queryParam = "";
+        if(StringUtils.isNotBlank(id)){
+            queryParam += "id="+id +"&";
+        }
+        if(StringUtils.isNotBlank(type)){
+            queryParam += "type="+type +"&";
+        }
+        if(StringUtils.isNotBlank(channelId)){
+            queryParam += "channelId="+channelId +"&";
+        }
+        System.out.println(queryParam.substring(0,queryParam.length()-1));
+        model.setQueryParam(queryParam.substring(0,queryParam.length()-1));
         model.setDescribe("二维码的链接");
         request.setBizModel(model);
         AlipayOpenAppQrcodeCreateResponse response = null;

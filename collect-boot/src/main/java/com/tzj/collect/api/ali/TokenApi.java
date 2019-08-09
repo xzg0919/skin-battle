@@ -1,9 +1,10 @@
 package com.tzj.collect.api.ali;
 
-import com.tzj.collect.api.ali.param.MemberBean;
-import com.tzj.collect.api.param.TokenBean;
+
+import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.service.MemberService;
+import com.tzj.collect.param.TokenBean;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;
@@ -58,7 +59,7 @@ public class TokenApi {
             member = memberService.saveByMemberBean(memberBean);
         }
 
-        String token = JwtUtils.generateToken(member.getId().toString(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
+        String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
         String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
         TokenBean tokenBean = new TokenBean();
         tokenBean.setExpire(ALI_API_EXPRIRE);
@@ -74,7 +75,6 @@ public class TokenApi {
      * @return
      */
     @Api(name = "token.flush", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     @ApiDocMethod(description = "刷新token", results = {
             @ApiDocField(name = "tokenBean", description = "token对象", dataType = DataType.OBJECT, beanClass = TokenBean.class)
@@ -104,7 +104,6 @@ public class TokenApi {
      * @return
      */
     @Api(name = "green.token.get", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     @ApiDocMethod(description = "刷新token", results = {
             @ApiDocField(name = "tokenBean", description = "token对象", dataType = DataType.OBJECT, beanClass = TokenBean.class)

@@ -1,24 +1,21 @@
 package api.app;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_EXPRIRE;
-import static com.tzj.collect.common.constant.TokenConst.APP_API_TOKEN_CYPTO_KEY;
-import static com.tzj.collect.common.constant.TokenConst.APP_API_TOKEN_SECRET_KEY;
+import com.alibaba.fastjson.JSON;
+import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.result.app.AppCompany;
+import com.tzj.module.api.utils.JwtUtils;
+import com.tzj.module.common.utils.security.CipherTools;
+import com.tzj.module.easyopen.util.ApiUtil;
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
+import io.jsonwebtoken.Claims;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.param.CategoryBean;
-import com.tzj.collect.api.ali.param.OrderBean;
-import com.tzj.collect.api.app.result.AppCompany;
-import com.tzj.module.api.utils.JwtUtils;
-import com.tzj.module.common.utils.security.CipherTools;
-import com.tzj.module.easyopen.util.ApiUtil;
-
-import io.itit.itf.okhttp.FastHttpClient;
-import io.itit.itf.okhttp.Response;
-import io.jsonwebtoken.Claims;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  *
@@ -46,15 +43,14 @@ public class TokenGetAppTest {
 				 orderBean.setId(8941);
 		 orderBean.setAchPrice("0.0");
 
-		 AppCompany appCompanys = new AppCompany();
-		 appCompanys.setComIds("1");
-		 appCompanys.setId("1");
+		 OrderBean orderbean = new OrderBean();
+		 orderBean.setPagebean(new PageBean());
 
 
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "recycler.deleteCompanyRecycle");
+	        param.put("name", "app.order.list.phone");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -62,7 +58,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", appCompanys);
+	        param.put("data", orderBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

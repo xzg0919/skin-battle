@@ -1,8 +1,8 @@
 package api.terminal;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.param.PageBean;
-import com.tzj.collect.api.enterprise.param.EnterpriseCodeBean;
+import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;

@@ -1,11 +1,11 @@
 package com.tzj.collect.api.ali;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.CategoryBean;
 import com.tzj.collect.common.util.MemberUtils;
-import com.tzj.collect.entity.*;
-import com.tzj.collect.service.*;
+import com.tzj.collect.core.param.ali.CategoryBean;
+import com.tzj.collect.core.service.*;
+import com.tzj.collect.entity.Category;
+import com.tzj.collect.entity.Member;
+import com.tzj.collect.entity.MemberAddress;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -43,13 +43,12 @@ public class CategoryAttrApi {
      * @return List<CategoryAttr>
      */
 	@Api(name = "categoryAttr.listCategoryAttrs", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getCategoryAttrList(CategoryBean categoryBean){
 		//查询用户的默认地址
 		Member member = MemberUtils.getMember();
-		System.out.println("------memberId参数是 ："+member.getId()+"------category参数是 ："+categoryBean.getId()+"-------cityId是 ："+categoryBean.getCityId());
-		MemberAddress memberAddress = memberAddressService.getMemberAdderssByMemberId(member.getId().toString());
+		System.out.println("------memberId参数是 ："+member.getAliUserId()+"------category参数是 ："+categoryBean.getId()+"-------cityId是 ："+categoryBean.getCityId());
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
     	if(memberAddress==null) {
     		//根据分类id取得所有分类属性
     		return categoryAttrService.getCategoryAttrListss(categoryBean.getId());

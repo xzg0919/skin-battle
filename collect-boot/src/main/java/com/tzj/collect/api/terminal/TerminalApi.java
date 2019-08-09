@@ -1,13 +1,12 @@
 package com.tzj.collect.api.terminal;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.enterprise.param.EnterpriseTerminalBean;
-import com.tzj.collect.api.param.TokenBean;
+import com.tzj.collect.core.param.enterprise.EnterpriseTerminalBean;
+import com.tzj.collect.core.service.EnterpriseTerminalService;
+import com.tzj.collect.core.service.MessageService;
 import com.tzj.collect.entity.EnterpriseTerminal;
-import com.tzj.collect.service.EnterpriseTerminalService;
-import com.tzj.collect.service.MessageService;
+import com.tzj.collect.param.TokenBean;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;

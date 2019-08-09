@@ -1,14 +1,13 @@
 package com.tzj.collect.api.enterprise;
 
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.enterprise.param.EnterpriseBean;
+import com.tzj.collect.core.param.enterprise.EnterpriseBean;
+import com.tzj.collect.core.service.EnterpriseAccountService;
+import com.tzj.collect.core.service.EnterpriseService;
 import com.tzj.collect.entity.Enterprise;
 import com.tzj.collect.entity.EnterpriseAccount;
-import com.tzj.collect.service.EnterpriseAccountService;
-import com.tzj.collect.service.EnterpriseService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;

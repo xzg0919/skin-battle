@@ -1,18 +1,17 @@
 package com.tzj.collect.api.business;
 
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.business.param.CategoryAttrOptionBean;
-import com.tzj.collect.api.business.param.CategoryBean;
-import com.tzj.collect.api.business.param.ComIdAndCateOptIdBean;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
-import com.tzj.collect.api.business.result.CategoryResult;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.core.param.business.CategoryBean;
+import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
+import com.tzj.collect.core.result.business.CategoryResult;
+import com.tzj.collect.core.service.CategoryService;
+import com.tzj.collect.core.service.CompanyCategoryAttrOptionService;
+import com.tzj.collect.core.service.CompanyCategoryService;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Category.CategoryType;
 import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.service.CategoryService;
-import com.tzj.collect.service.CompanyCategoryAttrOptionService;
-import com.tzj.collect.service.CompanyCategoryService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -45,7 +44,6 @@ public class BusinessCategoryApi {
      * @return
      */
 	@Api(name="business.category.toplist",version="1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String,List<Category>> getTopList(){
 		Map<String,List<Category>> map = new HashMap<String, List<Category>>();
@@ -60,7 +58,6 @@ public class BusinessCategoryApi {
 
 	//大件一级分类接口
 	@Api(name="business.category.bigtoplist",version="1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String,List<Category>> getTopBigthingList(){
 		Map<String,List<Category>> map = new HashMap<>();
@@ -77,7 +74,6 @@ public class BusinessCategoryApi {
 	 * @return
 	 */
 	@Api(name="business.category.digitalsecondlist",version="1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<Category> getSecondList(CategoryBean categoryBean){
 		String parentId = categoryBean.getParentId();
@@ -90,7 +86,6 @@ public class BusinessCategoryApi {
 	 * @return
 	 */
 	@Api(name="business.category.digitaldetail",version="1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getDigitalDetail(CategoryBean categoryBean) throws ApiException{
 		CompanyAccount companyAccount = getCompanyAccount();
@@ -109,7 +104,6 @@ public class BusinessCategoryApi {
 	 * @return
 	 */
 	@Api(name="business.category.householddetail",version="1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<CategoryResult> getHouseHold(CategoryBean categoryBean){
 		String parentId = categoryBean.getParentId();
@@ -124,7 +118,6 @@ public class BusinessCategoryApi {
 	 * @return
 	 */
 //	@Api(name="businesscategory.updateprice",version="1.0")
-//	@SignIgnore
 //	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 //	public String updatePrice(CompanyCategoryBean companyCategoryBean){
 //		CompanyCategory newCompanyCategory = null;
@@ -177,7 +170,6 @@ public class BusinessCategoryApi {
 	 * @throws ApiException 
 	 */
 	@Api(name="business.category.updateprice",version="1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public boolean updatePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException{
 		CompanyAccount companyAccount = getCompanyAccount();
@@ -201,7 +193,6 @@ public class BusinessCategoryApi {
 	 * @return
 	 */
 	@Api(name = "business.category.comcateoptprice", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<BusinessCategoryResult> selectComCateAttOptPrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) {
 		comIdAndCateOptIdBean.setCompanyId(this.getCompanyAccount().getCompanyId().toString());
@@ -209,7 +200,6 @@ public class BusinessCategoryApi {
 	}
 	
 	@Api(name = "business.category.modifycomoptprice", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public boolean modifyComCateAttOptPrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException {
 		CompanyAccount companyAccount = getCompanyAccount();
@@ -228,7 +218,6 @@ public class BusinessCategoryApi {
 	 * @throws ApiException
 	 */
 	@Api(name = "business.category.updatecomcateattroptprice", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public boolean updateComCateAttrOptPrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException {
 

@@ -4,13 +4,13 @@ package com.tzj.collect.api.enterprise;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.enterprise.param.EnterpriseProductBean;
 import com.tzj.collect.common.util.EnterpriseUtils;
+import com.tzj.collect.core.param.enterprise.EnterpriseProductBean;
+import com.tzj.collect.core.service.CategoryService;
+import com.tzj.collect.core.service.EnterpriseProductService;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.EnterpriseAccount;
 import com.tzj.collect.entity.EnterpriseProduct;
-import com.tzj.collect.service.CategoryService;
-import com.tzj.collect.service.EnterpriseProductService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.ENTERPRISE_API_COMMON_AUTHORITY;
 
 /**
  * 依旧换新产品信息

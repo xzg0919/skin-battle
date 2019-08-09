@@ -1,19 +1,17 @@
 package com.tzj.collect.api.ali;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.tzj.collect.api.ali.param.MemberBean;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.service.MemberService;
-import com.tzj.collect.service.MessageService;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -27,7 +25,7 @@ public class MemberApi {
 	@Autowired
 	private MemberService memberService;
 	@Autowired
-	private MessageService MessageService;
+	private com.tzj.collect.core.service.MessageService MessageService;
 	@Autowired
 	private XcxWebSocketServer xcxWebSocketServer;
 	
@@ -98,7 +96,7 @@ public class MemberApi {
     	}
     	memberService.updateById(member);
     	Map<String,Object> map = new HashMap<String,Object>();
-    	String token= JwtUtils.generateToken(member.getId().toString(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+    	String token= JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
     	String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
     	System.out.println("token:"+securityToken);
 		map.put("token", securityToken);
@@ -106,29 +104,7 @@ public class MemberApi {
     }
     
  
-//    /**
-//     * 修改弹框状态
-//     * @param memberBean
-//     * @return
-//     */
-//    public String updateShowDialog(MemberBean memberBean) {
-//		return memberService.updateShowDialog(memberBean);
-//	}  
-    /**
-     * 修改弹框状态
-     * @author 
-     * @param 
-     */
-    @Api(name = "member.updateShowDialog", version = "1.0")
-    @SignIgnore
-    public String updateShowDialog() {
-    	//获取当前登录的会员
-    	Member member = MemberUtils.getMember();
-    	member.setIsShowDialog("1");
-		Member member1 = memberService.selectById(member.getId());
-		memberService.updateById(member1);
-		return "success";
-    }
+
 	/**
 	 * 返回用户信息
 	 * @author
@@ -156,11 +132,21 @@ public class MemberApi {
 		}
 	}
 	@Api(name = "member.getPassIdUrl", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getPassIdUrl() {
 		Member member = MemberUtils.getMember();
-		return memberService.getPassIdUrl(member.getId());
+		return memberService.getPassIdUrl(member.getAliUserId());
 	}
-
+	//保存用户的来源
+	/**
+	 * 获取会员个人中心的相关数据
+	 * @author 王灿
+	 * @param
+	 */
+	@Api(name = "member.saveChannelId", version = "1.0")
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object saveChannel(MemberBean memberBean) {
+		Member member = MemberUtils.getMember();
+		return memberService.saveChannelId(member.getAliUserId(),memberBean.getChannelId());
+	}
 }

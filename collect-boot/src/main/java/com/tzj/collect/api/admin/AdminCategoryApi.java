@@ -1,29 +1,27 @@
 package com.tzj.collect.api.admin;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.core.param.admin.CategoryAttrBean;
+import com.tzj.collect.core.param.admin.CategoryBean;
+import com.tzj.collect.core.param.admin.CompanyCategoryBean;
+import com.tzj.collect.core.service.CategoryAttrOptionService;
+import com.tzj.collect.core.service.CategoryAttrService;
+import com.tzj.collect.core.service.CategoryService;
+import com.tzj.collect.core.service.CompanyCategoryService;
+import com.tzj.collect.entity.Category;
+import com.tzj.collect.entity.CategoryAttr;
+import com.tzj.collect.entity.CategoryAttrOption;
+import com.tzj.module.api.annotation.Api;
+import com.tzj.module.api.annotation.ApiService;
+import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.SignIgnore;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.admin.param.CategoryAttrBean;
-import com.tzj.collect.api.admin.param.CategoryBean;
-import com.tzj.collect.api.admin.param.CompanyBean;
-import com.tzj.collect.api.admin.param.CompanyCategoryBean;
-import com.tzj.collect.entity.Category;
-import com.tzj.collect.entity.CategoryAttr;
-import com.tzj.collect.entity.CategoryAttrOption;
-import com.tzj.collect.service.CategoryAttrOptionService;
-import com.tzj.collect.service.CategoryAttrService;
-import com.tzj.collect.service.CategoryService;
-import com.tzj.collect.service.CompanyCategoryService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 @ApiService
 public class AdminCategoryApi {
@@ -33,7 +31,7 @@ public class AdminCategoryApi {
 	@Autowired
 	private CategoryService categoryService;
 	@Autowired
-	private CategoryAttrService  categoryAttrService;
+	private CategoryAttrService categoryAttrService;
 	@Autowired
 	private CategoryAttrOptionService categoryAttrOptionService;
 	
@@ -156,7 +154,7 @@ public class AdminCategoryApi {
     @Api(name = "category.selectByCategoryAttrId", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
-    public List<CategoryAttrOption> selectByCategoryAttrId(CategoryAttrBean categoryAttrBean){   	
+    public List<CategoryAttrOption> selectByCategoryAttrId(CategoryAttrBean categoryAttrBean){
     	List<CategoryAttrOption> list = categoryAttrOptionService.selectList(new EntityWrapper<CategoryAttrOption>().eq("category_attr_id", categoryAttrBean.getId()).eq("del_flag", "0"));
     	return list;
     }

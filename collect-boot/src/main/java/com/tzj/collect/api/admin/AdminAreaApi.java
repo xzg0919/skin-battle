@@ -1,25 +1,25 @@
 package com.tzj.collect.api.admin;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
-import java.util.List;
-
-import com.tzj.collect.api.admin.param.AdminCommunityBean;
-import com.tzj.collect.api.admin.param.CompanyBean;
-import com.tzj.collect.api.business.param.RecyclersServiceRangeBean;
+import com.tzj.collect.core.param.admin.AdminCommunityBean;
+import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
+import com.tzj.collect.core.service.AreaService;
+import com.tzj.collect.core.service.CommunityService;
+import com.tzj.collect.core.service.CompanyService;
+import com.tzj.collect.core.service.RecyclerCommunityService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.AreaService;
-import com.tzj.collect.service.CommunityService;
-import com.tzj.collect.service.CompanyService;
-import com.tzj.collect.service.RecyclerCommunityService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
-
 import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 /**
  * 管理员小区管理
@@ -147,7 +147,6 @@ public class AdminAreaApi {
 	public Object isOpenCompanyByCategory(CompanyBean companyBean)throws Exception {
 		return areaService.isOpenCompanyByCategory(companyBean.getId().toString(),companyBean.getIsOpen(),companyBean.getTitle());
 	}
-
 	/*
 	 *根据公司Id和类型查询所属街道列表
 	 */

@@ -4,13 +4,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.AreaBean;
+import com.tzj.collect.core.param.ali.AreaBean;
+import com.tzj.collect.core.service.AreaService;
+import com.tzj.collect.core.service.CommunityService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Community;
-import com.tzj.collect.service.AreaService;
-import com.tzj.collect.service.CommunityService;
 import com.tzj.module.api.annotation.*;
-import com.tzj.module.easyopen.ApiEncrypter;
 import com.tzj.module.easyopen.exception.ApiException;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
@@ -49,7 +48,6 @@ public class AreaApi {
      * @return
      */
     @Api(name = "area.getByArea", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getByArea(AreaBean area){
     	if(StringUtils.isBlank(area.getCityId())||"0".equals(area.getCityId())) {
@@ -66,7 +64,6 @@ public class AreaApi {
      * @return
      */
     @Api(name = "area.child", version = "1.0")
-    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public JSONArray childArea(AreaBean area){
     	 List<Area>  areaLi= areaService.getChildArea(Long.valueOf(area.getId()));
@@ -95,7 +92,6 @@ public class AreaApi {
 	 * @return
 	 */
 	@Api(name = "area.getStreetByAreaName", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getStreetByAreaName(AreaBean areaBean){
@@ -114,7 +110,6 @@ public class AreaApi {
 	 * @return
 	 */
 	@Api(name = "area.getCommunityBystreetName", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getCommunityBystreetName(AreaBean areaBean){
 		if(StringUtils.isBlank(areaBean.getStreetName())) {
@@ -134,7 +129,6 @@ public class AreaApi {
 	 * @return
 	 */
 	@Api(name = "area.getCityList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getCityList(){
@@ -155,7 +149,6 @@ public class AreaApi {
 	 * @return
 	 */
 	@Api(name = "area.getCityAreaList", version = "1.0")
-	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getCityAreaList(){

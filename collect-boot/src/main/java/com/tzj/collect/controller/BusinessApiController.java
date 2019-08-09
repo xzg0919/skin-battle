@@ -45,7 +45,7 @@ public class BusinessApiController extends ApiController{
 	        apiConfig.addAppSecret(appSecretStore);
 
 	        ApiKeys apiKeys=new ApiKeys();
-	        //动态签名
+			//动态签名
 	        apiKeys.setTokenSignKey(true); //使用 appid的签名key
 	        apiKeys.setProduceSignKey(BUSINESS_API_TOKEN_SIGN_KEY);
 	        apiKeys.setTokenCyptoKey(BUSINESS_API_TOKEN_CYPTO_KEY);

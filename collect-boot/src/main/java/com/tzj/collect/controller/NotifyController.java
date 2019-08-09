@@ -1,32 +1,33 @@
 package com.tzj.collect.controller;
 
-import static com.tzj.collect.api.common.constant.Const.ALI_APPID;
-import static com.tzj.collect.api.common.constant.Const.ALI_PUBLIC_KEY;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.ali.param.OrderBean;
-import com.tzj.collect.api.common.MiniTemplatemessageUtil;
 import com.tzj.collect.common.thread.NewThreadPoorExcutor;
 import com.tzj.collect.common.thread.sendGreenOrderThread;
-import com.tzj.collect.common.util.PushUtils;
-import com.tzj.collect.entity.*;
-import com.tzj.collect.service.*;
-
+import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
+import com.tzj.collect.common.utils.PushUtils;
+import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.service.*;
+import com.tzj.collect.entity.EnterpriseCode;
+import com.tzj.collect.entity.Order;
+import com.tzj.collect.entity.Payment;
+import com.tzj.collect.entity.Recyclers;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import static com.tzj.collect.api.common.constant.Const.ALI_APPID;
+import static com.tzj.collect.api.common.constant.Const.ALI_PUBLIC_KEY;
 
 /**
  * 支付通知
@@ -45,7 +46,7 @@ public class NotifyController {
     private AreaService areaService;
     @Autowired
     private OrderItemAchService orderItemAchService;
-    @Autowired
+	@Autowired
     private AsyncService asyncService;
     @Autowired
     private RecyclersService recyclersService;
@@ -132,19 +133,18 @@ public class NotifyController {
                     if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
                         OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
-                    }
+					}
                     Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
                     if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
                         PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
                     }
-                    try {
+					try {
                         if (order.getAddress().startsWith("上海市")&&(Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){
                             NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
                         }
 //                        if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-//                            asyncService.sendOpenAppMini(payment.getAliUserId(),payment.getTradeNo(), MiniTemplatemessageUtil.payTemplateId,MiniTemplatemessageUtil.page,payment.getOrderSn(),"已支付",payment.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-//                        }
-//                        else {
+//                            asyncService.sendOpenAppMini(payment.getAliUserId(),payment.getTradeNo(), MiniTemplatemessageUtil.payTemplateId, MiniTemplatemessageUtil.page,payment.getOrderSn(),"已支付",payment.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+//                        }else {
 //                            Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 //                            asyncService.sendOpenAppMini(recyclers.getAliUserId(),payment.getTradeNo(), MiniTemplatemessageUtil.payTemplateId,MiniTemplatemessageUtil.page,payment.getOrderSn(),"已支付",payment.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 //                        }
@@ -190,16 +190,5 @@ public class NotifyController {
             return "failure";
         }
         return "success";
-    }
-    /**
-     * 支付宝支付通知
-     * @return
-     */
-    @RequestMapping("/getOrderTest")
-    public @ResponseBody
-    Object getOrderTest(String orderId) {
-        Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", "20190715171915765857").eq("del_flag", 0));
-        //NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,Integer.parseInt(orderId))));
-        return  order;
     }
 }

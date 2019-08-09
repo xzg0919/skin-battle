@@ -1,26 +1,25 @@
 package com.tzj.collect.api.app;
 
-import java.math.BigDecimal;
-
 import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.tzj.collect.api.ali.param.OrderBean;
-import com.tzj.collect.api.app.param.OrderPayParam;
+import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.app.OrderPayParam;
+import com.tzj.collect.core.service.MemberService;
+import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.core.service.PaymentService;
+import com.tzj.collect.core.service.RecyclersService;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
 import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.service.MemberService;
-import com.tzj.collect.service.OrderService;
-import com.tzj.collect.service.PaymentService;
-import com.tzj.collect.service.RecyclersService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
 import com.tzj.module.easyopen.exception.ApiException;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
 
 /**
  * 订单支付接口
@@ -39,7 +38,6 @@ public class AppOrderPayApi {
     private RecyclersService recyclersService;
 
     @Api(name = "app.order.pay", version = "1.0")
-    @SignIgnore
     @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
     public String orderPay(OrderPayParam orderPayParam) {
 
@@ -55,13 +53,13 @@ public class AppOrderPayApi {
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 
         Payment payment=paymentService.selectByOrderSn(order.getOrderNo());
-        Member member = memberService.selectById(order.getMemberId());
+
         if(payment==null){
             payment=new Payment();
             payment.setOrderSn(order.getOrderNo());
             payment.setPrice(orderPayParam.getPrice());
             payment.setRecyclersId(recyclers.getId());
-            payment.setAliUserId(member.getAliUserId());
+            payment.setAliUserId(order.getAliUserId());
             payment.setStatus(Payment.STATUS_UNPAY);
             paymentService.insert(payment);
         }else{
