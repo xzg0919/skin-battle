@@ -229,8 +229,6 @@ public class OrderBean {
 	
 	private String formId;
 
-	private String formId;
-
 	public String getMyslParam() {
 		return myslParam;
 	}

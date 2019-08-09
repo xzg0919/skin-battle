@@ -2,12 +2,12 @@ package com.tzj.collect.common.thread;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.common.constant.MD5Util;
+import com.tzj.collect.core.service.AreaService;
+import com.tzj.collect.core.service.OrderItemAchService;
+import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderItemAch;
-import com.tzj.collect.service.AreaService;
-import com.tzj.collect.service.OrderItemAchService;
-import com.tzj.collect.service.OrderService;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 

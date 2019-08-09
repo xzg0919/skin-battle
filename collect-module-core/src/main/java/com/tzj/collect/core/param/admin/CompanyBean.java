@@ -66,10 +66,6 @@ public class CompanyBean {
 
 	private String areaName;
 
-	private String cityName;
-
-	private String areaName;
-
 	public String getLongitude() {
 		return longitude;
 	}
