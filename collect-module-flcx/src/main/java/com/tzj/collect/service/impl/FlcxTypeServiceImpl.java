@@ -53,6 +53,7 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
         //提供单位及联合发布
         Map<String, Object> synProMap = flcxCityMapper.synPro(flcxBean.getCityName(), flcxBean.getCityId().toString());
         if (CollectionUtils.isEmpty(synProMap)){
+            synProMap = new HashMap<>();
             synProMap.put("provider", "归属地专业管理部门");
             synProMap.put("syndication", "浙江省长三角循环经济技术研究院");
             synProMap.put("remarks", "生活垃圾分类同时包括：大件垃圾、建筑装修垃圾。");

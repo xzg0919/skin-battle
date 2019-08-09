@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSON;
 import com.alipay.api.domain.KeyWordDTO;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationFeedbackSyncResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.constant.AmapConst;
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.api.lexicon.json.AmapRegeoJson;
 import com.tzj.collect.api.lexicon.param.FlcxBean;
+import com.tzj.collect.entity.FlcxCity;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxRecords;
 import com.tzj.collect.service.*;
@@ -25,8 +27,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +54,8 @@ public class LexiconApi {
     private AliFlcxService aliFlcxService;
     @Resource
     private FlcxFileUploadService fileUploadService;
+    @Resource
+    private FlcxCityService flcxCityService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -69,17 +75,22 @@ public class LexiconApi {
     @Api(name = "lex.check", version = "1.0")
     @AuthIgnore
     public Map lexCheck(FlcxBean flcxBean)throws Exception {
-        String cityName = flcxBean.getCityName();
-        //没传城市，只有经纬度
-        if (StringUtils.isNotEmpty(cityName) || flcxBean.getCityId() != 0){
-            //有传值撒都不干
-            flcxBean.setCityName("杭州市".equals(flcxBean.getCityName()) ? "杭州市" : "上海市");
-        }else if(StringUtils.isNotEmpty(flcxBean.getLatitude()) && StringUtils.isNotEmpty(flcxBean.getLongitude())){
-            flcxBean.setCityName("杭州市".equals(this.cityByLocation(flcxBean).get("city").toString()) ? "杭州市" : "上海市");
-        }else if (StringUtils.isEmpty(flcxBean.getCity())&& flcxBean.getCityId() == 0){
+        if (cityIsExit(flcxBean)){
+            //里面必包含城市信息（id或名称）
+        }else {
             flcxBean.setCityName("上海市");
             flcxBean.setCityId(1L);
         }
+//        //没传城市，只有经纬度
+//        if (StringUtils.isNotEmpty(cityName) || flcxBean.getCityId() != 0){
+//            //有传值撒都不干
+//            flcxBean.setCityName("杭州市".equals(flcxBean.getCityName()) ? "杭州市" : "上海市");
+//        }else if(StringUtils.isNotEmpty(flcxBean.getLatitude()) && StringUtils.isNotEmpty(flcxBean.getLongitude())){
+//            flcxBean.setCityName("杭州市".equals(this.cityByLocation(flcxBean).get("city").toString()) ? "杭州市" : "上海市");
+//        }else if (StringUtils.isEmpty(flcxBean.getCity())&& flcxBean.getCityId() == 0){
+//            flcxBean.setCityName("上海市");
+//            flcxBean.setCityId(1L);
+//        }
         Boolean isAr = false;
         String imageUrl = "";
         final Map<String, Object>[] map = new Map[]{new HashMap<>()};
@@ -252,12 +263,9 @@ public class LexiconApi {
     @AuthIgnore
     public Map typeList(FlcxBean flcxBean)throws Exception {
         //首次根据定位获取当前城市大分类名称（切换城市再改）
-        if (StringUtils.isNotEmpty(flcxBean.getCityName()) || flcxBean.getCityId() != 0){
-            //有传值撒都不干
-            flcxBean.setCityName("杭州市".equals(flcxBean.getCityName()) ? "杭州市" : "上海市");
-        }else if(StringUtils.isNotEmpty(flcxBean.getLatitude()) && StringUtils.isNotEmpty(flcxBean.getLongitude())){
-            flcxBean.setCityName("杭州市".equals(this.cityByLocation(flcxBean).get("city").toString()) ? "杭州市" : "上海市");
-        }else if (StringUtils.isEmpty(flcxBean.getCity())&& flcxBean.getCityId() == 0){
+        if (cityIsExit(flcxBean)){
+            //里面必包含城市信息（id或名称）
+        }else {
             flcxBean.setCityName("上海市");
             flcxBean.setCityId(1L);
         }
@@ -349,5 +357,60 @@ public class LexiconApi {
         return resultMap;
     }
 
+    public static void main(String[] args) throws Exception{
+        Map<String, Object> resultMap = new HashMap<>();
+        String url = "https://restapi.amap.com/v3/geocode/regeo";
+        Response response = null;
+        response = FastHttpClient.get().url(url)
+                .addParams("key", AmapConst.AMAP_KEY)
+                .addParams("location", "119.40738190624998" + "," + "26.054866789960712")
+                .build().execute();
+        String resultJson = response.body().string();
+        if (StringUtils.isNotEmpty(resultJson)){
+            resultJson = resultJson.replaceAll("\n", "");
+            try {
+                AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
+                if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
+                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString());
+                } else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())) {
+                    //定位没找到城市
+                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getProvince());
+                } else {
+                    resultMap.put("city", "");
+                }
+            }catch (Exception e){
+                System.out.println("=============异常抛出来咯："+resultJson+"============");
+            }
+        }else {
+            resultMap.put("city", "");
+        }
+        System.out.println(resultMap.get("city"));
+    }
 
+    /** city名称是否存在系统当中
+      * @author sgmark@aliyun.com
+      * @date 2019/8/5 0005
+      * @param
+      * @return
+      */
+    public Boolean cityIsExit(FlcxBean flcxBean) throws Exception{
+        if(StringUtils.isNotEmpty(flcxBean.getLatitude()) && StringUtils.isNotEmpty(flcxBean.getLongitude())){
+            flcxBean.setCityName(this.cityByLocation(flcxBean).get("city").toString());
+        }
+        if (StringUtils.isNotEmpty(flcxBean.getCityName()) || flcxBean.getCityId() != 0){
+            if (flcxBean.getCityId() != 0){
+                //当前id或名称存在系统当中则返回true
+                if (null != flcxCityService.selectById(flcxBean.getCityId())){
+                    return true;
+                }
+            }else if (StringUtils.isNotEmpty(flcxBean.getCityName())){
+                if (null != flcxCityService.selectOne(new EntityWrapper<FlcxCity>().eq("del_flag", 0).eq("city_name",flcxBean.getCityName()))){
+                    return true;
+                }
+            }
+            return false;
+        }else {
+            return false;
+        }
+    }
 }

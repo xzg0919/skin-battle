@@ -40,7 +40,7 @@ public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxR
         Map map = new HashMap();
         Object object = redisUtil.get("flcxTopFive");
 
-        List flcxRecordsList = null;
+        List flcxRecordsList =  new ArrayList();
         if (null != object){
             flcxRecordsList = (List<Map<String, Object>>)object;
 //            redisUtil.set("flcxTopFive", flcxRecordsList, 1);
@@ -50,9 +50,33 @@ public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxR
             if(flcxRecordsMapper.existTable(tableName)<=0){
                 //找不到前一天的数据
             }else {
-                flcxRecordsList = flcxRecordsMapper.topFive(tableName);
                 //放入缓存 12小时
-                redisUtil.set("flcxTopFive", flcxRecordsList, 24*60*60-1);
+                Map<String, Object> objectMap = new HashMap<>();
+                objectMap.put("count_", 99999);
+                objectMap.put("lexiconAfter", "玫瑰花");
+                flcxRecordsList.add(objectMap);
+                objectMap = new HashMap<>();
+                objectMap.put("count_", 99998);
+                objectMap.put("lexiconAfter", "永生花");
+                flcxRecordsList.add(objectMap);
+                objectMap = new HashMap<>();
+                objectMap.put("count_", 99997);
+                objectMap.put("lexiconAfter", "避孕套");
+                flcxRecordsList.add(objectMap);
+                objectMap = new HashMap<>();
+                objectMap.put("count_", 99995);
+                objectMap.put("lexiconAfter", "毛绒玩具");
+                flcxRecordsList.add(objectMap);
+                objectMap = new HashMap<>();
+                objectMap.put("count_", 99994);
+                objectMap.put("lexiconAfter", "纸张");
+                flcxRecordsList.add(objectMap);
+                objectMap = new HashMap<>();
+                objectMap.put("count_", 99993);
+                objectMap.put("lexiconAfter", "鸡骨头");
+                flcxRecordsList.add(objectMap);
+//                flcxRecordsList.addAll(flcxRecordsMapper.topFive(tableName));
+                redisUtil.set("flcxTopFive", flcxRecordsList, 6*60*60-1);
             }
         }
         map.put("typeList", flcxRecordsList);
