@@ -261,6 +261,10 @@
             <version>1.18.4</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-dailyda</artifactId>
+        </dependency>
 
     </dependencies>
 
