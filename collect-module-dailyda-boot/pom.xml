@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>collect-module-daliyda</artifactId>
+    <artifactId>collect-module-dailyda-boot</artifactId>
     <description>每日答答答</description>
     <dependencies>
         <!-- springboot -->
@@ -139,6 +139,10 @@
             <groupId>com.alipay</groupId>
             <artifactId>alipay-sdk</artifactId>
             <version>${alipay-sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-dailyda</artifactId>
         </dependency>
     </dependencies>
 

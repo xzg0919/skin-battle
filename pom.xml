@@ -27,7 +27,8 @@
         <module>collect-module-member</module>
         <module>collect-module-flcx</module>
         <module>collect-module-flcx-boot</module>
-        <module>collect-module-daliyda</module>
+        <module>collect-module-dailyda</module>
+        <module>collect-module-dailyda-boot</module>
     </modules>
 
     <repositories>
@@ -161,6 +162,11 @@
             <dependency>
                 <groupId>com.tzj</groupId>
                 <artifactId>collect-module-flcx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>collect-module-dailyda</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- 收呗模块包 -->
