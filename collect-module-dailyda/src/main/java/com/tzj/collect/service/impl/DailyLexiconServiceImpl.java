@@ -1,8 +1,8 @@
 package com.tzj.collect.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.core.mapper.DailyLexiconMapper;
 import com.tzj.collect.entity.DailyLexicon;
-import com.tzj.collect.mapper.DailyLexiconMapper;
 import com.tzj.collect.service.DailyLexiconService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
