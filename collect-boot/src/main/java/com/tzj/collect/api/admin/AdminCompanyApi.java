@@ -282,5 +282,15 @@ public class AdminCompanyApi {
 	public Object adminCompanyRangeById(CompanyBean companyBean) {
 		return companyService.adminCompanyRangeById(companyBean.getId().intValue());
 	}
-
+	/**
+	 * 获取各大公司的列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.getCompanyList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getCompanyList(){
+		return companyService.getCompanyList();
+	}
 }

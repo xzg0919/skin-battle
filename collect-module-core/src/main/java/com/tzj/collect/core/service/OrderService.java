@@ -306,4 +306,8 @@ public interface OrderService extends IService<Order> {
 	Boolean selectOrderByImprisonRule(String aliUserId, String title, Integer orderNum, Integer dateNum);
 
 	Object recallOrder(Integer orderId, Long recyclerId);
+	@DS("slave")
+	Object getOrderListByAdmin(OrderBean orderBean);
+	@DS("slave")
+	Object getOrderDetailByIdByAdmin(String orderId);
 }

@@ -12,4 +12,6 @@ public interface AdminService  extends IService<Admin>{
 
 	@DS("slave")
 	Admin selectByid(Long id);
+	@DS("slave")
+	Object getToken(String userName,String password);
 }

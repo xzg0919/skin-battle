@@ -6,7 +6,9 @@ import com.tzj.collect.api.commom.excel.ExcelUtils;
 import com.tzj.collect.common.util.SnUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PiccOrderBean;
+import com.tzj.collect.core.param.ali.RecruitExpressBean;
 import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
+import com.tzj.collect.core.result.admin.RecruitExpressResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.OrderItem;
@@ -28,6 +30,8 @@ import java.util.Map;
 @RequestMapping("out/excel")
 public class OutExcelController {
 
+    @Autowired
+    private RecruitExpressService recruitExpressService;
     @Autowired
     private EnterpriseCodeService enterpriseCodeService;
     @Autowired
@@ -211,6 +215,41 @@ public class OutExcelController {
             row.add(SnUtils.leftOne(list.get(i).get("linkMan")+"",1));
             row.add(SnUtils.telEncry(list.get(i).get("tel")+""));
             row.add(list.get(i).get("areaName"));
+            rows.add(row);
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
+
+    @RequestMapping("/getRecruitListOutExcel")
+    public void  getRecruitListOutExcel(HttpServletResponse response, RecruitExpressBean recruitExpressBean) throws Exception{
+        List<RecruitExpressResult> recruitList = recruitExpressService.getRecruitListOutExcel(recruitExpressBean);
+        ExcelData data = new ExcelData();
+        data.setName("以旧换新信息数据");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        titles.add("加入方式");
+        titles.add("合作方式");
+        titles.add("提交时间");
+        titles.add("企业名称");
+        titles.add("联系人姓名");
+        titles.add("回收类型");
+        titles.add("意向城市");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        for(int i=0; i<recruitList.size();i++){
+            row=new ArrayList();
+            row.add(recruitList.get(i).getType());
+            row.add(recruitList.get(i).getCooperationType());
+            row.add(recruitList.get(i).getCreateDate());
+            row.add(recruitList.get(i).getEnterprise());
+            row.add(recruitList.get(i).getName());
+            row.add(recruitList.get(i).getCategoryType());
+            row.add(recruitList.get(i).getCity());
             rows.add(row);
         }
         data.setRows(rows);

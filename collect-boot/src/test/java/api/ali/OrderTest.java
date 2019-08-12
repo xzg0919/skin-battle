@@ -3,6 +3,7 @@ package api.ali;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.ali.MapAddressBean;
 import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.param.ali.PiccOrderBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -56,12 +57,15 @@ public class OrderTest {
 //            mapAddressBean.setUserName("王先hao");
 //            mapAddressBean.setTel("13252525252");
 //            mapAddressBean.setHouseNumber("测试101");
-            MemberBean memberBean = new MemberBean();
-            memberBean.setChannelId("18375336389");
-
+            PiccOrderBean piccOrderBean = new PiccOrderBean();
+            piccOrderBean.setInsuranceId(654);
+            piccOrderBean.setIdCard("411403198905249076");
+            piccOrderBean.setMemberAddress("徐汇区湖南路街道asdasdas");
+            piccOrderBean.setMemberName("岳洋");
+            piccOrderBean.setMemberTel("15225253338");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","member.saveChannelId");
+                param.put("name","piccOrder.insertPiccOrder");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -69,7 +73,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",memberBean);
+                param.put("data",piccOrderBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

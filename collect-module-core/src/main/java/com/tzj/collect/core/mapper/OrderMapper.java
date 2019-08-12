@@ -158,5 +158,9 @@ public interface OrderMapper extends BaseMapper<Order> {
 	List<Map<String,Object>> getBigOrderListByPhone(@Param("recycleId") Integer recycleId, @Param("tel") String tel, @Param("startPage") Integer startPage, @Param("endPage") Integer endPage);
 
 	Integer getBigOrderCountByPhone(@Param("recycleId") Integer recycleId, @Param("tel") String tel);
+
+	List<Map<String,Object>> getOrderListByAdmin(@Param("companyId") String companyId, @Param("title") String title, @Param("status") String status, @Param("tel") String tel, @Param("orderNo")String orderNo, @Param("linkName")String linkName, @Param("startTime")String startTime, @Param("endTime")String endTime, @Param("startPage")Integer startPage, @Param("pageSize")Integer pageSize);
+
+	Integer getOrderCountByAdmin(@Param("companyId") String companyId,@Param("title") String title,@Param("status") String status,@Param("tel")String tel,@Param("orderNo")String orderNo,@Param("linkName")String linkName,@Param("startTime")String startTime,@Param("endTime")String endTime);
 }
 

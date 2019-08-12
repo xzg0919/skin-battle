@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alipay.api.domain.AntMerchantExpandTradeorderSyncModel;
 import com.alipay.api.domain.ItemOrder;
 import com.alipay.api.domain.OrderExtInfo;
+import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -3000,7 +3001,62 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			return "订单已完成或已取消，不可操作";
 		}
 	}
+	@Override
+	public Object getOrderListByAdmin(OrderBean orderBean) {
+		PageBean pageBean = orderBean.getPagebean();
 
+		if(null==orderBean.getCompanyId()&&StringUtils.isBlank(orderBean.getTitle())&&StringUtils.isBlank(orderBean.getStatus())
+				&&StringUtils.isBlank(orderBean.getTel())&&StringUtils.isBlank(orderBean.getOrderNo())&&StringUtils.isBlank(orderBean.getLinkName())
+				&&(StringUtils.isBlank(orderBean.getStartTime())||StringUtils.isBlank(orderBean.getEndTime()))){
+			throw new ApiException("请输入查询的条件");
+		}
+		Integer startPage = (pageBean.getPageNumber()-1)*pageBean.getPageSize();
+		Integer pageSize = pageBean.getPageSize();
+		Object orderList = orderMapper.getOrderListByAdmin(orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime(), startPage, pageSize);
+		Integer orderCount = orderMapper.getOrderCountByAdmin(orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
+		Map<String,Object> resultMap = new HashMap<>();
+		Map<String,Object> pagination = new HashMap<>();
+		pagination.put("current",pageBean.getPageNumber());
+		pagination.put("pageSize",pageBean.getPageSize());
+		pagination.put("total",orderCount);
+		resultMap.put("pagination",pagination);
+		resultMap.put("orderList",orderList);
+		return resultMap;
+	}
+
+	@Override
+	public Object getOrderDetailByIdByAdmin(String orderId) {
+		Order order = this.selectById(orderId);
+		Company company = companyService.selectById(order.getCompanyId());
+		List<OrderItem> orderItemList = orderItemService.selectList(new EntityWrapper<OrderItem>().eq("order_id", orderId));
+		List<OrderItemAch> orderItemAchList = orderItemAchService.selectList(new EntityWrapper<OrderItemAch>().eq("order_id", orderId));
+		if (orderItemAchList.isEmpty()){
+			orderItemAchList = new ArrayList<>();
+		}
+		List<OrderPic> orderPicList = orderPicService.selectList(new EntityWrapper<OrderPic>().eq("order_id", orderId));
+		List<OrderPicAch> orderPicAchList = orderPicAchService.selectList(new EntityWrapper<OrderPicAch>().eq("order_id", orderId));
+		if (orderPicAchList.isEmpty()){
+			orderPicAchList = new ArrayList<>();
+		}
+		String paymentNo = "";
+		Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", order.getOrderNo()));
+		if (null != payment){
+			AlipayFundTransOrderQueryResponse response = paymentService.getTransfer(payment.getId().toString());
+			if(response.isSuccess()){
+				paymentNo = response.getOrderId();
+			}
+		}
+		Map<String,Object> resultMap = new HashMap<>();
+		resultMap.put("order",order);
+		resultMap.put("company",company);
+		resultMap.put("orderItemList",orderItemList);
+		resultMap.put("orderItemAchList",orderItemAchList);
+		resultMap.put("orderPicList",orderPicList);
+		resultMap.put("orderPicAchList",orderPicAchList);
+		resultMap.put("paymentNo",paymentNo);
+
+		return resultMap;
+	}
 
 
 }

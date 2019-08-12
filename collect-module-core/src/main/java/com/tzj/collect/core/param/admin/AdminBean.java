@@ -1,25 +1,17 @@
 package com.tzj.collect.core.param.admin;
 
+import lombok.Data;
+
+@Data
 public class AdminBean {
 	private String username;
 	
 	private String password;
 
-	public String getUsername() {
-		return username;
-	}
+	private Integer id;
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+	private String name;      //名称
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 	
 	
 }

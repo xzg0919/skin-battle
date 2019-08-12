@@ -107,4 +107,6 @@ public interface CompanyService  extends IService<Company>{
 
 	@DS("slave")
 	Object adminCompanyRangeById(Integer companyId);
+	@DS("slave")
+	List<Company>  getCompanyList();
 }
