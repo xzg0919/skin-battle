@@ -31,21 +31,27 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     public Set<Map<String, Object>> dailyLexiconList() {
         Set<Map<String, Object>> returnList = new HashSet<>();
         List<Map<String, Object>> mapList = lexiconList("lexiconList");
-        mapList.stream().forEach(mapLists ->{
-            int size = returnList.size();
-            if (size>10){
-                return;
-            }
-            List<Object> depthLists = (ArrayList)mapLists.get("depthList");
-            //未考虑list大小只为1的情况(会出现死循环)
-            if (depthLists.size() == 1){
-                returnList.add((Map<String, Object>) depthLists.get(0));
-            }else {
-                do {
-                    returnList.add((Map<String, Object>) depthLists.get(new Random().nextInt(depthLists.size())+1));
-                }while (returnList.size() - size == 2 || returnList.size() == 10);
-            }
-        });
+        //设置开始时间
+        Long startTime = System.currentTimeMillis();
+        while (returnList.size() < 10 && System.currentTimeMillis() - startTime <= 200) {
+            mapList.stream().forEach(mapLists -> {
+                int size = returnList.size();
+                if (size > 10) {
+                    return;
+                }
+                List<Object> depthLists = (ArrayList) mapLists.get("depthList");
+                //未考虑list大小只为1的情况(会出现死循环)
+                if (depthLists.size() == 1) {
+                    returnList.add((Map<String, Object>) depthLists.get(0));
+                } else {
+                    while (returnList.size() - size < 2 && returnList.size() != 10) {
+                        returnList.add((Map<String, Object>) depthLists.get(new Random().nextInt(depthLists.size())));
+                    }
+                }
+            });
+        }
+        //去除答案
+        returnList.stream().forEach(returnLists ->returnLists.remove("type_id"));
         return returnList;
     }
 
