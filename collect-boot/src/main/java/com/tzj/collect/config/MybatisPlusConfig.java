@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.enums.IEnum;
 import com.baomidou.mybatisplus.handlers.EnumTypeHandler;
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
 
+import com.baomidou.mybatisplus.plugins.PerformanceInterceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandlerRegistry;
@@ -18,10 +19,10 @@ public class MybatisPlusConfig {
      * mybatis-plus SQL执行效率插件【生产环境可以关闭】
      */
     
-//    @Bean
-//    public PerformanceInterceptor performanceInterceptor() {
-//        return new PerformanceInterceptor();
-//    }
+    @Bean
+    public PerformanceInterceptor performanceInterceptor() {
+        return new PerformanceInterceptor();
+    }
     
 
     /**

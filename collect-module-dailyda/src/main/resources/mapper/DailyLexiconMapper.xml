@@ -36,4 +36,13 @@
 				NOW()
 			);
 	</insert>
+	<update id="updateDailyRecordsList" parameterType="String">
+		update  `collect`.${tableName} set user_type_id = #{typeId}, is_true = #{trueOrFalse},version_ = version_+1, update_date = NOW() where ali_user_id = #{aliUserId} and  uu_id = #{uuId} and  create_date between #{localDateBefore} and  #{localDateEnd}
+	</update>
+	<select id="checkDailyIsAnswer" resultType="Map">
+		select uu_id, ali_user_id, type_id from `collect`.${tableName} where  del_flag = 0 and uu_id = #{uuId} and user_type_id is null
+	</select>
+	<select id="dailyLexiconList" resultType="Map">
+		select dll.depth, ddr.uu_id as uuId, dll.name_ from  `collect`.${tableName} ddr left join daily_lexicon dll on ddr.lexicon_id = dll.id where ddr.del_flag = 0 and ddr.ali_user_id = #{aliUserId} and  ddr.create_date between #{localDateBefore} and  #{localDateEnd}
+	</select>
 </mapper>

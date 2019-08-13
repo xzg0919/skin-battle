@@ -31,11 +31,12 @@ public class DailyLexicon extends DataEntity<Long> {
 
 
     public enum LexType implements IEnum {
-        DRY(0),   	 //干垃圾
-        KITCHEN(1),		//湿垃圾
-        RECYCLABLE(2),	//可回收物
-        HARMFUL(3),		//有害垃圾
-        OTHER(4); // 装修垃圾
+        BEFORE(0),// 占位符
+        DRY(1),   	 //干垃圾
+        KITCHEN(2),		//湿垃圾
+        RECYCLABLE(3),	//可回收物
+        HARMFUL(4),		//有害垃圾
+        OTHER(5); // 装修垃圾
         private int value;
 
         LexType(final int value) {

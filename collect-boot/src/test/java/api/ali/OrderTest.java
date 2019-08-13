@@ -1,8 +1,10 @@
 package api.ali;
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.api.lexicon.param.DailyDaParam;
 import com.tzj.collect.core.param.ali.MapAddressBean;
 import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -36,12 +38,17 @@ public class OrderTest {
 
                 //String api="http://open.mayishoubei.com/ali/api";
                 //String api="http://dog.mayishoubei.com:9090/ali/api";
-                 String api="http://localhost:9004/daily/api";
+                 String api="http://localhost:9090/ali/api";
 
                 String  location = "121.446438,30.915836";
 
             MapAddressBean mapAddressBean = new MapAddressBean();
             mapAddressBean.setId("7");
+            DailyDaParam dailyDaParam = new DailyDaParam();
+            dailyDaParam.setDepth(1);
+            dailyDaParam.setLexType(DailyLexicon.LexType.HARMFUL);
+            dailyDaParam.setUuId("030dc5c7-9977-45d8-b79f-cf70cca8b72f");
+            dailyDaParam.setLexName("冰箱除臭剂");
 //            mapAddressBean.setAdcCode("330103");
 //            mapAddressBean.setAddress("浙江省杭州市下城区朝晖街道环球中心西湖文化广场");
 //            mapAddressBean.setCity("杭州市");
@@ -61,7 +68,7 @@ public class OrderTest {
 
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","lex.check");
+                param.put("name","daily.check");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -69,7 +76,7 @@ public class OrderTest {
 //                param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",memberBean);
+                param.put("data",dailyDaParam);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

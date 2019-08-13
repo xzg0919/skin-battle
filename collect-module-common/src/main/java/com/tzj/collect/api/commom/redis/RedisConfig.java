@@ -8,6 +8,8 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 @Configuration
@@ -83,6 +85,21 @@ public class RedisConfig {
 //        // 在空闲时检查有效性, 默认false
 //        jedisPoolConfig.setTestWhileIdle(testWhileIdle);
         return jedisPoolConfig;
+    }
+
+    @Bean
+    public JedisPool redisPoolFactory(){
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        // 最大空闲数
+        jedisPoolConfig.setMaxIdle(maxIdle);
+        // 连接池的最大连接数
+        jedisPoolConfig.setMaxTotal(maxTotal);
+        //最小空闲连接数, 默认0
+        jedisPoolConfig.setMinIdle(0);
+        // 最大建立连接等待时间
+        jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+        JedisPool jedisPool = new JedisPool(jedisPoolConfig,host,port,1000,password);
+        return  jedisPool;
     }
 
     /**

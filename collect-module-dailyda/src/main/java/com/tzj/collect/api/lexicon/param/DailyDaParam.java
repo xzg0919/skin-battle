@@ -10,7 +10,11 @@ import lombok.Data;
 @Data
 public class DailyDaParam {
 
-    private String uuId;//
+    private String uuId;//uuid
+
+    private Integer depth;//难易程度
+
+    private String lexName;//题目名称
 
     private DailyLexicon.LexType lexType;//答题类型
 

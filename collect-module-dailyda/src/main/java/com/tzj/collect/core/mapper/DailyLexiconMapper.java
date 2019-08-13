@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.entity.DailyLexicon;
 import org.apache.ibatis.annotations.Param;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Author 胡方明（12795880@qq.com）
@@ -26,4 +29,10 @@ public interface DailyLexiconMapper extends BaseMapper<DailyLexicon> {
       * @return
       */
     void insertDailyRecords(@Param("aliUserId") String aliUserId, @Param("uuId") String uuId, @Param("lexiconId") Long lexiconId, @Param("typeId") Integer typeId, @Param("tableName")String tableName);
+
+    Integer updateDailyRecordsList(@Param("aliUserId")String aliUserId , @Param("tableName")String tableName, @Param("uuId")String uuId, @Param("typeId")Serializable typeId, @Param("trueOrFalse")String trueOrFalse, @Param("localDateBefore")String localDateBefore, @Param("localDateEnd")String localDateEnd);
+
+    Map<String, Object> checkDailyIsAnswer(@Param("uuId")String uuId, @Param("tableName")String tableName);
+
+    Set<Map<String, Object>> dailyLexiconList(@Param("aliUserId")String aliUserId, @Param("tableName")String tableName, @Param("localDateBefore")String localDateBefore, @Param("localDateEnd")String localDateEnd);
 }

@@ -80,7 +80,7 @@ public class DailyDaApi {
     @AuthIgnore
     @SignIgnore
     public Set<Map<String, Object>> dailyLexiconList(){
-        return dailyLexiconService.dailyLexiconList("CeShiUId");
+        return dailyLexiconService.dailyLexiconList("CeShiUId45");
     }
 
     /** 答题验证
@@ -93,7 +93,7 @@ public class DailyDaApi {
     @AuthIgnore
     @SignIgnore
     public Map<String, Object> lexiconChecking(DailyDaParam dailyDaParam){
-        dailyDaParam.setAliUserId("CeShiUId");
+        dailyDaParam.setAliUserId("CeShiUId45");
         return dailyLexiconService.lexiconChecking(dailyDaParam);
     }
 
