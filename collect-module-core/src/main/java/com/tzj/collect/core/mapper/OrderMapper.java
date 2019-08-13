@@ -10,6 +10,7 @@ import com.tzj.collect.core.result.app.AppOrderResult;
 import com.tzj.collect.core.result.app.AppScoreResult;
 import com.tzj.collect.core.result.app.AttrItem;
 import com.tzj.collect.core.result.app.EvaluationResult;
+import com.tzj.collect.core.result.third.ThirdOrderResult;
 import com.tzj.collect.entity.Order;
 import org.apache.ibatis.annotations.Param;
 
@@ -158,5 +159,12 @@ public interface OrderMapper extends BaseMapper<Order> {
 	List<Map<String,Object>> getBigOrderListByPhone(@Param("recycleId") Integer recycleId, @Param("tel") String tel, @Param("startPage") Integer startPage, @Param("endPage") Integer endPage);
 
 	Integer getBigOrderCountByPhone(@Param("recycleId") Integer recycleId, @Param("tel") String tel);
+
+	/**
+	 * 根据区域id 提供第三方的订单数据
+	 * @param areaId
+	 * @return
+	 */
+	public List<ThirdOrderResult> orderStatistics4Third(@Param("areaId") String areaId,@Param("startPage") Integer startPage, @Param("endPage") Integer endPage);
 }
 
