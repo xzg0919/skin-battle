@@ -78,7 +78,7 @@ public class DailyDaApi {
     @AuthIgnore
     @SignIgnore
     public Set<Map<String, Object>> dailyLexiconList(){
-        return dailyLexiconService.dailyLexiconList();
+        return dailyLexiconService.dailyLexiconList("");
     }
 
     /** 答题验证

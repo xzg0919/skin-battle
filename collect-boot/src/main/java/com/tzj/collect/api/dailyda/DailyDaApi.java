@@ -1,6 +1,8 @@
 package com.tzj.collect.api.dailyda;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.tzj.collect.api.lexicon.param.DailyDaParam;
+import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.service.DailyLexiconService;
 import com.tzj.module.api.annotation.Api;
@@ -78,17 +80,21 @@ public class DailyDaApi {
     @AuthIgnore
     @SignIgnore
     public Set<Map<String, Object>> dailyLexiconList(){
-        return dailyLexiconService.dailyLexiconList();
+        return dailyLexiconService.dailyLexiconList("CeShiUId");
     }
 
     /** 答题验证
       * @author sgmark@aliyun.com
       * @date 2019/8/12 0012
-      * @param dailyLexicon (参数为题目id及提交答案类型(英文字母))
+      * @param dailyDaParam (参数为题目id及提交答案类型(英文字母))
       * @return
       */
-    public Map<String, Object> lexiconChecking(DailyLexicon dailyLexicon){
-        return null;
+    @Api(name = "daily.check", version = "1.0", ignoreTimestamp = true, ignoreNonce = true)
+    @AuthIgnore
+    @SignIgnore
+    public Map<String, Object> lexiconChecking(DailyDaParam dailyDaParam){
+        dailyDaParam.setAliUserId("CeShiUId");
+        return dailyLexiconService.lexiconChecking(dailyDaParam);
     }
 
     /** 本周累计分数，今日答题得分，周排名，今日答题正确错误数据

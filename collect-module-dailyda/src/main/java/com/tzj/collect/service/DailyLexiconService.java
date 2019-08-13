@@ -3,6 +3,7 @@ package com.tzj.collect.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
+import com.tzj.collect.api.lexicon.param.DailyDaParam;
 import com.tzj.collect.entity.DailyLexicon;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public interface DailyLexiconService extends IService<DailyLexicon> {
       * @param
       * @return
       */
-     Set<Map<String, Object>> dailyLexiconList();
+     Set<Map<String, Object>> dailyLexiconList(String aliUserId);
 
      /** 所有的题库(id, name, type, depth)
       * 返回结构 [{depth =1, depthList=[{id =1, name= "",depth = 1}]},{depth =2, depthList=[{id =5, name= "",depth = 2}]}]
@@ -32,4 +33,5 @@ public interface DailyLexiconService extends IService<DailyLexicon> {
      @DS("slave")
      List<Map<String, Object>> lexiconList(String lexiconList);
 
+     Map<String, Object> lexiconChecking(DailyDaParam dailyDaParam);
 }

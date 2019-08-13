@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tzj.collect.mapper.DailyLexiconMapper" >
+<mapper namespace="com.tzj.collect.core.mapper.DailyLexiconMapper" >
 	<select id="lexiconList" resultMap="getCheckMap">
         SELECT depth FROM daily_lexicon WHERE del_flag = 0 GROUP BY depth
     </select>
@@ -17,5 +17,23 @@
 			<result property="depth" column="depth"/>
 		</collection>
 	</resultMap>
-
+	<insert id="insertDailyRecords" parameterType="String">
+        INSERT INTO `collect`.${tableName} (
+			`uu_id`,
+			`ali_user_id`,
+			`lexicon_id`,
+			`type_id`,
+			`create_date`,
+			`update_date`
+		)
+		VALUES
+			(
+				#{uuId},
+				#{aliUserId},
+				#{lexiconId},
+				#{typeId},
+				NOW(),
+				NOW()
+			);
+	</insert>
 </mapper>
