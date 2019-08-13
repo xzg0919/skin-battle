@@ -35,6 +35,7 @@ import com.tzj.collect.core.result.app.AttrItem;
 import com.tzj.collect.core.result.app.EvaluationResult;
 import com.tzj.collect.core.result.business.ApiUtils;
 import com.tzj.collect.core.result.business.CancelResult;
+import com.tzj.collect.core.result.third.ThirdOrderResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
@@ -3001,6 +3002,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 	}
 
+
+	/**
+	 * 根据区域id 提供第三方的订单数据 默认第一页 10条数据
+	 * @param areaId
+	 * @return
+	 */
+	public List<ThirdOrderResult> orderStatistics4Third(String areaId,Integer pageNumber,Integer pageSize){
+		Integer _pageNumber = pageNumber == null?0:pageNumber;
+		Integer _pageSize  = pageSize==null?10:pageSize;
+
+		Integer start = _pageNumber*_pageSize + 1;
+		Integer end = _pageNumber*_pageSize + _pageSize;
+
+		return orderMapper.orderStatistics4Third(areaId,start,end);
+	}
 
 
 }

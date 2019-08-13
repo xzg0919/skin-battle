@@ -1307,6 +1307,38 @@
 		countAll.createDate DESC  LIMIT #{startPage},#{endPage}
 	</select>
 
+	<select id="orderStatistics4Third" parameterType="Object" resultType="com.tzj.collect.core.result.third.ThirdOrderResult">
+		SELECT
+          a.order_no,
+          c.name_ as level3,
+          d.name_ as level2,
+          CASE a.title
+			WHEN 1 THEN
+			  '家电数码'
+			WHEN 2 THEN
+			  '五废'
+			WHEN 3 THEN
+			  '5公斤废纺衣物回收'
+			WHEN 4 THEN
+			  '大件垃圾'
+			ELSE
+			  '其他' end as level1,
+		  a.green_count,
+		  IFNULL(round(f.amount,2),1) as amount
+        FROM
+          sb_order a
+        INNER JOIN sb_area b ON a.area_id = b.id
+        INNER JOIN sb_category c on a.category_id=c.id
+        INNER JOIN sb_category d on c.parent_id=d.id
+        INNER JOIN sb_company e on a.company_id=e.id
+        LEFT  JOIN (SELECT order_id,sum(amount) as amount from sb_order_item_ach GROUP BY order_id) f on a.id=f.order_id
+        where b.parent_ids like '%_14634_%'
+        and a.status_=3 and a.del_flag=0
+        ORDER BY
+		a.create_date DESC  LIMIT #{startPage},#{endPage}
+	</select>
+
+
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
         <id property="id" column="id" />
@@ -1427,5 +1459,7 @@
 		c.name_,
 		c.icon
 	</sql>
+
+
 </mapper>
 

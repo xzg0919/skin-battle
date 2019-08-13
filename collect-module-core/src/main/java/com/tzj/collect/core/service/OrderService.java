@@ -13,6 +13,7 @@ import com.tzj.collect.core.result.app.AppScoreResult;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.business.CompanyBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
+import com.tzj.collect.core.result.third.ThirdOrderResult;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Recyclers;
@@ -306,4 +307,13 @@ public interface OrderService extends IService<Order> {
 	Boolean selectOrderByImprisonRule(String aliUserId, String title, Integer orderNum, Integer dateNum);
 
 	Object recallOrder(Integer orderId, Long recyclerId);
+
+	/**
+	 * 根据区域id 提供第三方的订单数据 目前仅给合肥市
+	 * @param areaId
+	 * @return
+	 */
+	@DS("slave")
+	List<ThirdOrderResult> orderStatistics4Third(String areaId,Integer pageNumber,Integer pageSize);
+
 }
