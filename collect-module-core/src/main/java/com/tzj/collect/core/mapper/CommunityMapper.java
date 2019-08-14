@@ -3,6 +3,7 @@ package com.tzj.collect.core.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.core.param.admin.AdminCommunityBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.Recyclers;
@@ -56,4 +57,6 @@ public interface CommunityMapper extends BaseMapper<Community> {
 
 	void updateCommunityAmapName(@Param("amapName") String amapName, @Param("neighborhood") String neighborhood,
                                  @Param("formattedAd") String formattedAd, @Param("communityId") Long communityId);
+
+	Integer getCommunityCountByLj(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId);
 }

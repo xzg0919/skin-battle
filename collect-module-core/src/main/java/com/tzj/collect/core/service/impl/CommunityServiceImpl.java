@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.CommunityMapper;
 import com.tzj.collect.core.param.admin.AdminCommunityBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.service.CommunityService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Community;
@@ -98,6 +99,10 @@ public class CommunityServiceImpl  extends ServiceImpl<CommunityMapper, Communit
 	public List<Area> getCommunityData(String companyId) {
 		 List<Area> list = communityMapper.getCommunityData(companyId);
 		return list;
+	}
+
+	public Integer getCommunityCountByLj(LjAdminBean ljAdminBean){
+		return communityMapper.getCommunityCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId());
 	}
 
 }

@@ -123,4 +123,6 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	List<Recyclers> getRecyclersListByParentId(@Param("companyId") Integer companyId, @Param("recycleId") String recycleId, @Param("isBigRecycle") String isBigRecycle);
 
 	List<Recyclers> getRecycleSon(@Param("recyclerId") Long recyclerId,@Param("isBigRecycle") String isBigRecycle,@Param("recyclerName") String recyclerName);
+
+	Integer getRecyclersCountByLj(@Param("companyId")String companyId);
 }

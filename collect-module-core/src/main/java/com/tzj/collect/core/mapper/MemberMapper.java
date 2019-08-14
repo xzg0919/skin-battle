@@ -28,4 +28,15 @@ public interface MemberMapper extends BaseMapper<Member>{
      * @return
      */
     Integer insertMember(@Param("member")Member member);
+
+    /**
+     * 获取会员总数
+     * @return
+     */
+    long getMemberCount();
+    /**
+     * 获取当天会员总数
+     * @return
+     */
+    long getMemberCountToDay();
 }

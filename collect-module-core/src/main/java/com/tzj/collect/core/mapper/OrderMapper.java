@@ -162,5 +162,17 @@ public interface OrderMapper extends BaseMapper<Order> {
 	List<Map<String,Object>> getOrderListByAdmin(@Param("companyId") String companyId, @Param("title") String title, @Param("status") String status, @Param("tel") String tel, @Param("orderNo")String orderNo, @Param("linkName")String linkName, @Param("startTime")String startTime, @Param("endTime")String endTime, @Param("startPage")Integer startPage, @Param("pageSize")Integer pageSize);
 
 	Integer getOrderCountByAdmin(@Param("companyId") String companyId,@Param("title") String title,@Param("status") String status,@Param("tel")String tel,@Param("orderNo")String orderNo,@Param("linkName")String linkName,@Param("startTime")String startTime,@Param("endTime")String endTime);
+
+	Integer getOrderCountByLj(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate);
+	Integer getInitCountByLj(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId);
+	Integer getTosendCountByLj(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId);
+	Integer getOrderCountBytitle(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate,@Param("title")String title,@Param("isGreen")String isGreen);
+	Double getGreenBigPaymentOrderPrice(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate);
+	List<Map<String,Object>> getOrderCategoryByLj(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate);
+	List<Map<String,Object>> getHouseOrderCategoryByLj(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate);
+	Double avgOrMaxDateByOrderAvg(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate,@Param("status")String status);
+	Double avgOrMaxDateByOrderMax(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate,@Param("status")String status);
+	Integer getSumOrderBylj(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate);
+	Integer getOrderLjByStatus(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate,@Param("status")String status);
 }
 

@@ -1386,6 +1386,394 @@
 			AND concat(#{endTime},' 23:59:59') > a.create_date
 		</if>
 	</select>
+	<select id="getOrderCountByLj" parameterType="String" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+		sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+		a.del_flag = 0
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+	</select>
+	<select id="getInitCountByLj" parameterType="String" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+			sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+			a.status_ = '0'
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+	</select>
+	<select id="getTosendCountByLj" parameterType="String" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+			sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+			a.status_ in ('1','2')
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+	</select>
+	<select id="getOrderCountBytitle" parameterType="String" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+		sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+			a.title = #{title}
+		AND a.status_ != '4'
+		AND a.status_ != '5'
+		<if test="isGreen != null and isGreen != ''">
+			AND a.is_cash = #{isGreen}
+		</if>
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+		</if>
+		<if test="endtDate != null and endtDate != ''">
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+		</if>
+	</select>
+	<select id="getGreenBigPaymentOrderPrice" parameterType="String" resultType="Double">
+		SELECT
+			FORMAT(SUM(a.ach_price)/count(1),2)
+		FROM
+		sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+			a.title = 4
+		AND a.status_ != '4'
+		AND a.status_ != '5'
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+		</if>
+		<if test="endtDate != null and endtDate != ''">
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+		</if>
+	</select>
+	<select id="getOrderCategoryByLj" parameterType="String" resultType="Map">
+		SELECT
+			c.name_ as categoryName,
+			COUNT(1) as amount
+		FROM
+			sb_order a
+		LEFT JOIN sb_category b ON a.category_id = b.id
+		LEFT JOIN sb_category c ON b.parent_id = c.id
+		LEFT JOIN sb_area d ON a.area_id = d.id
+		WHERE
+			a.title IN (1, 4)
+		AND a.status_ = 3
+		<if test="cityId != '-1'">
+			AND	d.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+		</if>
+		<if test="endtDate != null and endtDate != ''">
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+		</if>
+		GROUP BY
+			c.id
+		ORDER BY
+			COUNT(1) DESC;
+	</select>
+	<select id="getHouseOrderCategoryByLj" parameterType="String" resultType="Map">
+		SELECT a.categoryName,FORMAT(SUM(a.amount),2) AS amount FROM (
+			SELECT
+				b.category_name AS categoryName,
+				SUM(b.amount) AS amount
+			FROM
+				sb_order a
+			LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			WHERE
+				a.status_ = 3
+			AND a.title IN (2, 3)
+			AND b.parent_id = 68
+			<if test="cityId != '-1'">
+				AND	c.parent_id = #{cityId}
+			</if>
+			<if test="areaId != '-1'">
+				AND a.area_id = #{areaId}
+			</if>
+			<if test="streetId != '-1'">
+				AND a.street_id = #{streetId}
+			</if>
+			<if test="companyId != '-1'">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+			</if>
+			<if test="endtDate != null and endtDate != ''">
+				AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+			</if>
+			GROUP BY b.category_name
+			UNION ALL
+			SELECT
+				b.parent_name AS categoryName,
+				SUM(b.amount) AS amount
+			FROM
+				sb_order a
+			LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			WHERE
+				a.status_ = 3
+			AND a.title IN (2, 3)
+			AND b.parent_id != 68
+			<if test="cityId != '-1'">
+				AND	c.parent_id = #{cityId}
+			</if>
+			<if test="areaId != '-1'">
+				AND a.area_id = #{areaId}
+			</if>
+			<if test="streetId != '-1'">
+				AND a.street_id = #{streetId}
+			</if>
+			<if test="companyId != '-1'">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+			</if>
+			<if test="endtDate != null and endtDate != ''">
+				AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+			</if>
+			GROUP BY b.parent_name
+		) a
+			WHERE a.categoryName != '六废'
+			GROUP BY a.categoryName
+	</select>
+	<select id="getSumOrderBylj" parameterType="String" resultType="Integer">
+		SELECT
+		count(1)
+		FROM
+		sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+		a.del_flag = 0
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+		</if>
+		<if test="endtDate != null and endtDate != ''">
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+		</if>
+	</select>
+	<select id="avgOrMaxDateByOrderAvg" parameterType="String" resultType="Double">
+		SELECT
+		<choose>
+			<when test="status == '1'.toString()">
+				AVG(TIMESTAMPDIFF(MINUTE, a.create_date, a.distribute_time))
+			</when>
+			<otherwise>
+				<choose>
+					<when test="status == '2'.toString()">
+						AVG(TIMESTAMPDIFF(MINUTE, a.create_date, a.receive_time))
+					</when>
+					<otherwise>
+						AVG(TIMESTAMPDIFF(MINUTE, a.create_date, a.complete_date))
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+		FROM
+			sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+		<choose>
+			<when test="status == '1'.toString()">
+				a.distribute_time IS NOT NULL
+			</when>
+			<otherwise>
+				<choose>
+					<when test="status == '2'.toString()">
+						a.receive_time IS NOT NULL
+					</when>
+					<otherwise>
+						a.complete_date IS NOT NULL
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+		</if>
+		<if test="endtDate != null and endtDate != ''">
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+		</if>
+	</select>
+	<select id="avgOrMaxDateByOrderMax" parameterType="String" resultType="Double">
+		SELECT
+		<choose>
+			<when test="status == '1'.toString()">
+				MAX(TIMESTAMPDIFF(MINUTE, a.create_date, a.distribute_time))
+			</when>
+			<otherwise>
+				<choose>
+					<when test="status == '2'.toString()">
+						MAX(TIMESTAMPDIFF(MINUTE, a.create_date, a.receive_time))
+					</when>
+					<otherwise>
+						MAX(TIMESTAMPDIFF(MINUTE, a.create_date, a.complete_date))
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+		FROM
+		sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+		<choose>
+			<when test="status == '1'.toString()">
+				a.distribute_time IS NOT NULL
+			</when>
+			<otherwise>
+				<choose>
+					<when test="status == '2'.toString()">
+						a.receive_time IS NOT NULL
+					</when>
+					<otherwise>
+						a.complete_date IS NOT NULL
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+		</if>
+		<if test="endtDate != null and endtDate != ''">
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+		</if>
+	</select>
+	<select id="getOrderLjByStatus" parameterType="String" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+		sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+		a.del_flag = 0
+		and a.status_ = #{status}
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+		</if>
+		<if test="endtDate != null and endtDate != ''">
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+		</if>
+	</select>
 
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">

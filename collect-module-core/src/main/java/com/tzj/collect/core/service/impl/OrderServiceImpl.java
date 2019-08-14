@@ -7,6 +7,7 @@ import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -19,6 +20,7 @@ import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
 import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
+import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.ali.IdAmountListBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.OrderItemBean;
@@ -3058,5 +3060,48 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return resultMap;
 	}
 
+	@Override
+	public Integer getOrderCountByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getOrderCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
+	@Override
+	public Integer getInitCountByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getInitCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId());
+	}
+	@Override
+	public Integer getTosendCountByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getTosendCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId());
+	}
+	@Override
+	public Integer getOrderCountBytitle(LjAdminBean ljAdminBean,String title,String isGreen){
+		return orderMapper.getOrderCountBytitle(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),title,isGreen);
+	}
+	@Override
+	public Double getGreenBigPaymentOrderPrice(LjAdminBean ljAdminBean){
+		return orderMapper.getGreenBigPaymentOrderPrice(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
+	@Override
+	public List<Map<String,Object>> getOrderCategoryByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getOrderCategoryByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
+	@Override
+	public List<Map<String,Object>> getHouseOrderCategoryByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getHouseOrderCategoryByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
+	@Override
+	public Double avgOrMaxDateByOrder(LjAdminBean ljAdminBean,String status,String avgOrMax){
+		if ("avg".equals(avgOrMax)){
+			return orderMapper.avgOrMaxDateByOrderAvg(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status);
+		}
+		return orderMapper.avgOrMaxDateByOrderMax(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status);
+	}
+	@Override
+	public Integer getSumOrderBylj(LjAdminBean ljAdminBean){
+		return orderMapper.getSumOrderBylj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
 
+	@Override
+	public Integer getOrderLjByStatus(LjAdminBean ljAdminBean,String status){
+		return orderMapper.getOrderLjByStatus(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status);
+	}
 }
