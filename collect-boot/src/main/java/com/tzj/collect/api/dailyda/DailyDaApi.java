@@ -3,6 +3,7 @@ package com.tzj.collect.api.dailyda;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.tzj.collect.api.lexicon.param.DailyDaParam;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.service.DailyLexiconService;
 import com.tzj.module.api.annotation.Api;
@@ -11,6 +12,7 @@ import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,8 +48,9 @@ public class DailyDaApi {
       * @param
       * @return
       */
+    @Api(name = "daily.member.info", version = "1.0")
     public Map<String, Object> memberInfo(){
-        return null;
+        return dailyLexiconService.memberInfo(MemberUtils.getMember());
     }
 
     /** 本周达人榜(头像，得分，名次), 需要分页（包含top50的数据， page最大值取到(假设每页10条，最大页数取值为5)）
@@ -56,8 +59,14 @@ public class DailyDaApi {
       * @param
       * @return
       */
-    public Page<Map<String, Object>> weekDresserList(){
-        return null;
+    @Api(name = "daily.week.dresser", version = "1.0")
+    public List<Map<String, Object>> weekDresserList(PageBean pageBean){
+        Integer startPage = null == pageBean.getPageNumber() ? 1: pageBean.getPageNumber();
+        Integer pageSize = null == pageBean.getPageSize() ? 10 : pageBean.getPageSize();
+        if (startPage * pageSize > 50){
+            startPage = 50/pageSize;
+        }
+        return dailyLexiconService.weekDresserList(startPage, pageSize.intValue());
     }
     /** 总环保荣誉榜(头像，得分，城市，多少周)
       * @author sgmark@aliyun.com
@@ -65,7 +74,8 @@ public class DailyDaApi {
       * @param
       * @return
       */
-    public Page<Map<String, Object>> eachWeekDresserList(){
+    @Api(name = "daily.all.week.dresser", version = "1.0")
+    public Page<Map<String, Object>> eachWeekDresserList(PageBean pageBean){
         return null;
     }
 
@@ -76,11 +86,9 @@ public class DailyDaApi {
      * @param
      * @return
      */
-    @Api(name = "daily.list", version = "1.0", ignoreTimestamp = true, ignoreNonce = true)
-    @AuthIgnore
-    @SignIgnore
+    @Api(name = "daily.list", version = "1.0")
     public Set<Map<String, Object>> dailyLexiconList(){
-        return dailyLexiconService.dailyLexiconList("CeShiUId45");
+        return dailyLexiconService.dailyLexiconList(MemberUtils.getMember().getAliUserId());
     }
 
     /** 答题验证
@@ -89,11 +97,9 @@ public class DailyDaApi {
       * @param dailyDaParam (参数为题目id及提交答案类型(英文字母))
       * @return
       */
-    @Api(name = "daily.check", version = "1.0", ignoreTimestamp = true, ignoreNonce = true)
-    @AuthIgnore
-    @SignIgnore
+    @Api(name = "daily.check", version = "1.0")
     public Map<String, Object> lexiconChecking(DailyDaParam dailyDaParam){
-        dailyDaParam.setAliUserId("CeShiUId45");
+        dailyDaParam.setAliUserId(MemberUtils.getMember().getAliUserId());
         return dailyLexiconService.lexiconChecking(dailyDaParam);
     }
 
@@ -103,8 +109,9 @@ public class DailyDaApi {
       * @param
       * @return
       */
+    @Api(name = "daily.week.records", version = "1.0")
     public Map<String, Object> weekRecords(){
-        return null;
+        return dailyLexiconService.weekRecords(MemberUtils.getMember());
     }
 
     /**  错题记录(包含未答题)，今日答题正确数，错误数
@@ -113,8 +120,9 @@ public class DailyDaApi {
       * @param
       * @return
       */
+    @Api(name = "daily.error.list", version = "1.0")
     public Map<String, Object> errorLexiconList(){
-        return null;
+        return dailyLexiconService.errorLexiconList(MemberUtils.getMember());
     }
 
     //---------------------------------------------帅气的分割线----------------------------------------------
@@ -125,6 +133,7 @@ public class DailyDaApi {
       * @param
       * @return
       */
+    @Api(name = "daily.member.receiving", version = "1.0")
     public Map<String, Object> memberReceivingRecords(){
         return null;
     }
@@ -135,6 +144,7 @@ public class DailyDaApi {
       * @param
       * @return
       */
+    @Api(name = "daily.receiving.money", version = "1.0")
     public Map<String, Object> receivingMoney(){
         return null;
     }

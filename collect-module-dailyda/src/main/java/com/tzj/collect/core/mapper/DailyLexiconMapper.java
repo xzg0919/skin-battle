@@ -35,4 +35,6 @@ public interface DailyLexiconMapper extends BaseMapper<DailyLexicon> {
     Map<String, Object> checkDailyIsAnswer(@Param("uuId")String uuId, @Param("tableName")String tableName);
 
     Set<Map<String, Object>> dailyLexiconList(@Param("aliUserId")String aliUserId, @Param("tableName")String tableName, @Param("localDateBefore")String localDateBefore, @Param("localDateEnd")String localDateEnd);
+
+    List<Map<String, Object>> errorLexiconList(@Param("tableName")String tableName, @Param("aliUserId")String aliUserId);
 }

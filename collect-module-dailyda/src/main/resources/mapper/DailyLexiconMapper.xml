@@ -37,12 +37,62 @@
 			);
 	</insert>
 	<update id="updateDailyRecordsList" parameterType="String">
-		update  `collect`.${tableName} set user_type_id = #{typeId}, is_true = #{trueOrFalse},version_ = version_+1, update_date = NOW() where ali_user_id = #{aliUserId} and  uu_id = #{uuId} and  create_date between #{localDateBefore} and  #{localDateEnd}
+		UPDATE `collect`.${tableName}
+			SET user_type_id = #{typeId},
+			is_true = #{trueOrFalse},
+			version_ = version_ + 1,
+			 update_date = NOW()
+			WHERE
+				ali_user_id = #{aliUserId}
+			AND uu_id = #{uuId}
+			AND create_date BETWEEN #{localDateBefore}
+			AND #{localDateEnd}
+
 	</update>
 	<select id="checkDailyIsAnswer" resultType="Map">
-		select uu_id, ali_user_id, type_id from `collect`.${tableName} where  del_flag = 0 and uu_id = #{uuId} and user_type_id is null
+		SELECT
+			uu_id,
+			ali_user_id,
+			type_id
+		FROM
+			`collect`.${tableName}
+		WHERE
+			del_flag = 0
+		AND uu_id = #{uuId}
+		AND user_type_id IS NULL
 	</select>
 	<select id="dailyLexiconList" resultType="Map">
-		select dll.depth, ddr.uu_id as uuId, dll.name_ from  `collect`.${tableName} ddr left join daily_lexicon dll on ddr.lexicon_id = dll.id where ddr.del_flag = 0 and ddr.ali_user_id = #{aliUserId} and  ddr.create_date between #{localDateBefore} and  #{localDateEnd}
+		SELECT
+			dll.depth,
+			ddr.uu_id AS uuId,
+			dll.name_
+		FROM
+			`collect`.${tableName} ddr
+		LEFT JOIN daily_lexicon dll ON ddr.lexicon_id = dll.id
+		WHERE
+			ddr.del_flag = 0
+		AND ddr.user_type_id IS NOT NULL
+		AND ddr.ali_user_id = #{aliUserId}
+		AND ddr.create_date BETWEEN #{localDateBefore}
+		AND #{localDateEnd}
 	</select>
+	<select id="errorLexiconList" resultMap="lexResultMap">
+		SELECT
+			dll.name_,
+			ddr.type_id,
+			ddr.user_type_id
+		FROM
+			`collect`.${tableName} ddr
+		LEFT JOIN daily_lexicon dll ON ddr.lexicon_id = dll.id
+		WHERE
+			ddr.del_flag = 0
+		AND ddr.ali_user_id = #{aliUserId}
+		AND ddr.is_true = 1
+		order by  ddr.user_type_id DESC
+	</select>
+	<resultMap id="lexResultMap" type="com.tzj.collect.api.lexicon.result.LexResult">
+		<result  property="name" column="name_"/>
+		<result property="lexType" column="type_id" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+		<result property="userLexType" column="user_type_id" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+	</resultMap>
 </mapper>

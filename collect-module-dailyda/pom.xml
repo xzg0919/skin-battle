@@ -43,9 +43,14 @@
             <groupId>com.hufm</groupId>
             <artifactId>hufm-module-common</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.tzj</groupId>
             <artifactId>collect-module-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-core</artifactId>
         </dependency>
         <!-- API 框架 -->
 
