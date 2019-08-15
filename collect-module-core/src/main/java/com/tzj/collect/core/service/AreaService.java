@@ -69,4 +69,6 @@ public interface AreaService  extends IService<Area>{
     void addInputAreaCode(List<Map<String, String>> mapList);
 	
 	Object getAreaStreetList(CompanyBean companyBean);
+	@DS("slave")
+	List<Area> getCityListByLj();
 }

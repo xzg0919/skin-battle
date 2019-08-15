@@ -1,6 +1,7 @@
 package com.tzj.collect.core.param.admin;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class LjAdminBean {
@@ -25,6 +26,31 @@ public class LjAdminBean {
 
     private String companyId;
 
+    public String getCityId() {
+        if (StringUtils.isNotBlank(cityId)){
+            return cityId.replace(",","");
+        }
+        return cityId;
+    }
 
+    public String getAreaId() {
+        if (StringUtils.isNotBlank(areaId)){
+            return areaId.replace(",","");
+        }
+        return areaId;
+    }
 
+    public String getStreetId() {
+        if (StringUtils.isNotBlank(streetId)){
+            return streetId.replace(",","");
+        }
+        return streetId;
+    }
+
+    public String getCompanyId() {
+        if (StringUtils.isNotBlank(companyId)){
+            return companyId.replace(",","");
+        }
+        return companyId;
+    }
 }

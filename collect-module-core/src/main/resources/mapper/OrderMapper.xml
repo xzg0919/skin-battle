@@ -1486,8 +1486,7 @@
 		LEFT JOIN sb_area b ON a.area_id = b.id
 		WHERE
 			a.title = 4
-		AND a.status_ != '4'
-		AND a.status_ != '5'
+		AND a.status_ = '3'
 		<if test="cityId != '-1'">
 			AND	b.parent_id = #{cityId}
 		</if>
@@ -1532,29 +1531,60 @@
 			AND a.company_id = #{companyId}
 		</if>
 		<if test="startDate != null and startDate != ''">
-			AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+			AND a.complete_date > CONCAT(#{startDate}, ' 00:00:01')
 		</if>
 		<if test="endtDate != null and endtDate != ''">
-			AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.complete_date
 		</if>
 		GROUP BY
 			c.id
 		ORDER BY
 			COUNT(1) DESC;
 	</select>
-	<select id="getHouseOrderCategoryByLj" parameterType="String" resultType="Map">
-		SELECT a.categoryName,FORMAT(SUM(a.amount),2) AS amount FROM (
+	<select id="getHouseOrderCategoryByLjAsCash" parameterType="String" resultType="Map">
+		SELECT
+			b.parent_name AS categoryName,
+			FORMAT(SUM(b.amount),2) AS amount
+		FROM
+			sb_order a
+		LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
+		LEFT JOIN sb_area c ON a.area_id = c.id
+		WHERE
+			a.status_ = 3
+		AND a.title = 2
+		AND b.price > 0
+		<if test="cityId != '-1'">
+			AND	c.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND a.complete_date > CONCAT(#{startDate}, ' 00:00:01')
+		</if>
+		<if test="endtDate != null and endtDate != ''">
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.complete_date
+		</if>
+		GROUP BY b.parent_name
+	</select>
+	<select id="getHouseOrderCategoryByLjAsGreen" parameterType="String" resultType="Map">
 			SELECT
 				b.category_name AS categoryName,
-				SUM(b.amount) AS amount
+				FORMAT(SUM(b.amount),2) AS amount
 			FROM
 				sb_order a
 			LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
 			LEFT JOIN sb_area c ON a.area_id = c.id
 			WHERE
 				a.status_ = 3
-			AND a.title IN (2, 3)
-			AND b.parent_id = 68
+			AND a.title =2
+			AND b.price = 0
 			<if test="cityId != '-1'">
 				AND	c.parent_id = #{cityId}
 			</if>
@@ -1568,46 +1598,12 @@
 				AND a.company_id = #{companyId}
 			</if>
 			<if test="startDate != null and startDate != ''">
-				AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+				AND a.complete_date > CONCAT(#{startDate}, ' 00:00:01')
 			</if>
 			<if test="endtDate != null and endtDate != ''">
-				AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+				AND CONCAT(#{endtDate}, ' 23:59:59') > a.complete_date
 			</if>
 			GROUP BY b.category_name
-			UNION ALL
-			SELECT
-				b.parent_name AS categoryName,
-				SUM(b.amount) AS amount
-			FROM
-				sb_order a
-			LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
-			LEFT JOIN sb_area c ON a.area_id = c.id
-			WHERE
-				a.status_ = 3
-			AND a.title IN (2, 3)
-			AND b.parent_id != 68
-			<if test="cityId != '-1'">
-				AND	c.parent_id = #{cityId}
-			</if>
-			<if test="areaId != '-1'">
-				AND a.area_id = #{areaId}
-			</if>
-			<if test="streetId != '-1'">
-				AND a.street_id = #{streetId}
-			</if>
-			<if test="companyId != '-1'">
-				AND a.company_id = #{companyId}
-			</if>
-			<if test="startDate != null and startDate != ''">
-				AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
-			</if>
-			<if test="endtDate != null and endtDate != ''">
-				AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
-			</if>
-			GROUP BY b.parent_name
-		) a
-			WHERE a.categoryName != '六废'
-			GROUP BY a.categoryName
 	</select>
 	<select id="getSumOrderBylj" parameterType="String" resultType="Integer">
 		SELECT
@@ -1648,7 +1644,14 @@
 						AVG(TIMESTAMPDIFF(MINUTE, a.create_date, a.receive_time))
 					</when>
 					<otherwise>
-						AVG(TIMESTAMPDIFF(MINUTE, a.create_date, a.complete_date))
+						<choose>
+						<when test="title == '1'.toString()">
+							AVG(TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='am',CONCAT(a.arrival_time,' 08:00:00'),CONCAT(a.arrival_time,' 12:00:00')), a.complete_date))
+						</when>
+						<otherwise>
+							AVG(TIMESTAMPDIFF(MINUTE, a.create_date, a.complete_date))
+						</otherwise>
+						</choose>
 					</otherwise>
 				</choose>
 			</otherwise>
@@ -1672,6 +1675,7 @@
 				</choose>
 			</otherwise>
 		</choose>
+		  and a.title = #{title}
 		<if test="cityId != '-1'">
 			AND	b.parent_id = #{cityId}
 		</if>
@@ -1703,7 +1707,14 @@
 						MAX(TIMESTAMPDIFF(MINUTE, a.create_date, a.receive_time))
 					</when>
 					<otherwise>
-						MAX(TIMESTAMPDIFF(MINUTE, a.create_date, a.complete_date))
+						<choose>
+						<when test="title == '1'.toString()">
+							MAX(TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='am',CONCAT(a.arrival_time,' 08:00:00'),CONCAT(a.arrival_time,' 12:00:00')), a.complete_date))
+						</when>
+							<otherwise>
+								MAX(TIMESTAMPDIFF(MINUTE, a.create_date, a.complete_date))
+							</otherwise>
+						</choose>
 					</otherwise>
 				</choose>
 			</otherwise>
@@ -1727,6 +1738,7 @@
 				</choose>
 			</otherwise>
 		</choose>
+		and a.title = #{title}
 		<if test="cityId != '-1'">
 			AND	b.parent_id = #{cityId}
 		</if>

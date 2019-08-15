@@ -3085,15 +3085,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return orderMapper.getOrderCategoryByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
 	}
 	@Override
-	public List<Map<String,Object>> getHouseOrderCategoryByLj(LjAdminBean ljAdminBean){
-		return orderMapper.getHouseOrderCategoryByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	public List<Map<String,Object>> getHouseOrderCategoryByLj(LjAdminBean ljAdminBean,String isCash){
+		if ("0".equals(isCash)){
+			return orderMapper.getHouseOrderCategoryByLjAsCash(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+		}
+		return orderMapper.getHouseOrderCategoryByLjAsGreen(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
 	}
 	@Override
-	public Double avgOrMaxDateByOrder(LjAdminBean ljAdminBean,String status,String avgOrMax){
+	public Double avgOrMaxDateByOrder(LjAdminBean ljAdminBean,String status,String avgOrMax,String title){
 		if ("avg".equals(avgOrMax)){
-			return orderMapper.avgOrMaxDateByOrderAvg(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status);
+			return orderMapper.avgOrMaxDateByOrderAvg(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status,title);
 		}
-		return orderMapper.avgOrMaxDateByOrderMax(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status);
+		return orderMapper.avgOrMaxDateByOrderMax(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status,title);
 	}
 	@Override
 	public Integer getSumOrderBylj(LjAdminBean ljAdminBean){

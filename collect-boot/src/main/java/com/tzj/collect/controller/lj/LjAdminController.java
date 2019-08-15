@@ -41,7 +41,7 @@ public class LjAdminController {
     }
     @RequestMapping("/fwsDate")
     public String getFwsDate(LjAdminBean ljAdminBean, final ModelMap model){
-        List<Area> cityList = areaService.selectList(new EntityWrapper<Area>().eq("type", 1));
+        List<Area> cityList = areaService.getCityListByLj();
         List<Company> companyList = companyService.selectList(new EntityWrapper<Company>());
         model.addAttribute("cityList",cityList);
         model.addAttribute("companyList",companyList);
@@ -60,7 +60,7 @@ public class LjAdminController {
     @RequestMapping("/ywDate")
     public String getYwDate(LjAdminBean ljAdminBean, final ModelMap model){
 
-        List<Area> cityList = areaService.selectList(new EntityWrapper<Area>().eq("type", 1));
+        List<Area> cityList = areaService.getCityListByLj();
         List<Company> companyList = companyService.selectList(new EntityWrapper<Company>());
         model.addAttribute("cityList",cityList);
         model.addAttribute("companyList",companyList);
@@ -102,7 +102,7 @@ public class LjAdminController {
         int greenOrderCount = orderService.selectCount(new EntityWrapper<Order>().eq("title", "2").eq("is_cash","1").in("status_", "0,1,2,3"));
         //当天注册会员数量
         long memberCountToDay = memberService.getMemberCountToDay();
-        //开通小区数量
+        //开通街道数量
         int communityCount = communityService.getCommunityCountByLj(ljAdminBean);
         //五废服务商回收人员数量
         int recyclersCount = recyclersService.getRecyclersCountByLj(ljAdminBean);
@@ -124,7 +124,10 @@ public class LjAdminController {
         Double greenBigPaymentOrderPrice = orderService.getGreenBigPaymentOrderPrice(ljAdminBean);
 
         List<Map<String, Object>> orderCategoryByLj = orderService.getOrderCategoryByLj(ljAdminBean);
-        List<Map<String, Object>> houseOrderCategoryByLj = orderService.getHouseOrderCategoryByLj(ljAdminBean);
+        //要钱五废
+        List<Map<String, Object>> houseOrderCategoryByLjAsCash = orderService.getHouseOrderCategoryByLj(ljAdminBean,"0");
+        //不要钱五废
+        List<Map<String, Object>> houseOrderCategoryByLjAsGreen = orderService.getHouseOrderCategoryByLj(ljAdminBean,"1");
         Map<String,Object> resultMap = new HashMap<>();
             resultMap.put("memberCount",memberCount);
             resultMap.put("orderCount",orderCount);
@@ -145,23 +148,36 @@ public class LjAdminController {
             resultMap.put("greenOrderCountByLj",greenOrderCountByLj);
             resultMap.put("greenBigPaymentOrderPrice",greenBigPaymentOrderPrice==null?"0":greenBigPaymentOrderPrice);
             resultMap.put("orderCategoryByLj",orderCategoryByLj.isEmpty()?null:orderCategoryByLj);
-            resultMap.put("houseOrderCategoryByLj",houseOrderCategoryByLj.isEmpty()?null:houseOrderCategoryByLj);
+            resultMap.put("houseOrderCategoryByLjAsCash",houseOrderCategoryByLjAsCash.isEmpty()?null:houseOrderCategoryByLjAsCash);
+            resultMap.put("houseOrderCategoryByLjAsGreen",houseOrderCategoryByLjAsGreen.isEmpty()?null:houseOrderCategoryByLjAsGreen);
         return resultMap;
     }
     @RequestMapping("getFwsDateDetail")
     public @ResponseBody Map<String,Object> getFwsDateDetail(LjAdminBean ljAdminBean){
         //平均派单时间
-        Double avgTosendDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"1","avg");
+        Double avgTosendDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"1","avg","2");
         //平均接单时间
-        Double avgAlreadyDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"2","avg");
+        Double avgAlreadyDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"2","avg","2");
         //平均完成订单时间
-        Double avgCompleteDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"3","avg");
+        Double avgCompleteDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"3","avg","2");
         //最大派单时间
-        Double maxTosendDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"1","max");
+        Double maxTosendDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"1","max","2");
         //最大接单时间
-        Double maxAlreadyDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"2","max");
+        Double maxAlreadyDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"2","max","2");
         //最大完成订单时间
-        Double maxCompleteDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"3","max");
+        Double maxCompleteDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"3","max","2");
+        //平均派单时间
+        Double avgTosendDateDq = orderService.avgOrMaxDateByOrder(ljAdminBean,"1","avg","1");
+        //平均接单时间
+        Double avgAlreadyDateDq = orderService.avgOrMaxDateByOrder(ljAdminBean,"2","avg","1");
+        //平均完成订单时间
+        Double avgCompleteDateDq = orderService.avgOrMaxDateByOrder(ljAdminBean,"3","avg","1");
+        //最大派单时间
+        Double maxTosendDateDq = orderService.avgOrMaxDateByOrder(ljAdminBean,"1","max","1");
+        //最大接单时间
+        Double maxAlreadyDateDq = orderService.avgOrMaxDateByOrder(ljAdminBean,"2","max","1");
+        //最大完成订单时间
+        Double maxCompleteDateDq = orderService.avgOrMaxDateByOrder(ljAdminBean,"3","max","1");
         //订单总数
         Integer orderCount = orderService.getSumOrderBylj(ljAdminBean);
         //订单取消率
@@ -177,6 +193,12 @@ public class LjAdminController {
         resultMap.put("maxTosendDate",maxTosendDate);
         resultMap.put("maxAlreadyDate",maxAlreadyDate);
         resultMap.put("maxCompleteDate",maxCompleteDate);
+        resultMap.put("avgTosendDateDq",avgTosendDateDq);
+        resultMap.put("avgAlreadyDateDq",avgAlreadyDateDq);
+        resultMap.put("avgCompleteDateDq",avgCompleteDateDq);
+        resultMap.put("maxTosendDateDq",maxTosendDateDq);
+        resultMap.put("maxAlreadyDateDq",maxAlreadyDateDq);
+        resultMap.put("maxCompleteDateDq",maxCompleteDateDq);
         resultMap.put("orderCount",orderCount);
         resultMap.put("cancelOrderCount",((float) cancelOrderCount)/((float)orderCount));
         resultMap.put("rejectedOrderCount",((float)rejectedOrderCount)/((float)orderCount));

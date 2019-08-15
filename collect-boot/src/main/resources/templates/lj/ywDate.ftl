@@ -79,6 +79,10 @@
         </div>
 
         <div class="Div5">
+            <span class="span2" id="">截至当天当前时间的新增注册会员数量：</span
+            >
+            <span class="span3" id="memberCountToDay">0</span>
+            <br />
             <span class="span2" id="">截至当天当前时间的平台注册总用户数量：</span
             >
             <span class="span3" id="memberCount">0</span>
@@ -107,13 +111,9 @@
             >
             <span class="span3" id="greenOrderCount">0</span>
             <br />
-            <span class="span2" id="">截至当天当前时间的新增注册会员数量：</span
-            >
-            <span class="span3" id="memberCountToDay">0</span>
-            <br />
         </div>
         <div class="Div5">
-            <span class="span2" id="">截至当天当前时间的开通小区数量：</span>
+            <span class="span2" id="">截至当天当前时间的开通街道数量：</span>
             <span class="span3" id="communityCount">0</span>
             <br />
             <span class="span2" id="">截至当天当前时间的五废服务商回收人员数量：</span
@@ -141,6 +141,10 @@
             >
             <span class="span3" id="houseCountByLj">0</span>
             <br />
+            <span class="span2" id="">截至到当前时间的五废订单下单选择10倍积分的订单总量（含在途不含取消）：</span
+            >
+            <span class="span3" id="greenOrderCountByLj">0</span>
+            <br />
             <span class="span2" id="">截至当前时间的五公斤订单总量（含在途不含取消）：</span
             >
             <span class="span3" id="fiveKgCountByLj">0</span>
@@ -149,12 +153,13 @@
             >
             <span class="span3" id="greenBigPaymentOrderPrice">0</span>
             <br />
-            <span class="span2" id="">截至到当前时间的五废订单下单选择10倍积分的订单总量（含在途不含取消）：</span
-            >
-            <span class="span3" id="greenOrderCountByLj">0</span>
-            <br />
+
         </div>
         <div class="Div5" id="categoryNumDiv">
+        </div>
+        <div class="Div5" id="categoryHouseAsCash">
+        </div>
+        <div class="Div5" id="categoryHouseAsGreen">
         </div>
     </div>
 </body>
@@ -201,7 +206,9 @@
                 $("#fiveKgCountByLj").html(data.fiveKgCountByLj)
                 $("#greenOrderCountByLj").html(data.greenOrderCountByLj)
                 $("#greenBigPaymentOrderPrice").html(data.greenBigPaymentOrderPrice)
-                var categoryNumDiv = "";
+                var categoryNumDiv = "<span class=\"span2\" id=\"\">家电大件数量：</span> <br />";
+                var categoryHouseAsCash = "<span class=\"span2\" id=\"\">要钱五废重量(kg)：</span> <br />"
+                var categoryHouseAsGreen = "<span class=\"span2\" id=\"\">不要钱五废重量(kg)：</span> <br />";
                 if ( data.orderCategoryByLj != null){
                     var  date = data.orderCategoryByLj;
                     for (var i = 0; i < date.length; i++) {
@@ -260,7 +267,53 @@
                         "            <span class=\"span3\" id=\"\">0</span>\n" +
                         "            <br />"
                 }
+                if ( data.houseOrderCategoryByLjAsCash != null){
+                    var  date = data.houseOrderCategoryByLjAsCash;
+                    for (var i = 0; i < date.length; i++) {
+                        categoryHouseAsCash += '<span class="span2" id="">' + date[i].categoryName + '：</span>'+'<span class="span3" id="">'+date[i].amount+'</span><br />';
+                    }
+                }else {
+                    categoryHouseAsCash +=  "            <span class=\"span2\" id=\"\">废纸（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />\n" +
+                        "            <span class=\"span2\" id=\"\">废塑料（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />\n" +
+                        "            <span class=\"span2\" id=\"\">废金属（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />\n" +
+                        "            <span class=\"span2\" id=\"\">废玻璃（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />\n" +
+                        "            <span class=\"span2\" id=\"\">废纺（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />"
+                }
+                if ( data.houseOrderCategoryByLjAsGreen != null){
+                    var  date = data.houseOrderCategoryByLjAsGreen;
+                    for (var i = 0; i < date.length; i++) {
+                        categoryHouseAsGreen += '<span class="span2" id="">' + date[i].categoryName + '：</span>'+'<span class="span3" id="">'+date[i].amount+'</span><br />';
+                    }
+                }else {
+                    categoryHouseAsGreen +=  "            <span class=\"span2\" id=\"\">废纸（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />\n" +
+                        "            <span class=\"span2\" id=\"\">废塑料（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />\n" +
+                        "            <span class=\"span2\" id=\"\">废金属（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />\n" +
+                        "            <span class=\"span2\" id=\"\">废玻璃（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />\n" +
+                        "            <span class=\"span2\" id=\"\">废纺（公斤）：</span>\n" +
+                        "            <span class=\"span3\" id=\"\">0</span>\n" +
+                        "            <br />"
+                }
                 $("#categoryNumDiv").html(categoryNumDiv)
+                $("#categoryHouseAsCash").html(categoryHouseAsCash)
+                $("#categoryHouseAsGreen").html(categoryHouseAsGreen)
             }
         });
 

@@ -318,9 +318,9 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	List<Map<String,Object>> getOrderCategoryByLj(LjAdminBean ljAdminBean);
 	@DS("slave")
-	List<Map<String,Object>> getHouseOrderCategoryByLj(LjAdminBean ljAdminBean);
+	List<Map<String,Object>> getHouseOrderCategoryByLj(LjAdminBean ljAdminBean,String isCash);
 	@DS("slave")
-	Double avgOrMaxDateByOrder(LjAdminBean ljAdminBean,String status,String avgOrMax);
+	Double avgOrMaxDateByOrder(LjAdminBean ljAdminBean,String status,String avgOrMax,String title);
 	@DS("slave")
 	Integer getSumOrderBylj(LjAdminBean ljAdminBean);
 	@DS("slave")

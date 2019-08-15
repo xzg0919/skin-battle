@@ -79,7 +79,7 @@
   </div>
 
   <div class="Div5">
-    <span class="span2" id="">服务能力</span>
+    <span class="span2" id="">生活五废服务能力</span>
     <br />
     <span class="span2" id="">平均派单时长：</span>
     <span class="span3" id="avgTosendDate">0</span>
@@ -98,6 +98,27 @@
     <br />
     <span class="span2" id="">最长订单完成时长：</span>
     <span class="span3" id="maxCompleteDate">0</span>
+  </div>
+  <div class="Div5">
+    <span class="span2" id="">家电服务能力</span>
+    <br />
+    <span class="span2" id="">平均派单时长：</span>
+    <span class="span3" id="avgTosendDateDq">0</span>
+    <br />
+    <span class="span2" id="">最长派单时长：</span>
+    <span class="span3" id="maxTosendDateDq">0</span>
+    <br />
+    <span class="span2" id="">平均接单时长：</span>
+    <span class="span3" id="avgAlreadyDateDq">0</span>
+    <br />
+    <span class="span2" id="">最长接单时长：</span>
+    <span class="span3" id="maxAlreadyDateDq">0</span>
+    <br />
+    <span class="span2" id="">平均订单完成时长：</span>
+    <span class="span3" id="avgCompleteDateDq">0</span>
+    <br />
+    <span class="span2" id="">最长订单完成时长：</span>
+    <span class="span3" id="maxCompleteDateDq">0</span>
   </div>
   <div class="Div5">
     <span class="span2" id="">订单总数：</span>
@@ -145,6 +166,12 @@
         $("#maxTosendDate").html(data.maxTosendDate+"  分钟")
         $("#maxAlreadyDate").html(data.maxAlreadyDate+"  分钟")
         $("#maxCompleteDate").html(data.maxCompleteDate+"  分钟")
+        $("#avgTosendDateDq").html(data.avgTosendDateDq+"  分钟")
+        $("#avgAlreadyDateDq").html(data.avgAlreadyDateDq+"  分钟")
+        $("#avgCompleteDateDq").html(data.avgCompleteDateDq+"  分钟")
+        $("#maxTosendDateDq").html(data.maxTosendDateDq+"  分钟")
+        $("#maxAlreadyDateDq").html(data.maxAlreadyDateDq+"  分钟")
+        $("#maxCompleteDateDq").html(data.maxCompleteDateDq+"  分钟")
         $("#orderCount").html(data.orderCount)
         $("#cancelOrderCount").html(data.cancelOrderCount)
         $("#rejectedOrderCount").html(data.rejectedOrderCount)
