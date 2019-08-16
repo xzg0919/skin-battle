@@ -69,7 +69,7 @@ public class DailyDaApi {
         if (startPage * pageSize > 50){
             startPage = 50/pageSize;
         }
-        return dailyLexiconService.weekDresserList(startPage, pageSize.intValue());
+        return dailyLexiconService.weekDresserList(startPage.intValue(), pageSize);
     }
     /** 总环保荣誉榜(头像，得分，城市，多少周)
       * @author sgmark@aliyun.com

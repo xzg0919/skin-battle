@@ -71,16 +71,19 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
         //设值是否可领取
         AtomicInteger signNumInt = new AtomicInteger(1);
         while (signNumInt.get() <=   signNum){
-            returnListMap.get((signNum - 1)/2).put("isReceivable", "Y");
+            Map<String, Object> map = returnListMap.get((signNumInt.get() - 1) / 2);
+            returnListMap.get((signNumInt.get() - 1) / 2).put("isReceivable", "Y");
             signNumInt.incrementAndGet();
-//            System.out.println();
         }
 
         //设值是否已领取
         returnListMap.stream().forEach(returnListMaps ->
             receiveNumList.stream().forEach(receiveNumLists ->{
                 if (returnListMaps.get("setNum").equals(receiveNumLists.get("set_num"))){
-                    returnListMaps.put("isReceive", receiveNumLists.get("is_receive").toString().equals("0")?"Y":"N");
+                    if ("0".equals(receiveNumLists.get("is_receive").toString())){
+                        returnListMaps.put("isReceive", "Y");
+                        returnListMaps.put("isReceivable", "N");
+                    }
                 }
             })
         );
@@ -121,7 +124,6 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
             if(receivableLists.get("setNum").equals(dailyDaParam.getSetNum())){
                 //红包未领取并且处于可领取状态
                 if ("N".equals(receivableLists.get("isReceive")) && "Y".equals(receivableLists.get("isReceivable"))){
-
                     //创建红包时产生的uuId
                     String outBizNo = finalDailyReceiving.getUuId();
                     //更新成功, 调用转账接口
@@ -129,9 +131,6 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                     Payment payment = paymentService.selectByOrderSn(outBizNo);
                     if (null == payment){
                         payment = new Payment();
-                        outBizNo = UUID.randomUUID().toString();
-                    }else {
-                        outBizNo = payment.getOrderSn();
                     }
                     //用户转账
                     AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = paymentService.dailyDaTransfer(aliUserId, finalPrice, outBizNo);
@@ -144,7 +143,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                         //交易完成(状态设置为已转账)
                         payment.setStatus(STATUS_TRANSFER);
                         payment.setIsSuccess("1");
-                        payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOutBizNo());
+                        payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
                         finalDailyReceiving.setIsReceive(0);
                     }else {
                         //交易失败(状态设置为未转账)
