@@ -2412,6 +2412,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				for (OrderItemBean orderItemBean : orderItemList) {
 					//根据分类Id查询分类信息
 					Category category = categoryService.selectById(orderItemBean.getId());
+					float price = 0;
+					CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", order.getCompanyId()).eq("city_id", orderBean.getCityId()).eq("category_id", orderItemBean.getId()).eq("del_flag", "0"));
+					if (null == companyCategoryCity){
+						CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", order.getCompanyId()).eq("category_id", orderItemBean.getId()).eq("del_flag", "0"));
+						price = companyCategory.getPrice();
+					}else {
+						price = companyCategoryCity.getPrice().floatValue();
+					}
 					OrderItem orderItem = new OrderItem();
 					orderItem.setOrderId(Integer.parseInt(order.getId() + ""));
 					orderItem.setCategoryId(Integer.parseInt(category.getId() + ""));
@@ -2421,7 +2429,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderItem.setParentName(orderItemBean.getParentName());
 					orderItem.setAmount(1);
 					orderItem.setUnit(category.getUnit());
-					orderItem.setPrice(StringUtils.isBlank(orderItemBean.getPrice())?category.getPrice().floatValue():Float.parseFloat(orderItemBean.getPrice()));
+					orderItem.setPrice(price);
 					orderItemService.insert(orderItem);
 					amount += orderItemBean.getAmount();
 				}
