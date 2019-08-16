@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.point.mapper.MemberMapper">
+
+<select id="selectMemberByAliUserId" parameterType="String" resultType="com.tzj.collect.entity.Member">
+	SELECT
+		*
+	FROM
+		${tableName}
+	WHERE
+		ali_user_id = #{aliUserId}
+</select>
+<update id="updateMemberByAliUserId" parameterType="com.tzj.collect.entity.Member">
+	UPDATE ${member.tableName} a
+	SET
+	<if test="member.idCard != null and member.idCard != ''">
+		a.id_card = #{member.idCard},
+	</if>
+	<if test="member.name != null and member.name != ''">
+		a.name_ = #{member.name},
+	</if>
+	<if test="member.address != null and member.address != ''">
+		a.address = #{member.address},
+	</if>
+	<if test="member.mobile != null and member.mobile != ''">
+		a.mobile = #{member.mobile},
+	</if>
+	<if test="member.cardNo != null and member.cardNo != ''">
+		a.card_no = #{member.cardNo},
+	</if>
+	<if test="member.greenCode != null and member.greenCode != ''">
+		a.green_code = #{member.greenCode},
+	</if>
+	<if test="member.isShowDialog != null and member.isShowDialog != ''">
+		a.is_show_dialog = #{member.isShowDialog},
+	</if>
+	<if test="member.aliUserId != null and member.aliUserId != ''">
+		a.ali_user_id = #{member.aliUserId},
+	</if>
+	<if test="member.remarks != null and member.remarks != ''">
+		a.remarks = #{member.remarks},
+	</if>
+	<if test="member.delFlag != null and member.delFlag != ''">
+		a.del_flag = #{member.delFlag},
+	</if>
+	<if test="member.aliCardNo != null and member.aliCardNo != ''">
+		a.ali_card_no = #{member.aliCardNo},
+	</if>
+	<if test="member.openCardDate != null ">
+		a.open_card_date = #{member.openCardDate},
+	</if>
+	<if test="member.gender != null and member.gender != ''">
+		a.gender = #{member.gender},
+	</if>
+	<if test="member.isCertified != null and member.isCertified != ''">
+		a.is_certified = #{member.isCertified},
+	</if>
+	<if test="member.city != null and member.city != ''">
+		a.city = #{member.city},
+	</if>
+	<if test="member.birthday != null and member.birthday != ''">
+		a.birthday = #{member.birthday},
+	</if>
+	<if test="member.linkName != null and member.linkName != ''">
+		a.link_name = #{member.linkName},
+	</if>
+	<if test="member.picUrl != null and member.picUrl != ''">
+		a.pic_url = #{member.picUrl},
+	</if>
+	<if test="member.channelId != null and member.channelId != ''">
+		a.channel_id = #{member.channelId},
+	</if>
+		a.update_date = NOW()
+	WHERE
+		a.ali_user_id = #{member.aliUserId}
+</update>
+	<insert id="insertMember" parameterType="com.tzj.collect.entity.Member">
+		INSERT INTO ${member.tableName} (
+		<if test="member.idCard != null and member.idCard != ''">
+			id_card,
+		</if>
+		<if test="member.name != null and member.name != ''">
+			name_,
+		</if>
+		<if test="member.address != null and member.address != ''">
+			address,
+		</if>
+		<if test="member.mobile != null and member.mobile != ''">
+			mobile,
+		</if>
+		<if test="member.cardNo != null and member.cardNo != ''">
+			card_no,
+		</if>
+		<if test="member.greenCode != null and member.greenCode != ''">
+			green_code,
+		</if>
+		<if test="member.aliUserId != null and member.aliUserId != ''">
+			ali_user_id,
+		</if>
+		<if test="member.createBy != null and member.createBy != ''">
+			create_by,
+		</if>
+		<if test="member.updateBy != null and member.updateBy != ''">
+			update_by,
+		</if>
+		<if test="member.remarks != null and member.remarks != ''">
+			remarks,
+		</if>
+		<if test="member.delFlag != null and member.delFlag != ''">
+			del_flag,
+		</if>
+		<if test="member.aliCardNo != null and member.aliCardNo != ''">
+			ali_card_no,
+		</if>
+		<if test="member.openCardDate != null ">
+			open_card_date,
+		</if>
+		<if test="member.appId != null and member.appId != ''">
+			app_id,
+		</if>
+		<if test="member.gender != null and member.gender != ''">
+			gender,
+		</if>
+		<if test="member.isCertified != null and member.isCertified != ''">
+			is_certified,
+		</if>
+		<if test="member.city != null and member.city != ''">
+			city,
+		</if>
+		<if test="member.birthday != null and member.birthday != ''">
+			birthday,
+		</if>
+		<if test="member.linkName != null and member.linkName != ''">
+			link_name,
+		</if>
+		<if test="member.picUrl != null and member.picUrl != ''">
+			pic_url,
+		</if>
+		<if test="member.channelId != null and member.channelId != ''">
+			channel_id,
+		</if>
+			create_date,
+			update_date
+		)
+		VALUES
+			(
+		<if test="member.idCard != null and member.idCard != ''">
+			#{member.idCard},
+		</if>
+		<if test="member.name != null and member.name != ''">
+			#{member.name},
+		</if>
+		<if test="member.address != null and member.address != ''">
+			#{member.address},
+		</if>
+		<if test="member.mobile != null and member.mobile != ''">
+			#{member.mobile},
+		</if>
+		<if test="member.cardNo != null and member.cardNo != ''">
+			#{member.cardNo},
+		</if>
+		<if test="member.greenCode != null and member.greenCode != ''">
+			#{member.greenCode},
+		</if>
+		<if test="member.aliUserId != null and member.aliUserId != ''">
+			#{member.aliUserId},
+		</if>
+		<if test="member.createBy != null and member.createBy != ''">
+			#{member.createBy},
+		</if>
+		<if test="member.updateBy != null and member.updateBy != ''">
+			#{member.updateBy},
+		</if>
+		<if test="member.remarks != null and member.remarks != ''">
+			#{member.remarks},
+		</if>
+		<if test="member.delFlag != null and member.delFlag != ''">
+			#{member.delFlag},
+		</if>
+		<if test="member.aliCardNo != null and member.aliCardNo != ''">
+			#{member.aliCardNo},
+		</if>
+		<if test="member.openCardDate != null ">
+			#{member.openCardDate},
+		</if>
+		<if test="member.appId != null and member.appId != ''">
+			#{member.appId},
+		</if>
+		<if test="member.gender != null and member.gender != ''">
+			#{member.gender},
+		</if>
+		<if test="member.isCertified != null and member.isCertified != ''">
+			#{member.isCertified},
+		</if>
+		<if test="member.city != null and member.city != ''">
+			#{member.city},
+		</if>
+		<if test="member.birthday != null and member.birthday != ''">
+			#{member.birthday},
+		</if>
+		<if test="member.linkName != null and member.linkName != ''">
+			#{member.linkName},
+		</if>
+		<if test="member.picUrl != null and member.picUrl != ''">
+			#{member.picUrl},
+		</if>
+		<if test="member.channelId != null and member.channelId != ''">
+			#{member.channelId},
+		</if>
+			NOW(),
+			NOW()
+			)
+	</insert>
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
