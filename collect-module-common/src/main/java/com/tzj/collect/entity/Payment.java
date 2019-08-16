@@ -2,7 +2,9 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IEnum;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -33,6 +35,8 @@ public class Payment extends DataEntity<Long>{
     private String isSuccess;
     @TableField(value = "status_")
     private int status=STATUS_UNPAY;
+
+    private PayType payType;//交易类型默认0:收呗订单; 1: 每日答答答红包转账
 
 
     @Override
@@ -139,5 +143,27 @@ public class Payment extends DataEntity<Long>{
 
     public void setIsSuccess(String isSuccess) {
         this.isSuccess = isSuccess;
+    }
+
+    public PayType getPayType() {
+        return payType;
+    }
+
+    public void setPayType(PayType payType) {
+        this.payType = payType;
+    }
+
+    public enum PayType implements IEnum {
+        COLLECT(0), // 收呗订单
+        RED_BAG(1); // 答答答红包转账
+        private int value;
+
+        PayType(final int value) {
+            this.value = value;
+        }
+
+        public Serializable getValue() {
+            return this.value;
+        }
     }
 }

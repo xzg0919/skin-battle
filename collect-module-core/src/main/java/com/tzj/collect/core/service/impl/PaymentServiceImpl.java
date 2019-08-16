@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static com.tzj.collect.common.constant.Const.*;
 
@@ -108,6 +109,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     public static void main(String[] args) {
+        String uuId = UUID.randomUUID().toString();
+//        dailyDaTransfer("2088212384105273","0.01", uuId);
 //        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
 //        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
 //        request.setBizContent("{" +
@@ -130,7 +133,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
-        String tradeNo = "2019062922001484060512892284";
+        String tradeNo = uuId;
         AlipayTradeQueryModel model = new AlipayTradeQueryModel();
         model.setOutTradeNo(tradeNo);
         model.setTradeNo(tradeNo);
@@ -269,4 +272,26 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
        return response;
     }
 
+    public  AlipayFundTransToaccountTransferResponse dailyDaTransfer(String aliUserId, String price, String outBizNo){
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+
+        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
+        model.setOutBizNo(outBizNo);
+        model.setPayeeType("ALIPAY_USERID");
+        model.setPayeeAccount(aliUserId);
+        model.setAmount(price);
+        model.setPayerShowName("答答答红包");
+        model.setRemark("答答答红包");
+        request.setBizModel(model);
+        AlipayFundTransToaccountTransferResponse response =null;
+        try {
+            response  = alipayClient.execute(request);
+//            System.out.println(response);
+        }catch (AlipayApiException e){
+            throw new ApiException("系统异常：" + e.getErrMsg());
+        }
+        return response;
+
+    }
 }

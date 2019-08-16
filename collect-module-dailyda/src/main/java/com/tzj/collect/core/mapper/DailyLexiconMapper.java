@@ -6,14 +6,16 @@ import com.tzj.collect.entity.DailyLexicon;
 import org.apache.ibatis.annotations.Param;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * @Author 胡方明（12795880@qq.com）
- **/
+  * @author sgmark@aliyun.com
+  * @date 2019/8/15 0015
+  * @param 
+  * @return 
+  */
 public interface DailyLexiconMapper extends BaseMapper<DailyLexicon> {
     /** 所有的题库(id, name, ,typeId, depth)
      * @author sgmark@aliyun.com

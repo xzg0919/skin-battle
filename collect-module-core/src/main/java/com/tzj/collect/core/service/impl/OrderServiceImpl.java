@@ -894,7 +894,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
 					//峰会只给瓶子蚂蚁森林能量
 					bottlesCount.set(itemList.getQuantity());
-					score[0] += itemList.getQuantity() * 0.04;//瓶子个数40g/个
+					score[0] += itemList.getQuantity() * 1;//瓶子个数40g/个(改为1积分一个（updateDate:20190815）)
 					order.setUnit("个");
 				}else {
 					score[0] += itemList.getQuantity();

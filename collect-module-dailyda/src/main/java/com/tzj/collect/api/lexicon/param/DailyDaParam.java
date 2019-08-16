@@ -19,4 +19,6 @@ public class DailyDaParam {
     private DailyLexicon.LexType lexType;//答题类型
 
     private String aliUserId;//阿里用户id
+
+    private Integer setNum;//领取红包所在位置
 }

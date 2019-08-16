@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.DailyReceivingMapper" >
+	<select id="signNum" resultType="int">
+		SELECT
+			COUNT(1)
+		FROM
+			(
+				SELECT
+					DATE_FORMAT(ddr.create_date, '%Y-%m-%d') AS time
+				FROM
+					`collect`.${tableName} ddr
+				WHERE
+					del_flag = 0
+				AND ddr.user_type_id IS NOT NULL
+				AND ali_user_id = #{aliUserId}
+				GROUP BY
+					time
+			) dailyCount
+	</select>
+
+	<select id="receiveNum" resultType="Map">
+		SELECT
+			is_receive, set_num, ali_user_id,uu_id
+		FROM
+			daily_receiving ddr
+		WHERE
+			del_flag = 0
+		AND week_ = #{week}
+		AND ali_user_id = #{aliUserId}
+
+	</select>
+</mapper>

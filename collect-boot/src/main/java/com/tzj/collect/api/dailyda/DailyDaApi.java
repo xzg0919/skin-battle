@@ -6,15 +6,15 @@ import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.service.DailyLexiconService;
+import com.tzj.collect.service.DailyReceivingService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.easyopen.exception.ApiException;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 每日答答答api
@@ -28,6 +28,9 @@ public class DailyDaApi {
 
     @Resource
     private DailyLexiconService dailyLexiconService;
+
+    @Resource
+    private DailyReceivingService dailyReceivingService;
 
 //  /** 根据用户授权返回的authCode,解析用户的数据
 //    * @author sgmark@aliyun.com
@@ -135,7 +138,7 @@ public class DailyDaApi {
       */
     @Api(name = "daily.member.receiving", version = "1.0")
     public Map<String, Object> memberReceivingRecords(){
-        return null;
+        return dailyReceivingService.memberReceivingRecords(MemberUtils.getMember().getAliUserId());
     }
 
     /** 用户领取现金红包(领取前判断本周领取次数)
@@ -145,7 +148,8 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.receiving.money", version = "1.0")
-    public Map<String, Object> receivingMoney(){
-        return null;
+    public Map<String, Object> receivingMoney(DailyDaParam dailyDaParam){
+        dailyDaParam.setAliUserId(MemberUtils.getMember().getAliUserId());
+        return dailyReceivingService.receivingMoney(dailyDaParam);
     }
 }

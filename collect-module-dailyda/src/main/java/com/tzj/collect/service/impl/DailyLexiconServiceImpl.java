@@ -80,7 +80,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             //用户点击开始答题，直接存入本周记录
             String uuId = UUID.randomUUID().toString();
             //保存记录
-            new Thread(()->this.saveDailyRecordsList(aliUserId, uuId, Long.parseLong(returnLists.get("id").toString()), Integer.parseInt(returnLists.get("type_id").toString())));
+            this.saveDailyRecordsList(aliUserId, uuId, Long.parseLong(returnLists.get("id").toString()), Integer.parseInt(returnLists.get("type_id").toString()));
             returnLists.put("uuId", uuId);
             returnLists.remove("id");
             returnLists.remove("type_id");
@@ -269,7 +269,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
       * @param 
       * @return 
       */
-    public String tableName(Long currentTimeMillis){
+    public static String tableName(Long currentTimeMillis){
         Integer week = Instant.ofEpochMilli(currentTimeMillis).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         return "daily_day_records_"+ LocalDate.now().getYear() + "" + week;
     }
