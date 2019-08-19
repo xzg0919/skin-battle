@@ -9,14 +9,13 @@ import com.tzj.collect.entity.DailyWeekRanking;
 import com.tzj.collect.service.DailyLexiconService;
 import com.tzj.collect.service.DailyReceivingService;
 import com.tzj.collect.service.DailyWeekRankingService;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.exception.ApiException;
 
 import javax.annotation.Resource;
 import java.util.*;
+
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 /**
  * 每日答答答api
@@ -57,6 +56,7 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.member.info", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> memberInfo(){
         return dailyLexiconService.memberInfo(MemberUtils.getMember());
     }
@@ -68,6 +68,7 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.week.dresser", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<Map<String, Object>> weekDresserList(PageBean pageBean){
         Integer startPage = null == pageBean.getPageNumber() ? 1: pageBean.getPageNumber();
         Integer pageSize = null == pageBean.getPageSize() ? 10 : pageBean.getPageSize();
@@ -83,6 +84,7 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.all.week.dresser", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Page<DailyWeekRanking> eachWeekDresserList(PageBean pageBean){
         return dailyWeekRankingService.eachWeekDresserList(pageBean.getPageNumber(), pageBean.getPageSize());
     }
@@ -95,6 +97,7 @@ public class DailyDaApi {
      * @return
      */
     @Api(name = "daily.list", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Set<Map<String, Object>> dailyLexiconList(){
         if (dailyLexiconService.isAnswerDaily(MemberUtils.getMember().getAliUserId()).size()>0){
            throw new ApiException("今日答题已完成，明儿请赶早");
@@ -109,6 +112,7 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.check", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> lexiconChecking(DailyDaParam dailyDaParam){
         dailyDaParam.setAliUserId(MemberUtils.getMember().getAliUserId());
         return dailyLexiconService.lexiconChecking(dailyDaParam);
@@ -121,6 +125,7 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.week.records", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> weekRecords(){
         return dailyLexiconService.weekRecords(MemberUtils.getMember());
     }
@@ -132,6 +137,7 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.error.list", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> errorLexiconList(){
         return dailyLexiconService.errorLexiconList(MemberUtils.getMember());
     }
@@ -145,6 +151,7 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.member.receiving", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> memberReceivingRecords(){
         return dailyReceivingService.memberReceivingRecords(MemberUtils.getMember().getAliUserId());
     }
@@ -156,8 +163,14 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.receiving.money", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> receivingMoney(DailyDaParam dailyDaParam){
         dailyDaParam.setAliUserId(MemberUtils.getMember().getAliUserId());
         return dailyReceivingService.receivingMoney(dailyDaParam);
+    }
+    @Api(name = "daily.week.ranking", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public void receivingMoney(){
+        dailyWeekRankingService.insertEachWeekDresser();
     }
 }

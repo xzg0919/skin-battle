@@ -172,7 +172,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
                             if (dailyLexiconMapper.updateDailyRecordsList(dailyDaParam.getAliUserId(), tableName(System.currentTimeMillis()) ,dailyDaParam.getUuId(), dailyDaParam.getLexType().getValue(),trueOrFalse, LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59") > 0){
                                 if ("0".equals(trueOrFalse)){
                                     Jedis jedis = jedisPool.getResource();
-                                    //正确答题积分加一(周记录)
+                                    //正确答题积分加十(周记录)
                                     jedis.zincrby(redisKeyName(), 10, dailyDaParam.getAliUserId());
                                     //每日答题数据记录
                                     jedis.zincrby(redisKeyName() +":"+ LocalDate.now().getDayOfWeek(), 10, dailyDaParam.getAliUserId());
@@ -210,7 +210,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         Long weekRanking = jedis.zrevrank(redisKeyName(), member.getAliUserId());
         returnMap.put("weekRanking", null == weekRanking ? "999+": ++weekRanking);
         //本日是否已答过题
-        returnMap.put("todayIsAnswer", dailyLexiconMapper.dailyLexiconList(member.getAliUserId(), tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59").size() > 0 ? "Y":"N");
+        returnMap.put("todayIsAnswer", dailyLexiconMapper.isAnswerDaily(member.getAliUserId(), tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59").size() > 0 ? "Y":"N");
         return returnMap;
     }
 
@@ -296,7 +296,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
       * @param
       * @return
       */
-    public String redisKeyName(){
+    public static String redisKeyName(){
         Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         return LocalDate.now().getYear() + ":" + week;
     }

@@ -37,7 +37,7 @@ public class LjAdminController {
     @RequestMapping("/home")
     public String getHome(){
 
-        return "lj/home";
+        return "lj/,";
     }
     @RequestMapping("/fwsDate")
     public String getFwsDate(LjAdminBean ljAdminBean, final ModelMap model){

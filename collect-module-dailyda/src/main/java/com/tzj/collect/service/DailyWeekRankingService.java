@@ -13,4 +13,11 @@ import com.tzj.collect.entity.DailyWeekRanking;
 public interface DailyWeekRankingService extends IService<DailyWeekRanking> {
 
      Page<DailyWeekRanking> eachWeekDresserList(Integer pageNumber, Integer pageSize);
+     /**  计算前一周的环保荣誉达人
+       * @author sgmark@aliyun.com
+       * @date 2019/8/19 0019
+       * @param
+       * @return
+       */
+     void insertEachWeekDresser();
 }

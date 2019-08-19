@@ -2,8 +2,8 @@ package com.tzj.collect.core.mapper;
 
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.tzj.collect.entity.DailyReceiving;
 import com.tzj.collect.entity.DailyWeekRanking;
+import org.apache.ibatis.annotations.Param;
 
 /**
   * @author sgmark@aliyun.com
@@ -13,4 +13,5 @@ import com.tzj.collect.entity.DailyWeekRanking;
   */
 public interface DailyWeekRankingMapper extends BaseMapper<DailyWeekRanking> {
 
+    String insertEachWeekDresser(@Param("tableName") String week);
 }

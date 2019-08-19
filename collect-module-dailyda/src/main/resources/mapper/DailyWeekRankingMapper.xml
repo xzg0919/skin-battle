@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.DailyWeekRankingMapper" >
+	<select id="insertEachWeekDresser" resultType="String">
+		SELECT
+			ddr.ali_user_id
+		FROM
+			`collect`.${tableName} ddr
+		WHERE
+			ddr.del_flag = 0
+		AND ddr.is_true = 0
+		GROUP BY
+			ddr.ali_user_id
+		ORDER BY
+			COUNT(ddr.is_true = 0) DESC
+		LIMIT 0, 1
+	</select>
+</mapper>
