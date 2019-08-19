@@ -2,6 +2,76 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tzj.collect.core.mapper.MemberMapper">
 
+	<select id="getMemberCount" resultType="Long">
+		SELECT sum(b.a) from
+		(select count(1) a   from sb_member00 UNION ALL select count(1) from sb_member01
+		UNION ALL select count(1) from sb_member02 UNION ALL select count(1) from sb_member03
+		UNION ALL select count(1) from sb_member04 UNION ALL select count(1) from sb_member05
+		UNION ALL select count(1) from sb_member06 UNION ALL select count(1) from sb_member07
+		UNION ALL select count(1) from sb_member08 UNION ALL select count(1) from sb_member09
+		UNION ALL select count(1) from sb_member10 UNION ALL select count(1) from sb_member11
+		UNION ALL select count(1) from sb_member12 UNION ALL select count(1) from sb_member13
+		UNION ALL select count(1) from sb_member14 UNION ALL select count(1) from sb_member15
+		UNION ALL select count(1) from sb_member16 UNION ALL select count(1) from sb_member17
+		UNION ALL select count(1) from sb_member18 UNION ALL select count(1) from sb_member19
+		UNION ALL select count(1) from sb_member20 UNION ALL select count(1) from sb_member21
+		UNION ALL select count(1) from sb_member22 UNION ALL select count(1) from sb_member23
+		UNION ALL select count(1) from sb_member24 UNION ALL select count(1) from sb_member25
+		UNION ALL select count(1) from sb_member26 UNION ALL select count(1) from sb_member27
+		UNION ALL select count(1) from sb_member28 UNION ALL select count(1) from sb_member29
+		UNION ALL select count(1) from sb_member30 UNION ALL select count(1) from sb_member31
+		UNION ALL select count(1) from sb_member32 UNION ALL select count(1) from sb_member33
+		UNION ALL select count(1) from sb_member34 UNION ALL select count(1) from sb_member35
+		UNION ALL select count(1) from sb_member36 UNION ALL select count(1) from sb_member37
+		UNION ALL select count(1) from sb_member38 UNION ALL select count(1) from sb_member39
+		) b
+	</select>
+	<select id="getMemberCountToDay" resultType="Long">
+		SELECT sum(b.a) from (
+			SELECT count(1) a FROM sb_member00 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member01 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member02 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member03 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member04 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member05 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member06 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member07 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member08 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member09 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member10 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member11 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member12 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member13 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member14 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member15 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member16 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member17 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member18 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member19 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member20 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member21 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member22 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member23 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member24 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member25 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member26 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member27 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member28 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member29 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member30 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member31 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member32 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member33 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member34 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member35 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member36 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member37 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member38 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+			UNION ALL SELECT count(1) FROM sb_member39 a WHERE SUBSTR(a.create_date,1,10) = SUBSTR(NOW(),1,10)
+		) b
+	</select>
+
+
 <select id="selectMemberByAliUserId" parameterType="String" resultType="com.tzj.collect.entity.Member">
 	SELECT
 		*

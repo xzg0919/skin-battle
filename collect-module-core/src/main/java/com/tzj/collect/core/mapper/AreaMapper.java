@@ -43,4 +43,6 @@ public interface AreaMapper extends BaseMapper<Area> {
 	List<StreetNameBean> selectStreetListByName(@Param("name") String name, @Param("code") String code);
 
 	Integer updateStreet(@Param("id") String id, @Param("name") String name, @Param("code") String code);
+
+	List<Area> getCityListByLj();
 }

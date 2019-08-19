@@ -1,10 +1,9 @@
 package api.ali;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.lexicon.param.DailyDaParam;
 import com.tzj.collect.core.param.ali.MapAddressBean;
 import com.tzj.collect.core.param.ali.MemberBean;
-import com.tzj.collect.entity.DailyLexicon;
+import com.tzj.collect.core.param.ali.PiccOrderBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -44,11 +43,6 @@ public class OrderTest {
 
             MapAddressBean mapAddressBean = new MapAddressBean();
             mapAddressBean.setId("7");
-            DailyDaParam dailyDaParam = new DailyDaParam();
-            dailyDaParam.setDepth(1);
-            dailyDaParam.setLexType(DailyLexicon.LexType.HARMFUL);
-            dailyDaParam.setUuId("030dc5c7-9977-45d8-b79f-cf70cca8b72f");
-            dailyDaParam.setLexName("冰箱除臭剂");
 //            mapAddressBean.setAdcCode("330103");
 //            mapAddressBean.setAddress("浙江省杭州市下城区朝晖街道环球中心西湖文化广场");
 //            mapAddressBean.setCity("杭州市");
@@ -63,20 +57,23 @@ public class OrderTest {
 //            mapAddressBean.setUserName("王先hao");
 //            mapAddressBean.setTel("13252525252");
 //            mapAddressBean.setHouseNumber("测试101");
-            MemberBean memberBean = new MemberBean();
-            memberBean.setChannelId("18375336389");
-
+            PiccOrderBean piccOrderBean = new PiccOrderBean();
+            piccOrderBean.setInsuranceId(654);
+            piccOrderBean.setIdCard("411403198905249076");
+            piccOrderBean.setMemberAddress("徐汇区湖南路街道asdasdas");
+            piccOrderBean.setMemberName("岳洋");
+            piccOrderBean.setMemberTel("15225253338");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","daily.check");
+                param.put("name","piccOrder.insertPiccOrder");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
                 param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
-//                param.put("token",securityToken);
+                param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",dailyDaParam);
+                param.put("data",piccOrderBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

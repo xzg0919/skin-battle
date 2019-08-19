@@ -3,6 +3,7 @@ package com.tzj.collect.core.service.impl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.RecruitExpressMapper;
 import com.tzj.collect.core.param.ali.RecruitExpressBean;
+import com.tzj.collect.core.result.admin.RecruitExpressResult;
 import com.tzj.collect.core.service.AsyncService;
 import com.tzj.collect.core.service.RecruitExpressService;
 import com.tzj.collect.entity.RecruitExpress;
@@ -11,6 +12,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -46,5 +51,26 @@ public class RecruitExpressServiceImpl extends ServiceImpl<RecruitExpressMapper,
             asyncService.notifyDingDingOrderCreate(message.toString(), true, recruitDingDing);
         }
         return "操作成功";
+    }
+    @Override
+    public Object getRecruitList(RecruitExpressBean recruitExpressBean) {
+        Integer startPage = (recruitExpressBean.getPageBean().getPageNumber()-1)*recruitExpressBean.getPageBean().getPageSize();
+        Integer pageSize = recruitExpressBean.getPageBean().getPageSize();
+        List<RecruitExpressResult> recruitList = recruitExpressMapper.getRecruitList(recruitExpressBean.getType(), recruitExpressBean.getCooperationType(), recruitExpressBean.getEnterprise(), recruitExpressBean.getCity(), recruitExpressBean.getMobile(), recruitExpressBean.getStartTime(), recruitExpressBean.getEndTime(), startPage, pageSize);
+        Integer recruitCount = recruitExpressMapper.getRecruitCount(recruitExpressBean.getType(), recruitExpressBean.getCooperationType(), recruitExpressBean.getEnterprise(), recruitExpressBean.getCity(), recruitExpressBean.getMobile(), recruitExpressBean.getStartTime(), recruitExpressBean.getEndTime());
+        Map<String,Object> resultMap = new HashMap<>();
+        Map<String,Object> pagination = new HashMap<>();
+        pagination.put("current",recruitExpressBean.getPageBean().getPageNumber());
+        pagination.put("pageSize",recruitExpressBean.getPageBean().getPageSize());
+        pagination.put("total",recruitCount);
+        resultMap.put("pagination",pagination);
+        resultMap.put("orderList",recruitList);
+        return resultMap;
+    }
+
+    @Override
+    public List<RecruitExpressResult> getRecruitListOutExcel(RecruitExpressBean recruitExpressBean) {
+        List<RecruitExpressResult> recruitList = recruitExpressMapper.getRecruitListOutExcel(recruitExpressBean.getType(), recruitExpressBean.getCooperationType(), recruitExpressBean.getEnterprise(), recruitExpressBean.getCity(), recruitExpressBean.getMobile(), recruitExpressBean.getStartTime(), recruitExpressBean.getEndTime());
+        return recruitList;
     }
 }

@@ -466,6 +466,15 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	}
 
 	@Override
+	public long getMemberCount() {
+		return memberMapper.getMemberCount();
+	}
+	@Override
+	public long getMemberCountToDay() {
+		return memberMapper.getMemberCountToDay();
+	}
+
+	@Override
 	public Member selectMemberByAliUserId(String aliUserId) {
 		String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
 		return memberMapper.selectMemberByAliUserId(aliUserId,memberName);

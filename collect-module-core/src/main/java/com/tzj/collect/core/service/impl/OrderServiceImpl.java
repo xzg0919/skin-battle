@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alipay.api.domain.AntMerchantExpandTradeorderSyncModel;
 import com.alipay.api.domain.ItemOrder;
 import com.alipay.api.domain.OrderExtInfo;
+import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -18,6 +20,7 @@ import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
 import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
+import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.ali.IdAmountListBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.OrderItemBean;
@@ -2410,6 +2413,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				for (OrderItemBean orderItemBean : orderItemList) {
 					//根据分类Id查询分类信息
 					Category category = categoryService.selectById(orderItemBean.getId());
+					float price = 0;
+					CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", order.getCompanyId()).eq("city_id", orderBean.getCityId()).eq("category_id", orderItemBean.getId()).eq("del_flag", "0"));
+					if (null == companyCategoryCity){
+						CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", order.getCompanyId()).eq("category_id", orderItemBean.getId()).eq("del_flag", "0"));
+						price = companyCategory.getPrice();
+					}else {
+						price = companyCategoryCity.getPrice().floatValue();
+					}
 					OrderItem orderItem = new OrderItem();
 					orderItem.setOrderId(Integer.parseInt(order.getId() + ""));
 					orderItem.setCategoryId(Integer.parseInt(category.getId() + ""));
@@ -2419,7 +2430,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderItem.setParentName(orderItemBean.getParentName());
 					orderItem.setAmount(1);
 					orderItem.setUnit(category.getUnit());
-					orderItem.setPrice(StringUtils.isBlank(orderItemBean.getPrice())?category.getPrice().floatValue():Float.parseFloat(orderItemBean.getPrice()));
+					orderItem.setPrice(price);
 					orderItemService.insert(orderItem);
 					amount += orderItemBean.getAmount();
 				}
@@ -3001,8 +3012,62 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			return "订单已完成或已取消，不可操作";
 		}
 	}
+	@Override
+	public Object getOrderListByAdmin(OrderBean orderBean) {
+		PageBean pageBean = orderBean.getPagebean();
 
+		if(null==orderBean.getCompanyId()&&StringUtils.isBlank(orderBean.getTitle())&&StringUtils.isBlank(orderBean.getStatus())
+				&&StringUtils.isBlank(orderBean.getTel())&&StringUtils.isBlank(orderBean.getOrderNo())&&StringUtils.isBlank(orderBean.getLinkName())
+				&&(StringUtils.isBlank(orderBean.getStartTime())||StringUtils.isBlank(orderBean.getEndTime()))){
+			throw new ApiException("请输入查询的条件");
+		}
+		Integer startPage = (pageBean.getPageNumber()-1)*pageBean.getPageSize();
+		Integer pageSize = pageBean.getPageSize();
+		Object orderList = orderMapper.getOrderListByAdmin(orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime(), startPage, pageSize);
+		Integer orderCount = orderMapper.getOrderCountByAdmin(orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
+		Map<String,Object> resultMap = new HashMap<>();
+		Map<String,Object> pagination = new HashMap<>();
+		pagination.put("current",pageBean.getPageNumber());
+		pagination.put("pageSize",pageBean.getPageSize());
+		pagination.put("total",orderCount);
+		resultMap.put("pagination",pagination);
+		resultMap.put("orderList",orderList);
+		return resultMap;
+	}
 
+	@Override
+	public Object getOrderDetailByIdByAdmin(String orderId) {
+		Order order = this.selectById(orderId);
+		Company company = companyService.selectById(order.getCompanyId());
+		List<OrderItem> orderItemList = orderItemService.selectList(new EntityWrapper<OrderItem>().eq("order_id", orderId));
+		List<OrderItemAch> orderItemAchList = orderItemAchService.selectList(new EntityWrapper<OrderItemAch>().eq("order_id", orderId));
+		if (orderItemAchList.isEmpty()){
+			orderItemAchList = new ArrayList<>();
+		}
+		List<OrderPic> orderPicList = orderPicService.selectList(new EntityWrapper<OrderPic>().eq("order_id", orderId));
+		List<OrderPicAch> orderPicAchList = orderPicAchService.selectList(new EntityWrapper<OrderPicAch>().eq("order_id", orderId));
+		if (orderPicAchList.isEmpty()){
+			orderPicAchList = new ArrayList<>();
+		}
+		String paymentNo = "";
+		Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", order.getOrderNo()));
+		if (null != payment){
+			AlipayFundTransOrderQueryResponse response = paymentService.getTransfer(payment.getId().toString());
+			if(response.isSuccess()){
+				paymentNo = response.getOrderId();
+			}
+		}
+		Map<String,Object> resultMap = new HashMap<>();
+		resultMap.put("order",order);
+		resultMap.put("company",company);
+		resultMap.put("orderItemList",orderItemList);
+		resultMap.put("orderItemAchList",orderItemAchList);
+		resultMap.put("orderPicList",orderPicList);
+		resultMap.put("orderPicAchList",orderPicAchList);
+		resultMap.put("paymentNo",paymentNo);
+
+		return resultMap;
+    }
 	/**
 	 * 根据区域id 提供第三方的订单数据 默认第一页 10条数据
 	 * @param areaId
@@ -3019,4 +3084,51 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 
+	@Override
+	public Integer getOrderCountByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getOrderCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
+	@Override
+	public Integer getInitCountByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getInitCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId());
+	}
+	@Override
+	public Integer getTosendCountByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getTosendCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId());
+	}
+	@Override
+	public Integer getOrderCountBytitle(LjAdminBean ljAdminBean,String title,String isGreen){
+		return orderMapper.getOrderCountBytitle(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),title,isGreen);
+	}
+	@Override
+	public Double getGreenBigPaymentOrderPrice(LjAdminBean ljAdminBean){
+		return orderMapper.getGreenBigPaymentOrderPrice(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
+	@Override
+	public List<Map<String,Object>> getOrderCategoryByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getOrderCategoryByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
+	@Override
+	public List<Map<String,Object>> getHouseOrderCategoryByLj(LjAdminBean ljAdminBean,String isCash){
+		if ("0".equals(isCash)){
+			return orderMapper.getHouseOrderCategoryByLjAsCash(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+		}
+		return orderMapper.getHouseOrderCategoryByLjAsGreen(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
+	@Override
+	public Double avgOrMaxDateByOrder(LjAdminBean ljAdminBean,String status,String avgOrMax,String title){
+		if ("avg".equals(avgOrMax)){
+			return orderMapper.avgOrMaxDateByOrderAvg(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status,title);
+		}
+		return orderMapper.avgOrMaxDateByOrderMax(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status,title);
+	}
+	@Override
+	public Integer getSumOrderBylj(LjAdminBean ljAdminBean){
+		return orderMapper.getSumOrderBylj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+	}
+
+	@Override
+	public Integer getOrderLjByStatus(LjAdminBean ljAdminBean,String status){
+		return orderMapper.getOrderLjByStatus(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status);
+	}
 }

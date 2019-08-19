@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
 import com.tzj.collect.core.param.admin.AdminCommunityBean;
+import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.admin.RecyclersBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.BusinessRecyclerBean;
@@ -219,4 +220,6 @@ public interface RecyclersService extends IService<Recyclers>{
 	Object getAreaRecyclersRangeList(RecyclersServiceRangeBean recyclersServiceRangeBean, String companyId);
 	@DS("slave")
 	Object getRecycleSon(Long recyclerId, com.tzj.collect.core.param.app.RecyclersBean recyclersBean);
+	@DS("slave")
+	Integer getRecyclersCountByLj(LjAdminBean ljAdminBean);
 }

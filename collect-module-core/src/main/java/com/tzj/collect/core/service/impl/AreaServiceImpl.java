@@ -506,4 +506,8 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		resultMap.put("pageNum",pageBean.getPageNumber());
 		return resultMap;
 	}
+
+	public List<Area> getCityListByLj(){
+		return mapper.getCityListByLj();
+	}
 }

@@ -501,6 +501,18 @@ select count(1) from (
 				and scr.type_ = '1'
 			</otherwise>
 		</choose>
-
+	</select>
+	<select id="getRecyclersCountByLj" parameterType="String" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			sb_company_recycler a
+		INNER JOIN sb_recyclers b ON a.recycler_id = b.id
+		WHERE
+			a.status_ = '1'
+		AND a.type_ = '1'
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
 	</select>
 </mapper>

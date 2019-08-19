@@ -344,6 +344,7 @@ public class OrderApi {
 		String companyId = "";
 		String level = "";
 		String areaId = memberAddress.getAreaId().toString();
+		String cityId = memberAddress.getCityId().toString();
 		//根据分类Id和小区Id查询所属企业
 		companyId = companyStreetHouseService.selectStreetHouseceCompanyId(category.getParentId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
 		if(StringUtils.isBlank(companyId)) {
@@ -354,6 +355,7 @@ public class OrderApi {
 		orderbean.setCommunityId(communityId);
 		orderbean.setAreaId(Integer.parseInt(areaId));
 		orderbean.setStreetId(memberAddress.getStreetId());
+		orderbean.setCityId(cityId);
 		orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(),member.getAliUserId()));
 		//随机生成订单号
 		String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);

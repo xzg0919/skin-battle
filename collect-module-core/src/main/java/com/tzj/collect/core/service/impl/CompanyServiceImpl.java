@@ -277,4 +277,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		resultMap.put("bigRange",bigRange);
 		return  resultMap;
 	}
+
+	@Override
+	public List<Company> getCompanyList() {
+		return this.selectList(new EntityWrapper<Company>().eq("del_flag",0));
+	}
 }

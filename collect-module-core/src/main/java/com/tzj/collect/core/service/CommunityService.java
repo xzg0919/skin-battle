@@ -1,8 +1,10 @@
 package com.tzj.collect.core.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.core.param.admin.AdminCommunityBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.Recyclers;
@@ -87,4 +89,6 @@ public interface CommunityService extends IService<Community> {
      * @return
      */
     List<Area> getCommunityData(String companyId);
+	@DS("slave")
+	Integer getCommunityCountByLj(LjAdminBean ljAdminBean);
 }

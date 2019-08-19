@@ -27,6 +27,7 @@
         <module>collect-module-member</module>
         <module>collect-module-flcx</module>
         <module>collect-module-flcx-boot</module>
+        <module>collect-module-point</module>
         <module>collect-module-dailyda</module>
         <module>collect-module-dailyda-boot</module>
     </modules>

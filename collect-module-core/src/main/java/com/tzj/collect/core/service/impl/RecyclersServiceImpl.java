@@ -21,6 +21,7 @@ import com.taobao.api.ApiException;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.mapper.RecyclersMapper;
 import com.tzj.collect.core.param.admin.AdminCommunityBean;
+import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.admin.RecyclersBean;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.PageBean;
@@ -492,5 +493,9 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
 	@Override
 	public Object getRecycleSon(Long recyclerId, com.tzj.collect.core.param.app.RecyclersBean recyclersBean) {
 		return recyclersMapper.getRecycleSon(recyclerId,recyclersBean.getIsBigRecycle(),recyclersBean.getName());
+	}
+	@Override
+	public Integer getRecyclersCountByLj(LjAdminBean ljAdminBean){
+		return recyclersMapper.getRecyclersCountByLj(ljAdminBean.getCompanyId());
 	}
 }

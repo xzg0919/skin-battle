@@ -1,5 +1,8 @@
 package com.tzj.collect.core.param.ali;
 
+import lombok.Data;
+
+@Data
 public class RecruitExpressBean {
 
     private Long id;
@@ -31,6 +34,16 @@ public class RecruitExpressBean {
      * 意向回收的类型 1家电 2生活垃圾 3五公斤
      */
     private String categoryType;
+    /**
+     * 开始时间
+     */
+    private String startTime;
+    /**
+     * 结束时间
+     */
+    private String endTime;
+
+    private PageBean pageBean;
 
     public Long getId() {
         return id;

@@ -84,4 +84,15 @@ public interface MemberService extends IService<Member>{
     Integer inserOrUpdatetMember(Member member);
 
     String saveChannelId(String aliUserId,String channelId);
+
+    /**
+     * 获取会员总数
+     * @return
+     */
+    long getMemberCount();
+    /**
+     * 获取当天会员总数
+     * @return
+     */
+    long getMemberCountToDay();
 }

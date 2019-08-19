@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
+import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.app.ScoreAppBean;
@@ -125,13 +126,11 @@ public interface OrderService extends IService<Order> {
 	AppOrderResult getOrderDetails(OrderBean orderbean);
 	/**
 	 * 主要是修改上门时间能通用但必须传订单单号或者订单id 及回收人员id,否则返回false
-	 * @param order
 	 * @return
 	 */
 	boolean modifyOrder(OrderBean orderBean);
 	/**
 	 * 获得当前回收人员数据
-	 * @param orderBean
 	 * @return
 	 */
 	@DS("slave")
@@ -163,7 +162,6 @@ public interface OrderService extends IService<Order> {
 	/**
 	 * 订单详情(用户)
 	 * @author 王灿
-	 * @param order:订单
 	 * @return
 	*/
 	@DS("slave")
@@ -171,7 +169,6 @@ public interface OrderService extends IService<Order> {
 	/**
 	 * 订单详情(企业)
 	 * @author 王灿
-	 * @param order:订单
 	 * @return
 	*/
 	@DS("slave")
@@ -179,7 +176,6 @@ public interface OrderService extends IService<Order> {
 	/**
 	 * 获取用户提交生活垃圾订单id详情
 	 * @author 王灿
-	 * @param order:订单
 	 * @return
 	*/
 	@DS("slave")
@@ -203,7 +199,6 @@ public interface OrderService extends IService<Order> {
 	/**
 	 * 订单数据看板折线图
 	 * @author 王灿
-	 * @param orderBean
 	 * @return
 	 */
 	@DS("slave")
@@ -316,4 +311,28 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	List<ThirdOrderResult> orderStatistics4Third(String areaId,Integer pageNumber,Integer pageSize);
 
+	@DS("slave")
+	Object getOrderListByAdmin(OrderBean orderBean);
+	@DS("slave")
+	Object getOrderDetailByIdByAdmin(String orderId);
+	@DS("slave")
+	Integer getOrderCountByLj(LjAdminBean ljAdminBean);
+	@DS("slave")
+	Integer getInitCountByLj(LjAdminBean ljAdminBean);
+	@DS("slave")
+	Integer getTosendCountByLj(LjAdminBean ljAdminBean);
+	@DS("slave")
+	Integer getOrderCountBytitle(LjAdminBean ljAdminBean,String title,String isGreen);
+	@DS("slave")
+	Double getGreenBigPaymentOrderPrice(LjAdminBean ljAdminBean);
+	@DS("slave")
+	List<Map<String,Object>> getOrderCategoryByLj(LjAdminBean ljAdminBean);
+	@DS("slave")
+	List<Map<String,Object>> getHouseOrderCategoryByLj(LjAdminBean ljAdminBean,String isCash);
+	@DS("slave")
+	Double avgOrMaxDateByOrder(LjAdminBean ljAdminBean,String status,String avgOrMax,String title);
+	@DS("slave")
+	Integer getSumOrderBylj(LjAdminBean ljAdminBean);
+	@DS("slave")
+	Integer getOrderLjByStatus(LjAdminBean ljAdminBean,String status);
 }
