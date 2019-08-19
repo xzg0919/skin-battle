@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tzj.collect.core.mapper.DailyLexiconMapper" >
+	<select id="existTable" parameterType="String" resultType="Integer">
+        select count(*)
+        from information_schema.TABLES
+        where LCASE(table_name)=#{tableName}
+    </select>
+
+	<update id="createNewTable" parameterType="String">
+        CREATE TABLE  ${tableName} (
+		  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+		  `uu_id` varchar(100) DEFAULT NULL COMMENT 'uuId',
+		  `ali_user_id` varchar(100) DEFAULT NULL COMMENT '阿里会员id',
+		  `lexicon_id` int(11) NOT NULL COMMENT '答题id',
+		  `type_id` smallint(3) NOT NULL COMMENT '原有答案',
+		  `user_type_id` smallint(3) DEFAULT NULL COMMENT '用户输入答案',
+		  `is_true` smallint(3) DEFAULT '1' COMMENT '正确与否(0:正确, 1:错误)',
+		  `score_` smallint(3) DEFAULT '0' COMMENT '获得积分',
+		  `create_by` varchar(50) DEFAULT NULL COMMENT '创建者',
+		  `create_date` datetime NOT NULL COMMENT '创建时间',
+		  `update_by` varchar(50) DEFAULT NULL COMMENT '更新者',
+		  `update_date` datetime NOT NULL COMMENT '更新时间',
+		  `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息',
+		  `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标记',
+		  `version_` int(11) DEFAULT '1' COMMENT '当前版本号',
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COMMENT='每日答题记录流水(每人每日记录一次),按周分表';
+    </update>
+
+
 	<select id="lexiconList" resultMap="getCheckMap">
         SELECT depth FROM daily_lexicon WHERE del_flag = 0 GROUP BY depth
     </select>
@@ -71,6 +99,20 @@
 		LEFT JOIN daily_lexicon dll ON ddr.lexicon_id = dll.id
 		WHERE
 			ddr.del_flag = 0
+		AND ddr.ali_user_id = #{aliUserId}
+		AND ddr.create_date BETWEEN #{localDateBefore}
+		AND #{localDateEnd}
+	</select>
+	<select id="isAnswerDaily" resultType="Map">
+		SELECT
+			dll.depth,
+			ddr.uu_id AS uuId,
+			dll.name_
+		FROM
+			`collect`.${tableName} ddr
+		LEFT JOIN daily_lexicon dll ON ddr.lexicon_id = dll.id
+		WHERE
+			ddr.del_flag = 0
 		AND ddr.user_type_id IS NOT NULL
 		AND ddr.ali_user_id = #{aliUserId}
 		AND ddr.create_date BETWEEN #{localDateBefore}
@@ -88,6 +130,8 @@
 			ddr.del_flag = 0
 		AND ddr.ali_user_id = #{aliUserId}
 		AND ddr.is_true = 1
+		AND ddr.create_date BETWEEN #{localDateBefore}
+		AND #{localDateEnd}
 		order by  ddr.user_type_id DESC
 	</select>
 	<resultMap id="lexResultMap" type="com.tzj.collect.api.lexicon.result.LexResult">

@@ -44,4 +44,7 @@ public interface DailyLexiconService extends IService<DailyLexicon> {
      List<Map<String, Object>> weekDresserList(Integer startPage, Integer pageSize);
 
      Map<String, Object> errorLexiconList(Member member);
+
+     Set<Map<String, Object>> isAnswerDaily(String aliUserId);
+
 }

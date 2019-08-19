@@ -97,7 +97,8 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
     public Map<String, Object> receivingMoney(DailyDaParam dailyDaParam) {
         Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         //领红包时创建红包(aliUserId, week, setNum)
-        String price = (Math.random() * 0.4+0.1+"").substring(0,4);
+//        String price = (Math.random() * 0.4+0.1+"").substring(0,4);
+        String price = "0.11";
         while(Double.parseDouble(price) >= 0.50) {
             price = (Math.random() * 0.4+0.1+"").substring(0,4);
         }
@@ -157,10 +158,10 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                     returnMap.put("msg", "领取成功");
                     returnMap.put("price", finalPrice);
                     return;
-                }else if ("N".equals(receivableLists.get("isReceivable"))){
-                    throw new ApiException("红包状态不能领取");
                 }else if("Y".equals(receivableLists.get("isReceive"))){
                     throw new ApiException("红包已领取");
+                }else if ("N".equals(receivableLists.get("isReceivable"))){
+                    throw new ApiException("红包处于不可领取状态下");
                 }
             }
         });

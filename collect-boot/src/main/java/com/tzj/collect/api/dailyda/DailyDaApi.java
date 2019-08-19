@@ -5,8 +5,10 @@ import com.tzj.collect.api.lexicon.param.DailyDaParam;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.entity.DailyLexicon;
+import com.tzj.collect.entity.DailyWeekRanking;
 import com.tzj.collect.service.DailyLexiconService;
 import com.tzj.collect.service.DailyReceivingService;
+import com.tzj.collect.service.DailyWeekRankingService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
@@ -31,6 +33,9 @@ public class DailyDaApi {
 
     @Resource
     private DailyReceivingService dailyReceivingService;
+
+    @Resource
+    private DailyWeekRankingService dailyWeekRankingService;
 
 //  /** 根据用户授权返回的authCode,解析用户的数据
 //    * @author sgmark@aliyun.com
@@ -78,8 +83,8 @@ public class DailyDaApi {
       * @return
       */
     @Api(name = "daily.all.week.dresser", version = "1.0")
-    public Page<Map<String, Object>> eachWeekDresserList(PageBean pageBean){
-        return null;
+    public Page<DailyWeekRanking> eachWeekDresserList(PageBean pageBean){
+        return dailyWeekRankingService.eachWeekDresserList(pageBean.getPageNumber(), pageBean.getPageSize());
     }
 
 
@@ -91,6 +96,9 @@ public class DailyDaApi {
      */
     @Api(name = "daily.list", version = "1.0")
     public Set<Map<String, Object>> dailyLexiconList(){
+        if (dailyLexiconService.isAnswerDaily(MemberUtils.getMember().getAliUserId()).size()>0){
+           throw new ApiException("今日答题已完成，明儿请赶早");
+        }
         return dailyLexiconService.dailyLexiconList(MemberUtils.getMember().getAliUserId());
     }
 

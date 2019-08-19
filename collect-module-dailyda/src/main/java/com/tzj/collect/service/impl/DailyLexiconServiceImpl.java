@@ -39,6 +39,19 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 
     @Resource
     private  DailyLexiconMapper dailyLexiconMapper;
+
+    /** 查询当前用户当天在本周记录表中是否有数据若没有，创建答题，若已有直接返回当前用户题目信息
+      * @author sgmark@aliyun.com
+      * @date 2019/8/17 0017
+      * @param
+      * @return
+      */
+    public  Set<Map<String, Object>> isAnswerDaily(String aliUserId){
+        Set<Map<String, Object>> returnList = new HashSet<>();
+        //查询当前用户当天在本周记录表中是否有数据若没有，创建答题，若已有直接返回当前用户题目信息  todo
+        returnList = dailyLexiconMapper.isAnswerDaily(aliUserId, tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59");
+        return returnList;
+    }
     /**  各个随机取2值
      * @author sgmark@aliyun.com
      * @date 2019/8/9 0009
@@ -49,7 +62,6 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     @Cacheable(value = "dailyLexiconList", key = "#aliUserId", sync = true)
     public Set<Map<String, Object>> dailyLexiconList(String aliUserId) {
         Set<Map<String, Object>> returnList = new HashSet<>();
-        //查询当前用户当天在本周记录表中是否有数据若没有，创建答题，若已有直接返回当前用户题目信息  todo
         returnList = dailyLexiconMapper.dailyLexiconList(aliUserId, tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59");
         if (returnList.size() > 0){
             return returnList;
@@ -249,7 +261,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     @Override
     public Map<String, Object> errorLexiconList(Member member) {
         Map<String, Object> returnMap = new HashMap<>();
-        returnMap.put("errorList", dailyLexiconMapper.errorLexiconList(tableName(System.currentTimeMillis()), member.getAliUserId()));
+        returnMap.put("errorList", dailyLexiconMapper.errorLexiconList(tableName(System.currentTimeMillis()), member.getAliUserId(), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59"));
         return returnMap;
     }
 
@@ -260,6 +272,11 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
       * @return
       */
     public void saveDailyRecordsList(String aliUserId, String uuId, Long lexiconId, Integer typeId){
+        //本周记录表若没有创建新表
+        if(dailyLexiconMapper.existTable(tableName(System.currentTimeMillis())) <= 0){
+            dailyLexiconMapper.createNewTable(tableName(System.currentTimeMillis()));
+        }
+        //存入每日答题信息
         dailyLexiconMapper.insertDailyRecords(aliUserId, uuId, lexiconId, typeId, tableName(System.currentTimeMillis()));
     }
 
