@@ -121,16 +121,16 @@
     <span class="span3" id="maxCompleteDateDq">0</span>
   </div>
   <div class="Div5">
-    <span class="span2" id="">订单总数：</span>
+    <span class="span2" id="">全部订单总数：</span>
     <span class="span3" id="orderCount">0</span>
     <br />
-    <span class="span2" id="">订单取消率：</span>
+    <span class="span2" id="">全部订单取消率：</span>
     <span class="span3" id="cancelOrderCount">0</span>
     <br />
-    <span class="span2" id="">订单驳回率：</span>
+    <span class="span2" id="">全部订单驳回率：</span>
     <span class="span3" id="rejectedOrderCount">0</span>
     <br />
-    <span class="span2" id="">订单完成率：</span>
+    <span class="span2" id="">全部订单完成率：</span>
     <span class="span3" id="completeOrderCount">0</span>
   </div>
 </div>

@@ -43,9 +43,6 @@
                     </div>
                 </div>
             </form>
-            <#--<div class="layui-input-inline">-->
-                <#--<select id="secetedTest" ></select>-->
-            <#--</div>-->
 
             <form class="layui-form" action="">
                 <div class="layui-form-item">
@@ -79,7 +76,7 @@
         </div>
 
         <div class="Div5">
-            <span class="span2" id="">截至当天当前时间的新增注册会员数量：</span
+            <span class="span2" id="">当天当前时间的新增注册会员数量：</span
             >
             <span class="span3" id="memberCountToDay">0</span>
             <br />
@@ -91,29 +88,29 @@
             >
             <span class="span3" id="orderCount">0</span>
             <br />
-            <span class="span2" id="">截至当前时间的家电订单量（含在途不含取消）：</span
+            <span class="span2" id="">截至当前时间的家电订单量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="digitalCount">0</span>
             <br />
-            <span class="span2" id="">截至当前时间的大件垃圾订单量（含在途不含取消）：</span
+            <span class="span2" id="">截至当前时间的大件垃圾订单量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="bigCount">0</span>
             <br />
-            <span class="span2" id="">截至当前时间的五废订单量（含在途不含取消）：</span
+            <span class="span2" id="">截至当前时间的五废订单量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="houseCount">0</span>
             <br />
-            <span class="span2" id="">截至当前时间的五公斤订单量（含在途不含取消）：</span
+            <span class="span2" id="">截至当前时间的五公斤订单量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="fiveKgCount">0</span>
             <br />
-            <span class="span2" id="">截至当前时间的五废订单下单选择10倍积分的订单总量（含在途不含取消）：</span
+            <span class="span2" id="">截至当前时间的五废订单下单选择10倍积分的订单总量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="greenOrderCount">0</span>
             <br />
         </div>
         <div class="Div5">
-            <span class="span2" id="">截至当天当前时间的开通街道数量：</span>
+            <span class="span2" id="">截至当天当前时间的五废开通街道数量：</span>
             <span class="span3" id="communityCount">0</span>
             <br />
             <span class="span2" id="">截至当天当前时间的五废服务商回收人员数量：</span
@@ -129,23 +126,23 @@
             <br />
         </div>
         <div class="Div5">
-            <span class="span2" id="">截至当前时间的家电订单总量（含在途不含取消）：</span
+            <span class="span2" id="">截至当前时间的家电订单总量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="digitalCountByLj">0</span>
             <br />
-            <span class="span2" id="">截至当前时间的大件垃圾订单总量（含在途不含取消）：</span
+            <span class="span2" id="">截至当前时间的大件垃圾订单总量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="bigCountByLj">0</span>
             <br />
-            <span class="span2" id="">截至当前时间的五废订单总量（含在途不含取消）：</span
+            <span class="span2" id="">截至当前时间的五废订单总量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="houseCountByLj">0</span>
             <br />
-            <span class="span2" id="">截至到当前时间的五废订单下单选择10倍积分的订单总量（含在途不含取消）：</span
+            <span class="span2" id="">截至到当前时间的五废订单下单选择10倍积分的订单总量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="greenOrderCountByLj">0</span>
             <br />
-            <span class="span2" id="">截至当前时间的五公斤订单总量（含在途不含取消）：</span
+            <span class="span2" id="">截至当前时间的五公斤订单总量（含未派单含在途不含取消驳回）：</span
             >
             <span class="span3" id="fiveKgCountByLj">0</span>
             <br />
