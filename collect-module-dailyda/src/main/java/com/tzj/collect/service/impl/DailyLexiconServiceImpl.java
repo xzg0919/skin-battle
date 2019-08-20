@@ -210,7 +210,13 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         Long weekRanking = jedis.zrevrank(redisKeyName(), member.getAliUserId());
         returnMap.put("weekRanking", null == weekRanking ? "999+": ++weekRanking);
         //本日是否已答过题
-        returnMap.put("todayIsAnswer", dailyLexiconMapper.isAnswerDaily(member.getAliUserId(), tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59").size() > 0 ? "Y":"N");
+        Long zrank = jedis.zrank(redisKeyName() + ":" + LocalDate.now().getDayOfWeek(), member.getAliUserId());
+        if (null == zrank){
+            returnMap.put("todayIsAnswer", "N");
+        }else {
+            returnMap.put("todayIsAnswer", "Y");
+        }
+//        returnMap.put("todayIsAnswer", dailyLexiconMapper.isAnswerDaily(member.getAliUserId(), tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59").size() > 0 ? "Y":"N");
         return returnMap;
     }
 
