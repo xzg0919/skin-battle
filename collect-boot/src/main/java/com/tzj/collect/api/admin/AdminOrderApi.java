@@ -1,6 +1,7 @@
 package com.tzj.collect.api.admin;
 
 import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.OrderStatusType;
 import com.tzj.collect.entity.OrdersType;
@@ -11,6 +12,7 @@ import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 @ApiService
 public class AdminOrderApi {
@@ -63,6 +65,22 @@ public class AdminOrderApi {
     public Object getOrderDetailById(OrderBean orderBean){
         return orderService.getOrderDetailByIdByAdmin(orderBean.getId().toString());
     }
-
+    /**
+     * 中台驳回接口
+     * @author 王灿
+     * @param
+     * @return
+     */
+    @Api(name = "admin.order.updateOdrerStatusByAdmin", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public String updateOdrerStatusByAdmin(BOrderBean orderbean) {
+        //订单id
+        Integer orderId = orderbean.getId();
+        //驳回原因
+        String cancelReason = orderbean.getCancelReason();
+        String sta = orderService.updateOrderByBusiness(orderId,"REJECTED",cancelReason,null);
+        return sta;
+    }
 
 }
