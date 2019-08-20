@@ -3077,10 +3077,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Integer _pageNumber = pageNumber == null?0:pageNumber;
 		Integer _pageSize  = pageSize==null?10:pageSize;
 
-		Integer start = _pageNumber*_pageSize + 1;
-		Integer end = _pageNumber*_pageSize + _pageSize;
+		Integer start = _pageNumber*_pageSize;
 
-		return orderMapper.orderStatistics4Third(areaId,start,end);
+		return orderMapper.orderStatistics4Third(areaId,start,_pageSize);
 	}
 
 
