@@ -309,7 +309,7 @@ public interface OrderService extends IService<Order> {
 	 * @return
 	 */
 	@DS("slave")
-	List<ThirdOrderResult> orderStatistics4Third(String areaId,Integer pageNumber,Integer pageSize);
+	List<ThirdOrderResult> orderStatistics4Third(String areaId,String startTime,String endTime,Integer pageNumber,Integer pageSize);
 
 	@DS("slave")
 	Object getOrderListByAdmin(OrderBean orderBean);

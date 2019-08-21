@@ -3073,13 +3073,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @param areaId
 	 * @return
 	 */
-	public List<ThirdOrderResult> orderStatistics4Third(String areaId,Integer pageNumber,Integer pageSize){
+	public List<ThirdOrderResult> orderStatistics4Third(String areaId,String startTime,String endTime,Integer pageNumber,Integer pageSize){
 		Integer _pageNumber = pageNumber == null?0:pageNumber;
 		Integer _pageSize  = pageSize==null?10:pageSize;
 
 		Integer start = _pageNumber*_pageSize;
 
-		return orderMapper.orderStatistics4Third(areaId,start,_pageSize);
+		return orderMapper.orderStatistics4Third(areaId,startTime,endTime,start,_pageSize);
 	}
 
 

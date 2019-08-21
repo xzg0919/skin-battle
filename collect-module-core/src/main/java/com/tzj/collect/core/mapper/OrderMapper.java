@@ -182,6 +182,6 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @param areaId
 	 * @return
 	 */
-	public List<ThirdOrderResult> orderStatistics4Third(@Param("areaId") String areaId,@Param("startPage") Integer startPage, @Param("endPage") Integer endPage);
+	public List<ThirdOrderResult> orderStatistics4Third(@Param("areaId") String areaId,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("startPage") Integer startPage, @Param("endPage") Integer endPage);
 }
 

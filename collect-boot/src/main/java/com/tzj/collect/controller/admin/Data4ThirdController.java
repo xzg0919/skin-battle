@@ -38,10 +38,10 @@ public class Data4ThirdController {
      * @return
      */
     @RequestMapping(value = "/orderStatistics",method = RequestMethod.GET)
-    public Object orderStatistics(String areaId,Integer pageNumber,Integer pageSize){
+    public Object orderStatistics(String areaId,String startTime,String endTime,Integer pageNumber,Integer pageSize){
         List<Map<String,Object>> restList = new ArrayList<>();
         List<ThirdOrderResult> map = new ArrayList<>();
-        map = orderService.orderStatistics4Third(areaId,pageNumber,pageSize);
+        map = orderService.orderStatistics4Third(areaId,startTime,endTime,pageNumber,pageSize);
         return map;
     }
 }
