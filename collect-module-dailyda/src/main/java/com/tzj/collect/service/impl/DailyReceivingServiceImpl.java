@@ -55,7 +55,12 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
         //用户签到天数(有答题记录的天数)
         Integer signNum = dailyReceivingMapper.signNum(aliUserId, DailyLexiconServiceImpl.tableName(System.currentTimeMillis()));
         returnMap.put("signNum", signNum);
-        List<Map<String, Object>> receiveNumList = dailyReceivingMapper.receiveNum(aliUserId, LocalDate.now().getYear()+ "" + week);
+        List<Map<String, Object>> receiveNumList = null;
+        try {
+            receiveNumList = dailyReceivingMapper.receiveNum(aliUserId, LocalDate.now().getYear() + "" + week);
+        }catch (Exception e){
+            receiveNumList = new ArrayList<>();
+        }
         //领奖天数
         returnMap.put("receiveNum", receiveNumList.size());
         List<Map<String, Object>> returnListMap = new ArrayList<>(3);
@@ -77,8 +82,9 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
         }
 
         //设值是否已领取
+        List<Map<String, Object>> finalReceiveNumList = receiveNumList;
         returnListMap.stream().forEach(returnListMaps ->
-            receiveNumList.stream().forEach(receiveNumLists ->{
+            finalReceiveNumList.stream().forEach(receiveNumLists ->{
                 if (returnListMaps.get("setNum").equals(receiveNumLists.get("set_num"))){
                     if ("0".equals(receiveNumLists.get("is_receive").toString())){
                         returnListMaps.put("isReceive", "Y");
