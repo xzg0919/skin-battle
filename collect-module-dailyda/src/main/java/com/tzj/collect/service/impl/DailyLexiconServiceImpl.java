@@ -64,6 +64,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         Set<Map<String, Object>> returnList = new HashSet<>();
         returnList = dailyLexiconMapper.dailyLexiconList(aliUserId, tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59");
         if (returnList.size() > 0){
+            returnList.stream().forEach(returnLists -> returnLists.put("answerList", answerMapList()));
             return returnList;
         }
         List<Map<String, Object>> mapList = lexiconList("lexiconList");
@@ -96,38 +97,42 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             returnLists.put("uuId", uuId);
             returnLists.remove("id");
             returnLists.remove("type_id");
-            //给出答案选项，包含正确答案
-            List<Map<String, Object>> answerList = new ArrayList<>();
-            Map<String, Object> answerMap = new HashMap<>();
 
-            answerMap.put("typeId", "1");
-            answerMap.put("name", "干垃圾");
-            answerMap.put("aliasName", "DRY");
-            answerList.add(answerMap);
-
-            answerMap = new HashMap<>();
-            answerMap.put("typeId", "2");
-            answerMap.put("name", "湿垃圾");
-            answerMap.put("aliasName", "KITCHEN");
-            answerList.add(answerMap);
-
-            answerMap = new HashMap<>();
-            answerMap.put("typeId", "3");
-            answerMap.put("name", "可回收物");
-            answerMap.put("aliasName", "RECYCLABLE");
-            answerList.add(answerMap);
-
-            answerMap = new HashMap<>();
-            answerMap.put("typeId", "4");
-            answerMap.put("name", "有害垃圾");
-            answerMap.put("aliasName", "HARMFUL");
-            answerList.add(answerMap);
-            Collections.shuffle(answerList);//打乱顺序
-            returnLists.put("answerList", answerList);
+            returnLists.put("answerList", answerMapList());
         });
         return returnList;
     }
 
+    public  List<Map<String, Object>> answerMapList(){
+        //给出答案选项，包含正确答案
+        List<Map<String, Object>> answerList = new ArrayList<>();
+        Map<String, Object> answerMap = new HashMap<>();
+
+        answerMap.put("typeId", "1");
+        answerMap.put("name", "干垃圾");
+        answerMap.put("aliasName", "DRY");
+        answerList.add(answerMap);
+
+        answerMap = new HashMap<>();
+        answerMap.put("typeId", "2");
+        answerMap.put("name", "湿垃圾");
+        answerMap.put("aliasName", "KITCHEN");
+        answerList.add(answerMap);
+
+        answerMap = new HashMap<>();
+        answerMap.put("typeId", "3");
+        answerMap.put("name", "可回收物");
+        answerMap.put("aliasName", "RECYCLABLE");
+        answerList.add(answerMap);
+
+        answerMap = new HashMap<>();
+        answerMap.put("typeId", "4");
+        answerMap.put("name", "有害垃圾");
+        answerMap.put("aliasName", "HARMFUL");
+        answerList.add(answerMap);
+        Collections.shuffle(answerList);//打乱顺序
+        return answerList;
+    }
 
     /**   总的list
      * @author sgmark@aliyun.com
