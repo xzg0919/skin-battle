@@ -151,7 +151,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     public Map<String, Object> lexiconChecking(DailyDaParam dailyDaParam) {
         if (StringUtils.isEmpty(dailyDaParam.getAliUserId())|| StringUtils.isEmpty(dailyDaParam.getUuId()) || null == dailyDaParam.getLexType() || 0 == dailyDaParam.getDepth()){
             throw new ApiException("参数错误，提交失败");
-        }else if (dailyLexiconMapper.dailyLexiconList(dailyDaParam.getAliUserId(), tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59").size() >= 10){
+        }else if (dailyLexiconMapper.isAnswerDaily(dailyDaParam.getAliUserId(), tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59").size() >= 10){
             throw new ApiException("每日答题，只能为十题");
         }
         Map<String, Object> returnMap = new HashMap<>();
