@@ -61,7 +61,7 @@
                         ftt.eng_name,
                         '' AS lexiconName,
                         '' AS lexicon_id,
-                        '' AS `recover`
+                        CASE WHEN #{typeId}=2 THEN '1' ELSE '0' END AS `recover`
                     FROM
                         flcx_type ftt
                     WHERE
@@ -162,7 +162,7 @@
                         ftt.eng_name,
                         '' AS lexiconName,
                         '' AS lexicon_id,
-                        '' AS `recover`
+                        CASE WHEN #{typeId}=2 THEN '1' ELSE '0' END AS `recover`
                     FROM
                         flcx_type ftt
                     WHERE
