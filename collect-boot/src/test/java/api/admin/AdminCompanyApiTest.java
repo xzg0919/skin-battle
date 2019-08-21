@@ -11,6 +11,7 @@ package api.admin;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -72,16 +73,12 @@ public class AdminCompanyApiTest {
 //
 //		 recyclersServiceRangeBean.setAreaList(areaList);
 
-		 CompanyBean companyBean = new CompanyBean();
-		 companyBean.setId((long)2);
-		 companyBean.setTitle("1");
-		 companyBean.setPageBean(new PageBean());
-		 companyBean.setCityName("合肥");
-		 companyBean.setAreaName("巢湖");
-
+		 BOrderBean orderbean = new BOrderBean();
+			orderbean.setId(18670);
+		 orderbean.setCancelReason("平台驳回");
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.company.getAreaStreetList");
+	        param.put("name","admin.order.updateOdrerStatusByAdmin");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -89,7 +86,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",companyBean);
+	        param.put("data",orderbean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");

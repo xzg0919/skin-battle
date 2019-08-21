@@ -3023,8 +3023,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		Integer startPage = (pageBean.getPageNumber()-1)*pageBean.getPageSize();
 		Integer pageSize = pageBean.getPageSize();
-		Object orderList = orderMapper.getOrderListByAdmin(orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime(), startPage, pageSize);
-		Integer orderCount = orderMapper.getOrderCountByAdmin(orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
+		Object orderList = orderMapper.getOrderListByAdmin(orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime(), startPage, pageSize);
+		Integer orderCount = orderMapper.getOrderCountByAdmin(orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
 		Map<String,Object> resultMap = new HashMap<>();
 		Map<String,Object> pagination = new HashMap<>();
 		pagination.put("current",pageBean.getPageNumber());
@@ -3077,10 +3077,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Integer _pageNumber = pageNumber == null?0:pageNumber;
 		Integer _pageSize  = pageSize==null?10:pageSize;
 
-		Integer start = _pageNumber*_pageSize + 1;
-		Integer end = _pageNumber*_pageSize + _pageSize;
+		Integer start = _pageNumber*_pageSize;
 
-		return orderMapper.orderStatistics4Third(areaId,start,end);
+		return orderMapper.orderStatistics4Third(areaId,start,_pageSize);
 	}
 
 
