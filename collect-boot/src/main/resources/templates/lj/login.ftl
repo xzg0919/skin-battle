@@ -12,44 +12,7 @@
 
     <!--主要样式-->
     <link type="text/css" href="/css/lj/style.css" rel="stylesheet" />
--
-    <script>
-        function CheckLogin(obj) {
-            if (obj.username.value == '') {
-                alert('请输入用户名');
-                obj.username.focus();
-                return false;
-            }
-            if (obj.username.value != 'gary') {
-                alert('用户名错误，请重新输入用户名！');
-                obj.username.focus();
-                return false;
-            }
-            if (obj.username.value == 'gary' & obj.password.value == 'tingzhijun123') {
-                this.seCookie("name_login","test1");
-                return true;
-            }
-            if (obj.password.value == '') {
-                alert('请输入登录密码');
-                obj.password.focus();
-                return false;
-            }
-            if (obj.username.value != 'tingzhijun123') {
-                alert('密码错误，请重新输入密码！');
-                obj.username.focus();
-                return false;
-            }
-            return true;
-        }
-
-        function seCookie(cname, cvalue) {
-            var d = new Date();
-            d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
-            var expires = "expires=" + d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-        }
-    </script>
-
+    <script src="/js/lj/login.js"></script>
 
 </head>
 

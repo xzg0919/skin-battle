@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/css/lj/index.css" />
   <link rel="stylesheet" href="/js/lj/layui-v2.5.4/layui/css/layui.css" media="all" />
   <script src="/jquery-3.1.1/jquery-3.1.1.min.js"> </script>
+    <script src="/js/lj/cookie.js"></script>
 </head>
 
 <body>
@@ -139,7 +140,9 @@
 <script src="/js/index.js"></script>
 <script src="/js/lj/mouse.js"></script>
 <script type="text/javascript">
-
+    $(function() {// 初始化内容
+        htmlLoad();
+    });
   function selectDetail(){
     var cityId = $('#selectedCity option:selected') .val();
     var areaId = $('#selectedArea option:selected') .val();
