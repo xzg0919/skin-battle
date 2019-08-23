@@ -16,8 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -93,6 +92,12 @@ public class JfappPointListServiceImpl extends ServiceImpl<JfappPointListMapper,
     @Override
     public Object getJfPointListByAdmin(JfappRecyclerBean jfappRecyclerBean) {
         Integer startSize = (jfappRecyclerBean.getPageBean().getPageNum()-1)*jfappRecyclerBean.getPageBean().getPageSize();
-        return jfappPointListMapper.getJfPointListByAdmin(jfappRecyclerBean.getUserName(),jfappRecyclerBean.getRecyclerName(),jfappRecyclerBean.getMobile(),jfappRecyclerBean.getStartDate(),jfappRecyclerBean.getEndDate(),startSize,jfappRecyclerBean.getPageBean().getPageSize());
+        List<Map<String, Object>> jfPointListByAdminList = jfappPointListMapper.getJfPointListByAdmin(jfappRecyclerBean.getUserName(), jfappRecyclerBean.getRecyclerName(), jfappRecyclerBean.getMobile(), jfappRecyclerBean.getStartDate(), jfappRecyclerBean.getEndDate(), startSize, jfappRecyclerBean.getPageBean().getPageSize());
+        Integer count = jfappPointListMapper.getJfPointListCountByAdmin(jfappRecyclerBean.getUserName(), jfappRecyclerBean.getRecyclerName(), jfappRecyclerBean.getMobile(), jfappRecyclerBean.getStartDate(), jfappRecyclerBean.getEndDate());
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("jfPointListByAdminList",jfPointListByAdminList);
+        resultMap.put("count",count);
+        resultMap.put("pageNum",jfappRecyclerBean.getPageBean().getPageNum());
+        return resultMap;
     }
 }
