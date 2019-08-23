@@ -13,4 +13,6 @@ public interface JfappPointListMapper extends BaseMapper<JfappPointList> {
 
     List<Map<String,Object>> getJfPointListByAdmin(@Param("userName")String userName,@Param("recyclerName")String recyclerName,@Param("mobile")String mobile,@Param("startDate")String startDate,@Param("endDate")String endDate,@Param("startSize")Integer startSize,@Param("pageSize")Integer pageSize);
 
+    Integer getJfPointListCountByAdmin(@Param("userName")String userName,@Param("recyclerName")String recyclerName,@Param("mobile")String mobile,@Param("startDate")String startDate,@Param("endDate")String endDate);
+
 }

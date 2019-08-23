@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.point.api.app.param.JfappRecyclerBean;
+import com.tzj.point.common.util.PushUtils;
 import com.tzj.point.entity.JfappRecycler;
 import com.tzj.point.mapper.JfappRecyclerMapper;
 import com.tzj.point.service.JfappRecyclerService;
@@ -22,6 +23,7 @@ public class JfappRecyclerServiceImpl extends ServiceImpl<JfappRecyclerMapper, J
 
 
     @Override
+    @Transactional
     public Object getRecycleToken(JfappRecyclerBean jfappRecyclerBean) {
 
         JfappRecycler jfappRecycler = this.selectOne(new EntityWrapper<JfappRecycler>().eq("tel", jfappRecyclerBean.getTel()).eq("password", jfappRecyclerBean.getPassword()));
@@ -29,8 +31,10 @@ public class JfappRecyclerServiceImpl extends ServiceImpl<JfappRecyclerMapper, J
             throw new ApiException("手机号或密码错误");
         }
         if(!jfappRecyclerBean.getTerminalNo().equals(jfappRecycler.getTerminalNo())){
-            System.out.println("通知上个机器已在另外机器登录");
+            PushUtils.getAcsResponse(jfappRecycler.getTerminalNo());
         }
+        jfappRecycler.setTerminalNo(jfappRecyclerBean.getTerminalNo());
+        this.updateById(jfappRecycler);
         String token = JwtUtils.generateToken(jfappRecycler.getId().toString(), JFAPP_API_EXPRIRE, JFAPP_API_TOKEN_SECRET_KEY);
         String securityToken = JwtUtils.generateEncryptToken(token, JFAPP_API_TOKEN_CYPTO_KEY);
         Map<String,Object> resultMap = new HashMap<>();
