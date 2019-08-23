@@ -1899,8 +1899,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//给用户增加会员卡积分
 		try {
 			Member member = memberService.selectMemberByAliUserId(aliUserId);
-			System.out.println("给用户增加的积分是 ：" + amount + "----point: " +Double.parseDouble(df.format(points.getPoint()))+ "");
-			aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), Double.parseDouble(df.format(points.getPoint())) + "", null, member.getAppId());
+			System.out.println("给用户增加的积分是 ：" + amount + "----point: " +Double.parseDouble(df.format(points.getRemainPoint()))+ "");
+			aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), Double.parseDouble(df.format(points.getRemainPoint())) + "", null, member.getAppId());
 		} catch (Exception e) {
 			System.out.println("给用户增加积分失败---------------");
 		}
