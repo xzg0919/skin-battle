@@ -44,7 +44,7 @@ public class CardUtil {
         {
             AlipayMarketingCardTemplateModifyRequest request = new AlipayMarketingCardTemplateModifyRequest();
             String biz = "{"
-                    + "\"request_id\":\"lajihuishou0051\","
+                    + "\"request_id\":\"lajihuishou0063\","
                     + "\"template_id\":\"20180711000000001069918000300173\","
                     + "\"biz_no_prefix\":\"collect\","
                     + "\"write_off_type\":\"qrcode\","
@@ -76,7 +76,30 @@ public class CardUtil {
                     + "],"
                     + "\"field_rule_list\":[{\"field_name\":\"Balance\",\"rule_name\":\"ASSIGN_FROM_REQUEST\",\"rule_value\":\"Balance\"},"
                     + "{\"field_name\":\"Point\",\"rule_name\":\"ASSIGN_FROM_REQUEST\",\"rule_value\":\"Point\"},"
-                    + "{\"field_name\":\"OpenDate\",\"rule_name\":\"ASSIGN_FROM_REQUEST\",\"rule_value\":\"OpenDate\"}]}";
+                    + "{\"field_name\":\"OpenDate\",\"rule_name\":\"ASSIGN_FROM_REQUEST\",\"rule_value\":\"OpenDate\"}],"
+                    +   "\"card_action_list\":["
+                    +   "{"
+                    +    "        \"code\":\"TO_CLOCK_IN\","
+                    +    "\"text\":\"预约回收\","
+                    +    "\"url_type\":\"miniAppUrl\","
+                    +    "\"url\":\"https://qr.alipay.com/s6x01452mvefon1xfq0zt3f\","
+                    +    "\"mini_app_url\":{"
+                    +    "\"mini_app_id\":\"2018060660292753\","
+                    +    "\"display_on_list\":\"true\""
+                    +    "        }"
+                    +   "        },"
+                    +   "{"
+                    +    "        \"code\":\"TO_CLOCK_IN\","
+                    +    "\"text\":\"环保商城\","
+                    +    "\"url_type\":\"miniAppUrl\","
+                    +    "\"url\":\"https://qr.alipay.com/s6x01452mvefon1xfq0zt3f\","
+                    +    "\"mini_app_url\":{"
+                    +    "\"mini_app_id\":\"2018060660292753\","
+                    +    "\"display_on_list\":\"true\""
+                    +    "        }"
+                    +   "        }" +
+                    "]"
+                    +"}";
 
             //+ "\"column_info_list\":["
             //+ "\"title\":\"专属权益修改\",\"operate_type\":\"openWeb\",\"value\":\"会员权益\"},"
