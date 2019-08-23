@@ -175,13 +175,19 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
                            //这里如果用户回答正确可以加分(其他地方执行会重复加分)
                             //保存用户答题信息(只允许答今日所在题目且只能答一次)
                             if (dailyLexiconMapper.updateDailyRecordsList(dailyDaParam.getAliUserId(), tableName(System.currentTimeMillis()) ,dailyDaParam.getUuId(), dailyDaParam.getLexType().getValue(),trueOrFalse, LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59") > 0){
+                                Jedis jedis = jedisPool.getResource();
                                 if ("0".equals(trueOrFalse)){
-                                    Jedis jedis = jedisPool.getResource();
                                     //正确答题积分加十(周记录)
                                     jedis.zincrby(redisKeyName(), 10, dailyDaParam.getAliUserId());
                                     //每日答题数据记录
                                     jedis.zincrby(redisKeyName() +":"+ LocalDate.now().getDayOfWeek(), 10, dailyDaParam.getAliUserId());
 //                                System.out.println(jedisPool.getResource().zscore(redisKeyName(), dailyDaParam.getAliUserId()));
+                                }else{
+                                    //正确答题积分加十(周记录)
+                                    jedis.zincrby(redisKeyName(), 0, dailyDaParam.getAliUserId());
+                                    //每日答题数据记录
+                                    jedis.zincrby(redisKeyName() +":"+ LocalDate.now().getDayOfWeek(), 0, dailyDaParam.getAliUserId());
+//
                                 }
                             }
                         }else {

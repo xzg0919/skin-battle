@@ -105,7 +105,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
         //领红包时创建红包(aliUserId, week, setNum)
 //        String price = (Math.random() * 0.4+0.1+"").substring(0,4);
         String price = "0.11";
-        while(Double.parseDouble(price) >= 0.50) {
+        while(Double.parseDouble(price) >= 5.00) {
             price = (Math.random() * 0.4+0.1+"").substring(0,4);
         }
         DailyReceiving dailyReceiving = this.selectOne(new EntityWrapper<DailyReceiving>().eq("del_flag", 0).eq("ali_user_id", dailyDaParam.getAliUserId()).eq("week_", LocalDate.now().getYear() + "" + week).eq("set_num", dailyDaParam.getSetNum()));
@@ -151,13 +151,12 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                         payment.setStatus(STATUS_TRANSFER);
                         payment.setIsSuccess("1");
                         payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
-                        finalDailyReceiving.setIsReceive(0);
                     }else {
                         //交易失败(状态设置为未转账)
                         payment.setStatus(STATUS_PAYED);
                         payment.setIsSuccess("0");
-                        finalDailyReceiving.setIsReceive(1);
                     }
+                    finalDailyReceiving.setIsReceive(0);
                     paymentService.insertOrUpdate(payment);
 
                     this.insertOrUpdate(finalDailyReceiving);
