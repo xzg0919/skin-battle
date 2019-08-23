@@ -79,7 +79,7 @@ public class JfappPointListServiceImpl extends ServiceImpl<JfappPointListMapper,
         jfappPointList.setMobile(jfappRecyclerBean.getMobile());
         this.insert(jfappPointList);
         DecimalFormat df   = new DecimalFormat("######0.00");
-        aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), Double.parseDouble(df.format(point.getPoint())) + "", null);
+        aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), Double.parseDouble(df.format(point.getRemainPoint())) + "", null);
         return "success";
     }
 
