@@ -338,8 +338,10 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		if ( null != point){
 			greenCount = point.getPoint();
 			resultMap.put("greenCount",greenCount);
+			resultMap.put("remainPoint",point.getRemainPoint());
 		}else {
 			resultMap.put("greenCount","0");
+			resultMap.put("remainPoint","0");
 		}
 		//获取个人中心电话
 		Company company = companyService.selectById(1);
