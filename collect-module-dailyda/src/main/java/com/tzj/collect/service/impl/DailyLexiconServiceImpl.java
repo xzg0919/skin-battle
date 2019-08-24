@@ -59,8 +59,12 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
      * @return
      */
     @Override
-    @Cacheable(value = "dailyLexiconList", key = "#aliUserId", sync = true)
+//    @Cacheable(value = "dailyLexiconList", key = "#aliUserId", sync = true)
     public Set<Map<String, Object>> dailyLexiconList(String aliUserId) {
+        //本周记录表若没有创建新表
+        if(dailyLexiconMapper.existTable(tableName(System.currentTimeMillis())) <= 0){
+            dailyLexiconMapper.createNewTable(tableName(System.currentTimeMillis()));
+        }
         Set<Map<String, Object>> returnList = new HashSet<>();
         returnList = dailyLexiconMapper.dailyLexiconList(aliUserId, tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59");
         if (returnList.size() > 0){
@@ -289,10 +293,6 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
       * @return
       */
     public void saveDailyRecordsList(String aliUserId, String uuId, Long lexiconId, Integer typeId){
-        //本周记录表若没有创建新表
-        if(dailyLexiconMapper.existTable(tableName(System.currentTimeMillis())) <= 0){
-            dailyLexiconMapper.createNewTable(tableName(System.currentTimeMillis()));
-        }
         //存入每日答题信息
         dailyLexiconMapper.insertDailyRecords(aliUserId, uuId, lexiconId, typeId, tableName(System.currentTimeMillis()));
     }

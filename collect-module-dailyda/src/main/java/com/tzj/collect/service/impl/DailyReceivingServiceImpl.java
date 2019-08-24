@@ -53,7 +53,12 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
         Map<String, Object> returnMap = new HashMap<>();
         Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         //用户签到天数(有答题记录的天数)
-        Integer signNum = dailyReceivingMapper.signNum(aliUserId, DailyLexiconServiceImpl.tableName(System.currentTimeMillis()));
+        Integer signNum = 0;
+        try {
+            signNum = dailyReceivingMapper.signNum(aliUserId, DailyLexiconServiceImpl.tableName(System.currentTimeMillis()));
+        }catch (Exception e){
+            //防止表不存在异常
+        }
         returnMap.put("signNum", signNum);
         List<Map<String, Object>> receiveNumList = null;
         try {
@@ -101,12 +106,17 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
     @Override
     @Transactional(readOnly = false ,rollbackFor = Exception.class)
     public Map<String, Object> receivingMoney(DailyDaParam dailyDaParam) {
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("msg", "领取失败");
+        if (dailyDaParam.getSetNum() >= 5 || dailyDaParam.getSetNum() <= 0){
+            return returnMap;
+        }
         Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         //领红包时创建红包(aliUserId, week, setNum)
 //        String price = (Math.random() * 0.4+0.1+"").substring(0,4);
-        String price = "0.11";
-        while(Double.parseDouble(price) >= 5.00) {
-            price = (Math.random() * 0.4+0.1+"").substring(0,4);
+        String price = (Math.random() * 1 + dailyDaParam.getSetNum() + "").substring(0,4);
+        while(Double.parseDouble(price) >= 5.00 || Double.parseDouble(price) <= 0) {
+            price = (Math.random() * 1 + dailyDaParam.getSetNum() + "").substring(0,4);
         }
         DailyReceiving dailyReceiving = this.selectOne(new EntityWrapper<DailyReceiving>().eq("del_flag", 0).eq("ali_user_id", dailyDaParam.getAliUserId()).eq("week_", LocalDate.now().getYear() + "" + week).eq("set_num", dailyDaParam.getSetNum()));
         if (null == dailyReceiving){
@@ -118,9 +128,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
             dailyReceiving.setSetNum(dailyDaParam.getSetNum());
         }
 
-        Map<String, Object> returnMap = new HashMap<>();
-        returnMap.put("msg", "领取失败");
-        returnMap.put("price", 0);
+
         String aliUserId = MemberUtils.getMember().getAliUserId();
         Map<String, Object> receivableMap = this.memberReceivingRecords(aliUserId);
         List<Map<String, Object>> receivableList = (List<Map<String, Object>>) receivableMap.get("bagList");
@@ -175,7 +183,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
 
     public static void main(String[] args) {
         for (int i = 0; i < 100; i++){
-            System.out.println((Math.random() * 0.4+0.1+"").substring(0,4));
+            System.out.println((Math.random() * 1 + 4 + "").substring(0,4));
         }
     }
 }
