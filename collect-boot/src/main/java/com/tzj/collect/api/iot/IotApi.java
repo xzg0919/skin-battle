@@ -179,7 +179,8 @@ public class IotApi {
       * @param
       * @return
       */
-    @Api(name = "iot.long.pulling", version = "1.0")
+    @Api(name = "iot.long.pulling", version = "1.0", ignoreNonce = true, ignoreTimestamp = true)
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> longPulling(){
         Member member = MemberUtils.getMember();

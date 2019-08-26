@@ -20,6 +20,8 @@ public class IotPostParamBean {
 
     private String sign;//签名验证
 
+    private String ecUuid;//随机数（iot迭代随机数）
+
     public String getAPIName() {
         return APIName;
     }
@@ -74,5 +76,13 @@ public class IotPostParamBean {
 
     public void setQrUrl(String qrUrl) {
         this.qrUrl = qrUrl;
+    }
+
+    public String getEcUuid() {
+        return ecUuid;
+    }
+
+    public void setEcUuid(String ecUuid) {
+        this.ecUuid = ecUuid;
     }
 }

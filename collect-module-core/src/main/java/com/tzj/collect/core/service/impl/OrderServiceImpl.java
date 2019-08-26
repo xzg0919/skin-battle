@@ -7,7 +7,6 @@ import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -858,8 +857,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	  * @return
 	  */
 	@Override
+	@Transactional(readOnly = false)
 	public Map<String, Object> iotCreatOrder(IotParamBean iotParamBean) {
 		Map<String, Object> map = new HashMap<>();
+		List<Map<String, Object>> nameListMap = new ArrayList<>();
 		List<IotParamBean.ParentList> parentLists = iotParamBean.getParentLists();
 		EntityWrapper<CompanyEquipment> entityWrapper = new EntityWrapper();
 		entityWrapper.eq("del_flag", 0);
@@ -893,6 +894,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//查找所有重量
 		final double[] score = {0};
 		parentLists.stream().forEach(parentList -> {
+			nameListMap.addAll(parentList.getNameList());
 			parentList.getItemList().stream().forEach(itemList -> {
 				if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
 					//峰会只给瓶子蚂蚁森林能量
@@ -921,15 +923,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setTitle(Order.TitleType.IOTORDER);
 		order.setStatus(OrderType.COMPLETE);
 		order.setPrice(BigDecimal.ZERO);
-		this.insert(order);
-
+		order.setAliUserId(aliUserId);
 		//保存id至redis，跳转到订单详情页面
 		try {
-			Hashtable<String, String> hashTable = null;
+			Hashtable<String, Object> hashTable = null;
 			if (null == redisUtil.get("iotMap")){
 				hashTable = new Hashtable<>();
 			}else {
-				hashTable = (Hashtable<String, String>)redisUtil.get("iotMap");
+				hashTable = (Hashtable<String, Object>)redisUtil.get("iotMap");
 			}
 			String iotMemberId = "iot_member_id_" + member.getAliUserId();
 //            System.out.println(parentLists.stream().allMatch(parentList -> parentList.getItemList().stream().allMatch(itemList -> itemList.getQuantity() != 0.0)));
@@ -941,7 +942,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				map.put("msg", "empty");
                 return map;
 			}else {
-				hashTable.put(iotMemberId, order.getId()+"");
+				this.insert(order);
+				Map<String, Object> iotNameListMap = new HashMap<>();
+				iotNameListMap.put("orderId", order.getId());
+				iotNameListMap.put("nameList", nameListMap);
+				hashTable.put(iotMemberId, iotNameListMap);
 			}
 			redisUtil.set("iotMap", hashTable);
 		}catch (Exception e){

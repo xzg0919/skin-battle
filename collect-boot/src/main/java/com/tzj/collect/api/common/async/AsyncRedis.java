@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -30,15 +32,16 @@ public class AsyncRedis {
     @Async
     public void getTokenByCache(Long startTime, String iotMemId){
         IotApi.flag = new  AtomicBoolean(true);//每次进来设值为真
-        Hashtable<String, String> iotMapCache;
+        Hashtable<String, Object> iotMapCache;
         LatchMap latchMapResult = null;
         do {
             try {
-                iotMapCache  = (Hashtable<String, String>)redisUtil.get("iotMap");
+                iotMapCache  = (Hashtable<String, Object>)redisUtil.get("iotMap");
                 if (iotMapCache != null && iotMapCache.containsKey(iotMemId)){
                     latchMapResult = IotApi.latMapConcurrent.get(iotMemId);
                     if (null != latchMapResult){
-                        latchMapResult.orderId = iotMapCache.get(iotMemId);
+                        latchMapResult.orderId = ((Map<String, Object>)iotMapCache.get(iotMemId)).get("orderId").toString();
+                        latchMapResult.nameList = (List<Map<String, Object>>) ((Map<String, Object>)iotMapCache.get(iotMemId)).get("nameList");
                         latchMapResult.latch.countDown();
                         iotMapCache.remove(iotMemId);
                         redisUtil.set("iotMap", iotMapCache);

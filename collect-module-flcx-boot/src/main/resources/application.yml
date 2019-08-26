@@ -22,7 +22,7 @@ spring:
     name: collect
   # 环境 dev|test|pro   dynamicdb 正式多数据源配置               dynamicdb-pro 测试多数据源配置
   profiles:
-    active: dynamicdb-pro
+    active: dynamicdb
   # cache配置
   cache:
     type: ehcache

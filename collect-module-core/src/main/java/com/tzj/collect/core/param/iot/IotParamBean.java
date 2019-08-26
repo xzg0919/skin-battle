@@ -4,6 +4,7 @@ import com.tzj.collect.entity.Category;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author sgmark
@@ -66,6 +67,8 @@ public class IotParamBean {
 
         private List<ItemList> itemList;
 
+        private List<Map<String, Object>> nameList;//[{name:'怡宝'， quantity: 5},{name:'农妇三拳'， quantity: 10}]
+
        public Category.ParentType getParentName() {
            return parentName;
        }
@@ -80,6 +83,14 @@ public class IotParamBean {
 
         public void setItemList(List<ItemList> itemList) {
             this.itemList = itemList;
+        }
+
+        public List<Map<String, Object>> getNameList() {
+            return nameList;
+        }
+
+        public void setNameList(List<Map<String, Object>> nameList) {
+            this.nameList = nameList;
         }
     }
 
