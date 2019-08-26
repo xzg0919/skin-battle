@@ -146,31 +146,33 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                     Payment payment = paymentService.selectByOrderSn(outBizNo);
                     if (null == payment){
                         payment = new Payment();
-                    }
-                    //用户转账
-                    AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = paymentService.dailyDaTransfer(aliUserId, finalPrice, outBizNo);
-                    payment.setAliUserId(aliUserId);
-                    payment.setPrice(new BigDecimal(finalPrice));
-                    payment.setOrderSn(outBizNo);
-                    payment.setSellerId(aliUserId);
-                    payment.setPayType(Payment.PayType.RED_BAG);
-                    if("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())){
-                        //交易完成(状态设置为已转账)
-                        payment.setStatus(STATUS_TRANSFER);
-                        payment.setIsSuccess("1");
-                        payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
                     }else {
-                        //交易失败(状态设置为未转账)
-                        payment.setStatus(STATUS_PAYED);
-                        payment.setIsSuccess("0");
+                        throw new ApiException("红包已领取");
                     }
                     finalDailyReceiving.setIsReceive(0);
-                    paymentService.insertOrUpdate(payment);
-
-                    this.insertOrUpdate(finalDailyReceiving);
-                    returnMap.put("msg", "领取成功");
-                    returnMap.put("price", finalPrice);
-                    return;
+                    if (this.insertOrUpdate(finalDailyReceiving)) {
+                        //用户转账
+                        AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = paymentService.dailyDaTransfer(aliUserId, finalPrice, outBizNo);
+                        payment.setAliUserId(aliUserId);
+                        payment.setPrice(new BigDecimal(finalPrice));
+                        payment.setOrderSn(outBizNo);
+                        payment.setSellerId(aliUserId);
+                        payment.setPayType(Payment.PayType.RED_BAG);
+                        if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())) {
+                            //交易完成(状态设置为已转账)
+                            payment.setStatus(STATUS_TRANSFER);
+                            payment.setIsSuccess("1");
+                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+                        } else {
+                            //交易失败(状态设置为未转账)
+                            payment.setStatus(STATUS_PAYED);
+                            payment.setIsSuccess("0");
+                        }
+                        paymentService.insertOrUpdate(payment);
+                        returnMap.put("msg", "领取成功");
+                        returnMap.put("price", finalPrice);
+                        return;
+                    }
                 }else if("Y".equals(receivableLists.get("isReceive"))){
                     throw new ApiException("红包已领取");
                 }else if ("N".equals(receivableLists.get("isReceivable"))){
