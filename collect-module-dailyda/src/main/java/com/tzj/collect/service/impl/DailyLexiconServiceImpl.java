@@ -47,8 +47,13 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
       * @return
       */
     public  Set<Map<String, Object>> isAnswerDaily(String aliUserId){
+        //本周记录表若没有创建新表
+        if(dailyLexiconMapper.existTable(tableName(System.currentTimeMillis())) <= 0){
+            dailyLexiconMapper.createNewTable(tableName(System.currentTimeMillis()));
+            return new HashSet<>();
+        }
         Set<Map<String, Object>> returnList = new HashSet<>();
-        //查询当前用户当天在本周记录表中是否有数据若没有，创建答题，若已有直接返回当前用户题目信息  todo
+        //查询当前用户当天在本周记录表中是否有数据若没有，创建答题，若已有直接返回当前用户题目信息
         returnList = dailyLexiconMapper.isAnswerDaily(aliUserId, tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59");
         return returnList;
     }
@@ -61,10 +66,6 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     @Override
 //    @Cacheable(value = "dailyLexiconList", key = "#aliUserId", sync = true)
     public Set<Map<String, Object>> dailyLexiconList(String aliUserId) {
-        //本周记录表若没有创建新表
-        if(dailyLexiconMapper.existTable(tableName(System.currentTimeMillis())) <= 0){
-            dailyLexiconMapper.createNewTable(tableName(System.currentTimeMillis()));
-        }
         Set<Map<String, Object>> returnList = new HashSet<>();
         returnList = dailyLexiconMapper.dailyLexiconList(aliUserId, tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59");
         if (returnList.size() > 0){
