@@ -506,4 +506,66 @@ public class FileUploadServiceImpl implements FileUploadService {
 	}
 
 
+    public List<FileBean> uploadImageForIot(List<FileBase64Param> fileBase64ParamLists) {
+        Base64.Decoder decoder = Base64.getDecoder();
+        String tempPath = System.getProperty("java.io.tmpdir");
+
+
+        FileBean fileBean=new FileBean();
+        List<FileBean> fileBeanList=new LinkedList<>();
+        //开始上传文件
+        for(FileBase64Param file : fileBase64ParamLists){
+            String extensionName = FileUtil.getExtension(file.getFileName());
+
+            if (StringUtils.isBlank(extensionName)) {
+                extensionName = "jpg";
+            }
+
+            String uuid = UUID.randomUUID().toString();
+            //先把文件放入临时的地方
+            File tempFile = new File(
+                    tempPath + "/original_" + uuid + "." +extensionName);
+
+
+            BufferedImage image = null;
+            byte[] imageByte = null;
+
+            try {
+                imageByte = DatatypeConverter.parseBase64Binary(file.getFileContentBase64().
+                        substring(file.getFileContentBase64().lastIndexOf(",")+1,file.getFileContentBase64().length()));
+                ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+                image = ImageIO.read(new ByteArrayInputStream(imageByte));
+                bis.close();
+
+                ImageIO.write(image,extensionName,tempFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+
+            String savePath = "new_bridge/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
+
+            String saveLargeFile=savePath+"/iot_" + uuid + "." +extensionName;
+
+            fileUpload.upload(saveLargeFile,tempFile,null);
+
+            fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveLargeFile);
+            fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveLargeFile);
+            fileBean.setOriginal(fileUpload.getImageDomain()+"/"+saveLargeFile);
+
+            //上传到OSS后，删除临时文件
+            try{
+                tempFile.delete();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            fileBeanList.add(fileBean);
+        }
+
+        return fileBeanList;
+    }
 }

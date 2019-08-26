@@ -15,4 +15,6 @@ import java.util.Map;
   */
 public interface FlcxTypeMapper extends BaseMapper<FlcxType> {
     List<Map<String, Object>> typeList(@Param("cityName")String city, @Param("cityId")String cityId);
+
+    List<FlcxType> cityTypeList(@Param("cityId")String cityId);
 }

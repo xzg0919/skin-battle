@@ -11,6 +11,7 @@ import com.tzj.collect.mapper.FlcxCityMapper;
 import com.tzj.collect.mapper.FlcxLexiconMapper;
 import com.tzj.collect.mapper.FlcxLexiconTypeMapper;
 import com.tzj.collect.mapper.FlcxTypeMapper;
+import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxTypeService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.cache.annotation.Cacheable;
@@ -37,7 +38,8 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
 
     @Resource
     private FlcxLexiconMapper flcxLexiconMapper;
-
+    @Resource
+    private FlcxLexiconService flcxLexiconService;
     @Resource
     private FlcxLexiconTypeMapper flcxLexiconTypeMapper;
 
@@ -105,6 +107,50 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
         });
     }
 
+    @Transactional(readOnly = false)
+    public void updateType(List<Map<String, String>> mapList) {
+        List<FlcxType> flcxTypes = flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", 0).eq("level_", 1));
+        //杭州类型
+        List<FlcxType> cityTypeList = flcxTypeMapper.cityTypeList("2");
+        mapList.stream().forEach(map -> {
+            FlcxLexicon flcxLexicon = flcxLexiconService.selectOne(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).eq("name_", map.get("name")));
+            FlcxLexiconType flcxLexiconType = null;
+            if (null == flcxLexicon){
+                flcxLexicon = new FlcxLexicon();
+                flcxLexicon.setName(map.get("name"));
+                FlcxLexicon finalFlcxLexicon = flcxLexicon;
+                flcxTypes.stream().forEach(flcxType -> {
+                    if (map.get("type").contains(flcxType.getName())) {
+                        finalFlcxLexicon.setParentId(flcxType.getParentId());
+                    }
+                });
+                try {
+                    finalFlcxLexicon.setCreateDate(new Date());
+                    finalFlcxLexicon.setUpdateDate(new Date());
+                    flcxLexiconService.insertOrUpdate(finalFlcxLexicon);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }else {
+                flcxLexiconType = new FlcxLexiconType();
+                flcxLexiconType.setLexiconId(flcxLexicon.getId());
+                flcxLexiconType.setAreaId(2l);
+                flcxLexiconType.setCreateDate(new Date());
+                flcxLexiconType.setUpdateDate(new Date());
+                FlcxLexiconType finalFlcxLexiconType = flcxLexiconType;
+                cityTypeList.stream().forEach(flcxType -> {
+                    if (map.get("type").contains(flcxType.getName())) {
+                        finalFlcxLexiconType.setParentId(flcxType.getParentId());
+                        finalFlcxLexiconType.setTypeId(flcxType.getId());
+                    }
+                });
+                Integer flcxLexiconTypeRecordCount = flcxLexiconTypeMapper.selectCount(new EntityWrapper<FlcxLexiconType>().eq("del_flag", 0).eq("area_id", 2).eq("lexicon_id", flcxLexicon.getId()));
+                if(flcxLexiconTypeRecordCount == 0){
+                    flcxLexiconTypeMapper.insert(finalFlcxLexiconType);
+                }
+            }
+        });
+    }
 
 
     /**

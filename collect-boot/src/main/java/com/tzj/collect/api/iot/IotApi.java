@@ -12,15 +12,20 @@ import com.tzj.collect.core.param.iot.IotPostParamBean;
 import com.tzj.collect.core.service.CompanyService;
 import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.exception.ApiException;
+import com.tzj.module.easyopen.file.FileBase64Param;
+import com.tzj.module.easyopen.file.FileBean;
+import com.tzj.module.easyopen.file.FileUploadService;
 import com.tzj.module.easyopen.util.ApiUtil;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -46,6 +51,9 @@ public class IotApi {
     private CompanyService companyService;
     @Autowired
     private AsyncRedis asyncRedis;
+
+    @Resource
+    private FileUploadServiceImpl fileUploadServiceImpl;
 
 
     public static AtomicBoolean flag = new AtomicBoolean(true);//保证当前线程能执行
@@ -228,5 +236,18 @@ public class IotApi {
         result.put("tryAgain", "Y");
         return result;
     }
+
+
+
+    /**
+     * 上传文件0
+     */
+    @Api(name = "iot.util.uploadImage", version = "1.0")
+    @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
+    @AuthIgnore
+    public List<FileBean> uploadImage(List<FileBase64Param> fileBase64ParamLists){
+        return fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
+    }
+
 
 }

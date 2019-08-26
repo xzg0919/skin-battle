@@ -21,6 +21,7 @@ public interface FlcxTypeService extends IService<FlcxType> {
     Map typeList(FlcxBean flcxBean);
 
     void inputLinAndType(List<Map<String, String>> mapList);
+    void updateType(List<Map<String, String>> mapList);
 
     /**
      * 根据层级获取该层级的所有分类
@@ -38,4 +39,5 @@ public interface FlcxTypeService extends IService<FlcxType> {
      * @throws ApiException
      */
     Map findTypeByParent(FlcxTypeBean typeBean);
+
 }

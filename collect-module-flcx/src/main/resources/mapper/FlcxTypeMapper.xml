@@ -38,4 +38,15 @@
         AND ft.img_url != '' ORDER BY ft.sort_ ASC;
 
     </select>
+    <select id="cityTypeList"  parameterType="String"  resultType="com.tzj.collect.entity.FlcxType">
+        SELECT
+            ftt.name_,
+            fct.parent_id,
+            ftt.id
+        FROM
+            flcx_type ftt
+        RIGHT  JOIN flcx_city_type fct ON ftt.id = fct.type_id
+        WHERE
+            fct.area_id = #{cityId};
+    </select>
 </mapper>
