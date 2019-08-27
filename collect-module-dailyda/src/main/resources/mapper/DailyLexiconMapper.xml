@@ -33,7 +33,7 @@
         SELECT depth FROM daily_lexicon WHERE del_flag = 0 GROUP BY depth
     </select>
 	<select id="selectDepth" resultType="Map">
-        SELECT id,name_,type_id,depth FROM daily_lexicon WHERE del_flag = 0 and  depth =  #{depth}
+        SELECT id,name_,type_id,depth FROM daily_lexicon WHERE del_flag = 0 and  depth =  #{depth} ORDER BY RAND() LIMIT 2
     </select>
 	<resultMap id="getCheckMap" type="map">
 		<result property="depth" column="depth"/>
@@ -46,7 +46,7 @@
 		</collection>
 	</resultMap>
 	<insert id="insertDailyRecords" parameterType="String">
-        INSERT INTO `collect`.${tableName} (
+        INSERT INTO ${tableName} (
 			`uu_id`,
 			`ali_user_id`,
 			`lexicon_id`,
@@ -65,7 +65,7 @@
 			);
 	</insert>
 	<update id="updateDailyRecordsList" parameterType="String">
-		UPDATE `collect`.${tableName}
+		UPDATE ${tableName}
 			SET user_type_id = #{typeId},
 			is_true = #{trueOrFalse},
 			version_ = version_ + 1,
@@ -83,7 +83,7 @@
 			ali_user_id,
 			type_id
 		FROM
-			`collect`.${tableName}
+			${tableName}
 		WHERE
 			del_flag = 0
 		AND uu_id = #{uuId}
@@ -95,7 +95,7 @@
 			ddr.uu_id AS uuId,
 			dll.name_
 		FROM
-			`collect`.${tableName} ddr
+			${tableName} ddr
 		LEFT JOIN daily_lexicon dll ON ddr.lexicon_id = dll.id
 		WHERE
 			ddr.del_flag = 0
@@ -109,7 +109,7 @@
 			ddr.uu_id AS uuId,
 			dll.name_
 		FROM
-			`collect`.${tableName} ddr
+			${tableName} ddr
 		LEFT JOIN daily_lexicon dll ON ddr.lexicon_id = dll.id
 		WHERE
 			ddr.del_flag = 0
@@ -124,7 +124,7 @@
 			ddr.type_id,
 			ddr.user_type_id
 		FROM
-			`collect`.${tableName} ddr
+			${tableName} ddr
 		LEFT JOIN daily_lexicon dll ON ddr.lexicon_id = dll.id
 		WHERE
 			ddr.del_flag = 0

@@ -40,6 +40,9 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     @Resource
     private  DailyLexiconMapper dailyLexiconMapper;
 
+    @Resource
+    private DailyLexiconService dailyLexiconService;
+
     /** 查询当前用户当天在本周记录表中是否有数据若没有，创建答题，若已有直接返回当前用户题目信息
       * @author sgmark@aliyun.com
       * @date 2019/8/17 0017
@@ -64,7 +67,6 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
      * @return
      */
     @Override
-//    @Cacheable(value = "dailyLexiconList", key = "#aliUserId", sync = true)
     public Set<Map<String, Object>> dailyLexiconList(String aliUserId) {
         Set<Map<String, Object>> returnList = new HashSet<>();
         returnList = dailyLexiconMapper.dailyLexiconList(aliUserId, tableName(System.currentTimeMillis()), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59");
@@ -72,7 +74,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             returnList.stream().forEach(returnLists -> returnLists.put("answerList", answerMapList()));
             return returnList;
         }
-        List<Map<String, Object>> mapList = lexiconList("lexiconList");
+        List<Map<String, Object>> mapList = dailyLexiconService.lexiconList(aliUserId);
         //设置开始时间
         Long startTime = System.currentTimeMillis();
         while (returnList.size() < 10 && System.currentTimeMillis() - startTime <= 200) {
@@ -101,8 +103,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             this.saveDailyRecordsList(aliUserId, uuId, Long.parseLong(returnLists.get("id").toString()), Integer.parseInt(returnLists.get("type_id").toString()));
             returnLists.put("uuId", uuId);
             returnLists.remove("id");
-            returnLists.remove("type_id");
-
+//            returnLists.remove("type_id");
             returnLists.put("answerList", answerMapList());
         });
         return returnList;
@@ -146,8 +147,8 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
      * @return
      */
     @Override
-    @Cacheable(value = "dailyLexiconList", key = "#lexiconList", sync = true)
-    public List<Map<String, Object>> lexiconList(String lexiconList) {
+    @Cacheable(value = "dailyLexiconList", key = "#aliUserId", sync = true)
+    public List<Map<String, Object>> lexiconList(String aliUserId) {
         return dailyLexiconMapper.lexiconList();
     }
 
@@ -161,8 +162,8 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         }
         Map<String, Object> returnMap = new HashMap<>();
         AtomicReference<String> trueOrFalseReturn = new AtomicReference<>("N");
-        //所有题目信息
-        List<Map<String, Object>> mapList = lexiconList("lexiconList");
+        //所有题目信息(走服务器缓存)
+        List<Map<String, Object>> mapList = dailyLexiconService.lexiconList(dailyDaParam.getAliUserId());
         mapList.stream().forEach(mapLists ->{
             //根据难易程度去找题目所在位置，减少循环
             if(dailyDaParam.getDepth() == Integer.parseInt(mapLists.get("depth").toString())){

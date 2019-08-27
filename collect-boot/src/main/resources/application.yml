@@ -22,7 +22,7 @@ spring:
     name: collect
   # 环境 dev|test|pro   dynamicdb 测试多数据源配置               dynamicdb-pro 正式多数据源配置
   profiles:
-    active: dynamicdb
+    active: dynamicdb-pro
   # cache配置
   cache:
     type: ehcache
@@ -39,9 +39,11 @@ spring:
   redis:
     #open: false  # 是否开启redis缓存  true开启   false关闭
     #database: 0
-    # 正式地址
+    # 测试地址
 #    host: r-uf6d7cda9ccf46a4.redis.rds.aliyuncs.com
-    host: 139.224.113.110
+    # 正式地址
+    host: 172.19.193.25
+    # 测试6370 正式6379
     port: 6379
     password: sb_123456      # 密码（默认为空）
     timeout: 1000  # 连接超时时长（毫秒）
@@ -109,4 +111,4 @@ logging:
     org.springfromework.web: warn
     org.hibernate: error
     com.tzj: info
-    com.tzj.collect.mapper: debug
+#    com.tzj.collect.mapper: debug
