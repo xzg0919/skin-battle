@@ -130,9 +130,18 @@ public interface CategoryService extends IService<Category> {
 	 */
 	@DS("slave")
 	List<CategoryResult> getHouseHoldDetail(String parentId, String companyId, String cityId);
+	/**
+	 * 根据parentId查询定点的生活垃圾品类、单价
+	 * @param parentId
+	 * @return
+	 */
+	@DS("slave")
+	List<CategoryResult> getHouseHoldDetailLocale(String parentId, String companyId, String cityId);
 
 
 	boolean updatePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException;
+
+	boolean updateLocalePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException;
 	/**
 	 * 获取分类属性所有价格及当前价格
 	 * @param categoryBean

@@ -742,7 +742,7 @@
 		count(1)
 		FROM
 		sb_recyclers a
-		LEFT JOIN sb_order b ON a.id = b.recycler_id
+		LEFT JOIN sb_order b  force index (idx_recycler_id) ON a.id = b.recycler_id
 		LEFT JOIN sb_category c ON c.id = b.category_id
 		WHERE
 		a.parents_id = #{recycleId}

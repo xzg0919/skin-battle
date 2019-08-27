@@ -40,6 +40,24 @@
         AND a.company_id != 1
         GROUP BY b.parent_id
     </select>
-
+    <select id="getOrderItemDetail" parameterType="Object" resultType="Map">
+        SELECT
+        a.category_name AS categoryName,
+        a.price,
+        a.unit,
+        a.amount
+        FROM
+        sb_order_item_ach a
+        WHERE
+        a.order_id = #{orderId}
+        <choose>
+            <when test="isCash == '0'.toString()">
+                AND a.price > 0
+            </when>
+            <otherwise>
+                AND a.price = 0
+            </otherwise>
+        </choose>
+    </select>
 
 </mapper>

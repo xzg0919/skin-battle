@@ -42,4 +42,6 @@ public interface OrderItemAchService extends IService<OrderItemAch>{
 	String orderSum(String streetId);
 	@DS("slave")
 	List<ResultDataVParam> orderDetialNum(String streetId);
+	@DS("slave")
+	List<Map<String,Object>> getOrderItemDetail(Long orderId,String isCash);
 }

@@ -44,4 +44,6 @@ public interface OrderItemService extends IService<OrderItem>{
 	List<ComCatePrice> selectCateAchName(int orderId);
 	@DS("slave")
 	Map<String, Object> selectItemOne(Integer orderId);
+	@DS("slave")
+	List<Map<String,Object>> getOrderItemDetail(Long orderId,String isCash);
 }

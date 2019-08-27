@@ -600,5 +600,16 @@ public class OrderApi {
 		}
 		return resultMap;
 	}
-
+	/**
+	 * 小程序第二版订单详情接口
+	 * @author 王灿
+	 * @param
+	 * @return
+	 * @throws ApiException
+	 */
+	@Api(name = "order.getNewOrderDetail", version = "1.0")
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object getNewOrderDetail(OrderBean orderbean) throws ApiException{
+		return orderService.getNewOrderDetail(orderbean.getId());
+	}
 }

@@ -3135,4 +3135,56 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Integer getOrderLjByStatus(LjAdminBean ljAdminBean,String status){
 		return orderMapper.getOrderLjByStatus(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status);
 	}
+
+	@Override
+	public Object getNewOrderDetail(Integer orderId){
+		Map<String,Object> resultMap = new HashMap<>();
+		Order order = this.selectById(orderId);
+		String paymentNo = "";
+		Payment payment = paymentService.selectByOrderSn(order.getOrderNo());
+		if (null != payment){
+			//查询此单交易是否成功
+			AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getId().toString());
+			if("Success".equals(aliPayment.getMsg())){
+				paymentNo = aliPayment.getOrderId();
+			}
+		}
+		Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+		List<OrderPic> orderPicList = orderPicService.selectList(new EntityWrapper<OrderPic>().eq("order_id", order.getId()));
+		List<OrderPicAch> orderPicAchList = orderPicAchService.selectList(new EntityWrapper<OrderPicAch>().eq("order_id", order.getId()));
+
+		Company company = companyService.selectById(order.getCompanyId());
+		List<Map<String,Object>> houseOrderItemiPrice = new ArrayList<>();
+		List<Map<String,Object>> houseOrderItemiNoPrice = new ArrayList<>();
+		List<OrderItem> orderItemList = new ArrayList<>();
+		Category category = null;
+		if ((Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){
+			if ((OrderType.COMPLETE+"").equals(order.getStatus()+"")){
+				houseOrderItemiPrice  = orderItemAchService.getOrderItemDetail(order.getId(),"0");
+				houseOrderItemiNoPrice = orderItemAchService.getOrderItemDetail(order.getId(),"1");
+			}else {
+				houseOrderItemiPrice = orderItemService.getOrderItemDetail(order.getId(),"0");
+				houseOrderItemiNoPrice  = orderItemService.getOrderItemDetail(order.getId(),"1");
+			}
+		}else {
+			category = categoryService.selectById(order.getCategoryId());
+			orderItemList = orderItemService.selectList(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));
+		}
+		resultMap.put("order",order);
+		resultMap.put("paymentNo",paymentNo);
+		resultMap.put("recyclers",recyclers);
+		resultMap.put("orderPicList",orderPicList);
+		resultMap.put("orderPicAchList",orderPicAchList);
+		resultMap.put("orderItemList",orderItemList);
+		resultMap.put("company",company);
+		resultMap.put("category",category);
+		resultMap.put("houseOrderItemiPrice",houseOrderItemiPrice);
+		resultMap.put("houseOrderItemiNoPrice",houseOrderItemiNoPrice);
+		return  resultMap;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(Order.TitleType.HOUSEHOLD);
+		System.out.println(OrderType.COMPLETE);
+	}
 }

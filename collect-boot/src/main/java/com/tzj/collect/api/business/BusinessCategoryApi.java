@@ -111,58 +111,20 @@ public class BusinessCategoryApi {
 		String companyId = companyAccount.getCompanyId().toString();
 		return categoryService.getHouseHoldDetail(parentId, companyId,categoryBean.getCityId());
 	}
-	
 	/**
-	 * 更新生活垃圾价格
-	 * @param category
+	 * 根据parentId查询定点的生活垃圾品类、单价
+	 * @param
 	 * @return
 	 */
-//	@Api(name="businesscategory.updateprice",version="1.0")
-//	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-//	public String updatePrice(CompanyCategoryBean companyCategoryBean){
-//		CompanyCategory newCompanyCategory = null;
-//		boolean i = false;
-//		//获取companyId
-//		String companyId = getCompanyAccount().getCompanyId().toString();
-//		//通过categoryId获取category对象
-//		Category category = categoryService.selectById(companyCategoryBean.getCategoryId());
-//		
-//		if(CategoryType.DIGITAL.toString().equals(category.getTitle().toString())) {
-//			//家用电器
-//			
-//			
-//		}else if(CategoryType.HOUSEHOLD.toString().equals(category.getTitle().toString())) {
-//			//生活垃圾
-//			CompanyCategory companyCategory1 = companyCategoryService.selectByCategoryId(category.getId().intValue());
-//			if(companyCategory1!=null) {
-//				newCompanyCategory = new CompanyCategory();
-//				newCompanyCategory.setPrice(Float.parseFloat(companyCategoryBean.getPrice()));
-//				EntityWrapper<CompanyCategory> wrapper = new EntityWrapper<CompanyCategory>();
-//				wrapper.eq("company_id", companyId);
-//				wrapper.eq("category_id", companyCategoryBean.getCategoryId());
-//				i =companyCategoryService.update(newCompanyCategory, wrapper);
-//				//i = companyCategoryService.updatePrice(newCompanyCategory);
-//				if(i) {
-//					return "success";
-//				}
-//				return "fail";
-//			}
-//			newCompanyCategory = new CompanyCategory();
-//			newCompanyCategory.setCategoryId(companyCategoryBean.getCategoryId());
-//			newCompanyCategory.setParentId((Long.valueOf(category.getParentId())));
-//			newCompanyCategory.setParentIds(category.getParentIds());
-//			newCompanyCategory.setCompanyId(companyId);
-//			newCompanyCategory.setPrice(Float.parseFloat(companyCategoryBean.getPrice()));
-//			newCompanyCategory.setUnit("kg");
-//			i = companyCategoryService.insertAllColumn(newCompanyCategory);
-//			//i = companyCategoryService.insertPrice(newCompanyCategory);
-//			if(i) {
-//				return "success";
-//			}
-//			return "fail";
-//		}
-//		return "fail";
-//	}
+	@Api(name="business.category.houseHoldDetailLocale",version="1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public List<CategoryResult> getHouseHoldDetailLocale(CategoryBean categoryBean){
+		String parentId = categoryBean.getParentId();
+		CompanyAccount companyAccount = getCompanyAccount();
+		String companyId = companyAccount.getCompanyId().toString();
+		return categoryService.getHouseHoldDetailLocale(parentId, companyId,categoryBean.getCityId());
+	}
+
 	/**
 	 * 更新价格
 	 * @param comIdAndCateOptIdBean
@@ -179,6 +141,23 @@ public class BusinessCategoryApi {
 			throw new ApiException("请先登录,再执行更新操作");
 		}
 		return categoryService.updatePrice(comIdAndCateOptIdBean);
+	}
+	/**
+	 * 更新定点分类的价格
+	 * @param comIdAndCateOptIdBean
+	 * @return
+	 * @throws ApiException
+	 */
+	@Api(name="business.category.updateLocalePrice",version="1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public boolean updateLocalePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException{
+		CompanyAccount companyAccount = getCompanyAccount();
+		if (companyAccount != null) {
+			comIdAndCateOptIdBean.setCompanyId(companyAccount.getCompanyId().toString());
+		}else {
+			throw new ApiException("请先登录,再执行更新操作");
+		}
+		return categoryService.updateLocalePrice(comIdAndCateOptIdBean);
 	}
 	
 	public CompanyAccount  getCompanyAccount() {

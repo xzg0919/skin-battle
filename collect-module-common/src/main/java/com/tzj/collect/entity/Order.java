@@ -840,7 +840,10 @@ public class Order extends DataEntity<Long> {
 		this.cancelReason = cancelReason;
 	}
 
-	public Date getCancelTime() {
+	public Object getCancelTime() {
+		if(null!=cancelTime) {
+			return this.getDate(cancelTime);
+		}
 		return cancelTime;
 	}
 

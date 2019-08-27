@@ -83,5 +83,10 @@ public class OrderItemAchServiceImpl extends ServiceImpl<OrderItemAchMapper, Ord
 		return orderItemAchMapper.orderDetialNum(streetId);
 	}
 
+	@Override
+	public List<Map<String, Object>> getOrderItemDetail(Long orderId, String isCash) {
+		return orderItemAchMapper.getOrderItemDetail(orderId,isCash);
+	}
+
 
 }

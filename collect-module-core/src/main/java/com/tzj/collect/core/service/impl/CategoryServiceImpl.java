@@ -53,6 +53,8 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	private CategoryAttrOptionService categoryAttrOptionService;
 	@Autowired
 	private CompanyStreetBigService companyStreetBigService;
+	@Autowired
+	private CompanyCategoryCityLocaleService companyCategoryCityLocaleService;
 
 	
 	/**
@@ -247,6 +249,20 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 		}
 		return categoryResultList;
 	}
+	/**
+	 * 根据parentId查询生活垃圾品类、单价
+	 * @return
+	 */
+	@Override
+	@DS("slave")
+	public List<CategoryResult> getHouseHoldDetailLocale(String parentId,String companyId,String cityId) {
+		List<CategoryResult> categoryResultList = null;
+		categoryResultList = companyCategoryCityLocaleService.getHouseHoldDetailLocale(parentId,companyId,cityId);
+		if(categoryResultList.isEmpty()){
+			categoryResultList = categoryMapper.getHouseHoldDetail(parentId,companyId);
+		}
+		return categoryResultList;
+	}
 
 
 
@@ -295,6 +311,42 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 			}
 		}
 		return false;
+	}
+	@Override
+	@Transactional(readOnly=false)
+	public boolean updateLocalePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws ApiException {
+			List<CategoryBean> priceList = comIdAndCateOptIdBean.getHouseholdPriceList();
+			for (CategoryBean categoryBean : priceList) {
+				Category category = this.selectById(categoryBean.getId());
+				if(category==null) {
+					throw  new ApiException("传入的分类Id不存在："+categoryBean.getId());
+				}
+				CompanyCategoryCityLocale companyCategoryCityLocale = companyCategoryCityLocaleService.selectOne(new EntityWrapper<CompanyCategoryCityLocale>().eq("city_id", comIdAndCateOptIdBean.getCityId()).eq("company_id", comIdAndCateOptIdBean.getCompanyId()).eq("category_id", categoryBean.getId()).eq("del_flag", 0));
+				if (companyCategoryCityLocale != null) {
+					companyCategoryCityLocale.setPrice(new BigDecimal(categoryBean.getPrice()));
+					companyCategoryCityLocale.setUpdateDate(new Date());
+					companyCategoryCityLocale.setCityId(comIdAndCateOptIdBean.getCityId());
+					companyCategoryCityLocale.setUpdateBy(comIdAndCateOptIdBean.getCompanyId());
+					//companyCategoryMapper.updateAllColumnById(companyCategory);
+					companyCategoryCityLocaleService.updateById(companyCategoryCityLocale);
+				}else{
+					companyCategoryCityLocale = new CompanyCategoryCityLocale();
+					if(category!=null) {
+						companyCategoryCityLocale.setParentId(category.getParentId());
+						companyCategoryCityLocale.setParentIds(category.getParentIds());
+						companyCategoryCityLocale.setCategoryId(Integer.parseInt(categoryBean.getId()));
+						companyCategoryCityLocale.setCompanyId(comIdAndCateOptIdBean.getCompanyId());
+						companyCategoryCityLocale.setPrice(new BigDecimal(categoryBean.getPrice()));
+						//暂时将单位放进去（之后更新弃置todoing）
+						companyCategoryCityLocale.setUnit("kg");
+						companyCategoryCityLocale.setCityId(comIdAndCateOptIdBean.getCityId());
+						companyCategoryCityLocale.setCreateBy(comIdAndCateOptIdBean.getCompanyId());
+					}
+					companyCategoryCityLocaleService.insert(companyCategoryCityLocale);
+					//companyCategoryMapper.insert(companyCategory);
+				}
+			}
+			return true;
 	}
 
 	@Override

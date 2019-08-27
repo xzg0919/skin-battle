@@ -335,4 +335,6 @@ public interface OrderService extends IService<Order> {
 	Integer getSumOrderBylj(LjAdminBean ljAdminBean);
 	@DS("slave")
 	Integer getOrderLjByStatus(LjAdminBean ljAdminBean,String status);
+	@DS("slave")
+	Object getNewOrderDetail(Integer orderId);
 }
