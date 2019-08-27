@@ -21,5 +21,7 @@ public interface CompanyCategoryCityService extends IService<CompanyCategoryCity
     List<Category> topListAppByCity(String level, String title, String companyId, String cityId);
     @DS("slave")
     List<ComCatePrice> getOwnnerPriceAppByCity(String categoryId, String companyId, String cityId);
+    @DS("slave")
+    List<Category> getOneCategoryListByOrder(Integer companyId, Integer cityId);
 
 }

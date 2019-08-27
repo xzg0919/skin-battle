@@ -18,5 +18,36 @@
         AND scc.`company_id` = #{companyId}
         AND scc.city_id = #{cityId}
     </select>
+    <select id="getOneCategoryListLocale" resultType="com.tzj.collect.entity.Category" parameterType="Integer">
+		SELECT DISTINCT
+			scc.*
+		FROM
+			sb_category scc
+		LEFT JOIN (SELECT sccc.id AS aId,sccc.price AS aprice,sccc.parent_id AS aparentId FROM sb_company_category_city_locale sccc WHERE sccc.company_id = #{companyId} AND sccc.city_id = #{cityId} ) sccc ON sccc.aparentId = scc.id
+		LEFT JOIN (SELECT sc.id AS bId,sc.price AS bprice,sc.parent_id AS bparentId FROM sb_company_category sc WHERE sc.company_id = #{companyId} AND sc.del_flag = 0) sc ON sc.bparentId = scc.id
+		WHERE
+			scc.title = '2'
+		AND scc.level_ = '0'
+		AND(sccc.aprice > 0 OR (sccc.aId is null AND sc.bprice >0))
+	 </select>
+    <select id="getTwoCategoryListLocale" parameterType="String" resultType="com.tzj.collect.core.result.ali.ComCatePrice">
+		SELECT
+			FORMAT(sccp.price,2) AS price,
+			sccp.unit,
+			sc.name_,
+			sc.id,
+			sc.icon
+		FROM
+			sb_company_category_city_locale sccp
+		INNER JOIN sb_category sc ON sc.id = sccp.category_id
+		WHERE
+			sccp.parent_id = #{categoryId}
+		AND sccp.company_id = #{companyId}
+		AND (FORMAT(sccp.price,2) > 0 OR sc.unuseful = '1')
+		AND sccp.del_flag = 0
+		AND sc.del_flag = 0
+		AND sccp.city_id = #{cityId}
+		ORDER BY sc.code_ ASC
+	</select>
 
 </mapper>

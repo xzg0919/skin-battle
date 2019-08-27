@@ -155,4 +155,16 @@ public interface CategoryService extends IService<Category> {
 	List<Map<String,Object>> getIsOpenCategory(String companyId);
 	@DS("slave")
 	BigDecimal getPrice(String aliUserId, long categoryId, String type, String categoryAttrOptionIds);
+	@DS("slave")
+	Object getNoCashOneCategoryList();
+	@DS("slave")
+	Object getNoCashTwoCategoryList(Integer categoryId);
+	@DS("slave")
+	Object getOneCategoryListByOrder(String orderId);
+	@DS("slave")
+	Object getTwoCategoryListByOrder(Integer categoryId,String orderId);
+	@DS("slave")
+	Object getOneCategoryListLocale(String location,Long recyclerId);
+	@DS("slave")
+	Object getTwoCategoryListLocale(String location,Integer categoryId,Long recyclerId);
 }

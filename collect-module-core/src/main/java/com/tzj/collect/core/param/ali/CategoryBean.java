@@ -1,5 +1,7 @@
 package com.tzj.collect.core.param.ali;
 
+import lombok.Data;
+
 import java.util.List;
 
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  * @author Michael_Wang
  *
  */
+@Data
 public class CategoryBean {
 
 	//id
@@ -52,6 +55,10 @@ public class CategoryBean {
 	 * 是否是五公斤废纺衣物回收
 	 */
 	private String isFiveKg;
+	/**
+	 * 经纬度
+	 */
+	private String location;
 	
 	//分类属性
 	private List<CategoryAttrBean> categoryAttr;
