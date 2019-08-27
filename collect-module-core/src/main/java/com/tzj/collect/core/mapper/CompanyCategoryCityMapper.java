@@ -20,4 +20,6 @@ public interface CompanyCategoryCityMapper extends BaseMapper<CompanyCategoryCit
     List<Category> topListAppByCity(@Param("level") String level, @Param("title") String title, @Param("companyId") String companyId, @Param("cityId") String cityId);
 
     List<ComCatePrice> getOwnnerPriceAppByCity(@Param("categoryId") String categoryId, @Param("companyId") String companyId, @Param("cityId") String cityId);
+
+    List<Category>  getOneCategoryListByOrder(@Param("companyId")Integer companyId,@Param("cityId")Integer cityId);
 }

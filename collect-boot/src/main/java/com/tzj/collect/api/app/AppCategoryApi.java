@@ -119,4 +119,64 @@ public class AppCategoryApi {
 //		});
 		return comCatePriceList;
 	}
+	/**
+	 * 最新app不要钱的一级分类
+	 * @author wangcan
+	 * @return
+	 */
+	@Api(name = "app.category.getNoCashOneCategoryList", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getNoCashOneCategoryList(){
+		return categoryService.getNoCashOneCategoryList();
+	}
+	/**
+	 * 最新app不要钱的二级分类
+	 * @author wangcan
+	 * @return
+	 */
+	@Api(name = "app.category.getNoCashTwoCategoryList", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getNoCashTwoCategoryList(CategoryBean categoryBean){
+		return categoryService.getNoCashTwoCategoryList(categoryBean.getId());
+	}
+	/**
+	 * 最新app根据OrderId订单查询一级分类
+	 * @author wangcan
+	 * @return
+	 */
+	@Api(name = "app.category.getOneCategoryListByOrder", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getOneCategoryListByOrder(CategoryBean categoryBean){
+		return categoryService.getOneCategoryListByOrder(categoryBean.getOrderId());
+	}
+	/**
+	 * 最新app根据一级分类Id查询二级分类
+	 * @author wangcan
+	 * @return
+	 */
+	@Api(name = "app.category.getTwoCategoryListByOrder", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getTwoCategoryListByOrder(CategoryBean categoryBean){
+		return categoryService.getTwoCategoryListByOrder(categoryBean.getId(),categoryBean.getOrderId());
+	}
+	/**
+	 * 最新app查询定点回收的一级分类
+	 * @author wangcan
+	 * @return
+	 */
+	@Api(name = "app.category.getOneCategoryListLocale", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getOneCategoryListLocale(CategoryBean categoryBean){
+		return categoryService.getOneCategoryListLocale(categoryBean.getLocation(),RecyclersUtils.getRecycler().getId());
+	}
+	/**
+	 * 最新app查询定点回收的二级分类
+	 * @author wangcan
+	 * @return
+	 */
+	@Api(name = "app.category.getTwoCategoryListLocale", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getTwoCategoryListLocale(CategoryBean categoryBean){
+		return categoryService.getTwoCategoryListLocale(categoryBean.getLocation(),categoryBean.getId(),RecyclersUtils.getRecycler().getId());
+	}
 }

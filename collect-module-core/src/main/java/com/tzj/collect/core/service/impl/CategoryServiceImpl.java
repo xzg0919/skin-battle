@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
 import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.utils.AmapUtil;
 import com.tzj.collect.core.mapper.CategoryAttrOptionMapper;
 import com.tzj.collect.core.mapper.CategoryMapper;
 import com.tzj.collect.core.mapper.CompanyCategoryMapper;
@@ -13,7 +14,9 @@ import com.tzj.collect.core.param.ali.AliCategoryAttrOptionBean;
 import com.tzj.collect.core.param.ali.CategoryAttrBean;
 import com.tzj.collect.core.param.business.CategoryBean;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
+import com.tzj.collect.core.result.ali.AmapResult;
 import com.tzj.collect.core.result.ali.ClassifyAndMoney;
+import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.result.business.CategoryResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -27,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -55,6 +59,12 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	private CompanyStreetBigService companyStreetBigService;
 	@Autowired
 	private CompanyCategoryCityLocaleService companyCategoryCityLocaleService;
+	@Autowired
+	private OrderService orderService;
+	@Autowired
+	private AreaService areaService;
+	@Autowired
+	private CompanyRecyclerService companyRecyclerService;
 
 	
 	/**
@@ -484,5 +494,94 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 		return price;
 	}
 
+	@Override
+	public Object getNoCashOneCategoryList() {
+		return this.selectList(new EntityWrapper<Category>().eq("level_","0").eq("title","2").eq("unuseful","0"));
+	}
 
+	@Override
+	public Object getNoCashTwoCategoryList(Integer categoryId) {
+		List<Category> categoryList = this.selectList(new EntityWrapper<Category>().eq("parent_id", categoryId));
+		categoryList.stream().forEach(category -> {
+			category.setPrice(new BigDecimal("0"));
+		});
+		return categoryList;
+	}
+
+	@Override
+	public Object getOneCategoryListByOrder(String orderId) {
+		Order order = orderService.selectById(orderId);
+		Area area = areaService.selectById(order.getAreaId());
+		List<Category> categoryList = companyCategoryCityService.getOneCategoryListByOrder(order.getCompanyId(),area.getParentId());
+		return categoryList;
+	}
+
+	@Override
+	public Object getTwoCategoryListByOrder(Integer categoryId,String orderId) {
+		Order order = orderService.selectById(orderId);
+		Area area = areaService.selectById(order.getAreaId());
+		List<ComCatePrice> priceList = null;
+		priceList = companyCategoryCityService.getOwnnerPriceAppByCity(categoryId.toString(),order.getCompanyId().toString(),area.getParentId().toString());
+		if (priceList.isEmpty()) {
+			com.tzj.collect.core.param.ali.CategoryBean categoryBean = new com.tzj.collect.core.param.ali.CategoryBean();
+			categoryBean.setId(categoryId);
+			priceList = companyCategoryService.getOwnnerPriceApp(categoryBean, order.getCompanyId());
+		}
+		return priceList;
+	}
+
+	@Override
+	public Object getOneCategoryListLocale(String location,Long recyclerId) {
+		Integer cityId = this.getCityId(location);
+		Integer companyId = null;
+		List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(new EntityWrapper<CompanyRecycler>().eq("status_", "1").eq("recycler_id", recyclerId).eq("type_", "1"));
+		if (companyRecyclerList.isEmpty()){
+			return "您暂未添加回收公司";
+		}
+		companyId = companyRecyclerList.get(0).getCompanyId();
+		List<Category> oneCategoryListLocale = companyCategoryCityLocaleService.getOneCategoryListLocale(companyId, cityId);
+		return oneCategoryListLocale;
+	}
+
+	@Override
+	public Object getTwoCategoryListLocale(String location, Integer categoryId,Long recyclerId) {
+		Integer cityId = this.getCityId(location);
+		Integer companyId = null;
+		List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(new EntityWrapper<CompanyRecycler>().eq("status_", "1").eq("recycler_id", recyclerId).eq("type_", "1"));
+		if (companyRecyclerList.isEmpty()){
+			return "您暂未添加回收公司";
+		}
+		companyId = companyRecyclerList.get(0).getCompanyId();
+		List<ComCatePrice> priceList = null;
+		priceList = companyCategoryCityLocaleService.getTwoCategoryListLocale(categoryId.toString(),companyId+"",cityId+"");
+		if (priceList.isEmpty()) {
+			com.tzj.collect.core.param.ali.CategoryBean categoryBean = new com.tzj.collect.core.param.ali.CategoryBean();
+			categoryBean.setId(categoryId);
+			priceList = companyCategoryService.getOwnnerPriceApp(categoryBean, companyId);
+		}
+		return priceList;
+	}
+
+	public Integer getCityId(String location) {
+		Integer cityId = null;
+		try {
+			AmapResult amap = AmapUtil.getAmap(location);
+			if(null!= amap) {
+				Area street = areaService.selectOne(new EntityWrapper<Area>().eq("code_", amap.getTowncode()));
+				if (null != street){
+					Area area = areaService.selectById(street.getParentId());
+					if (null != area){
+						cityId = area.getParentId();
+					}
+				}else {
+					Area city = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", amap.getCity()));
+					if (null != city){
+						cityId = city.getId().intValue();
+					}
+				}
+			}
+		} catch (Exception e) {
+		}
+		return  cityId;
+	}
 }

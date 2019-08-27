@@ -45,4 +45,9 @@ public class CompanyCategoryCityServiceImpl extends ServiceImpl<CompanyCategoryC
     public List<ComCatePrice> getOwnnerPriceAppByCity(String categoryId, String companyId, String cityId) {
         return companyCategoryCityMapper.getOwnnerPriceAppByCity(categoryId,companyId,cityId);
     }
+
+    @Override
+    public List<Category> getOneCategoryListByOrder(Integer companyId, Integer cityId){
+        return companyCategoryCityMapper.getOneCategoryListByOrder(companyId,cityId);
+    }
 }

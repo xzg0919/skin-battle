@@ -1,6 +1,7 @@
 package api.app;
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.result.app.AppCompany;
@@ -26,7 +27,7 @@ import static com.tzj.collect.common.constant.TokenConst.*;
 public class TokenGetAppTest {
 	 public static void main(String[] args) throws Exception {
 
-		 String token = JwtUtils.generateToken("1", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
+		 String token = JwtUtils.generateToken("2202", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
 		 String securityToken = JwtUtils.generateEncryptToken(token, APP_API_TOKEN_CYPTO_KEY);
 		 System.out.println("token : "+securityToken);
 
@@ -43,14 +44,12 @@ public class TokenGetAppTest {
 				 orderBean.setId(8941);
 		 orderBean.setAchPrice("0.0");
 
-		 OrderBean orderbean = new OrderBean();
-		 orderBean.setPagebean(new PageBean());
-
-
-
+		 CategoryBean categoryBean = new CategoryBean();
+		 categoryBean.setLocation("121.5508,31.204655");
+		 categoryBean.setId(25);
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.order.list.phone");
+	        param.put("name", "app.category.getTwoCategoryListLocale");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -58,7 +57,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", orderBean);
+	        param.put("data", categoryBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

@@ -92,6 +92,18 @@
 		AND a.title = #{title}
 		AND a.unuseful = '1'
 	 </select>
+	<select id="getOneCategoryListByOrder" resultType="com.tzj.collect.entity.Category" parameterType="Integer">
+		SELECT DISTINCT
+			scc.*
+		FROM
+			sb_category scc
+		LEFT JOIN (SELECT sccc.id AS aId,sccc.price AS aprice,sccc.parent_id AS aparentId FROM sb_company_category_city sccc WHERE sccc.company_id = #{companyId} AND sccc.city_id = #{cityId} ) sccc ON sccc.aparentId = scc.id
+		LEFT JOIN (SELECT sc.id AS bId,sc.price AS bprice,sc.parent_id AS bparentId FROM sb_company_category sc WHERE sc.company_id = #{companyId} AND sc.del_flag = 0) sc ON sc.bparentId = scc.id
+		WHERE
+			scc.title = '2'
+		AND scc.level_ = '0'
+		AND(sccc.aprice > 0 OR (sccc.aId is null AND sc.bprice >0))
+	 </select>
 
 	<select id="getOwnnerPriceAppByCity" parameterType="String" resultType="com.tzj.collect.core.result.ali.ComCatePrice">
 		SELECT
