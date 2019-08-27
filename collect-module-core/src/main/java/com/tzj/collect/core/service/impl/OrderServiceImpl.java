@@ -15,6 +15,7 @@ import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.thread.NewThreadPoorExcutor;
 import com.tzj.collect.common.thread.sendGreenOrderThread;
+import com.tzj.collect.common.utils.AmapUtil;
 import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
 import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.common.utils.ToolUtils;
@@ -29,6 +30,7 @@ import com.tzj.collect.core.param.app.TimeBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.business.CompanyBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
+import com.tzj.collect.core.result.ali.AmapResult;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.result.ali.CommToken;
 import com.tzj.collect.core.result.app.AppOrderResult;
@@ -133,6 +135,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private CompanyCategoryCityService companyCategoryCityService;
 	@Autowired
 	private AreaService areaService;
+	@Autowired
+	private CompanyCategoryCityLocaleService companyCategoryCityLocaleService;
 
 	/**
 	 * 获取会员的订单列表 分页
@@ -509,6 +513,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 							orderItem.setParentIds(companyCategory.getParentIds());
 							orderItem.setPrice(companyCategory.getPrice());
 							orderItem.setUnit(companyCategory.getUnit());
+						}
+						if ("1".equals(item.getIsCash())){
+							orderItem.setPrice(0);
 						}
 						orderItemAchService.insert(orderItem);
 					}
@@ -2178,6 +2185,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return resultMap;
 	}
 
+	public Integer getCityId(String location) {
+		Integer cityId = null;
+		try {
+			AmapResult amap = AmapUtil.getAmap(location);
+			if(null!= amap) {
+				Area street = areaService.selectOne(new EntityWrapper<Area>().eq("code_", amap.getTowncode()));
+				if (null != street){
+					Area area = areaService.selectById(street.getParentId());
+					if (null != area){
+						cityId = area.getParentId();
+					}
+				}else {
+					Area city = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", amap.getCity()));
+					if (null != city){
+						cityId = city.getId().intValue();
+					}
+				}
+			}
+		} catch (Exception e) {
+		}
+		return  cityId;
+	}
 	/**
 	 * 扫描用户会员卡卡号完成订单
 	 *
@@ -2188,6 +2217,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 */
 	@Override
 	public Object saveOrderByCardNo(OrderBean orderBean, Recyclers recyclers) {
+		Integer cityId = this.getCityId(orderBean.getLocation());
 		//根据回收人员信息查询所属关联公司
 		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclers.getId()).eq("status_", "1").eq("type_","1"));
 		//获取用户的详细信息
@@ -2256,8 +2286,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<OrderItemBean> orderItemList = orderBean.getOrderItemList();
 		if (!orderItemList.isEmpty()) {
 			for (OrderItemBean orderItemBean : orderItemList) {
-				//根据分类Id和公司id查询分类信息
-				CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("category_id", orderItemBean.getCategoryId()).eq("company_id", companyRecycler.getCompanyId()).eq("del_flag", 0));
+				float price = 0;
+				if (!"1".equals(orderItemBean.getIsCash())){
+					CompanyCategoryCityLocale companyCategoryCityLocale = companyCategoryCityLocaleService.selectOne(new EntityWrapper<CompanyCategoryCityLocale>().eq("company_id", order.getCompanyId()).eq("city_id", cityId).eq("category_id", orderItemBean.getCategoryId()));
+					if (null == companyCategoryCityLocale){
+						//根据分类Id和公司id查询分类信息
+						CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("category_id", orderItemBean.getCategoryId()).eq("company_id", companyRecycler.getCompanyId()).eq("del_flag", 0));
+						if (null != companyCategory){
+							price = companyCategory.getPrice();
+						}
+					}else {
+						price = companyCategoryCityLocale.getPrice().floatValue();
+					}
+				}
 				Category category = categoryService.selectById(orderItemBean.getCategoryId());
 				OrderItem orderItem = new OrderItem();
 				orderItem.setOrderId(Integer.parseInt(order.getId() + ""));
@@ -2268,7 +2309,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				orderItem.setParentName(orderItemBean.getParentName());
 				orderItem.setAmount(orderItemBean.getAmount());
 				orderItem.setUnit(category.getUnit());
-				orderItem.setPrice(companyCategory.getPrice());
+				orderItem.setPrice(price);
 				orderItemService.insert(orderItem);
 				OrderItemAch orderItemAch = new OrderItemAch();
 				orderItemAch.setOrderId(Integer.parseInt(order.getId() + ""));
@@ -2279,7 +2320,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				orderItemAch.setParentName(orderItemBean.getParentName());
 				orderItemAch.setAmount(orderItemBean.getAmount());
 				orderItemAch.setUnit(category.getUnit());
-				orderItemAch.setPrice(companyCategory.getPrice());
+				orderItemAch.setPrice(price);
 				orderItemAchService.insert(orderItemAch);
 				amount += orderItemBean.getAmount();
 			}
@@ -3181,10 +3222,5 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("houseOrderItemiPrice",houseOrderItemiPrice);
 		resultMap.put("houseOrderItemiNoPrice",houseOrderItemiNoPrice);
 		return  resultMap;
-	}
-
-	public static void main(String[] args) {
-		System.out.println(Order.TitleType.HOUSEHOLD);
-		System.out.println(OrderType.COMPLETE);
 	}
 }

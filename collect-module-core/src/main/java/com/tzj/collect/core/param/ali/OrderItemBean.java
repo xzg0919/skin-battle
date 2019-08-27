@@ -1,5 +1,7 @@
 package com.tzj.collect.core.param.ali;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 
 /**
@@ -7,6 +9,7 @@ import java.math.BigDecimal;
  * @author Michael_Wang
  *
  */
+@Data
 public class OrderItemBean {
 	private Long id;
     /**
@@ -58,6 +61,10 @@ public class OrderItemBean {
 	private String price;
 
     private double amount;//数量
+	/**
+	 * 是否现金
+	 */
+	private String isCash;
 
 	public String getPrice() {
 		return price;

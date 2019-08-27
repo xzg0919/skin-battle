@@ -232,5 +232,9 @@ public class OrderBean {
 	private String OrderNo;
 
 	private String linkName;
+    /**
+     * 经纬度
+     */
+    private String location;
 
 }
