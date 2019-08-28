@@ -2,6 +2,7 @@ package com.tzj.collect.api.ali;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
+import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.api.common.websocket.WebSocketServer;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.config.ApplicationInit;
@@ -71,6 +72,10 @@ public class OrderApi {
 	private ImprisonMemberService imprisonMemberService;
 	@Autowired
 	private ImprisonRuleService imprisonRuleService;
+	@Autowired
+	private RedisUtil redisUtil;
+	@Autowired
+	private MemberService memberService;
 	
 
 	/**
@@ -611,5 +616,54 @@ public class OrderApi {
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getNewOrderDetail(OrderBean orderbean) throws ApiException{
 		return orderService.getNewOrderDetail(orderbean.getId());
+	}
+
+	/**
+	 * 小程序第二版订单详情接口
+	 * @author 王灿
+	 * @param
+	 * @return
+	 * @throws ApiException
+	 */
+	@Api(name = "order.getCollectDetail", version = "1.0")
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object getCollectDetail() throws ApiException{
+		Object collectDetail = redisUtil.get("collectDetail");
+		if (null == collectDetail){
+			//注册总用户数量
+			long memberCount = memberService.getMemberCount();
+			int OrderCount = orderService.selectCount(new EntityWrapper<Order>());
+			Long greenCount = (long)0;
+			List<Map<String, Object>> maps = orderService.selectHouseAmount();
+			for (Map<String, Object> map:maps){
+				Integer green = 0;
+				if ("废塑料".equals(map.get("categoryName"))){
+					green = 144;
+				}else if ("废旧衣物".equals(map.get("categoryName"))){
+					green = 78;
+				}else if ("废纺衣物".equals(map.get("categoryName"))){
+					green = 78;
+				}else if ("废衣服".equals(map.get("categoryName"))){
+					green = 78;
+				}else if ("废纸".equals(map.get("categoryName"))){
+					green = 100;
+				}else if ("废金属".equals(map.get("categoryName"))){
+					green = 13;
+				}
+				greenCount += new Double((double)map.get("amount")*green).longValue();
+			};
+			int counts = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1"));
+			int count1 = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1").eq("category_id", "23"));
+			int count2 = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1").eq("category_id", "24"));
+			greenCount += count1*987+(counts-count1-count2)*9763;
+			Map<String,Object> resultMap = new HashMap<>();
+			resultMap.put("memberCount",memberCount);
+			resultMap.put("OrderCount",OrderCount);
+			resultMap.put("greenCount",greenCount);
+			redisUtil.set("collectDetail",resultMap,19800);
+			return resultMap;
+		}else {
+			return  collectDetail;
+		}
 	}
 }

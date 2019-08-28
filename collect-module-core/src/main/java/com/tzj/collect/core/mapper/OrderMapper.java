@@ -183,5 +183,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @return
 	 */
 	public List<ThirdOrderResult> orderStatistics4Third(@Param("areaId") String areaId,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("startPage") Integer startPage, @Param("endPage") Integer endPage);
+
+	List<Map<String,Object>> selectHouseAmount();
 }
 

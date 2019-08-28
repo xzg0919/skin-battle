@@ -337,4 +337,6 @@ public interface OrderService extends IService<Order> {
 	Integer getOrderLjByStatus(LjAdminBean ljAdminBean,String status);
 	@DS("slave")
 	Object getNewOrderDetail(Integer orderId);
+	@DS("slave")
+	List<Map<String,Object>>selectHouseAmount();
 }

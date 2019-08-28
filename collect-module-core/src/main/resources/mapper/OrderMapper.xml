@@ -1827,7 +1827,35 @@
         ORDER BY
 		a.create_date DESC  LIMIT #{startPage},#{endPage}
 	</select>
-
+	<select id="selectHouseAmount" resultType="Map">
+		SELECT a.categoryName,ROUND(SUM(a.amount),0) AS amount FROM (
+		SELECT
+						b.category_name AS categoryName,
+						SUM(b.amount) AS amount
+					FROM
+						sb_order a
+					LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
+					LEFT JOIN sb_area c ON a.area_id = c.id
+					WHERE
+						a.status_ = 3
+					AND a.title =2
+					AND b.price = 0
+		GROUP BY b.category_name
+		UNION ALL
+		SELECT
+					b.parent_name AS categoryName,
+					SUM(b.amount) AS amount
+				FROM
+					sb_order a
+				LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
+				LEFT JOIN sb_area c ON a.area_id = c.id
+				WHERE
+					a.status_ = 3
+				AND a.title = 2
+				AND b.price > 0
+		GROUP BY b.parent_name
+		) a GROUP BY a.categoryName
+	</select>
 
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
