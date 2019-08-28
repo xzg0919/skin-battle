@@ -477,6 +477,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	}
 
 	@Override
+	public Map<String, Object> selectMemberInfoByAliUserId(String aliUserId) {
+		String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
+		return memberMapper.selectMemberInfoByAliUserId(aliUserId,memberName);
+	}
+
+	@Override
 	public Member selectMemberByAliUserId(String aliUserId) {
 		String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
 		return memberMapper.selectMemberByAliUserId(aliUserId,memberName);

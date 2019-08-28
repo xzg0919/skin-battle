@@ -80,6 +80,14 @@
 	WHERE
 		ali_user_id = #{aliUserId}
 </select>
+	<select id="selectMemberInfoByAliUserId" parameterType="String" resultType="Map">
+		SELECT
+			mm.city, mm.pic_url as picUrl, mm.link_name as linkName
+		FROM
+			${tableName} mm
+		WHERE
+			ali_user_id = #{aliUserId}
+</select>
 <update id="updateMemberByAliUserId" parameterType="com.tzj.collect.entity.Member">
 	UPDATE ${member.tableName} a
 	SET

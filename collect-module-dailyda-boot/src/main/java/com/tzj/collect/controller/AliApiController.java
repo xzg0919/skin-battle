@@ -12,11 +12,13 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tzj.collect.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SIGN_KEY;
 
 
 @Controller
-@RequestMapping(value = "/daily/api")
+@RequestMapping(value = "/operate/api")
 public class AliApiController extends ApiController {
     @Resource(name="apiNonceServiceImpl")
     private NoceService noceService;
@@ -41,9 +43,9 @@ public class AliApiController extends ApiController {
 
         ApiKeys apiKeys=new ApiKeys();
         apiKeys.setTokenSignKey(false); //使用 appid的签名key
-        apiKeys.setProduceSignKey(DA_API_TOKEN_SIGN_KEY);
-        apiKeys.setTokenCyptoKey(DA_API_TOKEN_CYPTO_KEY);
-        apiKeys.setTokenSecretKey(DA_API_TOKEN_SECRET_KEY);
+        apiKeys.setProduceSignKey(ALI_API_TOKEN_SIGN_KEY);
+        apiKeys.setTokenCyptoKey(ALI_API_TOKEN_CYPTO_KEY);
+        apiKeys.setTokenSecretKey(ALI_API_TOKEN_SECRET_KEY);
         apiConfig.setApiKeys(apiKeys);
 
         //设置  SubjectService 以及 NoceService 的实现 =========

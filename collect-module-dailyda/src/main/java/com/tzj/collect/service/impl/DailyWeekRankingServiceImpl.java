@@ -11,6 +11,7 @@ import com.tzj.collect.entity.Member;
 import com.tzj.collect.service.DailyWeekRankingService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
@@ -61,8 +62,9 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
         //周达人aliUserId
         String tableWeek = LocalDate.now().getYear()+""+(Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) - 1);
         String aliUserId = dailyWeekRankingMapper.insertEachWeekDresser("daily_day_records_"+tableWeek);
+        Jedis jedis = jedisPool.getResource();
         //以redis默认排序为准
-        Set<String> stringSet = jedisPool.getResource().zrevrangeByScore(this.redisKeyNameLastWeek(), 1000, 0);
+        Set<String> stringSet = jedis.zrevrangeByScore(this.redisKeyNameLastWeek(), 1000, 0);
         Member member = memberService.selectMemberByAliUserId(stringSet.iterator().next().trim());
         dailyWeekRanking.setWeek(week);
         dailyWeekRanking.setCity(null==member.getCity()?"":member.getCity());
@@ -70,6 +72,7 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
         dailyWeekRanking.setLinkName(member.getLinkName());
         //计算上周达人
         this.insert(dailyWeekRanking);
+        jedis.close();
     }
     /** 上周达人榜
       * @author sgmark@aliyun.com

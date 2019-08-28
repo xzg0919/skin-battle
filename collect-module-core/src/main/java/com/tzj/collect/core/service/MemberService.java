@@ -95,4 +95,6 @@ public interface MemberService extends IService<Member>{
      * @return
      */
     long getMemberCountToDay();
+    @DS("slave")
+    Map<String, Object> selectMemberInfoByAliUserId(String aliUserId);
 }

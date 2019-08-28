@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.entity.Member;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 /**
  * @Author 王灿
  **/
@@ -39,4 +41,6 @@ public interface MemberMapper extends BaseMapper<Member>{
      * @return
      */
     long getMemberCountToDay();
+
+    Map<String, Object> selectMemberInfoByAliUserId(@Param("aliUserId") String aliUserId,@Param("tableName") String tableName);
 }
