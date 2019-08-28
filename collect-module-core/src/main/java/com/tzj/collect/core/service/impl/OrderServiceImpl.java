@@ -3199,7 +3199,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<Map<String,Object>> houseOrderItemiNoPrice = new ArrayList<>();
 		List<OrderItem> orderItemList = new ArrayList<>();
 		Category category = null;
-		if ((Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){
+		if ((Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")||(Order.TitleType.FIVEKG+"").equals(order.getTitle()+"")){
 			if ((OrderType.COMPLETE+"").equals(order.getStatus()+"")){
 				houseOrderItemiPrice  = orderItemAchService.getOrderItemDetail(order.getId(),"0");
 				houseOrderItemiNoPrice = orderItemAchService.getOrderItemDetail(order.getId(),"1");
