@@ -45,4 +45,7 @@ public interface DailyLexiconMapper extends BaseMapper<DailyLexicon> {
     Integer existTable(@Param("tableName")String tableName);
 
     void createNewTable(@Param("tableName")String tableName);
+
+    List<Map<String, Object>> lexiconListByAliUserId(@Param("aliUserId")String aliUserId, @Param("tableName")String tableName, @Param("localDateBefore")String localDateBefore, @Param("localDateEnd")String localDateEnd);
+
 }

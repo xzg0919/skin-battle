@@ -33,7 +33,7 @@
         SELECT depth FROM daily_lexicon WHERE del_flag = 0 GROUP BY depth
     </select>
 	<select id="selectDepth" resultType="Map">
-        SELECT id,name_,type_id,depth FROM daily_lexicon WHERE del_flag = 0 and  depth =  #{depth} ORDER BY RAND() LIMIT 2
+        SELECT id,name_,type_id,depth FROM daily_lexicon WHERE del_flag = 0 and  depth =  #{depth}
     </select>
 	<resultMap id="getCheckMap" type="map">
 		<result property="depth" column="depth"/>
@@ -138,5 +138,54 @@
 		<result  property="name" column="name_"/>
 		<result property="lexType" column="type_id" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
 		<result property="userLexType" column="user_type_id" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+	</resultMap>
+
+	<select id="lexiconListByAliUserId" resultMap="getCheckMapUser" >
+        SELECT
+            DISTINCT
+            dll.depth,
+            ddr.ali_user_id as aliUserId,
+            #{localDateBefore} as localDateBefore,
+            #{localDateEnd} as localDateEnd,
+            #{tableName} as  tableName
+        FROM
+             ${tableName} ddr
+        LEFT JOIN daily_lexicon dll ON ddr.lexicon_id = dll.id
+        WHERE
+            ddr.ali_user_id = #{aliUserId}
+        AND ddr.create_date BETWEEN #{localDateBefore}
+		AND #{localDateEnd}
+	</select>
+
+	<select id="selectDepthDailyUser" resultType="Map" >
+        SELECT
+            ddr.uu_id,
+            dll.type_id,
+            dll.name_,
+            dll.depth,
+            ddr.user_type_id
+        FROM
+            ${tableName} ddr
+        LEFT JOIN daily_lexicon dll ON ddr.lexicon_id = dll.id
+        WHERE
+            ddr.ali_user_id = #{aliUserId}
+        AND dll.depth = #{depth}
+        AND ddr.create_date BETWEEN #{localDateBefore}
+		AND #{localDateEnd}
+
+    </select>
+	<resultMap id="getCheckMapUser" type="map">
+		<result property="depth" column="depth"/>
+		<result property="aliUserId" column="aliUserId"/>
+		<result property="localDateBefore" column="localDateBefore"/>
+		<result property="localDateEnd" column="localDateEnd"/>
+		<result property="tableName" column="tableName"/>
+		<collection property="depthList" javaType="ArrayList" ofType="Map"
+					select="selectDepthDailyUser" column="{depth=depth, aliUserId=aliUserId, localDateBefore=localDateBefore, localDateEnd=localDateEnd, tableName=tableName}">
+			<result property="uu_id" column="uu_id" />
+			<result property="name" column="name_"/>
+			<result property="typeId" column="type_id"/>
+			<result property="depth" column="depth"/>
+		</collection>
 	</resultMap>
 </mapper>
