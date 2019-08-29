@@ -16,8 +16,8 @@ import lombok.Data;
 @Data
 public class FlcxCityResult {
     private Long id ;
-    private String  cityName;
-    private String code;
+    private String  city;
+    private String adCode;
     private String spell;
 
 }
