@@ -3,14 +3,11 @@ package com.tzj.collect.common;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.core.param.ali.PageBean;
-import com.tzj.collect.core.service.AliPayService;
-import com.tzj.collect.core.service.RecyclersService;
 import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
-import com.tzj.module.common.file.upload.FileUpload;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
 import com.tzj.module.easyopen.file.FileUploadService;
@@ -31,12 +28,6 @@ public class UtilApi {
 	private FileUploadService fileUploadService;
 	@Autowired
 	private FileUploadServiceImpl fileUploadServiceImpl;
-	@Autowired
-    private FileUpload fileUpload;
-    @Autowired
-	private AliPayService aliPayService;
-    @Autowired
-    private RecyclersService recyclersService;
 	
     /**
      * 上传文件，客户端只支持 FormData 格式协议

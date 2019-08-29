@@ -4,13 +4,13 @@ package com.tzj.collect.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.core.mapper.DailyWeekRankingMapper;
-import com.tzj.collect.core.service.MemberService;
+import com.tzj.collect.mapper.DailyWeekRankingMapper;
 import com.tzj.collect.entity.DailyWeekRanking;
-import com.tzj.collect.entity.Member;
 import com.tzj.collect.service.DailyWeekRankingService;
+import com.tzj.collect.service.DailyMemberService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.WeekFields;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -40,7 +41,7 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
 
 
     @Resource
-    private MemberService memberService;
+    private DailyMemberService memberService;
 
     @Override
     public Page<DailyWeekRanking> eachWeekDresserList(Integer pageNumber, Integer pageSize) {
@@ -65,11 +66,13 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
         Jedis jedis = jedisPool.getResource();
         //以redis默认排序为准
         Set<String> stringSet = jedis.zrevrangeByScore(this.redisKeyNameLastWeek(), 1000, 0);
-        Member member = memberService.selectMemberByAliUserId(stringSet.iterator().next().trim());
+        Map<String, Object> memberMap = memberService.selectMemberInfoByAliUserId(stringSet.iterator().next().trim());
         dailyWeekRanking.setWeek(week);
-        dailyWeekRanking.setCity(null==member.getCity()?"":member.getCity());
-        dailyWeekRanking.setImg(member.getPicUrl());
-        dailyWeekRanking.setLinkName(member.getLinkName());
+        if (!CollectionUtils.isEmpty(memberMap)){
+            dailyWeekRanking.setCity(null == memberMap.get("city") ? "" : memberMap.get("city").toString());
+            dailyWeekRanking.setImg(null == memberMap.get("picUrl") ? "" :  memberMap.get("picUrl").toString());
+            dailyWeekRanking.setLinkName(null == memberMap.get("linkName") ? "" : memberMap.get("linkName").toString());
+        }
         //计算上周达人
         this.insert(dailyWeekRanking);
         jedis.close();

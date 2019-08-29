@@ -2,11 +2,11 @@ package com.tzj.collect.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.lexicon.param.DailyDaParam;
-import com.tzj.collect.core.mapper.DailyLexiconMapper;
-import com.tzj.collect.core.service.MemberService;
+import com.tzj.collect.mapper.DailyLexiconMapper;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.service.DailyLexiconService;
+import com.tzj.collect.service.DailyMemberService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,7 +35,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     private JedisPool jedisPool;
 
     @Resource
-    private MemberService memberService;
+    private DailyMemberService dailyMemberService;
 
     @Resource
     private  DailyLexiconMapper dailyLexiconMapper;
@@ -279,7 +279,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 //            tupleMap.put("aliUserId", aliUserIdScore.get(0));
             tupleMap.put("score", tuple.getScore());
             //这里根据阿里userId去找当前用户信息
-            Map<String, Object> member = memberService.selectMemberInfoByAliUserId(aliUserIdScore.get(0));
+            Map<String, Object> member = dailyMemberService.selectMemberInfoByAliUserId(aliUserIdScore.get(0));
             tupleMap.put("picUrl", null == member.get("picUrl") ? "": member.get("picUrl"));
             tupleMap.put("linkName", null == member.get("linkName") ? "" : member.get("linkName"));
             tupleMap.put("city", null == member.get("city") ? "" : member.get("city"));

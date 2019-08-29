@@ -5,11 +5,11 @@ import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.lexicon.param.DailyDaParam;
-import com.tzj.collect.common.utils.MemberUtils;
-import com.tzj.collect.core.mapper.DailyReceivingMapper;
-import com.tzj.collect.core.service.PaymentService;
+import com.tzj.collect.api.lexicon.utils.MemberUtils;
+import com.tzj.collect.mapper.DailyReceivingMapper;
 import com.tzj.collect.entity.DailyReceiving;
 import com.tzj.collect.entity.Payment;
+import com.tzj.collect.service.DailyPaymentService;
 import com.tzj.collect.service.DailyReceivingService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
     private DailyReceivingMapper dailyReceivingMapper;
 
     @Resource
-    private PaymentService paymentService;
+    private DailyPaymentService dailyPaymentService;
 
     /** 用户领取记录
       * @author sgmark@aliyun.com
@@ -147,8 +147,8 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                     //创建红包时产生的uuId
                     String outBizNo = finalDailyReceiving.getUuId();
                     //更新成功, 调用转账接口
-                    //记录转账
-                    Payment payment = paymentService.selectByOrderSn(outBizNo);
+                    //记录转账(限制用户一天最多领取4个红包) todo
+                    Payment payment = null ;
                     if (null == payment){
                         payment = new Payment();
                     }else {
@@ -157,7 +157,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                     finalDailyReceiving.setIsReceive(0);
                     if (this.insertOrUpdate(finalDailyReceiving)) {
                         //用户转账
-                        AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = paymentService.dailyDaTransfer(aliUserId, finalPrice, outBizNo);
+                        AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(aliUserId, finalPrice, outBizNo);
                         payment.setAliUserId(aliUserId);
                         payment.setPrice(new BigDecimal(finalPrice));
                         payment.setOrderSn(outBizNo);
@@ -173,7 +173,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                             payment.setStatus(STATUS_PAYED);
                             payment.setIsSuccess("0");
                         }
-                        paymentService.insertOrUpdate(payment);
+                        dailyPaymentService.insertOrUpdate(payment);
                         returnMap.put("msg", "领取成功");
                         returnMap.put("price", finalPrice);
                         return;

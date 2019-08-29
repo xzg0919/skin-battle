@@ -43,5 +43,8 @@
     <!-- 查询缓存typeListMap 23小时 -->
     <cache name="typeListMap" maxElementsInMemory="10000"  maxElementsOnDisk="10000000" eternal="false" overflowToDisk="true"
            timeToLiveSeconds="82800" timeToIdleSeconds="300"/>
+    <!-- 随机数缓存 -->
+    <cache name="dailyLexiconList" maxElementsInMemory="10000" maxElementsOnDisk="10000000"
+           timeToIdleSeconds="300" timeToLiveSeconds="82800" eternal="false" overflowToDisk="true" memoryStoreEvictionPolicy="FIFO" />
 
 </ehcache>

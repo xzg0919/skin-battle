@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static com.tzj.collect.constant.TokenConst.DA_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 
 /**
@@ -25,7 +25,7 @@ public class SubjectServiceImpl implements SubjectService{
     private CacheManager cacheManager;
 
     //@Autowired
-    //private MemberService memberService;
+    //private DailyMemberService memberService;
 
     @Override
     public Subject getSubjectByTokenSubject(String token,String key, Map<String, Object> map) {
@@ -37,7 +37,7 @@ public class SubjectServiceImpl implements SubjectService{
         Subject subject=new Subject();
 
         LinkedList<String> authorities=new LinkedList<>();
-        authorities.add(DA_API_COMMON_AUTHORITY);
+        authorities.add(ALI_API_COMMON_AUTHORITY);
         subject.setAuthorities(authorities);
 
 

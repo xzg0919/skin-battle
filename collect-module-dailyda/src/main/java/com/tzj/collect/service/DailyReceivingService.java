@@ -3,7 +3,6 @@ package com.tzj.collect.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.lexicon.param.DailyDaParam;
-import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.entity.DailyReceiving;
 
 import java.util.Map;

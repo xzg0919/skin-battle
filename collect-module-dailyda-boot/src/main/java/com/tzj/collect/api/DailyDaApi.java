@@ -3,8 +3,8 @@ package com.tzj.collect.api;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.tzj.collect.api.lexicon.param.DailyDaParam;
-import com.tzj.collect.common.utils.MemberUtils;
-import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.api.lexicon.param.PageBean;
+import com.tzj.collect.api.lexicon.utils.MemberUtils;
 import com.tzj.collect.entity.DailyWeekRanking;
 import com.tzj.collect.service.DailyLexiconService;
 import com.tzj.collect.service.DailyReceivingService;

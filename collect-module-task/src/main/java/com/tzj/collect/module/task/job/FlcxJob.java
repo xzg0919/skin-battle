@@ -60,6 +60,7 @@ public class FlcxJob {
             mapList.parallelStream().forEach(map -> {
                 redisUtil.set(map.get("name_").toString(), map.get("count_"));
             });
+
         }
     }
 

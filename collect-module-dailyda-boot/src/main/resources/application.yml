@@ -1,15 +1,15 @@
 # Tomcat
 server:
-    tomcat:
+  tomcat:
     #    uri-encoding: UTF-8
-        max-threads: 1000
-        max-connections: 2000
-    #    min-spare-threads: 30
-    port: 9004
-    #context-path: /collect
-    jetty:
-      acceptors: 2
-      selectors: 4
+    max-threads: 1000
+    max-connections: 2000
+  #    min-spare-threads: 30
+  port: 9004
+  #context-path: /collect
+  jetty:
+    acceptors: 2
+    selectors: 4
 
 # mysql
 spring:
@@ -20,9 +20,9 @@ spring:
       max-file-size: 100MB
   application:
     name: collect
-  # 环境 dev|test|pro   dynamicdb 正式多数据源配置               dynamicdb-pro 测试多数据源配置
+  # 环境 dev|test|pro   dynamicdb 测试多数据源配置               dynamicdb-pro 正式多数据源配置
   profiles:
-    active: dynamicdb-pro
+    active: dynamicdb
   # cache配置
   cache:
     type: ehcache
@@ -39,9 +39,13 @@ spring:
   redis:
     #open: false  # 是否开启redis缓存  true开启   false关闭
     #database: 0
-    host: 172.19.182.81 #内网IP 172.19.182.81 外网IP 106.15.72.157
+    #  正式地址
+    #    host:  r-uf6crus7stfo0npql7.redis.rds.aliyuncs.com
+    #  测试地址
+    host: 172.19.193.25
+    # 测试6370 正式6379
     port: 6379
-    password: FeiLei_!@#      # 密码（默认为空）
+    password: sb_123456      # 密码（默认为空）
     timeout: 1000  # 连接超时时长（毫秒）
     jedis:
       pool:
@@ -51,15 +55,15 @@ spring:
         min-idle: 5       # 连接池中的最小空闲连接
   thymeleaf:
     cache: false
-    prefix: classpath:/template/
-    suffix: .ftl
+    prefix: classpath:/templates/
+    suffix: .html
     encoding: UTF-8
     mode: LEGACYHTML5
     servlet:
       content-type: text/html
   #配置MQ
   rabbitmq:
-    host: 172.19.182.81 #内网IP 172.19.182.81 外网IP 106.15.72.157
+    host: 106.15.72.157 #内网IP 172.19.182.81
     port: 5672
     username: rabbitadmin
     password: FeiLei@123
@@ -86,7 +90,7 @@ mybatis-plus:
     #逻辑删除配置
     logic-delete-value: 0
     logic-not-delete-value: 1
-    #meta-object-handler: com.tzj.collect.common.handler.BaseMetaObjectHandler
+    meta-object-handler: com.tzj.collect.common.handler.BaseMetaObjectHandler
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
@@ -98,7 +102,6 @@ devtools:
   restart:
     enabled: true
     #additional-exclude: views/**
-
 
 #配置日志
 logging:

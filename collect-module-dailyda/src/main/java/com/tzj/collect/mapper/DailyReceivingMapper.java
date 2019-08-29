@@ -1,4 +1,4 @@
-package com.tzj.collect.core.mapper;
+package com.tzj.collect.mapper;
 
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;

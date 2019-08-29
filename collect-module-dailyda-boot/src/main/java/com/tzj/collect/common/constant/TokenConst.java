@@ -1,4 +1,4 @@
-package com.tzj.collect.constant;
+package com.tzj.collect.common.constant;
 
 /**
  * token 涉及到的一些常量
@@ -7,8 +7,8 @@ package com.tzj.collect.constant;
 public class TokenConst {
 
     //ali 客户端的一些通用常量=============================================================================================
-    //ali api token 有效期
-    public static final long DA_API_EXPRIRE=60*60*24*30;
+    public static final long ALI_API_EXPRIRE=60*60*24*30;
+
     /**
      * 支付宝客户端的api 基础权限
      */
