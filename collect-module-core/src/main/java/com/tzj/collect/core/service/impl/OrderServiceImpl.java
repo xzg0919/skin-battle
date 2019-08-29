@@ -49,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -901,7 +902,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//查找所有重量
 		final double[] score = {0};
 		parentLists.stream().forEach(parentList -> {
-			nameListMap.addAll(parentList.getNameList());
+			nameListMap.addAll(!CollectionUtils.isEmpty(parentList.getNameList()) ? parentList.getNameList(): new ArrayList<>());
 			parentList.getItemList().stream().forEach(itemList -> {
 				if (itemList.getName() == Category.SecondType.BEVERAGE_BOTTLES){
 					//峰会只给瓶子蚂蚁森林能量
