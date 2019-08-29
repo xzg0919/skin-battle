@@ -357,6 +357,17 @@ public class LexiconApi {
         return resultMap;
     }
 
+    /** 获取所有的开通城市
+     * @author wangmeixia
+     * @date 2019/8/29
+     * @return
+     */
+    @Api(name = "city.getAllOpenCity", version = "1.0")
+    @AuthIgnore
+    public List getAllOpenCity() throws Exception {
+        return  flcxCityService.getAllOpenCity();
+    }
+
     public static void main(String[] args) throws Exception{
         Map<String, Object> resultMap = new HashMap<>();
         String url = "https://restapi.amap.com/v3/geocode/regeo";
@@ -413,4 +424,7 @@ public class LexiconApi {
             return false;
         }
     }
+
+
+
 }

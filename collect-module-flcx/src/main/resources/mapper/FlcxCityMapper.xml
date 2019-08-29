@@ -21,4 +21,18 @@
 			WHERE
 				id = #{cityId}
     </select>
+
+
+	<resultMap type="com.tzj.collect.api.lexicon.result.FlcxCityResult" id="openCity">
+		<result property="id" column="id"/>
+		<result property="cityName" column="city_name"/>
+		<result property="code" column="code_"/>
+		<result property="spell" column="spell"/>
+	</resultMap>
+
+	<select id="getAllOpenCity" parameterType="String" resultMap="openCity">
+       SELECT c.id,c.city_name,c.code_,c.spell
+       from flcx_city c
+       where c.del_flag=0
+    </select>
 </mapper>

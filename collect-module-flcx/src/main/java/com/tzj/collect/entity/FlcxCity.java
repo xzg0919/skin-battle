@@ -34,4 +34,6 @@ public class FlcxCity extends DataEntity<Long>{
 
     private String syndication;//联合发布
 
+    private String spell;//拼音
+
 }
