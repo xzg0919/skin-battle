@@ -3,18 +3,18 @@ package com.tzj.collect.api.business;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.result.business.CancelResult;
+import com.tzj.collect.core.result.business.OrderServiceabilityResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
@@ -237,6 +237,53 @@ public class BusinessOrderApi {
 	public Object orderUpdateStatus(BOrderBean bOrderBean){
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		return  orderService.orderUpdateStatus(companyAccount.getCompanyId().toString(),bOrderBean.getOrderId());
+	}
+
+	/**
+	 * 获取订单的服务能力数据
+	 * @author wangmeixia
+	 * @date 2019/08/30
+	 * @return
+	 */
+	@Api(name = "business.order.orderServiceability", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public List<OrderServiceabilityResult> orderServiceability(LjAdminBean ljAdminBean){
+		List<OrderServiceabilityResult> data = new ArrayList<OrderServiceabilityResult>();
+		//因为原来的service id用的是-1 所以先初始化成默认值 兼容原来的代码
+		if(null == ljAdminBean.getAreaId()){
+			ljAdminBean.setAreaId("-1");
+		}
+		if(null == ljAdminBean.getStreetId()){
+			ljAdminBean.setStreetId("-1");
+		}
+		if(null == ljAdminBean.getCityId()){
+			ljAdminBean.setCityId("-1");
+		}
+		//平均派单时间
+		Double avgTosendDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"1","avg","2");
+		//最长派单时间
+		Double maxTosendDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"1","max","2");
+		//平均接单时间
+		Double avgAlreadyDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"2","avg","2");
+		//最长接单时间
+		Double maxAlreadyDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"2","max","2");
+		//平均完成订单时间
+		Double avgCompleteDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"3","avg","2");
+		//最长完成订单时间
+		Double maxCompleteDate = orderService.avgOrMaxDateByOrder(ljAdminBean,"3","max","2");
+
+		OrderServiceabilityResult result = new OrderServiceabilityResult();
+		result.setAvgTosendDate(avgTosendDate);
+		result.setMaxTosendDate(maxTosendDate);
+		result.setAvgAlreadyDate(avgAlreadyDate);
+		result.setMaxAlreadyDate(maxAlreadyDate);
+		result.setAvgCompleteDate(avgCompleteDate);
+		result.setMaxCompleteDate(maxCompleteDate);
+
+		data.add(result);
+
+
+		return data;
 	}
 
 
