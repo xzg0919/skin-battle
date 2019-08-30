@@ -3,6 +3,7 @@ package com.tzj.collect.api.app;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
+import com.alipay.api.request.AlipayUserCertifyOpenQueryRequest;
 import com.alipay.api.response.*;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -478,12 +479,46 @@ public class AppRecyclersApi {
 				//身份认证开始认证服务接口
 				AlipayUserCertifyOpenCertifyResponse getInitializeUrl = aliPayService.certifyAlipayUser(initialize.getCertifyId());
 				recycler.setBizNo(initialize.getCertifyId());
+//				System.out.println("--------------------------------getInitializeUrl:"+ initialize.getCertifyId()+ "-------------");
 				recyclersService.updateById(recycler) ;
 				resultMap.put("aliUrl",getInitializeUrl.getBody());
+				resultMap.put("certifyId", initialize.getCertifyId());
+//				System.out.println(initialize.getCertifyId());
 			}
 		}
 		return resultMap;
 	}
+	/**	认证结果查询
+	  * @author sgmark@aliyun.com
+	  * @date 2019/8/30 0030
+	  * @param
+	  * @return
+	  */
+	@Api(name = "ali.certify.query", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String, Object> certifyOpenQuery(){
+		Map<String, Object> resultMap = new HashMap<>();
+		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
+//		System.out.println("------------------------------bizNo:"+recycler.getBizNo());
+		AlipayUserCertifyOpenQueryResponse  alipayUserCertifyOpenQueryResponse = aliPayService.certifyOpenQuery(recycler.getBizNo());
+		JSONObject jsonObject = JSONObject.parseObject(alipayUserCertifyOpenQueryResponse.getBody());
+		JSONObject alipay_user_certify_open_query_response = null;
+		if (null != jsonObject){
+			alipay_user_certify_open_query_response = JSONObject.parseObject(jsonObject.get("alipay_user_certify_open_query_response").toString());
+
+		}
+		if("10000".equals(alipayUserCertifyOpenQueryResponse.getCode()) && "T".equals(alipay_user_certify_open_query_response.get("passed"))){
+			resultMap.put("passed", "T");
+			recycler.setIsReal("1");
+			recyclersService.updateById(recycler) ;
+		}else {
+			resultMap.put("passed", "N");
+		}
+		resultMap.put("subMsg", alipayUserCertifyOpenQueryResponse.getSubMsg());
+		resultMap.put("returnMap", alipay_user_certify_open_query_response);
+		return resultMap;
+	}
+
 	/**
 	 * 芝麻认证开始
 	 */

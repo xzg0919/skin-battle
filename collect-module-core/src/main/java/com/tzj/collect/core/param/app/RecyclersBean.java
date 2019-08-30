@@ -39,4 +39,6 @@ public class RecyclersBean {
 	private String authCode;
 
 	private String isBigRecycle;
+
+	private String certifyId;
 }

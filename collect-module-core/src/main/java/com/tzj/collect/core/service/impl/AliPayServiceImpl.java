@@ -531,11 +531,41 @@ public class AliPayServiceImpl implements AliPayService {
         return response;
     }
 
+    @Override
+    public AlipayUserCertifyOpenQueryResponse  certifyOpenQuery(String certifyId) {
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key,AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key,AlipayConst.sign_type);
+        AlipayUserCertifyOpenQueryRequest request = new AlipayUserCertifyOpenQueryRequest();
+        request.setBizContent("{" +
+                "\"certify_id\":\"" + certifyId + "\" }");
+        AlipayUserCertifyOpenQueryResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+            if(response.isSuccess()){
+                System.out.println("调用成功");
+            } else {
+                System.out.println("调用失败");
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
 
     public static void main(String[] args) {
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key,AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key,AlipayConst.sign_type);
+        AlipayUserCertifyOpenQueryRequest request = new AlipayUserCertifyOpenQueryRequest();
+        request.setBizContent("{" +
+                "\"certify_id\":\"" + "432bb2eeb6ee9f08e7925087c32585df" + "\" }");
+        AlipayUserCertifyOpenQueryResponse response = null;
         try {
-//            certifyAlipayUser(initializeAlipayUser("郑东东", "321322198805091250").getCertifyId());
-        } catch (Exception e) {
+            response = alipayClient.execute(request);
+            if(response.isSuccess()){
+                System.out.println("调用成功");
+            } else {
+                System.out.println("调用失败");
+            }
+        } catch (AlipayApiException e) {
             e.printStackTrace();
         }
     }

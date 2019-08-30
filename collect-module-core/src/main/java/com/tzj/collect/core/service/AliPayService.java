@@ -1,6 +1,7 @@
 package com.tzj.collect.core.service;
 
 import com.alipay.api.AlipayApiException;
+import com.alipay.api.request.AlipayUserCertifyOpenQueryRequest;
 import com.alipay.api.response.*;
 import com.tzj.collect.entity.Member;
 
@@ -72,4 +73,6 @@ public interface AliPayService {
     AlipayUserCertifyOpenInitializeResponse initializeAlipayUser (String certName, String certNo) throws AlipayApiException;
 
     AlipayUserCertifyOpenCertifyResponse certifyAlipayUser(String certifyId);
+
+    AlipayUserCertifyOpenQueryResponse  certifyOpenQuery(String certifyId);
 }
