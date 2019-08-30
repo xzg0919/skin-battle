@@ -1,5 +1,6 @@
 package com.tzj.collect.core.service;
 
+import com.alipay.api.AlipayApiException;
 import com.alipay.api.response.*;
 import com.tzj.collect.entity.Member;
 
@@ -62,4 +63,13 @@ public interface AliPayService {
 
 
     AlipaySystemOauthTokenResponse flcxToken(String authCode, String appId);
+    /** 人脸认证身份认证初始化服务（支付宝开放认证初始化服务）
+      * @author sgmark@aliyun.com
+      * @date 2019/8/30 0030
+      * @param
+      * @return
+      */
+    AlipayUserCertifyOpenInitializeResponse initializeAlipayUser (String certName, String certNo) throws AlipayApiException;
+
+    AlipayUserCertifyOpenCertifyResponse certifyAlipayUser(String certifyId);
 }

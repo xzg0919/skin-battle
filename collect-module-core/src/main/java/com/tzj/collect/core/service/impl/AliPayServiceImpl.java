@@ -1,6 +1,7 @@
 package com.tzj.collect.core.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -248,28 +249,28 @@ public class AliPayServiceImpl implements AliPayService {
         return usefullDate;
     }
 
-    public static void main(String[] args) throws Exception{
-        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, "2018060660292753", AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
-        AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
-        request.setCode("c5de4d7a5b4642129b326e0aab49OX50");
-        request.setGrantType("authorization_code");
-        AlipaySystemOauthTokenResponse response=null;
-        try {
-            response = alipayClient.execute(request);
-            //用户的授权的token
-            System.out.println(response.getAccessToken());
-            //用户的唯一userId
-            System.out.println(response.getUserId());
-        } catch (AlipayApiException e) {
-            //处理异常
-            e.printStackTrace();
-        }
-        if(response.isSuccess()){
-            System.out.println("调用用户查询token接口成功");
-        } else {
-            System.out.println("调用用户查询token接口失败");
-        }
-    }
+//    public static void main(String[] args) throws Exception{
+//        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, "2018060660292753", AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+//        AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
+//        request.setCode("c5de4d7a5b4642129b326e0aab49OX50");
+//        request.setGrantType("authorization_code");
+//        AlipaySystemOauthTokenResponse response=null;
+//        try {
+//            response = alipayClient.execute(request);
+//            //用户的授权的token
+//            System.out.println(response.getAccessToken());
+//            //用户的唯一userId
+//            System.out.println(response.getUserId());
+//        } catch (AlipayApiException e) {
+//            //处理异常
+//            e.printStackTrace();
+//        }
+//        if(response.isSuccess()){
+//            System.out.println("调用用户查询token接口成功");
+//        } else {
+//            System.out.println("调用用户查询token接口失败");
+//        }
+//    }
     
     /**
      * <p>Discription:[更改会员积分]</p>
@@ -342,7 +343,7 @@ public class AliPayServiceImpl implements AliPayService {
      * @author:[王灿]
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      */
-    public ZhimaCustomerCertificationInitializeResponse initialize(String certName, String certNo){
+    public  ZhimaCustomerCertificationInitializeResponse initialize(String certName, String certNo){
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.TZJ_appId, AlipayConst.TZJ_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.TZJ_ali_public_key, AlipayConst.sign_type);
         ZhimaCustomerCertificationInitializeRequest request = new ZhimaCustomerCertificationInitializeRequest();
         ZhimaCustomerCertificationInitializeModel model = new ZhimaCustomerCertificationInitializeModel();
@@ -450,6 +451,93 @@ public class AliPayServiceImpl implements AliPayService {
             System.out.println("调用失败");
         }
         return response;
+    }
+
+
+    /** 人脸认证身份认证初始化服务（支付宝开放认证初始化服务）
+      * @author sgmark@aliyun.com
+      * @date 2019/8/30 0030
+      * @param
+      * @return
+      */
+    public AlipayUserCertifyOpenInitializeResponse initializeAlipayUser(String certName, String certNo) throws AlipayApiException{
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key,AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key,AlipayConst.sign_type);
+        AlipayUserCertifyOpenInitializeRequest request = new AlipayUserCertifyOpenInitializeRequest();
+        //构造身份信息json对象
+        JSONObject identityObj = new JSONObject();
+        //身份类型，必填，详细取值范围请参考接口文档说明
+        identityObj.put("identity_type", "CERT_INFO");
+        //证件类型，必填，详细取值范围请参考接口文档说明
+        identityObj.put("cert_type", "IDENTITY_CARD");
+        //真实姓名，必填
+        identityObj.put("cert_name", certName);
+        //证件号码，必填
+        identityObj.put("cert_no", certNo);
+        //构造商户配置json对象
+        JSONObject merchantConfigObj = new JSONObject();
+        // 设置回调地址,必填. 如果需要直接在支付宝APP里面打开回调地址使用alipay协议，参考下面的案例：appId用固定值 20000067，url替换为urlEncode后的业务回跳地址
+        // alipays://platformapi/startapp?appId=20000067&url=https%3A%2F%2Fapp.cqkqinfo.com%2Fcertify%2FzmxyBackNew.do
+        merchantConfigObj.put("return_url", "xl://goods:8888/goodsDetail?goodsId=10011002");
+
+        //构造身份认证初始化服务业务参数数据
+        JSONObject bizContentObj = new JSONObject();
+        //商户请求的唯一标识，推荐为uuid，必填
+        bizContentObj.put("outer_order_no", UUID.randomUUID());
+        bizContentObj.put("biz_code", "FACE");
+        bizContentObj.put("identity_param", identityObj);
+        bizContentObj.put("merchant_config", merchantConfigObj);
+        request.setBizContent(bizContentObj.toString());
+        AlipayUserCertifyOpenInitializeResponse response = alipayClient.execute(request);
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+        }
+        System.out.println(response.getCertifyId());
+        return response;
+    }
+
+    /** 身份认证开始认证服务接口
+      * @author sgmark@aliyun.com
+      * @date 2019/8/30 0030
+      * @param 
+      * @return 
+      */
+    public  AlipayUserCertifyOpenCertifyResponse certifyAlipayUser(String certifyId){
+        //获取alipay client
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key,AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key,AlipayConst.sign_type);
+        AlipayUserCertifyOpenCertifyRequest request = new AlipayUserCertifyOpenCertifyRequest();
+
+        //设置certifyId
+        JSONObject bizContentObj = new JSONObject();
+        bizContentObj.put("certify_id", certifyId);
+        request.setBizContent(bizContentObj.toString());
+
+        //生成请求链接，这里一定要使用GET模式
+        AlipayUserCertifyOpenCertifyResponse response = null;
+        try {
+            response = alipayClient.pageExecute(request, "GET");
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("开始认证服务调用成功");
+            String certifyUrl = response.getBody();
+            System.out.println(certifyUrl);
+            //执行后续流程...
+        } else {
+            System.out.println("调用失败");
+        }
+        return response;
+    }
+
+
+    public static void main(String[] args) {
+        try {
+//            certifyAlipayUser(initializeAlipayUser("郑东东", "321322198805091250").getCertifyId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

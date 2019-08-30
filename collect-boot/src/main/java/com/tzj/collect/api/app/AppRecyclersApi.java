@@ -2,9 +2,8 @@ package com.tzj.collect.api.app;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alipay.api.response.ZhimaCustomerCertificationCertifyResponse;
-import com.alipay.api.response.ZhimaCustomerCertificationInitializeResponse;
-import com.alipay.api.response.ZhimaCustomerCertificationQueryResponse;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.response.*;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
@@ -466,11 +465,19 @@ public class AppRecyclersApi {
 			String name = map.get("name")+"";
 			String num = map.get("num")+"";
 			if(StringUtils.isNotBlank(name)&&StringUtils.isNotBlank(num)){
-				//调用芝麻认知初始化接口
-				ZhimaCustomerCertificationInitializeResponse initialize = aliPayService.initialize(name, num);
-				//芝麻认证初返回URL
-				ZhimaCustomerCertificationCertifyResponse getInitializeUrl = aliPayService.getInitializeUrl(initialize.getBizNo());
-				recycler.setBizNo(initialize.getBizNo());
+				//调用身份认证初始化服务
+				AlipayUserCertifyOpenInitializeResponse initialize = null;
+				try {
+					initialize = aliPayService.initializeAlipayUser(name, num);
+				} catch (AlipayApiException e) {
+					e.printStackTrace();
+				}
+				if (null == initialize){
+					throw new ApiException("解析失败");
+				}
+				//身份认证开始认证服务接口
+				AlipayUserCertifyOpenCertifyResponse getInitializeUrl = aliPayService.certifyAlipayUser(initialize.getCertifyId());
+				recycler.setBizNo(initialize.getCertifyId());
 				recyclersService.updateById(recycler) ;
 				resultMap.put("aliUrl",getInitializeUrl.getBody());
 			}
