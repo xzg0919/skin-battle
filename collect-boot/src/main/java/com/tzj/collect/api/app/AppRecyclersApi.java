@@ -635,6 +635,35 @@ public class AppRecyclersApi {
 	}
 
 	/**
+	 * 返回芝麻认证
+	 */
+	@Api(name = "ali.certify.url", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object certifyOpenQueryUrl(){
+		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
+		if (StringUtils.isBlank(recycler.getName())||StringUtils.isBlank(recycler.getIdCard())){
+			return "信息不全";
+		}
+		//调用身份认证初始化服务
+		AlipayUserCertifyOpenInitializeResponse initialize = null;
+		try {
+			initialize = aliPayService.initializeAlipayUser(recycler.getName(), recycler.getIdCard());
+		} catch (AlipayApiException e) {
+			e.printStackTrace();
+		}
+		if (null == initialize){
+			throw new ApiException("解析失败");
+		}
+		//身份认证开始认证服务接口
+		AlipayUserCertifyOpenCertifyResponse getInitializeUrl = aliPayService.certifyAlipayUser(initialize.getCertifyId());
+		recycler.setBizNo(initialize.getCertifyId());
+//				System.out.println("--------------------------------getInitializeUrl:"+ initialize.getCertifyId()+ "-------------");
+		recyclersService.updateById(recycler) ;
+//				System.out.println(initialize.getCertifyId());
+		return getInitializeUrl.getBody();
+	}
+
+	/**
 	 * 增加回收人员的支付宝号码
 	 */
 	@Api(name = "app.recycler.updateMobile", version = "1.0")
