@@ -3132,7 +3132,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 	@Override
 	public Integer getOrderCountByLj(LjAdminBean ljAdminBean){
-		return orderMapper.getOrderCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+		return orderMapper.getOrderCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate());
 	}
 	@Override
 	public Integer getInitCountByLj(LjAdminBean ljAdminBean){
@@ -3144,38 +3144,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 	@Override
 	public Integer getOrderCountBytitle(LjAdminBean ljAdminBean,String title,String isGreen){
-		return orderMapper.getOrderCountBytitle(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),title,isGreen);
+		return orderMapper.getOrderCountBytitle(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate(),title,isGreen);
 	}
 	@Override
 	public Double getGreenBigPaymentOrderPrice(LjAdminBean ljAdminBean){
-		return orderMapper.getGreenBigPaymentOrderPrice(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+		return orderMapper.getGreenBigPaymentOrderPrice(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate());
 	}
 	@Override
 	public List<Map<String,Object>> getOrderCategoryByLj(LjAdminBean ljAdminBean){
-		return orderMapper.getOrderCategoryByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+		return orderMapper.getOrderCategoryByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate());
 	}
 	@Override
 	public List<Map<String,Object>> getHouseOrderCategoryByLj(LjAdminBean ljAdminBean,String isCash){
 		if ("0".equals(isCash)){
-			return orderMapper.getHouseOrderCategoryByLjAsCash(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+			return orderMapper.getHouseOrderCategoryByLjAsCash(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate());
 		}
-		return orderMapper.getHouseOrderCategoryByLjAsGreen(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+		return orderMapper.getHouseOrderCategoryByLjAsGreen(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate());
 	}
 	@Override
 	public Double avgOrMaxDateByOrder(LjAdminBean ljAdminBean,String status,String avgOrMax,String title){
 		if ("avg".equals(avgOrMax)){
-			return orderMapper.avgOrMaxDateByOrderAvg(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status,title);
+			return orderMapper.avgOrMaxDateByOrderAvg(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate(),status,title);
 		}
-		return orderMapper.avgOrMaxDateByOrderMax(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status,title);
+		return orderMapper.avgOrMaxDateByOrderMax(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate(),status,title);
 	}
 	@Override
 	public Integer getSumOrderBylj(LjAdminBean ljAdminBean){
-		return orderMapper.getSumOrderBylj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate());
+		return orderMapper.getSumOrderBylj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate());
 	}
 
 	@Override
 	public Integer getOrderLjByStatus(LjAdminBean ljAdminBean,String status){
-		return orderMapper.getOrderLjByStatus(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndtDate(),status);
+		return orderMapper.getOrderLjByStatus(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate(),status);
 	}
 
 	@Override
