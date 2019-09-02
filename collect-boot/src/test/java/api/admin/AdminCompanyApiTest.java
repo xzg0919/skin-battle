@@ -9,6 +9,7 @@
 package api.admin;
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.core.param.admin.CategoryBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.BOrderBean;
@@ -19,9 +20,7 @@ import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -73,12 +72,17 @@ public class AdminCompanyApiTest {
 //
 //		 recyclersServiceRangeBean.setAreaList(areaList);
 
-		 BOrderBean orderbean = new BOrderBean();
-			orderbean.setId(18670);
-		 orderbean.setCancelReason("平台驳回");
+		 CategoryBean categoryBean = new CategoryBean();
+		 categoryBean.setCityId("2237");
+		 categoryBean.setCompanyId("1");
+		 categoryBean.setIsOpen("1");
+		 List<String> list = new ArrayList<>();
+		 list.add("26");
+		 list.add("30");
+		 categoryBean.setParamList(list);
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.order.updateOdrerStatusByAdmin");
+	        param.put("name","category.saveOrDeleteCategoryById");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -86,7 +90,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",orderbean);
+	        param.put("data",categoryBean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");

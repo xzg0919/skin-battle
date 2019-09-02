@@ -2,9 +2,12 @@ package com.tzj.collect.core.param.admin;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.tzj.collect.entity.Category;
+import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+@Data
 public class CategoryBean {
 	private Long id;
 	private Integer parentId;  //父级编号
@@ -23,6 +26,14 @@ public class CategoryBean {
 	private String unit;    //计量单位
 	private String ismetering;   //是否计量
     private Category category;
+
+    private String companyId;
+    private String cityId;
+    private String title;
+    private List<String> paramList;
+    private String isOpen; //0开通  1关闭
+
+
 	public Long getId() {
 		return id;
 	}

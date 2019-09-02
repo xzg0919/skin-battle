@@ -81,6 +81,16 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 	 * @return
 	 */
 	List<Map<String,Object>> getCompanyRange(Integer companyId);
-
+	/**
+	 * 获取企业大件服务范围（例南京市，苏州市等）
+	 */
 	List<Map<String,Object>> getBigCompanyRange(Integer companyId);
+	/**
+	 * 获取企业家电服务范围（例南京市，苏州市等）
+	 */
+	List<Map<String,Object>> getAppliceCompanyRange(Integer companyId);
+	/**
+	 * 获取企业生活垃圾服务范围（例南京市，苏州市等）
+	 */
+	List<Map<String,Object>> getHouseCompanyRange(Integer companyId);
 }

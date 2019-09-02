@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
@@ -290,7 +291,28 @@ public class AdminCompanyApi {
 	@Api(name = "admin.getCompanyList", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
-	public Object getCompanyList(){
-		return companyService.getCompanyList();
+	public Object getCompanyList(CompanyBean companyBean){
+		return companyService.getCompanyList(companyBean.getCompanyName());
 	}
+	/**
+	 * 根据公司ID和类型获取对应的城市
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.getCityListByCompany", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getCityListByCompany(CompanyBean companyBean){
+		List<Map<String, Object>> companyRange = null;
+		if ("1".equals(companyBean.getTitle())){
+			companyRange = companyRecycleService.getAppliceCompanyRange(companyBean.getId().intValue());
+		}else if ("2".equals(companyBean.getTitle())){
+			companyRange = companyRecycleService.getHouseCompanyRange(companyBean.getId().intValue());
+		}else if ("4".equals(companyBean.getTitle())){
+			companyRange = companyRecycleService.getBigCompanyRange(companyBean.getId().intValue());
+		}
+		return companyRange;
+	}
+
+
 }

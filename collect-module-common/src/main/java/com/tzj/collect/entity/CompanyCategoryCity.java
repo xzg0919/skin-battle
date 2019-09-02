@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 /**
  *
- *回收企业城市分类关联表
+ *回收企业城市分类价格关联表
  *
  * @Author 王灿
  **/
