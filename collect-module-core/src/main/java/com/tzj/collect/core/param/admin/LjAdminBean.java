@@ -8,7 +8,7 @@ public class LjAdminBean {
 
     private String startDate;
 
-    private String endtDate;
+    private String endDate;
 
     private String cityName;
 
