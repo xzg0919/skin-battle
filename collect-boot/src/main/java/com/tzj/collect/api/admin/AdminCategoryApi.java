@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.core.param.admin.CategoryAttrBean;
 import com.tzj.collect.core.param.admin.CategoryBean;
 import com.tzj.collect.core.param.admin.CompanyCategoryBean;
-import com.tzj.collect.core.service.CategoryAttrOptionService;
-import com.tzj.collect.core.service.CategoryAttrService;
-import com.tzj.collect.core.service.CategoryService;
-import com.tzj.collect.core.service.CompanyCategoryService;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.CategoryAttr;
 import com.tzj.collect.entity.CategoryAttrOption;
@@ -34,6 +31,8 @@ public class AdminCategoryApi {
 	private CategoryAttrService categoryAttrService;
 	@Autowired
 	private CategoryAttrOptionService categoryAttrOptionService;
+	@Autowired
+	private CompanyCategoryCityNameService companyCategoryCityNameService;
 	
 	/**
      * 查询分类列表
@@ -235,6 +234,30 @@ public class AdminCategoryApi {
     	
     	return statu;
     }
+    /**
+     * 根据服务商Id和城市Id和类型获取相关的分类列表
+     * @author: 王灿
+     * @param
+     * @return TokenBean    返回类型
+     */
+    @Api(name = "category.getCategoryListByCompanyCityId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object getCategoryListByCompanyCityId(CategoryBean categoryBean) {
+        return companyCategoryCityNameService.getCategoryListByCompanyCityId(categoryBean);
+    }
 
+    /**
+     * 根据服务商Id和城市Id和二级类型Id获取删除或添加相关分类
+     * @author: 王灿
+     * @param
+     * @return TokenBean    返回类型
+     */
+    @Api(name = "category.saveOrDeleteCategoryById", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object saveOrDeleteCategoryById(CategoryBean categoryBean) {
+        return companyCategoryCityNameService.saveOrDeleteCategoryById(categoryBean);
+    }
     
 }	

@@ -57,6 +57,10 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	private RecyclersRangeApplianceService recyclersRangeApplianceService;
 	@Autowired
 	private RecyclersRangeBigService recyclersRangeBigService;
+	@Autowired
+	private CompanyRecyclerService companyRecyclerService;
+	@Autowired
+	private CompanyCategoryCityNameService companyCategoryCityNameService;
 
 	@Override
 	public List<Area> getByArea(int level,String cityId) {
@@ -380,6 +384,33 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 						companyCategory.setUnit(category.getUnit());
 						companyCategoryService.insert(companyCategory);
 					}
+					List<Map<String, Object>> companyRangeList = null;
+					if ("1".equals(title)){
+						companyRangeList = companyRecyclerService.getAppliceCompanyRange(Integer.parseInt(companyId));
+					}else if("2".equals(title)){
+						companyRangeList = companyRecyclerService.getHouseCompanyRange(Integer.parseInt(companyId));
+					}else if("4".equals(title)){
+						companyRangeList = companyRecyclerService.getBigCompanyRange(Integer.parseInt(companyId));
+					}
+					if (null!= companyRangeList){
+						companyRangeList.stream().forEach(map ->{
+							CompanyCategoryCityName companyCategoryCityName = companyCategoryCityNameService.selectOne(new EntityWrapper<CompanyCategoryCityName>().eq("company_id", companyId).eq("city_id", map.get("id")).eq("category_id", category.getId()));
+							if (null == companyCategoryCityName){
+								companyCategoryCityName = new CompanyCategoryCityName();
+								Category parentCategory = categoryService.selectById(category.getParentId());
+								companyCategoryCityName.setCompanyId(companyId);
+								companyCategoryCityName.setCityId(map.get("id").toString());
+								companyCategoryCityName.setCategoryId(category.getId().intValue());
+								companyCategoryCityName.setParentId(category.getParentId());
+								companyCategoryCityName.setParentName(parentCategory.getName());
+								companyCategoryCityName.setParentIds(category.getParentIds());
+								companyCategoryCityName.setPrice(category.getMarketPrice());
+								companyCategoryCityName.setUnit(category.getUnit());
+								companyCategoryCityNameService.insert(companyCategoryCityName);
+							}
+
+						});
+					}
 				}
 			}
 			if(null!=attrOptionList && !attrOptionList.isEmpty()){
@@ -400,6 +431,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 			if(null!=categoryList && !categoryList.isEmpty()){
 				for (Category category: categoryList) {
 					companyCategoryService.delete(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",category.getId()));
+					companyCategoryCityNameService.delete(new EntityWrapper<CompanyCategoryCityName>().eq("company_id",companyId).eq("category_id",category.getId()));
 				}
 			}
 			if(null!=attrOptionList && !attrOptionList.isEmpty()){

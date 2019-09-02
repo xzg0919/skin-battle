@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.CompanyCategoryCityNameMapper" >
+
+	<select id="getCategoryListByCompanyCityId" parameterType="Object" resultType="Map">
+		SELECT
+			a.id,
+			a.parent_id AS parentId,
+			a.name_ AS name,
+			a.price,
+			a.market_price AS marketPrice,
+			b.isChoose
+		FROM
+			sb_category a
+		INNER JOIN (
+			SELECT
+				a.category_id,
+
+			IF (b.id IS NULL, '1', '2') AS isChoose
+			FROM
+				sb_company_category a
+			LEFT JOIN sb_company_category_city_name b ON a.category_id = b.category_id
+			AND a.company_id = b.company_id
+			AND b.city_id = #{cityId}
+			WHERE
+				a.company_id = #{companyId}
+			AND a.parent_id = #{categoryId}
+		) b ON a.id = b.category_id
+	</select>
+
+</mapper>

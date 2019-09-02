@@ -3,14 +3,17 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @TableName("sb_category")
+@Data
 public class Category extends DataEntity<Long> {
 	private Long id;
 	private Integer parentId;  //父级编号
@@ -59,6 +62,9 @@ public class Category extends DataEntity<Long> {
 	private String aliItemType;
 
 	private String antForestPic;
+
+	@TableField(exist=false)
+	private List<Map<String,Object>> categoryMap;
 
 	public String getAliItemType() {
 		return aliItemType;

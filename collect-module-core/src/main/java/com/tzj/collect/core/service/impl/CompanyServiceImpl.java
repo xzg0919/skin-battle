@@ -1,6 +1,7 @@
 package com.tzj.collect.core.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.CompanyMapper;
@@ -279,7 +280,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	}
 
 	@Override
-	public List<Company> getCompanyList() {
-		return this.selectList(new EntityWrapper<Company>().eq("del_flag",0));
+	public List<Company> getCompanyList(String companyName) {
+		Wrapper<Company> wrapper = new EntityWrapper<Company>().eq("del_flag", 0);
+		if (StringUtils.isNotBlank(companyName)){
+			wrapper.like("name_",companyName);
+		}
+		return this.selectList(wrapper);
 	}
 }

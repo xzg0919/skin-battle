@@ -1,5 +1,6 @@
 package com.tzj.collect.core.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -257,13 +258,25 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	 * @return
 	 */
 	@Override
-	public Object getCompanyRange(Integer companyId){
+	public List<Map<String,Object>> getCompanyRange(Integer companyId){
 		return mapper.getCompanyRange(companyId);
 	}
 
 	@Override
-	public Object getBigCompanyRange(Integer companyId){
+	public List<Map<String,Object>> getBigCompanyRange(Integer companyId){
 		return mapper.getBigCompanyRange(companyId);
+	}
+	/**
+	 * 获取企业家电服务范围（例南京市，苏州市等）
+	 */
+	public List<Map<String,Object>> getAppliceCompanyRange(Integer companyId){
+		return mapper.getAppliceCompanyRange(companyId);
+	}
+	/**
+	 * 获取企业生活垃圾服务范围（例南京市，苏州市等）
+	 */
+	public List<Map<String,Object>> getHouseCompanyRange(Integer companyId){
+		return mapper.getHouseCompanyRange(companyId);
 	}
 
 	@Override
