@@ -40,11 +40,19 @@ public class AsyncRedis {
                 if (iotMapCache != null && iotMapCache.containsKey(iotMemId)){
                     latchMapResult = IotApi.latMapConcurrent.get(iotMemId);
                     if (null != latchMapResult){
-                        latchMapResult.orderId = ((Map<String, Object>)iotMapCache.get(iotMemId)).get("orderId").toString();
-                        latchMapResult.nameList = (List<Map<String, Object>>) ((Map<String, Object>)iotMapCache.get(iotMemId)).get("nameList");
-                        latchMapResult.latch.countDown();
-                        iotMapCache.remove(iotMemId);
-                        redisUtil.set("iotMap", iotMapCache);
+                        try {
+                            latchMapResult.orderId = ((Map<String, Object>)iotMapCache.get(iotMemId)).get("orderId").toString();
+                            latchMapResult.nameList = (List<Map<String, Object>>) ((Map<String, Object>)iotMapCache.get(iotMemId)).get("nameList");
+                            latchMapResult.latch.countDown();
+                            iotMapCache.remove(iotMemId);
+                            redisUtil.set("iotMap", iotMapCache);
+                        }catch (Exception e){
+                            latchMapResult.orderId = iotMapCache.get(iotMemId)+"";
+                            latchMapResult.latch.countDown();
+                            iotMapCache.remove(iotMemId);
+                            redisUtil.set("iotMap", iotMapCache);
+                            e.printStackTrace();
+                        }
                         break;
                     }else{
                         continue;
@@ -54,7 +62,8 @@ public class AsyncRedis {
                     try{
                         Thread.sleep(1000);
                     }catch(Exception e){
-                        System.exit(0);//退出程序
+                        e.printStackTrace();
+//                        System.exit(0);//退出程序
                     }
                 }
             }catch (Exception e){
