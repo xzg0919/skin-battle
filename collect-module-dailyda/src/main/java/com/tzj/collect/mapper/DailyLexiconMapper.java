@@ -6,6 +6,7 @@ import com.tzj.collect.entity.DailyLexicon;
 import org.apache.ibatis.annotations.Param;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,4 +49,9 @@ public interface DailyLexiconMapper extends BaseMapper<DailyLexicon> {
 
     List<Map<String, Object>> lexiconListByAliUserId(@Param("aliUserId")String aliUserId, @Param("tableName")String tableName, @Param("localDateBefore")String localDateBefore, @Param("localDateEnd")String localDateEnd);
 
+//    Map<String, Object> selectCountAndPrices(@Param("tableName")String tableName, @Param("aliUserId")String aliUserId, @Param("localDateBefore")String localDateBefore, @Param("localDateEnd")String localDateEnd);
+
+    Map<String, Object> selectSums(@Param("tableName")String tableName, @Param("aliUserId")String aliUserId);
+
+    Map<String, Object> selectPrices(@Param("aliUserId")String aliUserId, @Param("localDateBefore")String localDateBefore, @Param("localDateEnd")String localDateEnd);
 }

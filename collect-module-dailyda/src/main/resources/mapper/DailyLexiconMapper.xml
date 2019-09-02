@@ -188,4 +188,48 @@
 			<result property="depth" column="depth"/>
 		</collection>
 	</resultMap>
+	<select id="selectSums" resultType="Map">
+		SELECT
+			SUM(countUid.count_) AS sum_,
+			countUid.ali_user_id
+		FROM
+			(
+				SELECT
+					LEFT (create_date, 10) AS time_,
+					ddr.ali_user_id,
+					CASE
+				WHEN SUM(
+					CASE
+					WHEN ddr.user_type_id IS NOT NULL THEN
+						1
+					ELSE
+						0
+					END
+				) >= 1 THEN
+					1
+				ELSE
+					0
+				END AS count_
+				FROM
+					${tableName} ddr
+				WHERE
+					del_flag = 0
+				AND ddr.ali_user_id = #{aliUserId}
+				GROUP BY
+					time_
+			) AS countUid
+		GROUP BY
+			countUid.ali_user_id
+	</select>
+	<select id="selectPrices" resultType="Map">
+		SELECT
+			COUNT(1) as count_,
+			SUM(ddr.price) AS price
+		FROM
+			daily_receiving ddr
+		WHERE
+			ddr.ali_user_id = #{aliUserId}
+		AND create_date BETWEEN #{localDateBefore}
+		AND #{localDateEnd}
+	</select>
 </mapper>

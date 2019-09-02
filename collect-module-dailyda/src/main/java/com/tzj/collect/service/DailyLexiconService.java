@@ -42,6 +42,15 @@ public interface DailyLexiconService extends IService<DailyLexicon> {
 
      List<Map<String, Object>> weekDresserList(Integer startPage, Integer pageSize);
 
+     /**  上周前50达人记录
+       * @author sgmark@aliyun.com
+       * @date 2019/9/2 0002
+       * @param
+       * @return
+       */
+     @DS("slave")
+     List<Map<String, Object>> weekDresserList();
+
      Map<String, Object> errorLexiconList(Member member);
 
      Set<Map<String, Object>> isAnswerDaily(String aliUserId);

@@ -3,7 +3,7 @@
 <mapper namespace="com.tzj.collect.mapper.DailyMemberMapper">
 	<select id="selectMemberInfoByAliUserId" parameterType="String" resultType="Map">
 			SELECT
-				mm.city, mm.pic_url as picUrl, mm.link_name as linkName
+				mm.city, mm.pic_url as picUrl, mm.link_name as linkName, mobile
 			FROM
 				${tableName} mm
 			WHERE

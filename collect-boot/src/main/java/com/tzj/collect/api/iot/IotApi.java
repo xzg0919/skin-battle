@@ -187,7 +187,7 @@ public class IotApi {
       * @param
       * @return
       */
-    @Api(name = "iot.long.pulling")
+    @Api(name = "iot.long.pulling", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> longPulling(){
         Member member = MemberUtils.getMember();
@@ -248,6 +248,4 @@ public class IotApi {
     public List<FileBean> uploadImage(List<FileBase64Param> fileBase64ParamLists){
         return fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
     }
-
-
 }

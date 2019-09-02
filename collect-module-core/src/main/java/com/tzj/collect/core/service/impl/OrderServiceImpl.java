@@ -943,7 +943,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			String iotMemberId = "iot_member_id_" + member.getAliUserId();
 //            System.out.println(parentLists.stream().allMatch(parentList -> parentList.getItemList().stream().allMatch(itemList -> itemList.getQuantity() != 0.0)));
 			if (parentLists.isEmpty() || parentLists.stream().anyMatch(parentList -> parentList.getItemList().stream().anyMatch(itemList -> itemList.getQuantity() == 0.0))){//打开箱门，并没投递任何东西
-				hashTable.put(iotMemberId, "empty");
+				Map<String, Object> iotNameListMap = new HashMap<>();
+				iotNameListMap.put("orderId", "empty");
+				iotNameListMap.put("nameList", nameListMap);
+//				hashTable.put(iotMemberId, "empty");
                 redisUtil.set("iotMap", hashTable);
 				map.put("order_no", order.getOrderNo());
 				map.put("equipment_code",iotParamBean.getEquipmentCode());
