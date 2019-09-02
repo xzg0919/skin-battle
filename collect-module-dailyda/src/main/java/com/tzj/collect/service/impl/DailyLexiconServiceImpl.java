@@ -291,6 +291,42 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     }
 
     @Override
+    public List<Map<String, Object>> weekDresserList() {
+        Jedis jedis = jedisPool.getResource();
+        Long localTime = System.currentTimeMillis();
+        //周记录
+        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyNameLastWeek(), 1000, 0, 0,20000);
+        List<Map<String, Object>> aliUserIdScoreList = new ArrayList<>();
+        aliUserIdSet.stream().forEach(tuple -> {
+            Map<String, Object> tupleMap = new HashMap<>();
+            List<String> aliUserIdScore = Arrays.asList(tuple.getElement().replace("[", "").replace("]", "").split(","));
+//            tupleMap.put("aliUserId", aliUserIdScore.get(0));
+            tupleMap.put("score", tuple.getScore());
+            //这里根据阿里userId去找当前用户信息
+            Map<String, Object> member = dailyMemberService.selectMemberInfoByAliUserId(aliUserIdScore.get(0));
+            Map<String, Object> sums = dailyLexiconMapper.selectSums(tableNameLastWeek(System.currentTimeMillis()), aliUserIdScore.get(0));
+            Map<String, Object> prices = dailyLexiconMapper.selectPrices(aliUserIdScore.get(0), LocalDate.now().minusWeeks(1).with(DayOfWeek.MONDAY) + "", LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY)+ " 23:59:59");
+            if(!CollectionUtils.isEmpty(prices)){
+                tupleMap.put("price", null == prices.get("price") ? "" : prices.get("price"));
+                tupleMap.put("count_", null == prices.get("count_") ? "" : prices.get("count_"));
+
+            }
+            if (!CollectionUtils.isEmpty(sums)){
+                tupleMap.put("sum", null == sums.get("sum_") ? 0: sums.get("sum_"));
+            }
+            tupleMap.put("picUrl", null == member.get("picUrl") ? "": member.get("picUrl"));
+            tupleMap.put("linkName", null == member.get("linkName") ? "" : member.get("linkName"));
+            tupleMap.put("mobile", member.get("mobile"));
+            tupleMap.put("city", null == member.get("city") ? "" : member.get("city"));
+            aliUserIdScoreList.add(tupleMap);
+        });
+        jedis.close();
+        System.out.println(System.currentTimeMillis()-localTime);
+        return aliUserIdScoreList;
+    }
+
+
+    @Override
     public Map<String, Object> errorLexiconList(Member member) {
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("errorList", dailyLexiconMapper.errorLexiconList(tableName(System.currentTimeMillis()), member.getAliUserId(), LocalDate.now()+" 00:00:00", LocalDate.now() + " 23:59:59"));
@@ -318,6 +354,12 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         Integer week = Instant.ofEpochMilli(currentTimeMillis).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         return "daily_day_records_"+ LocalDate.now().getYear() + "" + week;
     }
+
+    public static String tableNameLastWeek(Long currentTimeMillis){
+        Integer week = Instant.ofEpochMilli(currentTimeMillis).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().minusWeeks(1l).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
+        return "daily_day_records_"+ LocalDate.now().getYear() + "" + week;
+    }
+
     /** 年:周(作为排序key)
       * @author sgmark@aliyun.com
       * @date 2019/8/13 0013
@@ -329,11 +371,17 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         return LocalDate.now().getYear() + ":" + week;
     }
 
-//    public static void main(String[] args) {
-//        //计算周数
-////        LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
-////        System.out.println(tableName(System.currentTimeMillis()));
-//
-//    }
+    public static String redisKeyNameLastWeek(){
+        Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear())-1;
+        return LocalDate.now().getYear() + ":" + week;
+    }
+
+    public static void main(String[] args) {
+        //计算周数
+//        LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
+        System.out.println(LocalDate.now().minusWeeks(1).with(DayOfWeek.MONDAY));
+        System.out.println(LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY));
+
+    }
 }
 
