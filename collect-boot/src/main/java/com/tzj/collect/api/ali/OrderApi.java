@@ -217,7 +217,7 @@ public class OrderApi {
     	String level = "1";
     	String areaId = memberAddress.getAreaId().toString();
 		//根据分类Id、街道id和小区Id查询所属企业
-		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(category.getParentId(), memberAddress.getStreetId(), communityId);
+		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyIdByCategoryId(category.getParentId(), memberAddress.getStreetId(), communityId);
 		if (StringUtils.isBlank(companyId)){
 			return "该区域暂无回收企业";
 		}
@@ -288,21 +288,21 @@ public class OrderApi {
 			companyId = streeCompanyId+"";
 		}else if("BIGTHING".equals(orderbean.getType())){
 			//判断地址是否有公司回收大件
-			Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(orderbean.getCategoryId(),memberAddress.getStreetId());
+			Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyIdByCategoryId(orderbean.getCategoryId(),memberAddress.getStreetId());
 			if(null==streetBigCompanyId){
 				return "该区域暂无回收企业";
 			}
 			companyId = streetBigCompanyId+"";
 		}else if("DIGITAL".equals(orderbean.getType())){
 			//根据分类Id和小区id去公海查询相关企业
-			String companyId1 = companyStreetApplianceService.selectStreetApplianceCompanyId(orderbean.getCategoryId(), memberAddress.getStreetId(),memberAddress.getCommunityId());
+			String companyId1 = companyStreetApplianceService.selectStreetApplianceCompanyIdByCategoryId(orderbean.getCategoryId(), memberAddress.getStreetId(),memberAddress.getCommunityId());
 			if(StringUtils.isBlank(companyId1)) {
 				return "该区域暂无回收企业";
 			}
 			companyId = companyId1.toString();
 		}else {
 			//根据分类Id和小区Id查询所属企业
-			companyId = companyStreetHouseService.selectStreetHouseceCompanyId(orderbean.getCategoryId(), memberAddress.getStreetId(),memberAddress.getCommunityId());
+			companyId = companyStreetHouseService.selectStreetHouseceCompanyIdByCategoryId(orderbean.getCategoryId(), memberAddress.getStreetId(),memberAddress.getCommunityId());
 			if(StringUtils.isBlank(companyId)){
 				//判断该地址是否回收5公斤废纺衣物
 				Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(orderbean.getCategoryId(), memberAddress.getStreetId());
@@ -351,7 +351,7 @@ public class OrderApi {
 		String areaId = memberAddress.getAreaId().toString();
 		String cityId = memberAddress.getCityId().toString();
 		//根据分类Id和小区Id查询所属企业
-		companyId = companyStreetHouseService.selectStreetHouseceCompanyId(category.getParentId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
+		companyId = companyStreetHouseService.selectStreetHouseceCompanyIdByCategoryId(category.getParentId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
 		if(StringUtils.isBlank(companyId)) {
 			return "该区域暂无回收企业";
 		}
@@ -569,7 +569,7 @@ public class OrderApi {
 		String level = "0";
 		String areaId = memberAddress.getAreaId().toString();
 		//根据分类Id和小区Id查询所属企业
-		Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(category.getParentId(), memberAddress.getStreetId());
+		Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyIdByCategoryId(category.getParentId(), memberAddress.getStreetId());
 		if(streetBigCompanyId == null) {
 				return "该区域暂无回收企业";
 		}

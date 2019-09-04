@@ -19,10 +19,12 @@ public class CompanyStreetBigServiceImpl extends ServiceImpl<CompanyStreetBigMap
     private CompanyStreetBigMapper companyStreetBigMapper;
 
     @Override
-    public Integer selectStreetBigCompanyId(Integer categoryId, Integer streetId) {
-
-
-        return companyStreetBigMapper.selectStreetBigCompanyId(categoryId,streetId);
+    public Integer selectStreetBigCompanyId(Integer streetId) {
+        return companyStreetBigMapper.selectStreetBigCompanyId(streetId);
+    }
+    @Override
+    public Integer selectStreetBigCompanyIdByCategoryId(Integer categoryId,Integer streetId) {
+        return companyStreetBigMapper.selectStreetBigCompanyIdByCategoryId(categoryId,streetId);
     }
 
     @Override

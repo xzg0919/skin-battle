@@ -56,7 +56,7 @@ public class CategoryAttrApi {
     	//根据分类Id查询父类分类id
     	Category category = categoryService.selectById(categoryBean.getId());
 		//根据小区Id，分类id和街道id 查询相关企业
-		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(category.getParentId(),memberAddress.getStreetId(),memberAddress.getCommunityId());
+		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyIdByCategoryId(category.getParentId(),memberAddress.getStreetId(),memberAddress.getCommunityId());
 		if(StringUtils.isBlank(companyId)) {
 			return "该区域暂无服务";
 		}

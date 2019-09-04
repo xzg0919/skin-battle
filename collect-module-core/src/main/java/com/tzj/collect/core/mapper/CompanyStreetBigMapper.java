@@ -9,7 +9,8 @@ import java.util.Map;
 
 public interface CompanyStreetBigMapper extends BaseMapper<CompanyStreetBig> {
 
-    Integer selectStreetBigCompanyId(@Param("categoryId") Integer categoryId, @Param("streetId") Integer streetId);
+    Integer selectStreetBigCompanyId(@Param("streetId") Integer streetId);
+    Integer selectStreetBigCompanyIdByCategoryId(@Param("categoryId") Integer categoryId,@Param("streetId") Integer streetId);
 
     Map<String,Object> companyAreaRanges(String companyId);
 	

@@ -39,7 +39,7 @@ public class OrderTest {
 
                 //String api="http://open.mayishoubei.com/ali/api";
                 //String api="http://dog.mayishoubei.com:9090/ali/api";
-                 String api="http://localhost:9003/app/api";
+                 String api="http://localhost:9090/ali/api";
 
 //                String  location = "121.446438,30.915836";
 //
@@ -72,7 +72,7 @@ public class OrderTest {
 //            categoryBean.setCityId("17685");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","city.getAllOpenCity");
+                param.put("name","category.categoryNewHouseListByToken");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -80,7 +80,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-//                param.put("data","{\"cityName\":\"上海市\",\"authCode\":\"e4efd253025b45fc9bc4be816753ZA29\"}");
+                param.put("data",null);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

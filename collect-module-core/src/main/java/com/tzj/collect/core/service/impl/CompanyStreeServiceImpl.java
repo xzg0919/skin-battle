@@ -19,8 +19,6 @@ public class CompanyStreeServiceImpl extends ServiceImpl<CompanyStreeMapper,Comp
 
     @Override
     public Integer selectStreeCompanyIds(Integer categoryId, Integer streetId) {
-
-
         return companyStreeMapper.selectStreeCompanyIds(categoryId,streetId);
     }
 }

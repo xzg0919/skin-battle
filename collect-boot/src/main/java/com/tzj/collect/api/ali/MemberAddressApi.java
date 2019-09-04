@@ -187,7 +187,7 @@ public class MemberAddressApi {
 		}
 		//判断地址是否有公司回收六废
 		//根据分类Id和小区Id查询所属企业
-		String companyId = companyStreetHouseService.selectStreetHouseceCompanyId(25, memberAddress.getStreetId(), memberAddress.getCommunityId());
+		String companyId = companyStreetHouseService.selectStreetHouseceCompanyId(memberAddress.getStreetId(), memberAddress.getCommunityId());
 		//Company companys = companyCategoryService.selectCompany(25,communityId);
 		if(!StringUtils.isBlank(companyId)){
 			memberAddress.setIsHousehold("Y");
@@ -202,14 +202,14 @@ public class MemberAddressApi {
 			memberAddress.setIsFiveKg("N");
 		}
 		//判断地址是否有公司回收电器
-		String companyIds = companyStreetApplianceService.selectStreetApplianceCompanyId(9,memberAddress.getStreetId(), memberAddress.getCommunityId());
+		String companyIds = companyStreetApplianceService.selectStreetApplianceCompanyId(memberAddress.getStreetId(), memberAddress.getCommunityId());
 		if(StringUtils.isBlank(companyIds)){
 			memberAddress.setIsDigital("N");
 		}else {
 			memberAddress.setIsDigital("Y");
 		}
 		//判断地址是否有公司回收大件
-		Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(78,memberAddress.getStreetId());
+		Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(memberAddress.getStreetId());
 		if(null != streetBigCompanyId){
 			memberAddress.setIsDigThing("Y");
 		}else {

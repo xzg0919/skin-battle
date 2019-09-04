@@ -167,4 +167,8 @@ public interface CategoryService extends IService<Category> {
 	Object getOneCategoryListLocale(String location,Long recyclerId);
 	@DS("slave")
 	Object getTwoCategoryListLocale(String location,Integer categoryId,Long recyclerId);
+	@DS("slave")
+	Object getCategoryNewHouseList();
+	@DS("slave")
+	Object getCategoryNewHouseListByToken(String aliUserId);
 }

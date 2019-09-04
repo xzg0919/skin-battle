@@ -10,12 +10,17 @@ import java.util.Map;
 public interface CompanyStreetApplianceMapper extends BaseMapper<CompanyStreetAppliance> {
 
     /**
-     * 根据分类id和街道id查询所属公司
-     * @param categoryId
+     * 根据街道id查询所属公司
      * @param streetId
      * @return
      */
-    Integer selectStreetApplianceCompanyId(@Param("categoryId") Integer categoryId, @Param("streetId") Integer streetId);
+    Integer selectStreetApplianceCompanyId(@Param("streetId") Integer streetId);
+    /**
+     * 根据分类id和街道id查询所属公司
+     * @param streetId
+     * @return
+     */
+    Integer selectStreetApplianceCompanyIdByCategoryId(@Param("categoryId") Integer categoryId,@Param("streetId") Integer streetId);
 
     Map<String,Object> companyAreaRanges(String companyId);
 

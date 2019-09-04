@@ -44,7 +44,8 @@ public interface CompanyCategoryMapper extends BaseMapper<CompanyCategory>{
 	 */
 	List<ComCatePrice> getOwnnerPrice(@Param("categoryBean") CategoryBean categoryBean, @Param("companyId") Integer companyId);
 
-	List<ComCatePrice> getBigThingCategoryList(@Param("categoryId") Integer categoryId, @Param("companyId") Integer companyId);
+	List<ComCatePrice> getBigThingCategoryList(@Param("categoryId") Integer categoryId, @Param("companyId") Integer companyId, @Param("cityId") Integer cityId);
+
 	/**
 	 * 该地区有服务范围的公司,获取该公司的价格列表
 	 * @return
@@ -121,5 +122,7 @@ public interface CompanyCategoryMapper extends BaseMapper<CompanyCategory>{
 	 * @param communityId : 小区Id
 	 * @return
 	 */
-	Company selectCompany(@Param("categoryId") Integer categoryId, @Param("communityId") Integer communityId);
+	Company selectCompanys(@Param("categoryId") Integer categoryId, @Param("communityId") Integer communityId);
+
+	Company selectCompanyByTitle(@Param("title") String title, @Param("communityId") Integer communityId);
 }

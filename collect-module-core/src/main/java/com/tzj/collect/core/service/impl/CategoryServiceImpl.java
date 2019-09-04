@@ -65,6 +65,12 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	private AreaService areaService;
 	@Autowired
 	private CompanyRecyclerService companyRecyclerService;
+	@Autowired
+	private CompanyStreetHouseService companyStreetHouseService;
+	@Autowired
+	private CompanyStreeService companyStreeService;
+	@Autowired
+	private CompanyCategoryCityNameService companyCategoryCityNameService;
 
 	
 	/**
@@ -433,12 +439,12 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 		String companyId = "";
 		if("DIGITAL".equals(type)){
 			//根据小区Id，分类id和街道id 查询相关企业
-			companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(category.getParentId(),memberAddress.getStreetId(),memberAddress.getCommunityId());
+			companyId = companyStreetApplianceService.selectStreetApplianceCompanyIdByCategoryId(category.getParentId(),memberAddress.getStreetId(),memberAddress.getCommunityId());
 			if(StringUtils.isBlank(companyId)) {
 				throw new com.tzj.module.easyopen.exception.ApiException("该区域暂无服务: memberAddressId:"+memberAddress.getId()+"---分类Id："+category.getParentId()+"--------街道Id："+memberAddress.getStreetId()+"-----小区Id： "+memberAddress.getCommunityId());
 			}
 		}else if ("BIGTHING".equals(type)){
-			Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(category.getParentId(),memberAddress.getStreetId());
+			Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyIdByCategoryId(category.getParentId(),memberAddress.getStreetId());
 			if(null==streetBigCompanyId) {
 				throw new com.tzj.module.easyopen.exception.ApiException("该区域暂无服务");
 			}
@@ -583,5 +589,47 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 		} catch (Exception e) {
 		}
 		return  cityId;
+	}
+	public Object getCategoryNewHouseList(){
+		Map<String,Object> resultMap = new HashMap<>();
+		List<Category> categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
+		categoryList.stream().forEach(category -> {
+			List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+			category.setCategoryList(categoryList1);
+		});
+		resultMap.put("categoryList",categoryList);
+		return resultMap;
+	}
+	public Object getCategoryNewHouseListByToken(String aliUserId){
+		Map<String,Object> resultMap = new HashMap<>();
+		List<Category> categoryList = null;
+		MemberAddress memberAdderss = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
+		if (null != memberAdderss){
+			String houseceCompanyId = companyStreetHouseService.selectStreetHouseceCompanyId(memberAdderss.getStreetId(), memberAdderss.getCommunityId());
+			if (StringUtils.isNotBlank(houseceCompanyId)){
+				categoryList = companyCategoryCityNameService.getHouseCategoryByCompanyId(Integer.parseInt(houseceCompanyId),memberAdderss.getCityId());
+			}else {
+				Integer fiveCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAdderss.getStreetId());
+				if (null!=fiveCompanyId){
+					categoryList = companyCategoryCityNameService.getHouseCategoryByCompanyId(fiveCompanyId,memberAdderss.getCityId());
+					List<Category> categoryLists = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
+					categoryLists.stream().forEach(category -> {
+						List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+						category.setCategoryList(categoryList1);
+					});
+					categoryLists = categoryLists.stream().filter(category -> category.getId()!=45).collect(Collectors.toList());
+					categoryList.addAll(categoryLists);
+				}
+			}
+		}
+		if(null == categoryList){
+			categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
+			categoryList.stream().forEach(category -> {
+				List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+				category.setCategoryList(categoryList1);
+			});
+		}
+		resultMap.put("categoryList",categoryList);
+		return resultMap;
 	}
 }

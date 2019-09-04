@@ -63,8 +63,14 @@ public class Category extends DataEntity<Long> {
 
 	private String antForestPic;
 
+	private String iconPic;
+
+	private String iconImg;
+
 	@TableField(exist=false)
 	private List<Map<String,Object>> categoryMap;
+	@TableField(exist=false)
+	private List<Category> categoryList;
 
 	public String getAliItemType() {
 		return aliItemType;
