@@ -322,6 +322,8 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Integer getTosendCountByLj(LjAdminBean ljAdminBean);
 	@DS("slave")
+	Integer getReadyCountByLj(LjAdminBean ljAdminBean);
+	@DS("slave")
 	Integer getOrderCountBytitle(LjAdminBean ljAdminBean,String title,String isGreen);
 	@DS("slave")
 	Double getGreenBigPaymentOrderPrice(LjAdminBean ljAdminBean);

@@ -1432,7 +1432,28 @@
 			sb_order a
 		LEFT JOIN sb_area b ON a.area_id = b.id
 		WHERE
-			a.status_ in ('1','2')
+			a.status_ = '1'
+		<if test="cityId != '-1'">
+			AND	b.parent_id = #{cityId}
+		</if>
+		<if test="areaId != '-1'">
+			AND a.area_id = #{areaId}
+		</if>
+		<if test="streetId != '-1'">
+			AND a.street_id = #{streetId}
+		</if>
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+	</select>
+	<select id="getReadyCountByLj" parameterType="String" resultType="Integer">
+		SELECT
+		count(1)
+		FROM
+		sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+		a.status_ = '2'
 		<if test="cityId != '-1'">
 			AND	b.parent_id = #{cityId}
 		</if>

@@ -3146,6 +3146,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return orderMapper.getTosendCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId());
 	}
 	@Override
+	public Integer getReadyCountByLj(LjAdminBean ljAdminBean){
+		return orderMapper.getReadyCountByLj(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId());
+	}
+	@Override
 	public Integer getOrderCountBytitle(LjAdminBean ljAdminBean,String title,String isGreen){
 		return orderMapper.getOrderCountBytitle(ljAdminBean.getCityId(),ljAdminBean.getAreaId(),ljAdminBean.getStreetId(),ljAdminBean.getCompanyId(),ljAdminBean.getStartDate(),ljAdminBean.getEndDate(),title,isGreen);
 	}
