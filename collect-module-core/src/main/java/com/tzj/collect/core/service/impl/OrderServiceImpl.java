@@ -3265,4 +3265,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		return false;
 	}
+
+	/**
+	 * 导出企业的完成订单的Excel
+	 * @param companyId
+	 * @param type
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 * added by michael_wang
+	 */
+	@Override
+	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime){
+		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime);
+	}
 }
