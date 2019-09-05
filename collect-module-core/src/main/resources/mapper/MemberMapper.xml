@@ -148,6 +148,9 @@
 	<if test="member.channelId != null and member.channelId != ''">
 		a.channel_id = #{member.channelId},
 	</if>
+	<if test="member.formId != null and member.formId != ''">
+		a.form_id = #{member.formId},
+	</if>
 		a.update_date = NOW()
 	WHERE
 		a.ali_user_id = #{member.aliUserId}

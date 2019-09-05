@@ -3,6 +3,7 @@ package com.tzj.collect.api.ali;
 import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
@@ -148,5 +149,13 @@ public class MemberApi {
 	public Object saveChannel(MemberBean memberBean) {
 		Member member = MemberUtils.getMember();
 		return memberService.saveChannelId(member.getAliUserId(),memberBean.getChannelId());
+	}
+
+	@Api(name = "member.form.id", version = "1.0")
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Map<String, Object> updateUserFormId(OrderBean orderBean){
+		Member member = MemberUtils.getMember();
+		member.setFormId(orderBean.getFormId());
+		return memberService.updateUserFormId(member);
 	}
 }

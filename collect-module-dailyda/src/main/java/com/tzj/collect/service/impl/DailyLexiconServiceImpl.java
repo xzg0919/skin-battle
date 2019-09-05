@@ -102,7 +102,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             //保存记录
             this.saveDailyRecordsList(aliUserId, uuId, Long.parseLong(returnLists.get("id").toString()), Integer.parseInt(returnLists.get("type_id").toString()));
             returnLists.put("uuId", uuId);
-            returnLists.remove("id");
+//            returnLists.remove("id");
 //            returnLists.remove("type_id");
             returnLists.put("answerList", answerMapList());
         });

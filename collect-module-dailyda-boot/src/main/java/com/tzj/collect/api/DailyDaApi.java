@@ -99,6 +99,7 @@ public class DailyDaApi {
     @Api(name = "daily.list", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Set<Map<String, Object>> dailyLexiconList(){
+        System.out.println(MemberUtils.getMember().getAliUserId());
         if (dailyLexiconService.isAnswerDaily(MemberUtils.getMember().getAliUserId()).size()>0){
             throw new ApiException("今日答题已完成，明儿请赶早");
         }
