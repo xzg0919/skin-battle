@@ -60,6 +60,7 @@ public interface CompanyCategoryMapper extends BaseMapper<CompanyCategory>{
 	 * @return
 	 */
 	List<ComCatePrice> getOwnnerPriceApp(@Param("categoryBean") CategoryBean categoryBean, @Param("companyId") Integer companyId);
+	List<ComCatePrice> getOwnnerPriceApps(@Param("categoryBean") CategoryBean categoryBean, @Param("companyId") Integer companyId);
 	/**
 	 * 没在所有的公司服务范围,获取所有的平均价格
 	 * @return

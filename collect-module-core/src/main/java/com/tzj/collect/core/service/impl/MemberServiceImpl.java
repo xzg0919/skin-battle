@@ -483,6 +483,18 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	}
 
 	@Override
+	@Transactional(readOnly = false)
+	public Map<String, Object> updateUserFormId(Member member) {
+		Map<String, Object> returnMap = new HashMap<>();
+		if (this.updateMemberByAliUserId(member) >=1){
+			returnMap.put("isSuccess", "Y");
+		}else {
+			returnMap.put("isSuccess", "N");
+		}
+		return returnMap;
+	}
+
+	@Override
 	public Member selectMemberByAliUserId(String aliUserId) {
 		String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
 		return memberMapper.selectMemberByAliUserId(aliUserId,memberName);

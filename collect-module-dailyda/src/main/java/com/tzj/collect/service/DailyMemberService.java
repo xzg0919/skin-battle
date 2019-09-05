@@ -13,4 +13,8 @@ import java.util.Map;
 public interface DailyMemberService extends IService<Member> {
     @DS("slave")
     Map<String, Object> selectMemberInfoByAliUserId(String aliUserId);
+    @DS("slave")
+    Member selectMemberByAliUserId(String key);
+
+    void sendMsgToAllMemberThread();
 }

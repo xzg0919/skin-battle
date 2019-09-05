@@ -182,7 +182,23 @@
 		AND sc.del_flag = 0
 		ORDER BY sc.code_ ASC
 	</select>
-
+	<select id="getOwnnerPriceApps" parameterType="com.tzj.collect.core.param.ali.CategoryBean" resultType="com.tzj.collect.core.result.ali.ComCatePrice">
+		SELECT
+			FORMAT(sccp.price,2) AS price,
+			sccp.unit,
+			sc.name_,
+			sc.id,
+			sc.icon
+		FROM
+			sb_company_category sccp
+		INNER JOIN sb_category sc ON sc.id = sccp.category_id
+		WHERE
+			sccp.parent_id = #{categoryBean.id}
+		AND sccp.company_id = #{companyId}
+		AND sccp.del_flag = 0
+		AND sc.del_flag = 0
+		ORDER BY sc.code_ ASC
+	</select>
 	<select id="getlogisticsPriceList" parameterType="Integer" resultType="com.tzj.collect.core.result.ali.ComCatePrice">
 		SELECT
 			FORMAT(b.price, 2) AS price,

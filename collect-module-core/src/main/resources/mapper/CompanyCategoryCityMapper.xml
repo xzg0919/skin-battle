@@ -102,7 +102,7 @@
 		WHERE
 			scc.title = '2'
 		AND scc.level_ = '0'
-		AND(sccc.aprice > 0 OR (sccc.aId is null AND sc.bprice >0))
+		AND(sccc.aId is not NULL OR sc.bId is NOT null)
 	 </select>
 
 	<select id="getOwnnerPriceAppByCity" parameterType="String" resultType="com.tzj.collect.core.result.ali.ComCatePrice">
@@ -118,7 +118,6 @@
 		WHERE
 			sccp.parent_id = #{categoryId}
 		AND sccp.company_id = #{companyId}
-		AND (FORMAT(sccp.price,2) > 0 OR sc.unuseful = '1')
 		AND sccp.del_flag = 0
 		AND sc.del_flag = 0
 		AND sccp.city_id = #{cityId}

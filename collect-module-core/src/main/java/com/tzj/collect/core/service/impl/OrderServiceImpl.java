@@ -57,6 +57,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * 订单ServiceImpl
@@ -686,6 +687,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<ComCatePrice> attrList = null;
 		List<AppOrderResult> orderLists = new ArrayList<AppOrderResult>();
 		for (AppOrderResult order : orderList) {
+			boolean tenGreen = this.isTenGreen(this.selectById(order.getOrderId()));
+			if (tenGreen){
+				order.setIsTenGreen("1");
+			}else {
+				order.setIsTenGreen("0");
+			}
 			//获取当前定单的成交价格
 			Object paymentPrice = orderMapper.paymentPriceByOrderId(Integer.parseInt(order.getOrderId()));
 			if (paymentPrice ==null){
@@ -941,13 +948,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				hashTable = (Hashtable<String, Object>)redisUtil.get("iotMap");
 			}
 			String iotMemberId = "iot_member_id_" + member.getAliUserId();
+			System.out.println("iotParamBean:-------------------"+iotParamBean.getParentLists().toString()+"");
 //            System.out.println(parentLists.stream().allMatch(parentList -> parentList.getItemList().stream().allMatch(itemList -> itemList.getQuantity() != 0.0)));
 			if (parentLists.isEmpty() || parentLists.stream().anyMatch(parentList -> parentList.getItemList().stream().anyMatch(itemList -> itemList.getQuantity() == 0.0))){//打开箱门，并没投递任何东西
 				Map<String, Object> iotNameListMap = new HashMap<>();
 				iotNameListMap.put("orderId", "empty");
 				iotNameListMap.put("nameList", nameListMap);
-//				hashTable.put(iotMemberId, "empty");
-                redisUtil.set("iotMap", hashTable);
+				hashTable.put(iotMemberId, iotNameListMap);
+				redisUtil.set("iotMap", hashTable, 500);
 				map.put("order_no", order.getOrderNo());
 				map.put("equipment_code",iotParamBean.getEquipmentCode());
 				map.put("msg", "empty");
@@ -958,8 +966,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				iotNameListMap.put("orderId", order.getId());
 				iotNameListMap.put("nameList", nameListMap);
 				hashTable.put(iotMemberId, iotNameListMap);
+				redisUtil.set("iotMap", hashTable, 500);
 			}
-			redisUtil.set("iotMap", hashTable);
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -1118,6 +1126,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 */
 	@Override
 	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime){
+		if ("2".equals(type)){
+			return orderMapper.outOrderExcelHouse(companyId,startTime,endTime);
+		}
 		return orderMapper.outOrderExcel(companyId,type,startTime,endTime);
 	}
 	/**
@@ -1605,6 +1616,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public AppOrderResult getOrderDetails(OrderBean orderbean) {
 		AppOrderResult result = orderMapper.getOrderDetails(orderbean);
+		boolean tenGreen = this.isTenGreen(this.selectById(result.getOrderId()));
+		if (tenGreen){
+			result.setIsTenGreen("1");
+		}else {
+			result.setIsTenGreen("0");
+		}
 		orderbean.setTitle(result.getTitle().toString());
 		orderbean.setIsCash(result.getIsCash());
 		//根据小区的Id查询精度和纬度
@@ -3237,17 +3254,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return orderMapper.selectHouseAmount();
 	}
 
-
-	/**
-	 * 导出企业的完成订单的Excel
-	 * @param companyId
-	 * @param startTime
-	 * @param endTime
-	 * @return
-	 * added by michael_wang
-	 */
-	@Override
-	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime){
-		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime);
+	public boolean isTenGreen(Order order){
+		if ("1".equals(order.getIsCash())){
+			return true;
+		}
+		List<OrderItem> orderItems = orderItemService.selectList(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));
+		List<OrderItem> collect = orderItems.stream().filter(orderItem -> orderItem.getPrice() > 0).collect(Collectors.toList());
+		if(null==collect||collect.isEmpty()){
+			return true;
+		}
+		return false;
 	}
 }

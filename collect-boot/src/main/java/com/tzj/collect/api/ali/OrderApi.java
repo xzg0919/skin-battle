@@ -13,10 +13,7 @@ import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Order.OrderType;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -626,7 +623,8 @@ public class OrderApi {
 	 * @throws ApiException
 	 */
 	@Api(name = "order.getCollectDetail", version = "1.0")
-	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@AuthIgnore
+	@SignIgnore
 	public Object getCollectDetail() throws ApiException{
 		Object collectDetail = redisUtil.get("collectDetail");
 		if (null == collectDetail){

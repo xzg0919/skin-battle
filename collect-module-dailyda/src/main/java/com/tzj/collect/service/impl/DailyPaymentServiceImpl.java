@@ -1,12 +1,17 @@
 package com.tzj.collect.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayFundTransToaccountTransferModel;
+import com.alipay.api.domain.AlipayOpenAppMiniTemplatemessageSendModel;
 import com.alipay.api.request.AlipayFundTransToaccountTransferRequest;
+import com.alipay.api.request.AlipayOpenAppMiniTemplatemessageSendRequest;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
+import com.alipay.api.response.AlipayOpenAppMiniTemplatemessageSendResponse;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.api.commom.constant.AlipayConst;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Payment;
 import com.tzj.collect.mapper.DailyMemberMapper;
@@ -20,11 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Map;
+import java.util.UUID;
 
-import static com.tzj.collect.common.constant.Const.ALI_APPID;
-import static com.tzj.collect.common.constant.Const.ALI_PAY_KEY;
-import static com.tzj.collect.common.constant.Const.ALI_PUBLIC_KEY;
-
+import static com.tzj.collect.common.constant.Const.*;
 /**
  * 答答答memberService
  *
@@ -56,4 +59,5 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
         return response;
 
     }
+
 }
