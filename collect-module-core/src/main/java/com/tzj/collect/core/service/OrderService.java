@@ -347,4 +347,15 @@ public interface OrderService extends IService<Order> {
 	 */
 	@DS("slave")
 	boolean isTenGreen(Order order);
+
+	/**
+	 * 导出企业的五废完成订单的Excel
+	 * @param companyId
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 * added by michael_wang
+	 */
+	@DS("slave")
+	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime);
 }

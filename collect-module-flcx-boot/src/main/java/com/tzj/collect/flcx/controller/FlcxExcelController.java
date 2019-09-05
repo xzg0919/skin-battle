@@ -69,7 +69,7 @@ public class FlcxExcelController  extends ApiController{
             }
             startRow ++;
             mapList.addAll(list);
-        }while (list.size() > 0);
+        }while (list.size() > 0 && startRow <= 2);
         //返回保存结果条数
         mapList.size();
         mapList = mapList.stream().filter(map -> map.size() > 1).collect(Collectors.toList());

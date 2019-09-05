@@ -97,4 +97,6 @@ public interface MemberService extends IService<Member>{
     long getMemberCountToDay();
     @DS("slave")
     Map<String, Object> selectMemberInfoByAliUserId(String aliUserId);
+
+    Map<String, Object> updateUserFormId(Member member);
 }

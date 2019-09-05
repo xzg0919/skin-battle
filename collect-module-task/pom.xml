@@ -79,6 +79,10 @@
             <groupId>com.tzj</groupId>
             <artifactId>collect-module-flcx</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-dailyda</artifactId>
+        </dependency>
 
 
         <!-- mybatis-plus begin -->

@@ -948,13 +948,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				hashTable = (Hashtable<String, Object>)redisUtil.get("iotMap");
 			}
 			String iotMemberId = "iot_member_id_" + member.getAliUserId();
+			System.out.println("iotParamBean:-------------------"+iotParamBean.getParentLists().toString()+"");
 //            System.out.println(parentLists.stream().allMatch(parentList -> parentList.getItemList().stream().allMatch(itemList -> itemList.getQuantity() != 0.0)));
 			if (parentLists.isEmpty() || parentLists.stream().anyMatch(parentList -> parentList.getItemList().stream().anyMatch(itemList -> itemList.getQuantity() == 0.0))){//打开箱门，并没投递任何东西
 				Map<String, Object> iotNameListMap = new HashMap<>();
 				iotNameListMap.put("orderId", "empty");
 				iotNameListMap.put("nameList", nameListMap);
-//				hashTable.put(iotMemberId, "empty");
-                redisUtil.set("iotMap", hashTable);
+				hashTable.put(iotMemberId, iotNameListMap);
+				redisUtil.set("iotMap", hashTable, 500);
 				map.put("order_no", order.getOrderNo());
 				map.put("equipment_code",iotParamBean.getEquipmentCode());
 				map.put("msg", "empty");
@@ -965,8 +966,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				iotNameListMap.put("orderId", order.getId());
 				iotNameListMap.put("nameList", nameListMap);
 				hashTable.put(iotMemberId, iotNameListMap);
+				redisUtil.set("iotMap", hashTable, 500);
 			}
-			redisUtil.set("iotMap", hashTable);
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -3263,5 +3264,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * 导出企业的完成订单的Excel
+	 * @param companyId
+	 * @param type
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 * added by michael_wang
+	 */
+	@Override
+	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime){
+		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime);
 	}
 }
