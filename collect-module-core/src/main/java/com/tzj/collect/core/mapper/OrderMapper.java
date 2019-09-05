@@ -188,5 +188,16 @@ public interface OrderMapper extends BaseMapper<Order> {
 	public List<ThirdOrderResult> orderStatistics4Third(@Param("areaId") String areaId,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("startPage") Integer startPage, @Param("endPage") Integer endPage);
 
 	List<Map<String,Object>> selectHouseAmount();
+
+	/**
+	 * 导出企业的完成订单的Excel
+	 * @param companyId
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 * added by michael_wang
+	 */
+	List<Map<String,Object>> orderDetail4HorseHold(@Param("companyId") Integer companyId,@Param("startTime") String startTime, @Param("endTime") String endTime);
+
 }
 

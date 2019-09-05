@@ -656,6 +656,78 @@
 		AND b.seller_id is NOT NULL
 
 	</select>
+
+	<!--五废订单 -->
+	<select id="orderDetail4HorseHold" parameterType="Object" resultType="Map">
+		SELECT
+		comId.order_no as orderNo,
+		comId.dateFor as createDate,
+		scc.name_ as company,
+		comId.title as title,
+		(SELECT (SELECT name_ from sb_category where id=c.parent_id) from sb_category  c where id=comId.category_id ) as firstCate,
+		comId.category_name as secondCate,
+		comId.cash as cash,
+		comId.ach_price as price,
+		comId.amount as weight,
+		comId.name_ as recycleName
+		FROM
+		sb_company scc
+		RIGHT JOIN (
+		SELECT
+		soia.amount,
+		soia.category_name,
+		soia.category_id,
+		soia.parent_name,
+		dataInfo.*
+		FROM
+		sb_order_item_ach soia
+		RIGHT JOIN (
+		SELECT
+		soo.order_no,
+		soo.id,
+		sr.name_,
+		CASE soo.title
+		WHEN 1 THEN
+		'家电数码'
+		WHEN 2 THEN
+		'五废'
+		WHEN 3 THEN
+		'5公斤废纺衣物回收'
+		WHEN 4 THEN
+		'大件垃圾'
+		ELSE
+		'其他'
+		END AS title,
+		CASE soo.is_cash WHEN 1 THEN '能量' WHEN 0 THEN '现金' end as cash,
+		soo.company_id,
+		soo.ach_price,
+		soo.green_count,
+		DATE_FORMAT(
+		soo.complete_date,
+		'%Y-%m-%d'
+		) AS dateFor
+		FROM
+		sb_order soo,sb_recyclers sr
+		WHERE
+		1=1
+		<if test="startTime !=null and startTime !=''">
+			<![CDATA[
+							AND soo.complete_date >= CONCAT(#{startTime},' 00:00:00')
+						 ]]>
+		</if>
+		<if test="endTime !=null and endTime !=''">
+			<![CDATA[
+							AND soo.complete_date <= CONCAT(#{endTime},' 23:59:59')
+						 ]]>
+		</if>
+		AND soo.title IN (2, 3)
+		and sr.id = soo.recycler_id
+		and soo.company_id=#{companyId}
+		ORDER BY
+		dateFor
+		) dataInfo ON dataInfo.id = soia.order_id
+		) comId ON comId.company_id = scc.id
+	</select>
 	<select id="outOrderExcel" parameterType="Object" resultType="Map">
 			SELECT
 			a.order_no AS orderNo,
