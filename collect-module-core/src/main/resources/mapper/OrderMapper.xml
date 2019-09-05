@@ -657,27 +657,27 @@
 
 	</select>
 	<select id="outOrderExcel" parameterType="Object" resultType="Map">
-		select excel.*, saa.area_name as areaName from sb_area saa RIGHT JOIN (SELECT
-			a.id,
+			SELECT
 			a.order_no AS orderNo,
-			CONCAT(date_format(a.arrival_time,'%Y-%m-%d'),IF(a.arrival_period = 'am','上午',IF(a.arrival_period = 'pm','下午',CONCAT(' ',a.arrival_period))))AS arrivalTime,
-			case a.title when 1 then '废弃家电' when 2 then  '生活垃圾' when 4 then '大件物品' else '其他' end AS titleName,
-			IF(a.is_cash = 0,a.price,'绿色能量') AS price,
-			IF(a.is_cash = 0,p.price,'绿色能量') AS paymentPrise,
-			b.name_ AS recycleName,
-			date_format(a.distribute_time,'%Y-%m-%d %H:%i:%S')AS distributeTime,
-			date_format(a.receive_time,'%Y-%m-%d %H:%i:%S') AS receiveTime,
-			date_format(a.complete_date,'%Y-%m-%d %H:%i:%S') AS completeDate,
-			a.link_man AS linkMan,
-			a.tel,
-			a.address,
-			a.area_id
+			date_format(a.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
+			c.name_ AS name,
+			bb.name_ AS parentName,
+			b.name_ AS categoryName,
+			IF (
+			a.ach_price > 0,
+			'现金',
+			'能量'
+			) AS isCash,
+			ROUND(a.ach_price, 2) AS amount,
+			d.name_ AS recyclerName
 			FROM
 			sb_order a
-			LEFT JOIN sb_payment p ON p.order_sn = a.order_no
-			LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+			LEFT JOIN sb_category b ON a.category_id = b.id
+			LEFT JOIN sb_category bb ON b.parent_id = bb.id
+			LEFT JOIN sb_company c ON a.company_id = c.id
+			LEFT JOIN sb_recyclers d ON a.recycler_id = d.id
 			WHERE
-			a.del_flag = '0'
+				a.del_flag = '0'
 			AND a.company_id = #{companyId}
 			AND a.title = #{type}
 			AND a.status_ = 3
@@ -691,7 +691,44 @@
 						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
 					 ]]>
 			</if>
-			GROUP BY a.id	ORDER BY a.create_date DESC) excel on excel.area_id = saa.id
+	</select>
+	<select id="outOrderExcelHouse" parameterType="Object" resultType="Map">
+		SELECT
+			a.order_no AS orderNo,
+			date_format(a.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
+			c.name_ AS name,
+			b.parent_name AS parentName,
+			b.category_name AS categoryName,
+		IF (
+			a.is_cash = '0',
+			'现金',
+			'能量'
+		) AS isCash,
+		 ROUND(SUM(b.amount), 2) AS amount,
+		 d.name_ AS recyclerName
+		FROM
+			sb_order a
+		LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
+		LEFT JOIN sb_company c ON a.company_id = c.id
+		LEFT JOIN sb_recyclers d ON a.recycler_id = d.id
+		WHERE
+			a.del_flag = '0'
+		AND a.company_id = #{companyId}
+		AND a.title = '2'
+		AND a.status_ = '3'
+		<if test="startTime !=null and startTime !=''">
+			<![CDATA[
+						AND a.complete_date >= CONCAT(#{startTime},' 00:00:00')
+					 ]]>
+		</if>
+		<if test="endTime !=null and endTime !=''">
+			<![CDATA[
+						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
+					 ]]>
+		</if>
+		GROUP BY
+			b.order_id,
+			b.category_name
 	</select>
 	<select id="getBigOrderTransferList" parameterType="Object" resultType="Map">
 		SELECT
@@ -1311,7 +1348,8 @@
 		a.id,
 		a.order_no AS orderNo,
 		DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as categoryDate,
-		c.name_ AS categoryName,
+		if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾','')))AS categoryName,
+		c.name_ AS name,
 		a.link_man AS userName,
 		a.tel,
 		a.status_ AS status,

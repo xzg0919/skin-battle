@@ -254,6 +254,10 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 		return comCateMapper.getOwnnerPriceApp(categoryBean, companyId);
 	}
 	@Override
+	public List<ComCatePrice> getOwnnerPriceApps(CategoryBean categoryBean, Integer companyId) {
+		return comCateMapper.getOwnnerPriceApps(categoryBean, companyId);
+	}
+	@Override
 	public List<ComCatePrice> getAvgPrice(CategoryBean categoryBean) {
 		return comCateMapper.getAvgPrice(categoryBean);
 	}

@@ -88,6 +88,8 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	CompanyCategory selectPriceByAttrId(String id, String companyId);
 	@DS("slave")
 	List<ComCatePrice> getOwnnerPriceApp(CategoryBean categoryBean, Integer companyId);
+	@DS("slave")
+	List<ComCatePrice> getOwnnerPriceApps(CategoryBean categoryBean, Integer companyId);
 	/**
 	 * 根据分类Id和小区Id查询所属企业
 	 * @param categoryId : 分类Id

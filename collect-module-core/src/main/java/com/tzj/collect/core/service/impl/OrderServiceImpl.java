@@ -57,6 +57,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * 订单ServiceImpl
@@ -686,6 +687,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<ComCatePrice> attrList = null;
 		List<AppOrderResult> orderLists = new ArrayList<AppOrderResult>();
 		for (AppOrderResult order : orderList) {
+			boolean tenGreen = this.isTenGreen(this.selectById(order.getOrderId()));
+			if (tenGreen){
+				order.setIsTenGreen("1");
+			}else {
+				order.setIsTenGreen("0");
+			}
 			//获取当前定单的成交价格
 			Object paymentPrice = orderMapper.paymentPriceByOrderId(Integer.parseInt(order.getOrderId()));
 			if (paymentPrice ==null){
@@ -1118,6 +1125,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 */
 	@Override
 	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime){
+		if ("2".equals(type)){
+			return orderMapper.outOrderExcelHouse(companyId,startTime,endTime);
+		}
 		return orderMapper.outOrderExcel(companyId,type,startTime,endTime);
 	}
 	/**
@@ -1605,6 +1615,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public AppOrderResult getOrderDetails(OrderBean orderbean) {
 		AppOrderResult result = orderMapper.getOrderDetails(orderbean);
+		boolean tenGreen = this.isTenGreen(this.selectById(result.getOrderId()));
+		if (tenGreen){
+			result.setIsTenGreen("1");
+		}else {
+			result.setIsTenGreen("0");
+		}
 		orderbean.setTitle(result.getTitle().toString());
 		orderbean.setIsCash(result.getIsCash());
 		//根据小区的Id查询精度和纬度
@@ -3235,5 +3251,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public List<Map<String, Object>> selectHouseAmount() {
 		return orderMapper.selectHouseAmount();
+	}
+
+	public boolean isTenGreen(Order order){
+		if ("1".equals(order.getIsCash())){
+			return true;
+		}
+		List<OrderItem> orderItems = orderItemService.selectList(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));
+		List<OrderItem> collect = orderItems.stream().filter(orderItem -> orderItem.getPrice() > 0).collect(Collectors.toList());
+		if(null==collect||collect.isEmpty()){
+			return true;
+		}
+		return false;
 	}
 }
