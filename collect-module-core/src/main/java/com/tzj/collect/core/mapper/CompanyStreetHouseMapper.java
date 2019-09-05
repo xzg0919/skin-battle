@@ -11,12 +11,17 @@ public interface CompanyStreetHouseMapper extends BaseMapper<CompanyStreetHouse>
 
 
     /**
-     * 根据分类id和街道id查询所属公司
-     * @param categoryId
+     * 根据街道id查询所属公司
      * @param streetId
      * @return
      */
-    Integer selectStreetHouseCompanyId(@Param("categoryId") Integer categoryId, @Param("streetId") Integer streetId);
+    Integer selectStreetHouseCompanyId(@Param("streetId") Integer streetId);
+    /**
+     * 根据街道id查询所属公司
+     * @param streetId
+     * @return
+     */
+    Integer selectStreetHouseCompanyIdByCategoryId(@Param("categoryId") Integer categoryId,@Param("streetId") Integer streetId);
 
     Map<String,Object> adminCompanyAreaRanges(String companyId);
 

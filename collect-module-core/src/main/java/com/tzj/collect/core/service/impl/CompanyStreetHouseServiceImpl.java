@@ -24,13 +24,13 @@ public class CompanyStreetHouseServiceImpl extends ServiceImpl<CompanyStreetHous
 
 
     @Override
-    public String selectStreetHouseceCompanyId(Integer categoryId, Integer streetId, Integer communityId) {
+    public String selectStreetHouseceCompanyId(Integer streetId, Integer communityId) {
         String companyId = "";
-        //根据分类Id和小区Id查询所属企业
-        Company companys = companyCategoryService.selectCompany(categoryId,communityId);
+        //根据回收类型和小区Id查询所属企业
+        Company companys = companyCategoryService.selectCompanyByTitle("2",communityId);
         if(companys == null) {
             //根据分类Id和小区id去公海查询相关企业
-            Integer companyId1 = companyStreetHouseMapper.selectStreetHouseCompanyId(categoryId, streetId);
+            Integer companyId1 = companyStreetHouseMapper.selectStreetHouseCompanyId(streetId);
             if(companyId1==null) {
                 return companyId;
             }
@@ -39,6 +39,27 @@ public class CompanyStreetHouseServiceImpl extends ServiceImpl<CompanyStreetHous
             companyId = companys.getId().toString();
         }
         return companyId;
+    }
+    @Override
+    public String selectStreetHouseceCompanyIdByCategoryId(Integer categoryId,Integer streetId, Integer communityId) {
+        String companyId = "";
+        //根据回收类型和小区Id查询所属企业
+        Company companys = companyCategoryService.selectCompanys(categoryId,communityId);
+        if(companys == null) {
+            //根据分类Id和小区id去公海查询相关企业
+            Integer companyId1 = companyStreetHouseMapper.selectStreetHouseCompanyIdByCategoryId(categoryId,streetId);
+            if(companyId1==null) {
+                return companyId;
+            }
+            companyId = companyId1.toString();
+        }else {
+            companyId = companys.getId().toString();
+        }
+        return companyId;
+    }
+    @Override
+    public Integer selectStreetHouseCompanyIdByCategoryId(Integer categoryId,Integer streetId){
+        return companyStreetHouseMapper.selectStreetHouseCompanyIdByCategoryId(categoryId,streetId);
     }
 
     @Override
@@ -49,12 +70,6 @@ public class CompanyStreetHouseServiceImpl extends ServiceImpl<CompanyStreetHous
     @Override
     public Map<String,Object> companyAreaRanges(String companyId) {
         return companyStreetHouseMapper.companyAreaRanges(companyId);
-    }
-
-    @Override
-    public Integer selectStreetHouseceCompanyId(Integer categoryId, Integer streetId) {
-
-        return companyStreetHouseMapper.selectStreetHouseCompanyId(categoryId, streetId);
     }
 	 @Override
     public Object getAreaStreetList(long companyId, String cityName, String areaName, Integer starts, Integer ends) {

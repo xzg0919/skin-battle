@@ -72,6 +72,20 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
         }
         return "操作成功";
     }
-
-
+    @Override
+    public List<Category> getAppliceCategoryByCompanyId(Integer companyId, Integer cityId){
+        return companyCategoryCityNameMapper.getAppliceCategoryByCompanyId(companyId,cityId);
+    }
+    @Override
+    public List<Category> getBigCategoryByCompanyId(Integer companyId, Integer cityId){
+        return companyCategoryCityNameMapper.getBigCategoryByCompanyId(companyId,cityId);
+    }
+    public List<Category> getHouseCategoryByCompanyId(Integer houseceCompanyId,Integer cityId){
+        List<Category> categoryList = companyCategoryCityNameMapper.getHouseCategoryByCompanyId(houseceCompanyId, cityId);
+        categoryList.stream().forEach(category -> {
+            List<Category> categoryList1 = companyCategoryCityNameMapper.getHouseCategoryByCategoryId(category.getId().intValue(),houseceCompanyId,cityId);
+            category.setCategoryList(categoryList1);
+        });
+        return categoryList;
+    }
 }

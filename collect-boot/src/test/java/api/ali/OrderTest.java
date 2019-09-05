@@ -1,10 +1,7 @@
 package api.ali;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.core.param.ali.MapAddressBean;
-import com.tzj.collect.core.param.ali.MemberBean;
-import com.tzj.collect.core.param.ali.OrderBean;
-import com.tzj.collect.core.param.ali.PiccOrderBean;
+import com.tzj.collect.core.param.ali.*;
 import com.tzj.collect.core.param.business.CategoryBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -26,7 +23,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("2088322039337350", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088212854989662", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -39,7 +36,7 @@ public class OrderTest {
 
                 //String api="http://open.mayishoubei.com/ali/api";
                 //String api="http://dog.mayishoubei.com:9090/ali/api";
-                 String api="http://localhost:9003/app/api";
+                 String api="http://localhost:9090/ali/api";
 
 //                String  location = "121.446438,30.915836";
 //
@@ -70,9 +67,11 @@ public class OrderTest {
 //            CategoryBean categoryBean = new CategoryBean();
 //            categoryBean.setParentId("25");
 //            categoryBean.setCityId("17685");
+                MemberAddressBean memberAddressBean = new MemberAddressBean();
+                memberAddressBean.setId("13");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","city.getAllOpenCity");
+                param.put("name","memberAddress.delectMemberAddress");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -80,7 +79,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-//                param.put("data","{\"cityName\":\"上海市\",\"authCode\":\"e4efd253025b45fc9bc4be816753ZA29\"}");
+                param.put("data",memberAddressBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

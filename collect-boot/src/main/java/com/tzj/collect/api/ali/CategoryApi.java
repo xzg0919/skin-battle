@@ -58,6 +58,8 @@ public class CategoryApi {
 	private CompanyCategoryAttrOptionCityService companyCategoryAttrOptionCityService;
 	@Autowired
 	private CompanyCategoryCityService companyCategoryCityService;
+	@Autowired
+	private CompanyCategoryCityNameService companyCategoryCityNameService;
     /**
      * 取得所有一级分类 
      * @param 
@@ -117,7 +119,7 @@ public class CategoryApi {
     	//根据分类Id查询父类分类id
     	Category category = categoryService.selectById(categoryId);
     	//根据小区Id，分类id和街道id 查询相关企业
-		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(category.getParentId(),memberAddress.getStreetId(),memberAddress.getCommunityId());
+		String companyId = companyStreetApplianceService.selectStreetApplianceCompanyIdByCategoryId(category.getParentId(),memberAddress.getStreetId(),memberAddress.getCommunityId());
 		if(StringUtils.isBlank(companyId)) {
 				return "该区域暂无回收企业";
 		}
@@ -196,6 +198,18 @@ public class CategoryApi {
 		return resultMap;
 	}
 	/**
+	 * 小程序取得所有电器大件一级分类需要token
+	 * @param
+	 * @return
+	 */
+	@Api(name = "category.categoryOneListToken", version = "1.0")
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object categoryOneListToken(){
+		Member member = MemberUtils.getMember();
+		String aliUserId = member.getAliUserId();
+		return priceService.categoryOneListToken(aliUserId);
+	}
+	/**
 	 * 小程序取得所有二级分类
 	 * @param
 	 * @return
@@ -215,7 +229,9 @@ public class CategoryApi {
 	@Api(name = "category.categoryHouseTwoList", version = "1.0")
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object categoryHouseTwoList(CategoryBean categoryBean){
-		return priceService.categoryHouseTwoList(categoryBean);
+		Member member = MemberUtils.getMember();
+		String aliUserId = member.getAliUserId();
+		return priceService.categoryHouseTwoList(categoryBean,aliUserId);
 
 	}
 	/**
@@ -299,5 +315,30 @@ public class CategoryApi {
 		map.put("LFcategories",LFcategories);
 		map.put("FiveCategory",FiveCategory);
 		return  map;
+	}
+
+	/**
+	* 小程序最新获取生活分类列表
+	* @param
+	* @return
+	*/
+	@Api(name = "category.categoryNewHouseList", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public Object getCategoryNewHouseList(){
+		return categoryService.getCategoryNewHouseList();
+	}
+	/**
+	 * 小程序最新获取生活分类列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "category.categoryNewHouseListByToken", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object getCategoryNewHouseListByToken(){
+		Member member = MemberUtils.getMember();
+		String aliUserId = member.getAliUserId();
+		return categoryService.getCategoryNewHouseListByToken(aliUserId);
 	}
 }

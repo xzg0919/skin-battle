@@ -112,8 +112,10 @@ public class LjAdminController {
         int recyclersCount = recyclersService.getRecyclersCountByLj(ljAdminBean);
         //未派订单总量
         int initOrderCount = orderService.getInitCountByLj(ljAdminBean);
-        //已派但未完成订单总量
+        //已派订单总量
         int tosendOrderCount = orderService.getTosendCountByLj(ljAdminBean);
+        //已接订单总量
+        int readyOrderCount = orderService.getReadyCountByLj(ljAdminBean);
         //家电订单量
         int digitalCountByLj = orderService.getOrderCountBytitle(ljAdminBean,"1",null);
         //大件垃圾订单量
@@ -145,6 +147,7 @@ public class LjAdminController {
             resultMap.put("recyclersCount",recyclersCount);
             resultMap.put("initOrderCount",initOrderCount);
             resultMap.put("tosendOrderCount",tosendOrderCount);
+            resultMap.put("readyOrderCount",readyOrderCount);
             resultMap.put("digitalCountByLj",digitalCountByLj);
             resultMap.put("bigCountByLj",bigCountByLj);
             resultMap.put("houseCountByLj",houseCountByLj);

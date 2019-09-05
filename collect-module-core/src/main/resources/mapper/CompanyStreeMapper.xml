@@ -3,16 +3,17 @@
 <mapper namespace="com.tzj.collect.core.mapper.CompanyStreeMapper">
 
 <select id="selectStreeCompanyIds" resultType="Integer" parameterType="Integer">
-    SELECT DISTINCT
-        a.company_id
+        SELECT DISTINCT
+	      d.company_id
         FROM
-        sb_company_stree a
-        LEFT JOIN sb_company_category b ON a.company_id = b.company_id
+            sb_company_stree a
+        LEFT JOIN sb_area b ON a.stree_id = b.id
+        LEFT JOIN sb_area c ON b.parent_id = c.id
+        LEFT JOIN sb_company_category_city_name d ON a.company_id = d.company_id AND c.parent_id = d.city_id
         WHERE
-        a.stree_id = #{streetId}
-    AND b.parent_id = #{categoryId}
-    AND b.del_flag = 0
-    AND a.del_flag = 0
+            a.stree_id = #{streetId}
+        AND d.parent_id = #{categoryId}
+        AND	d.id is NOT NULL
 </select>
 
 

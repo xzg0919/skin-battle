@@ -167,7 +167,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				selete.setAliUserId(aliUserId);
 				selete.setDelFlag("0");
 			List<MemberAddress> MemberAddressList = this.selectMemberAddressByAliUserId(selete);
-    		if(!MemberAddressList.isEmpty()) {
+    		if(null!= MemberAddressList) {
     			MemberAddress memberAddresss = MemberAddressList.get(0);
     				memberAddresss.setIsSelected(1);
     			this.updateMemberAddressByAliUserId(memberAddresss);

@@ -322,6 +322,8 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Integer getTosendCountByLj(LjAdminBean ljAdminBean);
 	@DS("slave")
+	Integer getReadyCountByLj(LjAdminBean ljAdminBean);
+	@DS("slave")
 	Integer getOrderCountBytitle(LjAdminBean ljAdminBean,String title,String isGreen);
 	@DS("slave")
 	Double getGreenBigPaymentOrderPrice(LjAdminBean ljAdminBean);
@@ -339,4 +341,10 @@ public interface OrderService extends IService<Order> {
 	Object getNewOrderDetail(Integer orderId);
 	@DS("slave")
 	List<Map<String,Object>>selectHouseAmount();
+	/**
+	 *根据订单信息，查询该订单是否是10倍积分
+	 * @return
+	 */
+	@DS("slave")
+	boolean isTenGreen(Order order);
 }

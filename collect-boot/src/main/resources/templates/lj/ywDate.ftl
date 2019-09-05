@@ -121,9 +121,13 @@
             <span class="span2" id="">截至当天当前时间的未派订单总量：</span>
             <span class="span3" id="initOrderCount">0</span>
             <br />
-            <span class="span2" id="">截止当天当前时间的已派但未完成订单总量：</span
+            <span class="span2" id="">截止当天当前时间的已派订单总量：</span
             >
             <span class="span3" id="tosendOrderCount">0</span>
+            <br />
+            <span class="span2" id="">截止当天当前时间的已接订单总量：</span
+            >
+            <span class="span3" id="readyOrderCount">0</span>
             <br />
         </div>
         <div class="Div5">
@@ -200,6 +204,7 @@
                 $("#recyclersCount").html(data.recyclersCount)
                 $("#initOrderCount").html(data.initOrderCount)
                 $("#tosendOrderCount").html(data.tosendOrderCount)
+                $("#readyOrderCount").html(data.readyOrderCount)
                 $("#digitalCountByLj").html(data.digitalCountByLj)
                 $("#bigCountByLj").html(data.bigCountByLj)
                 $("#houseCountByLj").html(data.houseCountByLj)

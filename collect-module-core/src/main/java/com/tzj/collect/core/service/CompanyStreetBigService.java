@@ -8,7 +8,10 @@ import java.util.Map;
 
 public interface CompanyStreetBigService  extends IService<CompanyStreetBig> {
     @DS("slave")
-    Integer selectStreetBigCompanyId(Integer categoryId, Integer streetId);
+    Integer selectStreetBigCompanyId(Integer streetId);
+
+    @DS("slave")
+    Integer selectStreetBigCompanyIdByCategoryId(Integer categoryId,Integer streetId);
 
     @DS("slave")
     Map<String,Object> companyAreaRanges(String companyId);

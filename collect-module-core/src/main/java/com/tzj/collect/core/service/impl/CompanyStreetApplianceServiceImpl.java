@@ -26,19 +26,18 @@ public class CompanyStreetApplianceServiceImpl extends ServiceImpl<CompanyStreet
 
 
     /**
-     * 根据分类id和街道id查询所属公司
-     * @param categoryId
+     * 根据回收类型和街道id查询所属公司
      * @param streetId
      * @return
      */
     @Override
-    public String selectStreetApplianceCompanyId(Integer categoryId, Integer streetId,Integer communityId) {
+    public String selectStreetApplianceCompanyId(Integer streetId,Integer communityId) {
         String companyId = "";
-        //根据分类Id和小区Id查询所属企业
-        Company companys = companyCategoryService.selectCompany(categoryId,communityId);
+        //根据回收类型和小区Id查询所属企业
+        Company companys = companyCategoryService.selectCompanyByTitle("1",communityId);
         if(companys == null) {
-            //根据分类Id和小区id去公海查询相关企业
-            Integer companyId1 = companyStreetApplianceMapper.selectStreetApplianceCompanyId(categoryId, streetId);
+            //根据街道id去公海查询相关企业
+            Integer companyId1 = companyStreetApplianceMapper.selectStreetApplianceCompanyId( streetId);
             if(companyId1==null) {
                 return companyId;
             }
@@ -47,18 +46,28 @@ public class CompanyStreetApplianceServiceImpl extends ServiceImpl<CompanyStreet
             companyId = companys.getId().toString();
         }
         return companyId;
-
     }
-
+    /**
+     * 根据分类id和街道id查询所属公司
+     * @param streetId
+     * @return
+     */
     @Override
-    public String selectStreetApplianceCompanyId(Integer categoryId, Integer streetId) {
+    public String selectStreetApplianceCompanyIdByCategoryId(Integer categoryId,Integer streetId,Integer communityId) {
         String companyId = "";
-        //根据分类Id和小区id去公海查询相关企业
-        Integer companyId1 = companyStreetApplianceMapper.selectStreetApplianceCompanyId(categoryId, streetId);
-        if(companyId1==null) {
-            return null;
+        //根据回收类型和小区Id查询所属企业
+        Company companys = companyCategoryService.selectCompanys(categoryId,communityId);
+        if(companys == null) {
+            //根据街道id去公海查询相关企业
+            Integer companyId1 = companyStreetApplianceMapper.selectStreetApplianceCompanyIdByCategoryId(categoryId,streetId);
+            if(companyId1==null) {
+                return companyId;
+            }
+            companyId = companyId1.toString();
+        }else {
+            companyId = companys.getId().toString();
         }
-        return companyId1.toString();
+        return companyId;
     }
 
     @Override

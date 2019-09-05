@@ -6,6 +6,7 @@ import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
+import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.CompanyCategory;
 import org.apache.ibatis.annotations.Param;
@@ -50,7 +51,9 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	@DS("slave")
 	Map<String, Object> categoryTwoList(CategoryBean categoryBean);
 	@DS("slave")
-	Map<String, Object> categoryHouseTwoList(CategoryBean categoryBean);
+	Map<String,Object> categoryOneListToken(String aliUserId);
+	@DS("slave")
+	Map<String, Object> categoryHouseTwoList(CategoryBean categoryBean,String aliUserId);
 	@DS("slave")
 	Map<String, Object> getTowCategoryList(CategoryBean categoryBean);
 
@@ -85,6 +88,8 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	CompanyCategory selectPriceByAttrId(String id, String companyId);
 	@DS("slave")
 	List<ComCatePrice> getOwnnerPriceApp(CategoryBean categoryBean, Integer companyId);
+	@DS("slave")
+	List<ComCatePrice> getOwnnerPriceApps(CategoryBean categoryBean, Integer companyId);
 	/**
 	 * 根据分类Id和小区Id查询所属企业
 	 * @param categoryId : 分类Id
@@ -92,5 +97,13 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	 * @return
 	 */
 	@DS("slave")
-	Company selectCompany(Integer categoryId, Integer communityId);
+	Company selectCompanys(Integer categoryId, Integer communityId);
+	/**
+	 * 根据title和小区Id查询私海所属企业
+	 * @param title : 类型
+	 * @param communityId : 小区Id
+	 * @return
+	 */
+	@DS("slave")
+	Company selectCompanyByTitle(String title, Integer communityId);
 }

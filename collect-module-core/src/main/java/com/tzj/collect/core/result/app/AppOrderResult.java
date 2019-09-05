@@ -1,12 +1,13 @@
 package com.tzj.collect.core.result.app;
 
 import com.tzj.collect.entity.Category.CategoryType;
+import lombok.Data;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
-
+@Data
 public class AppOrderResult {
 	
 	private String orderId;//订单id
@@ -98,6 +99,8 @@ public class AppOrderResult {
 	
 	
 	private Object obj;
+
+	private String isTenGreen; //0不是  1是
 
 
 	public String getAliUserId() {

@@ -9,6 +9,7 @@ import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.module.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,8 +56,41 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	private AreaService areaService;
 	@Autowired
 	private CompanyStreetHouseService companyStreetHouseService;
+	@Autowired
+	private MemberAddressService memberAddressService;
+	@Autowired
+	private CompanyStreetApplianceService companyStreetApplianceService;
+	@Autowired
+	private CompanyCategoryCityNameService companyCategoryCityNameService;
 
 
+
+	public Map<String,Object> categoryOneListToken(String aliUserId){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		List<Category> DIGITAL = null;
+		List<Category> BIGTHING = null;
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
+		if(memberAddress!=null) {
+			Integer cityId = memberAddress.getCityId();
+			String appliceCompanyId = companyStreetApplianceService.selectStreetApplianceCompanyId(memberAddress.getStreetId(), memberAddress.getCommunityId());
+			Integer bigCompanyId = companyStreetBigService.selectStreetBigCompanyId(memberAddress.getStreetId());
+			if (StringUtils.isNotBlank(appliceCompanyId)){
+				DIGITAL = companyCategoryCityNameService.getAppliceCategoryByCompanyId(Integer.parseInt(appliceCompanyId),cityId);
+			}
+			if (null != bigCompanyId){
+				BIGTHING = companyCategoryCityNameService.getBigCategoryByCompanyId(bigCompanyId,cityId);
+			}
+		}
+		if (null == DIGITAL){
+			DIGITAL = categoryService.topList(0, 1, null);
+		}
+		if (null == BIGTHING){
+			BIGTHING = categoryService.topList(0, 4,null);
+		}
+		resultMap.put("DIGITAL",DIGITAL);
+		resultMap.put("BIGTHING",BIGTHING);
+		return resultMap;
+	}
 	/**
 	 * 小程序取得所有二级分类
 	 * @param
@@ -80,89 +114,36 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 	 * @return
 	 */
 	@Override
-	public Map<String, Object> categoryHouseTwoList(CategoryBean categoryBean) {
+	public Map<String, Object> categoryHouseTwoList(CategoryBean categoryBean,String aliUserId) {
 		Category category = categoryService.selectById(categoryBean.getId());
 		Map<String, Object> map = new HashMap<>();
 		List<ComCatePrice> priceList = null;
 		List<ComCatePrice> noPriceList = null;
 			//根据分类Id和小区Id查询所属企业
-			Company company = this.selectCompany(categoryBean.getId(),categoryBean.getCommunityId());
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
+		if (null!=memberAddress){
 			if("bigFurniture".equals(categoryBean.getType())){
-				Integer streeCompanyId = companyStreetBigService.selectStreetBigCompanyId(categoryBean.getId(), categoryBean.getStreeId());
-				if(null != streeCompanyId){
-					priceList = comCateMapper.getBigThingCategoryList(categoryBean.getId(),streeCompanyId);
+				Integer bigCompanyId = companyStreetBigService.selectStreetBigCompanyIdByCategoryId(categoryBean.getId(), memberAddress.getStreetId());
+				if(null != bigCompanyId){
+					priceList = comCateMapper.getBigThingCategoryList(categoryBean.getId(),bigCompanyId,memberAddress.getCityId());
 					noPriceList = new ArrayList<>();
-				}else {
-					priceList = this.getAvgPrice(categoryBean);
-					noPriceList = this.getAvgNoPrice(categoryBean);
 				}
 			}else if("appliance".equals(categoryBean.getType())){
-				if(null!=company){
+				String appliceCompanyId = companyStreetApplianceService.selectStreetApplianceCompanyIdByCategoryId(categoryBean.getId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
+				if(StringUtils.isNotBlank(appliceCompanyId)){
 					//获取当前公司下的回收列表
-					priceList = this.getOwnnerPrice(categoryBean, Integer.parseInt(company.getId().toString()));
-					noPriceList = this.getOwnnerNoPrice(categoryBean,Integer.parseInt(company.getId().toString()));
-				}else {
-					priceList = this.getAvgPrice(categoryBean);
-					noPriceList = this.getAvgNoPrice(categoryBean);
-				}
-			}else if("rubbish".equals(categoryBean.getType())){
-				if(company == null) {
-					//根据分类Id和小区id去公海查询相关企业
-					Integer companyId1 = companyStreetHouseService.selectStreetHouseceCompanyId(categoryBean.getId(), categoryBean.getStreeId());
-					if(companyId1==null) {
-						//判断该地址是否回收5公斤废纺衣物
-						Integer streeCompanyId = companyStreeService.selectStreeCompanyIds(categoryBean.getId(), categoryBean.getStreeId());
-						if ("45".equals(categoryBean.getId().toString())&&null != streeCompanyId){
-							category.setIcon("http://images.sqmall.top/collect/20190412/original_2d560942-7a1f-4c95-9721-b19cb892ac4f.jpg");
-							category.setRecNotes("1.废旧衣物指无污染、无霉变的各类纺织品，包含衣服、鞋子、纺织包袋、床上用品和织物类家具用品；," +
-									"2.衣服包含毛衣、大衣、T恤和衬衫等；," +
-									"3.鞋子包含运动鞋、皮鞋和帆布鞋等；," +
-									"4.纺织包袋包含手提包、皮包和电脑包等；," +
-									"5.床上用品包含床单、被套和枕套等；," +
-									"6.织物类家居用品包含窗帘、地毯、毛巾、浴巾和桌布等;," +
-									"7.当日晚8点后预约，可预约时间最早为次日上午；," +
-									"8.预约完成后，回收人员会在预约时间段电话联系您，确认具体的上门时间，免费上门收取废旧衣物.," +
-									"提示：," +
-									"1.邮管局规定各快递公司全面推进实名制寄件，回收人员上门收件时可能需要您配合出示身份证件，望您理解;," +
-									"2.废旧衣物积累到5kg及以上可进行预约，需要您亲自打包好，这样可以减少上门回收的时间，方便回收人员称重.");
-							priceList = this.getOwnnerPrice(categoryBean,streeCompanyId);
-							noPriceList = this.getOwnnerNoPrice(categoryBean,streeCompanyId);
-						}else{
-							priceList = this.getAvgPrice(categoryBean);
-							noPriceList = this.getAvgNoPrice(categoryBean);
-						}
-					}else {
-						//根据相关城市id 和企业id 查询相关的分类列表
-						priceList = companyCategoryCityService.getOwnnerPriceBycityId(categoryBean.getId().toString(), companyId1.toString(),categoryBean.getCityId());
-						noPriceList = companyCategoryCityService.getOwnnerNoPriceBycityId(categoryBean.getId().toString(), companyId1.toString(),categoryBean.getCityId());
-						if(priceList.isEmpty()&&noPriceList.isEmpty()){
-							//如果该区域没有配置城市，则获取该公司的公共价格
-							priceList = this.getOwnnerPrice(categoryBean, companyId1);
-							noPriceList = this.getOwnnerNoPrice(categoryBean,companyId1);
-						}
-					}
-				}else {
-					//根据小区Id查询小区信息
-					Community community  = communityService.selectById(categoryBean.getCommunityId());
-					//判断该小区是否免费
-					if("1".equals(community.getIsFree())) {
-						priceList = new ArrayList<ComCatePrice>();
-						noPriceList = this.getNoPrice(categoryBean, Integer.parseInt(company.getId().toString()));
-					}else {
-						//根据相关城市id 和企业id 查询相关的分类列表
-						priceList = companyCategoryCityService.getOwnnerPriceBycityId(categoryBean.getId().toString(), company.getId().toString(),categoryBean.getCityId());
-						noPriceList = companyCategoryCityService.getOwnnerNoPriceBycityId(categoryBean.getId().toString(), company.getId().toString(),categoryBean.getCityId());
-						if(priceList.isEmpty()&&noPriceList.isEmpty()){
-							//如果该区域没有配置城市，则获取该公司的公共价格
-							priceList = this.getOwnnerPrice(categoryBean, Integer.parseInt(company.getId().toString()));
-							noPriceList = this.getOwnnerNoPrice(categoryBean,Integer.parseInt(company.getId().toString()));
-						}
-					}
+					priceList = comCateMapper.getBigThingCategoryList(categoryBean.getId(),Integer.parseInt(appliceCompanyId),memberAddress.getCityId());
+					noPriceList = new ArrayList<>();
 				}
 			}
-			map.put("ComCatePriceList", priceList);
-			map.put("ComCateNoPriceList", noPriceList);
-			map.put("category",category);
+		}
+		if (null==priceList&&null==noPriceList){
+			priceList = this.getAvgPrice(categoryBean);
+			noPriceList = this.getAvgNoPrice(categoryBean);
+		}
+		map.put("ComCatePriceList", priceList);
+		map.put("ComCateNoPriceList", noPriceList);
+		map.put("category",category);
 		return  map;
 	}
 	/**
@@ -176,8 +157,9 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 		List<ComCatePrice> noPriceList = null;
 		//如果不为空获取当前公司回收价格
 		if (categoryBean.getCommunityId() != null&&categoryBean.getCommunityId()!=0) {
+			Category category = categoryService.selectById(categoryBean.getId());
 			//根据分类Id和小区Id查询所属企业
-	    	Company company = this.selectCompany(categoryBean.getId(),categoryBean.getCommunityId());
+	    	Company company = this.selectCompanys(categoryBean.getId(),categoryBean.getCommunityId());
 			//根据小区Id查询唯一的所属企业
 	    	//CompanyServiceRange companyServiceRange = companyServiceService.selectOne(new EntityWrapper<CompanyServiceRange>().eq("community_id", categoryBean.getCommunityId()));
 	    	//Integer companyId = companyService.getCompanyIdByIds(orderbean.getCommunityId(),orderbean.getCategoryParentId());
@@ -272,6 +254,10 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 		return comCateMapper.getOwnnerPriceApp(categoryBean, companyId);
 	}
 	@Override
+	public List<ComCatePrice> getOwnnerPriceApps(CategoryBean categoryBean, Integer companyId) {
+		return comCateMapper.getOwnnerPriceApps(categoryBean, companyId);
+	}
+	@Override
 	public List<ComCatePrice> getAvgPrice(CategoryBean categoryBean) {
 		return comCateMapper.getAvgPrice(categoryBean);
 	}
@@ -341,8 +327,12 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 		return companyCategoryMapper.selectPriceByAttrId(id, companyId);
 	}
 	@Override
-	public Company selectCompany(Integer categoryId, Integer communityId) {
-		return companyCategoryMapper.selectCompany(categoryId,communityId);
-	}  
+	public Company selectCompanys(Integer categoryId, Integer communityId) {
+		return companyCategoryMapper.selectCompanys(categoryId,communityId);
+	}
+
+	public Company selectCompanyByTitle(String title, Integer communityId){
+		return companyCategoryMapper.selectCompanyByTitle(title,communityId);
+	}
 
 }
