@@ -32,7 +32,7 @@ public class DailyJob {
      * @param
      * @return
      */
-    @Scheduled(cron = "* * 8 * * 1,3,5")
+    @Scheduled(cron = "* * 7 * * 1,3,5")
 //    @Scheduled(cron = "20 17 14 * * ?")
     public void threeTimesSendMsgToAllMember(){
         System.out.println("-----------------------分割线--------------------");

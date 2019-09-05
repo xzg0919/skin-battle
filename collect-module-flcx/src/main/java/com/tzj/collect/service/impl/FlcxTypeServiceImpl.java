@@ -114,41 +114,45 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
         List<FlcxType> cityTypeList = flcxTypeMapper.cityTypeList("2");
         mapList.stream().forEach(map -> {
             FlcxLexicon flcxLexicon = flcxLexiconService.selectOne(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0).eq("name_", map.get("name")));
-            FlcxLexiconType flcxLexiconType = null;
-            if (null == flcxLexicon){
+//            FlcxLexiconType flcxLexiconType = null;
+            if (null == flcxLexicon) {
                 flcxLexicon = new FlcxLexicon();
-                flcxLexicon.setName(map.get("name"));
-                FlcxLexicon finalFlcxLexicon = flcxLexicon;
-                flcxTypes.stream().forEach(flcxType -> {
-                    if (map.get("type").contains(flcxType.getName())) {
-                        finalFlcxLexicon.setParentId(flcxType.getParentId());
-                    }
-                });
-                try {
-                    finalFlcxLexicon.setCreateDate(new Date());
-                    finalFlcxLexicon.setUpdateDate(new Date());
-                    flcxLexiconService.insertOrUpdate(finalFlcxLexicon);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }else {
-                flcxLexiconType = new FlcxLexiconType();
-                flcxLexiconType.setLexiconId(flcxLexicon.getId());
-                flcxLexiconType.setAreaId(2l);
-                flcxLexiconType.setCreateDate(new Date());
-                flcxLexiconType.setUpdateDate(new Date());
-                FlcxLexiconType finalFlcxLexiconType = flcxLexiconType;
-                cityTypeList.stream().forEach(flcxType -> {
-                    if (map.get("type").contains(flcxType.getName())) {
-                        finalFlcxLexiconType.setParentId(flcxType.getParentId());
-                        finalFlcxLexiconType.setTypeId(flcxType.getId());
-                    }
-                });
-                Integer flcxLexiconTypeRecordCount = flcxLexiconTypeMapper.selectCount(new EntityWrapper<FlcxLexiconType>().eq("del_flag", 0).eq("area_id", 2).eq("lexicon_id", flcxLexicon.getId()));
-                if(flcxLexiconTypeRecordCount == 0){
-                    flcxLexiconTypeMapper.insert(finalFlcxLexiconType);
-                }
             }
+            flcxLexicon.setName(map.get("name"));
+            FlcxLexicon finalFlcxLexicon = flcxLexicon;
+            flcxTypes.stream().forEach(flcxType -> {
+                if (map.get("type").contains(flcxType.getName())) {
+                    finalFlcxLexicon.setParentId(flcxType.getParentId());
+                }
+                if (map.get("type").equals("可回收物")){
+                    finalFlcxLexicon.setRecover("1");
+                }
+            });
+            try {
+                finalFlcxLexicon.setCreateDate(new Date());
+                finalFlcxLexicon.setUpdateDate(new Date());
+                flcxLexiconService.insertOrUpdate(finalFlcxLexicon);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+//            }else {
+//                flcxLexiconType = new FlcxLexiconType();
+//                flcxLexiconType.setLexiconId(flcxLexicon.getId());
+//                flcxLexiconType.setAreaId(2l);
+//                flcxLexiconType.setCreateDate(new Date());
+//                flcxLexiconType.setUpdateDate(new Date());
+//                FlcxLexiconType finalFlcxLexiconType = flcxLexiconType;
+//                cityTypeList.stream().forEach(flcxType -> {
+//                    if (map.get("type").contains(flcxType.getName())) {
+//                        finalFlcxLexiconType.setParentId(flcxType.getParentId());
+//                        finalFlcxLexiconType.setTypeId(flcxType.getId());
+//                    }
+//                });
+//                Integer flcxLexiconTypeRecordCount = flcxLexiconTypeMapper.selectCount(new EntityWrapper<FlcxLexiconType>().eq("del_flag", 0).eq("area_id", 2).eq("lexicon_id", flcxLexicon.getId()));
+//                if(flcxLexiconTypeRecordCount == 0){
+//                    flcxLexiconTypeMapper.insert(finalFlcxLexiconType);
+//                }
+//            }
         });
     }
 
