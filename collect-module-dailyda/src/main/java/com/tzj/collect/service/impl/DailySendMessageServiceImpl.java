@@ -38,9 +38,9 @@ public class DailySendMessageServiceImpl  implements DailySendMessageService {
         AlipayOpenAppMiniTemplatemessageSendRequest request = new AlipayOpenAppMiniTemplatemessageSendRequest();
         AlipayOpenAppMiniTemplatemessageSendModel model = new AlipayOpenAppMiniTemplatemessageSendModel();
         model.setToUserId("2088212384105273");
-        model.setFormId("1a0e7794-f65f-497d-81e5-0046ee66a59e");
+        model.setFormId("MjA4ODIxMjM4NDEwNTI3M18xNTY3NzQwMTQ5MzI5XzAzMw==");
         model.setUserTemplateId("YjA0MjI0MmEwMjYxYmE0ZGZjMWU4M2RhMWZjNDg2MjE=");
-        model.setPage("page/component/index");
+        model.setPage("pages/view/index/index");
         model.setData("{\"keyword1\" :{\"value\":\""+"每日答答答"+"\"},\"keyword2\" :{\"value\":\""+"答题赢豪礼，更有现金红包等你来拿"+"\"},\"keyword3\" :{\"value\":\""+"支付宝"+"\"}}");
         System.out.println(JSON.toJSONString(model));
         request.setBizModel(model);
@@ -72,7 +72,7 @@ public class DailySendMessageServiceImpl  implements DailySendMessageService {
         model.setToUserId(aliUserId);
         model.setFormId(formId);
         model.setUserTemplateId("YjA0MjI0MmEwMjYxYmE0ZGZjMWU4M2RhMWZjNDg2MjE=");
-        model.setPage("page/component/index");
+        model.setPage("pages/view/index/index");
         model.setData("{\"keyword1\" :{\"value\":\"每日答答答\"},\"keyword2\" :{\"value\":\"答题赢豪礼，更有现金红包等你来拿\"},\"keyword3\" :{\"value\":\"支付宝\"}}");
         System.out.println(JSON.toJSONString(model));
         request.setBizModel(model);

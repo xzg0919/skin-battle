@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 /**
- * 每周一三五消息推送线程
+ * 答答答定时任务
  *
  * @author sgmark
  * @create 2019-09-05 13:44
@@ -23,6 +23,8 @@ public class DailyJob {
     @Resource
     private DailyMemberService dailyMemberService;
 
+    @Resource
+    private DailyWeekRankingService dailyWeekRankingService;
 
 
 
@@ -32,11 +34,20 @@ public class DailyJob {
      * @param
      * @return
      */
-    @Scheduled(cron = "* * 7 * * 1,3,5")
+    @Scheduled(cron = "0 0 7 ? * 1,3,5")
 //    @Scheduled(cron = "20 17 14 * * ?")
     public void threeTimesSendMsgToAllMember(){
         System.out.println("-----------------------分割线--------------------");
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new SendMsgToAllMemberThread(dailyMemberService)));
+    }
+
+    /**
+     * 定时任务:每周十点执行（上周达人榜）
+     */
+    @Scheduled(cron = "0 0 10 ? * MON")
+    public void startWeeklyRanking(){
+        System.out.println("-----------------------分割线--------------------");
+        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new WeekRankingThread(dailyWeekRankingService)));
     }
 
     private class SendMsgToAllMemberThread implements Runnable {
@@ -49,4 +60,21 @@ public class DailyJob {
             dailyMemberService.sendMsgToAllMemberThread();
         }
     }
+    /** 每周一 十点执行上周达人排行线程
+     * @author sgmark@aliyun.com
+     * @date 2019/8/19 0019
+     * @param
+     * @return
+     */
+    private class WeekRankingThread implements Runnable{
+        private DailyWeekRankingService dailyWeekRankingService;
+        public WeekRankingThread(DailyWeekRankingService dailyWeekRankingService){
+            this.dailyWeekRankingService = dailyWeekRankingService;
+        }
+        @Override
+        public void run() {
+            dailyWeekRankingService.insertEachWeekDresser();
+        }
+    }
 }
+

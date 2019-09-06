@@ -51,31 +51,31 @@ public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxR
                 //找不到前一天的数据
             }else {
                 //放入缓存 12小时
-                Map<String, Object> objectMap = new HashMap<>();
-                objectMap.put("count_", 99999);
-                objectMap.put("lexiconAfter", "玫瑰花");
-                flcxRecordsList.add(objectMap);
-                objectMap = new HashMap<>();
-                objectMap.put("count_", 99998);
-                objectMap.put("lexiconAfter", "永生花");
-                flcxRecordsList.add(objectMap);
-                objectMap = new HashMap<>();
-                objectMap.put("count_", 99997);
-                objectMap.put("lexiconAfter", "避孕套");
-                flcxRecordsList.add(objectMap);
-                objectMap = new HashMap<>();
-                objectMap.put("count_", 99995);
-                objectMap.put("lexiconAfter", "毛绒玩具");
-                flcxRecordsList.add(objectMap);
-                objectMap = new HashMap<>();
-                objectMap.put("count_", 99994);
-                objectMap.put("lexiconAfter", "纸张");
-                flcxRecordsList.add(objectMap);
-                objectMap = new HashMap<>();
-                objectMap.put("count_", 99993);
-                objectMap.put("lexiconAfter", "鸡骨头");
-                flcxRecordsList.add(objectMap);
-//                flcxRecordsList.addAll(flcxRecordsMapper.topFive(tableName));
+//                Map<String, Object> objectMap = new HashMap<>();
+//                objectMap.put("count_", 99999);
+//                objectMap.put("lexiconAfter", "玫瑰花");
+//                flcxRecordsList.add(objectMap);
+//                objectMap = new HashMap<>();
+//                objectMap.put("count_", 99998);
+//                objectMap.put("lexiconAfter", "永生花");
+//                flcxRecordsList.add(objectMap);
+//                objectMap = new HashMap<>();
+//                objectMap.put("count_", 99997);
+//                objectMap.put("lexiconAfter", "避孕套");
+//                flcxRecordsList.add(objectMap);
+//                objectMap = new HashMap<>();
+//                objectMap.put("count_", 99995);
+//                objectMap.put("lexiconAfter", "毛绒玩具");
+//                flcxRecordsList.add(objectMap);
+//                objectMap = new HashMap<>();
+//                objectMap.put("count_", 99994);
+//                objectMap.put("lexiconAfter", "纸张");
+//                flcxRecordsList.add(objectMap);
+//                objectMap = new HashMap<>();
+//                objectMap.put("count_", 99993);
+//                objectMap.put("lexiconAfter", "鸡骨头");
+//                flcxRecordsList.add(objectMap);
+                flcxRecordsList.addAll(flcxRecordsMapper.topFive(tableName));
                 redisUtil.set("flcxTopFive", flcxRecordsList, 6*60*60-1);
             }
         }
