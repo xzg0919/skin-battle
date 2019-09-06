@@ -78,7 +78,7 @@ public class LexiconApi {
         if (cityIsExit(flcxBean)){
             //里面必包含城市信息（id或名称）
         }else {
-            flcxBean.setCityName("上海市");
+            flcxBean.setCityName("上海");
             flcxBean.setCityId(1L);
         }
 //        //没传城市，只有经纬度
@@ -266,7 +266,7 @@ public class LexiconApi {
         if (cityIsExit(flcxBean)){
             //里面必包含城市信息（id或名称）
         }else {
-            flcxBean.setCityName("上海市");
+            flcxBean.setCityName("上海");
             flcxBean.setCityId(1L);
         }
         return flcxTypeService.typeList(flcxBean);
@@ -343,8 +343,8 @@ public class LexiconApi {
                 if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
                     resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString());
                 } else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())) {
-                    //定位没找到城市
-                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getProvince());
+                    //定位没找到城市(配合支付宝页面展示，去掉市)
+                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getProvince().replace("市", ""));
                 } else {
                     resultMap.put("city", "");
                 }
@@ -374,7 +374,7 @@ public class LexiconApi {
         Response response = null;
         response = FastHttpClient.get().url(url)
                 .addParams("key", AmapConst.AMAP_KEY)
-                .addParams("location", "119.40738190624998" + "," + "26.054866789960712")
+                .addParams("location", "111.752206" + "," + "40.849938")
                 .build().execute();
         String resultJson = response.body().string();
         if (StringUtils.isNotEmpty(resultJson)){
