@@ -102,6 +102,8 @@ public class AppOrderResult {
 
 	private String isTenGreen; //0不是  1是
 
+	private String overTime;//超时时间
+
 
 	public String getAliUserId() {
 		return aliUserId;

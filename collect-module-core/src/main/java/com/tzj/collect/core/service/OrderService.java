@@ -358,4 +358,8 @@ public interface OrderService extends IService<Order> {
 	 */
 	@DS("slave")
 	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime);
+	@DS("slave")
+	Object getReyclersServiceAbility(OrderBean orderBean,Integer companyId);
+	@DS("slave")
+	Object overTimeOrderListByReyclersId(OrderBean orderBean);
 }

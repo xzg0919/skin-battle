@@ -3269,7 +3269,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	/**
 	 * 导出企业的完成订单的Excel
 	 * @param companyId
-	 * @param type
 	 * @param startTime
 	 * @param endTime
 	 * @return
@@ -3278,5 +3277,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime){
 		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime);
+	}
+	public Object getReyclersServiceAbility(OrderBean orderBean,Integer companyId){
+		PageBean pagebean = orderBean.getPagebean();
+		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
+		Integer pageSize = null!=pagebean ?pagebean.getPageSize():9999;
+		Integer pageStart = (pageNumber-1)*pageSize;
+		List<Map<String, Object>> reyclersServiceAbilityList = orderMapper.getReyclersServiceAbility(companyId,orderBean.getRecyclerName(),orderBean.getMobile(),orderBean.getStartTime(),orderBean.getEndTime(),orderBean.getIsBig(),orderBean.getIsOverTime(),pageStart,pageSize);
+		Integer	count = orderMapper.getReyclersServiceAbilityCount(companyId, orderBean.getRecyclerName(), orderBean.getMobile(), orderBean.getStartTime(), orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime());
+		Map<String,Object> resultMap = new HashMap<>();
+		resultMap.put("recyclerList",reyclersServiceAbilityList);
+		resultMap.put("count",count);
+		resultMap.put("pageNumber",pageNumber);
+		return resultMap;
+	}
+	public  Object overTimeOrderListByReyclersId(OrderBean orderBean){
+		PageBean pagebean = orderBean.getPagebean();
+		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
+		Integer pageSize = null!=pagebean ?pagebean.getPageSize():9999;
+		Integer pageStart = (pageNumber-1)*pageSize;
+		List<Map<String, Object>> overTimeOrderList = orderMapper.overTimeOrderListByReyclersId(orderBean.getRecyclerId(), orderBean.getStartTime(), orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime(), pageStart, pageSize);
+		Integer count = orderMapper.overTimeOrderListCount(orderBean.getRecyclerId(), orderBean.getStartTime(), orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime());
+		Map<String,Object> resultMap = new HashMap<>();
+		resultMap.put("overTimeOrderList",overTimeOrderList);
+		resultMap.put("count",count);
+		resultMap.put("pageNumber",pageNumber);
+		return resultMap;
 	}
 }

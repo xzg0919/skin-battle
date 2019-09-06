@@ -9,6 +9,7 @@
 package api.business;
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.business.CategoryBean;
@@ -33,7 +34,7 @@ import static com.tzj.collect.common.constant.TokenConst.*;
 
 public class BusinessOrderApiTest {
 	public static void main(String[] args) throws Exception {
-		String token = JwtUtils.generateToken("41", BUSINESS_API_EXPRIRE, BUSINESS_API_TOKEN_SECRET_KEY);
+		String token = JwtUtils.generateToken("2", BUSINESS_API_EXPRIRE, BUSINESS_API_TOKEN_SECRET_KEY);
 		String securityToken = JwtUtils.generateEncryptToken(token, BUSINESS_API_TOKEN_CYPTO_KEY);
 		System.out.println("生成的token是："+securityToken);
 
@@ -46,29 +47,17 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		ComIdAndCateOptIdBean comIdAndCateOptIdBean = new ComIdAndCateOptIdBean();
-		comIdAndCateOptIdBean.setCityId("17685");
-		List<CategoryBean> householdPriceList = new ArrayList<>();
-		CategoryBean categoryBean1 = new CategoryBean();
-		CategoryBean categoryBean2 = new CategoryBean();
-		CategoryBean categoryBean3 = new CategoryBean();
-		categoryBean1.setId("41");
-		categoryBean1.setName("玻璃瓶");
-		categoryBean1.setPrice("0.1");
-		categoryBean2.setId("43");
-		categoryBean2.setName("碎玻璃(单独包装)");
-		categoryBean2.setPrice("0.2");
-		categoryBean3.setId("44");
-		categoryBean3.setName("其他玻璃制品");
-		categoryBean3.setPrice("0.3");
-		householdPriceList.add(categoryBean1);
-		householdPriceList.add(categoryBean2);
-		householdPriceList.add(categoryBean3);
-		comIdAndCateOptIdBean.setHouseholdPriceList(householdPriceList);
+		OrderBean orderBean = new OrderBean();
+		orderBean.setRecyclerId(91);
+		orderBean.setStartTime("2019-08-01");
+		orderBean.setEndTime("2019-09-06");
+		orderBean.setIsBig("N");
+		orderBean.setIsOverTime("0");
+		orderBean.setPagebean(new PageBean());
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.category.updateLocalePrice");
+		param.put("name","business.order.overTimeOrderListByReyclersId");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -76,7 +65,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",comIdAndCateOptIdBean);
+		param.put("data",orderBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);

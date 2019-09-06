@@ -2,6 +2,7 @@ package com.tzj.point.api.app;
 
 
 import com.tzj.collect.entity.Member;
+import com.tzj.collect.entity.Point;
 import com.tzj.module.api.annotation.*;
 import com.tzj.point.api.app.param.JfappRecyclerBean;
 import com.tzj.point.api.app.param.PageBean;
@@ -11,6 +12,7 @@ import com.tzj.point.entity.JfappRecycler;
 import com.tzj.point.service.JfappPointListService;
 import com.tzj.point.service.JfappRecyclerService;
 import com.tzj.point.service.MemberService;
+import com.tzj.point.service.PointService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -27,6 +29,8 @@ public class JfappRecycleApi {
     private MemberService memberService;
     @Autowired
     private JfappPointListService jfappPointListService;
+    @Autowired
+    private PointService pointService;
 
     @Api(name = "jfapp.get.token", version = "1.0")
     @SignIgnore
@@ -41,6 +45,7 @@ public class JfappRecycleApi {
         Map<String,Object> resultMap = new HashMap<String,Object>();
         String aliUserId = ToolUtils.getAliUserIdByOrderNo(jfappRecyclerBean.getCardNo());
         Member member = memberService.selectMemberByAliUserId(aliUserId);
+        Point point = pointService.getPoint(aliUserId);
         if(member==null) {
             resultMap.put("code", "500");
             resultMap.put("member", "该卡号不存在");
@@ -48,6 +53,7 @@ public class JfappRecycleApi {
         }
         resultMap.put("code", "200");
         resultMap.put("member",member);
+        resultMap.put("point",point);
         return resultMap;
     }
     @Api(name = "jfapp.recycler.addOrDeleteUserPoint", version = "1.0")

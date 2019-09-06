@@ -72,6 +72,8 @@ public class Order extends DataEntity<Long> {
 
 	@TableField(exist = false)
 	private Community community;
+	@TableField(exist = false)
+	private Integer overTime;
 	/**
 	 * 地址
 	 */
