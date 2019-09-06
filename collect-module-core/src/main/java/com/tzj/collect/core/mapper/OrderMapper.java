@@ -199,5 +199,13 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 */
 	List<Map<String,Object>> orderDetail4HorseHold(@Param("companyId") Integer companyId,@Param("startTime") String startTime, @Param("endTime") String endTime);
 
+	List<Map<String,Object>> getReyclersServiceAbility(@Param("companyId") Integer companyId,@Param("recyclerName") String recyclerName,@Param("mobile")String mobile,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("isBig")String isBig,@Param("isOverTime")String isOverTime,@Param("pageStart")Integer pageStart,@Param("pageSize")Integer pageSize);
+
+	Integer getReyclersServiceAbilityCount(@Param("companyId") Integer companyId,@Param("recyclerName") String recyclerName,@Param("mobile")String mobile,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("isBig")String isBig,@Param("isOverTime")String isOverTime);
+
+	List<Map<String,Object>> overTimeOrderListByReyclersId (@Param("recyclerId")Integer recyclerId,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("isBig")String isBig,@Param("isOverTime")String isOverTime,@Param("pageStart")Integer pageStart,@Param("pageSize")Integer pageSize);
+
+	Integer overTimeOrderListCount (@Param("recyclerId")Integer recyclerId,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("isBig")String isBig,@Param("isOverTime")String isOverTime);
+
 }
 

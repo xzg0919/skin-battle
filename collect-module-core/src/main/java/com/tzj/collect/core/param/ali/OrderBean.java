@@ -237,4 +237,12 @@ public class OrderBean {
      */
     private String location;
 
+    private String isOverTime;//是否超时0，不超时  1超时
+
+    private String recyclerName;//
+
+    private String mobile;//
+
+    private String isBig;//"Y"是大件 其他情况不是
+
 }

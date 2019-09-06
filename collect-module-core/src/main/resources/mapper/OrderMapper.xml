@@ -2011,6 +2011,237 @@
 		) a GROUP BY a.categoryName
 	</select>
 
+	<select id="getReyclersServiceAbility" parameterType="Object" resultType="Map">
+		SELECT
+			b.id,
+			b.recyclerName,
+			b.tel,
+			IF(a.count is NULL,0,a.count) as count
+		FROM
+			(
+				SELECT
+					b.id,
+					b.name_ AS recyclerName,
+					b.tel
+				FROM
+					sb_company_recycler a
+				INNER JOIN sb_recyclers b ON a.recycler_id = b.id
+				WHERE
+					a.status_ = '1'
+					<choose>
+						<when test="isBig == 'Y'.toString()">
+							AND type_ = '4'
+						</when>
+						<otherwise>
+							AND type_ = '1'
+						</otherwise>
+					</choose>
+
+				AND a.company_id = #{companyId}
+			) b
+		LEFT JOIN (
+				SELECT a.recycler_id,COUNT(1) AS count FROM (
+				SELECT
+					a.recycler_id,
+					a.status_,
+					TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+				FROM
+					sb_order a
+				WHERE
+
+					a.company_id = #{companyId}
+				<if test="startTime != null and startTime != '' ">
+					AND a.create_date > CONCAT(#{startTime}, ' 00:00:01')
+				</if>
+				<if test="endTime != null and endTime != '' ">
+					AND CONCAT(#{endTime}, ' 23:59:59') > a.create_date
+				</if>
+				<choose>
+					<when test="isBig == 'Y'.toString()">
+						AND a.title = '4'
+					</when>
+					<otherwise>
+						AND a.title != '4'
+					</otherwise>
+				</choose>
+				AND a.recycler_id is not NULL
+				AND a.recycler_id != 0
+				) a
+				WHERE
+				<choose>
+					<when test="isOverTime == '0'.toString()">
+						0 > a.overTime
+					</when>
+					<otherwise>
+						a.overTime > 0
+					</otherwise>
+				</choose>
+				GROUP BY a.recycler_id
+		 ) a ON a.recycler_id = b.id
+		WHERE
+			1=1
+		<if test="recyclerName != null and recyclerName != '' ">
+			AND b.recyclerName LIKE CONCAT('%', #{recyclerName}, '%')
+		</if>
+		<if test="mobile != null and mobile != '' ">
+			AND b.tel LIKE CONCAT('%', #{mobile}, '%')
+		</if>
+		LIMIT #{pageStart} , #{pageSize}
+	</select>
+	<select id="getReyclersServiceAbilityCount" parameterType="Object" resultType="Integer">
+		SELECT
+			count(1) as count
+		FROM
+		(
+		SELECT
+		b.id,
+		b.name_ AS recyclerName,
+		b.tel
+		FROM
+		sb_company_recycler a
+		INNER JOIN sb_recyclers b ON a.recycler_id = b.id
+		WHERE
+		a.status_ = '1'
+		<choose>
+			<when test="isBig == 'Y'.toString()">
+				AND type_ = '4'
+			</when>
+			<otherwise>
+				AND type_ = '1'
+			</otherwise>
+		</choose>
+
+		AND a.company_id = #{companyId}
+		) b
+		LEFT JOIN (
+		SELECT a.recycler_id,COUNT(1) AS count FROM (
+		SELECT
+		a.recycler_id,
+		a.status_,
+		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		FROM
+		sb_order a
+		WHERE
+
+		a.company_id = #{companyId}
+		<if test="startTime != null and startTime != '' ">
+			AND a.create_date > CONCAT(#{startTime}, ' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime != '' ">
+			AND CONCAT(#{endTime}, ' 23:59:59') > a.create_date
+		</if>
+		<choose>
+			<when test="isBig == 'Y'.toString()">
+				AND a.title = '4'
+			</when>
+			<otherwise>
+				AND a.title != '4'
+			</otherwise>
+		</choose>
+		AND a.recycler_id is not NULL
+		AND a.recycler_id != 0
+		) a
+		WHERE
+		<choose>
+			<when test="isOverTime == '0'.toString()">
+				0 > a.overTime
+			</when>
+			<otherwise>
+				a.overTime > 0
+			</otherwise>
+		</choose>
+		GROUP BY a.recycler_id
+		) a ON a.recycler_id = b.id
+		WHERE
+		1=1
+		<if test="recyclerName != null and recyclerName != '' ">
+			AND b.recyclerName LIKE CONCAT('%', #{recyclerName}, '%')
+		</if>
+		<if test="mobile != null and mobile != '' ">
+			AND b.tel LIKE CONCAT('%', #{mobile}, '%')
+		</if>
+	</select>
+	<select id="overTimeOrderListByReyclersId" parameterType="Object" resultType="Map">
+		SELECT  *  FROM (
+		SELECT
+		a.order_no AS orderNo,
+		a.create_date AS createDate,
+		CONCAT(a.arrival_time,' ',a.arrival_period) AS arrivalTime,
+		a.link_man AS linkMan,
+		a.tel,
+		IF (a.title = '1','废弃家电',IF(a.title = '4','大件垃圾','生活垃圾')) AS categoryName,
+		a.status_ AS status,
+		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		FROM
+		sb_order a
+		WHERE
+			a.recycler_id = #{recyclerId}
+		<if test="startTime != null and startTime != '' ">
+			AND a.create_date > CONCAT(#{startTime}, ' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime != '' ">
+			AND CONCAT(#{endTime}, ' 23:59:59') > a.create_date
+		</if>
+		<choose>
+			<when test="isBig == 'Y'.toString()">
+				AND a.title = '4'
+			</when>
+			<otherwise>
+				AND a.title != '4'
+			</otherwise>
+		</choose>
+		) a
+		WHERE
+		<choose>
+			<when test="isOverTime == '0'.toString()">
+				0 > a.overTime
+			</when>
+			<otherwise>
+				a.overTime > 0
+			</otherwise>
+		</choose>
+		LIMIT #{pageStart} , #{pageSize}
+	</select>
+	<select id="overTimeOrderListCount" parameterType="Object" resultType="Integer">
+		SELECT  count(1)  FROM (
+		SELECT
+		a.order_no AS orderNo,
+		a.create_date AS createDate,
+		CONCAT(a.arrival_time,' ',a.arrival_period) AS arrivalTime,
+		a.link_man AS linkMan,
+		a.tel,
+		IF (a.title = '1','废弃家电',IF(a.title = '4','大件垃圾','生活垃圾')) AS categoryName,
+		a.status_ AS status,
+		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		FROM
+		sb_order a
+		WHERE
+		a.recycler_id = #{recyclerId}
+		<if test="startTime != null and startTime != '' ">
+			AND a.create_date > CONCAT(#{startTime}, ' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime != '' ">
+			AND CONCAT(#{endTime}, ' 23:59:59') > a.create_date
+		</if>
+		<choose>
+			<when test="isBig == 'Y'.toString()">
+				AND a.title = '4'
+			</when>
+			<otherwise>
+				AND a.title != '4'
+			</otherwise>
+		</choose>
+		) a
+		WHERE
+		<choose>
+			<when test="isOverTime == '0'.toString()">
+				0 > a.overTime
+			</when>
+			<otherwise>
+				a.overTime > 0
+			</otherwise>
+		</choose>
+	</select>
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
         <id property="id" column="id" />

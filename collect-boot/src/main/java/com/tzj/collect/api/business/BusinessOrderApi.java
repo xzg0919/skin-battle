@@ -285,6 +285,26 @@ public class BusinessOrderApi {
 
 		return data;
 	}
-
+	/**
+	 * 获取回收人员的服务能力数据
+	 * @date 2019/08/30
+	 * @return
+	 */
+	@Api(name = "business.order.getReyclersServiceAbility", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getReyclersServiceAbility(OrderBean orderBean){
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return orderService.getReyclersServiceAbility(orderBean,companyAccount.getCompanyId());
+	}
+	/**
+	 * 根据回收人Id查询回收人员正常或者超时的单子
+	 * @date 2019/08/30
+	 * @return
+	 */
+	@Api(name = "business.order.overTimeOrderListByReyclersId", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object overTimeOrderListByReyclersId(OrderBean orderBean){
+		return orderService.overTimeOrderListByReyclersId(orderBean);
+	}
 
 }
