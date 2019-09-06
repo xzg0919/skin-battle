@@ -26,9 +26,9 @@ spring:
           password: Fenlei@zhinan
           driver-class-name: com.mysql.cj.jdbc.Driver
           #driver-class-name: com.mysql.jdbc.Driver
-        #定义从库连接收呗正式数据库(从库)
+        #定义从库连接收呗正式数据库(主库（答答答周榜需用主库）)
         slave_1:
-          url: jdbc:mysql://rr-uf68jtqx8eo2ce0ew.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
           username: sb_admin
           password: shoubei_123
           driver-class-name: com.mysql.cj.jdbc.Driver
