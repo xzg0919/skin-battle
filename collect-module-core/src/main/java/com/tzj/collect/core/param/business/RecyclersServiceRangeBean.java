@@ -1,9 +1,12 @@
 package com.tzj.collect.core.param.business;
 
 import com.tzj.collect.core.param.ali.AreaBean;
+import lombok.Data;
 
 import java.util.List;
 
+
+@Data
 public class RecyclersServiceRangeBean {
     /**
      * 0是经理，1下级回收人员，2拒绝该用户
@@ -35,6 +38,10 @@ public class RecyclersServiceRangeBean {
      * 回收人员Id
      */
     private String recycleId;
+    /**
+     * 回收人员Id集合
+     */
+    private List<String> recycleIds;
     /**
      * 回收人员姓名
      */

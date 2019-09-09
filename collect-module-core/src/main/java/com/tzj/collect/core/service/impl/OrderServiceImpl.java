@@ -309,7 +309,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			resultMap.put("msg","操作成功");
 			resultMap.put("code",0);
 			resultMap.put("id",orderId);
-			resultMap.put("status",order.getStatus());
+			resultMap.put("status",order.getTitle());
 			return resultMap;
 		}
 		resultMap.put("msg","操作失败");
@@ -2525,7 +2525,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("msg","操作成功");
 		resultMap.put("code",0);
 		resultMap.put("id",order.getId());
-		resultMap.put("status",order.getStatus());
+		resultMap.put("status",order.getTitle());
 		return resultMap;
 	}
 	/**
@@ -2637,7 +2637,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("msg","操作成功");
 		resultMap.put("code",0);
 		resultMap.put("id",order.getId());
-		resultMap.put("status",order.getStatus());
+		resultMap.put("status",order.getTitle());
 		return resultMap;
 	}
 
@@ -2776,7 +2776,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("msg","操作成功");
 		resultMap.put("id",orderId);
 		resultMap.put("code",0);
-		resultMap.put("status",order.getStatus());
+		resultMap.put("status",order.getTitle());
 		return resultMap;
 
 	}

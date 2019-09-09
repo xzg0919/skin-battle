@@ -3,6 +3,7 @@ package com.tzj.collect.core.service;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.core.param.app.RecyclersBean;
+import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.result.app.AppCompany;
 import com.tzj.collect.core.param.business.BusinessRecyclerBean;
 import com.tzj.collect.entity.Company;
@@ -145,4 +146,6 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	Object recycleIsDelete(Integer companyId, String recycleId, String title);
 	@DS("slave")
 	Object getRecycleRangeByTitle(String companyId, String recyclerId, String title);
+
+	Object updateRecycleForParent(RecyclersServiceRangeBean recyclersServiceRangeBean, Integer companyId);
 }
