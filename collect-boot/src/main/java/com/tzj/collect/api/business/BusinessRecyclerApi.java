@@ -382,5 +382,16 @@ public class BusinessRecyclerApi {
 		return companyRecyclerService.getRecycleRangeByTitle(companyAccount.getCompanyId().toString(),recyclersServiceRangeBean.getRecycleId(),recyclersServiceRangeBean.getTitle());
 	}
 
+	/**
+	 * 修改下属回收人员所属的业务经理
+	 * @return
+	 */
+	@Api(name = "business.recycle.updateRecycleForParent", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object updateRecycleForParent(RecyclersServiceRangeBean recyclersServiceRangeBean) {
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return companyRecyclerService.updateRecycleForParent(recyclersServiceRangeBean,companyAccount.getCompanyId());
+	}
+
 
 }

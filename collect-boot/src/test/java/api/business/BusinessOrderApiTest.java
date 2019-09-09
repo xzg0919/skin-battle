@@ -14,6 +14,7 @@ import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.business.CategoryBean;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
+import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.api.utils.SignUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -47,17 +48,17 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		OrderBean orderBean = new OrderBean();
-		orderBean.setRecyclerId(91);
-		orderBean.setStartTime("2019-08-01");
-		orderBean.setEndTime("2019-09-06");
-		orderBean.setIsBig("N");
-		orderBean.setIsOverTime("0");
-		orderBean.setPagebean(new PageBean());
+		RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
+		recyclersServiceRangeBean.setManagerId("83");
+		List<String> recyclerId = new ArrayList<>();
+		recyclerId.add("145");
+		recyclerId.add("147");
+		recyclersServiceRangeBean.setRecycleIds(recyclerId);
+		recyclersServiceRangeBean.setIsBigRecycle("N");
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.order.overTimeOrderListByReyclersId");
+		param.put("name","business.recycle.updateRecycleForParent");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -65,7 +66,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",orderBean);
+		param.put("data",recyclersServiceRangeBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.CompanyRecyclerMapper;
 import com.tzj.collect.core.param.app.RecyclersBean;
 import com.tzj.collect.core.param.business.BusinessRecyclerBean;
+import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.result.app.AppCompany;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -432,4 +433,28 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		resultMap.put("communityNum",communityNum);
 		return resultMap;
 	}
+
+	@Override
+	@Transactional
+	public Object updateRecycleForParent(RecyclersServiceRangeBean recyclersServiceRangeBean, Integer companyId){
+		String type = "1";
+		if("Y".equals(recyclersServiceRangeBean.getIsBigRecycle())){
+				type = "4";
+		}
+		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("type_", type).eq("company_id", companyId).eq("recycler_id", recyclersServiceRangeBean.getManagerId()).eq("status_","1"));
+		if (null == companyRecycler){
+			throw new ApiException("找不到传入的业务经理");
+		}
+		List<String> recycleIds = recyclersServiceRangeBean.getRecycleIds();
+		String finalType = type;
+		recycleIds.stream().forEach(recycleId -> {
+			CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("type_", finalType).eq("company_id", companyId).eq("recycler_id", recycleId).eq("status_", "1"));
+			companyRecycler1.setParentsId(companyRecycler.getRecyclerId());
+			companyRecycler1.setCity(companyRecycler.getCity());
+			companyRecycler1.setProvince(companyRecycler.getProvince());
+			companyRecyclerService.updateById(companyRecycler1);
+		});
+		return "操作成功";
+	}
+
 }
