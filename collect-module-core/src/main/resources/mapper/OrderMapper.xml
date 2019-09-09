@@ -2410,7 +2410,6 @@
 		a.logistics_id,
 		a.logistics_name,
 		a.iot_equipment_code,
-		a.overTime,
 		c.name_,
 		c.icon
 	</sql>
