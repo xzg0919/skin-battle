@@ -1654,10 +1654,10 @@
 			AND a.company_id = #{companyId}
 		</if>
 		<if test="startDate != null and startDate != ''">
-			AND a.create_date > CONCAT(#{startDate}, ' 00:00:01')
+			AND a.complete_date > CONCAT(#{startDate}, ' 00:00:01')
 		</if>
 		<if test="endtDate != null and endtDate != ''">
-			AND CONCAT(#{endtDate}, ' 23:59:59') > a.create_date
+			AND CONCAT(#{endtDate}, ' 23:59:59') > a.complete_date
 		</if>
 	</select>
 	<select id="getOrderCategoryByLj" parameterType="String" resultType="Map">
