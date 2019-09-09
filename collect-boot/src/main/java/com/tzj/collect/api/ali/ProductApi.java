@@ -255,6 +255,7 @@ public class ProductApi {
 			MemberAddress select = new MemberAddress();
 				select.setName(productBean.getUserName());
 				select.setTel(productBean.getMobile());
+				select.setAliUserId(member.getAliUserId());
 				select.setAddress(productBean.getAddress());
 				select.setDelFlag("0");
     		memberAddress = memberAddressService.selectMemberAddressByAliUserIdOne(select);

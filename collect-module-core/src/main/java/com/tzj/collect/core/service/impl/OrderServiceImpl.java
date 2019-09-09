@@ -309,6 +309,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			resultMap.put("msg","操作成功");
 			resultMap.put("code",0);
 			resultMap.put("id",orderId);
+			resultMap.put("status",order.getStatus());
 			return resultMap;
 		}
 		resultMap.put("msg","操作失败");
@@ -2524,6 +2525,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("msg","操作成功");
 		resultMap.put("code",0);
 		resultMap.put("id",order.getId());
+		resultMap.put("status",order.getStatus());
 		return resultMap;
 	}
 	/**
@@ -2635,6 +2637,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("msg","操作成功");
 		resultMap.put("code",0);
 		resultMap.put("id",order.getId());
+		resultMap.put("status",order.getStatus());
 		return resultMap;
 	}
 
@@ -2773,6 +2776,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("msg","操作成功");
 		resultMap.put("id",orderId);
 		resultMap.put("code",0);
+		resultMap.put("status",order.getStatus());
 		return resultMap;
 
 	}
@@ -3303,5 +3307,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("count",count);
 		resultMap.put("pageNumber",pageNumber);
 		return resultMap;
+	}
+	public  List<Map<String,Object>>  getRecyclerOrderList(OrderBean orderBean){
+		return  orderMapper.getRecyclerOrderList(orderBean.getCompanyId(), orderBean.getRecyclerName(), orderBean.getMobile(),orderBean.getStartTime(),orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime());
 	}
 }
