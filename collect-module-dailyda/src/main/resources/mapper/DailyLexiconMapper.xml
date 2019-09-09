@@ -24,8 +24,10 @@
 		  `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息',
 		  `del_flag` char(1) NOT NULL DEFAULT '0' COMMENT '删除标记',
 		  `version_` int(11) DEFAULT '1' COMMENT '当前版本号',
-		  PRIMARY KEY (`id`)
-		) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COMMENT='每日答题记录流水(每人每日记录一次),按周分表';
+		  PRIMARY KEY (`id`),
+		  KEY `idx_aliuserid` (`ali_user_id`,`create_date`) USING BTREE,
+  		  KEY `idx_uuid` (`uu_id`) USING BTREE
+		) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='每日答题记录流水(每人每日记录一次),按周分表';
     </update>
 
 

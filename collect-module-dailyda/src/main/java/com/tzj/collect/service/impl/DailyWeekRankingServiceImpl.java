@@ -72,9 +72,9 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
             dailyWeekRanking.setCity(null == memberMap.get("city") ? "" : memberMap.get("city").toString());
             dailyWeekRanking.setImg(null == memberMap.get("picUrl") ? "" :  memberMap.get("picUrl").toString());
             dailyWeekRanking.setLinkName(null == memberMap.get("linkName") ? "" : memberMap.get("linkName").toString());
+            //计算上周达人
+            this.insert(dailyWeekRanking);
         }
-        //计算上周达人
-        this.insert(dailyWeekRanking);
         jedis.close();
     }
     /** 上周达人榜

@@ -108,17 +108,17 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
     public Map<String, Object> receivingMoney(DailyDaParam dailyDaParam) {
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("msg", "领取失败");
-        String price = randomPrice();
-        if (Double.parseDouble(price) > 99.00){
-           throw new ApiException("领取失败");
-        }
-//        if (dailyDaParam.getSetNum() >= 5 || dailyDaParam.getSetNum() <= 0){
-//            return returnMap;
-//        }else if (dailyDaParam.getSetNum() >= 1 && dailyDaParam.getSetNum() <= 2){
-//            price = (Math.random() * 0.2 + 0.1 + "").substring(0,4);
-//        }else if(dailyDaParam.getSetNum() >= 3 && dailyDaParam.getSetNum() <= 4){
-//            price = (Math.random() * 0.2 + 0.3 + "").substring(0,4);
+        String price = "";
+//        if (Double.parseDouble(price) > 99.00){
+//           throw new ApiException("领取失败");
 //        }
+        if (dailyDaParam.getSetNum() >= 5 || dailyDaParam.getSetNum() <= 0){
+            return returnMap;
+        }else if (dailyDaParam.getSetNum() >= 1 && dailyDaParam.getSetNum() <= 2){
+            price = (Math.random() * 0.2 + 0.1 + "").substring(0,4);
+        }else if(dailyDaParam.getSetNum() >= 3 && dailyDaParam.getSetNum() <= 4){
+            price = (Math.random() * 0.2 + 0.3 + "").substring(0,4);
+        }
         Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         DailyReceiving dailyReceiving = this.selectOne(new EntityWrapper<DailyReceiving>().eq("del_flag", 0).eq("ali_user_id", dailyDaParam.getAliUserId()).eq("week_", LocalDate.now().getYear() + "" + week).eq("set_num", dailyDaParam.getSetNum()));
         //领红包时创建红包(aliUserId, week, setNum)
