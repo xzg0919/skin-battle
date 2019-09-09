@@ -2165,7 +2165,7 @@
 		SELECT  *  FROM (
 		SELECT
 		a.order_no AS orderNo,
-		a.create_date AS createDate,
+		DATE_FORMAT(a.create_date,'%Y-%m-%d %k:%i:%s') AS createDate,
 		CONCAT(a.arrival_time,' ',a.arrival_period) AS arrivalTime,
 		a.link_man AS linkMan,
 		a.tel,
@@ -2241,6 +2241,56 @@
 				a.overTime > 0
 			</otherwise>
 		</choose>
+	</select>
+	<select id="getRecyclerOrderList" parameterType="Object" resultType="Map">
+		SELECT  *  FROM (
+		SELECT
+		a.order_no AS orderNo,
+		DATE_FORMAT(a.create_date,'%Y-%m-%d %k:%i:%s') AS createDate,
+		CONCAT(a.arrival_time,' ',a.arrival_period) AS arrivalTime,
+		a.link_man AS linkMan,
+		a.tel,
+        b.name_ AS recyclerName,
+        b.tel AS recyclerTel,
+		IF (a.title = '1','废弃家电',IF(a.title = '4','大件垃圾','生活垃圾')) AS categoryName,
+		a.status_ AS status,
+		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		FROM
+		sb_order a
+        LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		WHERE
+		a.company_id = #{companyId}
+		<if test="startTime != null and startTime != '' ">
+			AND a.create_date > CONCAT(#{startTime}, ' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime != '' ">
+			AND CONCAT(#{endTime}, ' 23:59:59') > a.create_date
+		</if>
+        <if test="recyclerName != null and recyclerName != '' ">
+            AND b.name_ LIKE CONCAT('%', #{recyclerName}, '%')
+        </if>
+        <if test="mobile != null and mobile != '' ">
+            AND b.tel LIKE CONCAT('%', #{mobile}, '%')
+        </if>
+		<choose>
+			<when test="isBig == 'Y'.toString()">
+				AND a.title = '4'
+			</when>
+			<otherwise>
+				AND a.title != '4'
+			</otherwise>
+		</choose>
+		) a
+		WHERE
+		<choose>
+			<when test="isOverTime == '0'.toString()">
+				0 > a.overTime
+			</when>
+			<otherwise>
+				a.overTime > 0
+			</otherwise>
+		</choose>
+		order by a.recyclerName
 	</select>
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">

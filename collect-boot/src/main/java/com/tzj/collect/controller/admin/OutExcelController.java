@@ -11,6 +11,7 @@ import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.result.admin.RecruitExpressResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.EnterpriseCode;
+import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderItem;
 import com.tzj.collect.entity.OrderItemAch;
 import org.apache.commons.lang3.StringUtils;
@@ -299,5 +300,72 @@ public class OutExcelController {
         String fileName=fdate.format(new Date())+".xlsx";
         ExcelUtils.exportExcel(response, fileName, data);
     }
+    @RequestMapping("/getRecyclerOrderList")
+    public void  getRecyclerOrderList(HttpServletResponse response, OrderBean orderBean) throws Exception{
 
+        List<Map<String,Object>> list = orderService.getRecyclerOrderList(orderBean);
+        ExcelData data = new ExcelData();
+        data.setName("正常订单数据");
+        if ("1".equals(orderBean.getIsOverTime())){
+            data.setName("超时订单数据");
+        }
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("回收人员姓名");
+        titles.add("回收人员电话");
+        titles.add("订单号");
+        titles.add("下单时间");
+        titles.add("预约时间");
+        titles.add("订单状态");
+        titles.add("回收品类");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        for(int i=0; i<list.size();i++){
+            row=new ArrayList();
+            row.add(list.get(i).get("recyclerName"));
+            row.add(list.get(i).get("recyclerTel"));
+            row.add(list.get(i).get("orderNo"));
+            row.add(list.get(i).get("createDate"));
+            row.add(list.get(i).get("arrivalTime"));
+            row.add(this.getOrderStatus(list.get(i).get("status")+""));
+            row.add(list.get(i).get("categoryName"));
+            rows.add(row);
+
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
+
+    public String getOrderStatus(String status){
+        String statusPage = null;
+        switch (status) {
+            case "INIT":
+                statusPage = "待接单";
+                break;
+            case "COMPLETE":
+                statusPage = "已完成";
+                break;
+            case "CANCEL":
+                statusPage = "已取消";
+                break;
+            case "TOSEND":
+                // statusPage = "已派单";
+                statusPage = "待接单";
+                break;
+            case "ALREADY":
+                statusPage = "进行中";
+                break;
+            case "REJECTED":
+                statusPage = "平台已取消";
+                break;
+            default:
+                break;
+        }
+        return statusPage;
+    }
 }
