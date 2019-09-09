@@ -45,9 +45,17 @@ public class AdminNoticeApi {
         if(StringUtils.isEmpty(adminBean.getContent())){
             throw new ApiException("内容不能为空");
         }
+
+        if(StringUtils.isEmpty(adminBean.getTitle())){
+            throw new ApiException("标题不能为空");
+        }
+        if(null == adminBean.getStartDate()){
+            throw new ApiException("开始时间不能为空");
+        }
         Notice entity = new Notice();
 
         entity.setContent(adminBean.getContent());
+        entity.setTitle(adminBean.getTitle());
         entity.setStartDate(adminBean.getStartDate());
         noticeService.insert(entity);
         map.put("result","success");
@@ -87,5 +95,23 @@ public class AdminNoticeApi {
         return map;
     }
 
+
+    /**
+     * 删除消息
+     * @param adminBean
+     * @return
+     */
+    @Api(name = "admin.notice.delNotice", version = "1.0")
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Map<String,Object> delNotice(AdminNoticeBean adminBean){
+        Map map = new HashMap();
+        try{
+            noticeService.delNotice(adminBean.getId());
+        }catch (RuntimeException exception){
+            map.put("errMessage",exception.getMessage());
+        }
+        map.put("result","success");
+        return map;
+    }
 
 }

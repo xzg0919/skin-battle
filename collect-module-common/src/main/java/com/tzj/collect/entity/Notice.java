@@ -37,6 +37,9 @@ public class Notice extends DataEntity<Long> {
     //开始日期
     private Date startDate;
 
+    //标题
+    private String title;
+
     public enum Type implements IEnum {
         CAROUSE(0);//暂时只有一种为首页轮播通知
         private int value;

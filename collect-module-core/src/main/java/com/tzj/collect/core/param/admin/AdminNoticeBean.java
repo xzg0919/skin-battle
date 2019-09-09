@@ -23,6 +23,9 @@ public class AdminNoticeBean {
     //内容
     private String content;
 
+    //标题
+    private String title;
+
     //状态
     private Boolean audit = Boolean.FALSE;
 

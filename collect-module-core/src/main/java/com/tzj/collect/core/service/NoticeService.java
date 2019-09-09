@@ -20,6 +20,8 @@ import java.util.List;
  **/
 public interface NoticeService extends IService<Notice> {
 
+    void delNotice(Long id);
+
     void auditNotice(Long id);
 
     @DS("slave")
