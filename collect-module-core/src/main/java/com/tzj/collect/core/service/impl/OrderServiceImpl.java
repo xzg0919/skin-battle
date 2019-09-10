@@ -7,6 +7,7 @@ import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -46,6 +47,7 @@ import com.tzj.collect.entity.Category.CategoryType;
 import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +67,7 @@ import java.util.stream.Collectors;
  **/
 @Service
 @Transactional
+@DS("slave")
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
 	@Autowired
@@ -3310,5 +3313,69 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 	public  List<Map<String,Object>>  getRecyclerOrderList(OrderBean orderBean){
 		return  orderMapper.getRecyclerOrderList(orderBean.getCompanyId(), orderBean.getRecyclerName(), orderBean.getMobile(),orderBean.getStartTime(),orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime());
+	}
+
+	/**【业务数据总览】(分页)
+	  * @author sgmark@aliyun.com
+	  * @date 2019/9/9 0009
+	  * @param 
+	  * @return 
+	  */
+	@Override
+	public Map<String, Object> getAllOrderMapOverview(BOrderBean orderBean) {
+		Map<String, Object> returnMap = new HashMap<>();
+		//公司所有del_flag不为0的订单
+		Wrapper<Order> entityWrapper = new EntityWrapper<Order>().eq("del_flag", "0").eq("company_id", orderBean.getCompanyId());
+		if (StringUtils.isNotEmpty(orderBean.getStatus())) {
+			entityWrapper.in("status_", orderBean.getStatus());
+		}
+		if (StringUtils.isNotEmpty(orderBean.getCategoryType())){
+			entityWrapper.eq("title", orderBean.getCategoryType());
+		}
+		if (StringUtils.isNotEmpty(orderBean.getStartTime()) && StringUtils.isNotEmpty(orderBean.getEndTime())){
+			entityWrapper.between("create_date", orderBean.getStartTime(), orderBean.getEndTime());
+		}
+		Integer count = orderMapper.selectCount(entityWrapper);
+		//分页展示
+		Integer pageNumber = null!=orderBean.getPagebean() ?orderBean.getPagebean().getPageNumber():1;
+		Integer pageSize = null!=orderBean.getPagebean() ?orderBean.getPagebean().getPageSize():10;
+		Integer pageStart = (pageNumber-1)*pageSize;
+		List<Map<String, Object>> returnMapList = orderMapper.getAllOrderMapOverview(orderBean.getStatus(), orderBean.getCompanyId(), orderBean.getCategoryType(), pageStart, pageSize, orderBean.getStartTime(), orderBean.getEndTime());
+		returnMap.put("count", count);
+		returnMap.put("list", returnMapList);
+		return returnMap;
+	}
+
+	/**	已完成订单
+	  * @author sgmark@aliyun.com
+	  * @date 2019/9/10 0010
+	  * @param
+	  * @return
+	  */
+	@Override
+	public List<Map<String, Object>> outAchOrderListOverview(BOrderBean bOrderBean) {
+		if (StringUtils.isEmpty(bOrderBean.getStatus())){
+			bOrderBean.setStatus("3");
+		}else if (StringUtils.isNotEmpty(bOrderBean.getStatus()) && !"3".equals(bOrderBean.getStatus())){
+			return new ArrayList<>();
+		}
+		return orderMapper.outAchOrderListOverview(bOrderBean.getCompanyId(), bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
+	}
+
+	/**	非完成状态订单
+	  * @author sgmark@aliyun.com
+	  * @date 2019/9/10 0010
+	  * @param
+	  * @return
+	  */
+	@Override
+	public List<Map<String, Object>> outOtherOrderListOverview(BOrderBean bOrderBean) {
+		if (StringUtils.isNotEmpty(bOrderBean.getStatus()) && "3".equals(bOrderBean.getStatus())){
+			return new ArrayList<>();
+		}else if (StringUtils.isEmpty(bOrderBean.getStatus())){
+			//所有非完成订单
+			bOrderBean.setStatus("0,1,2,4,5");
+		}
+		return orderMapper.outOtherOrderListOverview(bOrderBean.getCompanyId(), bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
 	}
 }

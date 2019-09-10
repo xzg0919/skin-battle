@@ -2292,6 +2292,264 @@
 		</choose>
 		order by a.recyclerName
 	</select>
+
+	<select id="getAllOrderMapOverview" resultType="Map" parameterType="String">
+		SELECT
+			CASE order_.status_
+		WHEN 0 THEN
+			'待接单'
+		WHEN 1 THEN
+			'已派送'
+		WHEN 2 THEN
+			'已接单'
+		WHEN 3 THEN
+			'已完成'
+		WHEN 4 THEN
+			'已取消'
+		WHEN 5 THEN
+			'驳回'
+		ELSE
+			'其他'
+		END AS status_,
+		 CASE order_.title
+		WHEN 1 THEN
+			'家电数码'
+		WHEN 2 THEN
+			'五废'
+		WHEN 3 THEN
+			'5公斤废纺衣物回收'
+		WHEN 4 THEN
+			'大件垃圾'
+		END AS title,
+		order_.isOverTime,
+		 order_.order_no,
+		 order_.create_date,
+		 order_.ach_price,
+		 order_.is_cash,
+		 saa.area_name streetName,
+		 saa2.area_name areaName,
+		 saa3.area_name cityName,
+		 saa4.area_name caName
+		FROM
+			(
+				SELECT
+					area_id,
+					street_id,
+					status_,
+					title,
+					order_no,
+					create_date,
+					ach_price,
+					is_cash,
+					CASE status_ IN (1, 2, 0)
+					AND now() > SUBDATE(arrival_time, INTERVAL - 1 DAY)
+					WHEN TRUE THEN
+					'是'
+					WHEN FALSE THEN
+					'否'
+					END AS isOverTime
+				FROM
+					sb_order
+				WHERE
+					del_flag = 0
+				AND company_id = #{companyId}
+				<if test="categoryType != null and categoryType != '' ">
+					AND title = #{categoryType}
+				</if>
+				<if test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
+					AND create_date BETWEEN #{startTime}
+					AND CONCAT(#{endTime}, ' 23:59:59')
+				</if>
+				<if test="status != null and status != '' ">
+					AND status_ in (#{status})
+				</if>
+				ORDER BY
+					create_date DESC
+				LIMIT #{pageStart},
+				#{pageSize}
+			) order_
+		LEFT JOIN sb_area saa ON order_.street_id = saa.id
+		LEFT JOIN sb_area saa2 ON order_.area_id = saa2.id
+		LEFT JOIN sb_area saa3 ON saa2.parent_id = saa3.id
+		LEFT JOIN sb_area saa4 ON saa3.parent_id = saa4.id
+	</select>
+	<select id="outAchOrderListOverview" resultType="Map" parameterType="String">
+		SELECT
+			CASE order_.status_
+		WHEN 0 THEN
+			'待接单'
+		WHEN 1 THEN
+			'已派送'
+		WHEN 2 THEN
+			'已接单'
+		WHEN 3 THEN
+			'已完成'
+		WHEN 4 THEN
+			'已取消'
+		WHEN 5 THEN
+			'驳回'
+		ELSE
+			'其他'
+		END AS status_,
+		 CASE order_.title
+		WHEN 1 THEN
+			'家电数码'
+		WHEN 2 THEN
+			'五废'
+		WHEN 3 THEN
+			'5公斤废纺衣物回收'
+		WHEN 4 THEN
+			'大件垃圾'
+		END AS title,
+		 order_.order_no,
+		 order_.create_date,
+		 order_.ach_price,
+		 order_.is_cash,
+		 order_.category_name,
+		 order_.amount,
+		 saa.area_name streetName,
+		 saa2.area_name areaName,
+		 saa3.area_name cityName,
+		 saa4.area_name caName
+		FROM
+			(
+				SELECT DISTINCT
+					soo.area_id,
+					soo.street_id,
+					soo.status_,
+					soo.title,
+					soo.order_no,
+					soo.create_date,
+					soo.ach_price,
+					soo.is_cash,
+					soi.category_name,
+					soi.amount
+				FROM
+					sb_order soo
+				INNER JOIN sb_order_item soi ON soo.id = soi.order_id
+				WHERE
+					soo.del_flag = 0
+				AND soo.company_id = 4
+				<choose>
+					<when test="categoryType == null  or categoryType == ''">
+						AND title IN (1, 3)
+					</when>
+					<when test="categoryType == 1 or categoryType == 3 ">
+						AND title IN (categoryType)
+					</when>
+					<otherwise>
+						AND title IN (0)
+					</otherwise>
+				</choose>
+				AND soo.create_date BETWEEN #{startTime}
+				AND CONCAT(#{endTime}, ' 23:59:59')
+				AND soo.status_ = 3
+				UNION ALL
+					SELECT
+						soo.area_id,
+						soo.street_id,
+						soo.status_,
+						soo.title,
+						soo.order_no,
+						soo.create_date,
+						soo.ach_price,
+						soo.is_cash,
+						soia.category_name,
+						soia.amount
+					FROM
+						sb_order soo
+					INNER JOIN sb_order_item_ach soia ON soo.id = soia.order_id
+					WHERE
+						soo.status_ = 3
+					AND soo.del_flag = 0
+					<choose>
+						<when test="categoryType == null  or categoryType == ''">
+							AND title IN (1,2, 3, 4, 5)
+						</when>
+						<otherwise>
+							AND title IN (#{categoryType})
+						</otherwise>
+					</choose>
+					AND soo.company_id = #{companyId}
+					AND soo.create_date BETWEEN #{startTime}
+					AND CONCAT(#{endTime}, ' 23:59:59')
+			) order_
+		LEFT JOIN sb_area saa ON order_.street_id = saa.id
+		LEFT JOIN sb_area saa2 ON order_.area_id = saa2.id
+		LEFT JOIN sb_area saa3 ON saa2.parent_id = saa3.id
+		LEFT JOIN sb_area saa4 ON saa3.parent_id = saa4.id
+		ORDER BY
+			order_.create_date DESC;
+	</select>
+	<select id="outOtherOrderListOverview" resultType="Map" parameterType="String">
+		SELECT
+			CASE order_.status_
+		WHEN 0 THEN
+			'待接单'
+		WHEN 1 THEN
+			'已派送'
+		WHEN 2 THEN
+			'已接单'
+		WHEN 3 THEN
+			'已完成'
+		WHEN 4 THEN
+			'已取消'
+		WHEN 5 THEN
+			'驳回'
+		ELSE
+			'其他'
+		END AS status_,
+		 CASE order_.title
+		WHEN 1 THEN
+			'家电数码'
+		WHEN 2 THEN
+			'五废'
+		WHEN 3 THEN
+			'5公斤废纺衣物回收'
+		WHEN 4 THEN
+			'大件垃圾'
+		END AS title,
+		 order_.order_no,
+		 order_.create_date,
+		 order_.ach_price,
+		 order_.is_cash,
+		 order_.category_name,
+		 order_.amount,
+		 saa.area_name,
+		 saa2.area_name,
+		 saa3.area_name,
+		 saa4.area_name
+		FROM
+			(
+				SELECT
+					soo.area_id,
+					soo.street_id,
+					soo.status_,
+					soo.title,
+					soo.order_no,
+					soo.create_date,
+					soo.ach_price,
+					soo.is_cash,
+					soi.category_name,
+					soi.amount
+				FROM
+					sb_order soo
+				LEFT JOIN sb_order_item soi ON soo.id = soi.order_id
+				WHERE
+					soo.del_flag = 0
+				AND soo.company_id = #{companyId}
+				AND soo.title in ( #{categoryType})
+				AND create_date BETWEEN #{startTime}
+				AND CONCAT(#{endTime}, ' 23:59:59')
+				AND soo.status_ NOT IN (3)
+				ORDER BY
+					soo.create_date DESC
+			) order_
+		LEFT JOIN sb_area saa ON order_.street_id = saa.id
+		LEFT JOIN sb_area saa2 ON order_.area_id = saa2.id
+		LEFT JOIN sb_area saa3 ON saa2.parent_id = saa3.id
+		LEFT JOIN sb_area saa4 ON saa3.parent_id = saa4.id
+	</select>
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
         <id property="id" column="id" />

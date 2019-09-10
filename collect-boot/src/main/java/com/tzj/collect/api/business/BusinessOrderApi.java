@@ -87,7 +87,20 @@ public class BusinessOrderApi {
 			Map<String, Object> resultMap = orderService.selectCountByStatus(orderBean.getStatus(),orderBean.getCompanyId(), Order.TitleType.valueOf(orderBean.getCategoryType()));
 			return  resultMap;
 	 }
-	
+
+	 /**【企业信息看板】中，增加【业务数据总览】模块(分页)
+	   * @author sgmark@aliyun.com
+	   * @date 2019/9/9 0009
+	   * @param 
+	   * @return 
+	   */
+	 @Api(name = "business.order.for.overview", version = "1.0")
+	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	 public Map<String, Object> getAllOrderMapOverview(BOrderBean orderBean){
+		 orderBean.setCompanyId(BusinessUtils.getCompanyAccount().getCompanyId());
+	 	return orderService.getAllOrderMapOverview(orderBean);
+	 }
+
 	/**
 	 * 根据订单id获取订单详情
 	 * @author 王灿
@@ -306,5 +319,7 @@ public class BusinessOrderApi {
 	public Object overTimeOrderListByReyclersId(OrderBean orderBean){
 		return orderService.overTimeOrderListByReyclersId(orderBean);
 	}
+
+
 
 }

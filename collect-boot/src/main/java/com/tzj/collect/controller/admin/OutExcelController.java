@@ -7,6 +7,7 @@ import com.tzj.collect.common.util.SnUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PiccOrderBean;
 import com.tzj.collect.core.param.ali.RecruitExpressBean;
+import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.result.admin.RecruitExpressResult;
 import com.tzj.collect.core.service.*;
@@ -14,6 +15,7 @@ import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderItem;
 import com.tzj.collect.entity.OrderItemAch;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -368,4 +370,65 @@ public class OutExcelController {
         }
         return statusPage;
     }
+
+    /** 【业务数据总览】 已完成和其他状态订单分sheet导出
+      * @author sgmark@aliyun.com
+      * @date 2019/9/10 0010
+      * @param
+      * @return
+      */
+    @RequestMapping("/out/order/for/overview")
+    public void  outAllOrderMapOverview(HttpServletResponse response, BOrderBean bOrderBean) throws Exception{
+        if (StringUtils.isEmpty(bOrderBean.getStartTime()) || StringUtils.isEmpty(bOrderBean.getEndTime())){
+            throw new ApiException("缺少开始或结束时间");
+        }else if (null == bOrderBean.getCompanyId()){
+            throw new ApiException("缺少公司id");
+        }
+        //如果为空导出所有类型订单
+//        if (StringUtils.isEmpty(bOrderBean.getCategoryType())){
+//            bOrderBean.setCategoryType("1,2,3,4,5,6,7,8,9");
+//        }
+        List<Map<String, Object>> otherList  = orderService.outAchOrderListOverview(bOrderBean);
+        List<Map<String, Object>> achList = orderService.outOtherOrderListOverview(bOrderBean);
+        List<Map<String, Object>> allList = new ArrayList<>();
+        allList.addAll(achList);
+        allList.addAll(otherList);
+        ExcelData data = new ExcelData();
+        data.setName("业务数据总览");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("订单号");
+        titles.add("省");
+        titles.add("市");
+        titles.add("区");
+        titles.add("街道");
+        titles.add("类目");
+        titles.add("订单状态");
+        titles.add("成交金额");
+        titles.add("数量");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        for(int i=0; i<allList.size();i++){
+            row=new ArrayList();
+            row.add(allList.get(i).get("order_no"));
+            row.add(allList.get(i).get("caName"));
+            row.add(allList.get(i).get("cityName"));
+            row.add(allList.get(i).get("areaName"));
+            row.add(allList.get(i).get("streetName"));
+            row.add(allList.get(i).get("category_name"));
+            row.add(allList.get(i).get("status_"));
+            row.add(allList.get(i).get("ach_price"));
+            row.add(allList.get(i).get("amount"));
+//            row.add(new BigDecimal(allList.get(i).get("price")+"").setScale(2, BigDecimal.ROUND_DOWN));
+            rows.add(row);
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
+
 }

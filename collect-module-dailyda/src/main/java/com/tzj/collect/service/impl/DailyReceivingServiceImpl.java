@@ -115,9 +115,9 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
         if (dailyDaParam.getSetNum() >= 5 || dailyDaParam.getSetNum() <= 0){
             return returnMap;
         }else if (dailyDaParam.getSetNum() >= 1 && dailyDaParam.getSetNum() <= 2){
-            price = (Math.random() * 0.2 + 0.1 + "").substring(0,4);
+            price = (Math.random() * 0.1 + 0.1 + "").substring(0,4);
         }else if(dailyDaParam.getSetNum() >= 3 && dailyDaParam.getSetNum() <= 4){
-            price = (Math.random() * 0.2 + 0.3 + "").substring(0,4);
+            price = (Math.random() * 0.1 + 0.2 + "").substring(0,4);
         }
         Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         DailyReceiving dailyReceiving = this.selectOne(new EntityWrapper<DailyReceiving>().eq("del_flag", 0).eq("ali_user_id", dailyDaParam.getAliUserId()).eq("week_", LocalDate.now().getYear() + "" + week).eq("set_num", dailyDaParam.getSetNum()));
@@ -186,13 +186,13 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
         return returnMap;
     }
 
-//    public static void main(String[] args) {
-//
-//        for (int i = 0; i < 10000; i++){
-//            System.out.println(randomPrice());
-//        }
+    public static void main(String[] args) {
+
+        for (int i = 0; i < 1000; i++){
+            System.out.println((Math.random() * 0.1 + 0.2 + "").substring(0,4));
+        }
 //        System.out.println(a+"-----------------"+b+"--------"+c +"----------" +d);
-//    }
+    }
 
     /** 每个位置随机金额（万分之1几率99
      万分之9几率9-10
