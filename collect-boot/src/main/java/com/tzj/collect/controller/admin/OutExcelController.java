@@ -443,13 +443,13 @@ public class OutExcelController {
 //        if (StringUtils.isEmpty(bOrderBean.getCategoryType())){
 //            bOrderBean.setCategoryType("1,2,3,4,5,6,7,8,9");
 //        }
-        List<Map<String, Object>> otherList  = orderService.outAchOrderListOverview(bOrderBean);
         List<Map<String, Object>> achList = orderService.outOtherOrderListOverview(bOrderBean);
-        List<Map<String, Object>> allList = new ArrayList<>();
-        allList.addAll(achList);
-        allList.addAll(otherList);
-        ExcelData data = new ExcelData();
-        data.setName("业务数据总览");
+        List<Map<String, Object>> otherList  = orderService.outAchOrderListOverview(bOrderBean);
+        List<ExcelData> allExcelData = new ArrayList<>();
+        ExcelData otherData = new ExcelData();
+        ExcelData achData = new ExcelData();
+        achData.setName("sheet1");
+        otherData.setName("sheet2");
         //添加表头
         List<String> titles = new ArrayList<>();
         //for(String title: excelInfo.getNames())
@@ -462,28 +462,45 @@ public class OutExcelController {
         titles.add("订单状态");
         titles.add("成交金额");
         titles.add("数量");
-        data.setTitles(titles);
+        otherData.setTitles(titles);
+        achData.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
         List<Object> row = null;
-        for(int i=0; i<allList.size();i++){
+        for(int i=0; i<otherList.size();i++){
             row=new ArrayList();
-            row.add(allList.get(i).get("order_no"));
-            row.add(allList.get(i).get("caName"));
-            row.add(allList.get(i).get("cityName"));
-            row.add(allList.get(i).get("areaName"));
-            row.add(allList.get(i).get("streetName"));
-            row.add(allList.get(i).get("category_name"));
-            row.add(allList.get(i).get("status_"));
-            row.add(allList.get(i).get("ach_price"));
-            row.add(allList.get(i).get("amount"));
-//            row.add(new BigDecimal(allList.get(i).get("price")+"").setScale(2, BigDecimal.ROUND_DOWN));
+            row.add(otherList.get(i).get("order_no"));
+            row.add(otherList.get(i).get("caName"));
+            row.add(otherList.get(i).get("cityName"));
+            row.add(otherList.get(i).get("areaName"));
+            row.add(otherList.get(i).get("streetName"));
+            row.add(otherList.get(i).get("category_name"));
+            row.add(otherList.get(i).get("status_"));
+            row.add(otherList.get(i).get("ach_price"));
+            row.add(otherList.get(i).get("amount"));
             rows.add(row);
         }
-        data.setRows(rows);
+        otherData.setRows(rows);
+        rows = new ArrayList();
+        for(int i=0; i<achList.size();i++){
+            row=new ArrayList();
+            row.add(achList.get(i).get("order_no"));
+            row.add(achList.get(i).get("caName"));
+            row.add(achList.get(i).get("cityName"));
+            row.add(achList.get(i).get("areaName"));
+            row.add(achList.get(i).get("streetName"));
+            row.add(achList.get(i).get("category_name"));
+            row.add(achList.get(i).get("status_"));
+            row.add(achList.get(i).get("ach_price"));
+            row.add(achList.get(i).get("amount"));
+            rows.add(row);
+        }
+        achData.setRows(rows);
+        allExcelData.add(achData);
+        allExcelData.add(otherData);
         SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         String fileName=fdate.format(new Date())+".xlsx";
-        ExcelUtils.exportExcel(response, fileName, data);
+        ExcelUtils.exportExcel(response, fileName, allExcelData);
     }
 
 }

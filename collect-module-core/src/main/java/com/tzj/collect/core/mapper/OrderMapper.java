@@ -216,9 +216,9 @@ public interface OrderMapper extends BaseMapper<Order> {
 
 	List<Map<String, Object>> getAllOrderMapOverview(@Param("status")String status, @Param("companyId")Integer companyId, @Param("categoryType")Serializable categoryType, @Param("pageStart")Integer pageStart, @Param("pageSize")Integer pageSize, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
 
-    List<Map<String, Object>> outAchOrderListOverview(@Param("companyId") Integer companyId, @Param("status")String status, @Param("categoryType")String categoryType, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
+    List<Map<String, Object>> outAchOrderListOverview(@Param("companyId") String companyId, @Param("status")String status, @Param("categoryType")String categoryType, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
 
-    List<Map<String, Object>> outOtherOrderListOverview(@Param("companyId") Integer companyId, @Param("status")String status, @Param("categoryType")String categoryType, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
+    List<Map<String, Object>> outOtherOrderListOverview(@Param("companyId") String companyId, @Param("status")String status, @Param("categoryType")String categoryType, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
 
 }
 

@@ -2377,6 +2377,8 @@
         '5公斤废纺衣物回收'
         WHEN 4 THEN
         '大件垃圾'
+		WHEN 5 THEN
+		'iot订单'
         END AS title,
         order_.isOverTime,
         order_.order_no,
@@ -2458,6 +2460,8 @@
         '5公斤废纺衣物回收'
         WHEN 4 THEN
         '大件垃圾'
+		WHEN 5 THEN
+		'iot订单'
         END AS title,
         order_.order_no,
         order_.create_date,
@@ -2566,6 +2570,8 @@
 			'5公斤废纺衣物回收'
 		WHEN 4 THEN
 			'大件垃圾'
+		WHEN 5 THEN
+		'iot订单'
 		END AS title,
 		 order_.order_no,
 		 order_.create_date,
@@ -2573,10 +2579,10 @@
 		 order_.is_cash,
 		 order_.category_name,
 		 order_.amount,
-		 saa.area_name,
-		 saa2.area_name,
-		 saa3.area_name,
-		 saa4.area_name
+		 saa.area_name streetName,
+		 saa2.area_name areaName,
+		 saa3.area_name cityName,
+		 saa4.area_name caName
 		FROM
 			(
 				SELECT
@@ -2596,8 +2602,15 @@
 				WHERE
 					soo.del_flag = 0
 				AND soo.company_id = #{companyId}
-				AND soo.title in ( #{categoryType})
-				AND create_date BETWEEN #{startTime}
+				<choose>
+					<when test="categoryType == null  or categoryType == ''">
+						AND soo.title IN (1,2, 3, 4, 5)
+					</when>
+					<otherwise>
+						AND soo.title IN (#{categoryType})
+					</otherwise>
+				</choose>
+				AND soo.create_date BETWEEN #{startTime}
 				AND CONCAT(#{endTime}, ' 23:59:59')
 				AND soo.status_ NOT IN (3)
 				ORDER BY

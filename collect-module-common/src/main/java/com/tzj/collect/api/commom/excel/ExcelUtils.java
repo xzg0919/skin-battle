@@ -28,6 +28,22 @@ public class ExcelUtils {
         exportExcel(data, response.getOutputStream());
     }
 
+    /** 多sheet导出
+      * @author sgmark@aliyun.com
+      * @date 2019/9/10 0010
+      * @param
+      * @return
+      */
+    public static void exportExcel(HttpServletResponse response, String fileName, List<ExcelData> dataList) throws Exception {
+        // 告诉浏览器用什么软件可以打开此文件
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        // 下载文件的默认名称
+        response.setHeader("Content-Disposition", "attachment; filename=\"" +
+                fileName + "\"");
+        response.setContentType("application/octet-stream; charset=utf-8");
+        exportExcel(dataList, response.getOutputStream());
+    }
+
     public static void exportExcel(ExcelData data, OutputStream out) throws Exception {
 
         XSSFWorkbook wb = new XSSFWorkbook();
@@ -38,6 +54,28 @@ public class ExcelUtils {
             }
             XSSFSheet sheet = wb.createSheet(sheetName);
             writeExcel(wb, sheet, data);
+
+            wb.write(out);
+        } catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            //此处需要关闭 wb 变量
+            out.close();
+        }
+    }
+
+    public static void exportExcel(List<ExcelData> dataList, OutputStream out) throws Exception {
+
+        XSSFWorkbook wb = new XSSFWorkbook();
+        try {
+            dataList.stream().forEach(excelData -> {
+                String sheetName = excelData.getName();
+                if (null == sheetName) {
+                    sheetName = "Sheet1";
+                }
+                XSSFSheet sheet = wb.createSheet(sheetName);
+                writeExcel(wb, sheet, excelData);
+            });
 
             wb.write(out);
         } catch(Exception e){

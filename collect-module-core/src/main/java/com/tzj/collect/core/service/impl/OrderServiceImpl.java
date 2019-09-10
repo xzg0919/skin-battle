@@ -3405,11 +3405,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public List<Map<String, Object>> outAchOrderListOverview(BOrderBean bOrderBean) {
         if (StringUtils.isEmpty(bOrderBean.getStatus())){
-            bOrderBean.setStatus("3");
+//            bOrderBean.setStatus("3");
         }else if (StringUtils.isNotEmpty(bOrderBean.getStatus()) && !"3".equals(bOrderBean.getStatus())){
             return new ArrayList<>();
         }
-        return orderMapper.outAchOrderListOverview(bOrderBean.getCompanyId(), bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
+        return orderMapper.outAchOrderListOverview(bOrderBean.getCompanyId()+"", bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
     }
 
     /**	非完成状态订单
@@ -3424,8 +3424,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             return new ArrayList<>();
         }else if (StringUtils.isEmpty(bOrderBean.getStatus())){
             //所有非完成订单
-            bOrderBean.setStatus("0,1,2,4,5");
+//            bOrderBean.setStatus2(Arrays.asList(0,1,2,4,5));
         }
-        return orderMapper.outOtherOrderListOverview(bOrderBean.getCompanyId(), bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
+        return orderMapper.outOtherOrderListOverview(bOrderBean.getCompanyId() +"", bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
     }
 }
