@@ -224,6 +224,7 @@ public class IotApi {
                 result.put("code", 0);
                 result.put("msg", "操作成功");
                 result.put("tryAgain", "N");
+                result.put("status", "IOTORDER");
                 //使用后清空
                 latchMap.orderId = null;
                 latMapConcurrent.put(iotMemId, latchMap);
