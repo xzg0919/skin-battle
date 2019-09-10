@@ -2351,6 +2351,7 @@
 
     <select id="getAllOrderMapOverview" resultType="Map" parameterType="String">
         SELECT
+		order_.order_id,
         CASE order_.status_
         WHEN 0 THEN
         '待接单'
@@ -2389,6 +2390,7 @@
         FROM
         (
         SELECT
+		id as order_id,
         area_id,
         street_id,
         status_,
