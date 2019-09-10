@@ -306,6 +306,308 @@
 		WHERE
 			a.type = 1
 	</select>
-
-
+	<select id="getCompanyServiceList" parameterType="Object" resultType="Map">
+		SELECT
+			a.province,
+			a.cityName,
+			a.areaName,
+			a.companyName,
+			a.areaId,
+			a.companyId,
+			COUNT(1) AS count
+		FROM (
+			SELECT
+			e.area_name AS province,
+			d.area_name AS cityName,
+			c.area_name AS areaName,
+			b.name_ AS companyName,
+			a.area_id AS areaId,
+			a.street_id AS streetId,
+			a.company_id AS companyId
+			FROM
+			sb_company_street_appliance a
+			LEFT JOIN sb_company b ON a.company_id = b.id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN sb_area e ON d.parent_id = e.id
+			WHERE 1=1
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="cityId != null and cityId != ''">
+				AND d.id = #{cityId}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+			UNION
+			SELECT
+			e.area_name AS province,
+			d.area_name AS cityName,
+			c.area_name AS areaName,
+			b.name_ AS companyName,
+			a.area_id AS areaId,
+			a.street_id AS streetId,
+			a.company_id AS companyId
+			FROM
+			sb_company_street_house a
+			LEFT JOIN sb_company b ON a.company_id = b.id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN sb_area e ON d.parent_id = e.id
+			WHERE 1=1
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="cityId != null and cityId != ''">
+				AND d.id = #{cityId}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+			UNION
+			SELECT
+			e.area_name AS province,
+			d.area_name AS cityName,
+			c.area_name AS areaName,
+			b.name_ AS companyName,
+			a.area_id AS areaId,
+			a.street_id AS streetId,
+			a.company_id AS companyId
+			FROM
+			sb_company_street_big a
+			LEFT JOIN sb_company b ON a.company_id = b.id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN sb_area e ON d.parent_id = e.id
+			WHERE 1=1
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="cityId != null and cityId != ''">
+				AND d.id = #{cityId}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+		) a
+		GROUP BY a.companyName,a.areaName
+		ORDER BY a.companyName,a.areaName
+		LIMIT #{pageStart},#{pageSize}
+	</select>
+	<select id="getCompanyServiceCount" parameterType="Object" resultType="Integer">
+		select count(1) from (
+			SELECT
+			a.province,
+			a.cityName,
+			a.areaName,
+			a.companyName,
+			a.areaId,
+			a.companyId,
+			COUNT(1) AS count
+			FROM (
+			SELECT
+			e.area_name AS province,
+			d.area_name AS cityName,
+			c.area_name AS areaName,
+			b.name_ AS companyName,
+			a.area_id AS areaId,
+			a.street_id AS streetId,
+			a.company_id AS companyId
+			FROM
+			sb_company_street_appliance a
+			LEFT JOIN sb_company b ON a.company_id = b.id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN sb_area e ON d.parent_id = e.id
+			WHERE 1=1
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="cityId != null and cityId != ''">
+				AND d.id = #{cityId}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+			UNION
+			SELECT
+			e.area_name AS province,
+			d.area_name AS cityName,
+			c.area_name AS areaName,
+			b.name_ AS companyName,
+			a.area_id AS areaId,
+			a.street_id AS streetId,
+			a.company_id AS companyId
+			FROM
+			sb_company_street_house a
+			LEFT JOIN sb_company b ON a.company_id = b.id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN sb_area e ON d.parent_id = e.id
+			WHERE 1=1
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="cityId != null and cityId != ''">
+				AND d.id = #{cityId}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+			UNION
+			SELECT
+			e.area_name AS province,
+			d.area_name AS cityName,
+			c.area_name AS areaName,
+			b.name_ AS companyName,
+			a.area_id AS areaId,
+			a.street_id AS streetId,
+			a.company_id AS companyId
+			FROM
+			sb_company_street_big a
+			LEFT JOIN sb_company b ON a.company_id = b.id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN sb_area e ON d.parent_id = e.id
+			WHERE 1=1
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="cityId != null and cityId != ''">
+				AND d.id = #{cityId}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+			) a
+			GROUP BY a.companyName,a.areaName
+		) a
+	</select>
+	<select id="getCompanyStreetAllList" parameterType="Object" resultType="Map">
+		SELECT
+			b.id,
+			b.area_name
+		FROM
+			sb_company_street_appliance a
+		LEFT JOIN sb_area b ON a.street_id = b.id
+		WHERE
+			a.company_id = #{companyId}
+		AND a.area_id = #{areaId}
+		UNION
+		SELECT
+			b.id,
+			b.area_name
+		FROM
+			sb_company_street_house a
+		LEFT JOIN sb_area b ON a.street_id = b.id
+		WHERE
+			a.company_id = #{companyId}
+		AND a.area_id = #{areaId}
+		UNION
+		SELECT
+			b.id,
+			b.area_name
+		FROM
+			sb_company_street_big a
+		LEFT JOIN sb_area b ON a.street_id = b.id
+		WHERE
+			a.company_id = #{companyId}
+		AND a.area_id = #{areaId}
+	</select>
+	<select id="getCompanyServiceOutList" parameterType="String" resultType="Map">
+		SELECT
+			a.province,
+			a.cityName,
+			a.areaName,
+			a.streetName,
+			a.companyName,
+			a.title
+		FROM (
+			SELECT
+			e.area_name AS province,
+			d.area_name AS cityName,
+			c.area_name AS areaName,
+			b.name_ AS companyName,
+			a.area_id AS areaId,
+			a.street_id AS streetId,
+			a.company_id AS companyId,
+			f.area_name AS streetName,
+			'家电数码' AS title
+			FROM
+			sb_company_street_appliance a
+			LEFT JOIN sb_company b ON a.company_id = b.id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN sb_area e ON d.parent_id = e.id
+			LEFT JOIN sb_area f ON f.id = a.street_id
+			WHERE 1=1
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="cityId != null and cityId != ''">
+				AND d.id = #{cityId}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+			UNION
+			SELECT
+			e.area_name AS province,
+			d.area_name AS cityName,
+			c.area_name AS areaName,
+			b.name_ AS companyName,
+			a.area_id AS areaId,
+			a.street_id AS streetId,
+			a.company_id AS companyId,
+			f.area_name AS streetName,
+			'生活垃圾' AS title
+			FROM
+			sb_company_street_house a
+			LEFT JOIN sb_company b ON a.company_id = b.id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN sb_area e ON d.parent_id = e.id
+			LEFT JOIN sb_area f ON f.id = a.street_id
+			WHERE 1=1
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="cityId != null and cityId != ''">
+				AND d.id = #{cityId}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+			UNION
+			SELECT
+			e.area_name AS province,
+			d.area_name AS cityName,
+			c.area_name AS areaName,
+			b.name_ AS companyName,
+			a.area_id AS areaId,
+			a.street_id AS streetId,
+			a.company_id AS companyId,
+			f.area_name AS streetName,
+			'大件垃圾' AS title
+			FROM
+			sb_company_street_big a
+			LEFT JOIN sb_company b ON a.company_id = b.id
+			LEFT JOIN sb_area c ON a.area_id = c.id
+			LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN sb_area e ON d.parent_id = e.id
+			LEFT JOIN sb_area f ON f.id = a.street_id
+			WHERE 1=1
+			<if test="companyId != null and companyId != ''">
+				AND a.company_id = #{companyId}
+			</if>
+			<if test="cityId != null and cityId != ''">
+				AND d.id = #{cityId}
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+		) a
+		ORDER BY a.companyName,a.areaName
+	</select>
 </mapper>

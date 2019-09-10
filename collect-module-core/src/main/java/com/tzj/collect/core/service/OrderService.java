@@ -377,4 +377,6 @@ public interface OrderService extends IService<Order> {
     List<Map<String, Object>> outAchOrderListOverview(BOrderBean bOrderBean);
     @DS("slave")
     List<Map<String, Object>> outOtherOrderListOverview(BOrderBean bOrderBean);
+
+	void  updateOrderCompany(String streetId,String companyId,String title);
 }

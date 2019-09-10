@@ -61,6 +61,8 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	private CompanyRecyclerService companyRecyclerService;
 	@Autowired
 	private CompanyCategoryCityNameService companyCategoryCityNameService;
+	@Autowired
+	private OrderService orderService;
 
 	@Override
 	public List<Area> getByArea(int level,String cityId) {
@@ -541,5 +543,63 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 
 	public List<Area> getCityListByLj(){
 		return mapper.getCityListByLj();
+	}
+
+	public Map<String,Object> getCompanyServiceList(AreaBean areaBean){
+		PageBean pagebean = areaBean.getPageBean();
+		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
+		Integer pageSize = null!=pagebean ?pagebean.getPageSize():9999;
+		Integer pageStart = (pageNumber-1)*pageSize;
+		List<Map<String, Object>> companyServiceList = mapper.getCompanyServiceList(areaBean.getCompanyId(), areaBean.getCityId(), areaBean.getAreaId(), pageStart, pageSize);
+		Integer count = mapper.getCompanyServiceCount(areaBean.getCompanyId(), areaBean.getCityId(), areaBean.getAreaId());
+		Map<String,Object> resultMap =new HashMap<>();
+		resultMap.put("companyServiceList",companyServiceList);
+		resultMap.put("count",count);
+		resultMap.put("pageNumber",pageNumber);
+		return resultMap;
+	}
+	public List<Map<String, Object>> getCompanyStreetAllList(AreaBean areaBean){
+		return mapper.getCompanyStreetAllList(areaBean.getCompanyId(),  areaBean.getAreaId());
+	}
+	@Transactional
+	public Object updateCompanyServiceByStreetId(AreaBean areaBean){
+		List<String> streetList = areaBean.getStreetList();
+		streetList.stream().forEach(streetId -> {
+			List<String> titleList = areaBean.getTitleList();
+			Area area = this.selectById(streetId);
+			titleList.stream().forEach(title -> {
+				if ("1".equals(title)){
+					companyStreetApplianceService.delete(new EntityWrapper<CompanyStreetAppliance>().eq("street_id",streetId));
+					CompanyStreetAppliance companyStreetAppliance = new CompanyStreetAppliance();
+					companyStreetAppliance.setCompanyId(Integer.parseInt(areaBean.getCompanyId()));
+					companyStreetAppliance.setAreaId(area.getParentId());
+					companyStreetAppliance.setStreetId(area.getId().intValue());
+					companyStreetApplianceService.insert(companyStreetAppliance);
+					orderService.updateOrderCompany(streetId,areaBean.getCompanyId(),"1");
+				}
+				if ("2".equals(title)){
+					companyStreetHouseService.delete(new EntityWrapper<CompanyStreetHouse>().eq("street_id",streetId));
+					CompanyStreetHouse companyStreetHouse = new CompanyStreetHouse();
+					companyStreetHouse.setCompanyId(Integer.parseInt(areaBean.getCompanyId()));
+					companyStreetHouse.setAreaId(area.getParentId());
+					companyStreetHouse.setStreetId(area.getId().intValue());
+					companyStreetHouseService.insert(companyStreetHouse);
+					orderService.updateOrderCompany(streetId,areaBean.getCompanyId(),"2");
+				}
+				if ("4".equals(title)){
+					companyStreetBigService.delete(new EntityWrapper<CompanyStreetBig>().eq("street_id",streetId));
+					CompanyStreetBig companyStreetBig = new CompanyStreetBig();
+					companyStreetBig.setCompanyId(Integer.parseInt(areaBean.getCompanyId()));
+					companyStreetBig.setAreaId(area.getParentId());
+					companyStreetBig.setStreetId(area.getId().intValue());
+					companyStreetBigService.insert(companyStreetBig);
+					orderService.updateOrderCompany(streetId,areaBean.getCompanyId(),"4");
+				}
+			});
+		});
+		return "操作成功";
+	}
+	public List<Map<String, Object>> getCompanyServiceOutList(AreaBean areaBean){
+		return  mapper.getCompanyServiceOutList(areaBean.getCompanyId(), areaBean.getCityId(), areaBean.getAreaId());
 	}
 }

@@ -2348,6 +2348,16 @@
 			AND CONCAT(#{endTime},' 23:59:59') > a.create_date
 		</if>
 	</select>
+	<update id="updateOrderCompany" parameterType="String">
+		UPDATE sb_order
+		SET company_id = #{companyId},
+		 status_ = 0,
+		 recycler_id = NULL
+		WHERE
+			street_id = #{streetId}
+		AND title = #{title}
+		AND status_ IN (0, 1, 2)
+	</update>
 
     <select id="getAllOrderMapOverview" resultType="Map" parameterType="String">
         SELECT

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.excel.ExcelData;
 import com.tzj.collect.api.commom.excel.ExcelUtils;
 import com.tzj.collect.common.util.SnUtils;
+import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PiccOrderBean;
 import com.tzj.collect.core.param.ali.RecruitExpressBean;
@@ -47,6 +48,8 @@ public class OutExcelController {
     private OrderItemService orderItemService;
     @Autowired
     private OrderItemAchService orderItemAchService;
+    @Autowired
+    private AreaService areaService;
 
     /**
      * 根据企业导出以旧换新的券的excel列表
@@ -379,7 +382,40 @@ public class OutExcelController {
         String fileName=fdate.format(new Date())+".xlsx";
         ExcelUtils.exportExcel(response, fileName, data);
     }
+    @RequestMapping("/getCompanyServiceOutList")
+    public void  getCompanyServiceOutList(HttpServletResponse response, AreaBean areaBean) throws Exception{
+        List<Map<String,Object>> list = areaService.getCompanyServiceOutList(areaBean);
+        ExcelData data = new ExcelData();
+        data.setName("服务商服务范围表");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("服务商名称");
+        titles.add("回收类型");
+        titles.add("省");
+        titles.add("市");
+        titles.add("区");
+        titles.add("街道");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        for(int i=0; i<list.size();i++){
+            row=new ArrayList();
+            row.add(list.get(i).get("companyName"));
+            row.add(list.get(i).get("title"));
+            row.add(list.get(i).get("province"));
+            row.add(list.get(i).get("cityName"));
+            row.add(list.get(i).get("areaName"));
+            row.add(list.get(i).get("streetName"));
+            rows.add(row);
 
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
 
 
 

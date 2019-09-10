@@ -11,6 +11,7 @@ package api.admin;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.admin.CategoryBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.BOrderBean;
@@ -73,14 +74,21 @@ public class AdminCompanyApiTest {
 //
 //		 recyclersServiceRangeBean.setAreaList(areaList);
 
-		 OrderBean orderBean = new OrderBean();
-		 orderBean.setId(69736);
-		 orderBean.setCancelReason("取消原因");
-		 orderBean.setStatus("2");
+		 AreaBean areaBean = new AreaBean();
+		 areaBean.setCompanyId("1");
+		 List<String> streetList = new ArrayList<>();
+		 streetList.add("1");
+		 streetList.add("2");
+		 List<String> titleList = new ArrayList<>();
+		 titleList.add("1");
+		 titleList.add("2");
+		 titleList.add("4");
+		 areaBean.setStreetList(streetList);
+		 areaBean.setTitleList(titleList);
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.order.agreeExamineOdrerStatus");
+	        param.put("name","admin.updateCompanyServiceByStreetId");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -88,7 +96,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",orderBean);
+	        param.put("data",areaBean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");

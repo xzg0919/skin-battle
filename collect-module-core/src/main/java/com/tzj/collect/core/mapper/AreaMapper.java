@@ -45,4 +45,12 @@ public interface AreaMapper extends BaseMapper<Area> {
 	Integer updateStreet(@Param("id") String id, @Param("name") String name, @Param("code") String code);
 
 	List<Area> getCityListByLj();
+
+	List<Map<String, Object>> getCompanyServiceList(@Param("companyId")String companyId,@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("pageStart") Integer pageStart,@Param("pageSize")Integer pageSize);
+
+	Integer getCompanyServiceCount (@Param("companyId")String companyId,@Param("cityId")String cityId,@Param("areaId")String areaId);
+
+	List<Map<String, Object>> getCompanyStreetAllList(@Param("companyId")String companyId,@Param("areaId")String areaId);
+
+	List<Map<String, Object>> getCompanyServiceOutList(@Param("companyId")String companyId,@Param("cityId")String cityId,@Param("areaId")String areaId);
 }

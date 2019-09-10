@@ -1,8 +1,10 @@
 package com.tzj.collect.api.admin;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.core.param.admin.AdminCommunityBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.service.AreaService;
 import com.tzj.collect.core.service.CommunityService;
@@ -15,6 +17,7 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -155,5 +158,67 @@ public class AdminAreaApi {
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public Object getAreaStreetList(CompanyBean companyBean)throws Exception {
 		return areaService.getAreaStreetList(companyBean);
+	}
+	/**
+	 * 获取所有城市列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.getCityAllList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getCityAllList(){
+		List<Area> cityList = areaService.getCityListByLj();
+		return cityList;
+	}
+	/**
+	 * 根据城市Id获取相关行政区
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.getAreaListBycityId", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getAreaListBycityId(AreaBean areaBean){
+		List<Area> areaList = null;
+		if(StringUtils.isNotBlank(areaBean.getCityId())){
+			areaList = areaService.selectList(new EntityWrapper<Area>().eq("parent_id", areaBean.getCityId()));
+		}
+		return areaList;
+	}
+
+	/**
+	 * 获取服务商回收区域列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.getCompanyServiceList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getCompanyServiceList(AreaBean areaBean){
+		return areaService.getCompanyServiceList(areaBean);
+	}
+	/**
+	 * 根据公司Id和行政区Id查询相关街道
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.getCompanyStreetAllList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getCompanyStreetAllList(AreaBean areaBean){
+		return areaService.getCompanyStreetAllList(areaBean);
+	}
+
+	/**
+	 * 更新公司的服务范围
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.updateCompanyServiceByStreetId", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object updateCompanyServiceByStreetId(AreaBean areaBean){
+		return areaService.updateCompanyServiceByStreetId(areaBean);
 	}
 }
