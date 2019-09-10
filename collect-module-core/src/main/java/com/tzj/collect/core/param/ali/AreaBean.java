@@ -2,6 +2,7 @@ package com.tzj.collect.core.param.ali;
 
 
 import com.tzj.collect.core.param.business.CommunityBean;
+import lombok.Data;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * @author Michael_Wang
  *
  */
+@Data
 public class AreaBean {
 	//id
 	private Integer id;
@@ -48,6 +50,14 @@ public class AreaBean {
 	 * 0保存，1删除
 	 */
 	private String saveOrDelete;
+
+	private PageBean pageBean;
+
+	private String companyId;
+
+	private List<String> streetList;
+
+	private List<String> titleList;
 
 	private List<CommunityBean> communityIdList;
 

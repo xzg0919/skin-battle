@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.taobao.api.ApiException;
 import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.param.business.StreetNameBean;
@@ -71,4 +72,12 @@ public interface AreaService  extends IService<Area>{
 	Object getAreaStreetList(CompanyBean companyBean);
 	@DS("slave")
 	List<Area> getCityListByLj();
+	@DS("slave")
+	Map<String,Object> getCompanyServiceList(AreaBean areaBean);
+	@DS("slave")
+	List<Map<String, Object>> getCompanyStreetAllList(AreaBean areaBean);
+
+	Object updateCompanyServiceByStreetId(AreaBean areaBean);
+	@DS("slave")
+	List<Map<String, Object>> getCompanyServiceOutList(AreaBean areaBean);
 }

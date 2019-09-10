@@ -3364,6 +3364,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderCancleExamineService.updateById(orderCancleExamine);
 		return "操作成功";
 	}
+	@Transactional
+	public void  updateOrderCompany(String streetId,String companyId,String title){
+		orderMapper.updateOrderCompany(streetId,companyId,title);
+	}
 
     /**【业务数据总览】(分页)
      * @author sgmark@aliyun.com
