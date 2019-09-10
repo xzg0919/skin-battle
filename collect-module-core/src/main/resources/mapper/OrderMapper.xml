@@ -107,12 +107,15 @@
 			b.tel AS BTel,
 			f.num,
 			p.price AS paymentPrice,
+			d.cancle_reason AS examineReason,
+			d.status_ AS examineStatus,
 		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))), NOW()) AS overTime
 			FROM
 			sb_order a
 			LEFT JOIN sb_category c ON a.category_id = c.id
 			LEFT JOIN sb_payment p ON p.order_sn = a.order_no
 			LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+			LEFT JOIN sb_order_cancle_examine d ON a.order_no = d.order_no
 			LEFT JOIN (
 			SELECT
 			d.order_id,
@@ -2292,6 +2295,59 @@
 		</choose>
 		order by a.recyclerName
 	</select>
+	<select id="getOrderCancleExamineList" parameterType="Object" resultType="Map">
+		SELECT
+			DATE_FORMAT(a.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
+			a.order_no AS orderNo,
+			IF(c.title = '1','家电数码',IF(c.title = '4','大件垃圾','生活垃圾')) AS title,
+			b.link_man AS linkMan,
+			b.id,
+			b.tel,
+			a.cancle_reason AS cancleReason,
+			d.name_ AS name
+		FROM
+			sb_order_cancle_examine a
+		LEFT JOIN sb_order b ON a.order_no = b.order_no
+		LEFT JOIN sb_category c ON b.category_id = c.id
+		LEFT JOIN sb_company d ON b.company_id = d.id
+		WHERE a.status_ = '0'
+		<if test="companyId != null and companyId != '' ">
+			AND b.company_id = #{companyId}
+		</if>
+		<if test="orderNo != null and orderNo != '' ">
+			AND a.order_no like CONCAT('%',#{orderNo},'%')
+		</if>
+		<if test="startTime != null and startTime != '' ">
+			AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime != '' ">
+			AND CONCAT(#{endTime},' 23:59:59') > a.create_date
+		</if>
+		ORDER BY a.create_date ASC
+		LIMIT #{pageStart},#{pageSize}
+	</select>
+	<select id="getOrderCancleExamineCount" parameterType="Object" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+		sb_order_cancle_examine a
+		LEFT JOIN sb_order b ON a.order_no = b.order_no
+		LEFT JOIN sb_category c ON b.category_id = c.id
+		LEFT JOIN sb_company d ON b.company_id = d.id
+		WHERE a.status_ = '0'
+		<if test="companyId != null and companyId != '' ">
+			AND b.company_id = #{companyId}
+		</if>
+		<if test="orderNo != null and orderNo != '' ">
+			AND a.order_no like CONCAT('%',#{orderNo},'%')
+		</if>
+		<if test="startTime != null and startTime != '' ">
+			AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime != '' ">
+			AND CONCAT(#{endTime},' 23:59:59') > a.create_date
+		</if>
+	</select>
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
         <id property="id" column="id" />
@@ -2347,6 +2403,8 @@
 		<result property="logisticsName" column="logistics_name"/>
 		<result property="iotEquipmentCode" column="iot_equipment_code"/>
 		<result property="overTime" column="overTime"/>
+		<result property="examineReason" column="examineReason"/>
+		<result property="examineStatus" column="examineStatus"/>
         <association property="category" javaType="com.tzj.collect.entity.Category">
             <result property="categoryId" column="categoryId" />
             <result property="name" column="name_" />

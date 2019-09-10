@@ -33,6 +33,11 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     @Autowired
     private NoticeMapper noticeMapper;
 
+    @Override
+    public void delNotice(Long id) {
+
+    }
+
     /**
      * 审核消息
      * @param id

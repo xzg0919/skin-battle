@@ -307,4 +307,15 @@ public class BusinessOrderApi {
 		return orderService.overTimeOrderListByReyclersId(orderBean);
 	}
 
+	/**
+	 * 申请订单取消
+	 * @date 2019/08/30
+	 * @return
+	 */
+	@Api(name = "business.order.cancleOrderExamine", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object cancleOrderExamine(OrderBean orderBean){
+		return orderService.cancleOrderExamine(orderBean);
+	}
+
 }

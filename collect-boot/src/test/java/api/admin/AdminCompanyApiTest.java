@@ -11,6 +11,7 @@ package api.admin;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.admin.CategoryBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.module.api.utils.JwtUtils;
@@ -72,17 +73,14 @@ public class AdminCompanyApiTest {
 //
 //		 recyclersServiceRangeBean.setAreaList(areaList);
 
-		 CategoryBean categoryBean = new CategoryBean();
-		 categoryBean.setCityId("2237");
-		 categoryBean.setCompanyId("1");
-		 categoryBean.setIsOpen("1");
-		 List<String> list = new ArrayList<>();
-		 list.add("26");
-		 list.add("30");
-		 categoryBean.setParamList(list);
+		 OrderBean orderBean = new OrderBean();
+		 orderBean.setId(69736);
+		 orderBean.setCancelReason("取消原因");
+		 orderBean.setStatus("2");
+
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","category.saveOrDeleteCategoryById");
+	        param.put("name","admin.order.agreeExamineOdrerStatus");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -90,7 +88,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",categoryBean);
+	        param.put("data",orderBean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");

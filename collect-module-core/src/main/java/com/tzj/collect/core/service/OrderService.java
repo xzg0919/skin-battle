@@ -364,4 +364,10 @@ public interface OrderService extends IService<Order> {
 	Object overTimeOrderListByReyclersId(OrderBean orderBean);
 	@DS("slave")
 	List<Map<String,Object>> getRecyclerOrderList(OrderBean orderBean);
+
+	Object cancleOrderExamine(OrderBean orderBean);
+	@DS("slave")
+	Map<String,Object> getOrderCancleExamineList(OrderBean orderBean);
+
+	String agreeExamineOdrerStatus(OrderBean orderbean);
 }

@@ -139,6 +139,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private AreaService areaService;
 	@Autowired
 	private CompanyCategoryCityLocaleService companyCategoryCityLocaleService;
+	@Autowired
+	private OrderCancleExamineService orderCancleExamineService;
 
 	/**
 	 * 获取会员的订单列表 分页
@@ -1411,12 +1413,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Company company = companyService.selectById(CompanyId);
 		//根据订单Id查询评价信息
 		OrderEvaluation OrderEvaluation = orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", orderId).eq("del_flag", "0"));
-
+		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		//order.setPrice(order.getAchPrice());
 		//resultMap.put("order", order);
 		resultMap.put("company", company);
 		resultMap.put("OrderEvaluation", OrderEvaluation);
+		resultMap.put("orderCancleExamine", orderCancleExamine);
 		//System.out.println(11111);
 		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG) {
 			OrderBean orderBean = new OrderBean();
@@ -1432,7 +1435,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			resultMap.put("greenCount", map.get("greenCount"));
 
 		}
-
 		if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
 			//回收人员填的图片
 			List<OrderPicAch> orderPicAchList = orderPicAchService.selectbyOrderId(orderId);
@@ -3310,5 +3312,53 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 	public  List<Map<String,Object>>  getRecyclerOrderList(OrderBean orderBean){
 		return  orderMapper.getRecyclerOrderList(orderBean.getCompanyId(), orderBean.getRecyclerName(), orderBean.getMobile(),orderBean.getStartTime(),orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime());
+	}
+	@Transactional
+	@Override
+	public Object cancleOrderExamine(OrderBean orderBean){
+		Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", orderBean.getOrderNo()));
+		if (null == order){
+			throw new ApiException("输入的订单号查找不到订单");
+		}
+		if(!(OrderType.INIT+"").equals(order.getStatus()+"")){
+			throw new ApiException("该订单的不是初始状态，目前不可被申请取消");
+		}
+		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no",orderBean.getOrderNo()));
+		if (null == orderCancleExamine){
+			orderCancleExamine = new OrderCancleExamine();
+		}
+		orderCancleExamine.setOrderNo(orderBean.getOrderNo());
+		orderCancleExamine.setCancleReason(orderBean.getCancelReason());
+		orderCancleExamine.setStatus("0");
+		orderCancleExamineService.insertOrUpdate(orderCancleExamine);
+		return "操作成功";
+	}
+	@Override
+	public Map<String,Object> getOrderCancleExamineList(OrderBean orderBean){
+		PageBean pagebean = orderBean.getPagebean();
+		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
+		Integer pageSize = null!=pagebean ?pagebean.getPageSize():9999;
+		Integer pageStart = (pageNumber-1)*pageSize;
+		List<Map<String,Object>> getOrderCancleExamineList = orderMapper.getOrderCancleExamineList(orderBean.getCompanyId(),orderBean.getOrderNo(),orderBean.getStartTime(),orderBean.getEndTime(),pageStart,pageSize);
+		Integer examineCount = orderMapper.getOrderCancleExamineCount(orderBean.getCompanyId(), orderBean.getOrderNo(), orderBean.getStartTime(), orderBean.getEndTime());
+		Map<String,Object> resultMap = new HashMap<>();
+		resultMap.put("overTimeOrderList",getOrderCancleExamineList);
+		resultMap.put("count",examineCount);
+		resultMap.put("pageNumber",pageNumber);
+		return resultMap;
+	}
+	@Transactional
+	public String agreeExamineOdrerStatus(OrderBean orderbean){
+		Order order = this.selectById(orderbean.getId());
+		if((OrderType.COMPLETE+"").equals(order.getStatus()+"")||(OrderType.CANCEL+"").equals(order.getStatus()+"")){
+			throw new ApiException("该订单的状态，目前不可被申请取消");
+		}
+		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
+		if ("1".equals(orderbean.getStatus())){
+			this.updateOrderByBusiness(orderbean.getId(),"REJECTED",orderbean.getCancelReason(),null);
+		}
+		orderCancleExamine.setStatus(orderbean.getStatus());
+		orderCancleExamineService.updateById(orderCancleExamine);
+		return "操作成功";
 	}
 }
