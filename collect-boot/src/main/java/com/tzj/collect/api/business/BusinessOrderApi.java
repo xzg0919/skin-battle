@@ -91,8 +91,8 @@ public class BusinessOrderApi {
 	 /**【企业信息看板】中，增加【业务数据总览】模块(分页)
 	   * @author sgmark@aliyun.com
 	   * @date 2019/9/9 0009
-	   * @param 
-	   * @return 
+	   * @param
+	   * @return
 	   */
 	 @Api(name = "business.order.for.overview", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
@@ -320,6 +320,15 @@ public class BusinessOrderApi {
 		return orderService.overTimeOrderListByReyclersId(orderBean);
 	}
 
-
+	/**
+	 * 申请订单取消
+	 * @date 2019/08/30
+	 * @return
+	 */
+	@Api(name = "business.order.cancleOrderExamine", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object cancleOrderExamine(OrderBean orderBean){
+		return orderService.cancleOrderExamine(orderBean);
+	}
 
 }

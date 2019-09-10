@@ -342,6 +342,61 @@ public class OutExcelController {
         String fileName=fdate.format(new Date())+".xlsx";
         ExcelUtils.exportExcel(response, fileName, data);
     }
+    @RequestMapping("/getOdrerCancleExamineList")
+    public void  getOdrerCancleExamineList(HttpServletResponse response, OrderBean orderBean) throws Exception{
+        Map<String,Object> resultMap = (Map<String,Object>)orderService.getOrderCancleExamineList(orderBean);
+        List<Map<String,Object>> list = (List<Map<String,Object>>)resultMap.get("overTimeOrderList");
+        ExcelData data = new ExcelData();
+        data.setName("取消申请订单列表");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("申请时间");
+        titles.add("订单编号");
+        titles.add("回收物类型");
+        titles.add("客户姓名");
+        titles.add("客户电话");
+        titles.add("服务商");
+        titles.add("取消理由");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        for(int i=0; i<list.size();i++){
+            row=new ArrayList();
+            row.add(list.get(i).get("createDate"));
+            row.add(list.get(i).get("orderNo"));
+            row.add(list.get(i).get("title"));
+            row.add(list.get(i).get("linkMan"));
+            row.add(list.get(i).get("tel"));
+            row.add(list.get(i).get("name"));
+            row.add(list.get(i).get("cancleReason"));
+            rows.add(row);
+
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public String getOrderStatus(String status){
         String statusPage = null;

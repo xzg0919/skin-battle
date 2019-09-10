@@ -142,6 +142,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private AreaService areaService;
 	@Autowired
 	private CompanyCategoryCityLocaleService companyCategoryCityLocaleService;
+	@Autowired
+	private OrderCancleExamineService orderCancleExamineService;
 
 	/**
 	 * 获取会员的订单列表 分页
@@ -1414,12 +1416,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Company company = companyService.selectById(CompanyId);
 		//根据订单Id查询评价信息
 		OrderEvaluation OrderEvaluation = orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", orderId).eq("del_flag", "0"));
-
+		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		//order.setPrice(order.getAchPrice());
 		//resultMap.put("order", order);
 		resultMap.put("company", company);
 		resultMap.put("OrderEvaluation", OrderEvaluation);
+		resultMap.put("orderCancleExamine", orderCancleExamine);
 		//System.out.println(11111);
 		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG) {
 			OrderBean orderBean = new OrderBean();
@@ -1435,7 +1438,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			resultMap.put("greenCount", map.get("greenCount"));
 
 		}
-
 		if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
 			//回收人员填的图片
 			List<OrderPicAch> orderPicAchList = orderPicAchService.selectbyOrderId(orderId);
@@ -3314,68 +3316,116 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public  List<Map<String,Object>>  getRecyclerOrderList(OrderBean orderBean){
 		return  orderMapper.getRecyclerOrderList(orderBean.getCompanyId(), orderBean.getRecyclerName(), orderBean.getMobile(),orderBean.getStartTime(),orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime());
 	}
-
-	/**【业务数据总览】(分页)
-	  * @author sgmark@aliyun.com
-	  * @date 2019/9/9 0009
-	  * @param 
-	  * @return 
-	  */
+	@Transactional
 	@Override
-	public Map<String, Object> getAllOrderMapOverview(BOrderBean orderBean) {
-		Map<String, Object> returnMap = new HashMap<>();
-		//公司所有del_flag不为0的订单
-		Wrapper<Order> entityWrapper = new EntityWrapper<Order>().eq("del_flag", "0").eq("company_id", orderBean.getCompanyId());
-		if (StringUtils.isNotEmpty(orderBean.getStatus())) {
-			entityWrapper.in("status_", orderBean.getStatus());
+	public Object cancleOrderExamine(OrderBean orderBean){
+		Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", orderBean.getOrderNo()));
+		if (null == order){
+			throw new ApiException("输入的订单号查找不到订单");
 		}
-		if (StringUtils.isNotEmpty(orderBean.getCategoryType())){
-			entityWrapper.eq("title", orderBean.getCategoryType());
+		if(!(OrderType.INIT+"").equals(order.getStatus()+"")){
+			throw new ApiException("该订单的不是初始状态，目前不可被申请取消");
 		}
-		if (StringUtils.isNotEmpty(orderBean.getStartTime()) && StringUtils.isNotEmpty(orderBean.getEndTime())){
-			entityWrapper.between("create_date", orderBean.getStartTime(), orderBean.getEndTime());
+		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no",orderBean.getOrderNo()));
+		if (null == orderCancleExamine){
+			orderCancleExamine = new OrderCancleExamine();
 		}
-		Integer count = orderMapper.selectCount(entityWrapper);
-		//分页展示
-		Integer pageNumber = null!=orderBean.getPagebean() ?orderBean.getPagebean().getPageNumber():1;
-		Integer pageSize = null!=orderBean.getPagebean() ?orderBean.getPagebean().getPageSize():10;
+		orderCancleExamine.setOrderNo(orderBean.getOrderNo());
+		orderCancleExamine.setCancleReason(orderBean.getCancelReason());
+		orderCancleExamine.setStatus("0");
+		orderCancleExamineService.insertOrUpdate(orderCancleExamine);
+		return "操作成功";
+	}
+	@Override
+	public Map<String,Object> getOrderCancleExamineList(OrderBean orderBean){
+		PageBean pagebean = orderBean.getPagebean();
+		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
+		Integer pageSize = null!=pagebean ?pagebean.getPageSize():9999;
 		Integer pageStart = (pageNumber-1)*pageSize;
-		List<Map<String, Object>> returnMapList = orderMapper.getAllOrderMapOverview(orderBean.getStatus(), orderBean.getCompanyId(), orderBean.getCategoryType(), pageStart, pageSize, orderBean.getStartTime(), orderBean.getEndTime());
-		returnMap.put("count", count);
-		returnMap.put("list", returnMapList);
-		return returnMap;
+		List<Map<String,Object>> getOrderCancleExamineList = orderMapper.getOrderCancleExamineList(orderBean.getCompanyId(),orderBean.getOrderNo(),orderBean.getStartTime(),orderBean.getEndTime(),pageStart,pageSize);
+		Integer examineCount = orderMapper.getOrderCancleExamineCount(orderBean.getCompanyId(), orderBean.getOrderNo(), orderBean.getStartTime(), orderBean.getEndTime());
+		Map<String,Object> resultMap = new HashMap<>();
+		resultMap.put("overTimeOrderList",getOrderCancleExamineList);
+		resultMap.put("count",examineCount);
+		resultMap.put("pageNumber",pageNumber);
+		return resultMap;
+	}
+	@Transactional
+	public String agreeExamineOdrerStatus(OrderBean orderbean){
+		Order order = this.selectById(orderbean.getId());
+		if((OrderType.COMPLETE+"").equals(order.getStatus()+"")||(OrderType.CANCEL+"").equals(order.getStatus()+"")){
+			throw new ApiException("该订单的状态，目前不可被申请取消");
+		}
+		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
+		if ("1".equals(orderbean.getStatus())){
+			this.updateOrderByBusiness(orderbean.getId(),"REJECTED",orderbean.getCancelReason(),null);
+		}
+		orderCancleExamine.setStatus(orderbean.getStatus());
+		orderCancleExamineService.updateById(orderCancleExamine);
+		return "操作成功";
 	}
 
-	/**	已完成订单
-	  * @author sgmark@aliyun.com
-	  * @date 2019/9/10 0010
-	  * @param
-	  * @return
-	  */
-	@Override
-	public List<Map<String, Object>> outAchOrderListOverview(BOrderBean bOrderBean) {
-		if (StringUtils.isEmpty(bOrderBean.getStatus())){
-			bOrderBean.setStatus("3");
-		}else if (StringUtils.isNotEmpty(bOrderBean.getStatus()) && !"3".equals(bOrderBean.getStatus())){
-			return new ArrayList<>();
-		}
-		return orderMapper.outAchOrderListOverview(bOrderBean.getCompanyId(), bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
-	}
+    /**【业务数据总览】(分页)
+     * @author sgmark@aliyun.com
+     * @date 2019/9/9 0009
+     * @param
+     * @return
+     */
+    @Override
+    public Map<String, Object> getAllOrderMapOverview(BOrderBean orderBean) {
+        Map<String, Object> returnMap = new HashMap<>();
+        //公司所有del_flag不为0的订单
+        Wrapper<Order> entityWrapper = new EntityWrapper<Order>().eq("del_flag", "0").eq("company_id", orderBean.getCompanyId());
+        if (StringUtils.isNotEmpty(orderBean.getStatus())) {
+            entityWrapper.in("status_", orderBean.getStatus());
+        }
+        if (StringUtils.isNotEmpty(orderBean.getCategoryType())){
+            entityWrapper.eq("title", orderBean.getCategoryType());
+        }
+        if (StringUtils.isNotEmpty(orderBean.getStartTime()) && StringUtils.isNotEmpty(orderBean.getEndTime())){
+            entityWrapper.between("create_date", orderBean.getStartTime(), orderBean.getEndTime());
+        }
+        Integer count = orderMapper.selectCount(entityWrapper);
+        //分页展示
+        Integer pageNumber = null!=orderBean.getPagebean() ?orderBean.getPagebean().getPageNumber():1;
+        Integer pageSize = null!=orderBean.getPagebean() ?orderBean.getPagebean().getPageSize():10;
+        Integer pageStart = (pageNumber-1)*pageSize;
+        List<Map<String, Object>> returnMapList = orderMapper.getAllOrderMapOverview(orderBean.getStatus(), orderBean.getCompanyId(), orderBean.getCategoryType(), pageStart, pageSize, orderBean.getStartTime(), orderBean.getEndTime());
+        returnMap.put("count", count);
+        returnMap.put("list", returnMapList);
+        return returnMap;
+    }
 
-	/**	非完成状态订单
-	  * @author sgmark@aliyun.com
-	  * @date 2019/9/10 0010
-	  * @param
-	  * @return
-	  */
-	@Override
-	public List<Map<String, Object>> outOtherOrderListOverview(BOrderBean bOrderBean) {
-		if (StringUtils.isNotEmpty(bOrderBean.getStatus()) && "3".equals(bOrderBean.getStatus())){
-			return new ArrayList<>();
-		}else if (StringUtils.isEmpty(bOrderBean.getStatus())){
-			//所有非完成订单
-			bOrderBean.setStatus("0,1,2,4,5");
-		}
-		return orderMapper.outOtherOrderListOverview(bOrderBean.getCompanyId(), bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
-	}
+    /**	已完成订单
+     * @author sgmark@aliyun.com
+     * @date 2019/9/10 0010
+     * @param
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> outAchOrderListOverview(BOrderBean bOrderBean) {
+        if (StringUtils.isEmpty(bOrderBean.getStatus())){
+            bOrderBean.setStatus("3");
+        }else if (StringUtils.isNotEmpty(bOrderBean.getStatus()) && !"3".equals(bOrderBean.getStatus())){
+            return new ArrayList<>();
+        }
+        return orderMapper.outAchOrderListOverview(bOrderBean.getCompanyId(), bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
+    }
+
+    /**	非完成状态订单
+     * @author sgmark@aliyun.com
+     * @date 2019/9/10 0010
+     * @param
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> outOtherOrderListOverview(BOrderBean bOrderBean) {
+        if (StringUtils.isNotEmpty(bOrderBean.getStatus()) && "3".equals(bOrderBean.getStatus())){
+            return new ArrayList<>();
+        }else if (StringUtils.isEmpty(bOrderBean.getStatus())){
+            //所有非完成订单
+            bOrderBean.setStatus("0,1,2,4,5");
+        }
+        return orderMapper.outOtherOrderListOverview(bOrderBean.getCompanyId(), bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
+    }
 }

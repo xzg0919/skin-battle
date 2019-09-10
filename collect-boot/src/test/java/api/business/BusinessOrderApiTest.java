@@ -48,17 +48,13 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
-		recyclersServiceRangeBean.setManagerId("83");
-		List<String> recyclerId = new ArrayList<>();
-		recyclerId.add("145");
-		recyclerId.add("147");
-		recyclersServiceRangeBean.setRecycleIds(recyclerId);
-		recyclersServiceRangeBean.setIsBigRecycle("N");
+		OrderBean orderBean = new OrderBean();
+		orderBean.setOrderNo("20190716123601395061");
+		orderBean.setCancelReason("我是申请取消原因");
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.recycle.updateRecycleForParent");
+		param.put("name","business.order.cancleOrderExamine");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -66,7 +62,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",recyclersServiceRangeBean);
+		param.put("data",orderBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);
