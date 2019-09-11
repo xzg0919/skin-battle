@@ -52,10 +52,10 @@ public class RedisConfig {
     @Value("${spring.redis.host}")
     private String host;
 
-    @Value("${spring.redis2.host}")
-    private String collectHost;//收呗答答答redis地址
-    @Value("${spring.redis2.password}")
-    private String collectPassword;//答答答redis地址
+//    @Value("${spring.redis2.host}")
+//    private String collectHost;//收呗答答答redis地址
+//    @Value("${spring.redis2.password}")
+//    private String collectPassword;//答答答redis地址
 
     @Value("${spring.redis.port}")
     private Integer port;
