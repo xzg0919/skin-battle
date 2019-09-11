@@ -363,9 +363,10 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     @Override
     public List<Map<String, Object>> weekDresserList() {
         Jedis jedis = jedisPool.getResource();
+        String redisTableName = redisKeyName() + ":" + "user_input_date";
         Long localTime = System.currentTimeMillis();
         //周记录
-        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyNameLastWeek(), 1000, 0, 0,20000);
+        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyNameLastWeek(), 1000, 0, 0,20000000);
         List<Map<String, Object>> aliUserIdScoreList = new ArrayList<>();
         aliUserIdSet.stream().forEach(tuple -> {
             Map<String, Object> tupleMap = new HashMap<>();
@@ -388,11 +389,16 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             tupleMap.put("linkName", null == member.get("linkName") ? "" : member.get("linkName"));
             tupleMap.put("mobile", member.get("mobile"));
             tupleMap.put("city", null == member.get("city") ? "" : member.get("city"));
+            //            //取出用户的答题时间
+            Double userTime = jedis.zscore(redisTableName, aliUserIdScore.get(0));
+            tupleMap.put("userInputDate", null == userTime ? Double.POSITIVE_INFINITY  : userTime);
             aliUserIdScoreList.add(tupleMap);
         });
+        System.out.println(System.currentTimeMillis()-localTime);
+        List<Map<String, Object>> collect = aliUserIdScoreList.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).collect(Collectors.toList());
         jedis.close();
         System.out.println(System.currentTimeMillis()-localTime);
-        return aliUserIdScoreList;
+        return collect;
     }
 
 
