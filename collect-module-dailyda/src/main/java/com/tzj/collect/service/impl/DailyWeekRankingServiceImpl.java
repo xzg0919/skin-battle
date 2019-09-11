@@ -1,6 +1,7 @@
 package com.tzj.collect.service.impl;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -30,12 +31,14 @@ import java.util.Set;
  **/
 @Service
 @Transactional(readOnly = true)
+@DS("slave")
 public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMapper, DailyWeekRanking> implements DailyWeekRankingService {
 
+//
+//    @Resource
+//    private DailyWeekRankingMapper dailyWeekRankingMapper;
 
-    @Resource
-    private DailyWeekRankingMapper dailyWeekRankingMapper;
-
+//    @Resource(name = "collectJedisPool")
     @Resource
     private JedisPool jedisPool;
 
@@ -62,7 +65,7 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
         }
         //周达人aliUserId
         String tableWeek = LocalDate.now().getYear()+""+(Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) - 1);
-        String aliUserId = dailyWeekRankingMapper.insertEachWeekDresser("daily_day_records_"+tableWeek);
+//        String aliUserId = dailyWeekRankingMapper.insertEachWeekDresser("daily_day_records_"+tableWeek);
         Jedis jedis = jedisPool.getResource();
         //以redis默认排序为准
         Set<String> stringSet = jedis.zrevrangeByScore(this.redisKeyNameLastWeek(), 1000, 0);

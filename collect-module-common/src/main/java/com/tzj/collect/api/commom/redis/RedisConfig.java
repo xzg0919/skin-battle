@@ -52,6 +52,11 @@ public class RedisConfig {
     @Value("${spring.redis.host}")
     private String host;
 
+    @Value("${spring.redis2.host}")
+    private String collectHost;//收呗答答答redis地址
+    @Value("${spring.redis2.password}")
+    private String collectPassword;//答答答redis地址
+
     @Value("${spring.redis.port}")
     private Integer port;
 
@@ -86,6 +91,21 @@ public class RedisConfig {
 //        jedisPoolConfig.setTestWhileIdle(testWhileIdle);
         return jedisPoolConfig;
     }
+
+//    @Bean(name = "collectJedisPool")
+//    public JedisPool redisPoolFactoryDaily(){
+//        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+//        // 最大空闲数
+//        jedisPoolConfig.setMaxIdle(maxIdle);
+//        // 连接池的最大连接数
+//        jedisPoolConfig.setMaxTotal(maxTotal);
+//        //最小空闲连接数, 默认0
+//        jedisPoolConfig.setMinIdle(0);
+//        // 最大建立连接等待时间
+//        jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+//        JedisPool jedisPool = new JedisPool(jedisPoolConfig,collectHost,port,1000,collectPassword);
+//        return  jedisPool;
+//    }
 
     @Bean
     public JedisPool redisPoolFactory(){

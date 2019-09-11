@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, DailyLexicon> implements DailyLexiconService {
 
+//    @Resource(name = "collectJedisPool")
     @Resource
     private JedisPool jedisPool;
 
