@@ -33,11 +33,6 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     @Autowired
     private NoticeMapper noticeMapper;
 
-    @Override
-    public void delNotice(Long id) {
-
-    }
-
     /**
      * 审核消息
      * @param id
@@ -52,6 +47,23 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
             throw new RuntimeException("消息不存在");
         }
         notice.setAudit(true);
+        noticeMapper.updateById(notice);
+    }
+
+    /**
+     * 审核消息
+     * @param id
+     */
+    @Transactional(readOnly=false)
+    public void delNotice(Long id){
+        if (null == id){
+            throw new RuntimeException("id不能为空");
+        }
+        Notice notice = noticeMapper.selectById(id);
+        if (null == notice){
+            throw new RuntimeException("消息不存在");
+        }
+        notice.setDelFlag("1");
         noticeMapper.updateById(notice);
     }
 
