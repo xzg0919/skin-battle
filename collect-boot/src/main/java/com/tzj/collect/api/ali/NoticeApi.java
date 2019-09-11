@@ -33,6 +33,7 @@ public class NoticeApi {
      */
     @Api(name = "notice.getVaildNotices", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    @AuthIgnore
     public List<Notice> getVaildNotices(){
         return noticeService.getVaildNotices();
     }
@@ -44,6 +45,7 @@ public class NoticeApi {
      */
     @Api(name = "notice.getNoticeDetail", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    @AuthIgnore
     public Notice getNoticeDetail(Long id){
         if(null == id){
             throw  new ApiException("id不能为空!");
