@@ -1424,7 +1424,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("OrderEvaluation", OrderEvaluation);
 		resultMap.put("orderCancleExamine", orderCancleExamine);
 		//System.out.println(11111);
-		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG) {
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
 			OrderBean orderBean = new OrderBean();
 			orderBean.setId(orderId);
 			orderBean.setTitle(order.getTitle().toString());
