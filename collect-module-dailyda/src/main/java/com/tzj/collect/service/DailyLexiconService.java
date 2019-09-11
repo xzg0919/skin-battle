@@ -22,7 +22,7 @@ public interface DailyLexiconService extends IService<DailyLexicon> {
       * @param
       * @return
       */
-     Set<Map<String, Object>> dailyLexiconList(String aliUserId);
+     Set<Map<String, Object>> dailyLexiconList(Member member);
 
      /** 所有的题库(id, name, type, depth)
       * 返回结构 [{depth =1, depthList=[{id =1, name= "",depth = 1}]},{depth =2, depthList=[{id =5, name= "",depth = 2}]}]

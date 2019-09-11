@@ -103,7 +103,7 @@ public class DailyDaApi {
         if (dailyLexiconService.isAnswerDaily(MemberUtils.getMember().getAliUserId()).size()>0){
             throw new ApiException("今日答题已完成，明儿请赶早");
         }
-        return dailyLexiconService.dailyLexiconList(MemberUtils.getMember().getAliUserId());
+        return dailyLexiconService.dailyLexiconList(MemberUtils.getMember());
     }
 
     /** 答题验证
