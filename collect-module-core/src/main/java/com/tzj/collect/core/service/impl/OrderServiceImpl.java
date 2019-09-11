@@ -3302,13 +3302,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("pageNumber",pageNumber);
 		return resultMap;
 	}
-	public  Object overTimeOrderListByReyclersId(OrderBean orderBean){
+	public  Object overTimeOrderListByReyclersId(OrderBean orderBean,Integer companyId){
 		PageBean pagebean = orderBean.getPagebean();
 		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
 		Integer pageSize = null!=pagebean ?pagebean.getPageSize():9999;
 		Integer pageStart = (pageNumber-1)*pageSize;
-		List<Map<String, Object>> overTimeOrderList = orderMapper.overTimeOrderListByReyclersId(orderBean.getRecyclerId(), orderBean.getStartTime(), orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime(), pageStart, pageSize);
-		Integer count = orderMapper.overTimeOrderListCount(orderBean.getRecyclerId(), orderBean.getStartTime(), orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime());
+		List<Map<String, Object>> overTimeOrderList = orderMapper.overTimeOrderListByReyclersId(companyId,orderBean.getRecyclerId(), orderBean.getStartTime(), orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime(), pageStart, pageSize);
+		Integer count = orderMapper.overTimeOrderListCount(companyId,orderBean.getRecyclerId(), orderBean.getStartTime(), orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime());
 		Map<String,Object> resultMap = new HashMap<>();
 		resultMap.put("overTimeOrderList",overTimeOrderList);
 		resultMap.put("count",count);

@@ -317,7 +317,8 @@ public class BusinessOrderApi {
 	@Api(name = "business.order.overTimeOrderListByReyclersId", version = "1.0")
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object overTimeOrderListByReyclersId(OrderBean orderBean){
-		return orderService.overTimeOrderListByReyclersId(orderBean);
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		return orderService.overTimeOrderListByReyclersId(orderBean,companyAccount.getCompanyId());
 	}
 
 	/**
