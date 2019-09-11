@@ -2179,6 +2179,7 @@
 		sb_order a
 		WHERE
 			a.recycler_id = #{recyclerId}
+			AND a.company_id = #{companyId}
 		<if test="startTime != null and startTime != '' ">
 			AND a.create_date > CONCAT(#{startTime}, ' 00:00:01')
 		</if>
@@ -2220,6 +2221,7 @@
 		sb_order a
 		WHERE
 		a.recycler_id = #{recyclerId}
+        AND a.company_id = #{companyId}
 		<if test="startTime != null and startTime != '' ">
 			AND a.create_date > CONCAT(#{startTime}, ' 00:00:01')
 		</if>

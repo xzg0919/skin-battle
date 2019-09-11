@@ -4,6 +4,7 @@ import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.NoticeService;
 import com.tzj.collect.entity.Notice;
 import com.tzj.module.api.annotation.*;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -34,6 +35,20 @@ public class NoticeApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<Notice> getVaildNotices(){
         return noticeService.getVaildNotices();
+    }
+
+
+    /**getNoticeDetail
+     * 获取消息的明细信息
+     * @return
+     */
+    @Api(name = "notice.getNoticeDetail", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Notice getNoticeDetail(Long id){
+        if(null == id){
+            throw  new ApiException("id不能为空!");
+        }
+        return noticeService.selectById(id);
     }
 
 }
