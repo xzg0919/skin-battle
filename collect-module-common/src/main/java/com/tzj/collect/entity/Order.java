@@ -75,9 +75,9 @@ public class Order extends DataEntity<Long> {
 	@TableField(exist = false)
 	private Integer overTime;
 	@TableField(exist = false)
-	private Integer examineReason;
+	private String examineReason;
 	@TableField(exist = false)
-	private Integer examineStatus;
+	private String examineStatus;
 	/**
 	 * 地址
 	 */
