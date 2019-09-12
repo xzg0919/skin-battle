@@ -127,11 +127,6 @@ public class AdminOrderApi {
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public String agreeExamineOdrerStatus(OrderBean orderbean) {
-        //订单id
-        Integer orderId = orderbean.getId();
-        //驳回原因
-        String cancelReason = orderbean.getCancelReason();
-        String sta = orderService.updateOrderByBusiness(orderId,"REJECTED",cancelReason,null);
        return orderService.agreeExamineOdrerStatus(orderbean);
     }
 
