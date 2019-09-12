@@ -290,7 +290,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
      */
     @Override
     public List<Map<String, Object>> weekDresserList(Integer startPage, Integer pageSize) {
-        Integer limit = 50;
+        Integer limit = 10;
         if (startPage == 1 && pageSize == 3){
             limit = 3;
         }
@@ -303,7 +303,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         //取出大于此分数所有人
 //        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyName(), 1000, zscore, (startPage - 1) * pageSize,pageSize);
         //周记录 取出前100名成员
-        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyName(), 1000, 0, 0, 55);
+        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyName(), 1000, 0, 0, 5*limit+5);
         List<Map<String, Object>> aliUserIdScoreList = new ArrayList<>();
         JedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new JedisUtil.SaveOrGetFromRedis();
         aliUserIdSet.stream().forEach(tuple -> {

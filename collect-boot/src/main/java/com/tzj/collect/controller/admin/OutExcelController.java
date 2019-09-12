@@ -3,6 +3,7 @@ package com.tzj.collect.controller.admin;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.excel.ExcelData;
 import com.tzj.collect.api.commom.excel.ExcelUtils;
+import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.SnUtils;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.OrderBean;
@@ -13,7 +14,6 @@ import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.result.admin.RecruitExpressResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.EnterpriseCode;
-import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderItem;
 import com.tzj.collect.entity.OrderItemAch;
 import com.tzj.module.easyopen.exception.ApiException;
@@ -21,10 +21,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import redis.clients.jedis.JedisPool;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,7 +53,8 @@ public class OutExcelController {
     private OrderItemAchService orderItemAchService;
     @Autowired
     private AreaService areaService;
-
+    @Resource
+    private JedisPool jedisPool;
     /**
      * 根据企业导出以旧换新的券的excel列表
      * @param response
@@ -475,9 +479,19 @@ public class OutExcelController {
         }else if (null == bOrderBean.getCompanyId()){
             throw new ApiException("缺少公司id");
         }
-        //如果为空导出所有类型订单
+//        String type = null;
 //        if (StringUtils.isEmpty(bOrderBean.getCategoryType())){
-//            bOrderBean.setCategoryType("1,2,3,4,5,6,7,8,9");
+//            type = "0";
+//        }else {
+//            type = bOrderBean.getCategoryType();
+//        }
+//        //限制各个类型每天导出一次
+//        String redisKeyName = LocalDate.now().getYear()+":"+LocalDate.now().getDayOfYear()+":"+bOrderBean.getCompanyId()+":"+ type;
+//        RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+//        if (null == saveOrGetFromRedis.getFromRedis(redisKeyName, jedisPool)){
+//            saveOrGetFromRedis.saveInRedis(redisKeyName,System.currentTimeMillis(), 24*3600, jedisPool);
+//        }else {
+//            throw new ApiException("今日已经导出过，不能再执行此操作");
 //        }
         List<Map<String, Object>> achList = orderService.outOtherOrderListOverview(bOrderBean);
         List<Map<String, Object>> otherList  = orderService.outAchOrderListOverview(bOrderBean);
