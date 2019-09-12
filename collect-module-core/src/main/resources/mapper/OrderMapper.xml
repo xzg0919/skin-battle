@@ -2394,7 +2394,7 @@
         END AS title,
         order_.isOverTime,
         order_.order_no,
-        order_.create_date,
+		DATE_FORMAT(order_.create_date, '%Y-%m-%d %k:%i:%s') AS create_date,
         order_.ach_price,
         order_.is_cash,
         saa.area_name streetName,
