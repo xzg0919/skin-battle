@@ -2441,7 +2441,7 @@
 			<when test="status == null  or status == ''">
 			</when>
 			<otherwise>
-				AND soo.status_ IN (#{status})
+				AND status_ IN (#{status})
 			</otherwise>
 		</choose>
         ORDER BY
@@ -2515,13 +2515,13 @@
         AND soo.company_id = 4
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND title IN (1, 3)
+                AND soo.title IN (1, 3)
             </when>
             <when test="categoryType == 1 or categoryType == 3 ">
-                AND title IN (#{categoryType})
+                AND soo.title IN (#{categoryType})
             </when>
             <otherwise>
-                AND title IN (0)
+                AND soo.title IN (0)
             </otherwise>
         </choose>
         AND soo.create_date BETWEEN #{startTime}
@@ -2547,10 +2547,10 @@
         AND soo.del_flag = 0
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND title IN (1,2, 3, 5)
+                AND soo.title IN (1,2, 3, 5)
             </when>
             <otherwise>
-                AND title IN (#{categoryType})
+                AND soo.title IN (#{categoryType})
             </otherwise>
         </choose>
         AND soo.company_id = #{companyId}
