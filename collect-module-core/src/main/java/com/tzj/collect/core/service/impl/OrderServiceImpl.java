@@ -3383,11 +3383,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //公司所有del_flag不为0的订单
         Wrapper<Order> entityWrapper = new EntityWrapper<Order>().eq("del_flag", "0").eq("company_id", orderBean.getCompanyId());
         if (StringUtils.isNotEmpty(orderBean.getStatus())) {
-            entityWrapper.in("status_", orderBean.getStatus());
+            entityWrapper.eq("status_", orderBean.getStatus());
         }
         if (StringUtils.isNotEmpty(orderBean.getCategoryType())){
             entityWrapper.eq("title", orderBean.getCategoryType());
-        }
+        }else {
+			entityWrapper.notIn("title", Order.TitleType.BIGTHING);
+		}
         if (StringUtils.isNotEmpty(orderBean.getStartTime()) && StringUtils.isNotEmpty(orderBean.getEndTime())){
             entityWrapper.between("create_date", orderBean.getStartTime(), orderBean.getEndTime());
         }

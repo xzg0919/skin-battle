@@ -2425,16 +2425,25 @@
         WHERE
         del_flag = 0
         AND company_id = #{companyId}
-        <if test="categoryType != null and categoryType != '' ">
-            AND title = #{categoryType}
-        </if>
+		<choose>
+			<when test="categoryType == null  or categoryType == ''">
+				AND title IN (1,2, 3, 5)
+			</when>
+			<otherwise>
+				AND title IN (#{categoryType})
+			</otherwise>
+		</choose>
         <if test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
             AND create_date BETWEEN #{startTime}
             AND CONCAT(#{endTime}, ' 23:59:59')
         </if>
-        <if test="status != null and status != '' ">
-            AND status_ in (#{status})
-        </if>
+		<choose>
+			<when test="status == null  or status == ''">
+			</when>
+			<otherwise>
+				AND soo.status_ IN (#{status})
+			</otherwise>
+		</choose>
         ORDER BY
         create_date DESC
         LIMIT #{pageStart},
@@ -2538,7 +2547,7 @@
         AND soo.del_flag = 0
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND title IN (1,2, 3, 4, 5)
+                AND title IN (1,2, 3, 5)
             </when>
             <otherwise>
                 AND title IN (#{categoryType})
@@ -2616,7 +2625,7 @@
 				AND soo.company_id = #{companyId}
 				<choose>
 					<when test="categoryType == null  or categoryType == ''">
-						AND soo.title IN (1,2, 3, 4, 5)
+						AND soo.title IN (1,2, 3, 5)
 					</when>
 					<otherwise>
 						AND soo.title IN (#{categoryType})
