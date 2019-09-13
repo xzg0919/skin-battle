@@ -2566,6 +2566,7 @@
     </select>
     <select id="outOtherOrderListOverview" resultType="Map" parameterType="String">
 		SELECT
+			DISTINCT
 			CASE order_.status_
 		WHEN 0 THEN
 			'待接单'
