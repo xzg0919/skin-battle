@@ -2413,8 +2413,7 @@
         create_date,
         ach_price,
         is_cash,
-        CASE status_ IN (1, 2, 0)
-        AND now() > SUBDATE(arrival_time, INTERVAL - 1 DAY)
+        CASE 0 > TIMESTAMPDIFF(MINUTE, IF(title = '2',CONCAT(arrival_time,' ',SUBSTR(arrival_period, 7,5),':00'),IF(arrival_period='am',CONCAT(arrival_time,' 12:00:00'),CONCAT(arrival_time,' 18:00:00'))),IF(status_ = '3',complete_date,if(status_ in ('4','5'),cancel_time,NOW())))
         WHEN TRUE THEN
         '是'
         WHEN FALSE THEN
