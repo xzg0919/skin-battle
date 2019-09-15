@@ -528,6 +528,7 @@ public class OrderApi {
 			Map<String,Object> map = new HashMap<>();
 			map.put("type",9);
 			map.put("msg","操作成功");
+			map.put("status","FIVEKG");
 			map.put("code",resultMap.get("code"));
 			map.put("id",resultMap.get("id"));
 			return map;
