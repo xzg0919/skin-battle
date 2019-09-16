@@ -41,4 +41,6 @@ public interface CategoryAttrOptionMapper  extends BaseMapper<CategoryAttrOption
      */
 	List<CategoryAttr> getDigitNameRePlace(@Param("categoryId") int categoryId);
 
+	List<CategoryAttrOption> getAppliceOrBigOption(@Param("title") String title);
+
 }

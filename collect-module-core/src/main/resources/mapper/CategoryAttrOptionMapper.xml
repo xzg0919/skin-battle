@@ -75,5 +75,15 @@
 			WHERE
 				sca.`category_id` = #{categoryId}
     </select>
+	<select id="getAppliceOrBigOption" parameterType="String" resultType="com.tzj.collect.entity.CategoryAttrOption">
+		SELECT
+			c.*
+		FROM
+			sb_category a
+		LEFT JOIN sb_category_attr b ON a.id = b.category_id
+		LEFT JOIN sb_category_attr_option c ON b.id = c.category_attr_id
+		WHERE c.id is not NULL
+		AND a.title = #{title}
+	</select>
     
 </mapper>

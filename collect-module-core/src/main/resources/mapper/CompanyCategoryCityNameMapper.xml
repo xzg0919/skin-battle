@@ -59,6 +59,7 @@
 			a.company_id = #{companyId}
 		AND a.city_id = #{cityId}
 		AND b.title = 2
+		AND b.unuseful = 0
 	</select>
 	<select id="getHouseCategoryByCategoryId" parameterType="Integer" resultType="com.tzj.collect.entity.Category">
 		SELECT DISTINCT

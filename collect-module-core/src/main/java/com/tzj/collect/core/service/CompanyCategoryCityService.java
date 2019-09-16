@@ -24,4 +24,6 @@ public interface CompanyCategoryCityService extends IService<CompanyCategoryCity
     @DS("slave")
     List<Category> getOneCategoryListByOrder(Integer companyId, Integer cityId);
 
+    boolean updateCompanyAreaCategoryRange(Integer companyId, Integer cityId,String title);
+
 }
