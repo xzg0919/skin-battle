@@ -96,8 +96,10 @@ public class CategoryAttrOptionServiceImpl extends ServiceImpl<CategoryAttrOptio
 		CompanyAccount companyAccount = (CompanyAccount)subject.getUser();
 		return categoryAttrOptionMapper.getDigitName(Integer.parseInt(categoryBean.getId()),companyAccount.getCompanyId());
 	}
-	
 
-	
+	public  List<CategoryAttrOption> getAppliceOrBigOption(String title){
+		return categoryAttrOptionMapper.getAppliceOrBigOption(title);
+	}
+
 
 }
