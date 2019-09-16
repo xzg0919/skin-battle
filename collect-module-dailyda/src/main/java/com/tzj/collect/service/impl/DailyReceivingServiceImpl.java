@@ -114,11 +114,29 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
 //        }
         if (dailyDaParam.getSetNum() >= 5 || dailyDaParam.getSetNum() <= 0){
             return returnMap;
-        }else if (dailyDaParam.getSetNum() >= 1 && dailyDaParam.getSetNum() <= 2){
-            price = (Math.random() * 0.1 + 0.1 + "").substring(0,4);
-        }else if(dailyDaParam.getSetNum() >= 3 && dailyDaParam.getSetNum() <= 4){
-            price = (Math.random() * 0.1 + 0.2 + "").substring(0,4);
         }
+//        else if (dailyDaParam.getSetNum() >= 1 && dailyDaParam.getSetNum() <= 2){
+//            price = (Math.random() * 0.1 + 0.1 + "").substring(0,4);
+//        }else if(dailyDaParam.getSetNum() >= 3 && dailyDaParam.getSetNum() <= 4){
+//            price = (Math.random() * 0.1 + 0.2 + "").substring(0,4);
+//        }
+        switch (dailyDaParam.getSetNum()){
+            case 1:
+                price = (Math.random() * 0.03 + 0.11 + "").substring(0,4);
+                break;
+            case 2:
+                price = (Math.random() * 0.03+ 0.14 + "").substring(0,4);
+                break;
+            case 3:
+                price = (Math.random() * 0.03 + 0.17 + "").substring(0,4);
+                break;
+            case 4:
+                price = (Math.random() * 0.03 + 0.20 + "").substring(0,4);
+                break;
+            default:
+                return returnMap;
+        }
+
         Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         DailyReceiving dailyReceiving = this.selectOne(new EntityWrapper<DailyReceiving>().eq("del_flag", 0).eq("ali_user_id", dailyDaParam.getAliUserId()).eq("week_", LocalDate.now().getYear() + "" + week).eq("set_num", dailyDaParam.getSetNum()));
         //领红包时创建红包(aliUserId, week, setNum)
@@ -170,6 +188,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                             //交易失败(状态设置为未转账)
                             payment.setStatus(STATUS_PAYED);
                             payment.setIsSuccess("0");
+                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
                         }
                         dailyPaymentService.insertOrUpdate(payment);
                         returnMap.put("msg", "领取成功");
@@ -189,7 +208,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
     public static void main(String[] args) {
 
         for (int i = 0; i < 1000; i++){
-            System.out.println((Math.random() * 0.1 + 0.2 + "").substring(0,4));
+            System.out.println((Math.random() * 0.03 + 0.20 + "").substring(0,4));
         }
 //        System.out.println(a+"-----------------"+b+"--------"+c +"----------" +d);
     }

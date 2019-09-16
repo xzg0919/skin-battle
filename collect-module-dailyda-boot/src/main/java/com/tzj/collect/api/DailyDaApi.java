@@ -69,6 +69,7 @@ public class DailyDaApi {
      */
     @Api(name = "daily.week.dresser", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    @AuthIgnore
     public List<Map<String, Object>> weekDresserList(PageBean pageBean){
         Integer startPage = null == pageBean.getPageNumber() ? 1: pageBean.getPageNumber();
         Integer pageSize = null == pageBean.getPageSize() ? 10 : pageBean.getPageSize();

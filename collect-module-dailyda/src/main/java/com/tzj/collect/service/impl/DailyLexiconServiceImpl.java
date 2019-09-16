@@ -248,7 +248,10 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         Jedis jedis = jedisPool.getResource();
         Long localTime = System.currentTimeMillis();
         Double weekScore = jedis.zscore(redisKeyName(), member.getAliUserId());
-        returnMap.put("weekScore", null == weekScore ? 0: weekScore.intValue());
+        if (null == weekScore){
+            weekScore = 0.0;
+        }
+        returnMap.put("weekScore", weekScore);
         //根据当前分数查大于当前分数的人数
         Long underPerSonNum = jedis.zcount(redisKeyName(), weekScore+0.1, 1000);
         //再根据当前分数里面的总人数排名
@@ -400,6 +403,9 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         });
         System.out.println(System.currentTimeMillis()-localTime);
         //根据redis中答题时间（谁先答题，同分数下谁在前面）
+        if (limit == 10){
+            limit = 50;//取排名50条数据
+        }
         List<Map<String, Object>> collect = aliUserIdScoreList.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).limit(limit).collect(Collectors.toList());
         //关闭 jedis
         jedis.close();

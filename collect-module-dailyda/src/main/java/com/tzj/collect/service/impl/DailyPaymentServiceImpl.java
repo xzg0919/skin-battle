@@ -60,4 +60,25 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
 
     }
 
+    public static void main(String[] args) {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+
+        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
+        model.setOutBizNo(UUID.randomUUID().toString());
+        model.setPayeeType("ALIPAY_USERID");
+        model.setPayeeAccount("2088212384105273");
+        model.setAmount("0.1");
+        model.setPayerShowName("答答答红包");
+        model.setRemark("答答答红包");
+        request.setBizModel(model);
+        AlipayFundTransToaccountTransferResponse response =null;
+        try {
+            response  = alipayClient.execute(request);
+            System.out.println(response);
+        }catch (AlipayApiException e){
+            throw new ApiException("系统异常：" + e.getErrMsg());
+        }
+    }
+
 }
