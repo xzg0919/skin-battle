@@ -20,4 +20,6 @@ public interface CompanyCategoryCityNameService extends IService<CompanyCategory
     List<Category> getBigCategoryByCompanyId(Integer companyId, Integer cityId);
     @DS("slave")
     List<Category> getHouseCategoryByCompanyId(Integer houseceCompanyId,Integer cityId);
+    @DS("slave")
+    List<Category> getFiveCategoryByCompanyId(Integer fiveCompanyId,Integer cityId);
 }

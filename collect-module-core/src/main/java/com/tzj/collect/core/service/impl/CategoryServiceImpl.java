@@ -611,7 +611,7 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 			}else {
 				Integer fiveCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAdderss.getStreetId());
 				if (null!=fiveCompanyId){
-					categoryList = companyCategoryCityNameService.getHouseCategoryByCompanyId(fiveCompanyId,memberAdderss.getCityId());
+					categoryList = companyCategoryCityNameService.getFiveCategoryByCompanyId(fiveCompanyId,memberAdderss.getCityId());
 					categoryList = categoryList.stream().filter(category -> category.getId()==45).collect(Collectors.toList());
 					List<Category> categoryLists = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
 					categoryLists = categoryLists.stream().filter(category -> category.getId()!=45).collect(Collectors.toList());
