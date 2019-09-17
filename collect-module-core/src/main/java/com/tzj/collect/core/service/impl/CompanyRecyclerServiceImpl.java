@@ -1,6 +1,5 @@
 package com.tzj.collect.core.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Transactional
@@ -448,20 +448,38 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		}
 		List<String> recycleIds = recyclersServiceRangeBean.getRecycleIds();
 		String finalType = type;
+		AtomicReference<Integer> parentId = null;
 		recycleIds.stream().forEach(recycleId -> {
 			CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("type_", finalType).eq("company_id", companyId).eq("recycler_id", recycleId).eq("status_", "1"));
+			parentId.set(companyRecycler1.getParentsId());
 			companyRecycler1.setParentsId(companyRecycler.getRecyclerId());
 			companyRecycler1.setCity(companyRecycler.getCity());
 			companyRecycler1.setProvince(companyRecycler.getProvince());
 			companyRecyclerService.updateById(companyRecycler1);
 			Recyclers recyclers = recyclersService.selectById(recycleId);
 			try {
-				PushUtils.getAcsResponse(recyclers.getTel(),"2","4");
-				PushUtils.getAcsResponse(recyclers.getTel(),"2","1");
+				if("Y".equals(recyclersServiceRangeBean.getIsBigRecycle())){
+					PushUtils.getAcsResponse(recyclers.getTel(),"2","4");
+				}else {
+					PushUtils.getAcsResponse(recyclers.getTel(),"2","1");
+				}
 			}catch (Exception e){
 				e.printStackTrace();
 			}
 		});
+		Recyclers parent = recyclersService.selectById(companyRecycler.getRecyclerId());
+		Recyclers parents = recyclersService.selectById(parentId.get());
+		try {
+			if("Y".equals(recyclersServiceRangeBean.getIsBigRecycle())){
+				PushUtils.getAcsResponse(parent.getTel(),"2","4");
+				PushUtils.getAcsResponse(parents.getTel(),"2","4");
+			}else {
+				PushUtils.getAcsResponse(parent.getTel(),"2","1");
+				PushUtils.getAcsResponse(parents.getTel(),"2","1");
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		return "操作成功";
 	}
 

@@ -417,7 +417,7 @@ public class AppRecyclersApi {
 				if("Y".equals(recyclersBean.getIsBigRecycle())){
 					wrapper.eq("type_","4");
 				}else {
-					wrapper.eq("type_","4");
+					wrapper.eq("type_","1");
 				}
 		List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(wrapper);
 		if(companyRecyclerList.isEmpty()){
