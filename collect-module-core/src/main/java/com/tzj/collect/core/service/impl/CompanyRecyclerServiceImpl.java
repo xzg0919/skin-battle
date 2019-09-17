@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.core.mapper.CompanyRecyclerMapper;
 import com.tzj.collect.core.param.app.RecyclersBean;
 import com.tzj.collect.core.param.business.BusinessRecyclerBean;
@@ -453,6 +454,13 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 			companyRecycler1.setCity(companyRecycler.getCity());
 			companyRecycler1.setProvince(companyRecycler.getProvince());
 			companyRecyclerService.updateById(companyRecycler1);
+			Recyclers recyclers = recyclersService.selectById(recycleId);
+			try {
+				PushUtils.getAcsResponse(recyclers.getTel(),"2","4");
+				PushUtils.getAcsResponse(recyclers.getTel(),"2","1");
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 		});
 		return "操作成功";
 	}

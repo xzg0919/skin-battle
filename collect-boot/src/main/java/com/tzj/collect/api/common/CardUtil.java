@@ -42,9 +42,10 @@ public class CardUtil {
     {
         try
         {
+            String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
             AlipayMarketingCardTemplateModifyRequest request = new AlipayMarketingCardTemplateModifyRequest();
             String biz = "{"
-                    + "\"request_id\":\"lajihuishou0063\","
+                    + "\"request_id\":\""+orderNo+"\","
                     + "\"template_id\":\"20180711000000001069918000300173\","
                     + "\"biz_no_prefix\":\"collect\","
                     + "\"write_off_type\":\"qrcode\","
@@ -92,9 +93,11 @@ public class CardUtil {
                     +    "        \"code\":\"TO_CLOCK_IN\","
                     +    "\"text\":\"环保商城\","
                     +    "\"url_type\":\"miniAppUrl\","
-                    +    "\"url\":\"https://qr.alipay.com/s6x01452mvefon1xfq0zt3f\","
+                    +    "\"url\":\"https://qr.alipay.com/s6x03220ijk70tkkgffxh59\","
                     +    "\"mini_app_url\":{"
                     +    "\"mini_app_id\":\"2018060660292753\","
+                    +    "\"mini_page_param\":\"pages/view/storeMall/energy/energy\","
+                +        "\"mini_query_param\":\"\","
                     +    "\"display_on_list\":\"true\""
                     +    "        }"
                     +   "        }" +
