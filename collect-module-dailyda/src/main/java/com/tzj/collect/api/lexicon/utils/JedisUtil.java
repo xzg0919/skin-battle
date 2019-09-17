@@ -43,7 +43,12 @@ public class JedisUtil {
             try {
                 jedis = jedisPool.getResource();
                 jedis.select(index);
+                if (null ==jedis.get(uuId.getBytes()))
+                {
+                    return null;
+                }
                 code = this.unSerialize(jedis.get(uuId.getBytes()));
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

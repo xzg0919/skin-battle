@@ -2414,10 +2414,11 @@
         ach_price,
         is_cash,
         CASE TIMESTAMPDIFF(MINUTE, IF(title = '2',CONCAT(arrival_time,' ',SUBSTR(arrival_period, 7,5),':00'),IF(arrival_period='am',CONCAT(arrival_time,' 12:00:00'),CONCAT(arrival_time,' 18:00:00'))),IF(status_ = '3',complete_date,if(status_ in ('4','5'),cancel_time,NOW()))) > 0
-        WHEN TRUE THEN
+        WHEN TRUE AND is_scan = 0 THEN
         '是'
         WHEN FALSE THEN
         '否'
+        ELSE '否'
         END AS isOverTime
         FROM
         sb_order

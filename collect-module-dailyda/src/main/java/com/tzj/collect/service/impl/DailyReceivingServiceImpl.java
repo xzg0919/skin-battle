@@ -188,7 +188,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                             //交易失败(状态设置为未转账)
                             payment.setStatus(STATUS_PAYED);
                             payment.setIsSuccess("0");
-                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+//                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
                         }
                         dailyPaymentService.insertOrUpdate(payment);
                         returnMap.put("msg", "领取成功");
