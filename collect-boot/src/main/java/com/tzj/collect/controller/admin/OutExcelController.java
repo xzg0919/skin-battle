@@ -240,9 +240,9 @@ public class OutExcelController {
             List<String> titles = new ArrayList<>();
             ExcelData data = new ExcelData();
             data.setName("完成订单");
-            titles.add("下单日期");
-            titles.add("服务商");
-            titles.add("类别");
+            titles.add("订单号");
+            titles.add("下单时间");
+            titles.add("公司");
             titles.add("一级类目");
             titles.add("二级类目");
             titles.add("计费方式");
