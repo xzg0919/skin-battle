@@ -170,16 +170,6 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
         return LocalDate.now().getYear() + ":" + week;
     }
 
-//    public static void main(String[] args) {
-//        try {
-//            System.out.println(System.getProperties().getProperty("user.home")+File.separator);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-    //fileUploadFactoryBean.setAccessId("LTAIMbbuj3E2uX48");
-    //        fileUploadFactoryBean.setAccessKey("V8RPkZqqaBg6QK0mk9GsPcub8ePRyN");
-    //        fileUploadFactoryBean.setBucketName("osssqt");
     public void  uploadExcelFile(String url, File file){
         // Endpoint以杭州为例，其它Region请按实际情况填写。
         String endpoint = "oss-cn-shanghai.aliyuncs.com";
