@@ -448,7 +448,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		}
 		List<String> recycleIds = recyclersServiceRangeBean.getRecycleIds();
 		String finalType = type;
-		AtomicReference<Integer> parentId = null;
+		AtomicReference<Integer> parentId = new AtomicReference<>();
 		recycleIds.stream().forEach(recycleId -> {
 			CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("type_", finalType).eq("company_id", companyId).eq("recycler_id", recycleId).eq("status_", "1"));
 			parentId.set(companyRecycler1.getParentsId());

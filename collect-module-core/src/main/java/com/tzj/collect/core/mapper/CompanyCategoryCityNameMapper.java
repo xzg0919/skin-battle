@@ -20,4 +20,8 @@ public interface CompanyCategoryCityNameMapper extends BaseMapper<CompanyCategor
     List<Category> getHouseCategoryByCompanyId(@Param("companyId")Integer companyId,@Param("cityId") Integer cityId);
 
     List<Category> getHouseCategoryByCategoryId(@Param("categoryId")Integer categoryId,@Param("companyId")Integer companyId,@Param("cityId") Integer cityId);
+
+    List<Category> getFiveCategoryByCompanyId(@Param("companyId")Integer companyId,@Param("cityId") Integer cityId);
+
+    List<Category> getFiveCategoryByCategoryId(@Param("categoryId")Integer categoryId,@Param("companyId")Integer companyId,@Param("cityId") Integer cityId);
 }

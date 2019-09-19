@@ -88,4 +88,12 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
         });
         return categoryList;
     }
+    public List<Category> getFiveCategoryByCompanyId(Integer fiveCompanyId,Integer cityId){
+        List<Category> categoryList = companyCategoryCityNameMapper.getFiveCategoryByCompanyId(fiveCompanyId, cityId);
+        categoryList.stream().forEach(category -> {
+            List<Category> categoryList1 = companyCategoryCityNameMapper.getFiveCategoryByCategoryId(category.getId().intValue(),fiveCompanyId,cityId);
+            category.setCategoryList(categoryList1);
+        });
+        return categoryList;
+    }
 }
