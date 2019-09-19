@@ -67,7 +67,6 @@ import java.util.stream.Collectors;
  **/
 @Service
 @Transactional
-@DS("slave")
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
 	@Autowired
