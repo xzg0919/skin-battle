@@ -33,6 +33,7 @@ public class DailyJob {
 
     @Resource
     private DailyWeekRankingService dailyWeekRankingService;
+
     @Resource
     private DailyPaymentService dailyPaymentService;
 
@@ -44,6 +45,16 @@ public class DailyJob {
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new DailyPaymentThread(dailyPaymentService)));
     }
 
+    /** 每周（1次）执行定时任务：上传上周排行榜记录到oss(供用户下载)
+     * @author sgmark@aliyun.com
+     * @date 2019/9/4 0004
+     * @param
+     * @return
+     */
+    @Scheduled(cron = "10 27 18 ? * 4")
+    public void downloadExcel(){
+        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new UploadExcelThread(dailyWeekRankingService)));
+    }
 
     /** 每周（三次）执行定时任务：发送模板消息给收呗用户（formId存在的用户）
      * @author sgmark@aliyun.com
@@ -141,5 +152,24 @@ public class DailyJob {
         }
     }
 
+    /** 每周（1次）执行定时任务：上传上周排行榜记录到oss(供用户下载)
+     * @author sgmark@aliyun.com
+     * @date 2019/9/4 0004
+     * @param
+     * @return
+     */
+    private class UploadExcelThread implements Runnable {
+
+        private DailyWeekRankingService dailyWeekRankingService;
+
+        public UploadExcelThread(DailyWeekRankingService dailyWeekRankingService) {
+            this.dailyWeekRankingService = dailyWeekRankingService;
+        }
+
+        @Override
+        public void run() {
+            dailyWeekRankingService.uploadExcel();
+        }
+    }
 }
 

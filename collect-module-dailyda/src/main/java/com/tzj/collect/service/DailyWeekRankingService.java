@@ -23,4 +23,7 @@ public interface DailyWeekRankingService extends IService<DailyWeekRanking> {
        */
      @DS("slave")
      void insertEachWeekDresser();
+     //上传excel文档到oss
+     @DS("slave")
+     void uploadExcel();
 }

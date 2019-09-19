@@ -518,6 +518,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         return (Double) map.get("userInputDate");
     }
 
+    //上周排行榜
     @Override
     public List<Map<String, Object>> weekDresserList() {
         Jedis jedis = jedisPool.getResource();
