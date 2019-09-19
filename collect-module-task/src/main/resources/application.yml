@@ -27,7 +27,10 @@ spring:
   redis2:
     #open: false  # 是否开启redis缓存  true开启   false关闭
     #database: 0
+    #正式
     host:  r-uf6crus7stfo0npql7.redis.rds.aliyuncs.com
+    #测试
+#    host: 172.19.193.25
     password: sb_123456      # 密码（默认为空）
 #    host: 172.19.193.25
 #    # 测试6370 正式6379

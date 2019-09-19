@@ -53,6 +53,11 @@
             <!--<artifactId>collect-module-core</artifactId>-->
         <!--</dependency>-->
         <!-- API 框架 -->
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>3.5.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>

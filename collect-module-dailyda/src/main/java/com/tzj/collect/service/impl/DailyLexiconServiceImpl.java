@@ -137,7 +137,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         Map<String, Object> answerMap = new HashMap<>();
 
         answerMap.put("typeId", "1");
-        answerMap.put("name", "干垃圾");
+        answerMap.put("name", "干垃圾/其他垃圾");
         answerMap.put("aliasName", "DRY");
         answerList.add(answerMap);
 
@@ -518,6 +518,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         return (Double) map.get("userInputDate");
     }
 
+    //上周排行榜
     @Override
     public List<Map<String, Object>> weekDresserList() {
         Jedis jedis = jedisPool.getResource();
