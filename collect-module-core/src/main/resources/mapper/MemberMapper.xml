@@ -88,7 +88,16 @@
 		WHERE
 			ali_user_id = #{aliUserId}
 </select>
-<update id="updateMemberByAliUserId" parameterType="com.tzj.collect.entity.Member">
+	<update id="deleteMemberByAliUserId" parameterType="String">
+		UPDATE ${tableName}
+			SET ali_card_no = NULL,
+				card_no = NULL,
+			 link_name = NULL,
+			 pic_url = NULL
+		WHERE
+			ali_user_id = #{aliUserId}
+	</update>
+	<update id="updateMemberByAliUserId" parameterType="com.tzj.collect.entity.Member">
 	UPDATE ${member.tableName} a
 	SET
 	<if test="member.idCard != null and member.idCard != ''">

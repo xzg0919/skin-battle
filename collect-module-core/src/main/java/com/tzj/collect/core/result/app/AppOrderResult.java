@@ -104,6 +104,8 @@ public class AppOrderResult {
 
 	private String overTime;//超时时间
 
+	private String overTimes;//超时时间
+
 
 	public String getAliUserId() {
 		return aliUserId;

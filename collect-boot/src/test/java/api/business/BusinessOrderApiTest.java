@@ -35,7 +35,7 @@ import static com.tzj.collect.common.constant.TokenConst.*;
 
 public class BusinessOrderApiTest {
 	public static void main(String[] args) throws Exception {
-		String token = JwtUtils.generateToken("2", BUSINESS_API_EXPRIRE, BUSINESS_API_TOKEN_SECRET_KEY);
+		String token = JwtUtils.generateToken("41", BUSINESS_API_EXPRIRE, BUSINESS_API_TOKEN_SECRET_KEY);
 		String securityToken = JwtUtils.generateEncryptToken(token, BUSINESS_API_TOKEN_CYPTO_KEY);
 		System.out.println("生成的token是："+securityToken);
 
@@ -48,13 +48,16 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		OrderBean orderBean = new OrderBean();
-		orderBean.setOrderNo("20190716123601395061");
-		orderBean.setCancelReason("我是申请取消原因");
+		RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
+		recyclersServiceRangeBean.setIsBigRecycle("N");
+		recyclersServiceRangeBean.setManagerId("2205");
+			List<String> list  = new ArrayList<>();
+			list.add("1564");
+		recyclersServiceRangeBean.setRecycleIds(list);
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.order.cancleOrderExamine");
+		param.put("name","business.recycle.updateRecycleForParent");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -62,7 +65,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",orderBean);
+		param.put("data",recyclersServiceRangeBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);

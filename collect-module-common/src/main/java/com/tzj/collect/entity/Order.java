@@ -75,6 +75,8 @@ public class Order extends DataEntity<Long> {
 	@TableField(exist = false)
 	private Integer overTime;
 	@TableField(exist = false)
+	private Integer overTimes;
+	@TableField(exist = false)
 	private String examineReason;
 	@TableField(exist = false)
 	private String examineStatus;
