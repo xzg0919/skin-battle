@@ -34,7 +34,7 @@ public class DailyLexicon extends DataEntity<Long> {
 
     public enum LexType implements IEnum {
         BEFORE(0, "占位符"),// 占位符
-        DRY(1, "干垃圾"),   	 //干垃圾
+        DRY(1, "干垃圾/其他垃圾"),   	 //干垃圾
         KITCHEN(2, "湿垃圾"),		//湿垃圾
         RECYCLABLE(3, "可回收物"),	//可回收物
         HARMFUL(4, "有害垃圾"),		//有害垃圾
