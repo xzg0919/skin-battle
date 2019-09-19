@@ -219,7 +219,7 @@ public class OutExcelController {
                     }
                 }
                 row.add(list.get(i).get("price"));
-                row.add(list.get(i).get("paymentPrise"));
+                row.add(list.get(i).get("paymentPrise")==null?0:list.get(i).get("paymentPrise"));
                 row.add(list.get(i).get("recycleName"));
                 row.add(list.get(i).get("distributeTime"));
 //            row.add(list.get(i).get("receiveTime"));5.9版本干掉接单时间
@@ -339,7 +339,7 @@ public class OutExcelController {
             row.add(list.get(i).get("orderNo"));
             row.add(list.get(i).get("createDate"));
             row.add(list.get(i).get("arrivalTime"));
-            row.add(this.getOrderStatus(list.get(i).get("status")+""));
+            row.add(this.getOrderStatus(list.get(i).get("status").toString()));
             row.add(list.get(i).get("categoryName"));
             rows.add(row);
 
@@ -441,23 +441,19 @@ public class OutExcelController {
     public String getOrderStatus(String status){
         String statusPage = null;
         switch (status) {
-            case "INIT":
+            case "1":
                 statusPage = "待接单";
                 break;
-            case "COMPLETE":
+            case "3":
                 statusPage = "已完成";
                 break;
-            case "CANCEL":
+            case "4":
                 statusPage = "已取消";
                 break;
-            case "TOSEND":
-                // statusPage = "已派单";
-                statusPage = "待接单";
-                break;
-            case "ALREADY":
+            case "2":
                 statusPage = "进行中";
                 break;
-            case "REJECTED":
+            case "5":
                 statusPage = "平台已取消";
                 break;
             default:

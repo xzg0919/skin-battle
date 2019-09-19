@@ -582,6 +582,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 					companyStreetApplianceService.insert(companyStreetAppliance);
 					orderService.updateOrderCompany(streetId,areaBean.getCompanyId(),"1");
 					companyCategoryCityService.updateCompanyAreaCategoryRange(Integer.parseInt(areaBean.getCompanyId()),area.getParentId(),"1");
+					recyclersRangeApplianceService.delete(new EntityWrapper<RecyclersRangeAppliance>().eq("street_id",streetId));
 				}
 				if ("2".equals(title)){
 					companyStreetHouseService.delete(new EntityWrapper<CompanyStreetHouse>().eq("street_id",streetId));
@@ -592,6 +593,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 					companyStreetHouseService.insert(companyStreetHouse);
 					orderService.updateOrderCompany(streetId,areaBean.getCompanyId(),"2");
 					companyCategoryCityService.updateCompanyAreaCategoryRange(Integer.parseInt(areaBean.getCompanyId()),area.getParentId(),"2");
+					recyclersRangeHouseService.delete(new EntityWrapper<RecyclersRangeHouse>().eq("street_id",streetId));
 				}
 				if ("4".equals(title)){
 					companyStreetBigService.delete(new EntityWrapper<CompanyStreetBig>().eq("street_id",streetId));
@@ -602,6 +604,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 					companyStreetBigService.insert(companyStreetBig);
 					orderService.updateOrderCompany(streetId,areaBean.getCompanyId(),"4");
 					companyCategoryCityService.updateCompanyAreaCategoryRange(Integer.parseInt(areaBean.getCompanyId()),area.getParentId(),"4");
+					recyclersRangeBigService.delete(new EntityWrapper<RecyclersRangeBig>().eq("street_id",streetId));
 				}
 			});
 		});

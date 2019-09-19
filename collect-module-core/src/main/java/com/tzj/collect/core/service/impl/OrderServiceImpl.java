@@ -73,7 +73,6 @@ import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
  **/
 @Service
 @Transactional
-@DS("slave")
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
 	@Autowired

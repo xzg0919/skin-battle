@@ -17,6 +17,8 @@ public interface MemberMapper extends BaseMapper<Member>{
      */
     Member selectMemberByAliUserId(@Param("aliUserId") String aliUserId,@Param("tableName") String tableName);
 
+    Integer deleteMemberByAliUserId(@Param("aliUserId") String aliUserId,@Param("tableName") String tableName);
+
     /**
      * 根据阿里UserId更新相关数据
      * @param member

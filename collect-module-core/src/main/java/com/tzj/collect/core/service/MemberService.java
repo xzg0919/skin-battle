@@ -64,6 +64,13 @@ public interface MemberService extends IService<Member>{
     Member selectMemberByAliUserId(String aliUserId);
 
     /**
+     * 根据阿里UserId删除唯一数据
+     * @param aliUserId
+     * @return
+     */
+    Integer deleteMemberByAliUserId(String aliUserId);
+
+    /**
      * 根据阿里UserId更新相关数据
      * @param member
      * @return

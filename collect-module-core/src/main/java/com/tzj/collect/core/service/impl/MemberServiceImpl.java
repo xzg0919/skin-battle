@@ -499,6 +499,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 		String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
 		return memberMapper.selectMemberByAliUserId(aliUserId,memberName);
 	}
+	@Override
+	@Transactional
+	public Integer deleteMemberByAliUserId(String aliUserId){
+		String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
+		return memberMapper.deleteMemberByAliUserId(aliUserId,memberName);
+	}
 
 	@Override
 	@Transactional
