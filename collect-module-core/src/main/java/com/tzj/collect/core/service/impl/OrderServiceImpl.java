@@ -3421,7 +3421,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			returnMap.put("msg", "随机数异常");
 		}else {
 			String price = randomPrice();
-			Payment payment = new Payment();
+			Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("del_flag", 0).eq("order_sn", fromRedis));
+			if (null == payment){
+				payment = new Payment();
+			}else {
+				//这里不判断也没关系，再次用相同的单号交易会出现异常（之后的定时任务会处理当前交易完成但是状态异常的订单）
+				returnMap.put("msg", "红包已领取");
+				return returnMap;
+			}
 			payment.setAliUserId(orderbean.getAliUserId());
 			payment.setPrice(new BigDecimal(price));
 			payment.setOrderSn(fromRedis.toString());
