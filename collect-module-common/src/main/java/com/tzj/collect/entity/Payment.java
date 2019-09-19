@@ -155,7 +155,8 @@ public class Payment extends DataEntity<Long>{
 
     public enum PayType implements IEnum {
         COLLECT(0), // 收呗订单
-        RED_BAG(1); // 答答答红包转账
+        RED_BAG(1), // 答答答红包转账
+        CASH_BAG(2);//马上回收现金红包
         private int value;
 
         PayType(final int value) {

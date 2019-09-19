@@ -634,7 +634,12 @@ public class RedisUtil {
             Object code = null;
             try {
                 jedis = jedisPool.getResource();
-                code = this.unSerialize(jedis.get(uuId.getBytes()));
+                byte[] byteArray = jedis.get(uuId.getBytes());
+                if (null != byteArray) {
+                    code = this.unSerialize(byteArray);
+                }else {
+                    return null;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

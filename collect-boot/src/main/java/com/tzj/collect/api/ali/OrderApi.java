@@ -16,7 +16,9 @@ import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.module.api.annotation.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import redis.clients.jedis.JedisPool;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -73,6 +75,8 @@ public class OrderApi {
 	private RedisUtil redisUtil;
 	@Autowired
 	private MemberService memberService;
+	@Resource
+	private JedisPool jedisPool;
 	
 
 	/**
@@ -258,6 +262,13 @@ public class OrderApi {
 			e.printStackTrace();
 		}
 
+		//是否有马上回收红包
+		if("Y".equals(orderbean.getIsDelivery())){
+			RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+			//保存一个月
+			saveOrGetFromRedis.saveInRedis("receive:" + orderNo, UUID.randomUUID().toString(), 30*24*60*60, jedisPool);
+		}
+
     	return resultMap;
     }
 	/**
@@ -409,6 +420,14 @@ public class OrderApi {
 		map.put("code",resultMap.get("code"));
 		map.put("id",resultMap.get("id"));
 		map.put("status",resultMap.get("status"));
+
+		//是否有马上回收红包
+		if("Y".equals(orderbean.getIsDelivery())){
+			RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+			//保存一个月
+			saveOrGetFromRedis.saveInRedis("receive:" + orderNo, UUID.randomUUID().toString(), 30*24*60*60, jedisPool);
+		}
+
 		return map;
 	}
 	/**
@@ -524,6 +543,14 @@ public class OrderApi {
 				e.printStackTrace();
 			}
 		}
+
+		//是否有马上回收红包
+		if("Y".equals(orderbean.getIsDelivery())){
+			RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+			//保存一个月
+			saveOrGetFromRedis.saveInRedis("receive:" + orderNo, UUID.randomUUID().toString(), 30*24*60*60, jedisPool);
+		}
+
 		if("操作成功".equals(resultMap.get("msg")+"")){
 			Map<String,Object> map = new HashMap<>();
 			map.put("type",9);
@@ -603,6 +630,13 @@ public class OrderApi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		//是否有马上回收红包
+		if("Y".equals(orderbean.getIsDelivery())){
+			RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+			//保存一个月
+			saveOrGetFromRedis.saveInRedis("receive:" + orderNo, UUID.randomUUID().toString(), 30*24*60*60, jedisPool);
+		}
 		return resultMap;
 	}
 	/**
@@ -666,5 +700,18 @@ public class OrderApi {
 		}else {
 			return  collectDetail;
 		}
+	}
+
+	/** 用户领取现金红包(领取前订单是否完成，该随机数是否准确，是否已被领取)
+	 * @author sgmark@aliyun.com （抄自答答答）
+	 * @date 2019/8/12 0012
+	 * @param orderbean(包含领奖随机数 + 订单编号 )
+	 * @return
+	 */
+	@Api(name = "order.receiving.money", version = "1.0")
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Map<String, Object> receivingMoney(OrderBean orderbean){
+		orderbean.setAliUserId(MemberUtils.getMember().getAliUserId());
+		return orderService.receivingMoney(orderbean);
 	}
 }

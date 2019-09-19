@@ -272,7 +272,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
        return response;
     }
 
-    public  AlipayFundTransToaccountTransferResponse dailyDaTransfer(String aliUserId, String price, String outBizNo){
+    public  AlipayFundTransToaccountTransferResponse receivingMoneyTransfer(String aliUserId, String price, String outBizNo){
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
 
@@ -281,8 +281,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         model.setPayeeType("ALIPAY_USERID");
         model.setPayeeAccount(aliUserId);
         model.setAmount(price);
-        model.setPayerShowName("答答答红包");
-        model.setRemark("答答答红包");
+        model.setPayerShowName("码上回收现金红包活动");
+        model.setRemark("码上回收现金红包活动");
         request.setBizModel(model);
         AlipayFundTransToaccountTransferResponse response =null;
         try {

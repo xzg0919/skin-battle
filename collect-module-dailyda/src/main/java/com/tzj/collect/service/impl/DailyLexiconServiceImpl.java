@@ -467,7 +467,6 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             Object object = saveOrGetFromRedis.getFromRedis(redisKeyName()+":"+"user_information"+":"+aliUserIdScore.get(0),jedisPool, 0);
             MemberBean member = null;
             if (null == object ){
-                return;
             }else {
                 member = (MemberBean)object;
             }

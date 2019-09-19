@@ -245,4 +245,6 @@ public class OrderBean {
 
     private String isBig;//"Y"是大件 其他情况不是
 
+    private String isDelivery;//马上回收（每笔订单是否派送红包）
+
 }

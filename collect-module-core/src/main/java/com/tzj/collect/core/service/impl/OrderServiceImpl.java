@@ -5,6 +5,7 @@ import com.alipay.api.domain.AntMerchantExpandTradeorderSyncModel;
 import com.alipay.api.domain.ItemOrder;
 import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
+import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.dynamic.datasource.annotation.DS;
@@ -52,7 +53,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import redis.clients.jedis.JedisPool;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -60,6 +63,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static com.tzj.collect.entity.Payment.STATUS_PAYED;
+import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
 
 /**
  * 订单ServiceImpl
@@ -144,6 +150,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private CompanyCategoryCityLocaleService companyCategoryCityLocaleService;
 	@Autowired
 	private OrderCancleExamineService orderCancleExamineService;
+
+	@Resource
+	private JedisPool jedisPool;
 
 	/**
 	 * 获取会员的订单列表 分页
@@ -3247,6 +3256,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			category = categoryService.selectById(order.getCategoryId());
 			orderItemList = orderItemService.selectList(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));
 		}
+		//马上回收跳转过来的可领取红包的订单（当前的订单编号-随机数）保存到redis中，随机数作为发红包的order_sn
+		RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+		Object fromRedis = saveOrGetFromRedis.getFromRedis("receive:" + order.getOrderNo(), jedisPool);
+		if (null != fromRedis){
+			if (OrderStatusType.COMPLETE.getValue().equals(order.getStatus().getValue())){
+				//根据随机数去发放流水表中查找记录
+				Payment deliveryPament = paymentService.selectOne(new EntityWrapper<Payment>().eq("del_flag", 0).eq("order_sn", fromRedis));
+				if (null != deliveryPament){
+					//已领取
+					resultMap.put("deliveryStatus", "COMPLETE");
+				}else {
+					//可领取，未领取状态
+					resultMap.put("deliveryStatus", "ALREADY");
+					//红包派发随机数
+					resultMap.put("delivery_no", fromRedis);
+				}
+			}else {
+				//第二种：订单未完成
+				resultMap.put("deliveryStatus", "INIT");
+			}
+		}else {
+			//没有红包
+			resultMap.put("deliveryStatus", "NOT");
+		}
+
 		resultMap.put("order",order);
 		resultMap.put("paymentNo",paymentNo);
 		resultMap.put("recyclers",recyclers);
@@ -3371,7 +3405,52 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderMapper.updateOrderCompany(streetId,companyId,title);
 	}
 
-    /**【业务数据总览】(分页)
+	@Override
+	public Map<String, Object> receivingMoney(OrderBean orderbean) {
+		Map<String, Object> returnMap = new HashMap<>();
+		if (StringUtils.isEmpty(orderbean.getOrderNo()) || StringUtils.isEmpty(orderbean.getIsDelivery())){
+			returnMap.put("msg", "参数错误");
+		}
+		RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+		Object fromRedis = saveOrGetFromRedis.getFromRedis("receive:" + orderbean.getOrderNo(), jedisPool);
+		Order order = orderService.selectOne(new EntityWrapper<Order>().eq("del_flag", 0).eq("order_no", orderbean.getOrderNo()).eq("status", OrderStatusType.ALREADY.getValue()));
+		if (null == fromRedis || null == order){
+			//redis中未查到当前订单，领奖失败
+			returnMap.put("msg", "未达到领奖条件");
+		}else if (!orderbean.getIsDelivery().equals(fromRedis)){
+			//随机数不匹配，领奖失败
+			returnMap.put("msg", "随机数异常");
+		}else {
+			String price = randomPrice();
+			Payment payment = new Payment();
+			payment.setAliUserId(orderbean.getAliUserId());
+			payment.setPrice(new BigDecimal(price));
+			payment.setOrderSn(fromRedis.toString());
+			payment.setSellerId(orderbean.getAliUserId());
+			payment.setPayType(Payment.PayType.CASH_BAG);
+			//产生随机金额，发送红包
+			AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = paymentService.receivingMoneyTransfer(orderbean.getAliUserId(), price, fromRedis.toString());
+			if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())) {
+				//交易完成(状态设置为已转账)
+				payment.setStatus(STATUS_TRANSFER);
+				payment.setIsSuccess("1");
+				payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+			} else {
+				//交易失败(状态设置为未转账)
+				payment.setStatus(STATUS_PAYED);
+				payment.setIsSuccess("0");
+				payment.setRemarks(alipayFundTransToaccountTransferResponse.getSubMsg());
+				//和收呗转账区分开（转账失败不设置tradeNo）下个版本增加转账失败后的定时任务
+//                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+			}
+			paymentService.insertOrUpdate(payment);
+			returnMap.put("msg", "领取成功");
+			returnMap.put("price", price);
+		}
+		return returnMap;
+	}
+
+	/**【业务数据总览】(分页)
      * @author sgmark@aliyun.com
      * @date 2019/9/9 0009
      * @param
@@ -3436,4 +3515,41 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         return orderMapper.outOtherOrderListOverview(bOrderBean.getCompanyId() +"", bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
     }
+
+	public String randomPrice(){
+		Integer randomInt = new Random().nextInt(10000);
+		String price = "";
+		switch (randomInt){
+			case 0:
+				price = "88.88";
+				break;
+			case 100:
+				price = "66.88";
+				break;
+			case 200:
+				price = "28.88";
+				break;
+			case 300:
+				price = "18.88";
+				break;
+			case 400:
+				price = "8.88";
+				break;
+			case 500:
+				price = "5.88";
+				break;
+			case 600:
+				price = "3.88";
+				break;
+			case 700:
+				price = "2.88";
+				break;
+			case 800:
+				price = "1.88";
+				break;
+			default:
+				price = "0.88";
+		}
+		return price;
+	}
 }

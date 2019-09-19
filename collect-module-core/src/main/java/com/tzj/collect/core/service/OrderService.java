@@ -379,4 +379,6 @@ public interface OrderService extends IService<Order> {
     List<Map<String, Object>> outOtherOrderListOverview(BOrderBean bOrderBean);
 
 	void  updateOrderCompany(String streetId,String companyId,String title);
+
+	Map<String, Object> receivingMoney(OrderBean orderbean);
 }

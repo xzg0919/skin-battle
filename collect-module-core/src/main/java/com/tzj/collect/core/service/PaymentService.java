@@ -41,5 +41,5 @@ public interface PaymentService extends IService<Payment> {
       * @param
       * @return
       */
-    AlipayFundTransToaccountTransferResponse dailyDaTransfer(String aliUserId, String price, String outBizNo);
+    AlipayFundTransToaccountTransferResponse receivingMoneyTransfer(String aliUserId, String price, String outBizNo);
 }
