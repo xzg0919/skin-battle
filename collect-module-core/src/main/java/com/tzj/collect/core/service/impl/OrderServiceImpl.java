@@ -3247,7 +3247,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
 		Object fromRedis = saveOrGetFromRedis.getFromRedis("receive:" + order.getOrderNo(), jedisPool);
 		if (null != fromRedis){
-			if (OrderStatusType.COMPLETE.getValue().equals(order.getStatus().getValue())){
+			if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())){
 				//根据随机数去发放流水表中查找记录
 				Payment deliveryPament = paymentService.selectOne(new EntityWrapper<Payment>().eq("del_flag", 0).eq("order_sn", fromRedis));
 				if (null != deliveryPament){
