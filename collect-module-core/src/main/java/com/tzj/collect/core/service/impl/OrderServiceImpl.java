@@ -3400,7 +3400,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
 		Object fromRedis = saveOrGetFromRedis.getFromRedis("receive:" + orderbean.getOrderNo(), jedisPool);
-		Order order = orderService.selectOne(new EntityWrapper<Order>().eq("del_flag", 0).eq("order_no", orderbean.getOrderNo()).eq("status", OrderStatusType.ALREADY.getValue()));
+		Order order = orderService.selectOne(new EntityWrapper<Order>().eq("del_flag", 0).eq("order_no", orderbean.getOrderNo()).eq("status_", OrderStatusType.ALREADY.getValue()));
 		if (null == fromRedis || null == order){
 			//redis中未查到当前订单，领奖失败
 			returnMap.put("msg", "未达到领奖条件");
