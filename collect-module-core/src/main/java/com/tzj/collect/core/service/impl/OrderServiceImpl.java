@@ -2056,11 +2056,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						map.put("amount", list.getAmount() + "");
 						price += list.getPrice() * list.getAmount();
 						achAmount += list.getAmount();
-						if (list.getPrice() == 0 && !ToolUtils.categoryName.equals(name.getName())) {
-							categoryName += list.getCategoryName() + "/";
-						} else{
-							listMap.add(map);
-						}
+						listMap.add(map);
 						count++;
 					}
 				}
@@ -2074,11 +2070,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						map.put("unit", list.getUnit());
 						map.put("amount", list.getAmount() + "");
 						price += list.getPrice() * list.getAmount();
-						if (list.getPrice() == 0) {
-							categoryName += list.getCategoryName() + "/";
-						} else {
-							listMap.add(map);
-						}
+						listMap.add(map);
 						count++;
 					}
 				}
@@ -2187,11 +2179,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						} else {
 							greenCount += list.getAmount();
 						}
-						if (list.getPrice() == 0 && !ToolUtils.categoryName.equals(name.getName())) {
-							categoryName += list.getCategoryName() + "/";
-						} else{
-							listMap.add(map);
-						}
+						listMap.add(map);
 					}
 				}
 			} else {

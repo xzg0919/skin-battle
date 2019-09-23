@@ -2321,9 +2321,9 @@
 			d.name_ AS name
 		FROM
 			sb_order_cancle_examine a
-		LEFT JOIN sb_order b ON a.order_no = b.order_no
-		LEFT JOIN sb_category c ON b.category_id = c.id
-		LEFT JOIN sb_company d ON b.company_id = d.id
+		inner JOIN sb_order b ON a.order_no = b.order_no
+		inner JOIN sb_category c ON b.category_id = c.id
+		inner JOIN sb_company d ON b.company_id = d.id
 		WHERE a.status_ = '0'
 		<if test="companyId != null and companyId != '' ">
 			AND b.company_id = #{companyId}
@@ -2345,9 +2345,9 @@
 			count(1)
 		FROM
 		sb_order_cancle_examine a
-		LEFT JOIN sb_order b ON a.order_no = b.order_no
-		LEFT JOIN sb_category c ON b.category_id = c.id
-		LEFT JOIN sb_company d ON b.company_id = d.id
+		inner JOIN sb_order b ON a.order_no = b.order_no
+		inner JOIN sb_category c ON b.category_id = c.id
+		inner JOIN sb_company d ON b.company_id = d.id
 		WHERE a.status_ = '0'
 		<if test="companyId != null and companyId != '' ">
 			AND b.company_id = #{companyId}

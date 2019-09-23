@@ -39,10 +39,10 @@ spring:
   redis:
     #open: false  # 是否开启redis缓存  true开启   false关闭
     #database: 0
-    # 测试地址
-#    host: r-uf6d7cda9ccf46a4.redis.rds.aliyuncs.com
     # 正式地址
-    host: 172.19.193.25
+    host: r-uf6crus7stfo0npql7.redis.rds.aliyuncs.com
+    # 测试地址
+    #    host: 172.19.193.25
     # 测试6370 正式6379
     port: 6379
     password: sb_123456      # 密码（默认为空）

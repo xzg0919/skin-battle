@@ -67,11 +67,14 @@ public class OrderTest {
 //            CategoryBean categoryBean = new CategoryBean();
 //            categoryBean.setParentId("25");
 //            categoryBean.setCityId("17685");
-                MemberAddressBean memberAddressBean = new MemberAddressBean();
-                memberAddressBean.setId("13");
+                CategoryAttrBean categoryAttrBean = new CategoryAttrBean();
+                categoryAttrBean.setToken("3F3TEMH74565Q5QORHNPE76UZM6VT4JPWVV4OPUNTGAXLLRLC6B5GYU3LW34YHVNOEFL2LXPVT24VVHUSAVURD6DYMTLXOHVOYHZ3WMT3F7XWVRQE3ZYJ23R2CDMCSECQB237EV36KEBVGOG7HIL6IFAJOMU2FP5UTXCOMUSI4FYDQRPZDVVG5H6RXR76SLSNTRZTN2PDRCBUILIXON354OAZ4B25DJDAFU2DMVTHEFPDGFFY7UL6IMGNRDSWL6IL422B7PWU22QUY57XS4X4OXJBIZ76PKGXZHLRBOURQWPIDCJIPPL4MDXGG35UUUMH6Q7KKE3GFVFG");
+                categoryAttrBean.setCategoryId((long)11);
+                categoryAttrBean.setType("DIGITAL");
+                categoryAttrBean.setCategoryAttrOptionids("62,73,77,82,85");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","memberAddress.delectMemberAddress");
+                param.put("name","category.getPrices");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -79,7 +82,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",memberAddressBean);
+                param.put("data",categoryAttrBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");
