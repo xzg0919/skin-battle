@@ -2609,6 +2609,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				//根据分类Id查询分类信息
 				Category category = categoryService.selectById(orderItemBean.getId());
 				Category categoryPar = categoryService.selectById(category.getParentId());
+				if(45!=category.getParentId()){
+					throw new ApiException("系统参数异常，请返回重新下单");
+				}
 				OrderItem orderItem = new OrderItem();
 				orderItem.setOrderId(Integer.parseInt(order.getId() + ""));
 				orderItem.setCategoryId(Integer.parseInt(category.getId() + ""));
