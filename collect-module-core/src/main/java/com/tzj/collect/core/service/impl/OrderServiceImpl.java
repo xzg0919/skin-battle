@@ -1624,6 +1624,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		resultMap.put("bigOrder",result);
 		resultMap.put("bigItemOrder",bigOrderAttrItem);
+		Payment payment = paymentService.selectByOrderSn(result.getOrderNo());
+		resultMap.put("paymentNo",payment==null?null:payment.getTradeNo());
 		return resultMap;
 	}
 
@@ -1677,6 +1679,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if(paymentPrice==null){
 			paymentPrice = 0;
 		}
+		Payment payment = paymentService.selectByOrderSn(result.getOrderNo());
+		result.setPaymentNo(payment.getTradeNo()==null?null:payment.getTradeNo());
 		result.setPaymentPrice(paymentPrice);
 		return result;
 	}

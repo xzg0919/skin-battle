@@ -96,6 +96,8 @@ public class AppOrderResult {
 	private String isManager;//是否是经理
 
 	private Object paymentPrice;//成交价格
+
+	private String paymentNo;
 	
 	
 	private Object obj;
