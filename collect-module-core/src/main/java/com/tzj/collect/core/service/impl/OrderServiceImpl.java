@@ -1680,7 +1680,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			paymentPrice = 0;
 		}
 		Payment payment = paymentService.selectByOrderSn(result.getOrderNo());
-		result.setPaymentNo(payment.getTradeNo()==null?null:payment.getTradeNo());
+		result.setPaymentNo(payment==null?null:payment.getTradeNo());
 		result.setPaymentPrice(paymentPrice);
 		return result;
 	}

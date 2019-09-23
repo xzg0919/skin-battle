@@ -74,21 +74,12 @@ public class AdminCompanyApiTest {
 //
 //		 recyclersServiceRangeBean.setAreaList(areaList);
 
-		 AreaBean areaBean = new AreaBean();
-		 areaBean.setCompanyId("1");
-		 List<String> streetList = new ArrayList<>();
-		 streetList.add("1");
-		 streetList.add("2");
-		 List<String> titleList = new ArrayList<>();
-		 titleList.add("1");
-		 titleList.add("2");
-		 titleList.add("4");
-		 areaBean.setStreetList(streetList);
-		 areaBean.setTitleList(titleList);
+		 OrderBean orderbean = new OrderBean();
+		 orderbean.setPagebean(new PageBean());
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.updateCompanyServiceByStreetId");
+	        param.put("name","admin.order.getOdrerCancleExamineList");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -96,7 +87,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",areaBean);
+	        param.put("data",orderbean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");
