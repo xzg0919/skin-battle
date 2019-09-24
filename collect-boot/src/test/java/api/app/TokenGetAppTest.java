@@ -27,7 +27,7 @@ import static com.tzj.collect.common.constant.TokenConst.*;
 public class TokenGetAppTest {
 	 public static void main(String[] args) throws Exception {
 
-		 String token = JwtUtils.generateToken("2202", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
+		 String token = JwtUtils.generateToken("1260", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
 		 String securityToken = JwtUtils.generateEncryptToken(token, APP_API_TOKEN_CYPTO_KEY);
 		 System.out.println("token : "+securityToken);
 
@@ -45,11 +45,11 @@ public class TokenGetAppTest {
 		 orderBean.setAchPrice("0.0");
 
 		 CategoryBean categoryBean = new CategoryBean();
-		 categoryBean.setLocation("121.5508,31.204655");
-		 categoryBean.setId(25);
+		 categoryBean.setOrderId("115417");
+		 categoryBean.setId(45);
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.category.getTwoCategoryListLocale");
+	        param.put("name", "app.category.getTwoCategoryListByOrder");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");

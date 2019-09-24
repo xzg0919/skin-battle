@@ -528,7 +528,7 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 		Area area = areaService.selectById(order.getAreaId());
 		List<ComCatePrice> priceList = null;
 		priceList = companyCategoryCityService.getOwnnerPriceAppByCity(categoryId.toString(),order.getCompanyId().toString(),area.getParentId().toString());
-		if (null==priceList&&priceList.isEmpty()) {
+		if (null==priceList||priceList.isEmpty()) {
 			com.tzj.collect.core.param.ali.CategoryBean categoryBean = new com.tzj.collect.core.param.ali.CategoryBean();
 			categoryBean.setId(categoryId);
 			priceList = companyCategoryService.getOwnnerPriceApps(categoryBean, order.getCompanyId());
