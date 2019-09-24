@@ -103,7 +103,7 @@ public class AdminOrderApi {
             return orderService.getOrderCancleExamineList(orderbean);
     }
     /**
-     * 小程序第二版订单详情接口
+     * 订单详情接口
      * @author 王灿
      * @param
      * @return
@@ -111,7 +111,7 @@ public class AdminOrderApi {
     @Api(name = "admin.order.getAdminOrderDetail", version = "1.0")
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public Object getNewOrderDetail(OrderBean orderbean) {
-        Map<String,Object> resultMap = (Map<String, Object>) orderService.getNewOrderDetail(orderbean.getId());
+        Map<String,Object> resultMap = (Map<String, Object>) orderService.getAdminOrderDetail(orderbean.getId());
         Order order = (Order) resultMap.get("order");
         OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
         resultMap.put("orderCancleExamine",orderCancleExamine);

@@ -11,6 +11,9 @@
     <cache name="adminCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
 
     <!-- 用户缓存 -->
+    <cache name="adminReceptionCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+
+    <!-- 用户缓存 -->
     <cache name="memberCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
 
     <!-- 用户缓存 -->

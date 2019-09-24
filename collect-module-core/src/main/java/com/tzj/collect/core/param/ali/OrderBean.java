@@ -247,4 +247,8 @@ public class OrderBean {
 
     private String isDelivery;//马上回收（每笔订单是否派送红包）
 
+    private String isComplaint; //是否客诉
+
+    private String reason;
+
 }
