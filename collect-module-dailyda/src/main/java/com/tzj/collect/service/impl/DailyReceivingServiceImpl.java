@@ -120,22 +120,23 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
 //        }else if(dailyDaParam.getSetNum() >= 3 && dailyDaParam.getSetNum() <= 4){
 //            price = (Math.random() * 0.1 + 0.2 + "").substring(0,4);
 //        }
-        switch (dailyDaParam.getSetNum()){
-            case 1:
-                price = (Math.random() * 0.03 + 0.11 + "").substring(0,4);
-                break;
-            case 2:
-                price = (Math.random() * 0.03+ 0.14 + "").substring(0,4);
-                break;
-            case 3:
-                price = (Math.random() * 0.03 + 0.17 + "").substring(0,4);
-                break;
-            case 4:
-                price = (Math.random() * 0.03 + 0.20 + "").substring(0,4);
-                break;
-            default:
-                return returnMap;
-        }
+//        switch (dailyDaParam.getSetNum()){
+//
+//            case 1:
+//            case 3:
+//                price = "0";
+//                break;
+//            case 2:
+//                price = (Math.random() * 0.03+ 0.12 + "").substring(0,4);
+//                break;
+//            case 4:
+//                price = (Math.random() * 0.03 + 0.18 + "").substring(0,4);
+//                break;
+//            default:
+//                return returnMap;
+//        }
+        //根据位置获取
+        price = randomPrice(dailyDaParam.getSetNum());
 
         Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         DailyReceiving dailyReceiving = this.selectOne(new EntityWrapper<DailyReceiving>().eq("del_flag", 0).eq("ali_user_id", dailyDaParam.getAliUserId()).eq("week_", LocalDate.now().getYear() + "" + week).eq("set_num", dailyDaParam.getSetNum()));
@@ -172,28 +173,33 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                     }
                     finalDailyReceiving.setIsReceive(0);
                     if (this.insertOrUpdate(finalDailyReceiving)) {
-                        //用户转账
-                        AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(aliUserId, finalPrice, outBizNo);
-                        payment.setAliUserId(aliUserId);
-                        payment.setPrice(new BigDecimal(finalPrice));
-                        payment.setOrderSn(outBizNo);
-                        payment.setSellerId(aliUserId);
-                        payment.setPayType(Payment.PayType.RED_BAG);
-                        if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())) {
-                            //交易完成(状态设置为已转账)
-                            payment.setStatus(STATUS_TRANSFER);
-                            payment.setIsSuccess("1");
-                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
-                        } else {
-                            //交易失败(状态设置为未转账)
-                            payment.setStatus(STATUS_PAYED);
-                            payment.setIsSuccess("0");
-//                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+                        if (!"0".equals(finalPrice)){
+                            //用户转账
+                            AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(aliUserId, finalPrice, outBizNo);
+                            payment.setAliUserId(aliUserId);
+                            payment.setPrice(new BigDecimal(finalPrice));
+                            payment.setOrderSn(outBizNo);
+                            payment.setSellerId(aliUserId);
+                            payment.setPayType(Payment.PayType.RED_BAG);
+                            if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())) {
+                                //交易完成(状态设置为已转账)
+                                payment.setStatus(STATUS_TRANSFER);
+                                payment.setIsSuccess("1");
+                                payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+                            } else {
+                                //交易失败(状态设置为未转账)
+                                payment.setStatus(STATUS_PAYED);
+                                payment.setIsSuccess("0");
+    //                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+                            }
+                            dailyPaymentService.insertOrUpdate(payment);
+                            returnMap.put("msg", "领取成功");
+                            returnMap.put("price", finalPrice);
+                            return;
+                        }else {
+                            //领取积分
+                            dailyPaymentService.updateMemberPoint(aliUserId, outBizNo, randomPoint(), "答答答红包");
                         }
-                        dailyPaymentService.insertOrUpdate(payment);
-                        returnMap.put("msg", "领取成功");
-                        returnMap.put("price", finalPrice);
-                        return;
                     }
                 }else if("Y".equals(receivableLists.get("isReceive"))){
                     throw new ApiException("红包已领取");
@@ -208,7 +214,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
     public static void main(String[] args) {
 
         for (int i = 0; i < 1000; i++){
-            System.out.println((Math.random() * 0.03 + 0.20 + "").substring(0,4));
+            System.out.println((Math.random() * .02+ .12 + "").substring(0,4));
         }
 //        System.out.println(a+"-----------------"+b+"--------"+c +"----------" +d);
     }
@@ -238,6 +244,40 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
             return (Math.random() * 1+ 1 + "").substring(0,4);
         }else {
             return (Math.random() * 0.2 + 0.1 + "").substring(0,4);
+        }
+    }
+
+    public String randomPrice(Integer setNum){
+        Integer randomInt = new Random().nextInt(10000);
+        if (randomInt == 0 && flag == false && (setNum == 2 || setNum == 4)){
+            System.out.println("中奖啦---------------------------1---------------------------");
+            flag = true;
+            return "99.00";
+        }else if (setNum == 2){
+            System.out.println("二等奖---------------------------2---------------------------");
+            return (Math.random() * .1+ 1.1 + "").substring(0,4);
+        }else if (setNum == 4){
+            System.out.println("三等奖---------------------------3---------------------------");
+            return (Math.random() * .02+ .12 + "").substring(0,4);
+        }else {
+            return "0";
+        }
+    }
+
+    public static double randomPoint(){
+        Integer randomInt = new Random().nextInt(10000);
+        if (randomInt == 0){
+            System.out.println("中奖啦---------------------------1---------------------------");
+            flag = true;
+            return 999.00;
+        }else if (randomInt > 0 && randomInt <= 9){
+            System.out.println("二等奖---------------------------2---------------------------");
+            return 99.00;
+        }else if (randomInt > 9 && randomInt <= 109){
+            System.out.println("三等奖---------------------------3---------------------------");
+            return 19;
+        }else {
+            return Double.parseDouble(new Random().nextInt(5) + 5  +"");
         }
     }
 }

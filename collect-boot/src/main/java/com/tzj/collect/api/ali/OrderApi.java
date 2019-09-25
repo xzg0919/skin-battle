@@ -413,14 +413,14 @@ public class OrderApi {
 			map.put("code",resultMap.get("code"));
 			map.put("id",resultMap.get("id"));
 			map.put("status",resultMap.get("status"));
-			return map;
+//			return map;
+		}else {
+			map.put("type", 9);
+			map.put("msg", "操作成功");
+			map.put("code", resultMap.get("code"));
+			map.put("id", resultMap.get("id"));
+			map.put("status", resultMap.get("status"));
 		}
-		map.put("type",9);
-		map.put("msg","操作成功");
-		map.put("code",resultMap.get("code"));
-		map.put("id",resultMap.get("id"));
-		map.put("status",resultMap.get("status"));
-
 		//是否有马上回收红包
 		if("Y".equals(orderbean.getIsDelivery())){
 			RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();

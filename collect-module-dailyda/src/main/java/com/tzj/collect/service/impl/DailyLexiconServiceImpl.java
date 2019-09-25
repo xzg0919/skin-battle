@@ -143,7 +143,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 
         answerMap = new HashMap<>();
         answerMap.put("typeId", "2");
-        answerMap.put("name", "湿垃圾");
+        answerMap.put("name", "厨余垃圾/易腐垃圾/湿垃圾");
         answerMap.put("aliasName", "KITCHEN");
         answerList.add(answerMap);
 
