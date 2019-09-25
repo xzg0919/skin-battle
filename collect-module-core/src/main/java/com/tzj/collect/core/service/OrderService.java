@@ -314,6 +314,8 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Object getOrderListByAdmin(OrderBean orderBean);
 	@DS("slave")
+	Object getOrderListByAdminReception(OrderBean orderBean);
+	@DS("slave")
 	Object getOrderDetailByIdByAdmin(String orderId);
 	@DS("slave")
 	Integer getOrderCountByLj(LjAdminBean ljAdminBean);
@@ -339,6 +341,8 @@ public interface OrderService extends IService<Order> {
 	Integer getOrderLjByStatus(LjAdminBean ljAdminBean,String status);
 	@DS("slave")
 	Object getNewOrderDetail(Integer orderId);
+	@DS("slave")
+	Object getAdminOrderDetail(Integer orderId);
 	@DS("slave")
 	List<Map<String,Object>>selectHouseAmount();
 	/**
@@ -381,4 +385,6 @@ public interface OrderService extends IService<Order> {
 	void  updateOrderCompany(String streetId,String companyId,String title);
 
 	Map<String, Object> receivingMoney(OrderBean orderbean);
+
+	Object saveOrderReceptionByOrderNo(OrderBean orderbean);
 }

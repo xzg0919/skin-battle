@@ -1528,6 +1528,145 @@
 			AND concat(#{endTime},' 23:59:59') > a.create_date
 		</if>
 	</select>
+	<select id="getOrderListByAdminReception" parameterType="Object" resultType="Map">
+	SELECT
+			a.*,
+			IF(a.overTime > 2880,'1',if(a.complaintCount > 1,'1','0')) AS isComplaint
+	 FROM (
+			SELECT
+				a.id,
+				a.order_no AS orderNo,
+				DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
+				if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾','')))AS categoryName,
+				c.name_ AS name,
+				a.link_man AS userName,
+				a.tel,
+				a.status_ AS status,
+				b.name_ AS recycleerName,
+				d.name_ AS companyName,
+				(SELECT COUNT(1) FROM sb_order_complaint b WHERE b.order_no = a.order_no ) AS complaintCount,
+				TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+			FROM
+				sb_order a
+			LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+			LEFT JOIN sb_category c ON a.category_id = c.id
+			LEFT JOIN sb_company d ON a.company_id = d.id
+	WHERE
+			a.del_flag = 0
+		<if test="companyId != null and companyId !='' ">
+			AND	a.company_id = #{companyId}
+		</if>
+		<if test="title != null and title !='' ">
+			AND a.title = #{title}
+		</if>
+		<if test="status != null and status !='' ">
+			AND a.status_ = #{status}
+		</if>
+		<if test="tel != null and tel !='' ">
+			AND a.tel = #{tel}
+		</if>
+		<if test="orderNo != null and orderNo !='' ">
+			AND a.order_no = #{orderNo}
+		</if>
+		<if test="linkName != null and linkName !='' ">
+			AND a.link_man = #{linkName}
+		</if>
+		<if test="startTime != null and startTime !='' ">
+			AND a.create_date > concat(#{startTime},' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime !='' ">
+			AND concat(#{endTime},' 23:59:59') > a.create_date
+		</if>
+	) a
+	WHERE
+		1 = 1
+		<if test="isComplaint != null and isComplaint !='' ">
+			<choose>
+				<when test="isComplaint='Y'.toString()">
+ 					and a.overTime > 2880 OR a.complaintCount > 1
+				</when>
+				<otherwise>
+					and 2880 > a.overTime OR 1 > a.complaintCount
+				</otherwise>
+			</choose>
+		</if>
+	ORDER BY a.createDate DESC
+	LIMIT #{startPage},#{pageSize}
+</select>
+<select id="getOrderCountByAdminReception" parameterType="Object" resultType="Integer">
+	SELECT
+		count(1)
+	FROM (
+	SELECT
+	a.id,
+	a.order_no AS orderNo,
+	DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
+	if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾','')))AS categoryName,
+	c.name_ AS name,
+	a.link_man AS userName,
+	a.tel,
+	a.status_ AS status,
+	b.name_ AS recycleerName,
+	d.name_ AS companyName,
+	(SELECT COUNT(1) FROM sb_order_complaint b WHERE b.order_no = a.order_no ) AS complaintCount,
+	TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+	FROM
+	sb_order a
+	LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+	LEFT JOIN sb_category c ON a.category_id = c.id
+	LEFT JOIN sb_company d ON a.company_id = d.id
+	WHERE
+	a.del_flag = 0
+	<if test="companyId != null and companyId !='' ">
+		AND	a.company_id = #{companyId}
+	</if>
+	<if test="title != null and title !='' ">
+		AND a.title = #{title}
+	</if>
+	<if test="status != null and status !='' ">
+		AND a.status_ = #{status}
+	</if>
+	<if test="tel != null and tel !='' ">
+		AND a.tel = #{tel}
+	</if>
+	<if test="orderNo != null and orderNo !='' ">
+		AND a.order_no = #{orderNo}
+	</if>
+	<if test="linkName != null and linkName !='' ">
+		AND a.link_man = #{linkName}
+	</if>
+	<if test="startTime != null and startTime !='' ">
+		AND a.create_date > concat(#{startTime},' 00:00:01')
+	</if>
+	<if test="endTime != null and endTime !='' ">
+		AND concat(#{endTime},' 23:59:59') > a.create_date
+	</if>
+	) a
+	WHERE
+	1 = 1
+	<if test="isComplaint != null and isComplaint !='' ">
+		<choose>
+			<when test="isComplaint='Y'.toString()">
+				and (a.overTime > 2880 OR a.complaintCount > 1)
+			</when>
+			<otherwise>
+				and (2880 > a.overTime OR 1 > a.complaintCount)
+			</otherwise>
+		</choose>
+	</if>
+</select>
+<select id="getOrderComplaint" parameterType="String" resultType="Map">
+	SELECT
+				a.id,
+				a.order_no AS orderNo,
+				(SELECT COUNT(1) FROM sb_order_complaint b WHERE b.order_no = a.order_no ) AS complaintCount,
+				TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+			FROM
+				sb_order a
+			WHERE
+				a.order_no = #{orderNo}
+</select>
+
 	<select id="getOrderCountByLj" parameterType="String" resultType="Integer">
 		SELECT
 			count(1)

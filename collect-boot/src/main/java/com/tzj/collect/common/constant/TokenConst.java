@@ -44,6 +44,14 @@ public class TokenConst {
     public static final String ADMIN_API_TOKEN_SECRET_KEY="2012p0876jnx42a8888ForShenZhenBgsdf561869839";
     public static final String ADMIN_API_TOKEN_SIGN_KEY="llsbadokx7s43dflkasda12kkkk";
 
+    //adminReception 的一些常量======================
+    public static final long ADMIN_RECEPTION_API_EXPRIRE=60*60*24*30;
+    public static final String ADMIN_RECEPTION_API_COMMON_AUTHORITY="ali:reception";
+
+    public static final String ADMIN_RECEPTION_API_TOKEN_CYPTO_KEY="Poasdasdadasasd231dasdsad2L";
+    public static final String ADMIN_RECEPTION_API_TOKEN_SECRET_KEY="2012p0876jnx42a8888ForShenZhenBgsdf561869839";
+    public static final String ADMIN_RECEPTION_API_TOKEN_SIGN_KEY="llsbadokx7s43dflkasda12kkkk";
+
 
     //enterprise 的一些常量======================
     public static final long ENTERPRISE_API_EXPRIRE=60*60*24*30;
