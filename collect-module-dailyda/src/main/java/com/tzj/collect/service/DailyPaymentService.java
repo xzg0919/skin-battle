@@ -17,4 +17,6 @@ public interface DailyPaymentService extends IService<Payment> {
     //查询转账信息
     @DS("slave")
     AlipayFundTransOrderQueryResponse getTransfer(String orderSn);
+    //增加积分
+    void updateMemberPoint(String aliUserId, String OrderNo, double amount,String descrb);
 }
