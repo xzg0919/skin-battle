@@ -316,6 +316,8 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Object getOrderListByAdminReception(OrderBean orderBean);
 	@DS("slave")
+	List<Map<String, Object>> getOutComplaintOrderList(OrderBean orderBean);
+	@DS("slave")
 	Object getOrderDetailByIdByAdmin(String orderId);
 	@DS("slave")
 	Integer getOrderCountByLj(LjAdminBean ljAdminBean);
@@ -387,4 +389,6 @@ public interface OrderService extends IService<Order> {
 	Map<String, Object> receivingMoney(OrderBean orderbean);
 
 	Object saveOrderReceptionByOrderNo(OrderBean orderbean);
+	@DS("slave")
+	Object getOrderComplaintDetail(String orderNo);
 }

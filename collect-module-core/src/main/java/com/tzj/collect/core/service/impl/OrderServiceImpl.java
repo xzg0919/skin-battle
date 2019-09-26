@@ -3131,23 +3131,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		Integer startPage = (pageBean.getPageNumber()-1)*pageBean.getPageSize();
 		Integer pageSize = pageBean.getPageSize();
-		List<Map<String, Object>> orderList = orderMapper.getOrderListByAdminReception(orderBean.getIsComplaint(), orderBean.getCompanyId() == null ? null : orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime(), startPage, pageSize);
-		Integer orderCount = orderMapper.getOrderCountByAdminReception(orderBean.getIsComplaint(),orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
-		orderList.stream().forEach(map ->{
-			int complaintCount = 0;
-			String orderComplaint = "";
-			if ("0".equals(map.get("status")+"")){
-				complaintCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", map.get("orderNo")).eq("type_", "0"));
-				orderComplaint = "催派"+complaintCount;
-			}else if("1".equals(map.get("status")+"")){
-				complaintCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", map.get("orderNo")).eq("type_", "1"));
-				orderComplaint = "催接"+complaintCount;
-			}else if("2".equals(map.get("status")+"")){
-				complaintCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", map.get("orderNo")).eq("type_", "1"));
-				orderComplaint = "催收"+complaintCount;
-			}
-			map.put("orderComplaint",orderComplaint);
-		});
+		List<Map<String, Object>> orderList = orderMapper.getOrderListByAdminReception(orderBean.getComplaintType(), orderBean.getCompanyId() == null ? null : orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime(), startPage, pageSize);
+		Integer orderCount = orderMapper.getOrderCountByAdminReception(orderBean.getComplaintType(),orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
 		Map<String,Object> resultMap = new HashMap<>();
 		Map<String,Object> pagination = new HashMap<>();
 		pagination.put("current",pageBean.getPageNumber());
@@ -3156,6 +3141,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("pagination",pagination);
 		resultMap.put("orderList",orderList);
 		return resultMap;
+	}
+	public List<Map<String, Object>> getOutComplaintOrderList(OrderBean orderBean){
+		return orderMapper.getOutComplaintOrderList(orderBean.getComplaintType(),orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
 	}
 
 	@Override
@@ -3353,6 +3341,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<OrderComplaint> orderComplaintList = orderComplaintService.selectList(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).orderBy("create_date",false));
 		Map<String, Object> orderComplaintMap = orderMapper.getOrderComplaint(order.getOrderNo());
 		if (null != orderComplaintMap && 2880<Integer.parseInt(orderComplaintMap.get("overTime")+"")){
+			if (null == orderComplaintList){
+				orderComplaintList = new ArrayList<>();
+			}
 			OrderComplaint orderComplaint = new OrderComplaint();
 			orderComplaint.setType("6");
 			orderComplaint.setTypes("订单超时");
@@ -3360,7 +3351,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderComplaint.setCreateDate(new Date());
 			orderComplaintList.add(orderComplaint);
 		}
+		int initCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "0"));
 
+		int TosendCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "1"));
+
+		int AlreadyCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "2"));
+
+
+		resultMap.put("initComplaint", "催派"+initCount);
+		resultMap.put("initComplaint", "催接"+TosendCount);
+		resultMap.put("initComplaint", "催收"+AlreadyCount);
 		resultMap.put("order",order);
 		resultMap.put("paymentNo",paymentNo);
 		resultMap.put("recyclers",recyclers);
@@ -3643,6 +3643,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Transactional
 	public Object saveOrderReceptionByOrderNo(OrderBean orderbean){
 		Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", orderbean.getOrderNo()));
+		int count = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()));
 		OrderComplaint orderComplaint = new OrderComplaint();
 		orderComplaint.setOrderNo(orderbean.getOrderNo());
 		orderComplaint.setType(orderbean.getType());
@@ -3664,8 +3665,34 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		orderComplaint.setReason(orderbean.getReason());
 		orderComplaintService.insert(orderComplaint);
+		if (count>0){
+			order.setComplaintType("3");
+		}else {
+			order.setComplaintType(orderbean.getType());
+		}
+		this.updateById(order);
 		return "操作成功";
 	}
 
+	public Object getOrderComplaintDetail(String orderNo){
+		Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo));
+		if (null==order){
+			throw new ApiException("传入的订单Id有误");
+		}
+		List<OrderComplaint> orderComplaintList = orderComplaintService.selectList(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).orderBy("create_date",false));
+		Map<String, Object> orderComplaintMap = orderMapper.getOrderComplaint(order.getOrderNo());
+		if (null != orderComplaintMap && 2880<Integer.parseInt(orderComplaintMap.get("overTime")+"")){
+			if (null == orderComplaintList){
+				orderComplaintList = new ArrayList<>();
+			}
+			OrderComplaint orderComplaint = new OrderComplaint();
+			orderComplaint.setType("6");
+			orderComplaint.setTypes("订单超时");
+			orderComplaint.setReason("超时两天");
+			orderComplaint.setCreateDate(new Date());
+			orderComplaintList.add(orderComplaint);
+		}
+		return orderComplaintList;
+	}
 
 }

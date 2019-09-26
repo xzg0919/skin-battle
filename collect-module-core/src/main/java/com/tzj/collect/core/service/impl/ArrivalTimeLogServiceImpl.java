@@ -34,16 +34,11 @@ public class ArrivalTimeLogServiceImpl extends ServiceImpl<ArrivalTimeLogMapper,
 	@Transactional
 	public String sendArrivalTimeLog(Integer orderId,String afterDate,String afterPeriod,String cancleDesc) {
 		 //查询订单日志表的数据
-		 ArrivalTimeLog arrivalTimeLog = this.selectOne(new EntityWrapper<ArrivalTimeLog>().eq("order_id", orderId));
+		 int arrivalTimeCount = this.selectCount(new EntityWrapper<ArrivalTimeLog>().eq("order_id", orderId));
 		 //根据订单Id查询订单表的数据
 		 Order order = orderService.selectById(orderId);
 		 ArrivalTimeLog arrivalTimeLogs = new ArrivalTimeLog();
-		 //判断是第几次更改
-		if(arrivalTimeLog == null) {
-			arrivalTimeLogs.setNum(1);
-		}else {
-			arrivalTimeLogs.setNum(2);
-		}
+		 arrivalTimeLogs.setNum(arrivalTimeCount);
 		arrivalTimeLogs.setOrderId(orderId);
 		arrivalTimeLogs.setCancleDesc(cancleDesc);
 		arrivalTimeLogs.setBeforeDate(order.getArrivalTime());

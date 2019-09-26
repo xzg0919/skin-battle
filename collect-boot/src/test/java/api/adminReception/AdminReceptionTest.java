@@ -3,6 +3,8 @@ package api.adminReception;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.admin.AdminBean;
 import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.app.ArrivalTimeLogBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -33,22 +35,29 @@ public class AdminReceptionTest {
 
         String api="http://localhost:9090/admin/reception/api";
         OrderBean orderBean = new OrderBean();
-//        orderBean.setStartTime("2019-09-01");
+//        orderBean.setStartTime("2018-09-01");
 //        orderBean.setEndTime("2019-10-01");
 //        orderBean.setCompanyId(41);
-//        orderBean.setStatus("1");
+//        orderBean.setStatus("3");
 //        orderBean.setTel("15691728708");
-//        orderBean.setOrderNo("20190924123218492923");
+//        orderBean.setOrderNo("20190924162542366492");
 //        orderBean.setLinkName("马欣竹");
-//        orderBean.setIsComplaint("Y");
+//        orderBean.setComplaintType("3");
+//        orderBean.setPagebean(new PageBean());
 //        orderBean.setCompanyName("再生资源");
-        orderBean.setOrderNo("20180727143553755258");
-        orderBean.setType("1");
-        orderBean.setReason("老板催我来接单");
+//        orderBean.setOrderNo("20190924141907716896");
+//        orderBean.setType("1");
+//        orderBean.setReason("老板催我来接单2");
+
+        ArrivalTimeLogBean arrivalTimeLogBean = new ArrivalTimeLogBean();
+        arrivalTimeLogBean.setOrderId(70092);
+        arrivalTimeLogBean.setAfterDate("2019-09-25");
+        arrivalTimeLogBean.setAfterPeriod("12:00-13:00");
+        arrivalTimeLogBean.setCancleDesc("我是修改原因");
 
 
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","admin.order.saveOrderReceptionByOrderNo");
+        param.put("name","admin.order.sendArrivalTimeLog");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_4");
@@ -56,7 +65,7 @@ public class AdminReceptionTest {
         param.put("token",securityToken);
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID().toString());
-        param.put("data",orderBean);
+        param.put("data",arrivalTimeLogBean);
 
         String jsonStr= JSON.toJSONString(param);
         String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_9988767");

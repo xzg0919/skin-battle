@@ -48,16 +48,12 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
-		recyclersServiceRangeBean.setIsBigRecycle("N");
-		recyclersServiceRangeBean.setManagerId("2205");
-			List<String> list  = new ArrayList<>();
-			list.add("1564");
-		recyclersServiceRangeBean.setRecycleIds(list);
+		BOrderBean orderBean = new BOrderBean();
+		orderBean.setOrderNo("20190924123802464324");
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.recycle.updateRecycleForParent");
+		param.put("name","business.order.getOrderComplaintDttail");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -65,7 +61,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",recyclersServiceRangeBean);
+		param.put("data",orderBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);
