@@ -222,11 +222,13 @@ public interface OrderMapper extends BaseMapper<Order> {
 
 	void  updateOrderCompany(@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("title")String title);
 
-	List<Map<String, Object>> getAllOrderMapOverview(@Param("status")String status, @Param("companyId")Integer companyId, @Param("categoryType")Serializable categoryType, @Param("pageStart")Integer pageStart, @Param("pageSize")Integer pageSize, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
+	List<Map<String, Object>> getAllOrderMapOverview(@Param("complaintType")String complaintType,@Param("status")String status, @Param("companyId")Integer companyId, @Param("categoryType")Serializable categoryType, @Param("pageStart")Integer pageStart, @Param("pageSize")Integer pageSize, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
 
-    List<Map<String, Object>> outAchOrderListOverview(@Param("companyId") String companyId, @Param("status")String status, @Param("categoryType")String categoryType, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
+	Integer getAllOrderMapOverviewCount(@Param("complaintType")String complaintType,@Param("status")String status, @Param("companyId")Integer companyId, @Param("categoryType")Serializable categoryType, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
 
-    List<Map<String, Object>> outOtherOrderListOverview(@Param("companyId") String companyId, @Param("status")String status, @Param("categoryType")String categoryType, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
+    List<Map<String, Object>> outAchOrderListOverview(@Param("complaintType")String complaintType,@Param("companyId") String companyId, @Param("status")String status, @Param("categoryType")String categoryType, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
+
+    List<Map<String, Object>> outOtherOrderListOverview(@Param("complaintType")String complaintType,@Param("companyId") String companyId, @Param("status")String status, @Param("categoryType")String categoryType, @Param("startTime")String  startTime, @Param("endTime")String  endTime);
 	/**
 	 * 根据订单号查询订单是否存在客诉条件
 	 */

@@ -3373,7 +3373,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("orderComplaintList",orderComplaintList);
 		return  resultMap;
 	}
-
+	@Override
+	public Map<String, Object> getOrderComplaint(String orderNo) {
+		return orderMapper.getOrderComplaint(orderNo);
+	}
 	@Override
 	public List<Map<String, Object>> selectHouseAmount() {
 		return orderMapper.selectHouseAmount();
@@ -3546,25 +3549,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Map<String, Object> getAllOrderMapOverview(BOrderBean orderBean) {
         Map<String, Object> returnMap = new HashMap<>();
-        //公司所有del_flag不为0的订单
-        Wrapper<Order> entityWrapper = new EntityWrapper<Order>().eq("del_flag", "0").eq("company_id", orderBean.getCompanyId());
-        if (StringUtils.isNotEmpty(orderBean.getStatus())) {
-            entityWrapper.eq("status_", orderBean.getStatus());
-        }
-        if (StringUtils.isNotEmpty(orderBean.getCategoryType())){
-            entityWrapper.eq("title", orderBean.getCategoryType());
-        }else {
-			entityWrapper.notIn("title", Order.TitleType.BIGTHING);
-		}
-        if (StringUtils.isNotEmpty(orderBean.getStartTime()) && StringUtils.isNotEmpty(orderBean.getEndTime())){
-            entityWrapper.between("create_date", orderBean.getStartTime(), orderBean.getEndTime());
-        }
-        Integer count = orderMapper.selectCount(entityWrapper);
         //分页展示
         Integer pageNumber = null!=orderBean.getPagebean() ?orderBean.getPagebean().getPageNumber():1;
         Integer pageSize = null!=orderBean.getPagebean() ?orderBean.getPagebean().getPageSize():10;
         Integer pageStart = (pageNumber-1)*pageSize;
-        List<Map<String, Object>> returnMapList = orderMapper.getAllOrderMapOverview(orderBean.getStatus(), orderBean.getCompanyId(), orderBean.getCategoryType(), pageStart, pageSize, orderBean.getStartTime(), orderBean.getEndTime());
+        List<Map<String, Object>> returnMapList = orderMapper.getAllOrderMapOverview(orderBean.getComplaintType(),orderBean.getStatus(), orderBean.getCompanyId(), orderBean.getCategoryType(), pageStart, pageSize, orderBean.getStartTime(), orderBean.getEndTime());
+		Integer count = orderMapper.getAllOrderMapOverviewCount(orderBean.getComplaintType(),orderBean.getStatus(), orderBean.getCompanyId(), orderBean.getCategoryType(), orderBean.getStartTime(), orderBean.getEndTime());
         returnMap.put("count", count);
         returnMap.put("list", returnMapList);
         return returnMap;
@@ -3583,7 +3573,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }else if (StringUtils.isNotEmpty(bOrderBean.getStatus()) && !"3".equals(bOrderBean.getStatus())){
             return new ArrayList<>();
         }
-        return orderMapper.outAchOrderListOverview(bOrderBean.getCompanyId()+"", bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
+        return orderMapper.outAchOrderListOverview(bOrderBean.getComplaintType(),bOrderBean.getCompanyId()+"", bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
     }
 
     /**	非完成状态订单
@@ -3600,7 +3590,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             //所有非完成订单
 //            bOrderBean.setStatus2(Arrays.asList(0,1,2,4,5));
         }
-        return orderMapper.outOtherOrderListOverview(bOrderBean.getCompanyId() +"", bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
+        return orderMapper.outOtherOrderListOverview(bOrderBean.getComplaintType(),bOrderBean.getCompanyId() +"", bOrderBean.getStatus(), bOrderBean.getCategoryType(), bOrderBean.getStartTime(), bOrderBean.getEndTime());
     }
 
 	public String randomPrice(){

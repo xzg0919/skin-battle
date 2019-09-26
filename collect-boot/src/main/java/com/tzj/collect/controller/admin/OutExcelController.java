@@ -484,12 +484,16 @@ public class OutExcelController {
         titles.add("订单状态");
         titles.add("成交金额");
         titles.add("数量");
+        titles.add("是否为客诉");
+        titles.add("客诉原因");
         otherData.setTitles(titles);
         achData.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
         List<Object> row = null;
         for(int i=0; i<otherList.size();i++){
+            Map<String, Object> complaint = orderService.getOrderComplaint(otherList.get(i).get("order_no") + "");
+            String complaints = "";
             row=new ArrayList();
             row.add(otherList.get(i).get("order_no"));
             row.add(otherList.get(i).get("caName"));
@@ -500,11 +504,21 @@ public class OutExcelController {
             row.add(otherList.get(i).get("status_"));
             row.add(otherList.get(i).get("ach_price"));
             row.add(otherList.get(i).get("amount"));
+            row.add("0".equals(otherList.get(i).get("isComplaint")+"")?"不是":"是");
+            if("3".equals(complaint.get("complaintType"))){
+                complaints = "催促两次";
+            }
+            if (2880<Integer.parseInt(complaint.get("overTime")+"")){
+                complaints += "超时两天";
+            }
+            row.add(complaints);
             rows.add(row);
         }
         otherData.setRows(rows);
         rows = new ArrayList();
         for(int i=0; i<achList.size();i++){
+            Map<String, Object> complaint = orderService.getOrderComplaint(achList.get(i).get("order_no") + "");
+            String complaints = "";
             row=new ArrayList();
             row.add(achList.get(i).get("order_no"));
             row.add(achList.get(i).get("caName"));
@@ -515,6 +529,14 @@ public class OutExcelController {
             row.add(achList.get(i).get("status_"));
             row.add(achList.get(i).get("ach_price"));
             row.add(achList.get(i).get("amount"));
+            row.add("0".equals(otherList.get(i).get("isComplaint")+"")?"不是":"是");
+            if("3".equals(complaint.get("complaintType"))){
+                complaints = "催促两次";
+            }
+            if (2880<Integer.parseInt(complaint.get("overTime")+"")){
+                complaints += "超时两天";
+            }
+            row.add(complaints);
             rows.add(row);
         }
         achData.setRows(rows);

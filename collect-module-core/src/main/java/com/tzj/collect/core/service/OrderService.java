@@ -346,6 +346,8 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Object getAdminOrderDetail(Integer orderId);
 	@DS("slave")
+	Map<String, Object> getOrderComplaint(String orderNo);
+	@DS("slave")
 	List<Map<String,Object>>selectHouseAmount();
 	/**
 	 *根据订单信息，查询该订单是否是10倍积分

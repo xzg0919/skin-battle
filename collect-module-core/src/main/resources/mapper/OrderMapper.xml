@@ -2614,39 +2614,98 @@
 		WHEN 5 THEN
 		'iot订单'
         END AS title,
-        order_.isOverTime,
+		IF(order_.isOverTime > 0,'是','否') AS isOverTime,
+		IF(order_.isOverTime > 2880,'1',if(order_.complaintType = '3','1','0')) AS isComplaint,
         order_.order_no,
 		DATE_FORMAT(order_.create_date, '%Y-%m-%d %k:%i:%s') AS create_date,
         order_.ach_price,
         order_.is_cash,
+		order_.complaintType,
         saa.area_name streetName,
         saa2.area_name areaName,
         saa3.area_name cityName,
         saa4.area_name caName
         FROM
-        (
-        SELECT
+        ( select * from (
+			SELECT
+			id as order_id,
+			area_id,
+			street_id,
+			status_,
+			title,
+			order_no,
+			create_date,
+			ach_price,
+			is_cash,
+			complaint_type AS complaintType,
+			TIMESTAMPDIFF(MINUTE, IF(title = '2',CONCAT(arrival_time,' ',SUBSTR(arrival_period, 7,5),':00'),IF(arrival_period='am',CONCAT(arrival_time,' 12:00:00'),CONCAT(arrival_time,' 18:00:00'))),IF(status_ = '3',complete_date,if(status_ in ('4','5'),cancel_time,NOW()))) AS isOverTime
+			FROM
+			sb_order
+			WHERE
+			del_flag = 0
+			AND company_id = #{companyId}
+			<choose>
+				<when test="categoryType == null  or categoryType == ''">
+					AND title IN (1,2, 3, 5)
+				</when>
+				<otherwise>
+					AND title IN (#{categoryType})
+				</otherwise>
+			</choose>
+			<if test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
+				AND create_date BETWEEN #{startTime}
+				AND CONCAT(#{endTime}, ' 23:59:59')
+			</if>
+			<choose>
+				<when test="status == null  or status == ''">
+				</when>
+				<otherwise>
+					AND status_ IN (#{status})
+				</otherwise>
+			</choose>
+		) order_
+		where 1=1
+		<if test="complaintType != null and complaintType !='' ">
+			<choose>
+				<when test="complaintType='3'.toString()">
+					and order_.isOverTime > 2880 OR order_.complaintType = 3
+				</when>
+				<otherwise>
+					and order_.complaintType = #{complaintType}
+				</otherwise>
+			</choose>
+		</if>
+		ORDER BY
+		create_date DESC
+		LIMIT #{pageStart},
+		#{pageSize}
+        ) order_
+        LEFT JOIN sb_area saa ON order_.street_id = saa.id
+        LEFT JOIN sb_area saa2 ON order_.area_id = saa2.id
+        LEFT JOIN sb_area saa3 ON saa2.parent_id = saa3.id
+        LEFT JOIN sb_area saa4 ON saa3.parent_id = saa4.id
+    </select>
+	<select id="getAllOrderMapOverviewCount" resultType="Integer" parameterType="String">
+	select
+	 count(1)
+	 from (
+		SELECT
 		id as order_id,
-        area_id,
-        street_id,
-        status_,
-        title,
-        order_no,
-        create_date,
-        ach_price,
-        is_cash,
-        CASE TIMESTAMPDIFF(MINUTE, IF(title = '2',CONCAT(arrival_time,' ',SUBSTR(arrival_period, 7,5),':00'),IF(arrival_period='am',CONCAT(arrival_time,' 12:00:00'),CONCAT(arrival_time,' 18:00:00'))),IF(status_ = '3',complete_date,if(status_ in ('4','5'),cancel_time,NOW()))) > 0
-        WHEN TRUE AND is_scan = 0 THEN
-        '是'
-        WHEN FALSE THEN
-        '否'
-        ELSE '否'
-        END AS isOverTime
-        FROM
-        sb_order
-        WHERE
-        del_flag = 0
-        AND company_id = #{companyId}
+		area_id,
+		street_id,
+		status_,
+		title,
+		order_no,
+		create_date,
+		ach_price,
+		is_cash,
+		complaint_type AS complaintType,
+		TIMESTAMPDIFF(MINUTE, IF(title = '2',CONCAT(arrival_time,' ',SUBSTR(arrival_period, 7,5),':00'),IF(arrival_period='am',CONCAT(arrival_time,' 12:00:00'),CONCAT(arrival_time,' 18:00:00'))),IF(status_ = '3',complete_date,if(status_ in ('4','5'),cancel_time,NOW()))) AS isOverTime
+		FROM
+		sb_order
+		WHERE
+		del_flag = 0
+		AND company_id = #{companyId}
 		<choose>
 			<when test="categoryType == null  or categoryType == ''">
 				AND title IN (1,2, 3, 5)
@@ -2655,10 +2714,10 @@
 				AND title IN (#{categoryType})
 			</otherwise>
 		</choose>
-        <if test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
-            AND create_date BETWEEN #{startTime}
-            AND CONCAT(#{endTime}, ' 23:59:59')
-        </if>
+		<if test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
+			AND create_date BETWEEN #{startTime}
+			AND CONCAT(#{endTime}, ' 23:59:59')
+		</if>
 		<choose>
 			<when test="status == null  or status == ''">
 			</when>
@@ -2666,16 +2725,19 @@
 				AND status_ IN (#{status})
 			</otherwise>
 		</choose>
-        ORDER BY
-        create_date DESC
-        LIMIT #{pageStart},
-        #{pageSize}
-        ) order_
-        LEFT JOIN sb_area saa ON order_.street_id = saa.id
-        LEFT JOIN sb_area saa2 ON order_.area_id = saa2.id
-        LEFT JOIN sb_area saa3 ON saa2.parent_id = saa3.id
-        LEFT JOIN sb_area saa4 ON saa3.parent_id = saa4.id
-    </select>
+		) order_
+		where 1=1
+		<if test="complaintType != null and complaintType !='' ">
+			<choose>
+				<when test="complaintType='3'.toString()">
+					and order_.isOverTime > 2880 OR order_.complaintType = 3
+				</when>
+				<otherwise>
+					and order_.complaintType = #{complaintType}
+				</otherwise>
+			</choose>
+		</if>
+	</select>
     <select id="outAchOrderListOverview" resultType="Map" parameterType="String">
         SELECT
         CASE order_.status_
@@ -2712,6 +2774,7 @@
         order_.is_cash,
         order_.category_name,
         order_.amount,
+		IF(order_.isOverTime > 2880,'1',if(order_.complaintType = '3','1','0')) AS isComplaint,
         saa.area_name streetName,
         saa2.area_name areaName,
         saa3.area_name cityName,
@@ -2727,6 +2790,8 @@
         soo.create_date,
         soo.ach_price,
         soo.is_cash,
+		soo.complaint_type AS complaintType,
+		TIMESTAMPDIFF(MINUTE, IF(soo.title = '2',CONCAT(soo.arrival_time,' ',SUBSTR(soo.arrival_period, 7,5),':00'),IF(soo.arrival_period='am',CONCAT(soo.arrival_time,' 12:00:00'),CONCAT(soo.arrival_time,' 18:00:00'))),IF(soo.status_ = '3',soo.complete_date,if(soo.status_ in ('4','5'),soo.cancel_time,NOW()))) AS isOverTime,
         soi.category_name,
         soi.amount
         FROM
@@ -2759,6 +2824,8 @@
         soo.create_date,
         soo.ach_price,
         soo.is_cash,
+		soo.complaint_type AS complaintType,
+		TIMESTAMPDIFF(MINUTE, IF(soo.title = '2',CONCAT(soo.arrival_time,' ',SUBSTR(soo.arrival_period, 7,5),':00'),IF(soo.arrival_period='am',CONCAT(soo.arrival_time,' 12:00:00'),CONCAT(soo.arrival_time,' 18:00:00'))),IF(soo.status_ = '3',soo.complete_date,if(soo.status_ in ('4','5'),soo.cancel_time,NOW()))) AS isOverTime,
         soia.category_name,
         soia.amount
         FROM
@@ -2783,6 +2850,17 @@
         LEFT JOIN sb_area saa2 ON order_.area_id = saa2.id
         LEFT JOIN sb_area saa3 ON saa2.parent_id = saa3.id
         LEFT JOIN sb_area saa4 ON saa3.parent_id = saa4.id
+		where 1=1
+		<if test="complaintType != null and complaintType !='' ">
+			<choose>
+				<when test="complaintType='3'.toString()">
+					and order_.isOverTime > 2880 OR order_.complaintType = 3
+				</when>
+				<otherwise>
+					and order_.complaintType = #{complaintType}
+				</otherwise>
+			</choose>
+		</if>
         ORDER BY
         order_.create_date DESC;
     </select>
@@ -2823,6 +2901,7 @@
 		 order_.is_cash,
 		 order_.category_name,
 		 order_.amount,
+		IF(order_.isOverTime > 2880,'1',if(order_.complaintType = '3','1','0')) AS isComplaint,
 		 saa.area_name streetName,
 		 saa2.area_name areaName,
 		 saa3.area_name cityName,
@@ -2838,6 +2917,8 @@
 					soo.create_date,
 					soo.ach_price,
 					soo.is_cash,
+					soo.complaint_type AS complaintType,
+					TIMESTAMPDIFF(MINUTE, IF(soo.title = '2',CONCAT(soo.arrival_time,' ',SUBSTR(soo.arrival_period, 7,5),':00'),IF(soo.arrival_period='am',CONCAT(soo.arrival_time,' 12:00:00'),CONCAT(soo.arrival_time,' 18:00:00'))),IF(soo.status_ = '3',soo.complete_date,if(soo.status_ in ('4','5'),soo.cancel_time,NOW()))) AS isOverTime,
 					soi.category_name,
 					soi.amount
 				FROM
@@ -2871,6 +2952,17 @@
 		LEFT JOIN sb_area saa2 ON order_.area_id = saa2.id
 		LEFT JOIN sb_area saa3 ON saa2.parent_id = saa3.id
 		LEFT JOIN sb_area saa4 ON saa3.parent_id = saa4.id
+		where 1=1
+		<if test="complaintType != null and complaintType !='' ">
+			<choose>
+				<when test="complaintType='3'.toString()">
+					and order_.isOverTime > 2880 OR order_.complaintType = 3
+				</when>
+				<otherwise>
+					and order_.complaintType = #{complaintType}
+				</otherwise>
+			</choose>
+		</if>
 	</select>
 
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
