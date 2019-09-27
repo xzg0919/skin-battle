@@ -585,8 +585,10 @@ public class OutExcelController {
             int initCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")).eq("type_", "0"));
             int TosendCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")).eq("type_", "1"));
             int AlreadyCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")).eq("type_", "2"));
-            if(2880<Integer.parseInt(list.get(i).get("overTime").toString())){
-                count ++;
+            if (null != list.get(i).get("overTime")){
+                if(2880<Integer.parseInt(list.get(i).get("overTime").toString())){
+                    count ++;
+                }
             }
             row.add(count);
             row.add(list.get(i).get(""));

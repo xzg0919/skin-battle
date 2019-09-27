@@ -268,6 +268,8 @@
 					6 as status,
 					so.price,
 					so.order_no orderNo,
+					so.complaint_type as complaintType,
+					TIMESTAMPDIFF(MINUTE, IF(so.title = '2',CONCAT(so.arrival_time,' ',SUBSTR(so.arrival_period, 7,5),':00'),IF(so.arrival_period='am',CONCAT(so.arrival_time,' 12:00:00'),CONCAT(so.arrival_time,' 18:00:00'))), IF(so.status_ = '3',so.complete_date,if(so.status_ in ('4','5'),so.cancel_time,NOW()))) AS overTimes,
 				date_format(IF(ISNULL(so.arrival_time),"",so.arrival_time), '%Y-%m-%d') AS arrivalTime,
 				so.arrival_period AS arrivalPeriod,
 				sc.name_ AS cateName,
@@ -843,6 +845,7 @@
 			b.order_no AS orderNo,
 			b.category_id AS categoryId,
 			b.order_remarks as orderRemarks,
+			b.complaint_type as complaintType,
 			c.name_ AS categoryName,
 			c.icon AS icon,
 			date_format(b.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
@@ -851,7 +854,8 @@
 			date_format(b.receive_time,'%Y-%m-%d %H:%i:%S')AS receiveTime,
 			date_format(b.distribute_time,'%Y-%m-%d %H:%i:%S') AS distributeTime,
 			date_format(b.complete_date,'%Y-%m-%d %H:%i:%S')AS completeDate,
-			IF(now()> CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'pm',' 12:00:00',IF(b.arrival_period = 'am',' 00:00:01',CONCAT(' ',SUBSTR(b.arrival_period,1,2) ,':00:00')))),'Y','N') AS isRead
+			IF(now()> CONCAT(date_format(b.arrival_time,'%Y-%m-%d'),IF(b.arrival_period = 'pm',' 12:00:00',IF(b.arrival_period = 'am',' 00:00:01',CONCAT(' ',SUBSTR(b.arrival_period,1,2) ,':00:00')))),'Y','N') AS isRead,
+			TIMESTAMPDIFF(MINUTE,IF(b.arrival_period='am',CONCAT(b.arrival_time,' 12:00:00'),CONCAT(b.arrival_time,' 18:00:00')), IF(b.status_ = '3',b.complete_date,if(b.status_ in ('4','5'),b.cancel_time,NOW()))) AS overTime
 		FROM
 			sb_recyclers a
 		LEFT JOIN sb_order b ON a.id = b.recycler_id
@@ -1459,6 +1463,9 @@
 		a.link_man AS userName,
 		a.tel,
 		a.status_ AS status,
+		DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
+		a.arrival_period AS arrivalPeriod,
+		(SELECT COUNT(1) FROM sb_arrival_time_log arr WHERE arr.order_id = a.id) AS num,
 		d.name_ AS companyName
 		FROM
 		sb_order a
@@ -1547,6 +1554,8 @@
 				b.name_ AS recycleerName,
 				d.name_ AS companyName,
 				a.complaint_type AS complaintType,
+				DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
+				a.arrival_period AS arrivalPeriod,
 				(SELECT COUNT(1) FROM sb_arrival_time_log arr WHERE arr.order_id = a.id) AS num,
 				TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 			FROM

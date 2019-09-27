@@ -2,7 +2,9 @@ package com.tzj.collect.api.admin;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.app.ArrivalTimeLogBean;
 import com.tzj.collect.core.param.business.BOrderBean;
+import com.tzj.collect.core.service.ArrivalTimeLogService;
 import com.tzj.collect.core.service.OrderCancleExamineService;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Order;
@@ -17,8 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 @ApiService
 public class AdminOrderApi {
@@ -26,6 +27,8 @@ public class AdminOrderApi {
     private OrderService orderService;
     @Autowired
     private OrderCancleExamineService orderCancleExamineService;
+    @Autowired
+    private ArrivalTimeLogService arrivalTimeLogService;
 
     /**
      * 根据条件获取订单内容
@@ -128,6 +131,21 @@ public class AdminOrderApi {
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public String agreeExamineOdrerStatus(OrderBean orderbean) {
        return orderService.agreeExamineOdrerStatus(orderbean);
+    }
+
+    /**
+     * 用户修改上门回收时间
+     * @author wangcan
+     * @return
+     */
+    @Api(name = "admin.sendArrivalTimeLog", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public String sendArrivalTimeLog(ArrivalTimeLogBean arrivalTimeLogBean){
+        //获取订单Id
+        Integer orderId =  arrivalTimeLogBean.getOrderId();
+        return arrivalTimeLogService.sendArrivalTimeLog(orderId,arrivalTimeLogBean.getAfterDate(),arrivalTimeLogBean.getAfterPeriod(),arrivalTimeLogBean.getCancleDesc());
+
     }
 
 }
