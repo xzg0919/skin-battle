@@ -42,7 +42,6 @@ import static com.tzj.collect.common.constant.Const.*;
  **/
 @Service
 @Transactional(readOnly = true)
-@DS("slave")
 public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Payment> implements DailyPaymentService {
 
     @Resource
@@ -151,6 +150,7 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
      * @param OrderNo:订单编号
      * @author 王灿
      */
+    @Transactional(readOnly = false)
     public void updateMemberPoint(String aliUserId, String OrderNo, double amount,String descrb) {
         DecimalFormat df   = new DecimalFormat("######0.00");
         amount = Double.parseDouble(df.format(amount));

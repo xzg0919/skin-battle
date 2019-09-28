@@ -32,6 +32,7 @@ public class DailyPointServiceImpl extends ServiceImpl<DailyPointMapper, Point> 
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public void insertPointList(PointList pointList) {
 		pointMapper.insertPointList(pointList);
 	}
