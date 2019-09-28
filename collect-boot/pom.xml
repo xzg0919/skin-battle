@@ -269,7 +269,7 @@
     </dependencies>
 
     <build>
-        <finalName>collect.jar</finalName>
+        <finalName>collect-boot</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

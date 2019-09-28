@@ -1,5 +1,6 @@
 package com.tzj.collect.core.result.app;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.tzj.collect.entity.Category.CategoryType;
 import lombok.Data;
 
@@ -107,6 +108,10 @@ public class AppOrderResult {
 	private String overTime;//超时时间
 
 	private String overTimes;//超时时间
+
+	private String isComplaint;
+
+	private String complaintType;//客诉类型  0催派 1催接 2催收  3形成客诉
 
 
 	public String getAliUserId() {

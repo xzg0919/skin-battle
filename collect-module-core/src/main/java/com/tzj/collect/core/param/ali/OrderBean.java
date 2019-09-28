@@ -251,4 +251,6 @@ public class OrderBean {
 
     private String reason;
 
+    private String complaintType;//客诉类型  0催派 1催接 2催收  3形成客诉
+
 }

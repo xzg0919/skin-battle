@@ -24,6 +24,8 @@ import java.util.Date;
 @Data
 public class Order extends DataEntity<Long> {
 	private Long id;
+
+	private String complaintType;//客诉类型  0催派 1催接 2催收  3形成客诉
 	/**
 	 * 会员id
 	 */
@@ -80,6 +82,8 @@ public class Order extends DataEntity<Long> {
 	private String examineReason;
 	@TableField(exist = false)
 	private String examineStatus;
+	@TableField(exist = false)
+	private String isComplaint;
 	/**
 	 * 地址
 	 */

@@ -332,4 +332,15 @@ public class BusinessOrderApi {
 		return orderService.cancleOrderExamine(orderBean);
 	}
 
+	/**
+	 * 获取订单客诉详情接口
+	 * @date 2019/08/30
+	 * @return
+	 */
+	@Api(name = "business.order.getOrderComplaintDttail", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getOrderComplaintDttail(OrderBean orderBean){
+		return orderService.getOrderComplaintDetail(orderBean.getOrderNo());
+	}
+
 }

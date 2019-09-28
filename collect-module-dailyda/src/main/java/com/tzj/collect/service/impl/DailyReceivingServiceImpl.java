@@ -197,8 +197,12 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                             returnMap.put("price", finalPrice);
                             return;
                         }else {
+                            double point = randomPoint();
                             //领取积分
-                            dailyPaymentService.updateMemberPoint(aliUserId, outBizNo, randomPoint(), "答答答红包");
+                            dailyPaymentService.updateMemberPoint(aliUserId, outBizNo, point, "答答答红包");
+                            returnMap.put("msg", "领取成功");
+                            returnMap.put("price", point);
+                            return;
                         }
                     }
                 }else if("Y".equals(receivableLists.get("isReceive"))){

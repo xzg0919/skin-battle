@@ -14,6 +14,7 @@ import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.result.admin.RecruitExpressResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.EnterpriseCode;
+import com.tzj.collect.entity.OrderComplaint;
 import com.tzj.collect.entity.OrderItem;
 import com.tzj.collect.entity.OrderItemAch;
 import com.tzj.module.easyopen.exception.ApiException;
@@ -48,7 +49,7 @@ public class OutExcelController {
     @Autowired
     private OrderService orderService;
     @Autowired
-    private OrderItemService orderItemService;
+    private OrderComplaintService orderComplaintService;
     @Autowired
     private OrderItemAchService orderItemAchService;
     @Autowired
@@ -428,6 +429,9 @@ public class OutExcelController {
             case "5":
                 statusPage = "平台已取消";
                 break;
+            case "0":
+                statusPage = "待处理";
+                break;
             default:
                 break;
         }
@@ -480,12 +484,16 @@ public class OutExcelController {
         titles.add("订单状态");
         titles.add("成交金额");
         titles.add("数量");
+        titles.add("是否为客诉");
+        titles.add("客诉原因");
         otherData.setTitles(titles);
         achData.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
         List<Object> row = null;
         for(int i=0; i<otherList.size();i++){
+            Map<String, Object> complaint = orderService.getOrderComplaint(otherList.get(i).get("order_no") + "");
+            String complaints = "";
             row=new ArrayList();
             row.add(otherList.get(i).get("order_no"));
             row.add(otherList.get(i).get("caName"));
@@ -496,11 +504,21 @@ public class OutExcelController {
             row.add(otherList.get(i).get("status_"));
             row.add(otherList.get(i).get("ach_price"));
             row.add(otherList.get(i).get("amount"));
+            row.add("0".equals(otherList.get(i).get("isComplaint")+"")?"不是":"是");
+            if("3".equals(complaint.get("complaintType"))){
+                complaints = "催促两次";
+            }
+            if (2880<Integer.parseInt(complaint.get("overTime")+"")){
+                complaints += "超时两天";
+            }
+            row.add(complaints);
             rows.add(row);
         }
         otherData.setRows(rows);
         rows = new ArrayList();
         for(int i=0; i<achList.size();i++){
+            Map<String, Object> complaint = orderService.getOrderComplaint(achList.get(i).get("order_no") + "");
+            String complaints = "";
             row=new ArrayList();
             row.add(achList.get(i).get("order_no"));
             row.add(achList.get(i).get("caName"));
@@ -511,6 +529,14 @@ public class OutExcelController {
             row.add(achList.get(i).get("status_"));
             row.add(achList.get(i).get("ach_price"));
             row.add(achList.get(i).get("amount"));
+            row.add("0".equals(otherList.get(i).get("isComplaint")+"")?"不是":"是");
+            if("3".equals(complaint.get("complaintType"))){
+                complaints = "催促两次";
+            }
+            if (2880<Integer.parseInt(complaint.get("overTime")+"")){
+                complaints += "超时两天";
+            }
+            row.add(complaints);
             rows.add(row);
         }
         achData.setRows(rows);
@@ -521,4 +547,60 @@ public class OutExcelController {
         ExcelUtils.exportExcel(response, fileName, allExcelData);
     }
 
+    @RequestMapping("/getOutComplaintOrderList")
+    public void  getOutComplaintOrderList(HttpServletResponse response, OrderBean orderBean) throws Exception{
+        List<Map<String, Object>> list = orderService.getOutComplaintOrderList(orderBean);
+
+        ExcelData data = new ExcelData();
+        data.setName("订单表");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("订单号");
+        titles.add("下单时间");
+        titles.add("用户手机号");
+        titles.add("回收商名称");
+        titles.add("回收员姓名");
+        titles.add("完成时间");
+        titles.add("订单状态");
+        titles.add("客诉数量");
+        titles.add("客诉是否解决");
+        titles.add("催派");
+        titles.add("催接");
+        titles.add("催收");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        for(int i=0; i<list.size();i++){
+            row=new ArrayList();
+            row.add(list.get(i).get("orderNo"));
+            row.add(list.get(i).get("createDate"));
+            row.add(list.get(i).get("tel"));
+            row.add(list.get(i).get("companyName"));
+            row.add(list.get(i).get("recycleerName"));
+            row.add(list.get(i).get("completeDate"));
+            row.add(this.getOrderStatus(list.get(i).get("status").toString()));
+            int count = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")));
+            int initCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")).eq("type_", "0"));
+            int TosendCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")).eq("type_", "1"));
+            int AlreadyCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")).eq("type_", "2"));
+            if (null != list.get(i).get("overTime")){
+                if(2880<Integer.parseInt(list.get(i).get("overTime").toString())){
+                    count ++;
+                }
+            }
+            row.add(count);
+            row.add(list.get(i).get(""));
+            row.add("催派"+initCount);
+            row.add("催接"+TosendCount);
+            row.add("催收"+AlreadyCount);
+            rows.add(row);
+
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
 }

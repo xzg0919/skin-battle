@@ -4,8 +4,11 @@ package com.tzj.collect.api.adminReceeption;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.param.app.ArrivalTimeLogBean;
+import com.tzj.collect.core.service.ArrivalTimeLogService;
 import com.tzj.collect.core.service.CompanyService;
 import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.entity.ArrivalTimeLog;
 import com.tzj.collect.entity.CompanyStree;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderCancleExamine;
@@ -14,8 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_RECEPTION_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 @ApiService
 public class ReceptionOrderApi {
@@ -24,6 +26,8 @@ public class ReceptionOrderApi {
     private OrderService orderService;
     @Autowired
     private CompanyService companyService;
+    @Autowired
+    private ArrivalTimeLogService arrivalTimeLogService;
 
     /**
      * 根据不同的条件查询订单列表
@@ -71,5 +75,20 @@ public class ReceptionOrderApi {
     @RequiresPermissions(values = ADMIN_RECEPTION_API_COMMON_AUTHORITY)
     public Object saveOrderReceptionByOrderNo(OrderBean orderbean) {
         return orderService.saveOrderReceptionByOrderNo(orderbean);
+    }
+
+    /**
+     * 用户修改上门回收时间
+     * @author wangcan
+     * @return
+     */
+    @Api(name = "admin.order.sendArrivalTimeLog", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_RECEPTION_API_COMMON_AUTHORITY)
+    public String sendArrivalTimeLog(ArrivalTimeLogBean arrivalTimeLogBean){
+        //获取订单Id
+        Integer orderId =  arrivalTimeLogBean.getOrderId();
+        return arrivalTimeLogService.sendArrivalTimeLog(orderId,arrivalTimeLogBean.getAfterDate(),arrivalTimeLogBean.getAfterPeriod(),arrivalTimeLogBean.getCancleDesc());
+
     }
 }

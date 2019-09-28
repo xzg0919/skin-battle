@@ -6,15 +6,19 @@ import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.OrderPic;
 import com.tzj.collect.entity.Recyclers;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+@Data
 public class BOrderBean {
 
 	//订单id
 		private Integer id;
+
+		private String complaintType;//客诉类型  0催派 1催接 2催收  3形成客诉
 		 /**
 	     * 会员id
 	     */
