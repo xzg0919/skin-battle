@@ -21,7 +21,7 @@
 			#{pointList.point},
 			'0',
 			#{pointList.documentNo},
-			'获取积分',
+			'答答答领取积分',
 			NULL,
 			NOW(),
 			NULL,
