@@ -45,7 +45,7 @@ public class DailyJob {
     /**
      * 定时任务,钱未转账到用户支付宝
      */
-    @Scheduled(cron = "30 15 20 ? * 1,2,3,5")
+    @Scheduled(cron = "30 15 20 ? * 1,3,5,7")
     public void startPaymentExecute(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new DailyPaymentThread(dailyPaymentService)));
     }
