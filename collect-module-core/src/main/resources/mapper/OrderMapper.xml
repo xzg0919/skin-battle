@@ -1454,6 +1454,10 @@
 		countAll.createDate DESC  LIMIT #{startPage},#{endPage}
 	</select>
 	<select id="getOrderListByAdmin" parameterType="Object" resultType="Map">
+	SELECT
+	a.*,
+	IF(a.overTime > 2880,'1',if(a.complaintType = '3','1','0')) AS isComplaint
+	FROM (
 		SELECT
 		a.id,
 		a.order_no AS orderNo,
@@ -1466,7 +1470,9 @@
 		DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
 		a.arrival_period AS arrivalPeriod,
 		(SELECT COUNT(1) FROM sb_arrival_time_log arr WHERE arr.order_id = a.id) AS num,
-		d.name_ AS companyName
+		d.name_ AS companyName,
+		a.complaint_type AS complaintType,
+		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
@@ -1499,12 +1505,30 @@
 			AND concat(#{endTime},' 23:59:59') > a.create_date
 		</if>
 		ORDER BY a.create_date DESC
-		LIMIT #{startPage},#{pageSize}
+	) a
+	WHERE
+	1 = 1
+	<if test="complaintType != null and complaintType !='' ">
+		<choose>
+			<when test="complaintType=='3'.toString()">
+				and a.overTime > 2880 OR a.complaintType = 3
+			</when>
+			<otherwise>
+				and  2880 > a.overTime and a.complaintType = #{complaintType}
+			</otherwise>
+		</choose>
+	</if>
+	LIMIT #{startPage},#{pageSize}
 	</select>
 
 	<select id="getOrderCountByAdmin" parameterType="Object" resultType="Integer">
-		SELECT
+	SELECT
 		count(1)
+	FROM (
+		SELECT
+		 	a.id,b.id as rId,c.id as cId,
+		a.complaint_type AS complaintType,
+		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
@@ -1536,6 +1560,19 @@
 		<if test="endTime != null and endTime !='' ">
 			AND concat(#{endTime},' 23:59:59') > a.create_date
 		</if>
+	) a
+	WHERE
+	1 = 1
+	<if test="complaintType != null and complaintType !='' ">
+		<choose>
+			<when test="complaintType=='3'.toString()">
+				and a.overTime > 2880 OR a.complaintType = 3
+			</when>
+			<otherwise>
+				and 2880 > a.overTime and a.complaintType = #{complaintType}
+			</otherwise>
+		</choose>
+	</if>
 	</select>
 	<select id="getOrderListByAdminReception" parameterType="Object" resultType="Map">
 	SELECT

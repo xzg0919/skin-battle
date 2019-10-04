@@ -267,6 +267,11 @@
         <!--</dependency>-->
 
     </dependencies>
+    <properties>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <!--指定时间格式-->
+        <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+    </properties>
 
     <build>
         <finalName>collect-boot-${maven.build.timestamp}</finalName>

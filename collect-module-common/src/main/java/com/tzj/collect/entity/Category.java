@@ -67,6 +67,8 @@ public class Category extends DataEntity<Long> {
 
 	private String iconImg;
 
+	private String myslGreen;
+
 	@TableField(exist=false)
 	private List<Map<String,Object>> categoryMap;
 	@TableField(exist=false)
