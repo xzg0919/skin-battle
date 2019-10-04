@@ -59,14 +59,14 @@ class PaymentThread implements Runnable{
             for(Payment payment:paymentsList){
                 //查询此单交易是否成功
             	AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getId().toString());
-                if(!"Success".equals(aliPayment.getMsg())){
-                	 //交易失败，重新转账
-                    System.out.println("交易失败，重新转账");
-                    paymentService.transfer(payment);
-                }else{
+                if("Success".equals(aliPayment.getMsg())&&"SUCCESS".equals(aliPayment.getStatus())){
                     //转账成功
                     payment.setIsSuccess("1");
                     paymentService.updateById(payment);
+                }else{
+                    //交易失败，重新转账
+                    System.out.println("交易失败，重新转账");
+                    paymentService.transfer(payment);
                 }
             }
         }
