@@ -9,6 +9,8 @@ import com.tzj.collect.service.DailyMemberService;
 import com.tzj.collect.service.DailyPaymentService;
 import com.tzj.collect.service.DailyWeekRankingService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -36,6 +38,9 @@ public class DailyJob {
 
     @Resource
     private DailyPaymentService dailyPaymentService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * 定时任务,钱未转账到用户支付宝
@@ -124,21 +129,24 @@ public class DailyJob {
                     if(!"Success".equals(aliPayment.getMsg())){
                         //交易失败，重新转账
                         System.out.println("交易失败，重新转账");
-                        AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = paymentService.dailyDaTransfer(paymentsLists.getAliUserId(), paymentsLists.getPrice().toString(),paymentsLists.getOrderSn());
-//                        成功更新状态
-                        if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())){
-                            paymentsLists.setStatus(2);
-                            //转账成功
-                            paymentsLists.setIsSuccess("1");
-                            paymentsLists.setUpdateDate(new Date());
-                            paymentsLists.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
-                            paymentService.updateById(paymentsLists);
-                        }else {
-                            paymentsLists.setIsSuccess("0");
-                            paymentsLists.setUpdateDate(new Date());
-                            paymentsLists.setRemarks(alipayFundTransToaccountTransferResponse.getSubMsg());
-                            paymentService.updateById(paymentsLists);
-                        }
+//                        AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = paymentService.dailyDaTransfer(paymentsLists.getAliUserId(), paymentsLists.getPrice().toString(),paymentsLists.getOrderSn());
+////                        成功更新状态
+//                        if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())){
+//                            paymentsLists.setStatus(2);
+//                            //转账成功
+//                            paymentsLists.setIsSuccess("1");
+//                            paymentsLists.setUpdateDate(new Date());
+//                            paymentsLists.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+//                            paymentService.updateById(paymentsLists);
+//                        }else {
+//                            paymentsLists.setIsSuccess("0");
+//                            paymentsLists.setUpdateDate(new Date());
+//                            paymentsLists.setRemarks(alipayFundTransToaccountTransferResponse.getSubMsg());
+//                            paymentService.updateById(paymentsLists);
+//                        }
+
+                        //交易失败，重新mq转账
+                        rabbitTemplate.convertAndSend("daily_keywords_queue", paymentsLists.getOrderSn());
                     }else{
                         paymentsLists.setUpdateDate(new Date());
                         paymentsLists.setStatus(2);

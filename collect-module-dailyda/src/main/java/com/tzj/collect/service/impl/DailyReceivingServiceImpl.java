@@ -12,6 +12,8 @@ import com.tzj.collect.entity.Payment;
 import com.tzj.collect.service.DailyPaymentService;
 import com.tzj.collect.service.DailyReceivingService;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,9 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
 
     @Resource
     private DailyPaymentService dailyPaymentService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /** 用户领取记录
       * @author sgmark@aliyun.com
@@ -175,26 +180,30 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
                     if (this.insertOrUpdate(finalDailyReceiving)) {
                         if (!"0".equals(finalPrice)){
                             //用户转账
-                            AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(aliUserId, finalPrice, outBizNo);
+//                            AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(aliUserId, finalPrice, outBizNo);
                             payment.setAliUserId(aliUserId);
                             payment.setPrice(new BigDecimal(finalPrice));
                             payment.setOrderSn(outBizNo);
                             payment.setSellerId(aliUserId);
                             payment.setPayType(Payment.PayType.RED_BAG);
-                            if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())) {
-                                //交易完成(状态设置为已转账)
-                                payment.setStatus(STATUS_TRANSFER);
-                                payment.setIsSuccess("1");
-                                payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
-                            } else {
-                                //交易失败(状态设置为未转账)
-                                payment.setStatus(STATUS_PAYED);
-                                payment.setIsSuccess("0");
-    //                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
-                            }
+//                            if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())) {
+//                                //交易完成(状态设置为已转账)
+//                                payment.setStatus(STATUS_TRANSFER);
+//                                payment.setIsSuccess("1");
+//                                payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+//                            } else {
+//                                //交易失败(状态设置为未转账)
+//                                payment.setStatus(STATUS_PAYED);
+//                                payment.setIsSuccess("0");
+//    //                            payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+//                            }
+                            payment.setStatus(STATUS_PAYED);
+                            payment.setIsSuccess("0");
                             dailyPaymentService.insertOrUpdate(payment);
                             returnMap.put("msg", "领取成功");
                             returnMap.put("price", finalPrice);
+                            //用户转账使用队列(给到领取红包的uuId)
+                            returnMap.put("outBizNo", outBizNo);
                             return;
                         }else {
                             double point = randomPoint();

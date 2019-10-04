@@ -58,8 +58,8 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
         model.setPayeeType("ALIPAY_USERID");
         model.setPayeeAccount(aliUserId);
         model.setAmount(price);
-        model.setPayerShowName("答答答红包");
-        model.setRemark("答答答红包(补发)");
+        model.setPayerShowName("支付宝垃圾分类回收");
+        model.setRemark("答答答红包");
         request.setBizModel(model);
         AlipayFundTransToaccountTransferResponse response =null;
         try {

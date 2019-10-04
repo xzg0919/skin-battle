@@ -173,7 +173,11 @@ public class DailyDaApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> receivingMoney(DailyDaParam dailyDaParam){
         dailyDaParam.setAliUserId(MemberUtils.getMember().getAliUserId());
-        return dailyReceivingService.receivingMoney(dailyDaParam);
+        Map<String, Object> returnMap = dailyReceivingService.receivingMoney(dailyDaParam);
+        if (returnMap.containsKey("outBizNo")){
+            rabbitTemplate.convertAndSend("daily_keywords_queue", returnMap.get("outBizNo"));
+        }
+        return returnMap;
     }
     @Api(name = "daily.week.ranking", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
