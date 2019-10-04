@@ -521,8 +521,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     @Override
     public List<Map<String, Object>> weekDresserList() {
         Jedis jedis = jedisPool.getResource();
-        String redisTableName = redisKeyName() + ":" + "user_input_date";
-        Long localTime = System.currentTimeMillis();
+        String redisTableName = redisKeyNameLastWeek() + ":" + "user_input_date";
         //周记录
         Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyNameLastWeek(), 1000, 0, 0,20000000);
         List<Map<String, Object>> aliUserIdScoreList = new ArrayList<>();
