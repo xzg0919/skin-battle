@@ -538,18 +538,22 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             if(!CollectionUtils.isEmpty(prices)){
                 tupleMap.put("price", null == prices.get("price") ? "" : prices.get("price"));
                 tupleMap.put("count_", null == prices.get("count_") ? "" : prices.get("count_"));
-
             }
             if (!CollectionUtils.isEmpty(sums)){
                 tupleMap.put("sum", null == sums.get("sum_") ? 0: sums.get("sum_"));
             }
-            tupleMap.put("picUrl", null == member.get("picUrl") ? "": member.get("picUrl"));
-            tupleMap.put("linkName", null == member.get("linkName") ? "" : member.get("linkName"));
-            tupleMap.put("mobile", member.get("mobile"));
-            tupleMap.put("city", null == member.get("city") ? "" : member.get("city"));
-            //            //取出用户的答题时间
-            Double userTime = jedis.zscore(redisTableName, aliUserIdScore.get(0));
-            tupleMap.put("userInputDate", null == userTime ? Double.POSITIVE_INFINITY  : userTime);
+            try {
+                tupleMap.put("picUrl", null == member.get("picUrl") ? "" : member.get("picUrl"));
+                tupleMap.put("linkName", null == member.get("linkName") ? "" : member.get("linkName"));
+                tupleMap.put("mobile", member.get("mobile"));
+                tupleMap.put("city", null == member.get("city") ? "" : member.get("city"));
+                //            //取出用户的答题时间
+                Double userTime = jedis.zscore(redisTableName, aliUserIdScore.get(0));
+                tupleMap.put("userInputDate", null == userTime ? Double.POSITIVE_INFINITY : userTime);
+            }catch (Exception e){
+                System.out.println(e.getCause());
+                tupleMap.put("userInputDate", Double.POSITIVE_INFINITY);
+            }
             aliUserIdScoreList.add(tupleMap);
         });
 //        System.out.println(System.currentTimeMillis()-localTime);
