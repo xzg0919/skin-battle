@@ -40,7 +40,7 @@ public class DailyJob {
     /**
      * 定时任务,钱未转账到用户支付宝
      */
-    @Scheduled(cron = "30 29 20 ? * 1,3,5")
+    @Scheduled(cron = "30 15 20 ? * 1,2,3,5")
     public void startPaymentExecute(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new DailyPaymentThread(dailyPaymentService)));
     }
@@ -51,7 +51,7 @@ public class DailyJob {
      * @param
      * @return
      */
-    @Scheduled(cron = "0 0 2 ? * 1")
+    @Scheduled(cron = "0 14 1 ? * MON")
     public void downloadExcel(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new UploadExcelThread(dailyWeekRankingService)));
     }
@@ -134,7 +134,7 @@ public class DailyJob {
                             paymentsLists.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
                             paymentService.updateById(paymentsLists);
                         }else {
-                            paymentsLists.setIsSuccess("1");
+                            paymentsLists.setIsSuccess("0");
                             paymentsLists.setUpdateDate(new Date());
                             paymentsLists.setRemarks(alipayFundTransToaccountTransferResponse.getSubMsg());
                             paymentService.updateById(paymentsLists);

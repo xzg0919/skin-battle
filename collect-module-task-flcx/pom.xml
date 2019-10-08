@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>collect-module-task</artifactId>
+    <artifactId>collect-module-task-flcx</artifactId>
 
     <description>定时任务模块、单独编译为一个jar包以及MQ的监听器</description>
 
@@ -79,11 +79,6 @@
             <groupId>com.tzj</groupId>
             <artifactId>collect-module-flcx</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.tzj</groupId>
-            <artifactId>collect-module-dailyda</artifactId>
-        </dependency>
-
 
         <!-- mybatis-plus begin -->
         <dependency>
@@ -129,6 +124,7 @@
     </dependencies>
 
     <build>
+        <finalName>flcx-task</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

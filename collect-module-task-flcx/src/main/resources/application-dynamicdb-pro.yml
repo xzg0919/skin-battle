@@ -25,9 +25,3 @@ spring:
           username: zhinan_admin
           password: Fenlei@zhinan
           driver-class-name: com.mysql.cj.jdbc.Driver
-          #driver-class-name: com.mysql.jdbc.Driver
-        slave_1:
-          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          username: sb_admin
-          password: shoubei_123
-          driver-class-name: com.mysql.cj.jdbc.Driver

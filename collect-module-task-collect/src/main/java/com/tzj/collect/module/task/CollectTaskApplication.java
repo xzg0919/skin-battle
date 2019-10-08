@@ -17,13 +17,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableScheduling
 @ComponentScan("com.tzj")
 @SpringBootApplication(exclude = DruidDataSourceAutoConfigure.class)
-public class TaskApplication {
-    protected final static Logger logger = LoggerFactory.getLogger(TaskApplication.class);
+public class CollectTaskApplication {
+    protected final static Logger logger = LoggerFactory.getLogger(CollectTaskApplication.class);
 
     public static void main(String[] args) throws Exception {
-        SpringApplication app = new SpringApplication(TaskApplication.class);
+        SpringApplication app = new SpringApplication(CollectTaskApplication.class);
         app.setBannerMode(Banner.Mode.OFF);
         app.run(args);
-        logger.info("PortalApplication is success!");
+        logger.info("CollectTaskApplication is success!");
     }
 }

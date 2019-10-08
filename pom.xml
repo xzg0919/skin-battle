@@ -21,7 +21,8 @@
     <modules>
         <module>collect-module-core</module>
         <module>collect-boot</module>
-        <module>collect-module-task</module>
+        <module>collect-module-task-collect</module>
+        <module>collect-module-task-flcx</module>
         <module>collect-module-umeng</module>
         <module>collect-module-common</module>
         <module>collect-module-member</module>

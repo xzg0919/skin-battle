@@ -1,6 +1,8 @@
+server:
+  port: 8081
 spring:
   application:
-    name: collect-task
+    name: flcx-task
   profiles:
     active: dynamicdb-pro
   #配置MQ
@@ -23,19 +25,6 @@ spring:
         max-wait: -1     # 连接池最大阻塞等待时间（使用负值表示没有限制）
         max-idle: 10      # 连接池中的最大空闲连接
         min-idle: 5       # 连接池中的最小空闲连接
-
-  redis2:
-    #open: false  # 是否开启redis缓存  true开启   false关闭
-    #database: 0
-    #正式
-    host:  r-uf6crus7stfo0npql7.redis.rds.aliyuncs.com
-    #测试
-#    host: 172.19.193.25
-    password: sb_123456      # 密码（默认为空）
-#    host: 172.19.193.25
-#    # 测试6370 正式6379
-#    port: 6379
-#    password: sb_123456
 
 #mybatis
 mybatis-plus:

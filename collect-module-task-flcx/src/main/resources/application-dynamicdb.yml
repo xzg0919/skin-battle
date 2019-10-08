@@ -1,0 +1,41 @@
+spring:
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    dynamic:
+      #p6spy: true
+      druid: #全局设置
+        initial-size: 10
+        max-active: 200
+        min-idle: 10
+        max-wait: 60000
+        pool-prepared-statements: true
+        max-pool-prepared-statement-per-connection-size: 20
+        max-open-prepared-statements: 20
+        validation-query: SELECT 1 from dual
+        test-on-borrow: false
+        test-on-return: false
+        test-while-idle: true
+        time-between-eviction-runs-millis: 60000
+        spring.datasource.druid.min-evictable-idle-time-millis: 300000
+      primary: master #设置默认的数据源或者数据源组,默认值即为master,如果你主从默认下主库的名称就是master可不定义此项。
+      datasource:
+        master:
+          url: jdbc:mysql://rm-uf6405043t8sk1tbe.mysql.rds.aliyuncs.com/flzn?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          username: zhinan_admin
+          password: Fenlei@zhinan
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          #driver-class-name: com.mysql.jdbc.Driver
+        #定义从库连接收呗正式数据库(主库（答答答周榜需用主库）)
+        slave_1:
+          url: jdbc:mysql://47.103.192.72:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          username: devuser
+          password: dev123456@1
+          driver-class-name: com.mysql.cj.jdbc.Driver
+#          #driver-class-name: com.mysql.jdbc.Driver
+#        slave_2:
+#          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+#          username: sb_admin
+#          password: shoubei_123
+#          driver-class-name: com.mysql.cj.jdbc.Driver
+          #driver-class-name: com.mysql.jdbc.Driver
