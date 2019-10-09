@@ -43,7 +43,6 @@ import java.util.concurrent.atomic.AtomicReference;
  **/
 @Service
 @Transactional(readOnly = true)
-@DS("slave")
 public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMapper, DailyWeekRanking> implements DailyWeekRankingService {
 
 

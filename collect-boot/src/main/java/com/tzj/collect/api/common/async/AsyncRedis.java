@@ -36,21 +36,20 @@ public class AsyncRedis {
         LatchMap latchMapResult = null;
         do {
             try {
-                iotMapCache  = (Hashtable<String, Object>)redisUtil.get("iotMap");
-                if (iotMapCache != null && iotMapCache.containsKey(iotMemId)){
+                iotMapCache  = (Hashtable<String, Object>)redisUtil.get("iotMap:"+iotMemId);
+                if (iotMapCache != null){
+                    //本地存放空间
                     latchMapResult = IotApi.latMapConcurrent.get(iotMemId);
                     if (null != latchMapResult){
                         try {
-                            latchMapResult.orderId = ((Map<String, Object>)iotMapCache.get(iotMemId)).get("orderId").toString();
-                            latchMapResult.nameList = (List<Map<String, Object>>) ((Map<String, Object>)iotMapCache.get(iotMemId)).get("nameList");
+                            latchMapResult.orderId = iotMapCache.get("orderId").toString();
+                            latchMapResult.nameList = (List<Map<String, Object>>) iotMapCache.get("nameList");
                             latchMapResult.latch.countDown();
-                            iotMapCache.remove(iotMemId);
-                            redisUtil.set("iotMap", iotMapCache);
+                            redisUtil.del("iotMap:"+iotMemId);
                         }catch (Exception e){
-                            latchMapResult.orderId = iotMapCache.get(iotMemId)+"";
+                            latchMapResult.orderId = iotMapCache.get("orderId")+"";
                             latchMapResult.latch.countDown();
-                            iotMapCache.remove(iotMemId);
-                            redisUtil.set("iotMap", iotMapCache);
+                            redisUtil.del("iotMap:"+iotMemId);
                             e.printStackTrace();
                         }
                         break;
