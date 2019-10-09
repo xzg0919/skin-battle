@@ -1598,7 +1598,7 @@
  					and a.overTime > 2880 OR a.complaintType = 3
 				</when>
 				<otherwise>
-					and a.complaintType = #{complaintType}
+					and  2880 > a.overTime and a.complaintType = #{complaintType}
 				</otherwise>
 			</choose>
 		</if>
@@ -1662,7 +1662,7 @@
 				and a.overTime > 2880 OR a.complaintType = 3
 			</when>
 			<otherwise>
-				and a.complaintType = #{complaintType}
+				and 2880 > a.overTime and a.complaintType = #{complaintType}
 			</otherwise>
 		</choose>
 	</if>
@@ -1726,7 +1726,7 @@
 					and a.overTime > 2880 OR a.complaintType = 3
 				</when>
 				<otherwise>
-					and a.complaintType = #{complaintType}
+					and 2880 > a.overTime  and a.complaintType = #{complaintType}
 				</otherwise>
 			</choose>
 		</if>
@@ -2680,7 +2680,7 @@
 					and order_.isOverTime > 2880 OR order_.complaintType = 3
 				</when>
 				<otherwise>
-					and order_.complaintType = #{complaintType}
+					and   2880 > order_.isOverTime and order_.complaintType = #{complaintType}
 				</otherwise>
 			</choose>
 		</if>
@@ -2742,7 +2742,7 @@
 					and order_.isOverTime > 2880 OR order_.complaintType = 3
 				</when>
 				<otherwise>
-					and order_.complaintType = #{complaintType}
+					and 2880 > order_.isOverTime and order_.complaintType = #{complaintType}
 				</otherwise>
 			</choose>
 		</if>
@@ -2866,7 +2866,7 @@
 					and order_.isOverTime > 2880 OR order_.complaintType = 3
 				</when>
 				<otherwise>
-					and order_.complaintType = #{complaintType}
+					and 2880 > order_.isOverTime and order_.complaintType = #{complaintType}
 				</otherwise>
 			</choose>
 		</if>
@@ -2968,7 +2968,7 @@
 					and order_.isOverTime > 2880 OR order_.complaintType = 3
 				</when>
 				<otherwise>
-					and order_.complaintType = #{complaintType}
+					and 2880 > order_.isOverTime and order_.complaintType = #{complaintType}
 				</otherwise>
 			</choose>
 		</if>
