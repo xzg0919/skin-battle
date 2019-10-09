@@ -1748,6 +1748,60 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		scoreResult.setEvaList(map);
 		return scoreResult;
 	}
+
+	@Override
+	public boolean modifyOrderByPayment(OrderBean orderBean) {
+		Order order = orderService.selectById(orderBean.getId());
+		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1");
+		if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+			wrapper.eq("type_","4");
+		}else {
+			wrapper.eq("type_","1");
+		}
+		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
+		OrderLog orderLog = new OrderLog();
+		orderLog.setOrderId(orderBean.getId());
+		String descrb = "";
+		boolean flag = false;
+		if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){
+			Category category = categoryService.selectById(order.getCategoryId());
+			descrb = category.getName();
+		}else{
+			descrb = "生活垃圾";
+		}
+		if ("2".equals(order.getStatus().getValue().toString())) {
+			order.setStatus(OrderType.COMPLETE);
+		} else {
+			throw new ApiException("该订单已被操作，请刷新页面查看状态");
+		}
+		order.setCompleteDate(new Date());
+		if(StringUtils.isNotBlank(orderBean.getAchPrice())){
+			order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
+		}
+		flag = orderService.updateById(order);
+		orderLog.setOpStatusAfter("COMPLETE");
+		orderLog.setOp("已完成");
+		this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
+		if (!"1".equals(companyRecycler.getIsManager())) {
+			//阿里云推送
+			Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
+			PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
+		}
+		try {
+			if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","大件回收");
+			}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","家电回收");
+			}else {
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","生活垃圾");
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	//修改日志列表
+		flag = orderLogService.insert(orderLog);
+		return flag;
+	}
 	@Override
 	public boolean modifyOrderSta(OrderBean orderBean) {
 		OrderLog orderLog = new OrderLog();

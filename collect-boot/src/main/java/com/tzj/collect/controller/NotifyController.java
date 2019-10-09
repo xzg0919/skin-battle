@@ -158,7 +158,7 @@ public class NotifyController {
                         orderBean.setStatus("3");
                         orderBean.setAmount(order.getGreenCount());
                         orderBean.setAchPrice(totalAmount);
-                        orderService.modifyOrderSta(orderBean);
+                        orderService.modifyOrderByPayment(orderBean);
                         //判断是否有券码完成转账
                         if(!StringUtils.isBlank(order.getEnterpriseCode())){
                             EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
