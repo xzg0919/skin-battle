@@ -1923,7 +1923,7 @@
 	</select>
 	<select id="getHouseOrderCategoryByLjAsCash" parameterType="String" resultType="Map">
 		SELECT
-			b.parent_name AS categoryName,
+			b.category_name AS categoryName,
 			FORMAT(SUM(b.amount),2) AS amount
 		FROM
 			sb_order a
@@ -1932,7 +1932,7 @@
 		WHERE
 			a.status_ = 3
 		AND a.title = 2
-		AND b.price > 0
+		AND a.is_cash = 0
 		<if test="cityId != '-1'">
 			AND	c.parent_id = #{cityId}
 		</if>
@@ -1951,7 +1951,7 @@
 		<if test="endtDate != null and endtDate != ''">
 			AND CONCAT(#{endtDate}, ' 23:59:59') > a.complete_date
 		</if>
-		GROUP BY b.parent_name
+		GROUP BY b.category_name
 	</select>
 	<select id="getHouseOrderCategoryByLjAsGreen" parameterType="String" resultType="Map">
 			SELECT
@@ -1964,7 +1964,7 @@
 			WHERE
 				a.status_ = 3
 			AND a.title =2
-			AND b.price = 0
+			AND a.is_cash = 1
 			<if test="cityId != '-1'">
 				AND	c.parent_id = #{cityId}
 			</if>
