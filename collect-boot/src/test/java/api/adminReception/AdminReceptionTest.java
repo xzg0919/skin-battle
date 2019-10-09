@@ -35,8 +35,10 @@ public class AdminReceptionTest {
 
         String api="http://localhost:9090/admin/reception/api";
         OrderBean orderBean = new OrderBean();
-//        orderBean.setStartTime("2018-09-01");
-//        orderBean.setEndTime("2019-10-01");
+        orderBean.setStartTime("2018-09-01");
+        orderBean.setEndTime("2019-10-11");
+        orderBean.setComplaintType("0");
+        orderBean.setPagebean(new PageBean());
 //        orderBean.setCompanyId(41);
 //        orderBean.setStatus("3");
 //        orderBean.setTel("15691728708");
@@ -49,15 +51,15 @@ public class AdminReceptionTest {
 //        orderBean.setType("1");
 //        orderBean.setReason("老板催我来接单2");
 
-        ArrivalTimeLogBean arrivalTimeLogBean = new ArrivalTimeLogBean();
-        arrivalTimeLogBean.setOrderId(70092);
-        arrivalTimeLogBean.setAfterDate("2019-09-25");
-        arrivalTimeLogBean.setAfterPeriod("12:00-13:00");
-        arrivalTimeLogBean.setCancleDesc("我是修改原因");
+//        ArrivalTimeLogBean arrivalTimeLogBean = new ArrivalTimeLogBean();
+//        arrivalTimeLogBean.setOrderId(70092);
+//        arrivalTimeLogBean.setAfterDate("2019-09-25");
+//        arrivalTimeLogBean.setAfterPeriod("12:00-13:00");
+//        arrivalTimeLogBean.setCancleDesc("我是修改原因");
 
 
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","admin.order.sendArrivalTimeLog");
+        param.put("name","admin.order.getOrderListByAdminReception");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_4");
@@ -65,7 +67,7 @@ public class AdminReceptionTest {
         param.put("token",securityToken);
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID().toString());
-        param.put("data",arrivalTimeLogBean);
+        param.put("data",orderBean);
 
         String jsonStr= JSON.toJSONString(param);
         String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_9988767");

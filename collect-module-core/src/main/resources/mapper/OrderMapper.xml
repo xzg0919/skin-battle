@@ -120,7 +120,7 @@
 					LEFT JOIN (
 					SELECT
 					d.order_id,
-					max(d.num) AS num
+					COUNT(1) AS num
 					FROM
 					sb_arrival_time_log d
 					LEFT JOIN sb_order a ON d.order_id = a.id
@@ -1589,12 +1589,13 @@
 		<if test="endTime != null and endTime !='' ">
 			AND concat(#{endTime},' 23:59:59') > a.create_date
 		</if>
+		ORDER BY a.create_date DESC
 	) a
 	WHERE
 		1 = 1
 		<if test="complaintType != null and complaintType !='' ">
 			<choose>
-				<when test="complaintType='3'.toString()">
+				<when test="complaintType=='3'.toString()">
  					and a.overTime > 2880 OR a.complaintType = 3
 				</when>
 				<otherwise>
@@ -1602,7 +1603,6 @@
 				</otherwise>
 			</choose>
 		</if>
-	ORDER BY a.createDate DESC
 	LIMIT #{startPage},#{pageSize}
 </select>
 <select id="getOrderCountByAdminReception" parameterType="Object" resultType="Integer">
@@ -1658,7 +1658,7 @@
 	1 = 1
 	<if test="complaintType != null and complaintType !='' ">
 		<choose>
-			<when test="complaintType='3'.toString()">
+			<when test="complaintType=='3'.toString()">
 				and a.overTime > 2880 OR a.complaintType = 3
 			</when>
 			<otherwise>
@@ -1722,7 +1722,7 @@
 		1 = 1
 		<if test="complaintType != null and complaintType !='' ">
 			<choose>
-				<when test="complaintType='3'.toString()">
+				<when test="complaintType=='3'.toString()">
 					and a.overTime > 2880 OR a.complaintType = 3
 				</when>
 				<otherwise>
@@ -1738,6 +1738,7 @@
 				a.id,
 				a.order_no AS orderNo,
 				a.complaint_type AS complaintType,
+				DATE_FORMAT(DATE_ADD(IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),interval 2 day),'%Y-%m-%d %h:%i:%s') as dates,
 				TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 			FROM
 				sb_order a
@@ -2676,7 +2677,7 @@
 		where 1=1
 		<if test="complaintType != null and complaintType !='' ">
 			<choose>
-				<when test="complaintType='3'.toString()">
+				<when test="complaintType=='3'.toString()">
 					and order_.isOverTime > 2880 OR order_.complaintType = 3
 				</when>
 				<otherwise>
@@ -2738,7 +2739,7 @@
 		where 1=1
 		<if test="complaintType != null and complaintType !='' ">
 			<choose>
-				<when test="complaintType='3'.toString()">
+				<when test="complaintType=='3'.toString()">
 					and order_.isOverTime > 2880 OR order_.complaintType = 3
 				</when>
 				<otherwise>
@@ -2862,7 +2863,7 @@
 		where 1=1
 		<if test="complaintType != null and complaintType !='' ">
 			<choose>
-				<when test="complaintType='3'.toString()">
+				<when test="complaintType=='3'.toString()">
 					and order_.isOverTime > 2880 OR order_.complaintType = 3
 				</when>
 				<otherwise>
@@ -2964,7 +2965,7 @@
 		where 1=1
 		<if test="complaintType != null and complaintType !='' ">
 			<choose>
-				<when test="complaintType='3'.toString()">
+				<when test="complaintType=='3'.toString()">
 					and order_.isOverTime > 2880 OR order_.complaintType = 3
 				</when>
 				<otherwise>

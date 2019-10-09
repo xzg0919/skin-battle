@@ -3148,11 +3148,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Object getOrderListByAdmin(OrderBean orderBean) {
 		PageBean pageBean = orderBean.getPagebean();
 
-		if(null==orderBean.getCompanyId()&&StringUtils.isBlank(orderBean.getTitle())&&StringUtils.isBlank(orderBean.getStatus())
-				&&StringUtils.isBlank(orderBean.getTel())&&StringUtils.isBlank(orderBean.getOrderNo())&&StringUtils.isBlank(orderBean.getLinkName())
-				&&(StringUtils.isBlank(orderBean.getStartTime())||StringUtils.isBlank(orderBean.getEndTime()))){
-			throw new ApiException("请输入查询的条件");
-		}
+
 		Integer startPage = (pageBean.getPageNumber()-1)*pageBean.getPageSize();
 		Integer pageSize = pageBean.getPageSize();
 		Object orderList = orderMapper.getOrderListByAdmin(orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime(), startPage, pageSize);
@@ -3172,11 +3168,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		PageBean pageBean = orderBean.getPagebean();
 		if (null==pageBean){
 			pageBean = new PageBean();
-		}
-		if(null==orderBean.getCompanyId()&&StringUtils.isBlank(orderBean.getTitle())&&StringUtils.isBlank(orderBean.getStatus())
-				&&StringUtils.isBlank(orderBean.getTel())&&StringUtils.isBlank(orderBean.getOrderNo())&&StringUtils.isBlank(orderBean.getLinkName())
-				&&(StringUtils.isBlank(orderBean.getStartTime())||StringUtils.isBlank(orderBean.getEndTime()))){
-			throw new ApiException("请输入查询的条件");
 		}
 		Integer startPage = (pageBean.getPageNumber()-1)*pageBean.getPageSize();
 		Integer pageSize = pageBean.getPageSize();
@@ -3395,7 +3386,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderComplaint.setType("6");
 			orderComplaint.setTypes("订单超时");
 			orderComplaint.setReason("超时两天");
-			orderComplaint.setCreateDate(new Date());
+			try{
+				orderComplaint.setCreateDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orderComplaintMap.get("dates")+""));
+			}catch (Exception e){
+				orderComplaint.setCreateDate(new Date());
+			}
 			orderComplaint.setIsComplaint("1");
 			resultList.add(orderComplaint);
 		}
@@ -3732,7 +3727,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderComplaint.setType("6");
 			orderComplaint.setTypes("订单超时");
 			orderComplaint.setReason("超时两天");
-			orderComplaint.setCreateDate(new Date());
+			try{
+				orderComplaint.setCreateDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orderComplaintMap.get("dates")+""));
+			}catch (Exception e){
+				orderComplaint.setCreateDate(new Date());
+			}
 			orderComplaint.setIsComplaint("1");
 			resultList.add(orderComplaint);
 		}

@@ -341,7 +341,7 @@ public class LexiconApi {
             try {
                 AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
                 if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
-                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString());
+                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString().replace("市", ""));
                 } else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())) {
                     //定位没找到城市(配合支付宝页面展示，去掉市)
                     resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getProvince().replace("市", ""));
