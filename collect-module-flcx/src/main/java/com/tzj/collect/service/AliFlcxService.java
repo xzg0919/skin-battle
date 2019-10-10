@@ -9,7 +9,7 @@ import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryRe
  * @create 2019-07-04 15:21
  **/
 public interface AliFlcxService {
-     AlipayIserviceCognitiveClassificationWasteQueryResponse returnTypeByPicOrVoice(String picUrl, String voiceString);
+     AlipayIserviceCognitiveClassificationWasteQueryResponse returnTypeByPicOrVoice(String picUrl, String voiceString, String source);
 
      void returnTypeVoice(String voiceString);
 

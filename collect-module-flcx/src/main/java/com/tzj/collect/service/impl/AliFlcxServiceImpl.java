@@ -23,13 +23,14 @@ import org.springframework.stereotype.Service;
  **/
 @Service
 public class AliFlcxServiceImpl implements AliFlcxService {
-    public  AlipayIserviceCognitiveClassificationWasteQueryResponse returnTypeByPicOrVoice(String picUrl, String voiceString) {
+    public  AlipayIserviceCognitiveClassificationWasteQueryResponse returnTypeByPicOrVoice(String picUrl, String voiceString, String source) {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
         AlipayIserviceCognitiveClassificationWasteQueryRequest request = new AlipayIserviceCognitiveClassificationWasteQueryRequest();
         AlipayIserviceCognitiveClassificationWasteQueryResponse execute = null;
         try {
             BizContent bizContent = new BizContent();
             if (!StringUtils.isBlank(picUrl)){
+                bizContent.setSource(source);
                 bizContent.setCognition_content(picUrl);
                 bizContent.setCognition_type("ImageUrl");
             }else if (!StringUtils.isBlank(voiceString)){
@@ -100,6 +101,8 @@ public class AliFlcxServiceImpl implements AliFlcxService {
         private String feedback_rubbish;//反馈名称
 
         private String action_type;
+
+        private String source;//区分ar/isv
     }
 
     public static void main(String[] args)throws AlipayApiException {

@@ -55,6 +55,8 @@ public class FlcxBean {
 
     private SourceType sourceType = SourceType.isv;//默认小程序
 
+    private  String source;//区别来源isv/ar
+
     /** 调用来源
       * @author sgmark@aliyun.com
       * @date 2019/7/29 0029

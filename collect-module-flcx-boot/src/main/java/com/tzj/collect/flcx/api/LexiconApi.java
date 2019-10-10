@@ -81,6 +81,9 @@ public class LexiconApi {
             flcxBean.setCityName("上海");
             flcxBean.setCityId(1L);
         }
+        if (StringUtils.isEmpty(flcxBean.getSource())){
+            flcxBean.setSource("isv");
+        }
 //        //没传城市，只有经纬度
 //        if (StringUtils.isNotEmpty(cityName) || flcxBean.getCityId() != 0){
 //            //有传值撒都不干
@@ -118,7 +121,7 @@ public class LexiconApi {
                 }
             }
             //语音搜索或者图片搜索
-            AlipayIserviceCognitiveClassificationWasteQueryResponse alipayResponse = aliFlcxService.returnTypeByPicOrVoice(imageUrl, flcxBean.getSpeechText());
+            AlipayIserviceCognitiveClassificationWasteQueryResponse alipayResponse = aliFlcxService.returnTypeByPicOrVoice(imageUrl, flcxBean.getSpeechText(), flcxBean.getSource());
             if(null != alipayResponse && null != alipayResponse.getKeyWords()){
                 List<KeyWordDTO> returnListMap = alipayResponse.getKeyWords();
                 Boolean finalIsAr = isAr;
