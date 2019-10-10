@@ -149,6 +149,7 @@
 
 
     <build>
+        <finalName>flcx-pro-${maven.build.timestamp}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

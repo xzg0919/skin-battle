@@ -12,7 +12,6 @@
     <artifactId>collect-module-task-flcx</artifactId>
 
     <description>定时任务模块、单独编译为一个jar包以及MQ的监听器</description>
-
     <dependencies>
 
         <!-- springboot -->
@@ -124,7 +123,7 @@
     </dependencies>
 
     <build>
-        <finalName>flcx-task</finalName>
+        <finalName>flcx-task-${maven.build.timestamp}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

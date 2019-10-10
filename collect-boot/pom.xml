@@ -269,7 +269,7 @@
     </dependencies>
 
     <build>
-        <finalName>collect-boot</finalName>
+        <finalName>collect-boot-${maven.build.timestamp}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

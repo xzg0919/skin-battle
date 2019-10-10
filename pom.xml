@@ -63,6 +63,8 @@
         <druid.version>1.1.18</druid.version>
         <skipTests>true</skipTests>
         <alipay-sdk.version>3.7.151.ALL</alipay-sdk.version>
+        <!--打包增加时间版本-->
+        <maven.build.timestamp.format>yyyy-MM</maven.build.timestamp.format>
     </properties>
 
     <dependencyManagement>

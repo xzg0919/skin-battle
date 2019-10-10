@@ -147,7 +147,7 @@
     </dependencies>
 
     <build>
-        <finalName>daily</finalName>
+        <finalName>daily-${maven.build.timestamp}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
