@@ -11,6 +11,8 @@ import com.tzj.collect.service.DailyReceivingService;
 import com.tzj.collect.service.DailyWeekRankingService;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -36,6 +38,8 @@ public class DailyDaApi {
     @Resource
     private DailyWeekRankingService dailyWeekRankingService;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 //  /** 根据用户授权返回的authCode,解析用户的数据
 //    * @author sgmark@aliyun.com
 //    * @date 2019/8/12 0012
@@ -102,6 +106,7 @@ public class DailyDaApi {
     public Set<Map<String, Object>> dailyLexiconList(){
         System.out.println(MemberUtils.getMember().getAliUserId());
         if (dailyLexiconService.isAnswerDaily(MemberUtils.getMember().getAliUserId()).size()>0){
+            rabbitTemplate.convertAndSend("daily_keywords_queue", "我是消息");
             throw new ApiException("今日答题已完成，明儿请赶早");
         }
         return dailyLexiconService.dailyLexiconList(MemberUtils.getMember());
