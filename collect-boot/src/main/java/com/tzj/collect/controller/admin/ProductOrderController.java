@@ -168,6 +168,9 @@ public class ProductOrderController {
 			companyList.add("韵达快递");
 			companyList.add("邮政快递");
 			companyList.add("顺丰快递");
+			companyList.add("申通快递");
+			companyList.add("圆通快递");
+			companyList.add("百世汇通");
 		return companyList;
 	}
 }
