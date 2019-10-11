@@ -17,6 +17,7 @@ import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
@@ -77,6 +78,21 @@ public class AdminOrderApi {
         return orderService.getOrderDetailByIdByAdmin(orderBean.getId().toString());
     }
     /**
+     * 根据订单id获取订单详情
+     * @author 王灿
+     * @param
+     * @return
+     */
+    @Api(name = "admin.order.getOrderDetail", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Map<String,Object> getAdminOrderDetail(OrderBean orderBean){
+        int orderId = orderBean.getId();
+        //查询订单详情
+        Map<String,Object> resultMap = orderService.selectOrderByBusiness(orderId);
+        return resultMap;
+    }
+    /**
      * 中台驳回接口
      * @author 王灿
      * @param
@@ -112,6 +128,7 @@ public class AdminOrderApi {
      * @return
      */
     @Api(name = "admin.order.getAdminOrderDetail", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public Object getNewOrderDetail(OrderBean orderbean) {
         Map<String,Object> resultMap = (Map<String, Object>) orderService.getAdminOrderDetail(orderbean.getId());
@@ -119,6 +136,20 @@ public class AdminOrderApi {
         OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
         resultMap.put("orderCancleExamine",orderCancleExamine);
         return resultMap;
+    }
+    /**
+     * 根据订单id获取取消订单申请理由
+     * @author 王灿
+     * @param
+     * @return
+     */
+    @Api(name = "admin.order.getCancleOrderDetail", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object getCancleOrderDetail(OrderBean orderbean){
+        //查询订单详情
+        List<OrderCancleExamine> orderCancleExamineList = orderCancleExamineService.selectList(new EntityWrapper<OrderCancleExamine>().eq("order_no", orderbean.getOrderNo()));
+        return orderCancleExamineList;
     }
     /**
      * 中台驳回接口

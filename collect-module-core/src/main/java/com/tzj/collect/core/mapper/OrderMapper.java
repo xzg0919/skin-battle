@@ -163,9 +163,9 @@ public interface OrderMapper extends BaseMapper<Order> {
 
 	Integer getBigOrderCountByPhone(@Param("recycleId") Integer recycleId, @Param("tel") String tel);
 
-	List<Map<String,Object>> getOrderListByAdmin(@Param("companyId") String companyId, @Param("title") String title, @Param("status") String status, @Param("tel") String tel, @Param("orderNo")String orderNo, @Param("linkName")String linkName, @Param("startTime")String startTime, @Param("endTime")String endTime, @Param("startPage")Integer startPage, @Param("pageSize")Integer pageSize);
+	List<Map<String,Object>> getOrderListByAdmin(@Param("complaintType") String complaintType,@Param("companyId") String companyId, @Param("title") String title, @Param("status") String status, @Param("tel") String tel, @Param("orderNo")String orderNo, @Param("linkName")String linkName, @Param("startTime")String startTime, @Param("endTime")String endTime, @Param("startPage")Integer startPage, @Param("pageSize")Integer pageSize);
 
-	Integer getOrderCountByAdmin(@Param("companyId") String companyId,@Param("title") String title,@Param("status") String status,@Param("tel")String tel,@Param("orderNo")String orderNo,@Param("linkName")String linkName,@Param("startTime")String startTime,@Param("endTime")String endTime);
+	Integer getOrderCountByAdmin(@Param("complaintType") String complaintType,@Param("companyId") String companyId,@Param("title") String title,@Param("status") String status,@Param("tel")String tel,@Param("orderNo")String orderNo,@Param("linkName")String linkName,@Param("startTime")String startTime,@Param("endTime")String endTime);
 
 	List<Map<String,Object>> getOrderListByAdminReception(@Param("complaintType") String complaintType,@Param("companyId") String companyId, @Param("title") String title, @Param("status") String status, @Param("tel") String tel, @Param("orderNo")String orderNo, @Param("linkName")String linkName, @Param("startTime")String startTime, @Param("endTime")String endTime, @Param("startPage")Integer startPage, @Param("pageSize")Integer pageSize);
 

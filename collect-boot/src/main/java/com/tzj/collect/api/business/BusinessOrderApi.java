@@ -43,6 +43,8 @@ public class BusinessOrderApi {
 	private CompanyService companyService;
 	@Autowired
 	private SendRocketmqMessageService sendRocketmqMessageService;
+	@Autowired
+	private OrderCancleExamineService orderCancleExamineService;
 	/**
 	 * 根据各种查询条件获取订单 列表
 	 * @author 王灿
@@ -114,6 +116,19 @@ public class BusinessOrderApi {
 		//查询订单详情
 		 Map<String,Object> resultMap = orderService.selectOrderByBusiness(orderId);
 		return resultMap;
+	}
+	/**
+	 * 根据订单id获取取消订单申请理由
+	 * @author 王灿
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.order.getCancleOrderDetail", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getCancleOrderDetail(BOrderBean bOrderBean){
+		//查询订单详情
+		List<OrderCancleExamine> orderCancleExamineList = orderCancleExamineService.selectList(new EntityWrapper<OrderCancleExamine>().eq("order_no", bOrderBean.getOrderNo()));
+		return orderCancleExamineList;
 	}
  /**
 	 * 获取用户提交生活垃圾订单id详情

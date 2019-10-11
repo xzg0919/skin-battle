@@ -224,7 +224,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		Company company = this.selectById(companyBean.getId());
 		CompanyAccount companyAccount = companyAccountService.selectOne(new EntityWrapper<CompanyAccount>().eq("company_id", companyBean.getId()));
 		if (!companyAccounts.isEmpty() ){
-			if(!(companyBean.getId().toString()).equals(companyAccounts.get(0).getId().toString())){
+			if(!(companyBean.getId().toString()).equals(companyAccounts.get(0).getCompanyId().toString())){
 				return "该用户名已存在，请更换";
 			}
 		}
