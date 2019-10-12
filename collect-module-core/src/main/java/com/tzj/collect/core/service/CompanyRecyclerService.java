@@ -101,7 +101,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
      * @return CompanyRecycler    返回类型
       */
      @DS("slave")
-	 CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId);
+	 CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId,String isBigRecycle);
 
 /**
  * 通过条件回收员姓名,id返回某公司回收人员列表

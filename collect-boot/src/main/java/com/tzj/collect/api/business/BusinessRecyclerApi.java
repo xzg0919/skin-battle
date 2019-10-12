@@ -119,21 +119,10 @@ public class BusinessRecyclerApi {
 	 @Api(name = "business.search.editorDelflag", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public String editorDelflag(BusinessRecyclerBean recyclerBean){		
-		 CompanyRecycler companyRecycler = companyRecyclerService.getCompanyRecyclerByRecyclerId(recyclerBean.getId());
-		String delFlag = recyclerBean.getDelFlag();
-		String msg = "操作成功";
-		switch(delFlag){
-		case "0" :
-			companyRecycler.setDelFlag(delFlag);//启用回收人员
-			companyRecyclerService.update(companyRecycler, new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclerBean.getId()));
-		 break;
-		case "1" :
-			companyRecycler.setDelFlag(delFlag);//禁用回收人员
-			companyRecyclerService.update(companyRecycler, new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclerBean.getId()));
-			break;
-		default : msg="请传入正确的状态" ;
-		}
-		return msg;
+		 CompanyRecycler companyRecycler = companyRecyclerService.getCompanyRecyclerByRecyclerId(recyclerBean.getId(),recyclerBean.getIsBigRecycle());
+		 companyRecycler.setDelFlag(recyclerBean.getDelFlag());
+		 companyRecyclerService.updateById(companyRecycler);
+		return "操作成功";
 	}
 	
 	/**
