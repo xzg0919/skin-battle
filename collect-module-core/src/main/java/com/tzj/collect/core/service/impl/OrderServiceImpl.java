@@ -3702,7 +3702,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderComplaint.setTypes("主动客诉");
 		}
 		orderComplaint.setReason(orderbean.getReason());
-		if (count>0||"4".equals(orderbean.getType())){
+		//判断订单是否超时
+		Map<String, Object> orderComplaintMap = orderMapper.getOrderComplaint(order.getOrderNo());
+		if (count>0||"4".equals(orderbean.getType())||(null != orderComplaintMap && 2880<Integer.parseInt(orderComplaintMap.get("overTime")+""))){
 			order.setComplaintType("3");
 			orderComplaint.setIsComplaint("1");
 		}else {
