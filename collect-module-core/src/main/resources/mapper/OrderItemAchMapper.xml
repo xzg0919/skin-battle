@@ -45,7 +45,15 @@
         a.category_name AS categoryName,
         a.price,
         a.unit,
-        a.amount
+        a.amount,
+        <choose>
+            <when test="isCash == '0'.toString()">
+                a.amount as greenCount
+            </when>
+            <otherwise>
+                a.amount*10 as greenCount
+            </otherwise>
+        </choose>
         FROM
         sb_order_item_ach a
         WHERE

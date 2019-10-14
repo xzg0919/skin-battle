@@ -1,16 +1,34 @@
 package com.tzj.collect.core.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.OrderCancleExamineMapper;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.OrderCancleExamineService;
+import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderCancleExamine;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
 @Transactional(readOnly=true)
 public class OrderCancleExamineServiceImpl extends ServiceImpl<OrderCancleExamineMapper, OrderCancleExamine> implements OrderCancleExamineService {
 
+    @Autowired
+    public OrderService orderService;
+
+    public Object getCancleOrderDetail(OrderBean orderbean){
+        List<OrderCancleExamine> orderCancleExamineList = this.selectList(new EntityWrapper<OrderCancleExamine>().eq("order_no", orderbean.getOrderNo()));
+        orderCancleExamineList.stream().forEach(OrderCancleExamine->{
+            Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", OrderCancleExamine.getOrderNo()));
+            OrderCancleExamine.setOrder(order);
+        });
+        return orderCancleExamineList;
+    }
 
 }

@@ -148,8 +148,7 @@ public class AdminOrderApi {
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public Object getCancleOrderDetail(OrderBean orderbean){
         //查询订单详情
-        List<OrderCancleExamine> orderCancleExamineList = orderCancleExamineService.selectList(new EntityWrapper<OrderCancleExamine>().eq("order_no", orderbean.getOrderNo()));
-        return orderCancleExamineList;
+        return orderCancleExamineService.getCancleOrderDetail(orderbean);
     }
     /**
      * 中台驳回接口
@@ -177,6 +176,31 @@ public class AdminOrderApi {
         Integer orderId =  arrivalTimeLogBean.getOrderId();
         return arrivalTimeLogService.sendArrivalTimeLog(orderId,arrivalTimeLogBean.getAfterDate(),arrivalTimeLogBean.getAfterPeriod(),arrivalTimeLogBean.getCancleDesc());
 
+    }
+
+    /**
+     * 订单详情接口
+     * @author 王灿
+     * @param
+     * @return
+     */
+    @Api(name = "admin.getReceptionOrderDetail", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object getReceptionOrderDetail(OrderBean orderbean) {
+        return orderService.getAdminOrderDetail(orderbean.getId());
+    }
+    /**
+     * 新增订单催促接口
+     * @author 王灿
+     * @param
+     * @return
+     */
+    @Api(name = "admin.saveOrderReceptionByOrderNo", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object saveOrderReceptionByOrderNo(OrderBean orderbean) {
+        return orderService.saveOrderReceptionByOrderNo(orderbean);
     }
 
 }

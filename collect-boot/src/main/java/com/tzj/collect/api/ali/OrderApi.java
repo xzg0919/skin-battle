@@ -653,7 +653,7 @@ public class OrderApi {
 	}
 
 	/**
-	 * 小程序第二版订单详情接口
+	 *
 	 * @author 王灿
 	 * @param
 	 * @return

@@ -24,5 +24,20 @@ public class OrderCancleExamine extends  DataEntity<Long>{
     //申请取消原因
     private String cancleReason;
 
+    @TableField(exist = false)
+    private Order order;
 
+    @TableField(exist = false)
+    private String createTime;
+
+    public String getCreateTime() {
+        if (null!=createTime){
+           return this.getDate(createDate);
+        }
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
 }
