@@ -3527,6 +3527,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if ("1".equals(orderbean.getStatus())){
 			this.updateOrderByBusiness(orderbean.getId(),"REJECTED",orderbean.getCancelReason(),null);
 		}
+		orderCancleExamine.setUpdateDate(new Date());
 		orderCancleExamine.setStatus(orderbean.getStatus());
 		orderCancleExamineService.updateById(orderCancleExamine);
 		return "操作成功";
