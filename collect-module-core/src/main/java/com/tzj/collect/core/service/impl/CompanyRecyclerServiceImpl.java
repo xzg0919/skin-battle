@@ -241,9 +241,14 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	 * 修改回收人员的启用状态
 	 */
 	@Override
-	public CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId) {
+	public CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId,String isBigRecycle) {
 		EntityWrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>();
 		wrapper.eq("recycler_id", recyclerId);
+		if ("Y".equals(isBigRecycle)){
+			wrapper.eq("type_","4");
+		}else {
+			wrapper.eq("type_","1");
+		}
 		return this.selectOne(wrapper);
 	}
 /**
