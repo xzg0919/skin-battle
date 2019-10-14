@@ -509,11 +509,11 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         return collect;
     }
 
-    private static Double comparingByScore(Map<String, Object> map){
+    public static Double comparingByScore(Map<String, Object> map){
         return (Double) map.get("score");
     }
 
-    private static Double comparingByInputDate(Map<String, Object> map){
+    public static Double comparingByInputDate(Map<String, Object> map){
         return (Double) map.get("userInputDate");
     }
 

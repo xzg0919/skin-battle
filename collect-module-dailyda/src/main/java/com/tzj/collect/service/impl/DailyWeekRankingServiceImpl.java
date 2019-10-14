@@ -3,28 +3,24 @@ package com.tzj.collect.service.impl;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.commom.excel.ExcelData;
 import com.tzj.collect.api.commom.excel.ExcelUtils;
-import com.tzj.collect.mapper.DailyWeekRankingMapper;
 import com.tzj.collect.entity.DailyWeekRanking;
+import com.tzj.collect.mapper.DailyWeekRankingMapper;
 import com.tzj.collect.service.DailyLexiconService;
-import com.tzj.collect.service.DailyWeekRankingService;
 import com.tzj.collect.service.DailyMemberService;
+import com.tzj.collect.service.DailyWeekRankingService;
 import com.tzj.module.common.file.upload.FileUpload;
-import com.tzj.module.common.file.upload.OssFileUpload;
-import org.h2.mvstore.WriteBuffer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ResourceUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Tuple;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -35,7 +31,7 @@ import java.time.ZoneId;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * @author sgmark
@@ -74,15 +70,41 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
         if (null == dailyWeekRanking) {
             dailyWeekRanking = new DailyWeekRanking();
         }else {
-            return;
+            dailyWeekRanking = new DailyWeekRanking();
         }
         //周达人aliUserId
 //        String tableWeek = LocalDate.now().getYear()+""+(Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) - 1);
 //        String aliUserId = dailyWeekRankingMapper.insertEachWeekDresser("daily_day_records_"+tableWeek);
         Jedis jedis = jedisPool.getResource();
-        //以redis默认排序为准
-        Set<String> stringSet = jedis.zrevrangeByScore(this.redisKeyNameLastWeek(), 1000, 0);
-        Map<String, Object> memberMap = memberService.selectMemberInfoByAliUserId(stringSet.iterator().next().trim());
+        String redisTableName = redisKeyNameLastWeek() + ":" + "user_input_date";
+        //周记录
+        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyNameLastWeek(), 1000, 0, 0,100);
+        List<Map<String, Object>> aliUserIdScoreList = new ArrayList<>();
+        aliUserIdSet.stream().forEach(tuple -> {
+            Map<String, Object> tupleMap = new HashMap<>();
+            List<String> aliUserIdScore = Arrays.asList(tuple.getElement().replace("[", "").replace("]", "").split(","));
+//            tupleMap.put("aliUserId", aliUserIdScore.get(0));
+            tupleMap.put("score", tuple.getScore());
+            //这里根据阿里userId去找当前用户信息
+            Map<String, Object> member = memberService.selectMemberInfoByAliUserId(aliUserIdScore.get(0));
+            try {
+                tupleMap.put("picUrl", null == member.get("picUrl") ? "" : member.get("picUrl"));
+                tupleMap.put("linkName", null == member.get("linkName") ? "" : member.get("linkName"));
+                tupleMap.put("mobile", member.get("mobile"));
+                tupleMap.put("city", null == member.get("city") ? "" : member.get("city"));
+                //            //取出用户的答题时间
+                Double userTime = jedis.zscore(redisTableName, aliUserIdScore.get(0));
+                tupleMap.put("userInputDate", null == userTime ? Double.POSITIVE_INFINITY : userTime);
+            }catch (Exception e){
+                System.out.println(e.getCause());
+                tupleMap.put("userInputDate", Double.POSITIVE_INFINITY);
+            }
+            aliUserIdScoreList.add(tupleMap);
+        });
+//        System.out.println(System.currentTimeMillis()-localTime);
+        List<Map<String, Object>> collect = aliUserIdScoreList.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).collect(Collectors.toList());
+
+        Map<String, Object> memberMap = collect.iterator().next();
         dailyWeekRanking.setWeek(week);
         if (!CollectionUtils.isEmpty(memberMap)){
             dailyWeekRanking.setCity(null == memberMap.get("city") ? "" : memberMap.get("city").toString());

@@ -77,7 +77,7 @@ public class DailyJob {
     /**
      * 定时任务:每周一 一点执行（上周达人榜）
      */
-    @Scheduled(cron = "0 0 1 ? * MON")
+    @Scheduled(cron = "30 5 0 ? * MON")
     public void startWeeklyRanking(){
         System.out.println("-----------------------分割线--------------------");
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new WeekRankingThread(dailyWeekRankingService)));
