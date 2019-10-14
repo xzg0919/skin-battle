@@ -31,7 +31,7 @@ public class OrderCancleExamine extends  DataEntity<Long>{
     private String createTime;
 
     public String getCreateTime() {
-        if (null!=createTime){
+        if (null!=createDate){
            return this.getDate(createDate);
         }
         return createTime;
