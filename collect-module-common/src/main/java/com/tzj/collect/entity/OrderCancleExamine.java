@@ -29,9 +29,11 @@ public class OrderCancleExamine extends  DataEntity<Long>{
 
     @TableField(exist = false)
     private String createTime;
+    @TableField(exist = false)
+    private String updateTime;
 
     public String getCreateTime() {
-        if (null!=createTime){
+        if (null!=createDate){
            return this.getDate(createDate);
         }
         return createTime;
@@ -39,5 +41,16 @@ public class OrderCancleExamine extends  DataEntity<Long>{
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getUpdateTime() {
+        if (null!=updateDate){
+            return this.getDate(updateDate);
+        }
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
     }
 }

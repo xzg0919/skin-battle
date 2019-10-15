@@ -28,6 +28,7 @@
 		WHERE
 			scc.title = '2'
 		AND scc.level_ = '0'
+		AND scc.unuseful = '0'
 		AND(sccc.aId is not NULL OR sc.bId is NOT null)
 	 </select>
     <select id="getTwoCategoryListLocale" parameterType="String" resultType="com.tzj.collect.core.result.ali.ComCatePrice">

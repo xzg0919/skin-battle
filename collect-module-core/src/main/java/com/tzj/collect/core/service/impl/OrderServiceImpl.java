@@ -63,6 +63,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.tzj.collect.entity.Payment.STATUS_PAYED;
 import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
@@ -3397,6 +3398,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (null != orderComplaintList){
 			resultList.addAll(orderComplaintList);
 		}
+		resultList = resultList.stream().sorted(Comparator.comparing(OrderComplaint::getCreateDate).reversed()).collect(Collectors.toList());
 		int initCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "0"));
 
 		int TosendCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "1"));
@@ -3525,6 +3527,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if ("1".equals(orderbean.getStatus())){
 			this.updateOrderByBusiness(orderbean.getId(),"REJECTED",orderbean.getCancelReason(),null);
 		}
+		orderCancleExamine.setUpdateDate(new Date());
 		orderCancleExamine.setStatus(orderbean.getStatus());
 		orderCancleExamineService.updateById(orderCancleExamine);
 		return "操作成功";
@@ -3702,7 +3705,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderComplaint.setTypes("主动客诉");
 		}
 		orderComplaint.setReason(orderbean.getReason());
-		if (count>0||"4".equals(orderbean.getType())){
+		//判断订单是否超时
+		Map<String, Object> orderComplaintMap = orderMapper.getOrderComplaint(order.getOrderNo());
+		if (count>0||"4".equals(orderbean.getType())||(null != orderComplaintMap && 2880<Integer.parseInt(orderComplaintMap.get("overTime")+""))){
 			order.setComplaintType("3");
 			orderComplaint.setIsComplaint("1");
 		}else {

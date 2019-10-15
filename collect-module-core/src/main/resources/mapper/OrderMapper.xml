@@ -1585,8 +1585,6 @@
 				DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
 				if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾','')))AS categoryName,
 				c.name_ AS name,
-				DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
-				a.arrival_period AS arrivalPeriod,
 				a.link_man AS userName,
 				a.tel,
 				a.status_ AS status,
@@ -2575,7 +2573,9 @@
 			b.id,
 			b.tel,
 			a.cancle_reason AS cancleReason,
-			d.name_ AS name
+			d.name_ AS name,
+			DATE_FORMAT(b.arrival_time, '%Y-%c-%d' ) as arrivalTime,
+			b.arrival_period AS arrivalPeriod
 		FROM
 			sb_order_cancle_examine a
 		inner JOIN sb_order b ON a.order_no = b.order_no
