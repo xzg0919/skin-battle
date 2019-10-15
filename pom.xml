@@ -23,7 +23,6 @@
         <module>collect-boot</module>
         <module>collect-module-task-collect</module>
         <module>collect-module-task-flcx</module>
-        <module>collect-module-umeng</module>
         <module>collect-module-common</module>
         <module>collect-module-member</module>
         <module>collect-module-flcx</module>
@@ -57,7 +56,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <HikariCP.version>2.4.13</HikariCP.version>
-        <fastjson.version>1.2.58</fastjson.version>
+        <fastjson.version>1.2.61</fastjson.version>
         <hufm.version>4.1.3</hufm.version>
         <mybatisplus.version>2.3.3</mybatisplus.version>
         <druid.version>1.1.18</druid.version>
