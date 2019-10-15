@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -30,6 +31,7 @@ public class OperateKeywordsListenter implements ChannelAwareMessageListener {
 
 
     @Override
+    @Transactional(readOnly =  false)
     public void onMessage(Message message, Channel channel) throws Exception {
 
         try {

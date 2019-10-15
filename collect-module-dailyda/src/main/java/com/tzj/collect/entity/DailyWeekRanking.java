@@ -26,5 +26,5 @@ public class DailyWeekRanking extends DataEntity<Long> {
     private String img;//头像
 
     @TableField(value = "week_")
-    private String week;//年+周(201933)
+    private String week;//年+周(2019年第35周)
 }

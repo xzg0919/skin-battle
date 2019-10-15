@@ -7,6 +7,7 @@ import com.tzj.collect.api.lexicon.utils.JedisUtil;
 import com.tzj.collect.mapper.DailyLexiconMapper;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.entity.Member;
+import com.tzj.collect.module.common.shard.ShardTableHelper;
 import com.tzj.collect.service.DailyLexiconService;
 import com.tzj.collect.service.DailyMemberService;
 import com.tzj.module.easyopen.exception.ApiException;
@@ -123,8 +124,8 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         memberBean.setPicUrl(member.getPicUrl());
         memberBean.setMobile(member.getMobile());
 
-//        保存个人信息到redis，时间为一周
-        saveOrGetFromRedis.saveInRedis(redisKeyName() +":"+"user_information"+":"+aliUserId, memberBean, 7*24*3600, jedisPool, 0);
+//        保存个人信息到redis，时间为一月
+        saveOrGetFromRedis.saveInRedis(redisKeyName() +":"+"user_information"+":"+aliUserId, memberBean, 30*24*3600, jedisPool, 0);
 
         jedis.close();
         System.out.println(System.currentTimeMillis());
@@ -372,7 +373,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
                     memberBean.setMobile(map.get("picUrl") + "");
 
                     //没查到保存至redis
-                    saveOrGetFromRedis.saveInRedis(redisKeyName() + ":" + "user_information" + ":" + aliUserIdScore.get(0), memberBean, 7 * 24 * 3600, jedisPool, 0);
+                    saveOrGetFromRedis.saveInRedis(redisKeyName() + ":" + "user_information" + ":" + aliUserIdScore.get(0), memberBean, 30 * 24 * 3600, jedisPool, 0);
 
                 } else {
                     tupleMap.put("picUrl", null == memberBean.getPicUrl() ? "" : memberBean.getPicUrl());
@@ -531,21 +532,24 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 //            tupleMap.put("aliUserId", aliUserIdScore.get(0));
             tupleMap.put("score", tuple.getScore());
             //这里根据阿里userId去找当前用户信息
-            Map<String, Object> member = dailyMemberService.selectMemberInfoByAliUserId(aliUserIdScore.get(0));
-            Map<String, Object> sums = dailyLexiconMapper.selectSums(tableNameLastWeek(System.currentTimeMillis()), aliUserIdScore.get(0));
-            Map<String, Object> prices = dailyLexiconMapper.selectPrices(aliUserIdScore.get(0), LocalDate.now().minusWeeks(1).with(DayOfWeek.MONDAY) + "", LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY)+ " 23:59:59");
-            if(!CollectionUtils.isEmpty(prices)){
-                tupleMap.put("price", null == prices.get("price") ? "" : prices.get("price"));
-                tupleMap.put("count_", null == prices.get("count_") ? "" : prices.get("count_"));
-            }
-            if (!CollectionUtils.isEmpty(sums)){
-                tupleMap.put("sum", null == sums.get("sum_") ? 0: sums.get("sum_"));
-            }
+//            Map<String, Object> member = dailyMemberService.selectMemberInfoByAliUserId(aliUserIdScore.get(0));
+//            Map<String, Object> sums = dailyLexiconMapper.selectSums(tableNameLastWeek(System.currentTimeMillis()), aliUserIdScore.get(0));
+//            Map<String, Object> prices = dailyLexiconMapper.selectPrices(aliUserIdScore.get(0), LocalDate.now().minusWeeks(1).with(DayOfWeek.MONDAY) + "", LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY)+ " 23:59:59");
+            //当前用户所在位置
+            String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserIdScore.get(0)), 40);
+            String yearWeek = LocalDate.now().getYear() + "" + (Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) - 1);
+            //优化整合上面三条语句
+            Map<String, Object> stringObjectMap = dailyLexiconMapper.selectPricesSumsAndMemInfoByAliId(aliUserIdScore.get(0), tableNameLastWeek(System.currentTimeMillis()), yearWeek, memberName);
             try {
-                tupleMap.put("picUrl", null == member.get("picUrl") ? "" : member.get("picUrl"));
-                tupleMap.put("linkName", null == member.get("linkName") ? "" : member.get("linkName"));
-                tupleMap.put("mobile", member.get("mobile"));
-                tupleMap.put("city", null == member.get("city") ? "" : member.get("city"));
+                if(!CollectionUtils.isEmpty(stringObjectMap)){
+                    tupleMap.put("price", null == stringObjectMap.get("price") ? "" : stringObjectMap.get("price"));
+                    tupleMap.put("count_", null == stringObjectMap.get("count_") ? "" : stringObjectMap.get("count_"));
+                    tupleMap.put("sum", null == stringObjectMap.get("sum_") ? 0: stringObjectMap.get("sum_"));
+                    tupleMap.put("picUrl", null == stringObjectMap.get("picUrl") ? "" : stringObjectMap.get("picUrl"));
+                    tupleMap.put("linkName", null == stringObjectMap.get("linkName") ? "" : stringObjectMap.get("linkName"));
+                    tupleMap.put("mobile", stringObjectMap.get("mobile"));
+                    tupleMap.put("city", null == stringObjectMap.get("city") ? "" : stringObjectMap.get("city"));
+                }
                 //            //取出用户的答题时间
                 Double userTime = jedis.zscore(redisTableName, aliUserIdScore.get(0));
                 tupleMap.put("userInputDate", null == userTime ? Double.POSITIVE_INFINITY : userTime);

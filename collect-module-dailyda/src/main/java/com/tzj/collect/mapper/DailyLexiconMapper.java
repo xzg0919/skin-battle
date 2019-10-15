@@ -54,4 +54,6 @@ public interface DailyLexiconMapper extends BaseMapper<DailyLexicon> {
     Map<String, Object> selectSums(@Param("tableName")String tableName, @Param("aliUserId")String aliUserId);
 
     Map<String, Object> selectPrices(@Param("aliUserId")String aliUserId, @Param("localDateBefore")String localDateBefore, @Param("localDateEnd")String localDateEnd);
+
+    Map<String, Object> selectPricesSumsAndMemInfoByAliId(@Param("aliUserId")String aliUserId, @Param("tableNameLastWeek")String tableNameLastWeek, @Param("yearWeek")String yearWeek, @Param("tableName")String tableName);
 }
