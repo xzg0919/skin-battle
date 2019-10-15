@@ -48,12 +48,13 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		BOrderBean orderBean = new BOrderBean();
-		orderBean.setOrderNo("20190924123802464324");
+		OrderBean orderBean = new OrderBean();
+		orderBean.setId(101);
+		orderBean.setComplaintBack("我是反馈客诉");
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.order.getOrderComplaintDttail");
+		param.put("name","business.order.addOrderComplaintBack");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");

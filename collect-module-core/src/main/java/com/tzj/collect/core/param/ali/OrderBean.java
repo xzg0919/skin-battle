@@ -179,6 +179,8 @@ public class OrderBean {
     
    
     private OrderPic  OrderPic;
+
+    private String complaintBack;//反馈客诉内容
     
     private String title;//回收无类型
     

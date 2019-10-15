@@ -565,9 +565,9 @@ public class OutExcelController {
         titles.add("订单状态");
         titles.add("客诉数量");
         titles.add("客诉是否解决");
-        titles.add("催派");
-        titles.add("催接");
-        titles.add("催收");
+        titles.add("催促状态");
+        titles.add("操作时间");
+        titles.add("回收类型");
         data.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
@@ -581,20 +581,11 @@ public class OutExcelController {
             row.add(list.get(i).get("recycleerName"));
             row.add(list.get(i).get("completeDate"));
             row.add(this.getOrderStatus(list.get(i).get("status").toString()));
-            int count = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")));
-            int initCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")).eq("type_", "0"));
-            int TosendCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")).eq("type_", "1"));
-            int AlreadyCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", list.get(i).get("orderNo")).eq("type_", "2"));
-            if (null != list.get(i).get("overTime")){
-                if(2880<Integer.parseInt(list.get(i).get("overTime").toString())){
-                    count ++;
-                }
-            }
-            row.add(count);
+            row.add(list.get(i).get("count"));
             row.add(list.get(i).get(""));
-            row.add("催派"+initCount);
-            row.add("催接"+TosendCount);
-            row.add("催收"+AlreadyCount);
+            row.add(list.get(i).get("reason"));
+            row.add(list.get(i).get("updateDate"));
+            row.add(list.get(i).get("categoryName"));
             rows.add(row);
 
         }

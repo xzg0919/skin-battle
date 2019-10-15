@@ -80,7 +80,7 @@
 						and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
 					</when>
 					<otherwise>
-						AND b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+						AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%') OR a.tel LIKE concat(concat('%',#{recyclersName}),'%'))
 					</otherwise>
 				</choose>
 			</if>
@@ -148,7 +148,7 @@
 								and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
 							</when>
 							<otherwise>
-								AND b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+								AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%') OR a.tel LIKE concat(concat('%',#{recyclersName}),'%'))
 							</otherwise>
 						</choose>
 					</if>
@@ -168,7 +168,7 @@
 					GROUP BY a.id
 				)a
 			)a
-		ORDER BY IF(a.status_='3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,a.overTime)) DESC ,a.create_date DESC
+		ORDER BY a.isComplaint DESC, IF(a.status_='3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,a.overTime)) DESC ,a.create_date DESC
 		LIMIT #{startSize} , #{pageSize}
     	</select>
     	
@@ -1722,12 +1722,16 @@
 		d.name_ AS companyName,
 		DATE_FORMAT(a.complete_date, '%Y-%c-%d %H:%i:%s' ) as completeDate,
 		a.complaint_type AS complaintType,
+		e.reason,
+		DATE_FORMAT(e.update_date, '%Y-%c-%d %H:%i:%s' ) as updateDate,
+		(SELECT COUNT(1) FROM sb_order_complaint aa WHERE aa.order_no = a.order_no) AS count,
 		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
 		LEFT JOIN sb_category c ON a.category_id = c.id
 		LEFT JOIN sb_company d ON a.company_id = d.id
+		LEFT JOIN sb_order_complaint e ON a.order_no = e.order_no
 		WHERE
 		a.del_flag = 0
 		<if test="companyId != null and companyId !='' ">
@@ -1775,7 +1779,7 @@
 				a.id,
 				a.order_no AS orderNo,
 				a.complaint_type AS complaintType,
-				DATE_FORMAT(DATE_ADD(IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),interval 2 day),'%Y-%m-%d %h:%i:%s') as dates,
+				DATE_FORMAT(DATE_ADD(IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),interval 2 day),'%Y-%m-%d %H:%i:%s') as dates,
 				TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 			FROM
 				sb_order a

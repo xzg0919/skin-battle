@@ -16,6 +16,7 @@ public class OrderComplaint extends DataEntity<Long> {
     private  String  types;//催促内容',
     private  String  reason;//客诉内容',
     private  String  isComplaint;//是否是客诉',
+    private String complaintBack;//客诉反馈
     @TableField(exist = false)
     private String createTime;
 

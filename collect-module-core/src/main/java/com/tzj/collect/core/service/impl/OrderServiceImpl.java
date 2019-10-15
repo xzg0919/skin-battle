@@ -3743,7 +3743,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (null != orderComplaintList){
 			resultList.addAll(orderComplaintList);
 		}
+		resultList = resultList.stream().sorted(Comparator.comparing(OrderComplaint::getCreateDate).reversed()).collect(Collectors.toList());
 		return  resultList;
 	}
+
+	@Override
+	@Transactional
+	public Object addOrderComplaintBack(Integer id,String complaintBack){
+    	if (null == id){
+    		throw new ApiException("该客诉无法进行反馈");
+		}
+		OrderComplaint orderComplaint = orderComplaintService.selectById(id);
+		if (null == orderComplaint){
+			throw new ApiException("该客诉无法进行反馈");
+		}
+		orderComplaint.setComplaintBack(complaintBack);
+		orderComplaintService.updateById(orderComplaint);
+		return "操作成功";
+    }
 
 }
