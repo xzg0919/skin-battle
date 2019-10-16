@@ -12,6 +12,8 @@ import com.baomidou.mybatisplus.annotations.TableName;
 @TableName("sb_company_equipment")
 public class CompanyEquipment extends  DataEntity<Long> {
 
+
+
     private static final long serialVersionUID = 1L;
 
     private Long id;
