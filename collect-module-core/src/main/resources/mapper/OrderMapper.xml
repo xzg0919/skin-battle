@@ -1471,6 +1471,7 @@
 		a.arrival_period AS arrivalPeriod,
 		(SELECT COUNT(1) FROM sb_arrival_time_log arr WHERE arr.order_id = a.id) AS num,
 		d.name_ AS companyName,
+		b.name_ AS recyclerName,
 		a.complaint_type AS complaintType,
 		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
