@@ -71,6 +71,8 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	private CompanyStreeService companyStreeService;
 	@Autowired
 	private CompanyCategoryCityNameService companyCategoryCityNameService;
+	@Autowired
+	private OrderItemAchService orderItemAchService;
 
 	
 	/**
