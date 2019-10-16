@@ -126,8 +126,8 @@ public class AppCategoryApi {
 	 */
 	@Api(name = "app.category.getNoCashOneCategoryList", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
-	public Object getNoCashOneCategoryList(){
-		return categoryService.getNoCashOneCategoryList();
+	public Object getNoCashOneCategoryList(CategoryBean categoryBean){
+		return categoryService.getNoCashOneCategoryList(categoryBean.getOrderId());
 	}
 	/**
 	 * 最新app不要钱的二级分类
@@ -137,7 +137,7 @@ public class AppCategoryApi {
 	@Api(name = "app.category.getNoCashTwoCategoryList", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getNoCashTwoCategoryList(CategoryBean categoryBean){
-		return categoryService.getNoCashTwoCategoryList(categoryBean.getId());
+		return categoryService.getNoCashTwoCategoryList(categoryBean.getId(),categoryBean.getOrderId());
 	}
 	/**
 	 * 最新app根据OrderId订单查询一级分类

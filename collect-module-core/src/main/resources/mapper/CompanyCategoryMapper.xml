@@ -82,8 +82,9 @@
 			sc.ant_forest_pic AS antForestPic
 		FROM
 			sb_company_category_city_name sccp
+		INNER JOIN sb_company_category c ON sccp.company_id = c.company_id AND sccp.category_id = c.category_id
 		INNER JOIN sb_category sc ON sc.id = sccp.category_id
-		LEFT JOIN sb_category b
+		INNER JOIN sb_category b
 		ON sc.parent_id = b.id
 		WHERE
 			sccp.parent_id = #{categoryId}

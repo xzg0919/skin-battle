@@ -3394,8 +3394,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderComplaint.setReason("超时两天");
 			try{
 				orderComplaint.setCreateDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orderComplaintMap.get("dates")+""));
+				orderComplaint.setUpdateDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orderComplaintMap.get("dates")+""));
 			}catch (Exception e){
 				orderComplaint.setCreateDate(new Date());
+				orderComplaint.setUpdateDate(new Date());
 			}
 			orderComplaint.setIsComplaint("1");
 			resultList.add(orderComplaint);
@@ -3403,7 +3405,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (null != orderComplaintList){
 			resultList.addAll(orderComplaintList);
 		}
-		resultList = resultList.stream().sorted(Comparator.comparing(OrderComplaint::getCreateDate).reversed()).collect(Collectors.toList());
+		resultList = resultList.stream().sorted(Comparator.comparing(OrderComplaint::getUpdateDate).reversed()).collect(Collectors.toList());
 		int initCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "0"));
 
 		int TosendCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "1"));
@@ -3739,8 +3741,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderComplaint.setReason("超时两天");
 			try{
 				orderComplaint.setCreateDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orderComplaintMap.get("dates")+""));
+				orderComplaint.setUpdateDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(orderComplaintMap.get("dates")+""));
 			}catch (Exception e){
 				orderComplaint.setCreateDate(new Date());
+				orderComplaint.setUpdateDate(new Date());
 			}
 			orderComplaint.setIsComplaint("1");
 			resultList.add(orderComplaint);
@@ -3748,7 +3752,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (null != orderComplaintList){
 			resultList.addAll(orderComplaintList);
 		}
-		resultList = resultList.stream().sorted(Comparator.comparing(OrderComplaint::getCreateDate).reversed()).collect(Collectors.toList());
+		resultList = resultList.stream().sorted(Comparator.comparing(OrderComplaint::getUpdateDate).reversed()).collect(Collectors.toList());
 		return  resultList;
 	}
 
