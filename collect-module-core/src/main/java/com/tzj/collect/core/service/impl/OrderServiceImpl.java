@@ -874,6 +874,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			if (order.getCategoryId() != null) {
 				order.setCategory(categoryService.selectById(order.getCategoryId()));
 			}
+			OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
+			if (null != orderCancleExamine){
+				order.setExamineReason(orderCancleExamine.getCancleReason());
+				order.setExamineStatus(orderCancleExamine.getStatus());
+			}
 		});
 		map.put("count", orderList.size());
 		map.put("list", orderList);
