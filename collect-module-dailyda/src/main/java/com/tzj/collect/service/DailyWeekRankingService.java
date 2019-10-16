@@ -5,7 +5,10 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.DailyWeekRanking;
+import com.tzj.collect.entity.Member;
 
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -26,4 +29,10 @@ public interface DailyWeekRankingService extends IService<DailyWeekRanking> {
      //上传excel文档到oss
      @DS("slave")
      void uploadExcel();
+
+    List<Map<String, Object>> dailyAllTop50Ranking(String year, String week);
+
+     List<Map<String, Object>> dailyPersonRanking(Member member);
+
+     List<Map<String, Object>> dailyAllTop50RankingTime(String year, String week);
 }

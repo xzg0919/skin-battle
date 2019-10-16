@@ -184,5 +184,44 @@ public class DailyDaApi {
     public void receivingMoney(){
         dailyWeekRankingService.insertEachWeekDresser();
     }
+
+    /**
+     * 答答答历史前50榜单（最近一个月）
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/10/15 0015
+     * @Param:
+     * @return:
+     */
+    @Api(name = "daily.all.top50.ranking", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public List<Map<String, Object>> dailyAllTop50Ranking(DailyDaParam dailyDaParam){
+        return dailyWeekRankingService.dailyAllTop50Ranking(dailyDaParam.getYear(), dailyDaParam.getWeek());
+    }
+    /** 有时间的
+     * 答答答历史前50榜单（最近一个月）
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/10/15 0015
+     * @Param:
+     * @return:
+     */
+    @Api(name = "daily.all.top50.ranking.time", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public List<Map<String, Object>> dailyAllTop50RankingTime(DailyDaParam dailyDaParam){
+        return dailyWeekRankingService.dailyAllTop50RankingTime(dailyDaParam.getYear(), dailyDaParam.getWeek());
+    }
+
+
+    /**
+     * 最近一个月个人榜单
+     * @author: sgmark@aliyun.com
+     * @Date: 2020/1/8 0008
+     * @Param: 
+     * @return: 
+     */
+    @Api(name = "daily.person.ranking", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public List<Map<String, Object>> dailyPersonRanking(){
+        return dailyWeekRankingService.dailyPersonRanking(MemberUtils.getMember());
+    }
 }
 

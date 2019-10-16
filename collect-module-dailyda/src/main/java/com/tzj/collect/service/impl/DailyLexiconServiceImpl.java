@@ -321,31 +321,36 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         }else {
             returnMap.put("todayIsAnswer", "Y");
         }
-        returnMap.put("weekRanking", weekRankingByTime(jedis, member));
+        returnMap.put("weekRanking", weekRankingByTime(jedis, member, redisKeyName()));
         System.out.println(System.currentTimeMillis()-localTime);
         jedis.close();
         return returnMap;
     }
-
-    public String weekRankingByTime(Jedis jedis, Member member){
-        String redisTableName = redisKeyName() + ":" + "user_input_date";
-
+    /**
+     * 个人周排名（）
+     * @author: sgmark@aliyun.com
+     * @Date: 2020/1/8 0008
+     * @Param: 
+     * @return: 
+     */
+    public String weekRankingByTime(Jedis jedis, Member member, String redisKeyName){
+        String redisTableName = redisKeyName + ":" + "user_input_date";
         String weekRanking = "999+";
         //每周分数
-        Double weekScore = jedis.zscore(redisKeyName(), member.getAliUserId());
+        Double weekScore = jedis.zscore(redisKeyName, member.getAliUserId());
         if (null == weekScore){
             weekScore = 0.0;
             return weekRanking;
         }
         //根据当前分数查大于当前分数的人数
-        Long underPerSonNum = jedis.zcount(redisKeyName(), weekScore+0.1, 1000);
+        Long underPerSonNum = jedis.zcount(redisKeyName, weekScore+0.1, 1000);
         AtomicReference<Integer> num = new AtomicReference<>(1);
         if (underPerSonNum > 100){
-            weekRanking = jedis.zrevrank(redisKeyName(), member.getAliUserId())+"";
+            weekRanking = jedis.zrevrank(redisKeyName, member.getAliUserId())+"";
             return weekRanking;
         }else {
             //再根据当前分数里面的总人数排名
-            Set<Tuple> aliUserIdSet = jedis.zrangeByScoreWithScores(redisKeyName(), weekScore, weekScore);
+            Set<Tuple> aliUserIdSet = jedis.zrangeByScoreWithScores(redisKeyName, weekScore, weekScore);
             List<Map<String, Object>> aliUserIdScoreList = new ArrayList<>();
             JedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new JedisUtil.SaveOrGetFromRedis();
             aliUserIdSet.stream().forEach(tuple -> {
@@ -357,7 +362,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 //            Map<String, Object> member = dailyMemberService.selectMemberInfoByAliUserId();
 //                System.out.println("-------------------------------------------------");
 //                System.out.println(System.currentTimeMillis());
-                MemberBean memberBean = (MemberBean) saveOrGetFromRedis.getFromRedis(redisKeyName() + ":" + "user_information" + ":" + aliUserIdScore.get(0), jedisPool, 0);
+                MemberBean memberBean = (MemberBean) saveOrGetFromRedis.getFromRedis(redisKeyName + ":" + "user_information" + ":" + aliUserIdScore.get(0), jedisPool, 0);
 //                System.out.println(System.currentTimeMillis());
                 if (null == memberBean) {
                     memberBean = new MemberBean();
@@ -373,7 +378,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
                     memberBean.setMobile(map.get("picUrl") + "");
 
                     //没查到保存至redis
-                    saveOrGetFromRedis.saveInRedis(redisKeyName() + ":" + "user_information" + ":" + aliUserIdScore.get(0), memberBean, 30 * 24 * 3600, jedisPool, 0);
+                    saveOrGetFromRedis.saveInRedis(redisKeyName + ":" + "user_information" + ":" + aliUserIdScore.get(0), memberBean, 30 * 24 * 3600, jedisPool, 0);
 
                 } else {
                     tupleMap.put("picUrl", null == memberBean.getPicUrl() ? "" : memberBean.getPicUrl());
@@ -397,7 +402,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             }
             weekRanking = underPerSonNum + num.get() +"";
 //        当前周排名
-//        Long weekRanking = jedis.zrevrank(redisKeyName(), member.getAliUserId());
+//        Long weekRanking = jedis.zrevrank(redisKeyName, member.getAliUserId());
         }
 //        jedis.close();
         return  weekRanking;
@@ -416,7 +421,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         returnMap.put("weekScore", null == weekScore ? 0: weekScore.intValue());
         //当前周排名
 //        Long weekRanking = jedis.zrevrank(redisKeyName(), member.getAliUserId());
-        String weekRanking = weekRankingByTime(jedis, member);
+        String weekRanking = weekRankingByTime(jedis, member, redisKeyName());
         returnMap.put("weekRanking", null == weekRanking ? "999+": weekRanking);
         returnMap.put("todayTrue", null == todayScore ? 0 : todayScore.intValue()/10);
         returnMap.put("todayFalse", null == todayScore ? 10 : 10 - todayScore.intValue()/10);
@@ -451,10 +456,79 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 ////        取出大于此分数所有人
 //            aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyName(), 1000, zscore);
 //        }
+        List<Map<String, Object>> aliUserIdScoreList = weekRankingTop50(jedis, redisKeyName());
 
         //周记录 取出前100名成员
-        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyName(), 1000, 0, 0, 100);
+//        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyName(), 1000, 0, 0, 100);
+//        JedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new JedisUtil.SaveOrGetFromRedis();
+//        aliUserIdSet.stream().forEach(tuple -> {
+//            Map<String, Object> tupleMap = new HashMap<>();
+//            List<String> aliUserIdScore = Arrays.asList(tuple.getElement().replace("[", "").replace("]", "").split(","));
+////            tupleMap.put("aliUserId", aliUserIdScore.get(0));
+//            tupleMap.put("score", tuple.getScore());
+//            //这里根据阿里userId去找当前用户信息
+////            Map<String, Object> member = dailyMemberService.selectMemberInfoByAliUserId();
+////            System.out.println("-------------------------------------------------");
+////            System.out.println(System.currentTimeMillis());
+//            Object object = saveOrGetFromRedis.getFromRedis(redisKeyName()+":"+"user_information"+":"+aliUserIdScore.get(0),jedisPool, 0);
+//            MemberBean member = null;
+//            if (null == object ){
+//            }else {
+//                member = (MemberBean)object;
+//            }
+////            System.out.println(System.currentTimeMillis());
+//            if (null == member){
+//                member = new MemberBean();
+//                Map<String, Object> map = dailyMemberService.selectMemberInfoByAliUserId(aliUserIdScore.get(0));
+//                tupleMap.put("picUrl", null == map.get("picUrl") ? "": map.get("picUrl"));
+//                tupleMap.put("linkName", null == map.get("linkName") ? "" : map.get("linkName"));
+////                tupleMap.put("mobile", map.get("mobile"));
+//                tupleMap.put("city", null == map.get("city") ? "" : map.get("city"));
+//
+//                member.setCity(null == map.get("city") ? "": map.get("city").toString());
+//                member.setLinkName(null == map.get("linkName") ? "" : map.get("linkName").toString());
+//                member.setPicUrl(null == map.get("picUrl") ? "": map.get("picUrl").toString());
+//                member.setMobile(null == map.get("mobile") ? "": map.get("mobile").toString());
+//
+//                //没查到保存至redis
+//                saveOrGetFromRedis.saveInRedis(redisKeyName()+":"+"user_information"+":"+aliUserIdScore.get(0), member, 7*24*3600, jedisPool,0);
+//
+//            }else {
+//                tupleMap.put("picUrl", null == member.getPicUrl() ? "": member.getPicUrl());
+//                tupleMap.put("linkName", null == member.getLinkName() ? "" : member.getLinkName());
+//                tupleMap.put("city", null == member.getCity() ? "" : member.getCity());
+//            }
+////            //取出用户的答题时间
+//            Double userTime = jedis.zscore(redisTableName, aliUserIdScore.get(0));
+//            tupleMap.put("userInputDate", null == userTime ? Double.POSITIVE_INFINITY  : userTime);
+//            aliUserIdScoreList.add(tupleMap);
+//        });
+//        System.out.println(System.currentTimeMillis()-localTime);
+        //根据redis中答题时间（谁先答题，同分数下谁在前面）
+        if (limit == 10){
+            limit = 50;//取排名50条数据
+        }
+        List<Map<String, Object>> collect = aliUserIdScoreList.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).limit(limit).collect(Collectors.toList());
+        //关闭 jedis
+        jedis.close();
+//        System.out.println(System.currentTimeMillis()-localTime);
+        return collect;
+    }
+
+    public static Double comparingByScore(Map<String, Object> map){
+        return (Double) map.get("score");
+    }
+
+    public static Double comparingByInputDate(Map<String, Object> map){
+        return (Double) map.get("userInputDate");
+    }
+
+    //根据周取出当前redis前50 排行
+    public List<Map<String, Object>> weekRankingTop50(Jedis jedis, String redisKeyName){
         List<Map<String, Object>> aliUserIdScoreList = new ArrayList<>();
+
+        //周记录 取出前100名成员
+        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyName, 1000, 0, 0, 100);
         JedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new JedisUtil.SaveOrGetFromRedis();
         aliUserIdSet.stream().forEach(tuple -> {
             Map<String, Object> tupleMap = new HashMap<>();
@@ -465,7 +539,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 //            Map<String, Object> member = dailyMemberService.selectMemberInfoByAliUserId();
 //            System.out.println("-------------------------------------------------");
 //            System.out.println(System.currentTimeMillis());
-            Object object = saveOrGetFromRedis.getFromRedis(redisKeyName()+":"+"user_information"+":"+aliUserIdScore.get(0),jedisPool, 0);
+            Object object = saveOrGetFromRedis.getFromRedis(redisKeyName+":"+"user_information"+":"+aliUserIdScore.get(0),jedisPool, 0);
             MemberBean member = null;
             if (null == object ){
             }else {
@@ -486,7 +560,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
                 member.setMobile(null == map.get("mobile") ? "": map.get("mobile").toString());
 
                 //没查到保存至redis
-                saveOrGetFromRedis.saveInRedis(redisKeyName()+":"+"user_information"+":"+aliUserIdScore.get(0), member, 7*24*3600, jedisPool,0);
+                saveOrGetFromRedis.saveInRedis(redisKeyName+":"+"user_information"+":"+aliUserIdScore.get(0), member, 30*24*3600, jedisPool,0);
 
             }else {
                 tupleMap.put("picUrl", null == member.getPicUrl() ? "": member.getPicUrl());
@@ -494,28 +568,11 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
                 tupleMap.put("city", null == member.getCity() ? "" : member.getCity());
             }
 //            //取出用户的答题时间
-            Double userTime = jedis.zscore(redisTableName, aliUserIdScore.get(0));
+            Double userTime = jedis.zscore(redisKeyName + ":" + "user_input_date", aliUserIdScore.get(0));
             tupleMap.put("userInputDate", null == userTime ? Double.POSITIVE_INFINITY  : userTime);
             aliUserIdScoreList.add(tupleMap);
         });
-//        System.out.println(System.currentTimeMillis()-localTime);
-        //根据redis中答题时间（谁先答题，同分数下谁在前面）
-        if (limit == 10){
-            limit = 50;//取排名50条数据
-        }
-        List<Map<String, Object>> collect = aliUserIdScoreList.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).limit(limit).collect(Collectors.toList());
-        //关闭 jedis
-        jedis.close();
-//        System.out.println(System.currentTimeMillis()-localTime);
-        return collect;
-    }
-
-    public static Double comparingByScore(Map<String, Object> map){
-        return (Double) map.get("score");
-    }
-
-    public static Double comparingByInputDate(Map<String, Object> map){
-        return (Double) map.get("userInputDate");
+        return aliUserIdScoreList;
     }
 
     //上周排行榜
@@ -620,7 +677,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     public static void main(String[] args) {
         //计算周数
 //        LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
-        System.out.println(LocalDate.now().minusWeeks(1).with(DayOfWeek.MONDAY));
+        System.out.println(Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().minusWeeks(3).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()));
         System.out.println(LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY));
 
     }

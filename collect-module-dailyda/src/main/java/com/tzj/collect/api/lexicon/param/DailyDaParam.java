@@ -21,4 +21,8 @@ public class DailyDaParam {
     private String aliUserId;//阿里用户id
 
     private Integer setNum;//领取红包所在位置
+
+    private String year;//年数
+
+    private String week;//周数
 }

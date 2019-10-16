@@ -9,15 +9,18 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.commom.excel.ExcelData;
 import com.tzj.collect.api.commom.excel.ExcelUtils;
 import com.tzj.collect.entity.DailyWeekRanking;
+import com.tzj.collect.entity.Member;
 import com.tzj.collect.mapper.DailyWeekRankingMapper;
 import com.tzj.collect.service.DailyLexiconService;
 import com.tzj.collect.service.DailyMemberService;
 import com.tzj.collect.service.DailyWeekRankingService;
 import com.tzj.module.common.file.upload.FileUpload;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Tuple;
@@ -42,7 +45,6 @@ import java.util.stream.Collectors;
 public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMapper, DailyWeekRanking> implements DailyWeekRankingService {
 
 
-//    @Resource(name = "collectJedisPool")
     @Resource
     private JedisPool jedisPool;
 
@@ -54,6 +56,9 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
 
     @Autowired
     private FileUpload fileUpload;
+
+
+
 
     @Override
     public Page<DailyWeekRanking> eachWeekDresserList(Integer pageNumber, Integer pageSize) {
@@ -180,6 +185,104 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
             }
 //            file.delete();
         }
+    }
+
+    /**
+     * 根据周数获取榜单
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/10/15 0015
+     * @Param: 
+     * @return: 
+     */
+    @Override
+    public List<Map<String, Object>> dailyAllTop50Ranking(String finalYear, String week) {
+        final Integer[] thisWeek = {Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY, 1).weekOfYear())};
+        //如果当前时间为1-4周，会取去年的数据
+        final String[] year = {LocalDate.now().getYear() + ""};
+        if (StringUtils.isEmpty(finalYear)){
+            finalYear = LocalDate.now().getYear() + "";
+        }
+        Map<String, Object> firstMap = new HashMap<>();
+        Map<String, Object> secondMap = new HashMap<>();
+        Map<String, Object> thirdMap = new HashMap<>();
+        Map<String, Object> fourthMap = new HashMap<>();
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        resultList.add(firstMap);
+        resultList.add(secondMap);
+        resultList.add(thirdMap);
+        resultList.add(fourthMap);
+
+        if (StringUtils.isEmpty(week)){
+            //默认上一周
+            week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().minusWeeks(1).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) +"";
+        }
+        List<Map<String, Object>> maps = dailyLexiconService.weekRankingTop50(jedisPool.getResource(), finalYear + ":" + week);
+        maps = maps.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).limit(50).collect(Collectors.toList());
+        String finalWeek = week;
+        List<Map<String, Object>> finalMaps = maps;
+        //放入查出来的前50数据
+        AtomicInteger integer = new AtomicInteger(1);
+        resultList.stream().forEach(resultLists ->{
+            Integer increment = integer.getAndIncrement();
+            if (thisWeek[0] - increment <= 0){
+                year[0] = LocalDate.now().getYear()-1 +"";
+                thisWeek[0] = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().minusWeeks(increment).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) + increment;
+            }
+            resultLists.put("week", thisWeek[0] -increment);
+            resultLists.put("year", year[0]);
+            resultLists.put("yearWeek", year[0] +"年第"+(thisWeek[0] -increment)+"周");
+
+            if (resultLists.get("week").toString().equals(finalWeek)){
+                resultLists.put("top50List", finalMaps);
+            }else {
+                resultLists.put("top50List", "");
+            }
+        });
+        return resultList;
+    }
+
+    @Override
+    public List<Map<String, Object>> dailyPersonRanking(Member member) {
+
+        final Integer[] thisWeek = {Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY, 1).weekOfYear())};
+        //如果当前时间为1-4周，会取去年的数据
+        final String[] year = {LocalDate.now().getYear() + ""};
+        Map<String, Object> firstMap = new HashMap<>();
+        Map<String, Object> secondMap = new HashMap<>();
+        Map<String, Object> thirdMap = new HashMap<>();
+        Map<String, Object> fourthMap = new HashMap<>();
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        resultList.add(firstMap);
+        resultList.add(secondMap);
+        resultList.add(thirdMap);
+        resultList.add(fourthMap);
+        //默认上一周
+        //放入查出来的前50数据
+        AtomicInteger integer = new AtomicInteger(1);
+        resultList.stream().forEach(resultLists ->{
+            Integer increment = integer.getAndIncrement();
+            if (thisWeek[0] - increment <= 0){
+                year[0] = LocalDate.now().getYear()-1 +"";
+                thisWeek[0] = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().minusWeeks(increment).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) + increment;
+            }
+            resultLists.put("week", thisWeek[0] -increment);
+            resultLists.put("year", year[0]);
+            resultLists.put("yearWeek", year[0] +"年第"+(thisWeek[0] -increment)+"周");
+            resultLists.put("ranking", dailyLexiconService.weekRankingByTime(jedisPool.getResource(), member, year[0]+":"+(thisWeek[0] -increment)));
+            resultLists.put("picUrl", null == member.getPicUrl() ? "": member.getPicUrl());
+            resultLists.put("linkName", null == member.getLinkName() ? "" : member.getLinkName());
+        });
+        return resultList;
+    }
+
+    @Override
+    public List<Map<String, Object>> dailyAllTop50RankingTime(String year, String week) {
+        if (StringUtils.isEmpty(year) ||  StringUtils.isEmpty(week)){
+            throw new ApiException("参数错误");
+        }
+        List<Map<String, Object>> maps = dailyLexiconService.weekRankingTop50(jedisPool.getResource(), year + ":" + week);
+        maps = maps.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).limit(50).collect(Collectors.toList());
+        return maps;
     }
 
     /** 上周达人榜

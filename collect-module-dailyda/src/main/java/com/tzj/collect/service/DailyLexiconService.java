@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.api.lexicon.param.DailyDaParam;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.entity.Member;
+import redis.clients.jedis.Jedis;
 
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,13 @@ public interface DailyLexiconService extends IService<DailyLexicon> {
 
      Map<String, Object> memberInfo(Member member);
 
+     String weekRankingByTime(Jedis jedis, Member member, String redisKeyName);
+
      Map<String, Object> weekRecords(Member member);
 
      List<Map<String, Object>> weekDresserList(Integer startPage, Integer pageSize);
+
+     List<Map<String, Object>> weekRankingTop50(Jedis jedis, String redisKeyName);
 
      /**  上周前50达人记录
        * @author sgmark@aliyun.com

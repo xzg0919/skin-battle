@@ -13,6 +13,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -74,14 +75,14 @@ public class DailyJob {
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new SendMsgToAllMemberThread(dailyMemberService)));
     }
 
-    /**
-     * 定时任务:每周一 一点执行（上周达人榜）
-     */
-    @Scheduled(cron = "30 5 0 ? * MON")
-    public void startWeeklyRanking(){
-        System.out.println("-----------------------分割线--------------------");
-        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new WeekRankingThread(dailyWeekRankingService)));
-    }
+//    /**
+//     * 定时任务:每周一 一点执行（上周达人榜）
+//     */
+//    @Scheduled(cron = "30 5 0 ? * MON")
+//    public void startWeeklyRanking(){
+//        System.out.println("-----------------------分割线--------------------");
+//        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new WeekRankingThread(dailyWeekRankingService)));
+//    }
 
     private class SendMsgToAllMemberThread implements Runnable {
         private DailyMemberService dailyMemberService;
@@ -113,6 +114,7 @@ public class DailyJob {
     /**
      * 定时任务,钱未转账到用户支付宝
      */
+    @Transactional(readOnly = false)
     private class DailyPaymentThread implements Runnable{
         private DailyPaymentService paymentService;
         public DailyPaymentThread(DailyPaymentService paymentService){
