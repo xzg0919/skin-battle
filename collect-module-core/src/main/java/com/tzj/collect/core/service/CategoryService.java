@@ -156,9 +156,9 @@ public interface CategoryService extends IService<Category> {
 	@DS("slave")
 	BigDecimal getPrice(String aliUserId, long categoryId, String type, String categoryAttrOptionIds);
 	@DS("slave")
-	Object getNoCashOneCategoryList();
+	Object getNoCashOneCategoryList(String orderId);
 	@DS("slave")
-	Object getNoCashTwoCategoryList(Integer categoryId);
+	Object getNoCashTwoCategoryList(Integer categoryId,String orderId);
 	@DS("slave")
 	Object getOneCategoryListByOrder(String orderId);
 	@DS("slave")

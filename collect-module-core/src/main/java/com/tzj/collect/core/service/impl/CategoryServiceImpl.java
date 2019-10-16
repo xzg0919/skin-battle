@@ -71,6 +71,8 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	private CompanyStreeService companyStreeService;
 	@Autowired
 	private CompanyCategoryCityNameService companyCategoryCityNameService;
+	@Autowired
+	private OrderItemAchService orderItemAchService;
 
 	
 	/**
@@ -501,13 +503,18 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	}
 
 	@Override
-	public Object getNoCashOneCategoryList() {
-		return this.selectList(new EntityWrapper<Category>().eq("level_","0").eq("title","2").eq("unuseful","0"));
+	public Object getNoCashOneCategoryList(String orderId) {
+		Order order = orderService.selectById(orderId);
+		Area area = areaService.selectById(order.getAreaId());
+		List<Category> categoryList = companyCategoryCityNameService.getOneCategoryList(order.getCompanyId(),area.getParentId(),"1");
+		return categoryList;
 	}
 
 	@Override
-	public Object getNoCashTwoCategoryList(Integer categoryId) {
-		List<Category> categoryList = this.selectList(new EntityWrapper<Category>().eq("parent_id", categoryId));
+	public Object getNoCashTwoCategoryList(Integer categoryId,String orderId) {
+		Order order = orderService.selectById(orderId);
+		Area area = areaService.selectById(order.getAreaId());
+		List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(categoryId,order.getCompanyId(),area.getParentId(),"1");
 		categoryList.stream().forEach(category -> {
 			category.setPrice(new BigDecimal("0"));
 		});
@@ -518,7 +525,8 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	public Object getOneCategoryListByOrder(String orderId) {
 		Order order = orderService.selectById(orderId);
 		Area area = areaService.selectById(order.getAreaId());
-		List<Category> categoryList = companyCategoryCityService.getOneCategoryListByOrder(order.getCompanyId(),area.getParentId());
+		List<Category> categoryList = companyCategoryCityNameService.getOneCategoryList(order.getCompanyId(),area.getParentId(),"0");
+		//List<Category> categoryList = companyCategoryCityService.getOneCategoryListByOrder(order.getCompanyId(),area.getParentId());
 		return categoryList;
 	}
 
@@ -526,14 +534,15 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	public Object getTwoCategoryListByOrder(Integer categoryId,String orderId) {
 		Order order = orderService.selectById(orderId);
 		Area area = areaService.selectById(order.getAreaId());
-		List<ComCatePrice> priceList = null;
-		priceList = companyCategoryCityService.getOwnnerPriceAppByCity(categoryId.toString(),order.getCompanyId().toString(),area.getParentId().toString());
-		if (null==priceList||priceList.isEmpty()) {
-			com.tzj.collect.core.param.ali.CategoryBean categoryBean = new com.tzj.collect.core.param.ali.CategoryBean();
-			categoryBean.setId(categoryId);
-			priceList = companyCategoryService.getOwnnerPriceApps(categoryBean, order.getCompanyId());
-		}
-		return priceList;
+		List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(categoryId,order.getCompanyId(),area.getParentId(),"0");
+//		List<ComCatePrice> priceList = null;
+//		priceList = companyCategoryCityService.getOwnnerPriceAppByCity(categoryId.toString(),order.getCompanyId().toString(),area.getParentId().toString());
+//		if (null==priceList||priceList.isEmpty()) {
+//			com.tzj.collect.core.param.ali.CategoryBean categoryBean = new com.tzj.collect.core.param.ali.CategoryBean();
+//			categoryBean.setId(categoryId);
+//			priceList = companyCategoryService.getOwnnerPriceApps(categoryBean, order.getCompanyId());
+//		}
+		return categoryList;
 	}
 
 	@Override
@@ -545,8 +554,9 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 			return "您暂未添加回收公司";
 		}
 		companyId = companyRecyclerList.get(0).getCompanyId();
-		List<Category> oneCategoryListLocale = companyCategoryCityLocaleService.getOneCategoryListLocale(companyId, cityId);
-		return oneCategoryListLocale;
+		List<Category> categoryList = companyCategoryCityNameService.getOneCategoryList(companyId,cityId,"0");
+		//List<Category> oneCategoryListLocale = companyCategoryCityLocaleService.getOneCategoryListLocale(companyId, cityId);
+		return categoryList;
 	}
 
 	@Override
@@ -558,14 +568,15 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 			return "您暂未添加回收公司";
 		}
 		companyId = companyRecyclerList.get(0).getCompanyId();
+		List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(categoryId,companyId,cityId,"0");
 		List<ComCatePrice> priceList = null;
-		priceList = companyCategoryCityLocaleService.getTwoCategoryListLocale(categoryId.toString(),companyId+"",cityId+"");
-		if (priceList.isEmpty()) {
-			com.tzj.collect.core.param.ali.CategoryBean categoryBean = new com.tzj.collect.core.param.ali.CategoryBean();
-			categoryBean.setId(categoryId);
-			priceList = companyCategoryService.getOwnnerPriceApps(categoryBean, companyId);
-		}
-		return priceList;
+//		priceList = companyCategoryCityLocaleService.getTwoCategoryListLocale(categoryId.toString(),companyId+"",cityId+"");
+//		if (priceList.isEmpty()) {
+//			com.tzj.collect.core.param.ali.CategoryBean categoryBean = new com.tzj.collect.core.param.ali.CategoryBean();
+//			categoryBean.setId(categoryId);
+//			priceList = companyCategoryService.getOwnnerPriceApps(categoryBean, companyId);
+//		}
+		return categoryList;
 	}
 
 	public Integer getCityId(String location) {

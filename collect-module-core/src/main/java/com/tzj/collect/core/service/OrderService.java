@@ -395,4 +395,6 @@ public interface OrderService extends IService<Order> {
 	Object saveOrderReceptionByOrderNo(OrderBean orderbean);
 	@DS("slave")
 	Object getOrderComplaintDetail(String orderNo);
+
+	Object addOrderComplaintBack(Integer id,String complaintBack);
 }

@@ -358,4 +358,15 @@ public class BusinessOrderApi {
 		return orderService.getOrderComplaintDetail(orderBean.getOrderNo());
 	}
 
+	/**
+	 * 增加客诉反馈接口
+	 * @date 2019/08/30
+	 * @return
+	 */
+	@Api(name = "business.order.addOrderComplaintBack", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object addOrderComplaintBack(OrderBean orderBean){
+		return orderService.addOrderComplaintBack(orderBean.getId(),orderBean.getComplaintBack());
+	}
+
 }

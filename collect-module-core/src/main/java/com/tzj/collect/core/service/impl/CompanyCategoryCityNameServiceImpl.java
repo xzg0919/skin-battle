@@ -96,4 +96,12 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
         });
         return categoryList;
     }
+    @Override
+    public List<Category> getOneCategoryList(Integer companyId,Integer cityId, String isCash){
+        return companyCategoryCityNameMapper.getOneCategoryList(companyId,cityId,isCash);
+    }
+    @Override
+    public List<Category> getTwoCategoryList(Integer categoryId,Integer companyId,Integer cityId, String isCash){
+        return companyCategoryCityNameMapper.getTwoCategoryList(categoryId,companyId,cityId,isCash);
+    }
 }
