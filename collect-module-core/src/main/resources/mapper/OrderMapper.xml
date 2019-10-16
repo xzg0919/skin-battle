@@ -80,7 +80,7 @@
 						and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
 					</when>
 					<otherwise>
-						AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%') OR a.tel LIKE concat(concat('%',#{recyclersName}),'%'))
+						AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%'))
 					</otherwise>
 				</choose>
 			</if>
@@ -148,7 +148,7 @@
 								and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
 							</when>
 							<otherwise>
-								AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%') OR a.tel LIKE concat(concat('%',#{recyclersName}),'%'))
+								AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%'))
 							</otherwise>
 						</choose>
 					</if>
