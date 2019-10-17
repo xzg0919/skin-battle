@@ -96,7 +96,15 @@ public class EquipmentErrorListServiceImpl extends ServiceImpl<EquipmentErrorLis
             map.put("create_date", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(equipmentErrorList.getCreateDate().toInstant()
                     .atZone( ZoneId.systemDefault() )
                     .toLocalDateTime()));
-            map.put("errorList", Arrays.asList(equipmentErrorList.getErrorMessage().split(",")));
+            List<String> errorlist = Arrays.asList(equipmentErrorList.getErrorMessage().split(","));
+            map.put("errorList", errorlist);
+            if (errorlist.size() >= 1){
+                if (errorlist.get(0).length() >= 8){
+                    map.put("error", errorlist.get(0).substring(0,8)+"...");
+                }else {
+                    map.put("error", errorlist.get(0));
+                }
+            }
             mapList.add(map);
         });
         returnPage.setRecords(mapList);
