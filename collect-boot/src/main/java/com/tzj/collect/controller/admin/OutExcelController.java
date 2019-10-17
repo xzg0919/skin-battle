@@ -529,7 +529,7 @@ public class OutExcelController {
             row.add(achList.get(i).get("status_"));
             row.add(achList.get(i).get("ach_price"));
             row.add(achList.get(i).get("amount"));
-            row.add("0".equals(otherList.get(i).get("isComplaint")+"")?"不是":"是");
+            row.add("0".equals(achList.get(i).get("isComplaint")+"")?"不是":"是");
             if("3".equals(complaint.get("complaintType"))){
                 complaints = "催促两次";
             }
