@@ -7,11 +7,10 @@ import com.tzj.collect.api.iot.localmap.LatchMap;
 import com.tzj.collect.api.iot.messagecode.MessageCode;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.param.iot.IotErrorParamBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.param.iot.IotPostParamBean;
-import com.tzj.collect.core.service.CompanyService;
-import com.tzj.collect.core.service.MemberService;
-import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
@@ -51,7 +50,10 @@ public class IotApi {
     private CompanyService companyService;
     @Autowired
     private AsyncRedis asyncRedis;
-
+    @Resource
+    private EquipmentErrorCodeService equipmentErrorCodeService;
+    @Resource
+    private EquipmentErrorListService equipmentErrorListService;
     @Resource
     private FileUploadServiceImpl fileUploadServiceImpl;
 
@@ -187,8 +189,7 @@ public class IotApi {
       * @param
       * @return
       */
-    @Api(name = "iot.long.pulling", version = "1.0", ignoreNonce = true, ignoreTimestamp = true)
-    @SignIgnore
+    @Api(name = "iot.long.pulling", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> longPulling(){
         Member member = MemberUtils.getMember();
@@ -238,7 +239,31 @@ public class IotApi {
         result.put("tryAgain", "Y");
         return result;
     }
-
+    /**
+     * iot错误信息列表
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/10/16 0016
+     * @Param: 
+     * @return: 
+     */
+    @Api(name = "iot.error.code", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public List<Map<String, Object>> iotErrorCode(IotErrorParamBean iotErrorParamBean){
+        return equipmentErrorCodeService.iotErrorCode(iotErrorParamBean);
+    }
+    /**
+     * 用户上传iot错误信息
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/10/16 0016
+     * @Param: 
+     * @return: 
+     */
+    @Api(name = "iot.error.list.member", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Map<String, Object>  iotErrorListByMember(IotErrorParamBean iotErrorParamBean){
+        iotErrorParamBean.setMember(MemberUtils.getMember());
+        return equipmentErrorListService.iotErrorListByMember(iotErrorParamBean);
+    }
 
 
     /**
