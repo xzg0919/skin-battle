@@ -451,20 +451,20 @@ public class OutExcelController {
         }else if (null == bOrderBean.getCompanyId()){
             throw new ApiException("缺少公司id");
         }
-//        String type = null;
-//        if (StringUtils.isEmpty(bOrderBean.getCategoryType())){
-//            type = "0";
-//        }else {
-//            type = bOrderBean.getCategoryType();
-//        }
-//        //限制各个类型每天导出一次
-//        String redisKeyName = LocalDate.now().getYear()+":"+LocalDate.now().getDayOfYear()+":"+bOrderBean.getCompanyId()+":"+ type;
-//        RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
-//        if (null == saveOrGetFromRedis.getFromRedis(redisKeyName, jedisPool)){
-//            saveOrGetFromRedis.saveInRedis(redisKeyName,System.currentTimeMillis(), 24*3600, jedisPool);
-//        }else {
-//            throw new ApiException("今日已经导出过，不能再执行此操作");
-//        }
+        String type = null;
+        if (StringUtils.isEmpty(bOrderBean.getCategoryType())){
+            type = "0";
+        }else {
+            type = bOrderBean.getCategoryType();
+        }
+        //限制各个类型每天导出一次
+        String redisKeyName = LocalDate.now().getYear()+":"+LocalDate.now().getDayOfYear()+":"+bOrderBean.getCompanyId()+":"+ type;
+        RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+        if (null == saveOrGetFromRedis.getFromRedis(redisKeyName, jedisPool)){
+            saveOrGetFromRedis.saveInRedis(redisKeyName,System.currentTimeMillis(), 24*3600, jedisPool);
+        }else {
+            throw new ApiException("今日已经导出过，不能再执行此操作");
+        }
         List<Map<String, Object>> achList = orderService.outOtherOrderListOverview(bOrderBean);
         List<Map<String, Object>> otherList  = orderService.outAchOrderListOverview(bOrderBean);
         List<ExcelData> allExcelData = new ArrayList<>();
@@ -529,7 +529,7 @@ public class OutExcelController {
             row.add(achList.get(i).get("status_"));
             row.add(achList.get(i).get("ach_price"));
             row.add(achList.get(i).get("amount"));
-            row.add("0".equals(otherList.get(i).get("isComplaint")+"")?"不是":"是");
+            row.add("0".equals(achList.get(i).get("isComplaint")+"")?"不是":"是");
             if("3".equals(complaint.get("complaintType"))){
                 complaints = "催促两次";
             }
