@@ -350,7 +350,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             return weekRanking;
         }else {
             //再根据当前分数里面的总人数排名
-            Set<Tuple> aliUserIdSet = jedis.zrangeByScoreWithScores(redisKeyName, weekScore, weekScore);
+            Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyName, weekScore, weekScore, 0, 100);
             List<Map<String, Object>> aliUserIdScoreList = new ArrayList<>();
             JedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new JedisUtil.SaveOrGetFromRedis();
             aliUserIdSet.stream().forEach(tuple -> {

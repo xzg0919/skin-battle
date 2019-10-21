@@ -106,7 +106,7 @@ public class DailyDaApi {
     public Set<Map<String, Object>> dailyLexiconList(){
         System.out.println(MemberUtils.getMember().getAliUserId());
         if (dailyLexiconService.isAnswerDaily(MemberUtils.getMember().getAliUserId()).size()>0){
-            rabbitTemplate.convertAndSend("daily_keywords_queue", "我是消息");
+//            rabbitTemplate.convertAndSend("daily_keywords_queue", "我是消息");
             throw new ApiException("今日答题已完成，明儿请赶早");
         }
         return dailyLexiconService.dailyLexiconList(MemberUtils.getMember());
