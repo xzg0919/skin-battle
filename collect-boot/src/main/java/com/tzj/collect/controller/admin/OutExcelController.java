@@ -572,20 +572,22 @@ public class OutExcelController {
         //添加列
         List<List<Object>> rows = new ArrayList();
         List<Object> row = null;
-        for(int i=0; i<list.size();i++){
-            row=new ArrayList();
-            row.add(list.get(i).get("orderNo"));
-            row.add(list.get(i).get("createDate"));
-            row.add(list.get(i).get("tel"));
-            row.add(list.get(i).get("companyName"));
-            row.add(list.get(i).get("recycleerName"));
-            row.add(list.get(i).get("completeDate"));
-            row.add(this.getOrderStatus(list.get(i).get("status").toString()));
-            row.add(list.get(i).get("count"));
-            row.add(list.get(i).get(""));
-            row.add(list.get(i).get("reason"));
-            row.add(list.get(i).get("updateDate"));
-            row.add(list.get(i).get("categoryName"));
+        Map<String,Object> outComplaintOrderMap  = null;
+        for(int i=0,j = list.size(); i<j;i++){
+            row= new ArrayList();
+            outComplaintOrderMap = list.get(i);
+            row.add(outComplaintOrderMap.get("orderNo"));
+            row.add(outComplaintOrderMap.get("createDate"));
+            row.add(outComplaintOrderMap.get("tel"));
+            row.add(outComplaintOrderMap.get("companyName"));
+            row.add(outComplaintOrderMap.get("recycleerName"));
+            row.add(outComplaintOrderMap.get("completeDate"));
+            row.add(this.getOrderStatus(outComplaintOrderMap.get("status").toString()));
+            row.add(outComplaintOrderMap.get("count"));
+            row.add("");
+            row.add(outComplaintOrderMap.get("reason"));
+            row.add(outComplaintOrderMap.get("updateDate"));
+            row.add(outComplaintOrderMap.get("categoryName"));
             rows.add(row);
 
         }
