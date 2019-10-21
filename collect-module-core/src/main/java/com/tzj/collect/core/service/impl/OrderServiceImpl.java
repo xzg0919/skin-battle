@@ -905,8 +905,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		CompanyEquipment companyEquipment = companyEquipmentService.selectOne(entityWrapper);
 		if(companyEquipment == null){
 			throw new ApiException("当前设备不存在","-9");
-		}else if (companyEquipment.getStatus() == 1){
-			throw new ApiException("当前设备不可用","-9");
 		}
 		Order order = new Order();
 		order.setCompanyId(Integer.parseInt(companyEquipment.getCompanyId().toString()));

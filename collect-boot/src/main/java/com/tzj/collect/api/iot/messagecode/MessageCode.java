@@ -9,13 +9,13 @@ import com.baomidou.mybatisplus.enums.IEnum;
  * @create 2019-04-23 10:36
  **/
 public enum  MessageCode implements IEnum{
-        SUCCESS_OPEN("200", "柜门已打开"),   	 //操作成功
-        EMPLOY_ERROR("201", "其他用户已打开"),   	 //占用中
-        STOPPAGE_ERROR("202", "柜门打开失败"),   	 //设备故障
+        SUCCESS_OPEN("200", "请您投放"),   	 //操作成功
+        EMPLOY_ERROR("201", "此设备使用中"),   	 //占用中
+        STOPPAGE_ERROR("202", "柜门未打开"),   	 //设备故障
         //其他类型(OTHER)
-        OTHERS_ERROR("203", "柜门打开失败"),       //设备故障
+        OTHERS_ERROR("203", "柜门未打开"),       //设备故障
 
-        ERROR_QRCODE("404", "二维码无法识别");
+        ERROR_QRCODE("404", "二维码未识别");
         private String key;
 
         private String value;
