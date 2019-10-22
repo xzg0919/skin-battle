@@ -8,6 +8,7 @@ import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.common.constant.ApplicaInit;
 import com.tzj.collect.core.mapper.PaymentMapper;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.core.service.PaymentService;
@@ -33,6 +34,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     private OrderService orderService;
     @Autowired
     private RecyclersService recyclersService;
+    @Autowired
+    private ApplicaInit applicaInit;
 
     @Override
     public Payment selectByOrderSn(String orderNo) {
@@ -61,7 +64,11 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         model.setExtendParams(extendParams);
         model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_HALF_UP).toString());
         request.setBizModel(model);
-        request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay");
+        if ("true".equals(applicaInit.getIsTestPayment())){
+            request.setNotifyUrl("http://shoubeics.mayishoubei.com/notify/alipay");
+        }else {
+            request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay");
+        }
         try {
             //这里和普通的接口调用不同，使用的是sdkExecutee
             AlipayTradeCreateResponse response = alipayClient.execute(request);
@@ -98,7 +105,11 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_HALF_UP).toString());
         model.setProductCode("QUICK_MSECURITY_PAY");
         request.setBizModel(model);
-        request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay");
+        if ("true".equals(applicaInit.getIsTestPayment())){
+            request.setNotifyUrl("http://shoubeics.mayishoubei.com/notify/alipay");
+        }else {
+            request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay");
+        }
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
@@ -214,6 +225,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             AlipayFundTransToaccountTransferResponse response = alipayClient.execute(request);
             if (response.isSuccess()) {
                 payment.setStatus(Payment.STATUS_TRANSFER);
+                payment.setRemarks(response.getSubMsg());
                 insertOrUpdate(payment);
             }
         }catch (AlipayApiException e){
