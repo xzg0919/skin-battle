@@ -61,6 +61,9 @@ public class AreaUrlController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            if (StringUtils.isBlank(getqRcode)){
+                getqRcode = "https://qr.alipay.com/s6x08110vnu8n4tl0po9w92";
+            }
             regionCity.setAreaName(urlParam);
             regionCity.setCityName(id);
             regionCity.setProvinceName(type);
