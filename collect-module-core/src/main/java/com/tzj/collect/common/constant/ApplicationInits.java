@@ -23,6 +23,7 @@ public class ApplicationInits {
     @Bean
     public ApplicaInit applicaInitConfig() {
         ApplicaInit applicaInit  = new ApplicaInit();
+        System.out.println(isMysl+"------------------------------------------"+isTestPayment);
         applicaInit.setIsMysl(isMysl);
         applicaInit.setIsTestPayment(isTestPayment);
         return applicaInit;
