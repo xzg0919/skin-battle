@@ -120,7 +120,7 @@ public class IotApi {
             String jsonStr= JSON.toJSONString(iotPostParamBean);
             String sign= this.buildSign(JSON.parseObject(jsonStr));
             iotPostParamBean.setSign(sign);
-            if (iotUrl == null || "".equals(iotUrl.trim())){
+            if (iotUrl == null || "".equals(iotUrl.trim()) || StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
 //              throw new ApiException("cabinetNo不存在", "-9");
                 map.put("msg", MessageCode.ERROR_QRCODE.getValue());
                 map.put("status", MessageCode.ERROR_QRCODE.getKey());
@@ -270,7 +270,7 @@ public class IotApi {
      * 上传文件0
      */
     @Api(name = "iot.util.uploadImage", version = "1.0")
-    @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
+    @SignIgnore
     @AuthIgnore
     public List<FileBean> uploadImage(List<FileBase64Param> fileBase64ParamLists){
         return fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
