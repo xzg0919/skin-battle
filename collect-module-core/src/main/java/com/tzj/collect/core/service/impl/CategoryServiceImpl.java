@@ -262,9 +262,9 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	public List<CategoryResult> getHouseHoldDetail(String parentId,String companyId,String cityId) {
 		List<CategoryResult> categoryResultList = null;
 		categoryResultList = companyCategoryCityService.getCityHouseHoldDetail(parentId,companyId,cityId);
-		if(categoryResultList.isEmpty()){
-			categoryResultList = categoryMapper.getHouseHoldDetail(parentId,companyId);
-		}
+//		if(categoryResultList.isEmpty()){
+//			categoryResultList = categoryMapper.getHouseHoldDetail(parentId,companyId);
+//		}
 		return categoryResultList;
 	}
 	/**
@@ -276,9 +276,9 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 	public List<CategoryResult> getHouseHoldDetailLocale(String parentId,String companyId,String cityId) {
 		List<CategoryResult> categoryResultList = null;
 		categoryResultList = companyCategoryCityLocaleService.getHouseHoldDetailLocale(parentId,companyId,cityId);
-		if(categoryResultList.isEmpty()){
-			categoryResultList = categoryMapper.getHouseHoldDetail(parentId,companyId);
-		}
+//		if(categoryResultList.isEmpty()){
+//			categoryResultList = categoryMapper.getHouseHoldDetail(parentId,companyId);
+//		}
 		return categoryResultList;
 	}
 
