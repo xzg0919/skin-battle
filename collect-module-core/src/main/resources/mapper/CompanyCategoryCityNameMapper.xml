@@ -145,13 +145,6 @@
 		AND a.city_id = #{cityId}
 		AND b.title = 2
 		AND b.unuseful = 0
-		<choose>
-			<when test="isCash == '0'.toString()">
-				AND if(cc.id is NOT null,cc.price,d.price) > 0;
-			</when>
-			<otherwise>
-			</otherwise>
-		</choose>
 	</select>
 	<select id="getTwoCategoryList" parameterType="Object" resultType="com.tzj.collect.entity.Category">
 		SELECT DISTINCT
@@ -182,13 +175,6 @@
 			a.company_id = #{companyId}
 		AND a.city_id = #{cityId}
 		AND a.parent_id = #{categoryId}
-		<choose>
-			<when test="isCash == '0'.toString()">
-				AND if(c.id is NOT null,c.price,d.price) > 0;
-			</when>
-			<otherwise>
-			</otherwise>
-		</choose>
 	</select>
 
 

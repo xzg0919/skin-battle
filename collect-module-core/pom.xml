@@ -48,6 +48,12 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dyplsapi</artifactId>
+            <version>1.1.1</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

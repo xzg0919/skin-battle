@@ -265,6 +265,16 @@
             <!--<groupId>com.tzj</groupId>-->
             <!--<artifactId>collect-module-dailyda</artifactId>-->
         <!--</dependency>-->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dyplsapi</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 
     </dependencies>
     <properties>

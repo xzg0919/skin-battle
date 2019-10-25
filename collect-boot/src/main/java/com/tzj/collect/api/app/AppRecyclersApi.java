@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.tzj.collect.api.common.MyX509TrustManager;
 import com.tzj.collect.common.util.RecyclersUtils;
+import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.app.RecyclersBean;
 import com.tzj.collect.core.param.app.RecyclersLoginBean;
@@ -79,6 +80,8 @@ public class AppRecyclersApi {
 	private AliPayService aliPayService;
 	@Autowired
 	private MessageService messageService;
+	@Autowired
+	private BindAxnService bindAxnService;
 
 	public Recyclers getRecycler() {
 		Subject subject=ApiContext.getSubject();
@@ -423,7 +426,7 @@ public class AppRecyclersApi {
 		if(companyRecyclerList.isEmpty()){
 			return "暂无信息";
 		}
-		List<Map<String,Object>> recycleList = recyclersService.getRecycleDetails(companyRecyclerList.get(0).getParentsId());
+		List<Map<String,Object>> recycleList = recyclersService.getRecycleDetails(companyRecyclerList.get(0).getParentsId(),recyclersBean.getIsBigRecycle(),companyRecyclerList.get(0).getCompanyId());
 		Recyclers recyclers = recyclersService.selectById(companyRecyclerList.get(0).getParentsId());
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("recyclers",recyclers);
@@ -680,6 +683,16 @@ public class AppRecyclersApi {
 		}else{
 			throw new ApiException("验证码错误");
 		}
+	}
+
+	/**
+	 * 获取加密后的号码
+	 */
+	@Api(name = "app.recycler.getAxnMobile", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getAxnMobile(RecyclersBean recyclersBean) throws ApiException{
+		Recyclers recyclers = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
+		return bindAxnService.getAxnMobile(recyclersBean.getMobile(),recyclers.getTel());
 	}
 
 
