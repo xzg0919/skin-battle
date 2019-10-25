@@ -227,7 +227,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
     public static void main(String[] args) {
 
         for (int i = 0; i < 1000; i++){
-            System.out.println(((Math.random() * .02+ .11 + "").substring(0,4)));
+            System.out.println(Double.parseDouble(new Random().nextInt(4) + 2  +""));
         }
 //        System.out.println(a+"-----------------"+b+"--------"+c +"----------" +d);
     }
@@ -283,14 +283,8 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
             System.out.println("中奖啦---------------------------1---------------------------");
             flag = true;
             return 999.00;
-        }else if (randomInt > 0 && randomInt <= 9){
-            System.out.println("二等奖---------------------------2---------------------------");
-            return 99.00;
-        }else if (randomInt > 9 && randomInt <= 109){
-            System.out.println("三等奖---------------------------3---------------------------");
-            return 19;
         }else {
-            return Double.parseDouble(new Random().nextInt(5) + 5  +"");
+            return Double.parseDouble(new Random().nextInt(4) + 2  +"");
         }
     }
 }
