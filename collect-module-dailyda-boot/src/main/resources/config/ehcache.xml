@@ -46,5 +46,7 @@
     <!-- 随机数缓存 -->
     <cache name="dailyLexiconList" maxElementsInMemory="10000" maxElementsOnDisk="10000000"
            timeToIdleSeconds="300" timeToLiveSeconds="82800" eternal="false" overflowToDisk="true" memoryStoreEvictionPolicy="FIFO" />
+    <cache name="dailyTop50" maxElementsInMemory="10000"  maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"
+           timeToLiveSeconds="82800" timeToIdleSeconds="300"/>
 
 </ehcache>
