@@ -37,6 +37,19 @@ public class ToolUtils {
 		return cal.getTime();
 	}
 	/**
+	 * 某个时间加上多少分钟
+	 * @param date
+	 * @param minute
+	 * @return
+	 */
+	public static Date addMinuteByNow(Date date,Integer minute){
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + minute);
+		return cal.getTime();
+	}
+
+	/**
 	 * 某个时间减去多少天
 	 * @param date
 	 * @param dateNum

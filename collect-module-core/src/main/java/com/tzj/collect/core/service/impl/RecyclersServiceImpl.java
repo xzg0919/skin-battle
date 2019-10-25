@@ -444,8 +444,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
 	 * @return
 	 */
 	@Override
-	public List<Map<String,Object>> getRecycleDetails(Integer recyclerId){
-		return recyclersMapper.getRecycleDetails(recyclerId);
+	public List<Map<String,Object>> getRecycleDetails(Integer recyclerId,String isBigRecycle,Integer companyId){
+		return recyclersMapper.getRecycleDetails(recyclerId,isBigRecycle,companyId);
 	}
 
 	@Transactional
