@@ -242,7 +242,7 @@ public interface OrderService extends IService<Order> {
 	 * @return
 	 */
 	@DS("slave")
-	List<Map<String,Object>> outOrderExcel(Integer companyId, String type, String startTime, String endTime);
+	List<Map<String,Object>> outOrderExcel(Integer companyId, String type, String startTime, String endTime,String recyclerName);
 
 	Object savefiveKgOrder(OrderBean orderBean);
 
@@ -367,7 +367,7 @@ public interface OrderService extends IService<Order> {
 	 * added by michael_wang
 	 */
 	@DS("slave")
-	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime);
+	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime,String recyclerName);
 	@DS("slave")
 	Object getReyclersServiceAbility(OrderBean orderBean,Integer companyId);
 	@DS("slave")

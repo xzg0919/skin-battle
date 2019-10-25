@@ -1140,11 +1140,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 */
 	@Override
-	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime){
+	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime,String recyclerName){
 		if ("2".equals(type)){
-			return orderMapper.outOrderExcelHouse(companyId,startTime,endTime);
+			return orderMapper.outOrderExcelHouse(companyId,startTime,endTime,recyclerName);
 		}
-		return orderMapper.outOrderExcel(companyId,type,startTime,endTime);
+		return orderMapper.outOrderExcel(companyId,type,startTime,endTime,recyclerName);
 	}
 	/**
 	 * 根据各种查询条件获取订单列表
@@ -3456,8 +3456,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * added by michael_wang
 	 */
 	@Override
-	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime){
-		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime);
+	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName){
+		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName);
 	}
 	public Object getReyclersServiceAbility(OrderBean orderBean,Integer companyId){
 		PageBean pagebean = orderBean.getPagebean();

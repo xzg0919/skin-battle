@@ -75,9 +75,13 @@ public class BusinessCategoryApi {
 	 */
 	@Api(name="business.category.digitalsecondlist",version="1.0")
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public List<Category> getSecondList(CategoryBean categoryBean){
+	public List<CategoryResult> getSecondList(CategoryBean categoryBean){
+//		String parentId = categoryBean.getParentId();
+////		return categoryService.getSecondList(parentId);
 		String parentId = categoryBean.getParentId();
-		return categoryService.getSecondList(parentId);
+		CompanyAccount companyAccount = getCompanyAccount();
+		String companyId = companyAccount.getCompanyId().toString();
+		return categoryService.getHouseHoldDetail(parentId, companyId,categoryBean.getCityId());
 	}
 	
 	/**

@@ -745,6 +745,9 @@
 							AND soo.complete_date <= CONCAT(#{endTime},' 23:59:59')
 						 ]]>
 		</if>
+		<if test="recyclerName !=null and recyclerName !=''">
+			AND sr.name_ like CONCAT('%',#{recyclerName},'%')
+		</if>
 		AND soo.title IN (2, 3)
 		and sr.id = soo.recycler_id
 		and soo.company_id=#{companyId}
@@ -788,6 +791,9 @@
 						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
 					 ]]>
 			</if>
+			<if test="recyclerName !=null and recyclerName !=''">
+				AND d.name_ like CONCAT('%',#{recyclerName},'%')
+			</if>
 	</select>
 	<select id="outOrderExcelHouse" parameterType="Object" resultType="Map">
 		SELECT
@@ -822,6 +828,9 @@
 			<![CDATA[
 						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
 					 ]]>
+		</if>
+		<if test="recyclerName !=null and recyclerName !=''">
+			AND d.name_ like CONCAT('%',#{recyclerName},'%')
 		</if>
 		GROUP BY
 			b.order_id,
