@@ -17,6 +17,7 @@ import com.tzj.collect.service.DailyWeekRankingService;
 import com.tzj.module.common.file.upload.FileUpload;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -216,10 +217,10 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
             //默认上一周
             week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().minusWeeks(1).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) +"";
         }
-        List<Map<String, Object>> maps = dailyLexiconService.weekRankingTop50(jedisPool.getResource(), finalYear + ":" + week);
-        maps = maps.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).limit(50).collect(Collectors.toList());
+//        List<Map<String, Object>> maps = dailyLexiconService.weekRankingTop50(jedisPool.getResource(), finalYear + ":" + week);
+//        maps = maps.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).limit(50).collect(Collectors.toList());
         String finalWeek = week;
-        List<Map<String, Object>> finalMaps = maps;
+//        List<Map<String, Object>> finalMaps = maps;
         //放入查出来的前50数据
         AtomicInteger integer = new AtomicInteger(1);
         resultList.stream().forEach(resultLists ->{
@@ -232,11 +233,11 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
             resultLists.put("year", year[0]);
             resultLists.put("yearWeek", year[0] +"年第"+(thisWeek[0] -increment)+"周");
 
-            if (resultLists.get("week").toString().equals(finalWeek)){
-                resultLists.put("top50List", finalMaps);
-            }else {
-                resultLists.put("top50List", "");
-            }
+//            if (resultLists.get("week").toString().equals(finalWeek)){
+//                resultLists.put("top50List", "");
+//            }else {
+//            }
+            resultLists.put("top50List", "");
         });
         return resultList;
     }
@@ -276,6 +277,7 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
     }
 
     @Override
+    @Cacheable(value = "dailyTop50" , key = "#year + '_' + #week",   sync = true)
     public List<Map<String, Object>> dailyAllTop50RankingTime(String year, String week) {
         if (StringUtils.isEmpty(year) ||  StringUtils.isEmpty(week)){
             throw new ApiException("参数错误");
