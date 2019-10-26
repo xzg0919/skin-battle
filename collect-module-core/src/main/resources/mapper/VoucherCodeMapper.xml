@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.VoucherCodeMapper">
+<select id="getByCode" parameterType="String" resultType="com.tzj.collect.entity.VoucherCode">
+	SELECT
+		member_id,dis,low_money,money,pick_limit_total,pickup_end,
+		pickup_start,top_money,valid_type,valid_day,valid_start,valid_end,
+		voucher_code,voucher_id,voucher_name,voucher_type,order_type,id
+	FROM
+		sb_voucher_code
+	WHERE
+		voucher_code = #{entityNum}
+</select>
+
+<update id="updateMemberId" parameterType="Long">
+	UPDATE sb_voucher_code
+	SET member_id = #{memberId}
+	WHERE id = #{id}
+</update>
+
+
+
+
+
+
+</mapper>
