@@ -1,5 +1,7 @@
 package com.tzj.collect.core.service.impl;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -116,19 +118,46 @@ public class VoucherAliServiceImpl extends ServiceImpl<VoucherAliMapper, Voucher
         VoucherAliMapper.updatePickCount(voucherId);
         
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+    /**
+     * 根据券的Id和最初的价格计算券优惠后的金额
+     * @param price
+     * @param voucherId
+     * @return
+     */
+    @Override
+    public BigDecimal getDiscountPriceByVoucherId(BigDecimal price, String voucherId){
+
+        BigDecimal discountPrice = price;
+        VoucherAli voucherAli = this.selectById(voucherId);
+        if (null==voucherAli){
+            System.out.println("----------------------该券不存在，voucherId："+voucherId);
+            return  discountPrice;
+        }
+        Date now = new Date();
+        if (now.before(voucherAli.getValidStart())||now.after(voucherAli.getValidEnd())){
+            System.out.println("----------------------该券不在使用时间内，voucherId："+voucherId);
+            return  discountPrice;
+        }
+        switch (voucherAli.getVoucherType()){
+            case "A":
+                discountPrice = discountPrice.subtract(new BigDecimal(voucherAli.getMoney()));
+                break;
+            case "B":
+                discountPrice = price.multiply(voucherAli.getDis().multiply(new BigDecimal(0.1)));
+                break;
+            case "C":
+                if (new BigDecimal(voucherAli.getLowMoney()).compareTo(price) < 1){
+                    discountPrice = discountPrice.subtract(new BigDecimal(voucherAli.getMoney()));
+                }else {
+                    System.out.println("----------------------该券不满足最低消费金额，voucherId："+voucherId);
+                }
+                break;
+             default:
+        }
+        return discountPrice;
+    }
+
 
 }

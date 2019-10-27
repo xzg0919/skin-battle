@@ -30,7 +30,7 @@ public class VoucherMember extends DataEntity<Long>
     /**
      * 类型
      */
-    private String voucherType;
+    private String voucherType;//A 代金券  B 折扣券  C 满减券
     /**
      * 折扣
      */
@@ -94,7 +94,7 @@ public class VoucherMember extends DataEntity<Long>
     /**
      * 券状态
      */
-    private String voucherStatus;
+    private String voucherStatus;//CREATE 初始中，USEING 绑定中 END已核销
     /**
      * 会员阿里id
      */

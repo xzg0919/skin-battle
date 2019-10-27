@@ -3,14 +3,8 @@ package com.tzj.collect.api.app;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.app.OrderPayParam;
-import com.tzj.collect.core.service.MemberService;
-import com.tzj.collect.core.service.OrderService;
-import com.tzj.collect.core.service.PaymentService;
-import com.tzj.collect.core.service.RecyclersService;
-import com.tzj.collect.entity.Member;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.Payment;
-import com.tzj.collect.entity.Recyclers;
+import com.tzj.collect.core.service.*;
+import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.SignIgnore;
@@ -36,12 +30,14 @@ public class AppOrderPayApi {
     private MemberService memberService;
     @Autowired
     private RecyclersService recyclersService;
+    @Autowired
+    private VoucherMemberService voucherMemberService;
 
     @Api(name = "app.order.pay", version = "1.0")
     @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
     public String orderPay(OrderPayParam orderPayParam) {
 
-        System.out.println("传入的订单Id："+orderPayParam.getOrderId()+"++传入的价格是："+orderPayParam.getPrice());
+        System.out.println("传入的订单Id："+orderPayParam.getOrderId()+"++传入的价格是："+orderPayParam.getPrice()+"优惠券Id："+orderPayParam.getVoucherId());
         if(orderPayParam.getPrice().compareTo(BigDecimal.ZERO)==0){
             throw new ApiException("不能支付0元");
         }
@@ -98,7 +94,8 @@ public class AppOrderPayApi {
             }
         }
         if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
-            return paymentService.genalPayXcx(payment);
+           // String tradeNo = paymentService.genalPayXcx(payment);
+            return voucherMemberService.updateOrderNo(orderPayParam.getPrice(),orderPayParam.getOrderId(),orderPayParam.getVoucherId(),payment);
         }else{
             return paymentService.genalPay(payment);
         }

@@ -1,8 +1,11 @@
 package com.tzj.collect.core.service;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.tzj.collect.entity.Payment;
 import com.tzj.collect.entity.VoucherMember;
 import com.tzj.collect.entity.VoucherNofity;
+
+import java.math.BigDecimal;
 
 /**
  *
@@ -26,5 +29,9 @@ public interface VoucherMemberService extends IService<VoucherMember>
      * @return void
      */
     VoucherNofity send(VoucherNofity voucherNofity);
+    /*
+    更新发放券的状态
+     */
+    String updateOrderNo(BigDecimal price,Integer orderId,String voucherId, Payment payment);
 
 }

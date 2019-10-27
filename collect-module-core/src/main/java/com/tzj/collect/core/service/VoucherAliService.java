@@ -3,6 +3,8 @@ package com.tzj.collect.core.service;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.VoucherAli;
 
+import java.math.BigDecimal;
+
 /**
  *
  * <p>Created on2019年10月24日</p>
@@ -34,5 +36,13 @@ public interface VoucherAliService extends IService<VoucherAli>
      * @return void
      */
     void updatePickCount(Long voucherId);
+
+    /**
+     * 根据券的Id和最初的价格计算券优惠后的金额
+     * @param price
+     * @param voucherId
+     * @return
+     */
+    BigDecimal getDiscountPriceByVoucherId(BigDecimal price,String voucherId);
 
 }

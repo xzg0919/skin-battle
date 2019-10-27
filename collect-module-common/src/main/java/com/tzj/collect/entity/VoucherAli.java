@@ -34,7 +34,7 @@ public class VoucherAli extends DataEntity<Long>
     /**
      * 类型
      */
-    private String voucherType;
+    private String voucherType;//A 代金券  B 折扣券  C 满减券
     /**
      * 折扣
      */

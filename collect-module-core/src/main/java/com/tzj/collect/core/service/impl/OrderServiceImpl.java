@@ -152,6 +152,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	private OrderCancleExamineService orderCancleExamineService;
 	@Autowired
 	private OrderComplaintService orderComplaintService;
+	@Autowired
+	private VoucherMemberService voucherMemberService;
 
 	@Resource
 	private JedisPool jedisPool;
@@ -371,8 +373,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setSignUrl(orderbean.getSignUrl());
 		if (StringUtils.isNotBlank(orderbean.getAchPrice())) {
 			order.setAchPrice(new BigDecimal(orderbean.getAchPrice()));
+			order.setDiscountPrice(new BigDecimal(orderbean.getAchPrice()));
 		} else {
 			order.setAchPrice(order.getPrice());
+			order.setDiscountPrice(order.getPrice());
 		}
 		orderbean.setIsCash(order.getIsCash());
 		Area city = areaService.selectById(order.getAreaId());
@@ -1783,6 +1787,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
 		}
 		flag = orderService.updateById(order);
+		VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
+		if(null != voucherMember){
+			voucherMember.setVoucherStatus("END");
+			voucherMemberService.updateById(voucherMember);
+			//通知支付宝该券码已核销
+		}
 		orderLog.setOpStatusAfter("COMPLETE");
 		orderLog.setOp("已完成");
 		this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
