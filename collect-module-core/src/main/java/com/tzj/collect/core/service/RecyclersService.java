@@ -211,7 +211,7 @@ public interface RecyclersService extends IService<Recyclers>{
 	 * @return
 	 */
 	@DS("slave")
-	List<Map<String,Object>> getRecycleDetails(Integer recyclerId);
+	List<Map<String,Object>> getRecycleDetails(Integer recyclerId,String isBigRecycle,Integer companyId);
 
 	String getAuthCode(String authCode, Long recyclersId) throws ApiException;
 	@DS("slave")

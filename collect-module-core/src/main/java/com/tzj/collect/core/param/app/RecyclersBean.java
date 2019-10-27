@@ -41,4 +41,6 @@ public class RecyclersBean {
 	private String isBigRecycle;
 
 	private String certifyId;
+
+	private String mobile;
 }

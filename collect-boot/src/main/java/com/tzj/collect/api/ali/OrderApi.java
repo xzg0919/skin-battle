@@ -361,6 +361,8 @@ public class OrderApi {
 		//根据分类Id和小区Id查询所属企业
 		companyId = companyStreetHouseService.selectStreetHouseceCompanyIdByCategoryId(category.getParentId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
 		if(StringUtils.isBlank(companyId)) {
+
+			System.out.println("六废该区域暂无回收企业"+category.getParentId()+"----"+memberAddress.getStreetId()+"-----"+memberAddress.getCommunityId());
 			return "该区域暂无回收企业";
 		}
 		orderbean.setCompanyId(Integer.parseInt(companyId));

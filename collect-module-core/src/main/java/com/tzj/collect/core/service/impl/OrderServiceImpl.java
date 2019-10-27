@@ -3410,11 +3410,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 		int AlreadyCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "2"));
 
-
+		OrderEvaluation orderEvaluation = orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", orderId));
 		resultMap.put("initComplaint", "催派"+initCount);
 		resultMap.put("TosendCount", "催接"+TosendCount);
 		resultMap.put("AlreadyCount", "催收"+AlreadyCount);
 		resultMap.put("order",order);
+		resultMap.put("OrderEvaluation",orderEvaluation);
 		resultMap.put("paymentNo",paymentNo);
 		resultMap.put("recyclers",recyclers);
 		resultMap.put("orderPicList",orderPicList);

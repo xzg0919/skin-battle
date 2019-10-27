@@ -4,7 +4,6 @@ import com.tzj.module.easyopen.doc.annotation.ApiDocField;
 
 /**
  * 回收人员手机登录验证
- * @Author 胡方明（12795880@qq.com）
  **/
 public class RecyclersLoginBean {
     @ApiDocField(description = "手机号", required = true, example = "13801550124")

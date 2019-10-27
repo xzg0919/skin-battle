@@ -462,24 +462,71 @@ select count(1) from (
 		GROUP BY b.id
 		) countFrom
 	</select>
-	<select id="getRecycleDetails" resultType="Map" parameterType="Integer">
-			SELECT
-				a.id,
-				a.name_,
-				b.area_id,
-				b.area_parents_id,
-				c.area_name AS cityName,
-				d.area_name AS areaName
-			FROM
-				sb_recyclers a
-			LEFT JOIN sb_recyclers_service_range b ON a.id = b.recyclers_id
-			LEFT JOIN sb_area c ON a.city = c.id
-			LEFT JOIN sb_area d ON d.id = b.area_parents_id
-			WHERE
-				a.del_flag = 0
-			AND b.del_flag = 0
-			AND a.id = #{recyclerId}
-			GROUP BY b.area_parents_id
+	<select id="getRecycleDetails" resultType="Map" parameterType="Object">
+			<choose>
+				<when test=" isBigRecycle == 'Y'.toString() ">
+					SELECT
+					a.id,
+					a.name_,
+					b.area_id,
+					c.area_name AS cityName,
+					d.area_name AS areaName
+					FROM
+					sb_recyclers a
+					LEFT JOIN sb_company_recycler cr ON a.id = cr.recycler_id
+					LEFT JOIN sb_recyclers_range_big b ON a.id = b.recyclers_id
+					LEFT JOIN sb_area c ON cr.city = c.id
+					LEFT JOIN sb_area d ON d.id = b.area_id
+					WHERE
+					a.del_flag = 0
+					AND cr.company_id = #{companyId}
+					AND cr.type_ = 4
+					AND b.del_flag = 0
+					AND a.id = #{recyclerId}
+					GROUP BY b.area_id
+				</when>
+				<otherwise>
+					SELECT
+					a.id,
+					a.name_,
+					b.area_id,
+					c.area_name AS cityName,
+					d.area_name AS areaName
+					FROM
+					sb_recyclers a
+					LEFT JOIN sb_company_recycler cr ON a.id = cr.recycler_id
+					LEFT JOIN sb_recyclers_range_appliance b ON a.id = b.recyclers_id
+					LEFT JOIN sb_area c ON cr.city = c.id
+					LEFT JOIN sb_area d ON d.id = b.area_id
+					WHERE
+					a.del_flag = 0
+					AND cr.company_id = #{companyId}
+					AND cr.type_ = 1
+					AND b.del_flag = 0
+					AND a.id = #{recyclerId}
+					GROUP BY b.area_id
+					UNION
+					SELECT
+					a.id,
+					a.name_,
+					b.area_id,
+					c.area_name AS cityName,
+					d.area_name AS areaName
+					FROM
+					sb_recyclers a
+					LEFT JOIN sb_company_recycler cr ON a.id = cr.recycler_id
+					LEFT JOIN sb_recyclers_range_house b ON a.id = b.recyclers_id
+					LEFT JOIN sb_area c ON cr.city = c.id
+					LEFT JOIN sb_area d ON d.id = b.area_id
+					WHERE
+					a.del_flag = 0
+					AND cr.company_id = #{companyId}
+					AND cr.type_ = 1
+					AND b.del_flag = 0
+					AND a.id = #{recyclerId}
+					GROUP BY b.area_id;
+				</otherwise>
+			</choose>
 	</select>
 	<select id="getRecyclersListByParentId" resultType="com.tzj.collect.entity.Recyclers">
 		  SELECT
