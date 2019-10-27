@@ -245,6 +245,7 @@ public class VoucherCodeController
             {
                 sb = sb.append("\"").append(voucherCode.getVoucherCode()).append("\",");
                 printWriter.print(sb.toString());
+                sb.setLength(0);
             }
             printWriter.flush();
         }

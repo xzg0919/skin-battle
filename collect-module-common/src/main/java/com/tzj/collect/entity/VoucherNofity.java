@@ -63,7 +63,27 @@ public class VoucherNofity extends DataEntity<Long>
      * 处理情况
      */
     private String notifyRemark;
+    /**
+     * 通知体
+     */
+    private String bizContent;
     
+    /**
+     * <p>Description:[获取通知体]</p>
+     * @return String bizContent.
+     */
+    public String getBizContent()
+    {
+        return bizContent;
+    }
+    /**
+     * <p>Description:[设置通知体]</p>
+     * @param String bizContent 
+     */
+    public void setBizContent(String bizContent)
+    {
+        this.bizContent = bizContent;
+    }
     /**
      * <p>Description:[获取通知状态]</p>
      * @return String notifyStatus.
