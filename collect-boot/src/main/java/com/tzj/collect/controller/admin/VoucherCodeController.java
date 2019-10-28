@@ -4,7 +4,12 @@ import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -16,10 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.service.VoucherAliService;
 import com.tzj.collect.core.service.VoucherCodeService;
+import com.tzj.collect.core.service.VoucherMemberService;
 import com.tzj.collect.entity.VoucherAli;
 import com.tzj.collect.entity.VoucherCode;
+import com.tzj.collect.entity.VoucherMember;
 
 /**
 *
@@ -41,6 +49,9 @@ public class VoucherCodeController
 
     @Resource
     private VoucherCodeService voucherCodeService;
+    
+    @Resource
+    private VoucherMemberService voucherMemberService;
 
     /**
      * 
@@ -72,10 +83,70 @@ public class VoucherCodeController
     @RequestMapping("/makeCode")
     public @ResponseBody String makeCode(String id, final ModelMap model)
     {
-        String returnStr = "群里找杨欢";
+        String returnStr = "ok";
+        VoucherAli voucherAli = null;
+        int size = 0;
+        VoucherCode voucherCode = null;
+        String code = null;
+        List<VoucherCode> voucherCodeList = new ArrayList<VoucherCode>();
+        Date now = new Date();
         try
         {
-            returnStr = voucherAliService.makeCode(id);
+            voucherAli = voucherAliService.selectById(id);
+            if(null == voucherAli)
+            {
+                returnStr = "券不存在!";
+                return returnStr;
+            }
+            if("1".equals(voucherAli.getMaked()))
+            {
+                returnStr = "券码已生成！";
+                return returnStr;
+            }
+            size = voucherAli.getVoucherCount().intValue();
+            for(int i=1;i<=size;i++)
+            {
+                if(i % 5000 == 0)
+                {
+                    voucherCodeService.insertBatch(voucherCodeList, 5000);
+                    System.out.println("++++++++++++++++++++++++++" + i);
+                    voucherCodeList.clear();
+                }
+                voucherCode = new VoucherCode();
+                voucherCode.setCreateBy(voucherAli.getCreateBy());
+                voucherCode.setCreateDate(now);
+                voucherCode.setDelFlag("0");
+                voucherCode.setDis(voucherAli.getDis());
+                voucherCode.setLowMoney(voucherAli.getLowMoney());
+                voucherCode.setMoney(voucherAli.getMoney());
+                voucherCode.setPickLimitTotal(voucherAli.getPickLimitTotal());
+                voucherCode.setPickupEnd(voucherAli.getPickupEnd());
+                voucherCode.setPickupStart(voucherAli.getPickupStart());
+                voucherCode.setTopMoney(voucherAli.getTopMoney());
+                voucherCode.setUpdateBy(voucherAli.getUpdateBy());
+                voucherCode.setUpdateDate(now);
+                voucherCode.setValidDay(voucherAli.getValidDay());
+                voucherCode.setValidEnd(voucherAli.getValidEnd());
+                voucherCode.setValidStart(voucherAli.getValidStart());
+                voucherCode.setValidType(voucherAli.getValidType());
+                voucherCode.setVersion(voucherAli.getVersion());
+                voucherCode.setOrderType(voucherAli.getOrderType());
+                voucherCode.setVoucherCount(voucherAli.getVoucherCount());
+                voucherCode.setVoucherId(voucherAli.getId());
+                voucherCode.setVoucherName(voucherAli.getVoucherName());
+                voucherCode.setVoucherType(voucherAli.getVoucherType());
+                code = UUID.randomUUID().toString();
+                code = code.substring(code.lastIndexOf("-")+1,code.length());
+                code = voucherAli.getVoucherType() + code;
+                voucherCode.setVoucherCode(code);
+                voucherCodeList.add(voucherCode);
+            }
+            if(size < 5000)
+            {
+                voucherCodeService.insertBatch(voucherCodeList, size);
+            }
+            voucherAli.setMaked("1");
+            voucherAliService.updateById(voucherAli);
         }
         catch (Exception e)
         {
@@ -232,22 +303,43 @@ public class VoucherCodeController
         wrapper.eq("voucher_id", id);
         wrapper.eq("del_flag", 0);
         PrintWriter printWriter = null;
-        StringBuffer sb = new StringBuffer();
+        int size =0; 
+        List<VoucherCode> voucherCodeList = null;
         try
         {
-            List<VoucherCode> voucherCodeList = voucherCodeService.selectList(wrapper);
             response.setCharacterEncoding("gbk");
             response.setContentType("text/csv");
             response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(vname + ".csv", "UTF-8"));
+            size =  voucherCodeService.selectCount(wrapper);
             printWriter = response.getWriter();
-            // 写入文件头部
-            for (VoucherCode voucherCode : voucherCodeList)
+            if(size < 50000)
             {
-                sb = sb.append("\"").append(voucherCode.getVoucherCode()).append("\",");
-                printWriter.print(sb.toString());
-                sb.setLength(0);
+                voucherCodeList =  voucherCodeService.selectList(wrapper);
+                for (VoucherCode voucherCode : voucherCodeList)
+                {
+                    //sb = sb.append("\"").append(voucherCode.getVoucherCode()).append("\",");
+                    printWriter.print(voucherCode.getVoucherCode());
+                    printWriter.write("\r\n");
+                }
+                printWriter.flush();
             }
-            printWriter.flush();
+            else
+            {
+                 PageBean pageBean = new PageBean();
+                 pageBean.setPageSize(50000);
+                 for(int i=0,j = size/50000 + 1;i<j;i++)
+                 {
+                     pageBean.setPageNumber(1 + i);
+                     voucherCodeList =  voucherCodeService.getExpoPageList(pageBean,Integer.valueOf(id));
+                     for (VoucherCode voucherCode : voucherCodeList)
+                     {
+                         printWriter.print(voucherCode.getVoucherCode());
+                         printWriter.write("\r\n");
+                     }
+                 }
+                 printWriter.flush();
+            }
+            
         }
         catch (Exception e)
         {
@@ -262,5 +354,91 @@ public class VoucherCodeController
         }
         return null;
     }
+    
+    
+    
+    /**
+     * 
+     * <p>Created on 2019年10月25日</p>
+     * <p>Description:[下单选择券]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return String
+     */
+    @RequestMapping("/getVoucherForOrder")
+    public Object getVoucherForOrder(final ModelMap model,Long memberId,String orderType,Integer orderPrice)
+    {
+        // 所有的
+        List<VoucherMember>  voucherMemberList = null;
+        // 可用的
+        List<VoucherMember>  voucherMemberUseList = null;
+        // 不能用的
+        List<VoucherMember>  voucherMemberNoUseList = null;
+        Map<String,Object> returnMap = new HashMap<String,Object>();
+        Date now = new Date();
+        try
+        {
+            voucherMemberList = voucherMemberService.getVoucherForOrder(memberId);
+            if(null == voucherMemberList || voucherMemberList.isEmpty())
+            {
+                // 可用数
+                returnMap.put("usefulCount","0");
+                return returnMap;
+            }
+            voucherMemberNoUseList = new ArrayList<VoucherMember>();
+            voucherMemberUseList = new ArrayList<VoucherMember>();
+            for(VoucherMember vmoucherMember : voucherMemberList)
+            {
+                if(now.after(vmoucherMember.getValidEnd()))
+                {
+                    vmoucherMember.setMsg("已过期");
+                    voucherMemberNoUseList.add(vmoucherMember);
+                    continue;
+                }
+                if(now.before(vmoucherMember.getValidStart()))
+                {
+                    vmoucherMember.setMsg("尚未开始");
+                    voucherMemberNoUseList.add(vmoucherMember);
+                    continue;
+                }
+                if(orderPrice > vmoucherMember.getLowMoney())
+                {
+                    vmoucherMember.setMsg("不满足最低金额");
+                    voucherMemberNoUseList.add(vmoucherMember);
+                    continue;
+                }
+                if(!"4".equals(orderType))
+                {
+                    vmoucherMember.setMsg("不支持大件类型订单");
+                    voucherMemberNoUseList.add(vmoucherMember);
+                    continue;
+                }
+                voucherMemberUseList.add(vmoucherMember);
+            }
+            returnMap.put("usefulCount",String.valueOf(voucherMemberUseList.size()));
+            returnMap.put("voucherMemberUseList",voucherMemberUseList);
+            returnMap.put("voucherMemberNoUseList",voucherMemberNoUseList);
+            
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        } 
+        
+        return null;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 }

@@ -1,5 +1,7 @@
 package com.tzj.collect.core.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -7,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.VoucherCodeMapper;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.service.VoucherCodeService;
 import com.tzj.collect.entity.VoucherCode;
 /**
@@ -52,6 +55,20 @@ public class VoucherCodeServiceImpl extends ServiceImpl<VoucherCodeMapper, Vouch
     public void updateMemberId(Long id, Long memberId)
     {
         voucherCodeMapper.updateMemberId(id,memberId);
+    }
+
+    /**
+     * <p>Created on 2019年10月28日</p>
+     * <p>Description:[导出券码分页查询]</p>
+     * @author:[杨欢] [yanghuan1937@aliyun.com]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return  
+     */
+    @Override
+    public List<VoucherCode> getExpoPageList(PageBean pageBean,Integer voucherId)
+    {
+        int pageStart = (pageBean.getPageNumber() - 1) * pageBean.getPageSize();
+        return voucherCodeMapper.getExpoPageList(pageStart,pageBean.getPageSize(),voucherId);
     }
 
 }

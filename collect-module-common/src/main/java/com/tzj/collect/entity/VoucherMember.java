@@ -1,5 +1,7 @@
 package com.tzj.collect.entity;
 
+import java.beans.Transient;
+
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
@@ -112,8 +114,28 @@ public class VoucherMember extends DataEntity<Long>
      */
     private Long orderId;
 
+    /**
+     * 券不可用信息
+     */
+    private String msg;
     
-    
+    /**
+     * <p>Description:[获取券不可用信息]</p>
+     * @return String msg.
+     */
+    @Transient
+    public String getMsg()
+    {
+        return msg;
+    }
+    /**
+     * <p>Description:[设置券不可用信息]</p>
+     * @param String msg 
+     */
+    public void setMsg(String msg)
+    {
+        this.msg = msg;
+    }
     /**
      * <p>Description:[获取订单号]</p>
      * @return String orderNo.

@@ -4,7 +4,7 @@
 <select id="getByCode" parameterType="String" resultType="com.tzj.collect.entity.VoucherCode">
 	SELECT
 		member_id,dis,low_money,money,pick_limit_total,pickup_end,
-		pickup_start,top_money,valid_type,valid_day,valid_start,valid_end,
+		pickup_start,top_money,valid_type,valid_day,valid_start,valid_end,voucher_count,
 		voucher_code,voucher_id,voucher_name,voucher_type,order_type,id
 	FROM
 		sb_voucher_code
@@ -18,7 +18,15 @@
 	WHERE id = #{id}
 </update>
 
-
+<select id="getExpoPageList" parameterType="Integer" resultType="com.tzj.collect.entity.VoucherCode">
+	SELECT
+		voucher_code
+	FROM
+		sb_voucher_code
+	WHERE
+		voucher_id = #{voucherId}
+	LIMIT #{pageStart},#{pageSize}
+</select>
 
 
 

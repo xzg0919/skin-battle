@@ -1,5 +1,7 @@
 package com.tzj.collect.core.mapper;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.entity.VoucherMember;
 /**
@@ -15,5 +17,14 @@ import com.tzj.collect.entity.VoucherMember;
  */
 public interface VoucherMemberMapper extends BaseMapper<VoucherMember>
 {
+
+    /**
+     * <p>Created on 2019年10月28日</p>
+     * <p>Description:[下单选择券]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return Object
+     */
+    List<VoucherMember> getVoucherForOrder(Long memberId);
 
 }

@@ -1,5 +1,7 @@
 package com.tzj.collect.core.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
@@ -35,5 +37,14 @@ public interface VoucherCodeMapper extends BaseMapper<VoucherCode>
      * @return void
      */
     void updateMemberId(@Param("id")Long id,@Param("memberId") Long memberId);
+
+    /**
+     * <p>Created on 2019年10月28日</p>
+     * <p>Description:[导出券码分页查询]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return List<VoucherCode>
+     */
+    List<VoucherCode> getExpoPageList(@Param("pageStart")Integer pageStart, @Param("pageSize")Integer pageSize,@Param("voucherId")Integer voucherId);
 
 }

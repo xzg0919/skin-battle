@@ -9,7 +9,11 @@
 
 
 
-
+<update id="updateUseCount" parameterType="Long">
+	UPDATE sb_voucher_ali
+	SET pick_count = use_count + 1
+	WHERE id = #{voucherId}
+</update>
 
 
 
