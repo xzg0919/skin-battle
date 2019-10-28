@@ -63,7 +63,6 @@ public class NotifyController {
     @RequestMapping("/alipay")
     public @ResponseBody
     String aliPayNotify(HttpServletRequest request, ModelMap model) {
-        System.out.println("支付通知---------------------");
         Map<String, String> params = new HashMap<>();
         Map requestParams = request.getParameterMap();
         for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
@@ -78,8 +77,6 @@ public class NotifyController {
             //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
             params.put(name, valueStr);
         }
-        System.out.println("支付通知-------------------------------------------------------------------------params.get(\"trade_status\"):"+params.get("trade_status"));
-
         try {
             boolean flag = AlipaySignature.rsaCheckV1(params, ALI_PUBLIC_KEY, "UTF-8", "RSA2");
             if (flag) {
@@ -89,8 +86,6 @@ public class NotifyController {
                 String appId = params.get("app_id");
                 String tradeStatus = params.get("trade_status");
                 String totalAmount = params.get("total_amount");
-                System.out.println("支付通知-------------------------------------------------------------------------tradeStatus:"+tradeStatus);
-
                 //1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
                 //2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额
                 //4、验证app_id是否为该商户本身
@@ -106,10 +101,10 @@ public class NotifyController {
                     return "failure";
                 }
 
-                if (payment.getPrice().compareTo(new BigDecimal(totalAmount)) != 0) {
-                    //金额不匹配
-                    return "failure";
-                }
+//                if (payment.getPrice().compareTo(new BigDecimal(totalAmount)) != 0) {
+//                    //金额不匹配
+//                    return "failure";
+//                }
                 Order order = null;
                 VoucherMember voucherMember = null;
 

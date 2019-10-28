@@ -9,6 +9,9 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.tzj.collect.core.service.VoucherMemberService;
+import com.tzj.collect.entity.VoucherMember;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +40,8 @@ public class VoucherAliServiceImpl extends ServiceImpl<VoucherAliMapper, Voucher
     private VoucherAliMapper VoucherAliMapper;
     @Resource
     private VoucherCodeService voucherCodeService;
+    @Autowired
+    private VoucherMemberService voucherMemberService;
     /**
      * <p>Created on 2019年10月25日</p>
      * <p>Description:[生成券码]</p>
@@ -128,35 +133,46 @@ public class VoucherAliServiceImpl extends ServiceImpl<VoucherAliMapper, Voucher
      */
     @Override
     public BigDecimal getDiscountPriceByVoucherId(BigDecimal price, String voucherId){
-
+        //优惠价格
         BigDecimal discountPrice = price;
-        VoucherAli voucherAli = this.selectById(voucherId);
-        if (null==voucherAli){
+        VoucherMember voucherMember = voucherMemberService.selectById(voucherId);
+        if (null==voucherMember){
             System.out.println("----------------------该券不存在，voucherId："+voucherId);
-            return  discountPrice;
+            return  price;
         }
         Date now = new Date();
-        if (now.before(voucherAli.getValidStart())||now.after(voucherAli.getValidEnd())){
+        if (now.before(voucherMember.getValidStart())||now.after(voucherMember.getValidEnd())){
             System.out.println("----------------------该券不在使用时间内，voucherId："+voucherId);
-            return  discountPrice;
+            return  price;
         }
-        switch (voucherAli.getVoucherType()){
-            case "A":
-                discountPrice = discountPrice.subtract(new BigDecimal(voucherAli.getMoney()));
+        if (price.compareTo(new BigDecimal(voucherMember.getLowMoney())) < 1){
+            return price;
+        }
+        switch (voucherMember.getVoucherType()){
+            case "D":
+                discountPrice = price.multiply((new BigDecimal(1)).subtract(voucherMember.getDis().multiply(new BigDecimal(0.1))));
                 break;
-            case "B":
-                discountPrice = price.multiply(voucherAli.getDis().multiply(new BigDecimal(0.1)));
+            case "P":
+                discountPrice = price.multiply(voucherMember.getDis()).subtract(price);
                 break;
-            case "C":
-                if (new BigDecimal(voucherAli.getLowMoney()).compareTo(price) < 1){
-                    discountPrice = discountPrice.subtract(new BigDecimal(voucherAli.getMoney()));
-                }else {
-                    System.out.println("----------------------该券不满足最低消费金额，voucherId："+voucherId);
-                }
+            case "E":
+                discountPrice = new BigDecimal(voucherMember.getMoney());
+                break;
+            case "R":
+                discountPrice = new BigDecimal(voucherMember.getMoney());
                 break;
              default:
         }
-        return discountPrice;
+        if (new BigDecimal(voucherMember.getTopMoney()).compareTo(discountPrice) < 1){
+            discountPrice =  new BigDecimal(voucherMember.getTopMoney());
+        }
+        if ("D".equals(voucherMember.getVoucherType())||"E".equals(voucherMember.getVoucherType())){
+            price = price.subtract(discountPrice);
+        }
+        if ("P".equals(voucherMember.getVoucherType())||"R".equals(voucherMember.getVoucherType())){
+            price = price.add(discountPrice);
+        }
+        return price;
     }
     /**
      * <p>Created on 2019年10月26日</p>

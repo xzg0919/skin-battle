@@ -75,7 +75,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
      * <p>Description:[发券]</p>
      * @author:[杨欢] [yanghuan1937@aliyun.com]
      * @update:[日期YYYY-MM-DD] [更改人姓名]
-     * @return  
+     * @return
      */
     @Override
     @Transactional
@@ -147,17 +147,17 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
             voucherNofity.setNotifyStatus("error");
             voucherNofity.setNotifyRemark(e.getMessage());
         }
-        
+
         return voucherNofity;
-        
-        
-        
-        
+
+
+
+
     }
     /**
      * <p>Created on 2019年10月28日</p>
      * <p>Description:[设置有效期]</p>
-     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @author:[杨欢][yanghuan1937@aliyun.com]
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      * @return VoucherMember
      */
@@ -167,7 +167,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         if("relative".equals(voucherCode.getValidType()))
         {
             Calendar calendar  =   Calendar.getInstance();
-            calendar.setTime(voucherMember.getCreateDate()); 
+            calendar.setTime(voucherMember.getCreateDate());
             calendar.add(calendar.DATE, voucherCode.getValidDay());
             voucherMember.setValidStart(voucherMember.getCreateDate());
             voucherMember.setValidEnd(calendar.getTime());
@@ -179,13 +179,13 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         }
         return voucherMember;
     }
-    
+
     /**
      * <p>Created on 2019年10月27日</p>
      * <p>Description:[券的使用]</p>
      * @author:[杨欢] [yanghuan1937@aliyun.com]
      * @update:[日期YYYY-MM-DD] [更改人姓名]
-     * @return  
+     * @return
      */
     @Override
     public String voucherUse(VoucherBean voucherBean)
@@ -217,30 +217,35 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         // 告诉支付宝
         try
         {
-            AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, "2018060660292753", AlipayConst.private_key, AlipayConst.format, 
+            AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format,
                     AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
             AlipayMarketingVoucherStockUseRequest request = new AlipayMarketingVoucherStockUseRequest();
             String bizContent = "";
             bizContent = bizContent
-                       + "{" 
-                       + "\"entity_no\":\""
-                       + voucherMember.getVoucherCode()
-                       + "\"," 
-                       + "\"out_biz_no\":\""
-                       + UUID.randomUUID().toString().replaceAll("-", "")
-                       + "}";
+                    + "{"
+                    + "\"entity_no\":\""
+                    + voucherMember.getVoucherCode()
+                    + "\","
+                    + "\"out_biz_no\":\""
+                    + UUID.randomUUID().toString().replaceAll("-", "")
+                    + "}";
             request.setBizContent(bizContent);
             AlipayMarketingVoucherStockUseResponse response = alipayClient.execute(request);
             if(!response.isSuccess())
             {
-            
-            } 
+
+            }
+            else
+            {
+                voucherMember.setAliVoucherId(response.getVoucherId());
+                this.updateById(voucherMember);
+            }
         }
         catch (AlipayApiException e)
         {
             e.printStackTrace();
         }
-        
+
         return null;
     }
     /**
@@ -248,74 +253,33 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
      * <p>Description:[下单选择券]</p>
      * @author:[杨欢] [yanghuan1937@aliyun.com]
      * @update:[日期YYYY-MM-DD] [更改人姓名]
-     * @return  
+     * @return
      */
     @Override
     public List<VoucherMember> getVoucherForOrder(Long memberId)
     {
-        return voucherMemberMapper.getVoucherForOrder(memberId);    
+        return voucherMemberMapper.getVoucherForOrder(memberId);
     }
     @Override
+    @Transactional
     public String updateOrderNo(BigDecimal price, Integer orderId, String voucherId, Payment payment) {
 
         Order order = orderService.selectById(orderId);
-        VoucherMember voucherMember = this.selectOne(new EntityWrapper<VoucherMember>().eq("ali_user_id", order.getAliUserId()).eq("voucher_id", voucherId).eq("voucher_status","CREATE"));
-        if (null != voucherMember){
+        BigDecimal discountPrice = BigDecimal.ZERO;
+        VoucherMember voucherMember = this.selectById(voucherId);
+        if (null != voucherMember&&"CREATE".equals(voucherMember.getVoucherStatus())){
             voucherMember.setOrderId(order.getId());
             voucherMember.setOrderNo(order.getOrderNo());
-            voucherMember.setVoucherStatus("USEING");
-            this.updateById(voucherMember);
-            BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(price, voucherId);
+            voucherMember.setVoucherStatus("CREATE");
+            discountPrice = voucherAliService.getDiscountPriceByVoucherId(price, voucherId);
             payment.setPrice(discountPrice);
+        }
+        if (!(price.compareTo(discountPrice)== 0)){
+            this.updateById(voucherMember);
         }
         order.setDiscountPrice(payment.getPrice());
         orderService.updateById(order);
         return  paymentService.genalPayXcx(payment);
     }
 
-//    public static void main(String[] args) {
-//        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-//        AlipayTradeCreateRequest request = new AlipayTradeCreateRequest();
-//        AlipayTradeCreateModel model = new AlipayTradeCreateModel();
-//        String sn = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
-//        String subject = "垃圾分类回收订单(收呗):" + sn;
-//
-//        model.setBody(subject);
-//        model.setSubject(subject);
-//        model.setOutTradeNo(sn);
-//        model.setTimeoutExpress("1m");
-//        model.setBuyerId("2088212854989662");
-//        ExtendParams extendParams = new ExtendParams();
-//        extendParams.setSysServiceProviderId("2088421446748174");
-//        model.setExtendParams(extendParams);
-//        model.setTotalAmount("0.1");
-//        request.setBizModel(model);
-//        request.setNotifyUrl("http://shoubeics.mayishoubei.com/notify/alipay");
-//
-//        try {
-//            //这里和普通的接口调用不同，使用的是sdkExecutee
-//            AlipayTradeCreateResponse response = alipayClient.execute(request);
-//            System.out.println(response.getTradeNo());
-//        } catch (AlipayApiException e) {
-//            throw new ApiException("系统异常：" + e.getErrMsg());
-//        }
-//    }
-
-    public static void main(String[] args)throws Exception{
-        String sn = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", Const.ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", Const.ALI_PUBLIC_KEY, "RSA2");
-        AlipayTradeCloseRequest request = new AlipayTradeCloseRequest();
-        request.setBizContent("{" +
-                "\"trade_no\":\"2019102722001489665709551035\"," +
-                "\"operator_id\":\""+sn+"\"" +
-                "  }");
-        AlipayTradeCloseResponse response = alipayClient.execute(request);
-        System.out.println(response.getBody());
-        if(response.isSuccess()){
-            System.out.println("调用成功");
-        } else {
-            System.out.println("调用失败");
-        }
-    }
-    
 }

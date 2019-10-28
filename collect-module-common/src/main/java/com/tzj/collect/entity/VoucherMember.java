@@ -118,7 +118,10 @@ public class VoucherMember extends DataEntity<Long>
     /**
      * 券不可用信息
      */
+    @TableField(exist = false)
     private String msg;
+
+    private String aliVoucherId;
 
 
 
@@ -201,7 +204,16 @@ public class VoucherMember extends DataEntity<Long>
     public void setValidStartTime(String validStartTime) {
         this.validStartTime = validStartTime;
     }
-    
+
+
+    public String getAliVoucherId() {
+        return aliVoucherId;
+    }
+
+    public void setAliVoucherId(String aliVoucherId) {
+        this.aliVoucherId = aliVoucherId;
+    }
+
     /**
      * <p>Description:[获取券不可用信息]</p>
      * @return String msg.
