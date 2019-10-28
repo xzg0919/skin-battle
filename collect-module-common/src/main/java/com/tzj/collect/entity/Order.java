@@ -158,6 +158,8 @@ public class Order extends DataEntity<Long> {
 	private TitleType title;// 回收物类型
 
 	private BigDecimal achPrice;//已完成价格
+
+	private BigDecimal discountPrice;//优惠价格
 	
 	//是否是扫码完成的订单 0不是 1是
 	private String isScan;

@@ -1,17 +1,19 @@
 package com.tzj.collect.controller;
 
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayTradeCloseRequest;
+import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.common.constant.Const;
 import com.tzj.collect.common.thread.NewThreadPoorExcutor;
 import com.tzj.collect.common.thread.sendGreenOrderThread;
 import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
 import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
-import com.tzj.collect.entity.EnterpriseCode;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.Payment;
-import com.tzj.collect.entity.Recyclers;
+import com.tzj.collect.entity.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,10 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static com.tzj.collect.api.common.constant.Const.ALI_APPID;
 import static com.tzj.collect.api.common.constant.Const.ALI_PUBLIC_KEY;
@@ -50,6 +50,8 @@ public class NotifyController {
     private AsyncService asyncService;
     @Autowired
     private RecyclersService recyclersService;
+    @Autowired
+    private VoucherMemberService voucherMemberService;
 
 
     /**
@@ -61,7 +63,7 @@ public class NotifyController {
     @RequestMapping("/alipay")
     public @ResponseBody
     String aliPayNotify(HttpServletRequest request, ModelMap model) {
-
+        System.out.println("支付通知---------------------");
         Map<String, String> params = new HashMap<>();
         Map requestParams = request.getParameterMap();
         for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
@@ -76,17 +78,18 @@ public class NotifyController {
             //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
             params.put(name, valueStr);
         }
+        System.out.println("支付通知-------------------------------------------------------------------------params.get(\"trade_status\"):"+params.get("trade_status"));
 
         try {
             boolean flag = AlipaySignature.rsaCheckV1(params, ALI_PUBLIC_KEY, "UTF-8", "RSA2");
             if (flag) {
                 //验签成功后
                 //按照支付结果异步通知中的描述，对支付结果中的业务内容进行1\2\3\4二次校验，校验成功后在response中返回success，校验失败返回failure
-
                 String orderSN = params.get("out_trade_no");
                 String appId = params.get("app_id");
                 String tradeStatus = params.get("trade_status");
                 String totalAmount = params.get("total_amount");
+                System.out.println("支付通知-------------------------------------------------------------------------tradeStatus:"+tradeStatus);
 
                 //1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
                 //2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额
@@ -107,8 +110,8 @@ public class NotifyController {
                     //金额不匹配
                     return "failure";
                 }
-
-
+                Order order = null;
+                VoucherMember voucherMember = null;
 
                 if (tradeStatus.equalsIgnoreCase("TRADE_SUCCESS") ||
                         tradeStatus.equalsIgnoreCase("TRADE_FINISHED")) {
@@ -128,7 +131,7 @@ public class NotifyController {
                     paymentService.transfer(payment);
 
                     //根據order_no查询相关订单
-                    Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
+                    order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
 
                     if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
@@ -142,12 +145,6 @@ public class NotifyController {
                         if (order.getAddress().startsWith("上海市")&&(Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){
                             NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
                         }
-//                        if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-//                            asyncService.sendOpenAppMini(payment.getAliUserId(),payment.getTradeNo(), MiniTemplatemessageUtil.payTemplateId, MiniTemplatemessageUtil.page,payment.getOrderSn(),"已支付",payment.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-//                        }else {
-//                            Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
-//                            asyncService.sendOpenAppMini(recyclers.getAliUserId(),payment.getTradeNo(), MiniTemplatemessageUtil.payTemplateId,MiniTemplatemessageUtil.page,payment.getOrderSn(),"已支付",payment.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-//                        }
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -180,6 +177,13 @@ public class NotifyController {
                             }
                         }
                     }
+                }else if (tradeStatus.equalsIgnoreCase("TRADE_CLOSED")){
+                    voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
+                    if(null != voucherMember){
+                        voucherMember.setVoucherStatus("CREATE");
+                        voucherMemberService.updateById(voucherMember);
+                    }
+                    return "failure";
                 }
 
             } else {
