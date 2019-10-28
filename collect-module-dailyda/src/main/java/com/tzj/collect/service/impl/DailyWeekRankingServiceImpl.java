@@ -279,11 +279,13 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
     @Override
     @Cacheable(value = "dailyTop50" , key = "#year + '_' + #week",   sync = true)
     public List<Map<String, Object>> dailyAllTop50RankingTime(String year, String week) {
+        Jedis jedis = jedisPool.getResource();
         if (StringUtils.isEmpty(year) ||  StringUtils.isEmpty(week)){
             throw new ApiException("参数错误");
         }
-        List<Map<String, Object>> maps = dailyLexiconService.weekRankingTop50(jedisPool.getResource(), year + ":" + week);
+        List<Map<String, Object>> maps = dailyLexiconService.weekRankingTop50(jedis, year + ":" + week);
         maps = maps.stream().sorted(Comparator.comparing(DailyLexiconServiceImpl::comparingByScore).reversed().thenComparing(DailyLexiconServiceImpl::comparingByInputDate)).limit(50).collect(Collectors.toList());
+        jedis.close();
         return maps;
     }
 
