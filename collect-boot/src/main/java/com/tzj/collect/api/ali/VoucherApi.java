@@ -93,6 +93,8 @@ public class VoucherApi {
         }
         if ("bigFurniture".equals(orderType)){
             wrapper.eq("order_type","B");
+        }else {
+            wrapper.eq("order_type","H");
         }
         List<VoucherMember> voucherList = voucherMemberService.selectList(wrapper);
         return voucherList;
