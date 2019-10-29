@@ -28,4 +28,8 @@ public class PushConst {
     public static final String APP_CODE_20 = "2000";
     public static final String APP_CODE_20_MESSAGE = "您有订单已被下属回收人员操作";
 
+    public static final String APP_CODE_30 = "3000";
+    public static final String APP_CODE_30_MESSAGE = "您所属公司已启用蓝牙电子称";
+    public static final String APP_CODE_31 = "3001";
+    public static final String APP_CODE_31_MESSAGE = "您所属公司已关闭蓝牙电子称";
 }

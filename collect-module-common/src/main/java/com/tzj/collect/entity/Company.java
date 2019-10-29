@@ -53,6 +53,8 @@ public class Company extends DataEntity<Long> {
 	@TableField(exist=false)
 	private Integer companyCategoryCount;//该回收服务类型个数
 
+	private Integer blueTooth;//是否开启蓝牙（0:未开启; 1:开启）
+
 	public String getAliMns() {
 		return aliMns;
 	}
@@ -68,6 +70,7 @@ public class Company extends DataEntity<Long> {
 	public void setIsMysl(String isMysl) {
 		this.isMysl = isMysl;
 	}
+
 
 	/**
 	* @return recyclerCount
@@ -272,5 +275,13 @@ public class Company extends DataEntity<Long> {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Integer getBlueTooth() {
+		return blueTooth;
+	}
+
+	public void setBlueTooth(Integer blueTooth) {
+		this.blueTooth = blueTooth;
 	}
 }

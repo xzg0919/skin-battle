@@ -66,6 +66,8 @@ public class CompanyBean {
 
 	private String areaName;
 
+	private Integer blueTooth;//是否开启蓝牙（0:未开启; 1:开启）
+
 	public String getLongitude() {
 		return longitude;
 	}
@@ -256,4 +258,5 @@ public class CompanyBean {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
 }

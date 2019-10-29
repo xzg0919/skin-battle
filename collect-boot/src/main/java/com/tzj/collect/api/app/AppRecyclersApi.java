@@ -136,6 +136,8 @@ public class AppRecyclersApi {
 		return recyclers;
 	}
 
+
+
 	/**
 	 * 回收人员的评价
 	 */
@@ -216,6 +218,18 @@ public class AppRecyclersApi {
 	public List<Company> getRecyclerCompany() {
 		List<Company> list = companyRecyclerService.selectCompanyByRecyclerId(this.getRecycler().getId().toString());
 		return list;
+	}
+	/**
+	 * 根据回收员找公司是否开启蓝牙
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2019/10/28 0028
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "app.blue.tooth", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public String companyBlueTooth(){
+		return companyRecyclerService.companyBlueTooth(this.getRecycler().getId().toString());
 	}
 
 	/**

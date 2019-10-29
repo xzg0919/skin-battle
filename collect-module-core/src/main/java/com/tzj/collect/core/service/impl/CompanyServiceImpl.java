@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.core.mapper.CompanyMapper;
+import com.tzj.collect.core.mapper.CompanyRecyclerMapper;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.result.business.BusinessRecType;
@@ -25,6 +27,8 @@ import java.util.Map;
 public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> implements CompanyService {
 	@Resource
 	private CompanyMapper companyMapper;
+	@Resource
+	private CompanyRecyclerMapper companyRecyclerMapper;
 	@Autowired
 	private CompanyAccountService companyAccountService;
 	@Autowired
@@ -228,11 +232,32 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 				return "该用户名已存在，请更换";
 			}
 		}
+		companyBean.setBlueTooth(null == companyBean.getBlueTooth() ? 0 : companyBean.getBlueTooth());
 		if(null == company&&null == companyAccount){
 			company = new Company();
 			companyAccount = new CompanyAccount();
+		}else {
+			//修改启用关闭蓝牙电子称时给回收员通知
+			if (!companyBean.getBlueTooth().equals(company.getBlueTooth())){
+				//找到当前公司下所有生活垃圾回收人员，发送通知
+				List<Map<String, Object>> recsInfo = companyRecyclerMapper.selectRecycleInfoByCompanyId(company.getId(), "2");
+				recsInfo.stream().forEach(recInfo ->{
+					if (null != recInfo.get("mobile")){
+						String status = "No";
+						if ("0".equals(companyBean.getBlueTooth().toString())){
+							//改变状态为关闭
+							status = "No";
+						}else if ("1".equals(companyBean.getBlueTooth().toString())){
+							//改变状态为开启
+							status = "Yes";
+						}
+						PushUtils.getAcsResponse(recInfo.get("mobile").toString(),status,"2");
+					}
+				});
+			}
 		}
 		company.setName(companyBean.getName());
+		company.setBlueTooth(companyBean.getBlueTooth());
 		company.setContacts(companyBean.getContacts());
 		company.setTel(companyBean.getTel());
 		company.setAddress(companyBean.getAddress());
