@@ -285,7 +285,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
     public boolean updateVoucherUseing(long orderId,String orderNo,long voucherMemberId){
         boolean bool = false;
         VoucherMember voucherMember = this.selectById(voucherMemberId);
-        if (null!= voucherMember){
+        if (null!= voucherMember&&VoucherUtils.CREATE.equals(voucherMember.getVoucherStatus())){
             voucherMember.setOrderId(orderId);
             voucherMember.setOrderNo(orderNo);
             voucherMember.setVoucherStatus(VoucherUtils.USEING);
@@ -302,7 +302,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
     public boolean updateVoucherCreate(long voucherMemberId){
         boolean bool = false;
         VoucherMember voucherMember = this.selectById(voucherMemberId);
-        if (null!= voucherMember){
+        if (null!= voucherMember&&VoucherUtils.USEING.equals(voucherMember.getVoucherStatus())){
             voucherMember.setOrderId((long)0);
             voucherMember.setOrderNo("");
             voucherMember.setVoucherStatus(VoucherUtils.CREATE);
