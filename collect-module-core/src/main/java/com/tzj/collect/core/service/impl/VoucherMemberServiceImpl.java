@@ -271,7 +271,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         //判断优惠又的价格是否和原价相等，如果不一样即说明优惠了
         if (!(price.compareTo(discountPrice)== 0)){
             //将券进行绑定
-            this.updateVoucherUseing(order.getId(),order.getOrderNo(),Long.parseLong(voucherId));
+            this.updateVoucherUseing(order.getId(),order.getOrderNo(),order.getAliUserId(),Long.parseLong(voucherId));
         }
         return  paymentService.genalPayXcx(payment);
     }
@@ -282,10 +282,10 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
      * @param voucherMemberId
      * @return
      */
-    public boolean updateVoucherUseing(long orderId,String orderNo,long voucherMemberId){
+    public boolean updateVoucherUseing(long orderId,String orderNo,String aliUserId,long voucherMemberId){
         boolean bool = false;
         VoucherMember voucherMember = this.selectById(voucherMemberId);
-        if (null!= voucherMember&&VoucherUtils.CREATE.equals(voucherMember.getVoucherStatus())){
+        if (null!= voucherMember&&VoucherUtils.CREATE.equals(voucherMember.getVoucherStatus())&&voucherMember.getAliUserId().equals(aliUserId)){
             voucherMember.setOrderId(orderId);
             voucherMember.setOrderNo(orderNo);
             voucherMember.setVoucherStatus(VoucherUtils.USEING);
