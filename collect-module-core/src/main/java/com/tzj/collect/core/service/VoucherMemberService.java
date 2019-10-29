@@ -1,11 +1,13 @@
 package com.tzj.collect.core.service;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.tzj.collect.core.param.admin.VoucherBean;
 import com.tzj.collect.entity.Payment;
 import com.tzj.collect.entity.VoucherMember;
 import com.tzj.collect.entity.VoucherNofity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  *
@@ -33,5 +35,35 @@ public interface VoucherMemberService extends IService<VoucherMember>
     更新发放券的状态
      */
     String updateOrderNo(BigDecimal price,Integer orderId,String voucherId, Payment payment);
+    /**
+     * <p>Created on 2019年10月28日</p>
+     * <p>Description:[券的使用]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return String
+     */
+    String voucherUse(VoucherBean voucherBean);
+    /**
+     * <p>Created on 2019年10月28日</p>
+     * <p>Description:[下单选择券]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return List<VoucherMember>
+     */
+    List<VoucherMember> getVoucherForOrder(Long memberId);
+    /**
+     * 更新券为使用中的状态（即绑定状态）
+     * @param orderId
+     * @param orderNo
+     * @param voucherMemberId
+     * @return
+     */
+    boolean updateVoucherUseing(long orderId,String orderNo,String aliUserId,long voucherMemberId);
+    /**
+     * 更新券为可使用的状态（即领取待使用状态）
+     * @param voucherMemberId
+     * @return
+     */
+    boolean updateVoucherCreate(long voucherMemberId);
 
 }

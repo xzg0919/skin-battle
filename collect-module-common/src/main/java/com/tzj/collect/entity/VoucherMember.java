@@ -1,5 +1,8 @@
 package com.tzj.collect.entity;
 
+import java.beans.Transient;
+
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
@@ -112,8 +115,122 @@ public class VoucherMember extends DataEntity<Long>
      */
     private Long orderId;
 
-    
-    
+    /**
+     * 券不可用信息
+     */
+    @TableField(exist = false)
+    private String msg;
+
+    private String aliVoucherId;
+
+
+
+    @TableField(exist = false)
+    private String createTime;
+    @TableField(exist = false)
+    private String updateTime;
+    @TableField(exist = false)
+    private String pickupEndTime;
+    @TableField(exist = false)
+    private String pickupStartTime;
+    @TableField(exist = false)
+    private String validEndTime;
+    @TableField(exist = false)
+    private String validStartTime;
+
+
+    public String getCreateTime() {
+        if (null!= createDate){
+            return this.getDate(createDate);
+        }
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getUpdateTime() {
+        if (null!= updateDate){
+            return this.getDate(updateDate);
+        }
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getPickupEndTime() {
+        if (null!= pickupEnd){
+            return this.getDate(pickupEnd);
+        }
+        return pickupEndTime;
+    }
+
+    public void setPickupEndTime(String pickupEndTime) {
+        this.pickupEndTime = pickupEndTime;
+    }
+
+    public String getPickupStartTime() {
+        if (null!= pickupStart){
+            return this.getDate(pickupStart);
+        }
+        return pickupStartTime;
+    }
+
+    public void setPickupStartTime(String pickupStartTime) {
+        this.pickupStartTime = pickupStartTime;
+    }
+
+    public String getValidEndTime() {
+        if (null!= validEnd){
+            return this.getDate(validEnd);
+        }
+        return validEndTime;
+    }
+
+    public void setValidEndTime(String validEndTime) {
+        this.validEndTime = validEndTime;
+    }
+
+    public String getValidStartTime() {
+        if (null!= validStart){
+            return this.getDate(validStart);
+        }
+        return validStartTime;
+    }
+
+    public void setValidStartTime(String validStartTime) {
+        this.validStartTime = validStartTime;
+    }
+
+
+    public String getAliVoucherId() {
+        return aliVoucherId;
+    }
+
+    public void setAliVoucherId(String aliVoucherId) {
+        this.aliVoucherId = aliVoucherId;
+    }
+
+    /**
+     * <p>Description:[获取券不可用信息]</p>
+     * @return String msg.
+     */
+    @Transient
+    public String getMsg()
+    {
+        return msg;
+    }
+    /**
+     * <p>Description:[设置券不可用信息]</p>
+     * @param String msg 
+     */
+    public void setMsg(String msg)
+    {
+        this.msg = msg;
+    }
     /**
      * <p>Description:[获取订单号]</p>
      * @return String orderNo.

@@ -1,6 +1,9 @@
 package com.tzj.collect.core.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.service.IService;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.entity.VoucherCode;
 
 /**
@@ -34,5 +37,14 @@ public interface VoucherCodeService extends IService<VoucherCode>
      * @return void
      */
     void updateMemberId(Long id, Long memberId);
+
+    /**
+     * <p>Created on 2019年10月28日</p>
+     * <p>Description:[导出券码分页查询]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return List<VoucherCode>
+     */
+    List<VoucherCode> getExpoPageList(PageBean pageBean,Integer Integer);
 
 }

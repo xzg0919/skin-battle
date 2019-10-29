@@ -25,7 +25,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("2088212869139500", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088102149186190", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -69,10 +69,13 @@ public class OrderTest {
 //            CategoryBean categoryBean = new CategoryBean();
 //            categoryBean.setParentId("25");
 //            categoryBean.setCityId("17685");
+                VoucherBean voucherBean = new VoucherBean();
+                voucherBean.setVoucherType("0");
+                voucherBean.setOrderType("bigFurniture");
                 OrderPayParam orderPayParam = new OrderPayParam();
-                orderPayParam.setPrice(new BigDecimal("100"));
-                orderPayParam.setOrderId(101);
-                orderPayParam.setVoucherId("123456");
+                orderPayParam.setPrice(new BigDecimal(100));
+                orderPayParam.setOrderId(70195);
+                orderPayParam.setVoucherId("293");
 
                 HashMap<String,Object> param=new HashMap<>();
                 param.put("name","app.order.pay");

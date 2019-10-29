@@ -45,4 +45,13 @@ public interface VoucherAliService extends IService<VoucherAli>
      */
     BigDecimal getDiscountPriceByVoucherId(BigDecimal price,String voucherId);
 
+    /**
+     * <p>Created on 2019年10月28日</p>
+     * <p>Description:[更新核销数]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return void
+     */
+    void updateUseCount(Long voucherId);
+
 }

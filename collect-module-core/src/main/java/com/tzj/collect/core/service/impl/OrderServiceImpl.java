@@ -23,6 +23,7 @@ import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
+import com.tzj.collect.core.param.admin.VoucherBean;
 import com.tzj.collect.core.param.ali.IdAmountListBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.OrderItemBean;
@@ -522,9 +523,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						orderItem.setAmount(item.getAmount());
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
 						if("1".equals(isCash)){
-							amount += item.getAmount()*10;
+							amount += item.getAmount()*10*2;
 						}else{
-							amount += item.getAmount();
+							amount += item.getAmount()*2;
 						}
 						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
@@ -1784,14 +1785,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		order.setCompleteDate(new Date());
 		if(StringUtils.isNotBlank(orderBean.getAchPrice())){
-			order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
+			order.setDiscountPrice(new BigDecimal(orderBean.getAchPrice()));
 		}
 		flag = orderService.updateById(order);
 		VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
 		if(null != voucherMember){
-			voucherMember.setVoucherStatus("END");
-			voucherMemberService.updateById(voucherMember);
 			//通知支付宝该券码已核销
+			VoucherBean voucherBean = new VoucherBean();
+			voucherBean.setOrderId(order.getId());
+			voucherBean.setOrderNo(order.getOrderNo());
+			voucherBean.setVoucherMemberId(voucherMember.getId());
+			voucherMemberService.voucherUse(voucherBean);
 		}
 		orderLog.setOpStatusAfter("COMPLETE");
 		orderLog.setOp("已完成");
