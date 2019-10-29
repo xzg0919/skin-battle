@@ -51,5 +51,19 @@ public interface VoucherMemberService extends IService<VoucherMember>
      * @return List<VoucherMember>
      */
     List<VoucherMember> getVoucherForOrder(Long memberId);
+    /**
+     * 更新券为使用中的状态（即绑定状态）
+     * @param orderId
+     * @param orderNo
+     * @param voucherMemberId
+     * @return
+     */
+    boolean updateVoucherUseing(long orderId,String orderNo,long voucherMemberId);
+    /**
+     * 更新券为可使用的状态（即领取待使用状态）
+     * @param voucherMemberId
+     * @return
+     */
+    boolean updateVoucherCreate(long voucherMemberId);
 
 }

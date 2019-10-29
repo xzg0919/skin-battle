@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import com.tzj.collect.common.utils.VoucherUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -205,7 +206,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
             // 改会员券状态
             voucherMember.setOrderId(voucherBean.getOrderId());
             voucherMember.setOrderNo(voucherBean.getOrderNo());
-            voucherMember.setVoucherStatus("USED");
+            voucherMember.setVoucherStatus(VoucherUtils.USED);
             // 改核销数
             voucherAliService.updatePickCount(voucherMember.getVoucherId());
         }
@@ -265,21 +266,47 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
     public String updateOrderNo(BigDecimal price, Integer orderId, String voucherId, Payment payment) {
 
         Order order = orderService.selectById(orderId);
-        BigDecimal discountPrice = BigDecimal.ZERO;
-        VoucherMember voucherMember = this.selectById(voucherId);
-        if (null != voucherMember&&"CREATE".equals(voucherMember.getVoucherStatus())){
-            voucherMember.setOrderId(order.getId());
-            voucherMember.setOrderNo(order.getOrderNo());
-            voucherMember.setVoucherStatus("CREATE");
-            discountPrice = voucherAliService.getDiscountPriceByVoucherId(price, voucherId);
-            payment.setPrice(discountPrice);
-        }
+        BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(price, voucherId);
+         payment.setPrice(discountPrice);
+        //判断优惠又的价格是否和原价相等，如果不一样即说明优惠了
         if (!(price.compareTo(discountPrice)== 0)){
-            this.updateById(voucherMember);
+            //将券进行绑定
+            this.updateVoucherUseing(order.getId(),order.getOrderNo(),Long.parseLong(voucherId));
         }
-        order.setDiscountPrice(payment.getPrice());
-        orderService.updateById(order);
         return  paymentService.genalPayXcx(payment);
+    }
+    /**
+     * 更新券为使用中的状态（即绑定状态）
+     * @param orderId
+     * @param orderNo
+     * @param voucherMemberId
+     * @return
+     */
+    public boolean updateVoucherUseing(long orderId,String orderNo,long voucherMemberId){
+        boolean bool = false;
+        VoucherMember voucherMember = this.selectById(voucherMemberId);
+        if (null!= voucherMember){
+            voucherMember.setOrderId(orderId);
+            voucherMember.setOrderNo(orderNo);
+            voucherMember.setVoucherStatus(VoucherUtils.USEING);
+            bool = this.updateById(voucherMember);
+        }
+        return  bool;
+    }
+
+    /**
+     * 更新券为可使用的状态（即领取待使用状态）
+     * @param voucherMemberId
+     * @return
+     */
+    public boolean updateVoucherCreate(long voucherMemberId){
+        boolean bool = false;
+        VoucherMember voucherMember = this.selectById(voucherMemberId);
+        if (null!= voucherMember){
+            voucherMember.setVoucherStatus(VoucherUtils.CREATE);
+            bool = this.updateById(voucherMember);
+        }
+        return  bool;
     }
 
 }

@@ -11,6 +11,7 @@ import com.tzj.collect.common.thread.NewThreadPoorExcutor;
 import com.tzj.collect.common.thread.sendGreenOrderThread;
 import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
 import com.tzj.collect.common.utils.PushUtils;
+import com.tzj.collect.common.utils.VoucherUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -175,8 +176,7 @@ public class NotifyController {
                 }else if (tradeStatus.equalsIgnoreCase("TRADE_CLOSED")){
                     voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
                     if(null != voucherMember){
-                        voucherMember.setVoucherStatus("CREATE");
-                        voucherMemberService.updateById(voucherMember);
+                        voucherMemberService.updateVoucherCreate(voucherMember.getId());
                     }
                     return "failure";
                 }
