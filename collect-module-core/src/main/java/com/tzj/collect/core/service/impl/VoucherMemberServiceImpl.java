@@ -282,6 +282,8 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
      * @param voucherMemberId
      * @return
      */
+    @Override
+    @Transactional
     public boolean updateVoucherUseing(long orderId,String orderNo,String aliUserId,long voucherMemberId){
         boolean bool = false;
         VoucherMember voucherMember = this.selectById(voucherMemberId);
@@ -299,6 +301,8 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
      * @param voucherMemberId
      * @return
      */
+    @Override
+    @Transactional
     public boolean updateVoucherCreate(long voucherMemberId){
         boolean bool = false;
         VoucherMember voucherMember = this.selectById(voucherMemberId);
