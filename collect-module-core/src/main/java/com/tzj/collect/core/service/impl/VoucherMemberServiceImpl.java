@@ -303,6 +303,8 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         boolean bool = false;
         VoucherMember voucherMember = this.selectById(voucherMemberId);
         if (null!= voucherMember){
+            voucherMember.setOrderId((long)0);
+            voucherMember.setOrderNo("");
             voucherMember.setVoucherStatus(VoucherUtils.CREATE);
             bool = this.updateById(voucherMember);
         }
