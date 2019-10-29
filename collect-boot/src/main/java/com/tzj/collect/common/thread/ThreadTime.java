@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.tzj.collect.common.constant.ApplicaInit;
 import com.tzj.collect.common.constant.MD5Util;
 import com.tzj.collect.core.param.ali.MemberAddressBean;
 import com.tzj.collect.core.service.*;
@@ -35,6 +36,8 @@ public class ThreadTime {
     private AreaService areaService;
     @Autowired
     private OrderItemAchService orderItemAchService;
+    @Autowired
+    private ApplicaInit applicaInit;
 //    @Resource
 //    private DailyWeekRankingService dailyWeekRankingService;
     /**
@@ -42,7 +45,9 @@ public class ThreadTime {
      */
     @Scheduled(cron = "0 0/2 * * * ?")
     public void startPaymentExecute(){
-        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new PaymentThread(paymentService)));
+        if (applicaInit.getIsOpenTransferThread()){
+            NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new PaymentThread(paymentService)));
+        }
     }
 //    @Scheduled(cron = "30 27 17 ? * MON")
 //    public void reSendExecute(){

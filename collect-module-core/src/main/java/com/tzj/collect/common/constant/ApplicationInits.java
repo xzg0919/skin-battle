@@ -20,11 +20,15 @@ public class ApplicationInits {
     @Value("${isTestPayment}")
     private String isTestPayment;
 
+    @Value("${isOpenTransferThread}")
+    private Boolean isOpenTransferThread;
+
     @Bean
     public ApplicaInit applicaInitConfig() {
         ApplicaInit applicaInit  = new ApplicaInit();
         applicaInit.setIsMysl(isMysl);
         applicaInit.setIsTestPayment(isTestPayment);
+        applicaInit.setIsOpenTransferThread(isOpenTransferThread);
         return applicaInit;
 
     }

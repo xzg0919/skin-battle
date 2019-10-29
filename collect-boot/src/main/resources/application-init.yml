@@ -6,3 +6,5 @@ isDd: true
 isWuGongJin: true
 #是否是测试支付通知
 isTestPayment: true
+#是否开启转账线程
+isOpenTransferThread: true

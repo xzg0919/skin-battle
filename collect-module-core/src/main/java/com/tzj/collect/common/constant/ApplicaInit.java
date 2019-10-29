@@ -12,6 +12,6 @@ public class ApplicaInit {
 
     private String isTestPayment;
 
-
+    private  Boolean isOpenTransferThread;//是否开启转账线程
 
 }

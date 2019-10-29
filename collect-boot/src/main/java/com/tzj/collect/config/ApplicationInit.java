@@ -17,5 +17,7 @@ public class ApplicationInit {
     private String isDd;
     @Value("${isWuGongJin}")
     private String isWuGongJin;
+    @Value("${isOpenTransferThread}")
+    private Boolean isOpenTransferThread;
 
 }
