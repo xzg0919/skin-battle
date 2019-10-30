@@ -1,16 +1,11 @@
 package com.tzj.collect.core.service.impl;
 
-import static com.tzj.collect.common.constant.Const.ALI_PAY_KEY;
-
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
-import com.tzj.collect.common.utils.VoucherUtils;
+import com.tzj.collect.common.utils.VoucherConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +14,9 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayMarketingVoucherStockUseRequest;
-import com.alipay.api.request.AlipayTradeCloseRequest;
 import com.alipay.api.response.AlipayMarketingVoucherStockUseResponse;
-import com.alipay.api.response.AlipayTradeCloseResponse;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.common.constant.AlipayConst;
-import com.tzj.collect.common.constant.Const;
 import com.tzj.collect.core.mapper.VoucherMemberMapper;
 import com.tzj.collect.core.param.admin.VoucherBean;
 import com.tzj.collect.core.service.MemberService;
@@ -206,7 +197,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
             // 改会员券状态
             voucherMember.setOrderId(voucherBean.getOrderId());
             voucherMember.setOrderNo(voucherBean.getOrderNo());
-            voucherMember.setVoucherStatus(VoucherUtils.USED);
+            voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_USED);
             // 改核销数
             voucherAliService.updatePickCount(voucherMember.getVoucherId());
         }
@@ -287,10 +278,10 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
     public boolean updateVoucherUseing(long orderId,String orderNo,String aliUserId,long voucherMemberId){
         boolean bool = false;
         VoucherMember voucherMember = this.selectById(voucherMemberId);
-        if (null!= voucherMember&&VoucherUtils.CREATE.equals(voucherMember.getVoucherStatus())&&voucherMember.getAliUserId().equals(aliUserId)){
+        if (null!= voucherMember&& VoucherConst.VOUCHER_STATUS_CREATE.equals(voucherMember.getVoucherStatus())&&voucherMember.getAliUserId().equals(aliUserId)){
             voucherMember.setOrderId(orderId);
             voucherMember.setOrderNo(orderNo);
-            voucherMember.setVoucherStatus(VoucherUtils.USEING);
+            voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_USEING);
             bool = this.updateById(voucherMember);
         }
         return  bool;
@@ -306,10 +297,10 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
     public boolean updateVoucherCreate(long voucherMemberId){
         boolean bool = false;
         VoucherMember voucherMember = this.selectById(voucherMemberId);
-        if (null!= voucherMember&&VoucherUtils.USEING.equals(voucherMember.getVoucherStatus())){
+        if (null!= voucherMember&& VoucherConst.VOUCHER_STATUS_USEING.equals(voucherMember.getVoucherStatus())){
             voucherMember.setOrderId((long)0);
             voucherMember.setOrderNo("");
-            voucherMember.setVoucherStatus(VoucherUtils.CREATE);
+            voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_CREATE);
             bool = this.updateById(voucherMember);
         }
         return  bool;
