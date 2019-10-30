@@ -1,12 +1,9 @@
 package com.tzj.collect.api.business;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
-import com.tzj.collect.api.common.websocket.AppWebSocketServer;
 import com.tzj.collect.common.util.BusinessUtils;
-import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.BusinessRecyclerBean;
 import com.tzj.collect.core.param.business.RecyclerServiceBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
@@ -15,12 +12,8 @@ import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.entity.CompanyRecycler;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.module.api.annotation.*;
-import com.tzj.module.easyopen.util.ApiUtil;
-import io.itit.itf.okhttp.FastHttpClient;
-import io.itit.itf.okhttp.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.net.InetAddress;
 import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
@@ -36,8 +29,6 @@ public class BusinessRecyclerApi {
 	private OrderEvaluationService orderEvaluationService;
 	@Autowired
 	private CompanyRecyclerService companyRecyclerService;
-	@Autowired
-	private AppWebSocketServer appWebSocketServer;
 	@Autowired
 	private RecyclersTitleService recyclersTitleService;
 	/**

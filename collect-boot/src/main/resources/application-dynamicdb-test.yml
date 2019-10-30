@@ -24,25 +24,7 @@ spring:
 #          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
 #          username: sb_admin
 #          password: shoubei_123
-          url: jdbc:mysql://172.19.182.62:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          username: devuser
-          password: dev123456@1
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          #driver-class-name: com.mysql.jdbc.Driver
-        slave_1:
-#          url: jdbc:mysql://rr-uf68jtqx8eo2ce0ew.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-#          username: sb_admin
-#          password: shoubei_123
-          url: jdbc:mysql://172.19.182.62:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-          username: devuser
-          password: dev123456@1
-          driver-class-name: com.mysql.cj.jdbc.Driver
-#          #driver-class-name: com.mysql.jdbc.Driver
-        slave_2:
-#          url: jdbc:mysql://rr-uf6xun0k65f3i09n4.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
-#          username: sb_admin
-#          password: shoubei_123
-          url: jdbc:mysql://172.19.182.62:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          url: jdbc:mysql://localhost:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
           username: devuser
           password: dev123456@1
           driver-class-name: com.mysql.cj.jdbc.Driver

@@ -5,6 +5,6 @@ isDd: true
 #五公斤推送是否用正式
 isWuGongJin: true
 #是否是正式支付通知
-isPayment: true
+isPayment: false
 #是否开启转账线程
-isOpenTransferThread: true
+isOpenTransferThread: false

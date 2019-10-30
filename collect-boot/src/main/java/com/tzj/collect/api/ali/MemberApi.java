@@ -1,6 +1,5 @@
 package com.tzj.collect.api.ali;
 
-import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.param.ali.OrderBean;
@@ -27,9 +26,7 @@ public class MemberApi {
 	private MemberService memberService;
 	@Autowired
 	private com.tzj.collect.core.service.MessageService MessageService;
-	@Autowired
-	private XcxWebSocketServer xcxWebSocketServer;
-	
+
 	/**
      * 根据用户授权返回的authCode,解析用户的数据
      * @author 王灿
@@ -122,16 +119,7 @@ public class MemberApi {
 		return resultMap;
 	}
 
-	@Api(name = "member.pushXcxDetail", version = "1.0")
-	@SignIgnore
-	@AuthIgnore
-	public void sendMessage(MemberBean memberBean) {
-		try {
-			xcxWebSocketServer.sendInfo(memberBean.getMemberId(),memberBean.getType(),memberBean.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+
 	@Api(name = "member.getPassIdUrl", version = "1.0")
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getPassIdUrl() {

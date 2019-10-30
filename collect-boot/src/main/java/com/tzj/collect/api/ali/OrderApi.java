@@ -3,7 +3,6 @@ package com.tzj.collect.api.ali;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.commom.redis.RedisUtil;
-import com.tzj.collect.api.common.websocket.WebSocketServer;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.config.ApplicationInit;
 import com.tzj.collect.core.param.ali.CategoryBean;
@@ -45,8 +44,6 @@ public class OrderApi {
 	private CategoryService categoryService;
 	@Autowired
 	private MemberAddressService memberAddressService;
-	@Autowired
-	private WebSocketServer webSocketServer;
 	@Autowired
 	private EnterpriseProductService enterpriseProductService;
 	@Autowired
@@ -257,12 +254,6 @@ public class OrderApi {
 					e.printStackTrace();
 				}
 			}
-    	try {
-			webSocketServer.sendInfo(companyId, "你有新订单了");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		//是否有马上回收红包
 		if("Y".equals(orderbean.getIsDelivery())){
 			RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
@@ -401,11 +392,6 @@ public class OrderApi {
 			}catch (Exception e){
 				e.printStackTrace();
 			}
-		}
-		try {
-			webSocketServer.sendInfo(companyId, "你有新订单了");
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		Map<String,Object> map = new HashMap<>();
 		Date date = new Date();
@@ -631,12 +617,6 @@ public class OrderApi {
 				asyncService.notifyDingDingOrderCreate(orderbean);
 			}
 		}
-		try {
-			webSocketServer.sendInfo(streetBigCompanyId+"", "你有新订单了");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		//是否有马上回收红包
 		if("Y".equals(orderbean.getIsDelivery())){
 			RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
