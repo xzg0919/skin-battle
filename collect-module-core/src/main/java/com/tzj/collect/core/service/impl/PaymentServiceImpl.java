@@ -69,10 +69,10 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         model.setExtendParams(extendParams);
         model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_HALF_UP).toString());
         request.setBizModel(model);
-        if ("true".equals(applicaInit.getIsTestPayment())){
-            request.setNotifyUrl("http://shoubeics.mayishoubei.com/notify/alipay");
-        }else {
+        if ("true".equals(applicaInit.getIsPayment())){
             request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay");
+        }else {
+            request.setNotifyUrl("http://shoubeics.mayishoubei.com/notify/alipay");
         }
         try {
             //这里和普通的接口调用不同，使用的是sdkExecutee
@@ -110,10 +110,10 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_HALF_UP).toString());
         model.setProductCode("QUICK_MSECURITY_PAY");
         request.setBizModel(model);
-        if ("true".equals(applicaInit.getIsTestPayment())){
-            request.setNotifyUrl("http://shoubeics.mayishoubei.com/notify/alipay");
-        }else {
+        if ("true".equals(applicaInit.getIsPayment())){
             request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay");
+        }else {
+            request.setNotifyUrl("http://shoubeics.mayishoubei.com/notify/alipay");
         }
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
