@@ -62,6 +62,106 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
     private PaymentService paymentService;
     @Autowired
     private OrderService orderService;
+    
+    
+    /**
+     * <p>Created on 2019年10月25日</p>
+     * <p>Description:[重发券--领券再授权的用户]</p>
+     * @author:[杨欢] [yanghuan1937@aliyun.com]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return
+     */
+    @Override
+    @Transactional
+    public String reSend(String aliUserId)
+    {
+        VoucherMember voucherMember = null;
+        VoucherCode voucherCode = null;
+        Member member = null;
+        List<VoucherNofity> voucherNofityList = null;
+        VoucherNofity voucherNofity = null;
+        voucherNofityList = voucherNofityService.getListByAliId(aliUserId);
+        if(null != voucherNofityList && !voucherNofityList.isEmpty())
+        {
+            for(int i=0,j=voucherNofityList.size();i<j;i++)
+            {
+                try
+                {
+                    voucherNofity = voucherNofityList.get(i);
+                    if(!VoucherConst.VOUCHER_NOTIFY_MEMBER.equals(voucherNofity.getNotifyStatus()))
+                    {
+                        continue;
+                    }
+                    voucherCode = voucherCodeService.getByCode(voucherNofity.getEntityNum());
+                    if(null == voucherCode)
+                    {
+                        voucherNofity.setNotifyStatus(VoucherConst.VOUCHER_NOTIFY_NO);
+                        voucherNofity.setNotifyRemark("券码不存在");
+                        voucherNofityService.updateStatus(voucherNofity);
+                        continue;
+                    }
+                    if(null != voucherCode.getMemberId())
+                    {
+                        voucherNofity.setNotifyStatus(VoucherConst.VOUCHER_NOTIFY_HAD);
+                        voucherNofity.setNotifyRemark("券码已被领取,member:"+voucherCode.getMemberId());
+                        voucherNofityService.updateStatus(voucherNofity);
+                        continue;
+                    }
+                    member = memberService.findMemberByAliId(aliUserId);
+                    if(null == member)
+                    {
+                        voucherNofity.setNotifyStatus(VoucherConst.VOUCHER_NOTIFY_MEMBER);
+                        voucherNofity.setNotifyRemark(voucherNofity.getUid() + "--此会员不存在");
+                        voucherNofityService.updateStatus(voucherNofity);
+                        continue;
+                    }
+                    voucherMember = new VoucherMember();
+                    voucherCode.setMemberId(member.getId());
+                    voucherMember.setMemberId(member.getId());
+                    voucherMember.setAliUserId(member.getAliUserId());
+                    voucherMember.setVoucherStatus("CREATE");
+                    // 券内容
+                    voucherMember.setCreateBy("ali");
+                    voucherMember.setCreateDate(voucherNofity.getCreateDate());
+                    voucherMember.setDelFlag("0");
+                    voucherMember.setDis(voucherCode.getDis());
+                    voucherMember.setLowMoney(voucherCode.getLowMoney());
+                    voucherMember.setMoney(voucherCode.getMoney());
+                    voucherMember.setPickLimitTotal(voucherCode.getPickLimitTotal());
+                    voucherMember.setPickupEnd(voucherCode.getPickupEnd());
+                    voucherMember.setPickupStart(voucherCode.getPickupStart());
+                    voucherMember.setTopMoney(voucherCode.getTopMoney());
+                    voucherMember.setUpdateBy("ali");
+                    voucherMember.setUpdateDate(voucherNofity.getCreateDate());
+                    voucherMember.setValidDay(voucherCode.getValidDay());
+                    voucherMember.setValidEnd(voucherCode.getValidEnd());
+                    voucherMember.setValidStart(voucherCode.getValidStart());
+                    voucherMember.setValidType(voucherCode.getValidType());
+                    voucherMember.setVoucherCode(voucherCode.getVoucherCode());
+                    voucherMember.setVoucherId(voucherCode.getVoucherId());
+                    voucherMember.setVoucherName(voucherCode.getVoucherName());
+                    voucherMember.setVoucherType(voucherCode.getVoucherType());
+                    voucherMember.setVoucherCount(voucherCode.getVoucherCount());
+                    voucherMember.setOrderType(voucherCode.getOrderType());
+                    voucherMember = setVaildDay(voucherMember,voucherCode);
+                    voucherCodeService.updateMemberId(voucherCode.getId(),voucherCode.getMemberId());
+                    this.insert(voucherMember);
+                    voucherAliService.updatePickCount(voucherCode.getVoucherId());
+                    voucherNofity.setNotifyStatus(VoucherConst.VOUCHER_NOTIFY_REOK);
+                    voucherNofity.setNotifyRemark("");
+                    voucherNofityService.updateStatus(voucherNofity);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    voucherNofity.setNotifyStatus(VoucherConst.VOUCHER_NOTIFY_ERROR);
+                    voucherNofity.setNotifyRemark(e.getMessage());
+                    voucherNofityService.updateStatus(voucherNofity);
+                }
+            }
+        }
+        return null;
+    }
     /**
      * <p>Created on 2019年10月25日</p>
      * <p>Description:[发券]</p>
@@ -81,14 +181,14 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
             voucherCode = voucherCodeService.getByCode(voucherNofity.getEntityNum());
             if(null == voucherCode)
             {
-                voucherNofity.setNotifyStatus("error");
+                voucherNofity.setNotifyStatus(VoucherConst.VOUCHER_NOTIFY_NO);
                 voucherNofity.setNotifyRemark("券码不存在");
                 voucherNofityService.updateById(voucherNofity);
                 return voucherNofity;
             }
             if(null != voucherCode.getMemberId())
             {
-                voucherNofity.setNotifyStatus("error");
+                voucherNofity.setNotifyStatus(VoucherConst.VOUCHER_NOTIFY_HAD);
                 voucherNofity.setNotifyRemark("券码已被领取,member:"+voucherCode.getMemberId());
                 voucherNofityService.updateById(voucherNofity);
                 return voucherNofity;
@@ -96,7 +196,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
             member = memberService.findMemberByAliId(voucherNofity.getUid());
             if(null == member)
             {
-                voucherNofity.setNotifyStatus("error");
+                voucherNofity.setNotifyStatus(VoucherConst.VOUCHER_NOTIFY_MEMBER);
                 voucherNofity.setNotifyRemark(voucherNofity.getUid() + "--此会员不存在");
                 voucherNofityService.updateById(voucherNofity);
                 return voucherNofity;
@@ -139,12 +239,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
             voucherNofity.setNotifyStatus("error");
             voucherNofity.setNotifyRemark(e.getMessage());
         }
-
         return voucherNofity;
-
-
-
-
     }
     /**
      * <p>Created on 2019年10月28日</p>
@@ -156,7 +251,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
     @SuppressWarnings("static-access")
     private VoucherMember setVaildDay(VoucherMember voucherMember, VoucherCode voucherCode)
     {
-        if("relative".equals(voucherCode.getValidType()))
+        if(VoucherConst.VOUCHER_VALIDTYPE_RELATIVE.equals(voucherCode.getValidType()))
         {
             Calendar calendar  =   Calendar.getInstance();
             calendar.setTime(voucherMember.getCreateDate());

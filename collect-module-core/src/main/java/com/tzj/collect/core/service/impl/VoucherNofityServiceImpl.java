@@ -1,5 +1,7 @@
 package com.tzj.collect.core.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -26,5 +28,31 @@ public class VoucherNofityServiceImpl extends ServiceImpl<VoucherNofityMapper, V
 {
     @Resource
     private VoucherNofityMapper VoucherNofityMapper;
+
+    /**
+     * <p>Created on 2019年10月30日</p>
+     * <p>Description:[阿里的id获取通知列表]</p>
+     * @author:[杨欢] [yanghuan1937@aliyun.com]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return  
+     */
+    @Override
+    public List<VoucherNofity> getListByAliId(String aliUserId)
+    {
+        return VoucherNofityMapper.getListByAliId(aliUserId);
+    }
+
+    /**
+     * <p>Created on 2019年10月30日</p>
+     * <p>Description:[更新通知状态]</p>
+     * @author:[杨欢] [yanghuan1937@aliyun.com]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return  
+     */
+    @Override
+    public void updateStatus(VoucherNofity voucherNofity)
+    {
+        VoucherNofityMapper.updateStatus(voucherNofity);
+    }
 
 }

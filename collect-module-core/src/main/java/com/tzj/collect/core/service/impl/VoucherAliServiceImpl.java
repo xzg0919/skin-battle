@@ -1,7 +1,6 @@
 package com.tzj.collect.core.service.impl;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,8 +8,6 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import com.tzj.collect.core.service.VoucherMemberService;
-import com.tzj.collect.entity.VoucherMember;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +16,10 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.VoucherAliMapper;
 import com.tzj.collect.core.service.VoucherAliService;
 import com.tzj.collect.core.service.VoucherCodeService;
+import com.tzj.collect.core.service.VoucherMemberService;
 import com.tzj.collect.entity.VoucherAli;
 import com.tzj.collect.entity.VoucherCode;
+import com.tzj.collect.entity.VoucherMember;
 /**
  *
  * <p>Created on2019年10月24日</p>

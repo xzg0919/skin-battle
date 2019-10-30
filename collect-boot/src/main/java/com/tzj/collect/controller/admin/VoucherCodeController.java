@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.common.utils.VoucherConst;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.service.VoucherAliService;
 import com.tzj.collect.core.service.VoucherCodeService;
@@ -69,6 +70,7 @@ public class VoucherCodeController
         wrapper.eq("del_flag", 0);
         List<VoucherAli> voucherAliList = voucherAliService.selectList(wrapper);
         model.addAttribute("page", getPageCode(voucherAliList));
+        
         return "admin/voucherCodeList";
     }
 
@@ -277,7 +279,7 @@ public class VoucherCodeController
     private String getValidTime(VoucherAli voucherAli, DateFormat dateFormat)
     {
         String validTime = null;
-        if ("absolute".equals(voucherAli.getValidType()))
+        if (VoucherConst.VOUCHER_VALIDTYPE_ABSOLUTE.equals(voucherAli.getValidType()))
         {
             validTime = dateFormat.format(voucherAli.getValidStart()).concat("<br>-<br>")
                     .concat(dateFormat.format(voucherAli.getValidEnd()));
