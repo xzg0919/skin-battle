@@ -18,6 +18,7 @@ import com.tzj.collect.core.result.third.ThirdOrderResult;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Recyclers;
+import com.tzj.collect.entity.VoucherMember;
 
 import java.util.List;
 import java.util.Map;
@@ -190,7 +191,7 @@ public interface OrderService extends IService<Order> {
 
 	boolean modifyOrderSta(OrderBean orderBean);
 
-	boolean modifyOrderByPayment(OrderBean orderBean);
+	boolean modifyOrderByPayment(OrderBean orderBean, VoucherMember voucherMember);
 	/** 回调修改状态
 	  * @author sgmark@aliyun.com
 	  * @date 2019/6/11 0011

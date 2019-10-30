@@ -245,6 +245,7 @@ public class OrderApi {
 				}
 				orderbean.setCompanyName(company.getName());
 				orderbean.setDingDingUrl(company.getDingDingUrl());
+				orderbean.setDingDingSing(company.getDingDingSing());
 				try{
 					if("操作成功".equals(resultMap.get("msg")+"")) {
 						if("true".equals(applicationInit.getIsDd())) {
@@ -389,6 +390,7 @@ public class OrderApi {
 			}
 			orderbean.setCompanyName(company.getName());
 			orderbean.setDingDingUrl(company.getDingDingUrl());
+			orderbean.setDingDingSing(company.getDingDingSing());
 			try{
 				if("操作成功".equals(resultMap.get("msg")+"")) {
 					if("true".equals(applicationInit.getIsDd())) {
@@ -534,6 +536,7 @@ public class OrderApi {
 			}
 			orderbean.setCompanyName(company.getName());
 			orderbean.setDingDingUrl(company.getDingDingUrl());
+			orderbean.setDingDingSing(company.getDingDingSing());
 			try{
 				if("操作成功".equals(resultMap.get("msg")+"")) {
 					if("true".equals(applicationInit.getIsDd())) {
@@ -618,6 +621,7 @@ public class OrderApi {
 			Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", streetBigCompanyId));
 			orderbean.setCompanyName(company.getName());
 			orderbean.setDingDingUrl(company.getDingDingUrl());
+			orderbean.setDingDingSing(company.getDingDingSing());
 		}else{
 			throw new ApiException("回收公司异常！！！！！");
 		}

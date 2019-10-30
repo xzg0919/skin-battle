@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayOpenAppMiniTemplatemessageSendModel;
+import com.alipay.api.internal.util.codec.Base64;
 import com.alipay.api.request.AlipayOpenAppMiniTemplatemessageSendRequest;
 import com.alipay.api.response.AlipayOpenAppMiniTemplatemessageSendResponse;
 import com.taobao.api.ApiException;
@@ -15,10 +16,15 @@ import com.tzj.collect.api.commom.constant.AlipayConst;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.AsyncService;
+import com.tzj.collect.entity.PaymentError;
 import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 /**
@@ -46,8 +52,45 @@ public class AsyncServiceImpl implements AsyncService {
         atMobiles.add("13855829796");
         atMobiles.add("15121063188");
         atMobiles.add("13262790702");
-        DingTalkNotify.sendTextMessageWithAt(message.toString(),atMobiles, orderBean.getDingDingUrl());
+        String ddUrl = this.getDingDingUrl(orderBean.getDingDingUrl(),orderBean.getDingDingSing());
+        DingTalkNotify.sendTextMessageWithAt(message.toString(),atMobiles,ddUrl);
     }
+
+    @Override
+    @Async
+    public void notifyDingDingPaymentError(String orderNo, String reason, String dingDingUrl,String dingDingSing,String receiveTel){
+        StringBuffer message=new StringBuffer();
+        message.append("转账有异常了！\r\n");
+        message.append("订单号：").append(orderNo).append("\r\n");
+        message.append("内容：").append(reason);
+        ArrayList<String> atMobiles=new ArrayList<>();
+            atMobiles.add(receiveTel);
+        String ddUrl = this.getDingDingUrl(dingDingUrl,dingDingSing);
+        DingTalkNotify.sendTextMessageWithAt(message.toString(),atMobiles, ddUrl);
+    }
+    public String getDingDingUrl(String ddUrl,String ddSing){
+        if(StringUtils.isBlank(ddSing)){
+            return ddUrl;
+        }
+        try{
+            String secret = ddSing;
+            Long timestamp = System.currentTimeMillis();
+            String stringToSign = timestamp + "\n" + secret;
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA256"));
+            byte[] signData = mac.doFinal(stringToSign.getBytes("UTF-8"));
+            String sing = URLEncoder.encode(new String(Base64.encodeBase64(signData)),"UTF-8");
+            ddUrl = ddUrl+"&timestamp="+timestamp+"&sign="+sing;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ddUrl;
+    }
+
+
+
+
+
     @Async
     public void notifyDingDingOrderCreate(String message, boolean atAll,  String dingDingUrl) {
         DingTalkNotify.sendTextMessageWithAtAndAtAll(message, null, atAll, dingDingUrl);

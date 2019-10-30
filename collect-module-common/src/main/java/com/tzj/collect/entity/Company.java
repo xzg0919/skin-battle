@@ -2,13 +2,16 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
+
 /**
  * 企业表
-* @ClassName: Company
-* @date 2018年3月20日 上午9:23:05
-* @author:[王池]
+ * @ClassName: Company
+ * @date 2018年3月20日 上午9:23:05
+ * @author:[王池]
  */
 @TableName("sb_company")
+@Data
 public class Company extends DataEntity<Long> {
 	private Long id;
 	@TableField(value="name_")
@@ -24,6 +27,8 @@ public class Company extends DataEntity<Long> {
 	private String zipcode;    //邮编
 	private String orgCode;   //组织机构编码
 	private String dingDingUrl;   //钉钉通知的连接
+
+	private String dingDingSing;//钉钉通知签名
 
 	private String iotUrl;//iot设备公司所对应的开箱地址
 
@@ -45,15 +50,13 @@ public class Company extends DataEntity<Long> {
 	 * 回收企业类型，回收企业，智能设备回收企业,回收企业并且是智能设备回收企业
 	 */
 	private String companyType;
-	
+
 	@TableField(exist=false)
 	private Integer recyclerCount;//企业绑定的回收人员数目
 	@TableField(exist=false)
 	private Integer companyServiceCount;//该企业回收服务类型个数
 	@TableField(exist=false)
 	private Integer companyCategoryCount;//该回收服务类型个数
-
-	private Integer blueTooth;//是否开启蓝牙（0:未开启; 1:开启）
 
 	public String getAliMns() {
 		return aliMns;
@@ -71,56 +74,55 @@ public class Company extends DataEntity<Long> {
 		this.isMysl = isMysl;
 	}
 
-
 	/**
-	* @return recyclerCount
-	*/
-	
+	 * @return recyclerCount
+	 */
+
 	public Integer getRecyclerCount() {
 		return recyclerCount;
 	}
 
-	
+
 	/**
-	* @param paramtheparamthe{bare_field_name} to set
-	*/
-	
+	 * @param paramtheparamthe{bare_field_name} to set
+	 */
+
 	public void setRecyclerCount(Integer recyclerCount) {
 		this.recyclerCount = recyclerCount;
 	}
 
-	
+
 	/**
-	* @return companyServiceCount
-	*/
-	
+	 * @return companyServiceCount
+	 */
+
 	public Integer getCompanyServiceCount() {
 		return companyServiceCount;
 	}
 
-	
+
 	/**
-	* @param paramtheparamthe{bare_field_name} to set
-	*/
-	
+	 * @param paramtheparamthe{bare_field_name} to set
+	 */
+
 	public void setCompanyServiceCount(Integer companyServiceCount) {
 		this.companyServiceCount = companyServiceCount;
 	}
 
-	
+
 	/**
-	* @return companyCategoryCount
-	*/
-	
+	 * @return companyCategoryCount
+	 */
+
 	public Integer getCompanyCategoryCount() {
 		return companyCategoryCount;
 	}
 
-	
+
 	/**
-	* @param paramtheparamthe{bare_field_name} to set
-	*/
-	
+	 * @param paramtheparamthe{bare_field_name} to set
+	 */
+
 	public void setCompanyCategoryCount(Integer companyCategoryCount) {
 		this.companyCategoryCount = companyCategoryCount;
 	}
@@ -275,13 +277,5 @@ public class Company extends DataEntity<Long> {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public Integer getBlueTooth() {
-		return blueTooth;
-	}
-
-	public void setBlueTooth(Integer blueTooth) {
-		this.blueTooth = blueTooth;
 	}
 }
