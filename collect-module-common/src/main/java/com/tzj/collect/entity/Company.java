@@ -41,6 +41,8 @@ public class Company extends DataEntity<Long> {
 	@TableField(exist = false)
 	private String password;   //页面需要的密码
 
+	private Integer blueTooth;
+
 	/**
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示
 	 */
