@@ -3,7 +3,7 @@
 AppName=collect-boot.jar
 
 #JVM参数
-JVM_OPTS="-Dname=$AppName  -Duser.timezone=Asia/Shanghai -server -Xms6000M -Xmx6000M -XX:PermSize=512M -XX:MaxPermSize=512M -XX:+HeapDumpOnOutOfMemoryError -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9001  -Dcom.sun.management.jmxremote.ssl=false  -Dcom.sun.management.jmxremote.authenticate=false "
+JVM_OPTS="-Dname=$AppName  -Duser.timezone=Asia/Shanghai -server -Xms6000M -Xmx6000M -XX:PermSize=512M -XX:MaxPermSize=512M -XX:+HeapDumpOnOutOfMemoryError -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9001 -Dcom.sun.management.jmxremote.rmi.port=9001  -Dcom.sun.management.jmxremote.ssl=false  -Dcom.sun.management.jmxremote.authenticate=false "
 APP_HOME=`pwd`
 LOG_PATH=$APP_HOME/logs/$AppName.log
 
