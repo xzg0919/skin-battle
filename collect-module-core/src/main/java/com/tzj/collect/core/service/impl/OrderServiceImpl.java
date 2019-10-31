@@ -8,7 +8,6 @@ import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -49,7 +48,6 @@ import com.tzj.collect.entity.Category.CategoryType;
 import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +62,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.tzj.collect.entity.Payment.STATUS_PAYED;
 import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
@@ -1497,6 +1494,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			resultMap.put("cancelTime", cancelResult.getCancelDate());
 			resultMap.put("cancelNameLast", cancelResult.getRecycleName());
 		}
+		//优惠券详情
+		resultMap.putAll(this.voucherInfo(order));
 		return resultMap;
 	}
 
@@ -3389,6 +3388,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			//没有红包
 			resultMap.put("deliveryStatus", "NOT");
 		}
+		//优惠券详情
+		resultMap.putAll(this.voucherInfo(order));
 
 		resultMap.put("order",order);
 		resultMap.put("paymentNo",paymentNo);
@@ -3810,5 +3811,45 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderComplaintService.updateById(orderComplaint);
 		return "操作成功";
     }
-
+	/**
+	 * 订单中使用优惠券详情
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2019/10/31 0031
+	 * @Param: 
+	 * @return: 
+	 */
+    public Map<String, Object>  voucherInfo(Order order){
+		Map<String, Object> resultMap = new HashMap<>();
+		//查询订单是否使用优惠券（根据订单号）
+		VoucherMember voucherMembers = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).last(" LIMIT 1"));
+		if (null != voucherMembers){
+			resultMap.put("useVoucher", "Y");
+			resultMap.put("voucherName", voucherMembers.getVoucherName());
+			if (Order.TitleType.BIGTHING.getValue().equals(order.getTitle().getValue())){
+				//完成订单
+				if (!OrderType.COMPLETE.getValue().equals(order.getTitle().getValue())){
+					resultMap.put("discountPrice", order.getDiscountPrice());//用户收到或支付的金额
+					resultMap.put("achPrice", order.getAchPrice());//回收员收到或支付的金额
+					resultMap.put("money", order.getAchPrice().subtract(order.getDiscountPrice()));//优惠金额
+				}else {
+					//进行中订单展示的优惠券抵扣价格（优惠金额）也称作平台支付金额
+					resultMap.put("money", voucherMembers.getMoney());
+				}
+			}else {
+				//大件以外的订单
+				if (!OrderType.COMPLETE.getValue().equals(order.getTitle().getValue())){
+					resultMap.put("discountPrice", order.getDiscountPrice());//用户收到或支付的金额
+					resultMap.put("achPrice", order.getAchPrice());//回收员收到或支付的金额
+					resultMap.put("money", order.getDiscountPrice().subtract(order.getAchPrice()));//优惠金额
+				}else {
+					//进行中订单展示的优惠券抵扣价格（优惠金额）也称作平台支付金额
+					resultMap.put("money", voucherMembers.getMoney());
+				}
+			}
+			resultMap.put("voucherMembers", voucherMembers);
+		}else {
+			resultMap.put("useVoucher", "未使用优惠券");
+		}
+		return resultMap;
+	}
 }
