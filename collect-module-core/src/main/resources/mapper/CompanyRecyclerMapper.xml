@@ -338,9 +338,11 @@
 			company_id as companyId
 		FROM
 			sb_company_recycler scr
-		INNER JOIN sb_company scc
+		INNER JOIN sb_company scc ON scc.id = scr.company_id
 		WHERE
 			scr.recycler_id = #{recId}
+			AND scr.type_ = 1
+			AND scr.status_ = 1
 		GROUP BY
 			scr.company_id
 		LIMIT 1
