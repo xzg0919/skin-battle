@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -26,19 +24,12 @@ public class OrderCancleExamineServiceImpl extends ServiceImpl<OrderCancleExamin
     public OrderService orderService;
 
     public Object getCancleOrderDetail(OrderBean orderbean){
+        Map<String,Object> resultMap = new HashMap<>();
         List<OrderCancleExamine> orderCancleExamineList = this.selectList(new EntityWrapper<OrderCancleExamine>().eq("order_no", orderbean.getOrderNo()));
         Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderbean.getOrderNo()));
-        if (null==orderCancleExamineList){
-            orderCancleExamineList = new ArrayList<>();
-            OrderCancleExamine orderCancleExamine = new OrderCancleExamine();
-            Date updateDate = ToolUtils.getDateTime(order.getCancelTime()+"");
-            orderCancleExamine.setUpdateDate(updateDate);
-        }else {
-            orderCancleExamineList.stream().forEach(OrderCancleExamine->{
-                OrderCancleExamine.setOrder(order);
-            });
-        }
-        return orderCancleExamineList;
+        resultMap.put("orderCancleExamineList",orderCancleExamineList);
+        resultMap.put("order",order);
+        return resultMap;
     }
 
 }
