@@ -3156,8 +3156,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Date endDate = new Date();
 		Date startDate = ToolUtils.RmDateByNow(endDate,dateNum-1);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		List<Order> orders = this.selectList(new EntityWrapper<Order>().eq("ali_user_id", aliUserId).eq("title", title).between("create_date", sdf.format(startDate)+" 00:00:01", sdf.format(endDate)+" 23:59:59"));
-		if(orders.size() >= orderNum){
+		Integer orders = this.selectCount(new EntityWrapper<Order>().eq("ali_user_id", aliUserId).eq("title", title).between("create_date", sdf.format(startDate)+" 00:00:01", sdf.format(endDate)+" 23:59:59"));
+		if(orders >= orderNum){
 			isImprisonRule = true;
 		}
 		return isImprisonRule;
