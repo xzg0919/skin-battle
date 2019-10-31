@@ -1,7 +1,6 @@
 package com.tzj.collect.api.ali;
 
 
-import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.picc.PiccInsurancePolicyBean;
 import com.tzj.collect.core.service.MemberService;
@@ -11,7 +10,6 @@ import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
@@ -27,8 +25,6 @@ public class MemberAdminApi {
     private MemberService memberService;
     @Autowired
     private PiccInsurancePolicyService piccInsurancePolicyService;
-    @Autowired
-    private XcxWebSocketServer xcxWebSocketServer;
     @Autowired
     private OrderService orderService;
 

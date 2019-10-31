@@ -4,11 +4,10 @@ package com.tzj.collect.api.ali;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.tzj.collect.common.util.MemberUtils;
-import com.tzj.collect.common.utils.VoucherUtils;
+import com.tzj.collect.common.utils.VoucherConst;
 import com.tzj.collect.core.param.ali.VoucherBean;
 import com.tzj.collect.core.service.VoucherAliService;
 import com.tzj.collect.core.service.VoucherMemberService;
-import com.tzj.collect.core.service.impl.VoucherAliServiceImpl;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.VoucherMember;
 import com.tzj.module.api.annotation.Api;
@@ -50,17 +49,17 @@ public class VoucherApi {
         String now = df.format(date);
         String voucherType = voucherBean.getVoucherType();
         Wrapper<VoucherMember> wrapper = new EntityWrapper<VoucherMember>().eq("ali_user_id", member.getAliUserId());
-        Integer createCount = voucherMemberService.selectCount(new EntityWrapper<VoucherMember>().eq("ali_user_id", member.getAliUserId()).le("valid_start",now).ge("valid_end",now).eq("voucher_status",VoucherUtils.CREATE));
-        Integer useCount = voucherMemberService.selectCount(new EntityWrapper<VoucherMember>().eq("ali_user_id", member.getAliUserId()).eq("voucher_status",VoucherUtils.USED));
-        Integer endCount = voucherMemberService.selectCount(new EntityWrapper<VoucherMember>().eq("ali_user_id", member.getAliUserId()).le("valid_end",now).eq("voucher_status",VoucherUtils.CREATE));
+        Integer createCount = voucherMemberService.selectCount(new EntityWrapper<VoucherMember>().eq("ali_user_id", member.getAliUserId()).le("valid_start",now).ge("valid_end",now).eq("voucher_status", VoucherConst.VOUCHER_STATUS_CREATE));
+        Integer useCount = voucherMemberService.selectCount(new EntityWrapper<VoucherMember>().eq("ali_user_id", member.getAliUserId()).eq("voucher_status", VoucherConst.VOUCHER_STATUS_USED));
+        Integer endCount = voucherMemberService.selectCount(new EntityWrapper<VoucherMember>().eq("ali_user_id", member.getAliUserId()).le("valid_end",now).eq("voucher_status", VoucherConst.VOUCHER_STATUS_CREATE));
         if("1".equals(voucherType)){
-            wrapper.le("valid_start",now).ge("valid_end",now).eq("voucher_status",VoucherUtils.CREATE);
+            wrapper.le("valid_start",now).ge("valid_end",now).eq("voucher_status", VoucherConst.VOUCHER_STATUS_CREATE);
         }
         if ("2".equals(voucherType)){
-            wrapper.eq("voucher_status",VoucherUtils.USED);
+            wrapper.eq("voucher_status", VoucherConst.VOUCHER_STATUS_USED);
         }
         if ("3".equals(voucherType)){
-            wrapper.le("valid_end",now).eq("voucher_status",VoucherUtils.CREATE);
+            wrapper.le("valid_end",now).eq("voucher_status", VoucherConst.VOUCHER_STATUS_CREATE);
         }
         List<VoucherMember> voucherList = voucherMemberService.selectList(wrapper);
         Map<String,Object> resultMap = new HashMap<>();
@@ -88,17 +87,19 @@ public class VoucherApi {
         String voucherType = voucherBean.getVoucherType();
         String orderType = voucherBean.getOrderType();
         if ("1".equals(voucherType)){
-            wrapper.addFilter(" (valid_end < '"+now+"' OR voucher_status = '"+ VoucherUtils.USED +"' OR valid_start > '"+now+"' OR voucher_status = '"+VoucherUtils.USEING+"' )");
+            wrapper.addFilter(" (valid_end < '"+now+"' OR voucher_status = '"+ VoucherConst.VOUCHER_STATUS_USED +"' OR valid_start > '"+now+"' OR voucher_status = '"+ VoucherConst.VOUCHER_STATUS_USEING+"' )");
         }else {
-            wrapper.le("valid_start",now).ge("valid_end",now).eq("voucher_status",VoucherUtils.CREATE);
+            wrapper.le("valid_start",now).ge("valid_end",now).eq("voucher_status", VoucherConst.VOUCHER_STATUS_CREATE);
             if ("bigFurniture".equals(orderType)){
                 wrapper.le("low_money",voucherBean.getPrice());
             }
         }
         if ("bigFurniture".equals(orderType)){
             wrapper.eq("order_type","B");
-        }else {
+        }else if ("appliance".equals(orderType)){
             wrapper.eq("order_type","H");
+        }else if ("rubbish".equals(orderType)){
+            wrapper.eq("order_type","L");
         }
         List<VoucherMember> voucherList = voucherMemberService.selectList(wrapper);
         return voucherList;

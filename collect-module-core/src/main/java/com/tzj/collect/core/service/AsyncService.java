@@ -64,6 +64,17 @@ public interface AsyncService {
                                final String code, final String productName);
     @Async
     void notifyDingDingOrderCreate(String toString, boolean b, String recruitDingDing);
+
+    /**
+     * 给的某个人发送钉钉通知
+     * @param orderNo
+     * @param reason
+     * @param dingDingUrl
+     * @param receiveTel
+     */
+    @Async
+    void notifyDingDingPaymentError(String orderNo, String reason, String dingDingUrl,String dingDingSing ,String receiveTel);
+
 	@Async
     void sendOpenAppMini(String aliUserId, String formId, String templateId,String page,String value1,String value2,String value3);
 }

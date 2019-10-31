@@ -3,6 +3,7 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
  * 支付宝单
  */
 @TableName("sb_payment")
+@Data
 public class Payment extends DataEntity<Long>{
 
     public final static  int STATUS_UNPAY=0;    //未支付
@@ -37,6 +39,11 @@ public class Payment extends DataEntity<Long>{
     private int status=STATUS_UNPAY;
 
     private PayType payType;//交易类型默认0:收呗订单; 1: 每日答答答红包转账
+
+    @TableField(exist = false)
+    private String totalAmount;
+    @TableField(exist = false)
+    private VoucherMember voucherMember;
 
 
     @Override
