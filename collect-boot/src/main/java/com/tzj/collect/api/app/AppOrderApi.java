@@ -1,7 +1,6 @@
 package com.tzj.collect.api.app;
 
 import com.tzj.collect.api.commom.redis.RedisUtil;
-import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.result.app.AppOrderResult;
@@ -10,7 +9,6 @@ import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.easyopen.ApiContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +38,6 @@ public class AppOrderApi {
 	private RecyclersService recyclersService;
 	@Autowired
 	private CategoryService categoryService;
-	@Autowired
-	private XcxWebSocketServer xcxWebSocketServer;
 	@Autowired
 	private RedisUtil redisUtil;
 	
@@ -188,11 +184,6 @@ public class AppOrderApi {
 			return "找不到该订单";
 		}
 		redisUtil.set(order.getOrderNo(), UUID.randomUUID(),60*60*12);
-		try {
-			xcxWebSocketServer.pushXcxDetail(order.getMemberId().toString(),"detalis","请支付订单");
-		}catch (Exception e){
-			e.printStackTrace();
-		}
 		return "操作成功";
 	}
 

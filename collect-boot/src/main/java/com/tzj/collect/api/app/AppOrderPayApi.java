@@ -94,8 +94,11 @@ public class AppOrderPayApi {
             }
         }
         if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
-           // String tradeNo = paymentService.genalPayXcx(payment);
-            return voucherMemberService.updateOrderNo(orderPayParam.getPrice(),orderPayParam.getOrderId(),orderPayParam.getVoucherId(),payment);
+            if (StringUtils.isNotBlank(orderPayParam.getVoucherId())){
+                return voucherMemberService.updateOrderNo(orderPayParam.getPrice(),orderPayParam.getOrderId(),orderPayParam.getVoucherId(),payment);
+            }else {
+                return paymentService.genalPayXcx(payment);
+            }
         }else{
             return paymentService.genalPay(payment);
         }

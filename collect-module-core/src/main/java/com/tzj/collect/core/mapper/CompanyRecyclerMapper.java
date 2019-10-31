@@ -93,4 +93,14 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 	 * 获取企业生活垃圾服务范围（例南京市，苏州市等）
 	 */
 	List<Map<String,Object>> getHouseCompanyRange(Integer companyId);
+
+    Map<String, Object> companyBlueTooth(@Param("recId")String recId);
+	/**
+	 * 根据公司和回收类型查找回收人员信息（主要是电话）
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2019/10/29 0029
+	 * @Param: 
+	 * @return: 
+	 */
+	List<Map<String, Object>> selectRecycleInfoByCompanyId(@Param("recId")Long companyId, @Param("title")String title);
 }

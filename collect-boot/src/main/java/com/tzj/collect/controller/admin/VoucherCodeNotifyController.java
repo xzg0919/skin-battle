@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tzj.collect.common.utils.VoucherConst;
 import com.tzj.collect.core.service.VoucherMemberService;
 import com.tzj.collect.core.service.VoucherNofityService;
 import com.tzj.collect.entity.VoucherNofity;
@@ -51,7 +52,7 @@ public class VoucherCodeNotifyController
         voucherNofity.setVoucherId(request.getParameter("voucher_id"));
         voucherNofity.setAlipayBizNo(request.getParameter("alipay_biz_no"));
         voucherNofity.setBizTime(request.getParameter("biz_time"));*/
-        voucherNofity.setNotifyStatus("ok");
+        voucherNofity.setNotifyStatus(VoucherConst.VOUCHER_NOTIFY_OK);
         try
         {
             Map<String, String[]> paramMap = request.getParameterMap();

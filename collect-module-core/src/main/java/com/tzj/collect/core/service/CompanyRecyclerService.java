@@ -148,4 +148,6 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	Object getRecycleRangeByTitle(String companyId, String recyclerId, String title);
 
 	Object updateRecycleForParent(RecyclersServiceRangeBean recyclersServiceRangeBean, Integer companyId);
+	@DS("slave")
+    String companyBlueTooth(String recId);
 }

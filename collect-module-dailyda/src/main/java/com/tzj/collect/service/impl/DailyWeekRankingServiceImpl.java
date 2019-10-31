@@ -244,7 +244,7 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
 
     @Override
     public List<Map<String, Object>> dailyPersonRanking(Member member) {
-
+        Jedis jedis = jedisPool.getResource();
         final Integer[] thisWeek = {Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY, 1).weekOfYear())};
         //如果当前时间为1-4周，会取去年的数据
         final String[] year = {LocalDate.now().getYear() + ""};
@@ -269,10 +269,11 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
             resultLists.put("week", thisWeek[0] -increment);
             resultLists.put("year", year[0]);
             resultLists.put("yearWeek", year[0] +"年第"+(thisWeek[0] -increment)+"周");
-            resultLists.put("ranking", dailyLexiconService.weekRankingByTime(jedisPool.getResource(), member, year[0]+":"+(thisWeek[0] -increment)));
+            resultLists.put("ranking", dailyLexiconService.weekRankingByTime(jedis, member, year[0]+":"+(thisWeek[0] -increment)));
             resultLists.put("picUrl", null == member.getPicUrl() ? "": member.getPicUrl());
             resultLists.put("linkName", null == member.getLinkName() ? "" : member.getLinkName());
         });
+        jedis.close();
         return resultList;
     }
 

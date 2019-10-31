@@ -637,6 +637,7 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 				category.setCategoryList(categoryList1);
 			});
 		}
+		categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getName)).collect(Collectors.toList());
 		resultMap.put("categoryList",categoryList);
 		return resultMap;
 	}

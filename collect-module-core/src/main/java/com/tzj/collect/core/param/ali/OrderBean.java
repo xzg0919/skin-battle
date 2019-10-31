@@ -17,6 +17,13 @@ import java.util.List;
  */
 @Data
 public class OrderBean {
+
+    private String dingDingSing;
+
+    private String discountPrice;
+
+    private String voucherId;
+
 	//用来储存订单描述
 	private String remarks;
 	

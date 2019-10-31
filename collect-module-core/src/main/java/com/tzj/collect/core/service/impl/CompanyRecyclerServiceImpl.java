@@ -15,12 +15,10 @@ import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -486,6 +484,21 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 			e.printStackTrace();
 		}
 		return "操作成功";
+	}
+	/**
+	 * 根据回收员找公司是否开启蓝牙
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2019/10/28 0028
+	 * @Param:
+	 * @return:
+	 */
+	@Override
+	public String companyBlueTooth(String recId) {
+		Map<String, Object> map = mapper.companyBlueTooth(recId);
+		if (!CollectionUtils.isEmpty(map)){
+			return (String) map.get("blueTooth");
+		}
+		return "No";
 	}
 
 }

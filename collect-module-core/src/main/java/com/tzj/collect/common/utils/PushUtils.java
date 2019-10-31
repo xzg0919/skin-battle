@@ -55,6 +55,18 @@ public class PushUtils {
             body= PushConst.APP_CODE_20_MESSAGE;
             code= PushConst.APP_CODE_20;
             message= PushConst.APP_CODE_20_MESSAGE;
+        }else if ("No".equals(status)){
+            //公司关闭蓝牙
+            channel = PushConst.APP_CODE_31;
+            body = PushConst.APP_CODE_31_MESSAGE;
+            code = PushConst.APP_CODE_31;
+            message = PushConst.APP_CODE_31_MESSAGE;
+        }else if ("Yes".equals(status)){
+            //公司开启蓝牙
+            channel = PushConst.APP_CODE_30;
+            body = PushConst.APP_CODE_30_MESSAGE;
+            code = PushConst.APP_CODE_30;
+            message = PushConst.APP_CODE_30_MESSAGE;
         }
         if ("4".equals(title)){
             aliYunAppId = Const.APP_ID_3;

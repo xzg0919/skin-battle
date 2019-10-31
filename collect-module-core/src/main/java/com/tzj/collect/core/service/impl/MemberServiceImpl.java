@@ -58,6 +58,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 	private RedisUtil redisUtil;
 	@Autowired
 	private CompanyService companyService;
+	@Autowired
+	private VoucherMemberService voucherMemberService;
 
     @Override
     public Member findMemberByAliId(String aliMemberId) {
@@ -193,6 +195,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 			member.setCardNo(cardNo);
 			member.setAppId(appId);
 			this.insertMember(member);
+			try {
+				voucherMemberService.reSend(member.getAliUserId());
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 		}else {
 			member.setAliUserId(userId);
 			if ("XCX".equals(source)){

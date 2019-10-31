@@ -10,5 +10,9 @@ public class VoucherBean {
 
     private String orderType;//bigFurniture大件 appliance家电  rubbish生活垃圾
 
+    private String price;
+
+    private String voucherId;
+
 
 }

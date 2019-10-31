@@ -10,8 +10,8 @@ public class ApplicaInit {
 
     private String isMysl;
 
-    private String isTestPayment;
+    private String isPayment;
 
-
+    private  Boolean isOpenTransferThread;//是否开启转账线程
 
 }

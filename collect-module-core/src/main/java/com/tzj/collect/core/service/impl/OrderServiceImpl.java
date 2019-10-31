@@ -23,6 +23,7 @@ import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
+import com.tzj.collect.core.param.admin.VoucherBean;
 import com.tzj.collect.core.param.ali.IdAmountListBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.OrderItemBean;
@@ -257,22 +258,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			} else {
 				order.setIsCash("0");
 			}
-			//判断是否有券码
+			order.setEnterpriseCode(orderbean.getEnterpriseCode());
+			order.setFormId(orderbean.getFormId());
+			order.setPriceT(orderbean.getPrice());
+			flag = this.insert(order);
+			//将券码跟订单进行绑定
+			if (StringUtils.isNoneBlank(orderbean.getVoucherId())){
+				boolean bool = voucherMemberService.updateVoucherUseing(order.getId(), order.getOrderNo(),order.getAliUserId(),Long.parseLong(orderbean.getVoucherId()));
+				if (!bool){
+					throw new ApiException("该券不存在或不是可使用状态");
+				}
+			}
+			//判断是否有以旧换新券码
 			if(!StringUtils.isBlank(orderbean.getEnterpriseCode())){
 				enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", orderbean.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",0));
 				//判断券码是否存在并且未使用
 				if(null!=enterpriseCode){
-					order.setEnterpriseCode(orderbean.getEnterpriseCode());
+					enterpriseCode.setIsUse("1");
+					enterpriseCode.setOrderId(order.getId().intValue());
+					enterpriseCodeService.updateById(enterpriseCode);
 				}
-			}
-			order.setFormId(orderbean.getFormId());
-			order.setPriceT(orderbean.getPrice());
-			flag = this.insert(order);
-			//更新券码信息
-			if(null!=enterpriseCode){
-				enterpriseCode.setIsUse("1");
-				enterpriseCode.setOrderId(order.getId().intValue());
-				enterpriseCodeService.updateById(enterpriseCode);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -522,9 +527,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						orderItem.setAmount(item.getAmount());
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
 						if("1".equals(isCash)){
-							amount += item.getAmount()*10;
+							amount += item.getAmount()*10*2;
 						}else{
-							amount += item.getAmount();
+							amount += item.getAmount()*2;
 						}
 						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
@@ -1285,12 +1290,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public String orderCancel(Order order, String orderInitStatus) {
 		String status = OrderType.valueOf(orderInitStatus).getValue()+"";
 		boolean bool = this.updateById(order);
-		if (bool) {
-			CommToken commToken = orderMapper.getCommToken(order.getOrderNo());
-			if (commToken != null) {
-				xingeService.sendPostMessage("您有一笔订单已被取消", "已取消订单来自" + commToken.getCommName() + "，点击查看", commToken.getTencentToken(), XingeMessageServiceImp.XingeMessageCode.cancelOrder);
-			}
-		}
+//		if (bool) {
+//			CommToken commToken = orderMapper.getCommToken(order.getOrderNo());
+//			if (commToken != null) {
+//				xingeService.sendPostMessage("您有一笔订单已被取消", "已取消订单来自" + commToken.getCommName() + "，点击查看", commToken.getTencentToken(), XingeMessageServiceImp.XingeMessageCode.cancelOrder);
+//			}
+//		}
 		if("3".equals(order.getTitle().getValue()+"")&&!"0".equals(status)){
 			try{
 				Company company = companyService.selectById(order.getCompanyId());
@@ -1310,7 +1315,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 			PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 		}
-		//判断是否有券码
+		//判断是否有以旧换新券码
 		if(!StringUtils.isBlank(order.getEnterpriseCode())){
 			EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
 			//判断券码是否存在并且未使用
@@ -1318,6 +1323,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				enterpriseCode.setIsUse("0");
 				enterpriseCodeService.updateById(enterpriseCode);
 			}
+		}
+		//将券码进行释放
+		VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
+		if(null != voucherMember){
+			voucherMemberService.updateVoucherCreate(voucherMember.getId());
 		}
 		//新增订单日志表的记录
 		OrderLog orderLog = new OrderLog();
@@ -1518,7 +1528,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				orderLog.setOpStatusAfter("REJECTED");
 				orderLog.setOp("已驳回");
 				this.updateById(order);
-				//判断是否有券码
+				//判断是否有以旧换新券码
 				if(!StringUtils.isBlank(order.getEnterpriseCode())){
 					EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
 					//判断券码是否存在并且未使用
@@ -1526,6 +1536,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						enterpriseCode.setIsUse("0");
 						enterpriseCodeService.updateById(enterpriseCode);
 					}
+				}
+				//将券码进行释放
+				VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
+				if(null != voucherMember){
+					voucherMemberService.updateVoucherCreate(voucherMember.getId());
 				}
 				try{
 					//查询回收人员信息推送消息
@@ -1758,7 +1773,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
-	public boolean modifyOrderByPayment(OrderBean orderBean) {
+	public boolean modifyOrderByPayment(OrderBean orderBean,VoucherMember voucherMember) {
 		Order order = orderService.selectById(orderBean.getId());
 		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1");
 		if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
@@ -1786,12 +1801,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if(StringUtils.isNotBlank(orderBean.getAchPrice())){
 			order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
 		}
+		if(StringUtils.isNotBlank(orderBean.getDiscountPrice())){
+			order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
+		}
 		flag = orderService.updateById(order);
-		VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
 		if(null != voucherMember){
-			voucherMember.setVoucherStatus("END");
-			voucherMemberService.updateById(voucherMember);
 			//通知支付宝该券码已核销
+			VoucherBean voucherBean = new VoucherBean();
+			voucherBean.setOrderId(order.getId());
+			voucherBean.setOrderNo(order.getOrderNo());
+			voucherBean.setVoucherMemberId(voucherMember.getId());
+			voucherMemberService.voucherUse(voucherBean);
 		}
 		orderLog.setOpStatusAfter("COMPLETE");
 		orderLog.setOp("已完成");
@@ -2523,6 +2543,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 			order.setFormId(orderBean.getFormId());
 			this.insert(order);
+			//将券码跟订单进行绑定
+			if (StringUtils.isNoneBlank(orderBean.getVoucherId())){
+				boolean bool = voucherMemberService.updateVoucherUseing(order.getId(), order.getOrderNo(),order.getAliUserId(),Long.parseLong(orderBean.getVoucherId()));
+				if (!bool){
+					throw new ApiException("该券不存在或不是可使用状态");
+				}
+			}
 			System.out.println(order.getId());
 			//储存图片链接
 			OrderPic orderPic = orderBean.getOrderPic();
@@ -2897,6 +2924,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public String saveBigOrderPrice(OrderBean orderBean){
 		Order order = orderService.selectById(orderBean.getId());
 		Category categorys = categoryService.selectById(order.getCategoryId());
+		Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+		if (StringUtils.isBlank(recyclers.getAliUserId())){
+			throw new ApiException("您未授权，请先在app内进行支付宝授权才能完成订单");
+		}
 		order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
 		order.setGreenCount(categorys.getGreenCount().doubleValue());
 		if(Double.parseDouble(orderBean.getAchPrice())==0){

@@ -1,20 +1,13 @@
 package com.tzj.collect.controller;
 
-import com.alipay.api.AlipayClient;
-import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
-import com.alipay.api.request.AlipayTradeCloseRequest;
-import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.common.constant.Const;
 import com.tzj.collect.common.thread.NewThreadPoorExcutor;
 import com.tzj.collect.common.thread.sendGreenOrderThread;
-import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
 import com.tzj.collect.common.utils.PushUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.tzj.collect.api.common.constant.Const.ALI_APPID;
@@ -52,6 +44,8 @@ public class NotifyController {
     private RecyclersService recyclersService;
     @Autowired
     private VoucherMemberService voucherMemberService;
+    @Autowired
+    private VoucherAliService voucherAliService;
 
 
     /**
@@ -63,7 +57,6 @@ public class NotifyController {
     @RequestMapping("/alipay")
     public @ResponseBody
     String aliPayNotify(HttpServletRequest request, ModelMap model) {
-        System.out.println("支付通知---------------------");
         Map<String, String> params = new HashMap<>();
         Map requestParams = request.getParameterMap();
         for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
@@ -78,8 +71,6 @@ public class NotifyController {
             //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
             params.put(name, valueStr);
         }
-        System.out.println("支付通知-------------------------------------------------------------------------params.get(\"trade_status\"):"+params.get("trade_status"));
-
         try {
             boolean flag = AlipaySignature.rsaCheckV1(params, ALI_PUBLIC_KEY, "UTF-8", "RSA2");
             if (flag) {
@@ -89,8 +80,6 @@ public class NotifyController {
                 String appId = params.get("app_id");
                 String tradeStatus = params.get("trade_status");
                 String totalAmount = params.get("total_amount");
-                System.out.println("支付通知-------------------------------------------------------------------------tradeStatus:"+tradeStatus);
-
                 //1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
                 //2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额
                 //4、验证app_id是否为该商户本身
@@ -106,12 +95,14 @@ public class NotifyController {
                     return "failure";
                 }
 
-                if (payment.getPrice().compareTo(new BigDecimal(totalAmount)) != 0) {
-                    //金额不匹配
-                    return "failure";
-                }
-                Order order = null;
-                VoucherMember voucherMember = null;
+//                if (payment.getPrice().compareTo(new BigDecimal(totalAmount)) != 0) {
+//                    //金额不匹配
+//                    return "failure";
+//                }
+                //根據order_no查询相关订单
+                Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
+                //根据订单号查询绑定券的信息
+                VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
 
                 if (tradeStatus.equalsIgnoreCase("TRADE_SUCCESS") ||
                         tradeStatus.equalsIgnoreCase("TRADE_FINISHED")) {
@@ -127,12 +118,15 @@ public class NotifyController {
                     payment.setBuyerLogonId(params.get("buyer_logon_id"));
 
                     paymentService.insertOrUpdate(payment);
+                    payment.setTotalAmount(totalAmount);
+                    payment.setVoucherMember(voucherMember);
                     //給用戶轉賬
+                    if(!(Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")&&null != voucherMember){
+                        //如果不是大件并且有优惠券，则计算使用该券后的价格给用户进行转账
+                        BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(payment.getPrice(), voucherMember.getId().toString());
+                        payment.setPrice(discountPrice);
+                    }
                     paymentService.transfer(payment);
-
-                    //根據order_no查询相关订单
-                    order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
-
                     if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                         //给用户增加蚂蚁能量
                         OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
@@ -148,40 +142,29 @@ public class NotifyController {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
-                    if(null != order&&order.getIsScan().equals("0")){
-                        //修改订单状态
-                        OrderBean orderBean = new OrderBean();
-                        orderBean.setId(order.getId().intValue());
-                        orderBean.setStatus("3");
-                        orderBean.setAmount(order.getGreenCount());
-                        orderBean.setAchPrice(totalAmount);
-                        orderService.modifyOrderByPayment(orderBean);
-                        //判断是否有券码完成转账
-                        if(!StringUtils.isBlank(order.getEnterpriseCode())){
-                            EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
-                            //判断券码是否存在并且未使用
-                            if(null!=enterpriseCode){
-                                //储存转账信息
-                                Payment payments = new Payment();
-                                payments.setAliUserId(order.getAliUserId());
-                                payments.setTradeNo("1");
-                                payments.setPrice(enterpriseCode.getPrice());
-                                payments.setRecyclersId(order.getRecyclerId().longValue());
-                                payments.setOrderSn(order.getOrderNo());
-                                paymentService.insert(payments);
-                                //给用户转账
-                                paymentService.transfer(payments);
-                                enterpriseCode.setReceiveDate(new Date());
-                                enterpriseCode.setIsUse("2");
-                                enterpriseCodeService.updateById(enterpriseCode);
-                            }
-                        }
-                    }
+                    //判断是否有券码完成转账
+//                        if(!StringUtils.isBlank(order.getEnterpriseCode())){
+//                            EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
+//                            //判断券码是否存在并且未使用
+//                            if(null!=enterpriseCode){
+//                                //储存转账信息
+//                                Payment payments = new Payment();
+//                                payments.setAliUserId(order.getAliUserId());
+//                                payments.setTradeNo("1");
+//                                payments.setPrice(enterpriseCode.getPrice());
+//                                payments.setRecyclersId(order.getRecyclerId().longValue());
+//                                payments.setOrderSn(order.getOrderNo());
+//                                paymentService.insert(payments);
+//                                //给用户转账
+//                                paymentService.transfer(payments);
+//                                enterpriseCode.setReceiveDate(new Date());
+//                                enterpriseCode.setIsUse("2");
+//                                enterpriseCodeService.updateById(enterpriseCode);
+//                            }
+//                        }
                 }else if (tradeStatus.equalsIgnoreCase("TRADE_CLOSED")){
-                    voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
                     if(null != voucherMember){
-                        voucherMember.setVoucherStatus("CREATE");
-                        voucherMemberService.updateById(voucherMember);
+                        voucherMemberService.updateVoucherCreate(voucherMember.getId());
                     }
                     return "failure";
                 }

@@ -25,7 +25,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("2088212854989662", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088102149186190", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -70,11 +70,15 @@ public class OrderTest {
 //            categoryBean.setParentId("25");
 //            categoryBean.setCityId("17685");
                 VoucherBean voucherBean = new VoucherBean();
-                voucherBean.setVoucherType("2");
+                voucherBean.setVoucherType("0");
                 voucherBean.setOrderType("bigFurniture");
+                OrderPayParam orderPayParam = new OrderPayParam();
+                orderPayParam.setPrice(new BigDecimal(100));
+                orderPayParam.setOrderId(70195);
+                orderPayParam.setVoucherId("293");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","voucher.voucherUseList");
+                param.put("name","app.order.pay");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -82,7 +86,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",voucherBean);
+                param.put("data",orderPayParam);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

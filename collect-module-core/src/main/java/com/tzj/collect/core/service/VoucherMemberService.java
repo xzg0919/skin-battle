@@ -51,5 +51,28 @@ public interface VoucherMemberService extends IService<VoucherMember>
      * @return List<VoucherMember>
      */
     List<VoucherMember> getVoucherForOrder(Long memberId);
+    /**
+     * 更新券为使用中的状态（即绑定状态）
+     * @param orderId
+     * @param orderNo
+     * @param voucherMemberId
+     * @return
+     */
+    boolean updateVoucherUseing(long orderId,String orderNo,String aliUserId,long voucherMemberId);
+    /**
+     * 更新券为可使用的状态（即领取待使用状态）
+     * @param voucherMemberId
+     * @return
+     */
+    boolean updateVoucherCreate(long voucherMemberId);
+    
+    /**
+     * <p>Created on 2019年10月25日</p>
+     * <p>Description:[重发券--领券再授权的用户]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return void
+     */
+    String reSend(String aliUserId);
 
 }

@@ -17,14 +17,18 @@ public class ApplicationInits {
     @Value("${isMysl}")
     private String isMysl;
 
-    @Value("${isTestPayment}")
-    private String isTestPayment;
+    @Value("${isPayment}")
+    private String isPayment;
+
+    @Value("${isOpenTransferThread}")
+    private Boolean isOpenTransferThread;
 
     @Bean
     public ApplicaInit applicaInitConfig() {
         ApplicaInit applicaInit  = new ApplicaInit();
         applicaInit.setIsMysl(isMysl);
-        applicaInit.setIsTestPayment(isTestPayment);
+        applicaInit.setIsPayment(isPayment);
+        applicaInit.setIsOpenTransferThread(isOpenTransferThread);
         return applicaInit;
 
     }

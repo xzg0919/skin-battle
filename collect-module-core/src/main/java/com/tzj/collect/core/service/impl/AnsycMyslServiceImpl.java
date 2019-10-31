@@ -10,6 +10,7 @@ import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.request.AntMerchantExpandTradeorderSyncRequest;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.tzj.collect.common.constant.AlipayConst;
+import com.tzj.collect.common.constant.ApplicaInit;
 import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.core.service.AnsycMyslService;
 import com.tzj.collect.core.service.OrderService;
@@ -26,40 +27,43 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
 
     @Autowired
     private OrderService orderService;
-
+    @Autowired
+    private ApplicaInit applicaInit;
 
     @Override
     public AntMerchantExpandTradeorderSyncResponse updateForest(String orderId,String myslParam){
         Order order = orderService.selectById(orderId);
-        try{
-            AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
-            AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
-            AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
-            request.setBizContent(myslParam);
-            AntMerchantExpandTradeorderSyncResponse response = null;
-            try {
-                response = alipayClient.execute(request);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            if(response.isSuccess()){
-                System.out.println("调⽤成功");
-                String MorderId = response.getOrderId();
-                order.setMyslOrderId(MorderId);
-                order.setMyslParam(JSON.toJSONString(response.getParams()));
-                orderService.updateById(order);
-            } else {
-                System.out.println("调⽤失败");
+        if ("true".equals(applicaInit.getIsMysl())){
+            try{
+                AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
+                AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
+                AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+                request.setBizContent(myslParam);
+                AntMerchantExpandTradeorderSyncResponse response = null;
+                try {
+                    response = alipayClient.execute(request);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                if(response.isSuccess()){
+                    System.out.println("调用成功");
+                    String MorderId = response.getOrderId();
+                    order.setMyslOrderId(MorderId);
+                    order.setMyslParam(JSON.toJSONString(response.getParams()));
+                    orderService.updateById(order);
+                } else {
+                    System.out.println("调用失败");
+                    DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                            ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是："+orderId,
+                            RocketMqConst.DINGDING_ERROR,response.getBody());
+                }
+                return response;
+            }catch (Exception e) {
                 DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
                         ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是："+orderId,
-                        RocketMqConst.DINGDING_ERROR,response.getBody());
+                        RocketMqConst.DINGDING_ERROR,e.toString());
+                e.printStackTrace();
             }
-            return response;
-        }catch (Exception e) {
-            DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是："+orderId,
-                    RocketMqConst.DINGDING_ERROR,e.toString());
-            e.printStackTrace();
         }
         return null;
     }

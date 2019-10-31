@@ -5,16 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.excel.ExcelData;
 import com.tzj.collect.api.commom.excel.ExcelUtils;
-import com.tzj.collect.api.common.websocket.AppWebSocketServer;
-import com.tzj.collect.api.common.websocket.WebSocketServer;
-import com.tzj.collect.api.common.websocket.XcxWebSocketServer;
 import com.tzj.collect.core.param.ali.OrderBean;
-import com.tzj.collect.core.param.ali.OrderItemBean;
 import com.tzj.collect.core.param.business.CityBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import net.sf.json.JSONArray;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +31,6 @@ public class AdminController {
 	private EnterpriseCodeService enterpriseCodeService;
 	@Autowired
 	private OrderService orderService;
-	@Autowired
-	private XcxWebSocketServer xcxWebSocketServer;
 	@Autowired
 	private AsyncService asyncService;
 
@@ -240,18 +233,6 @@ public class AdminController {
 	public  String openSocket() {
 		System.out.println("socket");
 
-		return "admin/love";
-	}
-
-	@RequestMapping("/product/order")
-	public @ResponseBody
-	String updateProducrOrder(String id) {
-		System.out.println("进来了2");
-		try {
-			xcxWebSocketServer.sendInfo(id,"", "你是回收经理");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		return "admin/love";
 	}
 

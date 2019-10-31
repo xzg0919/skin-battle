@@ -332,5 +332,40 @@
 		AND b.del_flag = 0
 		AND c.del_flag = 0)cc
 	</select>
-     
+     <select id="companyBlueTooth" resultType="Map" parameterType="String">
+		SELECT
+			IF(scc.blue_tooth = 0, 'No','Yes') as blueTooth,
+			company_id as companyId
+		FROM
+			sb_company_recycler scr
+		INNER JOIN sb_company scc ON scc.id = scr.company_id
+		WHERE
+			scr.recycler_id = #{recId}
+			AND scr.type_ = 1
+			AND scr.status_ = 1
+		GROUP BY
+			scr.company_id
+		LIMIT 1
+	 </select>
+	<select id="selectRecycleInfoByCompanyId" resultType="Map" parameterType="Object">
+		SELECT
+			srr.name_,
+			srr.tel AS mobile
+		FROM
+			sb_recyclers srr
+		INNER JOIN (
+			SELECT
+				scr.recycler_id
+			FROM
+				sb_company_recycler scr
+			INNER JOIN sb_company sc ON scr.company_id = sc.id
+			WHERE
+				scr.status_ = '1'
+			AND sc.id = #{recId}
+			AND sc.del_flag = '0'
+			AND scr.type_ = 1
+			GROUP BY
+				scr.recycler_id
+		) scrsc ON scrsc.recycler_id = srr.id
+	</select>
 </mapper>
