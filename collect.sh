@@ -1,11 +1,9 @@
-#!/bin/bash
-
 AppName=collect-boot.jar
 
 #JVM参数
 JVM_OPTS="-Dname=$AppName  -Duser.timezone=Asia/Shanghai -server -Xms6000M -Xmx6000M -XX:PermSize=512M -XX:MaxPermSize=512M -XX:+HeapDumpOnOutOfMemoryError -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9001 -Dcom.sun.management.jmxremote.rmi.port=9001  -Dcom.sun.management.jmxremote.ssl=false  -Dcom.sun.management.jmxremote.authenticate=false "
 APP_HOME=`pwd`
-LOG_PATH=$APP_HOME/logs/$AppName.log
+LOG_PATH=$APP_HOME/$AppName.log
 
 if [ "$1" = "" ];
 then
@@ -23,38 +21,37 @@ function start()
 {
     PID=`ps -ef |grep java|grep $AppName|grep -v grep|awk '{print $2}'`
 
-	if [ x"$PID" != x"" ]; then
-	    echo "$AppName is running..."
-	else
-		nohup java -jar  $JVM_OPTS $AppName > /dev/null 2>&1 &
-		echo "Start $AppName success..."
-	fi
+        if [ x"$PID" != x"" ]; then
+            echo "$AppName is running..."
+        else
+                nohup java -jar  $JVM_OPTS $AppName > /$APP_HOME/collect.log 2>&1 &
+                echo "Start $AppName success..."
+        fi
 }
 
 function stop()
 {
     echo "Stop $AppName"
 
-	PID=""
-	query(){
-		PID=`ps -ef |grep java|grep $AppName|grep -v grep|awk '{print $2}'`
-	}
+        PID=""
+        query(){
+                PID=`ps -ef |grep java|grep $AppName|grep -v grep|awk '{print $2}'`
+        }
 
-	query
-	if [ x"$PID" != x"" ]; then
-		kill -TERM $PID
-		echo "$AppName (pid:$PID) exiting..."
-		while [ x"$PID" != x"" ]
-		do
-			sleep 1
-			query
-		done
-		echo "$AppName exited."
-	else
-		echo "$AppName already stopped."
-	fi
+        query
+        if [ x"$PID" != x"" ]; then
+                kill -TERM $PID
+                echo "$AppName (pid:$PID) exiting..."
+                while [ x"$PID" != x"" ]
+                do
+                        sleep 1
+                        query
+                done
+                echo "$AppName exited."
+        else
+                echo "$AppName already stopped."
+        fi
 }
-
 function restart()
 {
     stop
@@ -84,3 +81,4 @@ case $1 in
     *)
 
 esac
+
