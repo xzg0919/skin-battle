@@ -3827,26 +3827,34 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			resultMap.put("voucherName", voucherMembers.getVoucherName());
 			if (Order.TitleType.BIGTHING.getValue().equals(order.getTitle().getValue())){
 				//完成订单
-				if (!OrderType.COMPLETE.getValue().equals(order.getTitle().getValue())){
+				if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())){
 					resultMap.put("discountPrice", order.getDiscountPrice());//用户收到或支付的金额
 					resultMap.put("achPrice", order.getAchPrice());//回收员收到或支付的金额
-					resultMap.put("money", order.getAchPrice().subtract(order.getDiscountPrice()));//优惠金额
+					try {
+						resultMap.put("money", order.getAchPrice().subtract(order.getDiscountPrice()));//优惠金额
+					}catch (Exception e){
+						resultMap.put("money", voucherMembers.getMoney());
+					}
 				}else {
 					//进行中订单展示的优惠券抵扣价格（优惠金额）也称作平台支付金额
 					resultMap.put("money", voucherMembers.getMoney());
 				}
 			}else {
 				//大件以外的订单
-				if (!OrderType.COMPLETE.getValue().equals(order.getTitle().getValue())){
+				if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())){
 					resultMap.put("discountPrice", order.getDiscountPrice());//用户收到或支付的金额
 					resultMap.put("achPrice", order.getAchPrice());//回收员收到或支付的金额
-					resultMap.put("money", order.getDiscountPrice().subtract(order.getAchPrice()));//优惠金额
+					try {
+						resultMap.put("money", order.getDiscountPrice().subtract(order.getAchPrice()));//优惠金额
+					}catch (Exception e){
+						resultMap.put("money", voucherMembers.getMoney());
+					}
 				}else {
 					//进行中订单展示的优惠券抵扣价格（优惠金额）也称作平台支付金额
 					resultMap.put("money", voucherMembers.getMoney());
 				}
 			}
-			resultMap.put("voucherMembers", voucherMembers);
+			resultMap.put("voucherMembers", voucherMembers);//整个券码
 		}else {
 			resultMap.put("useVoucher", "未使用优惠券");
 		}
