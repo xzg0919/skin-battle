@@ -3831,7 +3831,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					resultMap.put("discountPrice", order.getDiscountPrice());//用户收到或支付的金额
 					resultMap.put("achPrice", order.getAchPrice());//回收员收到或支付的金额
 					try {
-						resultMap.put("money", order.getAchPrice().subtract(order.getDiscountPrice()));//优惠金额
+						resultMap.put("money", order.getAchPrice().subtract(order.getDiscountPrice()).abs());//优惠金额
 					}catch (Exception e){
 						resultMap.put("money", voucherMembers.getMoney());
 					}
@@ -3845,7 +3845,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					resultMap.put("discountPrice", order.getDiscountPrice());//用户收到或支付的金额
 					resultMap.put("achPrice", order.getAchPrice());//回收员收到或支付的金额
 					try {
-						resultMap.put("money", order.getDiscountPrice().subtract(order.getAchPrice()));//优惠金额
+						resultMap.put("money", order.getDiscountPrice().subtract(order.getAchPrice()).abs());//优惠金额
 					}catch (Exception e){
 						resultMap.put("money", voucherMembers.getMoney());
 					}
