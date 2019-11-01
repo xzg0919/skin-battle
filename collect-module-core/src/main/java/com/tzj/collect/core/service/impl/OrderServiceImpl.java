@@ -373,13 +373,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		order.setAchRemarks(orderbean.getAchRemarks());
 		order.setSignUrl(orderbean.getSignUrl());
-		if (StringUtils.isNotBlank(orderbean.getAchPrice())) {
-			order.setAchPrice(new BigDecimal(orderbean.getAchPrice()));
-			order.setDiscountPrice(new BigDecimal(orderbean.getAchPrice()));
-		} else {
-			order.setAchPrice(order.getPrice());
-			order.setDiscountPrice(order.getPrice());
-		}
 		orderbean.setIsCash(order.getIsCash());
 		Area city = areaService.selectById(order.getAreaId());
 		orderbean.setCityId(city.getParentId().toString());
