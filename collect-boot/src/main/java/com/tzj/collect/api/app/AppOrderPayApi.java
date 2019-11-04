@@ -58,6 +58,9 @@ public class AppOrderPayApi {
             payment.setAliUserId(order.getAliUserId());
             payment.setStatus(Payment.STATUS_UNPAY);
             paymentService.insert(payment);
+            order.setAchPrice(orderPayParam.getPrice());
+            order.setDiscountPrice(orderPayParam.getPrice());
+            orderService.updateById(order);
         }else{
             //判断订单是否支付
             if(payment.getStatus()==1){
@@ -91,6 +94,9 @@ public class AppOrderPayApi {
                 payment.setAliUserId(order.getAliUserId());
                 payment.setStatus(Payment.STATUS_UNPAY);
                 paymentService.updateById(payment);
+                order.setAchPrice(orderPayParam.getPrice());
+                order.setDiscountPrice(orderPayParam.getPrice());
+                orderService.updateById(order);
             }
         }
         if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){

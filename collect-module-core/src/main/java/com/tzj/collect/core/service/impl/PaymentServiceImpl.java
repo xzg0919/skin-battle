@@ -124,77 +124,6 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         }
     }
 
-    public static void main(String[] args) throws Exception{
-//        String uuId = UUID.randomUUID().toString();
-//        //dailyDaTransfer("2088212384105273","0.01", uuId);
-//        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-//        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
-//        request.setBizContent("{" +
-//                "\"out_biz_no\":\""+732618+"\"" +
-//                //"\"order_id\":\"20160627110070001502260006780837\"" +
-//                "  }");
-//        AlipayFundTransOrderQueryResponse response = null;
-//        try {
-//            response = alipayClient.execute(request);
-//        } catch (AlipayApiException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        if(response.isSuccess()){
-//            System.out.println("调用成功");
-//        } else {
-//            System.out.println("调用失败");
-//        }
-//        System.out.println(response.getBody());
-
-//        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-//        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
-//        String tradeNo = uuId;
-//        AlipayTradeQueryModel model = new AlipayTradeQueryModel();
-//        model.setOutTradeNo(tradeNo);
-//        model.setTradeNo(tradeNo);
-//        request.setBizModel(model);
-//
-//        AlipayTradeQueryResponse response = null;
-//        try{
-//            response = alipayClient.execute(request);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        if(response.isSuccess()){
-//            System.out.println("调用查询交易接口成功 : "+response.getBody());
-//        } else {
-//            System.out.println("调用查询交易接口失败 : "+response.getBody());
-//        }
-//        System.out.println(response.getBody());
-
-//        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-//        AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
-//        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-//
-//        String sn = "20190624174741561944";
-//        String subject = "垃圾分类回收订单(收呗):" + sn;
-//
-//        model.setBody(subject);
-//        model.setSubject(subject);
-//        model.setOutTradeNo(sn);
-//        model.setTimeoutExpress("15d");
-//        ExtendParams extendParams = new ExtendParams();
-//        extendParams.setSysServiceProviderId("2017011905224137");
-//        model.setExtendParams(extendParams);
-//        model.setTotalAmount("10");
-//        model.setProductCode("QUICK_MSECURITY_PAY");
-//        request.setBizModel(model);
-//        request.setNotifyUrl("http://open.mayishoubei.com/notify/alipay");
-//        try {
-//            //这里和普通的接口调用不同，使用的是sdkExecute
-//            AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
-//            System.out.println(response.getBody());
-//        } catch (AlipayApiException e) {
-//            throw new ApiException("系统异常：" + e.getErrMsg());
-//        }
-    }
-
     /**
      * 支付宝转账
      *
@@ -350,5 +279,31 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         }
         return response;
 
+    }
+
+    public static AlipayTradeCloseResponse paymentCloseByTradeNo(String tradeNo){
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayTradeCloseRequest request = new AlipayTradeCloseRequest();
+        AlipayTradeCloseModel model = new AlipayTradeCloseModel();
+            //model.setTradeNo(tradeNo);
+            model.setOutTradeNo(tradeNo);
+            request.setBizModel(model);
+        AlipayTradeCloseResponse response = null;
+        try{
+            response = alipayClient.execute(request);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+        }
+        System.out.println(response.getBody());
+        return response;
+    }
+
+    public static void main(String[] args) {
+        paymentCloseByTradeNo("20191031161539337716");
     }
 }

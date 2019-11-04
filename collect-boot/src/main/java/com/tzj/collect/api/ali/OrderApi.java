@@ -15,6 +15,7 @@ import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.module.api.annotation.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
@@ -648,6 +649,7 @@ public class OrderApi {
 	@Api(name = "order.getCollectDetail", version = "1.0")
 	@AuthIgnore
 	@SignIgnore
+	@Cacheable(value = "getCollectDetail" , key = "#root.methodName",   sync = true)
 	public Object getCollectDetail() throws ApiException{
 		Object collectDetail = redisUtil.get("collectDetail");
 		if (null == collectDetail){
