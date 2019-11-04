@@ -78,7 +78,7 @@ public class OrderTest {
                 orderPayParam.setVoucherId("280");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","app.order.pay");
+                param.put("name","order.getCollectDetail");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -86,7 +86,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",orderPayParam);
+                param.put("data",null);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");
@@ -94,9 +94,12 @@ public class OrderTest {
 
                 String s = "{\"app_key\":\"app_id_1\",\"data\":{\"cityId\":745},\"name\":\"memberAddress.memberAddressList\",\"format\":\"json\",\"sign\":\"FC9A826D26B306554FA6EEA9F5633520\",\"version\":\"1.0\",\"nonce\":1236131394899.91299,\"token\":\"3F3TEMH74565Q5QORHNPE76UZM6VT4JPWVV4OPUNTGAXLLRLC6B5GYU3LW34YHVNOEFL2LXPVT24U65CVPQU32QS6WCOW4OQQ3AURAVX5JCW3DOJFI7QONQRCOYHSMZITFGRL7NE5YTTFKOD4CHYYW5XCU546HJVXIOTWEUH553LW7Q5I5HMBELSQBTBTYOQZEB2JBJEI7CERPJ5GXZGKOKLSCQFMEABHE2O75VTH57K7GHNNLDWI3HIJKS743QNBZCVVCNMPXWADKD4T3M3QCMWPAM7SRGIBEE27W26GDOMZF2JEZLQ\",\"timestamp\":\""+Calendar.getInstance().getTimeInMillis()+"\"}";
 
+                long startTime = Calendar.getInstance().getTimeInMillis();
                 System.out.println("请求的参数是 ："+JSON.toJSONString(param));
                 Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
                 String resultJson=response.body().string();
                 System.out.println("返回的参数是 ："+resultJson);
+                long endTime = Calendar.getInstance().getTimeInMillis();
+                System.out.println("请求时间："+(endTime-startTime));
         }
 }

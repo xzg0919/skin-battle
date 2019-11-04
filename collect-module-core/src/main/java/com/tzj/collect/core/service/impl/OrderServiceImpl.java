@@ -1796,7 +1796,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if(StringUtils.isNotBlank(orderBean.getDiscountPrice())){
 			order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
 		}
-		flag = orderService.updateById(order);
 		if(null != voucherMember){
 			//通知支付宝该券码已核销
 			VoucherBean voucherBean = new VoucherBean();
@@ -1804,7 +1803,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			voucherBean.setOrderNo(order.getOrderNo());
 			voucherBean.setVoucherMemberId(voucherMember.getId());
 			voucherMemberService.voucherUse(voucherBean);
+			order.setVoucherMemberId(voucherMember.getId().toString());
 		}
+		flag = orderService.updateById(order);
 		orderLog.setOpStatusAfter("COMPLETE");
 		orderLog.setOp("已完成");
 		this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);

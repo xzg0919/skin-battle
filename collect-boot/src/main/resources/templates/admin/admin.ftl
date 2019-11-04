@@ -15,6 +15,7 @@
 <form action="http://localhost:9090/ali/api" method="post" enctype="multipart/form-data">
      <input type="file" name="headImg" /></br>
      <input type="hidden"  value="util.uploadImageTwo" name="name"/></br>
+    <input type="hidden"  value="{name:'daxiang'}" name="date"/></br>
       <input type="hidden"  value="1.0" name="version"/></br>
      <input type="hidden"  value="uuidssssssssss" name="nonce" id ="nonce"/></br>
      <input type="hidden"  value="1537846411782" name="timestamp" id = "timestamp"/></br>

@@ -26,6 +26,9 @@ public class Order extends DataEntity<Long> {
 	private Long id;
 
 	private String complaintType;//客诉类型  0催派 1催接 2催收  3形成客诉
+
+	private String voucherMemberId;
+
 	/**
 	 * 会员id
 	 */
