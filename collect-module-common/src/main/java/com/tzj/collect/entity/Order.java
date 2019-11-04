@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -87,6 +88,8 @@ public class Order extends DataEntity<Long> {
 	private String examineStatus;
 	@TableField(exist = false)
 	private String isComplaint;
+	@TableField(exist = false)
+	private String money;
 	/**
 	 * 地址
 	 */
@@ -234,6 +237,21 @@ public class Order extends DataEntity<Long> {
 			return "Y";
 		}
 		return "N";
+	}
+
+	public String getMoney() {
+		try {
+			if (StringUtils.isBlank(money)){
+				return achPrice.subtract(discountPrice).abs().toString();
+			}
+		}catch (Exception e){
+
+		}
+		return null;
+	}
+
+	public void setMoney(String money) {
+		this.money = money;
 	}
 
 	public String getIsRisk() {
