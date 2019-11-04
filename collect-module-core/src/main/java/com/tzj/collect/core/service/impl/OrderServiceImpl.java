@@ -3440,12 +3440,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		resultList = resultList.stream().sorted(Comparator.comparing(OrderComplaint::getUpdateDate).reversed()).collect(Collectors.toList());
 		int initCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "0"));
-
 		int TosendCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "1"));
-
 		int AlreadyCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "2"));
-
 		OrderEvaluation orderEvaluation = orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", orderId));
+		VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()));
 		resultMap.put("initComplaint", "催派"+initCount);
 		resultMap.put("TosendCount", "催接"+TosendCount);
 		resultMap.put("AlreadyCount", "催收"+AlreadyCount);
@@ -3460,6 +3458,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("category",category);
 		resultMap.put("orderItemAchList",orderItemAchList);
 		resultMap.put("orderComplaintList",resultList);
+		resultMap.put("voucherMember",voucherMember);
 		return  resultMap;
 	}
 	@Override
