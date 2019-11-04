@@ -12,6 +12,7 @@ import com.tzj.collect.entity.RocketmqMessage;
 import com.tzj.module.common.aliyun.mns.Notification;
 import com.tzj.module.common.aliyun.mns.XMLUtils;
 import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +42,23 @@ public class IotController {
         try {
             notification = RocketMqConst.processMNSMessage(body, RocketMqConst.TOPIC_NAME_IOT_ORDER);
             JSONObject object = JSON.parseObject(notification.getMessage());
+
+            //验证token是否有效，若无效，直接丢弃消息
+            try {
+                String token = object.get("token")+"";
+                if (StringUtils.isEmpty(token)){
+                    //说明接收到的消息token不存在，直接丢弃掉
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                    return null;
+                }else {
+                    //解析token
+
+                }
+            }catch (Exception e){
+                //说明接收到的消息有问题，直接丢弃掉
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                return null;
+            }
 
             iotParamBean = new IotParamBean();
             iotParamBean.setSumPrice(new BigDecimal(object.get("sumPrice").toString()));
@@ -111,7 +129,7 @@ public class IotController {
         param.put("equipmentCode", "ceshi_code");
         param.put("sumPrice",17.20);
         param.put("parentLists", parentLists);
-        RocketMqConst.sendDeliveryOrder("{\\\"memberId\\\": \\\"6786\\\",\\\"equipmentCode\\\": \\\"kw_1232\\\",\\\"sumPrice\\\": 17.00,\\\"parentLists\\\": [{\\\"parentName\\\": \\\"PAPER\\\",\\\"itemList\\\": [{\\\"name\\\": \\\"BOOK_MAGAZINE\\\",\\\"quantity\\\": \\\"2\\\",\\\"unit\\\": \\\"kg\\\",\\\"price\\\": 3.40},{\\\"name\\\": \\\"CARD_BOARD_BOXES\\\",\\\"quantity\\\": \\\"2\\\",\\\"unit\\\": \\\"kg\\\",\\\"price\\\": 5.20}]}]}",RocketMqConst.TOPIC_NAME_IOT_ORDER);
+        RocketMqConst.sendDeliveryOrder("{\\\"memberId\\\": \\\"20194176425738279099\\\",\\\"equipmentCode\\\": \\\"kw_1232\\\",\\\"sumPrice\\\": 17.00,\\\"parentLists\\\": [{\\\"parentName\\\": \\\"PAPER\\\",\\\"itemList\\\": [{\\\"name\\\": \\\"BOOK_MAGAZINE\\\",\\\"quantity\\\": \\\"2\\\",\\\"unit\\\": \\\"kg\\\",\\\"price\\\": 3.40},{\\\"name\\\": \\\"CARD_BOARD_BOXES\\\",\\\"quantity\\\": \\\"2\\\",\\\"unit\\\": \\\"kg\\\",\\\"price\\\": 5.20}]}]}",RocketMqConst.TOPIC_NAME_IOT_ORDER);
         //JSONObject object = JSON.parseObject(JSON.toJSONString(param));
 //        Notification notification = xmlTest();
 //        JSONObject object = JSON.parseObject(notification.getMessage());
@@ -144,3 +162,4 @@ public class IotController {
 
 
 }
+

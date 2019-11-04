@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.iot.IotCompanyResult;
 import com.tzj.collect.core.result.business.BusinessRecType;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.CompanyAccount;
@@ -88,7 +89,7 @@ public interface CompanyService  extends IService<Company>{
 	 */
 	Company getCompanyByIds(Integer CommunityId, Integer CategoryId);
 	@DS("slave")
-    String selectIotUrlByEquipmentCode(String cabinetNo);
+	IotCompanyResult selectIotUrlByEquipmentCode(String cabinetNo);
 
 	String isOpenOrder(String isOpenOrder, Integer companyId);
 

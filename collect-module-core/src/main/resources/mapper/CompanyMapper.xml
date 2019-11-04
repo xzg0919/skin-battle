@@ -153,17 +153,27 @@
 		LIMIT 0,
 		 1
 	 </select>
-	<select id="selectIotUrlByEquipmentCode" parameterType="String" resultType="String">
+	<select id="selectIotUrlByEquipmentCode" parameterType="String" resultType="com.tzj.collect.core.param.iot.IotCompanyResult">
 		SELECT
-			scc.iot_url
+			sceUrl.iot_url,
+			sca.username,
+			sca.password_
 		FROM
-			sb_company scc
-		LEFT JOIN sb_company_equipment sce ON scc.id = sce.company_id
+			sb_company_account sca
+		INNER JOIN (
+			SELECT
+				scc.iot_url,
+				sce.company_id
+			FROM
+				sb_company scc
+			INNER JOIN sb_company_equipment sce ON scc.id = sce.company_id
+			WHERE
+				scc.del_flag = 0
+			AND sce.del_flag = 0
+			AND sce.equipment_code = #{cabinetNo}
+		) sceUrl ON sca.company_id = sceUrl.company_id
 		WHERE
-			scc.del_flag = 0
-		AND sce.del_flag = 0
-		AND sce.equipment_code = #{cabinetNo}
-
+			sca.del_flag = 0  limit 0, 1
 	</select>
 	<select id="getAdminCompanyList" parameterType="Object" resultType="Map">
 		SELECT DISTINCT

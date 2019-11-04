@@ -1,6 +1,7 @@
 package com.tzj.collect.core.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.tzj.collect.core.param.iot.IotCompanyResult;
 import com.tzj.collect.core.result.business.BusinessRecType;
 import com.tzj.collect.entity.Company;
 import org.apache.ibatis.annotations.Param;
@@ -62,7 +63,7 @@ public interface CompanyMapper extends BaseMapper<Company>{
 	 */
 	Company getCompanyWithNotFound(@Param("communityId") Integer communityId, @Param("categoryId") Integer categoryId);
 
-    String selectIotUrlByEquipmentCode(@Param("cabinetNo") String cabinetNo);
+	IotCompanyResult selectIotUrlByEquipmentCode(@Param("cabinetNo") String cabinetNo);
 
 	List<Map<String,Object>> getCompanyTitleNum();
 
