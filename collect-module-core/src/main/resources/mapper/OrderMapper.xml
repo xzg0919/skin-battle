@@ -3062,6 +3062,7 @@
         <result property="updateDate" column="update_date" />
         <result property="delFlag" column="del_flag" />
         <result property="achPrice" column="ach_price" />
+		<result property="discountPrice" column="discount_price"/>
         <result property="remarks" column="remarks" />
         <result property="achRemarks" column="ach_remarks" />
         <result property="title" column="title" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
@@ -3136,6 +3137,7 @@
 		a.is_distributed,
 		a.title,
 		a.ach_price,
+		IFNULL(discount_price, ach_price) as discount_price,
 		a.ach_remarks,
 		a.sign_url,
 		a.is_cash,
