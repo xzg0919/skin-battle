@@ -9,6 +9,7 @@ import com.tzj.collect.core.mapper.CompanyMapper;
 import com.tzj.collect.core.mapper.CompanyRecyclerMapper;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.iot.IotCompanyResult;
 import com.tzj.collect.core.result.business.BusinessRecType;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -121,7 +122,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	}
 
 	@Override
-	public String selectIotUrlByEquipmentCode(String cabinetNo) {
+	public IotCompanyResult selectIotUrlByEquipmentCode(String cabinetNo) {
 
 		return companyMapper.selectIotUrlByEquipmentCode(cabinetNo);
 	}

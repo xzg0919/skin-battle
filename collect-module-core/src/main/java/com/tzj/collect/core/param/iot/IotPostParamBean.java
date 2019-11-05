@@ -22,6 +22,10 @@ public class IotPostParamBean {
 
     private String ecUuid;//随机数（iot迭代随机数）
 
+    private String appId;//iot userName
+
+    private String appKey;//iot password
+
     public String getAPIName() {
         return APIName;
     }
@@ -84,5 +88,21 @@ public class IotPostParamBean {
 
     public void setEcUuid(String ecUuid) {
         this.ecUuid = ecUuid;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public void setAppKey(String appKey) {
+        this.appKey = appKey;
     }
 }

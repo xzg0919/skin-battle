@@ -7,6 +7,7 @@ import com.tzj.collect.api.iot.localmap.LatchMap;
 import com.tzj.collect.api.iot.messagecode.MessageCode;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.param.iot.IotCompanyResult;
 import com.tzj.collect.core.param.iot.IotErrorParamBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.param.iot.IotPostParamBean;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 /**
  * iot设备接口
@@ -81,6 +83,11 @@ public class IotApi {
     public Map<String, Object> iotCreatOrder(IotParamBean iotParamBean){
         return orderService.iotCreatOrder(iotParamBean);
     }
+    @Api(name = "iot.order.create", version = "2.0")
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Map<String, Object> iotCreatOrder2(IotParamBean iotParamBean){
+        return orderService.iotCreatOrder(iotParamBean);
+    }
 
 //    @Api(name = "iot.order.update", version = "1.0")
 //    @SignIgnore
@@ -104,32 +111,43 @@ public class IotApi {
         memberBean.setCardNo(member.getCardNo());
         if (member != null){
             String iotUrl = null;
-            if (iotPostParamBean.getQrUrl() != null && !"".equals(iotPostParamBean.getQrUrl().trim())){//http://xxx.com?cabinetNo=xxxa
-                iotUrl = iotPostParamBean.getQrUrl();
-            }else {
-                //根据设备编号在company表中找到访问地址
-                String equipmentCode = iotPostParamBean.getCabinetNo();
-                if (equipmentCode.contains("@")){
-                    equipmentCode = equipmentCode.substring(0, equipmentCode.indexOf("@"));
-                }
-                iotUrl = companyService.selectIotUrlByEquipmentCode(equipmentCode);
+            String equipmentCode = "";
+            IotCompanyResult iotCompanyResult = null;
+            //根据设备编号在company表中找到访问地址
+            equipmentCode = iotPostParamBean.getCabinetNo();
+            if (equipmentCode.contains("@")){
+                equipmentCode = equipmentCode.substring(0, equipmentCode.indexOf("@"));
             }
-            //发送post请求开箱
+            iotCompanyResult = companyService.selectIotUrlByEquipmentCode(equipmentCode);
+            if (null == iotCompanyResult){
+                map.put("msg", MessageCode.ERROR_QRCODE.getValue());
+                map.put("status", MessageCode.ERROR_QRCODE.getKey());
+                return map;
+            }
+            iotPostParamBean.setQrUrl(iotCompanyResult.getIotUrl());
+            iotPostParamBean.setAppId(iotCompanyResult.getUserName());
+            iotPostParamBean.setAppKey(iotCompanyResult.getPassword());
+            iotPostParamBean.setMemberId(member.getCardNo());
+            //发送get请求开箱
             iotPostParamBean.setMobile(member.getMobile());
+            iotPostParamBean.setTranTime(System.currentTimeMillis());
+            String encryptData = encrypt(iotPostParamBean);
             iotPostParamBean.setAPIName("OpnBox");
             String jsonStr= JSON.toJSONString(iotPostParamBean);
             String sign= this.buildSign(JSON.parseObject(jsonStr));
             iotPostParamBean.setSign(sign);
-            if (iotUrl == null || "".equals(iotUrl.trim()) || StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
+            // encryptData 加密数据：方式--- md5(md5(app_id&app_key&cabinetNo&mobile&memberId&tranTime)&tranTime)
+            if (StringUtils.isEmpty(iotCompanyResult.getIotUrl()) || StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
 //              throw new ApiException("cabinetNo不存在", "-9");
                 map.put("msg", MessageCode.ERROR_QRCODE.getValue());
                 map.put("status", MessageCode.ERROR_QRCODE.getKey());
                 return map;
             }
-            iotUrl = iotUrl +"?APIName="+iotPostParamBean.getAPIName()
+            iotUrl = iotCompanyResult.getIotUrl() +"?APIName="+iotPostParamBean.getAPIName()
                     +"&cabinetNo="+iotPostParamBean.getCabinetNo()+ "&memberId="+ member.getCardNo()
                     +"&mobile="+iotPostParamBean.getMobile()+ "&sign="+ iotPostParamBean.getSign()
-                    + "&tranTime="+iotPostParamBean.getTranTime().toString();
+                    + "&tranTime="+iotPostParamBean.getTranTime().toString()
+                    + "&encryptData=" + encryptData + "&appId="+ iotPostParamBean.getAppId();
             System.out.println(iotUrl);
             Response response = null;
             try {
@@ -274,5 +292,21 @@ public class IotApi {
     @AuthIgnore
     public List<FileBean> uploadImage(List<FileBase64Param> fileBase64ParamLists){
         return fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
+    }
+
+    /** 加密方式md5(md5(app_id&app_key&cabinetNo&mobile&memberId&tranTime)&tranTime)
+     * @author sgmark@aliyun.com
+     * @date 2019/4/25 0025
+     * @param
+     * @return
+     */
+    private static String encrypt(IotPostParamBean iotPostParamBean) {
+        Object []  strings = {iotPostParamBean.getAppId(), iotPostParamBean.getAppKey(), iotPostParamBean.getCabinetNo(),
+                iotPostParamBean.getMobile(), iotPostParamBean.getMemberId(), iotPostParamBean.getTranTime()+""};
+//        Arrays.sort(strings);//排序
+        List<Object> list = Arrays.asList(strings);
+        strings = new Object[]{ApiUtil.md5(StringUtils.join(list, "&")), iotPostParamBean.getTranTime()};
+        list = Arrays.asList(strings);
+        return ApiUtil.md5(StringUtils.join(list, "&"));
     }
 }
