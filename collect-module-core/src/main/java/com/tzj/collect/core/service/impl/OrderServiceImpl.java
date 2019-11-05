@@ -404,6 +404,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//该订单是只要能量的订单
 		if("1".equals(order.getIsCash())||0==Double.parseDouble(orderbean.getAchPrice())) {
 			//修改订单状态
+			orderbean.setAchPrice("0");
 			this.modifyOrderSta(orderbean);
 				if("1".equals(order.getIsMysl())){
 					//给用户增加蚂蚁能量
