@@ -3,6 +3,7 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+
 /**
  *
  * <p>Created on2019年10月24日</p>
@@ -17,85 +18,103 @@ import com.baomidou.mybatisplus.enums.IdType;
 @TableName("sb_voucher_ali")
 public class VoucherAli extends DataEntity<Long>
 {
-	private static final long serialVersionUID = -5430971499748254321L;
+    private static final long serialVersionUID = -5430971499748254321L;
+
     /**
      * 主键
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
     /**
      * 名称
      */
     private String voucherName;
+
     /**
      * 适用订单类型
      */
     private String orderType;
+
     /**
      * 类型
      */
     private String voucherType;//A 代金券  B 折扣券  C 满减券
+
     /**
      * 折扣
      */
     private java.math.BigDecimal dis;
+
     /**
      * 面额
      */
     private Integer money;
+
     /**
      * 最低使用金额
      */
     private Integer lowMoney;
+
     /**
      * 最高抵扣金额
      */
     private Integer topMoney;
+
     /**
      * 领取开始日期
      */
     private java.util.Date pickupStart;
+
     /**
      * 领取结束日期
      */
     private java.util.Date pickupEnd;
+
     /**
      * 有效期类型
      */
     private String validType;
+
     /**
      * 领取后n天有效
      */
     private Integer validDay;
+
     /**
      * 可用开始日期
      */
     private java.util.Date validStart;
+
     /**
      * 可用结束日期
      */
     private java.util.Date validEnd;
+
     /**
      * 券数量
      */
     private Long voucherCount;
+
     /**
      * 领取限制
      */
     private Integer pickLimitTotal;
+
     /**
      * 领取数
      */
     private Long pickCount;
+
     /**
      * 使用数
      */
     private Long useCount;
+
     /**
      * 已生成券码
      */
     private String maked;
-
 
     /**
      * <p>Description:[获取已生成券码]</p>
@@ -105,6 +124,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return maked;
     }
+
     /**
      * <p>Description:[设置已生成券码]</p>
      * @param String maked 
@@ -113,6 +133,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         this.maked = maked;
     }
+
     /**
      * <p>Description:[获取id]</p>
      * @return String id
@@ -121,14 +142,16 @@ public class VoucherAli extends DataEntity<Long>
     public Long getId()
     {
         return id;
-    }    /**
-     * <p>Description:[设置id]</p>
-     * @param String id 
-     */
+    }
+
+    /**
+    * <p>Description:[设置id]</p>
+    * @param String id 
+    */
     @Override
     public void setId(Long id)
     {
-        this.id=id;
+        this.id = id;
     }
 
     /**
@@ -139,6 +162,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return voucherName;
     }
+
     /**
      * <p>Description:[设置名称]</p>
      * @param String voucherName
@@ -157,6 +181,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return orderType;
     }
+
     /**
      * <p>Description:[设置适用订单类型]</p>
      * @param String orderType
@@ -175,6 +200,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return voucherType;
     }
+
     /**
      * <p>Description:[设置类型]</p>
      * @param String voucherType
@@ -193,6 +219,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return dis;
     }
+
     /**
      * <p>Description:[设置折扣]</p>
      * @param java.math.BigDecimal dis
@@ -211,6 +238,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return money;
     }
+
     /**
      * <p>Description:[设置面额]</p>
      * @param Integer money
@@ -229,6 +257,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return lowMoney;
     }
+
     /**
      * <p>Description:[设置最低使用金额]</p>
      * @param Integer lowMoney
@@ -247,6 +276,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return topMoney;
     }
+
     /**
      * <p>Description:[设置最高抵扣金额]</p>
      * @param Integer topMoney
@@ -265,6 +295,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return pickupStart;
     }
+
     /**
      * <p>Description:[设置领取开始日期]</p>
      * @param java.util.Date pickupStart
@@ -283,6 +314,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return pickupEnd;
     }
+
     /**
      * <p>Description:[设置领取结束日期]</p>
      * @param java.util.Date pickupEnd
@@ -301,6 +333,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return validType;
     }
+
     /**
      * <p>Description:[设置有效期类型]</p>
      * @param String validType
@@ -319,6 +352,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return validDay;
     }
+
     /**
      * <p>Description:[设置领取后n天有效]</p>
      * @param Integer validDay
@@ -337,6 +371,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return validStart;
     }
+
     /**
      * <p>Description:[设置可用开始日期]</p>
      * @param java.util.Date validStart
@@ -355,6 +390,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return validEnd;
     }
+
     /**
      * <p>Description:[设置可用结束日期]</p>
      * @param java.util.Date validEnd
@@ -373,6 +409,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return voucherCount;
     }
+
     /**
      * <p>Description:[设置券数量]</p>
      * @param Long voucherCount
@@ -391,6 +428,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return pickLimitTotal;
     }
+
     /**
      * <p>Description:[设置领取限制]</p>
      * @param Integer pickLimitTotal
@@ -409,6 +447,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return pickCount;
     }
+
     /**
      * <p>Description:[设置领取数]</p>
      * @param Long pickCount
@@ -427,6 +466,7 @@ public class VoucherAli extends DataEntity<Long>
     {
         return useCount;
     }
+
     /**
      * <p>Description:[设置使用数]</p>
      * @param Long useCount
