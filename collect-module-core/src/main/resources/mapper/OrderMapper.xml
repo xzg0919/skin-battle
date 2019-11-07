@@ -2006,6 +2006,7 @@
 			AND CONCAT(#{endtDate}, ' 23:59:59') > a.complete_date
 		</if>
 		GROUP BY b.category_name
+		ORDER BY b.parent_id
 	</select>
 	<select id="getHouseOrderCategoryByLjAsGreen" parameterType="String" resultType="Map">
 			SELECT
@@ -2038,6 +2039,7 @@
 				AND CONCAT(#{endtDate}, ' 23:59:59') > a.complete_date
 			</if>
 			GROUP BY b.category_name
+			ORDER BY b.parent_id
 	</select>
 	<select id="getSumOrderBylj" parameterType="String" resultType="Integer">
 		SELECT
