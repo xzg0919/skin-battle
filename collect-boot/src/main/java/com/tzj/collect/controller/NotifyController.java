@@ -1,5 +1,6 @@
 package com.tzj.collect.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.thread.NewThreadPoorExcutor;
@@ -71,12 +72,13 @@ public class NotifyController {
             //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
             params.put(name, valueStr);
         }
+        System.out.println("支付异部通知-------------------------------------------------------"+JSON.toJSONString(params));
         try {
             boolean flag = AlipaySignature.rsaCheckV1(params, ALI_PUBLIC_KEY, "UTF-8", "RSA2");
             if (flag) {
                 //验签成功后
                 //按照支付结果异步通知中的描述，对支付结果中的业务内容进行1\2\3\4二次校验，校验成功后在response中返回success，校验失败返回failure
-                String orderSN = params.get("out_trade_no");
+                String outTradeNo = params.get("out_trade_no");
                 String appId = params.get("app_id");
                 String tradeStatus = params.get("trade_status");
                 String totalAmount = params.get("total_amount");
@@ -89,18 +91,17 @@ public class NotifyController {
                     return "failure";
                 }
 
-                Payment payment=paymentService.selectByOrderSn(orderSN);
+                Payment payment=paymentService.selectByOutTradeNo(outTradeNo);
                 if (payment == null) {
                     //未找到相对应的订单
                     return "failure";
                 }
-
 //                if (payment.getPrice().compareTo(new BigDecimal(totalAmount)) != 0) {
 //                    //金额不匹配
 //                    return "failure";
 //                }
                 //根據order_no查询相关订单
-                Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderSN).eq("del_flag", 0));
+                Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", payment.getOrderSn()).eq("del_flag", 0));
                 //根据订单号查询绑定券的信息
                 VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
 

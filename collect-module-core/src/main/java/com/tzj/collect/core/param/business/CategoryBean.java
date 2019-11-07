@@ -1,9 +1,11 @@
 package com.tzj.collect.core.param.business;
 
 import com.tzj.collect.entity.Category;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class CategoryBean {
 	
 	private String id;
@@ -17,6 +19,8 @@ public class CategoryBean {
 	private String parentId;
 
 	private String cityId;
+
+	private String orderId;
 
 	public String getCityId() {
 		return cityId;

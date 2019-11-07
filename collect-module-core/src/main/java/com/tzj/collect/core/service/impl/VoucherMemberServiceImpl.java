@@ -376,7 +376,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         if (null!= voucherMember&& VoucherConst.VOUCHER_STATUS_CREATE.equals(voucherMember.getVoucherStatus())&&voucherMember.getAliUserId().equals(aliUserId)){
             voucherMember.setOrderId(orderId);
             voucherMember.setOrderNo(orderNo);
-            voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_CREATE);
+            voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_USEING);
             bool = this.updateById(voucherMember);
         }
         return  bool;

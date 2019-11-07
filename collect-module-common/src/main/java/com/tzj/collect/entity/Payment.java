@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 
 /**
  * 支付宝单
@@ -30,6 +33,8 @@ public class Payment extends DataEntity<Long>{
     private String buyerId;
     private String buyerLogonId;
     private String sellerId;
+
+    private String outTradeNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(89999999)+10000000);;
 
     private Long recyclersId;
     private String orderSn;

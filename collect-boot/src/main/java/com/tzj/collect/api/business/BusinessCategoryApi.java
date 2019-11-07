@@ -3,12 +3,14 @@ package com.tzj.collect.api.business;
 import com.taobao.api.ApiException;
 import com.tzj.collect.api.business.result.BusinessCategoryResult;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.business.CategoryBean;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
 import com.tzj.collect.core.result.business.CategoryResult;
 import com.tzj.collect.core.service.CategoryService;
 import com.tzj.collect.core.service.CompanyCategoryAttrOptionService;
 import com.tzj.collect.core.service.CompanyCategoryService;
+import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Category.CategoryType;
 import com.tzj.collect.entity.CompanyAccount;
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 /**
  * 
@@ -37,6 +40,8 @@ public class BusinessCategoryApi {
 	private CompanyCategoryService companyCategoryService;
 	@Autowired
 	private CompanyCategoryAttrOptionService attrOptionService;
+	@Autowired
+	private OrderService orderService;
 
 	 /**
      * 取得所有一级分类 
@@ -206,4 +211,36 @@ public class BusinessCategoryApi {
 
 		return attrOptionService.updateComCateAttOptPrice(comIdAndCateOptIdBean.getCategoryAttrOptionBeanList(),comIdAndCateOptIdBean.getCityId());
 	}
+
+	/**
+	 * 根据OrderId订单查询一级分类
+	 * @author wangcan
+	 * @return
+	 */
+	@Api(name = "business.category.getOneCategoryByOrder", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getOneCategoryByOrder(CategoryBean categoryBean){
+		return categoryService.getOneCategoryListByOrder(categoryBean.getOrderId());
+	}
+	/**
+	 * 根据一级分类Id和订单id查询二级分类
+	 * @author wangcan
+	 * @return
+	 */
+	@Api(name = "business.category.getTwoCategoryByOrder", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getTwoCategoryByOrder(CategoryBean categoryBean){
+		return categoryService.getTwoCategoryListByOrder(Integer.parseInt(categoryBean.getId()),categoryBean.getOrderId());
+	}
+	/**
+	 * 重新编辑重量
+	 * @param orderBean
+	 * @return
+	 */
+	@Api(name = "business.order.updateOrderAchItem", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public boolean updateOrderAchItem(OrderBean orderBean) {
+		return orderService.updateOrderAchItem(orderBean);
+	}
+
 }

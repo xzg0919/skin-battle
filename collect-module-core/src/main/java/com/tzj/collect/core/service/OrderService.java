@@ -49,7 +49,25 @@ public interface OrderService extends IService<Order> {
      */
 	 Map<String,Object> saveOrder(OrderBean orderbean);
 
+	/**
+	 * app保存订单信息
+	 * @param orderbean
+	 * @return
+	 */
 	boolean saveByRecy(OrderBean orderbean);
+	/**
+	 * 回收员无需重量提交订单其他信息
+	 * @param orderbean
+	 * @return
+	 */
+	Object editByAdminOrder(OrderBean orderbean);
+
+	/**
+	 * 后台重新编辑订单重量
+	 * @param orderBean
+	 * @return
+	 */
+	boolean updateOrderAchItem(OrderBean orderBean);
 
 	/**
 	 * @author sgmark@aliyun.com

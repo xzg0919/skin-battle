@@ -109,4 +109,62 @@ public class AppOrderPayApi {
             return paymentService.genalPay(payment);
         }
     }
+
+    /**
+     * 新的支付接口
+     * 可支持同一订单无限制支付
+     * @param orderPayParam
+     * @return
+     */
+    @Api(name = "app.order.tradePay", version = "1.0")
+    @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
+    public String orderTradePay(OrderPayParam orderPayParam) {
+        if(orderPayParam.getPrice().compareTo(BigDecimal.ZERO)==0){
+            throw new ApiException("不能支付0元");
+        }
+
+        Order order=orderService.selectById(orderPayParam.getOrderId());
+        if(order==null){
+            throw new ApiException("未找到Order信息！id:"+orderPayParam.getOrderId());
+        }
+
+        Payment payment=paymentService.selectPayByOrderSn(order.getOrderNo());
+        if (null != payment){
+            return "该订单已被支付，请勿重复支付";
+        }else {
+            payment=new Payment();
+        }
+        Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+
+        payment.setOrderSn(order.getOrderNo());
+        payment.setPrice(orderPayParam.getPrice());
+        payment.setRecyclersId(recyclers.getId());
+        payment.setAliUserId(order.getAliUserId());
+        payment.setStatus(Payment.STATUS_UNPAY);
+        paymentService.insert(payment);
+        order.setAchPrice(orderPayParam.getPrice());
+        order.setDiscountPrice(orderPayParam.getPrice());
+        orderService.updateById(order);
+        if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
+            if (StringUtils.isNotBlank(orderPayParam.getVoucherId())){
+                return voucherMemberService.updateOrderNo(orderPayParam.getPrice(),orderPayParam.getOrderId(),orderPayParam.getVoucherId(),payment);
+            }else {
+                return paymentService.genalPayXcx(payment);
+            }
+        }else{
+            return paymentService.genalPay(payment);
+        }
+    }
+    /**
+     * 新的支付接口
+     * 可支持同一订单无限制支付
+     * @param orderPayParam
+     * @return
+     */
+    @Api(name = "app.order.tradeClose", version = "1.0")
+    @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
+    public String paymentCloseByTradeNo(OrderPayParam orderPayParam) {
+        paymentService.paymentCloseByTradeNo(orderPayParam.getOutTradeNo());
+        return "操作成功";
+    }
 }

@@ -1,6 +1,5 @@
 package com.tzj.collect.core.service.impl;
 
-import com.alibaba.druid.pool.ha.selector.StickyRandomDataSourceSelector;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -46,6 +45,15 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     public Payment selectByOrderSn(String orderNo) {
         return selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo));
     }
+    @Override
+    public Payment selectByOutTradeNo(String outTradeNo){
+        return selectOne(new EntityWrapper<Payment>().eq("out_trade_no", outTradeNo));
+    }
+
+    @Override
+    public Payment selectPayByOrderSn(String orderNo){
+        return selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).eq("status_",Payment.STATUS_PAYED));
+    }
 
     /**
      * 小程序支付
@@ -61,8 +69,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
         model.setBody(subject);
         model.setSubject(subject);
-        model.setOutTradeNo(sn);
-        model.setTimeoutExpress("15d");
+        model.setOutTradeNo(payment.getOutTradeNo());
+        model.setTimeoutExpress("2m");
         model.setBuyerId(payment.getAliUserId());
         ExtendParams extendParams = new ExtendParams();
         extendParams.setSysServiceProviderId("2088421446748174");
@@ -102,8 +110,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
         model.setBody(subject);
         model.setSubject(subject);
-        model.setOutTradeNo(sn);
-        model.setTimeoutExpress("15d");
+        model.setOutTradeNo(payment.getOutTradeNo());
+        model.setTimeoutExpress("2m");
         ExtendParams extendParams = new ExtendParams();
         extendParams.setSysServiceProviderId("2017011905224137");
         model.setExtendParams(extendParams);
@@ -134,6 +142,10 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     public void transfer(Payment payment) {
 
         Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", payment.getOrderSn()));
+        PaymentError paymentError = paymentErrorService.selectOne(new EntityWrapper<PaymentError>().eq("order_sn",payment.getOrderSn()));
+        if (null==paymentError){
+            paymentError = new PaymentError();
+        }
         OrderBean orderBean = new OrderBean();
         if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
             orderBean.setAchPrice(payment.getPrice().toString());
@@ -152,7 +164,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         AlipayFundTransToaccountTransferResponse response = null;
         try {
             response =this.aliPayTransfer(payment.getId().toString(),aliUserId,payment.getPrice());
-            if (response.isSuccess()) {
+            if (response.isSuccess()||"10000".equals(response.getCode())) {
                 payment.setStatus(Payment.STATUS_TRANSFER);
                 //修改订单状态
                 orderBean.setId(order.getId().intValue());
@@ -160,33 +172,23 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
                 orderBean.setAmount(order.getGreenCount());
                 orderService.modifyOrderByPayment(orderBean,payment.getVoucherMember());
             }else {
-                order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
-                order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
-                orderService.updateById(order);
-                PaymentError paymentError = new PaymentError();
                 paymentError.setReason(response.getBody());
                 paymentError.setTitle(response.getSubMsg());
                 paymentError.setNotifyType(response.getCode());
                 paymentError.setSendUser(order.getTel());
                 paymentError.setReceiveUser(order.getRecyclerId().toString());
                 paymentError.setOrderSn(order.getOrderNo());
-                paymentErrorService.insert(paymentError);
+                paymentErrorService.insertOrUpdate(paymentError);
                 asyncService.notifyDingDingPaymentError(order.getOrderNo(),response.getBody(), PaymentError.DING_DING_URL,PaymentError.DING_DING_SING,PaymentError.DING_DING_TEL);
             }
-        }catch (AlipayApiException e){
-            order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
-            order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
-            orderService.updateById(order);
-            PaymentError paymentError = new PaymentError();
-            paymentError.setReason(response.getBody());
-            paymentError.setTitle(response.getSubMsg());
-            paymentError.setNotifyType(response.getCode());
-            paymentError.setSendUser(order.getTel());
-            paymentError.setReceiveUser(order.getRecyclerId().toString());
-            paymentError.setOrderSn(order.getOrderNo());
-            paymentErrorService.insert(paymentError);
-            asyncService.notifyDingDingPaymentError(order.getOrderNo(),response.getBody()+"系统异常 : "+ e.getErrMsg(), PaymentError.DING_DING_URL,PaymentError.DING_DING_SING,PaymentError.DING_DING_TEL);
+        }catch (Exception e){
+            e.printStackTrace();
         }finally {
+            if (!(response.isSuccess()||"10000".equals(response.getCode()))) {
+                order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
+                order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
+                orderService.updateById(order);
+            }
             payment.setRemarks(response.getSubMsg());
             this.updateById(payment);
         }
@@ -205,6 +207,24 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             model.setRemark("垃圾分类回收(收呗)货款");
         request.setBizModel(model);
         return alipayClient.execute(request);
+    }
+
+    public static void main(String[] args) throws Exception {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
+        model.setOutBizNo(UUID.randomUUID().toString());
+        model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
+        model.setPayeeAccount("2088212854989662");
+        model.setAmount("0.11");
+        model.setPayerShowName("垃圾分类回收(收呗)货款");
+        model.setRemark("垃圾分类回收(收呗)货款");
+        request.setBizModel(model);
+        AlipayFundTransToaccountTransferResponse r = alipayClient.execute(request);
+        System.out.println(r.isSuccess());
+        System.out.println(r.getSubMsg());
+        System.out.println(r.getSubCode());
+        System.out.println(r.getCode());
     }
     /**
      * 根据支付宝交易号查询该交易的详细信息
@@ -281,12 +301,18 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
     }
 
-    public static AlipayTradeCloseResponse paymentCloseByTradeNo(String tradeNo){
+    /**
+     * 交易关闭
+     * @param outTradeNo
+     * @return
+     */
+    @Override
+    public AlipayTradeCloseResponse paymentCloseByTradeNo(String outTradeNo){
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayTradeCloseRequest request = new AlipayTradeCloseRequest();
         AlipayTradeCloseModel model = new AlipayTradeCloseModel();
             //model.setTradeNo(tradeNo);
-            model.setOutTradeNo(tradeNo);
+            model.setOutTradeNo(outTradeNo);
             request.setBizModel(model);
         AlipayTradeCloseResponse response = null;
         try{
@@ -301,9 +327,5 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         }
         System.out.println(response.getBody());
         return response;
-    }
-
-    public static void main(String[] args) {
-        paymentCloseByTradeNo("20191031161539337716");
     }
 }

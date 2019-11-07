@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -66,14 +67,13 @@ class PaymentThread implements Runnable{
     @Override
     public void run() {
         //查询交易是否有未完成的
-        List<Payment> paymentsList = paymentService.selectList(new EntityWrapper<Payment>().eq("is_success","0").eq("del_flag", 0).isNotNull("ali_user_id").isNotNull("trade_no").eq("status_",1));
+        List<Payment> paymentsList = paymentService.selectList(new EntityWrapper<Payment>().eq("del_flag", 0).isNotNull("ali_user_id").isNotNull("trade_no").eq("status_",1));
         if (!paymentsList.isEmpty()){
             for(Payment payment:paymentsList){
                 //查询此单交易是否成功
                 AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getId().toString());
                 if("Success".equals(aliPayment.getMsg())&&"SUCCESS".equals(aliPayment.getStatus())){
                     //转账成功
-                    payment.setIsSuccess("1");
                     payment.setStatus(Payment.STATUS_TRANSFER);
                     paymentService.updateById(payment);
                 }else{
@@ -82,6 +82,9 @@ class PaymentThread implements Runnable{
                     //根据订单号查询绑定券的信息
                     VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", payment.getOrderSn()).eq("ali_user_id", payment.getAliUserId()));
                     //交易失败，重新转账
+                    if (order.getDiscountPrice().compareTo(BigDecimal.ZERO)==0){
+                        order.setDiscountPrice(order.getAchPrice());
+                    }
                     if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
                         payment.setPrice(order.getAchPrice());
                         payment.setTotalAmount(order.getDiscountPrice().toString());

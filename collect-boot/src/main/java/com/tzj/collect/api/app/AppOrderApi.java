@@ -112,6 +112,16 @@ public class AppOrderApi {
 		System.out.println("进完成接口了");
 		return orderService.saveByRecy(orderBean);
 	}
+	/**
+	 * 回收员订单重量提交信息
+	 * @param orderBean
+	 * @return
+	 */
+	@Api(name = "app.order.editByAdminOrder", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object editByAdminOrder(OrderBean orderBean) {
+		return orderService.editByAdminOrder(orderBean);
+	}
 	
 	/**
 	 * 扫描用户会员卡卡号完成订单

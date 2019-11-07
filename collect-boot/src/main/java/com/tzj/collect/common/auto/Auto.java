@@ -32,10 +32,11 @@ public class Auto
     private static String JAR_PATH = null; 
     private static String JAR_NAME = null;
     //public static String IPS[] = new String[]{"1","2","3","4"};   
-    public static String IPS[] = new String[]{"172.19.182.91","172.19.182.90","172.19.182.88","172.19.182.89","172.19.182.59","172.19.182.58"};
+    //public static String IPS[] = new String[]{"172.19.182.91","172.19.182.90","172.19.182.88","172.19.182.89","172.19.182.59","172.19.182.58"};
+    public static String IPS[] = new String[]{"172.19.182.62"};
     public static Integer PORT = 22;
-    public static String USER = "root";
-    public static String PSW = "Anping520";
+    public static String USER = "wangcan";
+    public static String PSW = "wangcan123";
     public static String TARGET_PATH = "/collect/collect-boot.jar";
     
     private static Connection conn;

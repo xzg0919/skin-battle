@@ -2,6 +2,7 @@ package com.tzj.collect.core.service;
 
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
+import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.Payment;
@@ -14,6 +15,18 @@ public interface PaymentService extends IService<Payment> {
      * @return
      */
     Payment selectByOrderSn(String orderNo);
+    /**
+     * 根据外部订单号查询 payment
+     * @param outTradeNo
+     * @return
+     */
+    Payment selectByOutTradeNo(String outTradeNo);
+    /**
+     * 根据订单号查询是否又成功支付的订单 payment
+     * @param orderNo
+     * @return
+     */
+    Payment selectPayByOrderSn(String orderNo);
 
     String genalPay(Payment payment);
 
@@ -31,7 +44,7 @@ public interface PaymentService extends IService<Payment> {
     AlipayTradeQueryResponse getAliPayment(String tradeNo);
     /**
      * 查询转账信息
-     * @param tradeNo
+     * @param paymentId
      */
     AlipayFundTransOrderQueryResponse getTransfer(String paymentId);
 
@@ -42,4 +55,10 @@ public interface PaymentService extends IService<Payment> {
       * @return
       */
     AlipayFundTransToaccountTransferResponse receivingMoneyTransfer(String aliUserId, String price, String outBizNo);
+    /**
+     * 交易关闭
+     * @param outTradeNo
+     * @return
+     */
+     AlipayTradeCloseResponse paymentCloseByTradeNo(String outTradeNo);
 }

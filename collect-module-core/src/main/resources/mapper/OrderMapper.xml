@@ -197,6 +197,7 @@
 				so.is_cash,
 				so.order_remarks,
 				so.complaint_type as complaintType,
+				so.is_item_ach as isItemAch,
 				bb.is_manager as isManager,
 				TIMESTAMPDIFF(MINUTE, IF(so.title = '2',CONCAT(so.arrival_time,' ',SUBSTR(so.arrival_period, 7,5),':00'),IF(so.arrival_period='am',CONCAT(so.arrival_time,' 12:00:00'),CONCAT(so.arrival_time,' 18:00:00'))), IF(so.status_ = '3',so.complete_date,if(so.status_ in ('4','5'),so.cancel_time,NOW()))) AS overTimes
 			FROM
@@ -352,6 +353,7 @@
 			scomco.ach_remarks,
 			scomco.is_cash,
 			scomco.green_count,
+			scomco.is_item_ach as isItemAch,
 			sr.is_manager
 		FROM
 			(
@@ -3089,6 +3091,7 @@
 		<result property="examineStatus" column="examineStatus"/>
 		<result property="isComplaint" column="isComplaint"/>
 		<result property="complaintType" column="complaint_type"/>
+		<result property="isItemAch" column="is_item_ach"/>
         <association property="category" javaType="com.tzj.collect.entity.Category">
             <result property="categoryId" column="categoryId" />
             <result property="name" column="name_" />
@@ -3154,6 +3157,7 @@
 		a.logistics_name,
 		a.iot_equipment_code,
 		a.complaint_type,
+		a.is_item_ach,
 		c.name_,
 		c.icon
 	</sql>

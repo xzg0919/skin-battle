@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 @Data
 public class AppOrderResult {
+
+	private String isItemAch;//0没有  1有
 	
 	private String orderId;//订单id
 	

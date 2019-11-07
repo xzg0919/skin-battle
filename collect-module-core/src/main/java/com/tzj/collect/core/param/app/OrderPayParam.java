@@ -16,6 +16,8 @@ public class OrderPayParam {
 
     private String voucherId;//优惠券Id
 
+    private String outTradeNo;
+
     public int getOrderId() {
         return orderId;
     }

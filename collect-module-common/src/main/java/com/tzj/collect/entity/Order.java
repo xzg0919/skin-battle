@@ -30,6 +30,8 @@ public class Order extends DataEntity<Long> {
 
 	private String voucherMemberId;
 
+	private String isItemAch;//是否编辑过完成重量
+
 	/**
 	 * 会员id
 	 */

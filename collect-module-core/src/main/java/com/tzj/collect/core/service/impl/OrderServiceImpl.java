@@ -366,8 +366,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		//删除上次储存的记录
 		try{
+			//保存orderItem
+			if ("0".equals(order.getIsItemAch())){
+				orderItemAchService.delete(new EntityWrapper<OrderItemAch>().eq("order_id",order.getId()));
+			}
 			orderPicAchService.delete(new EntityWrapper<OrderPicAch>().eq("order_id",order.getId()));
-			orderItemAchService.delete(new EntityWrapper<OrderItemAch>().eq("order_id",order.getId()));
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -376,9 +379,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderbean.setIsCash(order.getIsCash());
 		Area city = areaService.selectById(order.getAreaId());
 		orderbean.setCityId(city.getParentId().toString());
+		double amount = 0;
 		//保存orderItem
-		double amount = this.saveOrderItemAch(orderbean, null);
-		order.setGreenCount(amount);
+		if ("0".equals(order.getIsItemAch())){
+			amount = this.saveOrderItemAch(orderbean, null);
+			order.setGreenCount(amount);
+		}
 		flag = this.updateById(order);
 		orderbean.setAmount(amount);
 		//储存图片链接
@@ -408,7 +414,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			this.modifyOrderSta(orderbean);
 				if("1".equals(order.getIsMysl())){
 					//给用户增加蚂蚁能量
-					OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
+					orderService.myslOrderData(order.getId().toString());
 				}
 			try {
 				if (order.getAddress().startsWith("上海市")&&(Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){
@@ -418,6 +424,37 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				e.printStackTrace();
 			}
 		}
+		return flag;
+	}
+	public Object editByAdminOrder(OrderBean orderBean){
+		Map<String,Object> resultMap = new HashMap<>();
+		Order order = this.selectById(orderBean.getId());
+		List<OrderItemAch> orderItemAchList = orderItemAchService.selectByOrderId(orderBean.getId());
+		resultMap.put("order",order);
+		resultMap.put("orderItemAchList",orderItemAchList);
+		return resultMap;
+	}
+	public boolean updateOrderAchItem(OrderBean orderBean){
+		boolean flag = false;
+		Order order = this.selectById(orderBean.getId());
+		//删除上次储存的记录
+		try{
+			orderItemAchService.delete(new EntityWrapper<OrderItemAch>().eq("order_id",order.getId()));
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		//保存orderItem
+		orderBean.setTitle("HOUSEHOLD");
+		orderBean.setIsCash(order.getIsCash());
+		Area city = areaService.selectById(order.getAreaId());
+		orderBean.setCityId(city.getParentId().toString());
+		orderBean.setCompanyId(order.getCompanyId());
+		double amount = this.saveOrderItemAch(orderBean, null);
+		order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
+		order.setGreenCount(amount);
+		order.setIsItemAch("1");
+		flag = this.updateById(order);
+
 		return flag;
 	}
 
@@ -1785,11 +1822,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}else{
 			descrb = "生活垃圾";
 		}
-		if ("2".equals(order.getStatus().getValue().toString())) {
-			order.setStatus(OrderType.COMPLETE);
-		} else {
-			throw new ApiException("该订单已被操作，请刷新页面查看状态");
-		}
+		order.setStatus(OrderType.COMPLETE);
 		order.setCompleteDate(new Date());
 		if(StringUtils.isNotBlank(orderBean.getAchPrice())){
 			order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
