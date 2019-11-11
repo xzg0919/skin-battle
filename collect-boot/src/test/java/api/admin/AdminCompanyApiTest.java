@@ -75,11 +75,11 @@ public class AdminCompanyApiTest {
 //		 recyclersServiceRangeBean.setAreaList(areaList);
 
 		 OrderBean orderbean = new OrderBean();
-		 orderbean.setPagebean(new PageBean());
+		 orderbean.setId(70212);
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.order.getOdrerCancleExamineList");
+	        param.put("name","admin.getOrderDetailByOrderId");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");

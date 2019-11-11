@@ -1457,7 +1457,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						cateName = pCategory.getName() + "-" + category.getName();
 						category.setName(cateName);
 						order.setCategory(category);
-						cateName = "";
 					}
 				}
 			}
@@ -3496,6 +3495,80 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("voucherMember",voucherMember);
 		return  resultMap;
 	}
+	@Override
+	public Map<String, Object> getOrderDetailByOrderId(Integer orderId) {
+		Map<String, Object> resultMap = new HashMap<>();
+		Order order = this.selectById(orderId);
+		Category category = null;
+		String cateName = "";
+		//categoryId 再查他的父亲
+		if (order.getCategoryId() != null) {
+			category = categoryService.getCategoryById(order.getCategoryId());
+			if (category != null) {
+				Category pCategory = null;
+				if (category.getParentId() != null && !"".equals(category.getParentId())) {
+					pCategory = categoryService.getCategoryById(category.getParentId());
+					if (pCategory != null) {
+						cateName = pCategory.getName() + "-" + category.getName();
+						category.setName(cateName);
+						order.setCategory(category);
+					}
+				}
+			}
+		}
+		List<Map<String, Object>> houseOrderItem = new ArrayList<>();
+		List<Map<String, Object>> houseOrderAchItem = new ArrayList<>();
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
+			OrderBean orderBean = new OrderBean();
+			orderBean.setId(orderId);
+			orderBean.setTitle(order.getTitle().toString());
+			orderBean.setStatus(order.getStatus().getValue().toString());
+			orderBean.setIsCash(order.getIsCash());
+			if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
+				houseOrderAchItem = (List<Map<String, Object>>) this.createPriceAmount4PC(orderBean).get("listMapObject");
+			}
+			houseOrderItem =  (List<Map<String, Object>>)this.getInitDetail(orderId).get("listMapObject");
+		}
+		//回收人员填的图片
+		List<OrderPicAch> orderPicAchList = orderPicAchService.selectbyOrderId(orderId);
+		//查询订单表的用户填的图片
+		List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
+		//查询家电订单表未完成明细表
+		List<OrderItem> orderApplianceItemList = orderItemService.selectByOrderId(orderId);
+		//查询相关回收人员
+		Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+		//订单评价
+		OrderEvaluation orderEvaluation = orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", order.getId()));
+		//公司信息
+		Company company = companyService.selectById(order.getCompanyId());
+		//查询申请取消理由
+		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
+		int initCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "0"));
+		int TosendCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "1"));
+		int AlreadyCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "2"));
+		VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()));
+		Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", order.getOrderNo()).eq("status_", "2"));
+		int arrivalTimeCount = arrivalTimeLogService.selectCount(new EntityWrapper<ArrivalTimeLog>().eq("order_id", order.getId()));
+		resultMap.put("initComplaint", "催派"+initCount);
+		resultMap.put("TosendCount", "催接"+TosendCount);
+		resultMap.put("AlreadyCount", "催收"+AlreadyCount);
+		resultMap.put("order",order);
+		resultMap.put("houseOrderItem",houseOrderItem);
+		resultMap.put("houseOrderAchItem",houseOrderAchItem);
+		resultMap.put("orderPicAchList",orderPicAchList);
+		resultMap.put("orderPicList",orderPicList);
+		resultMap.put("orderApplianceItemList",orderApplianceItemList);
+		resultMap.put("recyclers",recyclers);
+		resultMap.put("orderEvaluation",orderEvaluation);
+		resultMap.put("company",company);
+		resultMap.put("orderCancleExamine",orderCancleExamine);
+		resultMap.put("voucherMember",voucherMember);
+		resultMap.put("payment",payment);
+		resultMap.put("arrivalTimeCount",arrivalTimeCount);
+		return resultMap;
+	}
+	@Autowired
+	private ArrivalTimeLogService arrivalTimeLogService;
 	@Override
 	public Map<String, Object> getOrderComplaint(String orderNo) {
 		return orderMapper.getOrderComplaint(orderNo);

@@ -91,4 +91,32 @@ public class ReceptionOrderApi {
         return arrivalTimeLogService.sendArrivalTimeLog(orderId,arrivalTimeLogBean.getAfterDate(),arrivalTimeLogBean.getAfterPeriod(),arrivalTimeLogBean.getCancleDesc());
 
     }
+    /**
+     * 订单详情接口
+     * @author 王灿
+     * @param
+     * @return
+     */
+    @Api(name = "reception.getOrderDetailByOrderId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_RECEPTION_API_COMMON_AUTHORITY)
+    public Object getOrderDetailByOrderId(OrderBean orderbean) {
+        return orderService.getOrderDetailByOrderId(orderbean.getId());
+    }
+    /**
+     * 根据订单id获取订单详情
+     * @author 王灿
+     * @param
+     * @return
+     */
+    @Api(name = "reception.getOrderDetail", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_RECEPTION_API_COMMON_AUTHORITY)
+    public Map<String,Object> getOrderDetail(OrderBean orderBean){
+        int orderId = orderBean.getId();
+        //查询订单详情
+        Map<String,Object> resultMap = orderService.selectOrderByBusiness(orderId);
+        return resultMap;
+    }
+
 }

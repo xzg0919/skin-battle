@@ -367,6 +367,8 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Object getAdminOrderDetail(Integer orderId);
 	@DS("slave")
+	Object getOrderDetailByOrderId(Integer orderId);
+	@DS("slave")
 	Map<String, Object> getOrderComplaint(String orderNo);
 	@DS("slave")
 	List<Map<String,Object>>selectHouseAmount();

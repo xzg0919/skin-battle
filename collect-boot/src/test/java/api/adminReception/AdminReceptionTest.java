@@ -35,10 +35,7 @@ public class AdminReceptionTest {
 
         String api="http://localhost:9090/admin/reception/api";
         OrderBean orderBean = new OrderBean();
-        orderBean.setStartTime("2018-09-01");
-        orderBean.setEndTime("2019-10-11");
-        orderBean.setComplaintType("0");
-        orderBean.setPagebean(new PageBean());
+        orderBean.setId(70212);
 //        orderBean.setCompanyId(41);
 //        orderBean.setStatus("3");
 //        orderBean.setTel("15691728708");
@@ -59,7 +56,7 @@ public class AdminReceptionTest {
 
 
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","admin.order.getOrderListByAdminReception");
+        param.put("name","reception.getOrderDetailByOrderId");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_4");

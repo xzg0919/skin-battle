@@ -203,4 +203,16 @@ public class AdminOrderApi {
         return orderService.saveOrderReceptionByOrderNo(orderbean);
     }
 
+    /**
+     * 订单详情接口
+     * @author 王灿
+     * @param
+     * @return
+     */
+    @Api(name = "admin.getOrderDetailByOrderId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object getOrderDetailByOrderId(OrderBean orderbean) {
+        return orderService.getOrderDetailByOrderId(orderbean.getId());
+    }
 }
