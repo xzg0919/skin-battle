@@ -10,6 +10,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>collect-module-api</artifactId>
+    <description>所有实体类（PO，VO）以及定义的接口</description>
+
 
 
 </project>
