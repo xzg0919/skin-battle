@@ -84,12 +84,7 @@
     </dependency>
     <!-- JSON -->
 
-    <!-- 收呗本身的模块 -->
-    <dependency>
-        <groupId>com.tzj</groupId>
-        <artifactId>collect-module-common</artifactId>
-    </dependency>
-    <!-- 收呗本身的模块 -->
+
 
 
 
