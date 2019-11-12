@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.OrderItemAchMapper">
+    <select id="selectItemSumAmount" parameterType="Integer" resultType="Map">
+        SELECT
+            round(SUM(a.amount)*1000,0)  AS amount,
+            a.parent_id AS parentId,
+            b.name_ AS parentName,
+            b.ali_item_type AS aliItemType
+        FROM
+        sb_order_item_ach a
+        LEFT JOIN sb_category b ON a.category_id = b.id
+		LEFT JOIN sb_category c ON c.id = b.parent_id
+        WHERE
+        a.order_id = #{orderId}
+		AND b.ali_item_type is NOT NULL
+		AND a.amount > 0
+        GROUP BY b.ali_item_type;
+    </select>
+
+    <select id="orderSum" parameterType="String" resultType="String">
+        SELECT
+            format(SUM(b.amount),2)
+        FROM
+            sb_order a
+        LEFT JOIN sb_order_item_ach b ON a.id = b.order_id
+        WHERE
+            a.street_id = #{streetId}
+        AND a.company_id != 1
+    </select>
+    <select id="orderDetialNum" parameterType="String" resultType="com.tzj.collect.core.param.business.ResultDataVParam">
+        SELECT
+        b.parent_name AS type,
+        round(SUM(b.amount),0) AS value
+        FROM
+            sb_order a
+        inner JOIN sb_order_item_ach b ON a.id = b.order_id
+        WHERE
+            a.street_id = #{streetId}
+        AND a.company_id != 1
+        GROUP BY b.parent_id
+    </select>
+    <select id="getOrderItemDetail" parameterType="Object" resultType="Map">
+        SELECT
+        a.category_name AS categoryName,
+        a.price,
+        a.unit,
+        a.amount,
+        <choose>
+            <when test="isCash == '0'.toString()">
+                a.amount as greenCount
+            </when>
+            <otherwise>
+                a.amount*10 as greenCount
+            </otherwise>
+        </choose>
+        FROM
+        sb_order_item_ach a
+        WHERE
+        a.order_id = #{orderId}
+        <choose>
+            <when test="isCash == '0'.toString()">
+                AND a.price > 0
+            </when>
+            <otherwise>
+                AND a.price = 0
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>

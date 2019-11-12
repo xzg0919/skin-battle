@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.RecyclersRangeHouseholdMapper">
+
+
+    <select id="getAreaRecyclersRange" parameterType="String" resultType="Map">
+			SELECT DISTINCT
+				d.id,
+				d.area_name,
+			IF (b.id IS NULL, 1, 2) AS isChoose,
+			(SELECT COUNT(1) FROM (	SELECT DISTINCT b.* FROM sb_recyclers_range_household a LEFT JOIN sb_area b ON a.street_id = b.id WHERE a.recyclers_id = #{recycleId} AND a.company_id =  #{companyId} AND a.del_flag = 0) b WHERE b.parent_id = d.id) AS num
+			FROM
+				sb_company_service a
+				LEFT JOIN sb_area c ON a.area_id = c.id
+				LEFT JOIN sb_area d ON c.parent_id = d.id
+			LEFT JOIN (
+				SELECT DISTINCT
+					b.id,b.parent_id
+				FROM
+					sb_recyclers_range_household a
+				LEFT JOIN sb_area b ON a.street_id = b.id
+				WHERE
+					a.recyclers_id = #{recycleId}
+				AND a.company_id =  #{companyId}
+				AND a.del_flag = 0
+			) b ON d.id = b.parent_id
+			WHERE
+				a.company_id = #{companyId}
+			AND d.parent_id = #{cityId}
+		</select>
+    <select id="getStreeRecyclersRange" parameterType="String" resultType="Map">
+			SELECT DISTINCT
+				a.id,
+				a.area_name,
+			IF (b.id IS NULL, 1, 2) AS isChoose,
+			(SELECT COUNT(*) FROM (	SELECT DISTINCT * FROM sb_recyclers_range_household a  WHERE a.recyclers_id = #{recycleId} AND a.company_id = #{companyId} AND a.del_flag = 0) b WHERE b.street_id = a.id) AS num
+			FROM
+				(
+				SELECT
+					c.id,c.area_name
+				FROM sb_company_service a
+				LEFT JOIN sb_area c ON a.area_id = c.id
+				WHERE a.company_id = #{companyId}
+				AND c.parent_id =  #{areaId}
+				) a
+			LEFT JOIN (
+				SELECT
+					a.id,a.street_id
+				FROM
+					sb_recyclers_range_household a
+				WHERE
+					a.recyclers_id = #{recycleId}
+				AND a.company_id = #{companyId}
+				AND a.del_flag = 0
+			) b ON a.id = b.street_id
+	</select>
+
+    <select id="getCommunityRecyclersRange" parameterType="String" resultType="Map">
+        SELECT DISTINCT
+				a.id,
+				a.name_ as area_name,
+			IF (b.id IS NULL, 1, 2) AS isChoose,
+			IF (c.id IS NULL, 1, 2) AS isEdit
+			FROM
+				(
+				SELECT
+					c.id,c.name_
+				FROM sb_company_service a
+				LEFT JOIN sb_community c ON a.community_id = c.id
+				WHERE a.company_id = #{companyId}
+				AND c.area_id = #{streetId}
+			) a
+			LEFT JOIN (
+				SELECT
+					a.id,a.community_id
+				FROM
+					sb_recyclers_range_household a
+				WHERE
+					a.recyclers_id =  #{recycleId}
+				AND a.company_id = #{companyId}
+				AND a.del_flag = 0
+			) b ON a.id = b.community_id
+			LEFT JOIN (
+				SELECT
+					a.id,a.community_id
+				FROM
+					sb_recyclers_range_household a
+				WHERE
+					a.recyclers_id != #{recycleId}
+				AND a.company_id = #{companyId}
+				AND a.del_flag = 0
+			) c ON a.id = c.community_id
+    </select>
+	<select id="selectAreaRangeCount" parameterType="String" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			(
+				SELECT
+					b.parent_id
+				FROM
+					sb_recyclers_range_household a
+				LEFT JOIN sb_area b ON a.street_id = b.id
+				WHERE
+					a.company_id = #{companyId}
+				AND a.recyclers_id = #{recyclerId}
+				AND a.del_flag = 0
+		GROUP BY b.parent_id
+			) a
+	</select>
+
+	<select id="companyAreaRecyclerRanges" parameterType="String" resultType="Map">
+	SELECT DISTINCT
+		(SELECT COUNT(1) FROM (
+			SELECT
+				c.parent_id AS cityId
+			FROM
+				sb_recyclers_range_household a
+			INNER JOIN sb_company_service e ON a.company_id = e.company_id AND a.community_id = e.community_id
+			INNER JOIN sb_area b ON a.street_id = b.id
+			INNER JOIN sb_area c ON b.parent_id = c.id
+			WHERE
+				a.company_id = #{companyId}
+			AND a.del_flag = 0
+			GROUP BY
+				c.parent_id
+		)a)  AS cityNum,
+		(SELECT COUNT(1) FROM (
+			SELECT
+				b.parent_id AS areaId
+			FROM
+				sb_recyclers_range_household a
+			INNER JOIN sb_company_service e ON a.company_id = e.company_id AND a.community_id = e.community_id
+			INNER JOIN sb_area b ON a.street_id = b.id
+			WHERE
+				a.company_id = #{companyId}
+			AND a.del_flag = 0
+			GROUP BY
+				b.parent_id
+		)a)  AS areaNum,
+		(SELECT COUNT(1) FROM (
+			SELECT
+				a.street_id AS streetId
+			FROM
+				sb_recyclers_range_household a
+			INNER JOIN sb_company_service e ON a.company_id = e.company_id AND a.community_id = e.community_id
+			WHERE
+				a.company_id = #{companyId}
+			AND a.del_flag = 0
+			GROUP BY
+				a.street_id
+		)a)  AS streetNum,
+	(SELECT COUNT(1) FROM (
+			SELECT
+				a.community_id AS communityId
+			FROM
+				sb_recyclers_range_household a
+			INNER JOIN sb_company_service e ON a.company_id = e.company_id AND a.community_id = e.community_id
+			WHERE
+				a.company_id = #{companyId}
+			AND a.del_flag = 0
+			GROUP BY
+				a.community_id
+		)a)  AS communityNum
+	FROM
+		sb_company a
+	WHERE
+		a.id = #{companyId}
+	AND a.del_flag = 0
+	</select>
+</mapper>

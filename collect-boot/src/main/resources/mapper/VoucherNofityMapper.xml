@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.VoucherNofityMapper">
+
+<select id="getListByAliId" parameterType="String" resultType="com.tzj.collect.entity.VoucherNofity">
+	SELECT 
+		id,entity_num,notify_status,create_date
+	FROM  sb_voucher_nofity
+	WHERE uid = #{aliUserId}
+</select>
+
+<update id="updateStatus" parameterType="com.tzj.collect.entity.VoucherNofity">
+		UPDATE sb_voucher_nofity
+		set notify_status = #{voucherNofity.notifyStatus},notify_remark = #{voucherNofity.notifyRemark}
+		WHERE id = #{voucherNofity.id}
+</update>
+
+
+
+</mapper>

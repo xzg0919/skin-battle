@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.RecyclersMapper">
+      
+	<select id="getRecyclerPage"  resultType="Recyclers" parameterType="com.tzj.collect.core.param.admin.RecyclersBean" >
+		select  sr.* from  sb_company_recycler  scr
+        inner join  sb_recyclers sr
+        on sr.id=scr.recycler_id
+        inner join  sb_company sc
+		on sc.id = scr.company_id
+		where scr.status_='1'
+		 <if test="recycler.recycleCompany != null and recycler.recycleCompany !=''">  
+           and sc.name_ =  #{recycler.recycleCompany}
+       </if>
+       <if test="recycler.recyclerId != null and recycler.recyclerId !='' ">  
+           and sr.id =   #{recycler.recyclerId}
+       </if>
+       <if test="recycler.recyclerName != null and recycler.recyclerName!='' ">  
+          and sr.name_ =  #{recycler.recyclerName}
+       </if>
+        order by id desc  
+		LIMIT #{recycler.startPage},#{recycler.endPage}
+	</select>
+	
+	<select id="getRecEvaById"  resultType="com.tzj.collect.core.param.admin.RecyclersBean">
+		SELECT
+			sr.name_ AS recyclerName,
+			sr.sex AS recyclerSex,
+			sr.tel AS recyclerTel,
+			sr.address AS recyclerAdd,
+			sr.id_card AS recyclerICard,
+			SUM( CASE WHEN soe.score &gt; 3 THEN 1 ELSE 0 END ) AS good,
+			SUM( CASE WHEN soe.score = 3 THEN 1 ELSE 0 END ) AS middle,
+			SUM( CASE WHEN soe.score &lt; 3 THEN 1 ELSE 0 END ) AS bad,
+			sr.id_card_rev AS recyclerICRev,
+			sr.id_card_obv AS recyclerICObv 
+		FROM
+			sb_recyclers sr
+			INNER JOIN sb_order_evaluation soe ON sr.id = soe.recycler_id 
+		WHERE
+			sr.id  = #{recyclerId}
+	</select>
+	<select id="getRecyclerPageSize"  resultType="Integer" parameterType="com.tzj.collect.core.param.admin.RecyclersBean" >
+		select  count(sr.id) from  sb_company_recycler  scr
+        inner join  sb_recyclers sr
+        on sr.id=scr.recycler_id
+        inner join  sb_company sc
+		on sc.id = scr.company_id
+		where scr.status_='1'
+		 <if test="recycler.recycleCompany != null and recycler.recycleCompany !=''">  
+           and sc.name_ =  #{recycler.recycleCompany}
+       </if>
+       <if test="recycler.recyclerId != null and recycler.recyclerId !='' ">  
+           and sr.id =   #{recycler.recyclerId}
+       </if>
+       <if test="recycler.recyclerName != null and recycler.recyclerName!='' ">  
+          and sr.name_ =  #{recycler.recyclerName}
+       </if>
+	</select>
+	<select id="getRecSerCommById" resultType="com.tzj.collect.core.param.admin.AdminCommunityBean">
+		SELECT
+			countyStreet.countyId,
+			countyStreet.countyName,
+			countyStreet.streetId,
+			countyStreet.streetName,
+			commId.id AS communityId,
+			commId.name_ AS communityName
+		FROM
+			(
+				SELECT
+					sa.id AS countyId,
+					sa.area_name AS countyName,
+					sa1.id AS streetId,
+					sa1.area_name AS streetName
+				FROM
+					sb_area sa
+				INNER JOIN sb_area sa1 ON sa.id = sa1.parent_id
+			) countyStreet
+		INNER JOIN (
+			SELECT
+				sc.id,
+				sc.name_,
+				sc.area_id
+			FROM
+				sb_community sc
+			INNER JOIN (
+				SELECT
+					sc.id AS communityId
+				FROM
+					(
+						SELECT
+							sr.id AS recyclerId,
+							src.community_id AS communityId
+						FROM
+							sb_recycler_community src
+						INNER JOIN sb_recyclers sr ON sr.id = src.recycler_id
+						WHERE
+							sr.status_ = '0'
+					) srccomm
+				INNER JOIN sb_community sc ON srccomm.communityId = sc.id
+				WHERE
+					srccomm.recyclerId = #{recyclerId}
+			) srcsc ON srcsc.communityId = sc.id
+		) commId ON commId.area_id = countyStreet.streetId
+	</select>
+	<select id="getCommNumByRecId" resultType="java.lang.Integer">
+		SELECT
+			COUNT(sc.id) AS commNum
+		FROM
+			(
+				SELECT
+					sr.id AS recyclerId,
+					src.community_id AS communityId
+				FROM
+					sb_recycler_community src
+				INNER JOIN sb_recyclers sr ON sr.id = src.recycler_id
+				WHERE
+					sr.status_ = '0'
+			) srccomm
+		INNER JOIN sb_community sc ON srccomm.communityId = sc.id
+		WHERE
+			srccomm.recyclerId = #{recyclerId}
+	</select>
+
+		
+<!-- 	<select id="getRecyclersList" resultMap="RecycleResultMap" parameterType="Integer">
+	 SELECT 
+	    <include refid="zd"/> ,
+	    (select count(*) from sb_order e where e.status_=1 AND e.del_flag = '0' AND a.id = e.recycler_id) AS init_count, 
+		(select count(*) from sb_order f where f.status_=2 AND f.del_flag = '0' AND a.id = f.recycler_id) AS already_count, 
+	  	(select count(*) from sb_order g where g.status_ in (4,5) AND g.del_flag = '0' AND a.id = g.recycler_id) AS cancel_count  
+	 FROM sb_recyclers a LEFT JOIN sb_company_recycler b ON a.id = b.recycler_id  LEFT JOIN sb_recyclers_category c ON a.id = c.recycler_id 
+	 WHERE b.company_id = #{companyId} AND c.category_id = #{categoryId} AND a.status_ = '0' AND a.del_flag = '0' AND b.del_flag = '0' AND c.del_flag = '0' 
+	 ORDER BY init_count,already_count,cancel_count	
+	</select> -->
+	
+	<select id="getRecyclersLists" resultMap="RecycleResultMap" parameterType="Integer">
+		SELECT DISTINCT
+		<include refid="zd"/>,
+		(select count(*) from sb_order e where e.status_=1 AND e.del_flag = '0' AND a.id = e.recycler_id) AS init_count,
+		(select count(*) from sb_order f where f.status_=2 AND f.del_flag = '0' AND a.id = f.recycler_id) AS already_count,
+		(SELECT COUNT(*)FROM(select * from sb_recycle_cancel_log c  GROUP BY c.recycler_id,c.order_id) con where con.recycler_id=a.id ) as cancel_count
+		FROM
+		sb_order f
+		<if test="title == 1">
+			INNER JOIN sb_recyclers_range_appliance c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		<if test="title == 2">
+			INNER JOIN sb_recyclers_range_house c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		<if test="title == 4">
+			INNER JOIN sb_recyclers_range_big c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		INNER JOIN sb_company_recycler d ON c.recyclers_id = d.recycler_id AND f.company_id = d.company_id
+		INNER JOIN sb_recyclers a ON c.recyclers_id = a.id
+		INNER JOIN sb_recyclers_title e ON f.title = e.title_id AND e.recycle_id = a.id
+		WHERE
+		f.id =  #{orderId}
+		AND c.del_flag = 0
+		AND d.del_flag = 0
+		AND e.del_flag = 0
+		AND f.del_flag = 0
+		AND d.is_manager = 1
+		AND d.status_ = '1'
+		<if test="title == 1">
+			AND d.type_ = '1'
+		</if>
+		<if test="title == 2">
+			AND d.type_ = '1'
+		</if>
+		<if test="title == 4">
+			AND d.type_ = '4'
+		</if>
+	</select>
+	<select id="getSendOrderRecyclersList" resultMap="RecycleResultMap" parameterType="Integer">
+		SELECT DISTINCT
+		<include refid="zd"/>
+		FROM
+		sb_order f
+		<if test="title == 1">
+			INNER JOIN sb_recyclers_range_appliance c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		<if test="title == 2">
+			INNER JOIN sb_recyclers_range_house c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		<if test="title == 4">
+			INNER JOIN sb_recyclers_range_big c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		INNER JOIN sb_company_recycler d ON c.recyclers_id = d.recycler_id AND f.company_id = d.company_id
+		INNER JOIN sb_recyclers a ON c.recyclers_id = a.id
+		INNER JOIN sb_recyclers_title e ON f.title = e.title_id AND e.recycle_id = a.id
+		WHERE
+		f.id =  #{orderId}
+		AND c.del_flag = 0
+		AND d.del_flag = 0
+		AND e.del_flag = 0
+		AND f.del_flag = 0
+		AND d.is_manager = 1
+		AND d.status_ = '1'
+		<if test="title == 1">
+			AND d.type_ = '1'
+		</if>
+		<if test="title == 2">
+			AND d.type_ = '1'
+		</if>
+		<if test="title == 4">
+			AND d.type_ = '4'
+		</if>
+	</select>
+	<select id="getRecycleSon" parameterType="Object" resultType="com.tzj.collect.entity.Recyclers">
+		SELECT
+			b.*
+		FROM
+			sb_company_recycler a
+		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		WHERE
+			a.parents_id = #{recyclerId}
+		<choose>
+			<when test=" isBigRecycle == 'Y'.toString() ">
+				AND a.type_ = '4'
+			</when>
+			<otherwise>
+				AND a.type_ = '1'
+			</otherwise>
+		</choose>
+		<if test="recyclerName != null and recyclerName != ''">
+			AND b.name_ like CONCAT('%',CONCAT(#{recyclerName},'%'))
+		</if>
+	</select>
+
+	 <resultMap type="com.tzj.collect.entity.Recyclers" id="RecycleResultMap">
+        <id property="id" column="id" />  
+        <result property="name" column="name_" />
+        <result property="idCard" column="id_card" />
+        <result property="idCardObv" column="id_card_obv" />
+        <result property="idCardRev" column="id_card_rev" />
+        <result property="tel" column="tel" />
+        <result property="icon" column="icon" />
+        <result property="address" column="address" />
+        <result property="sex" column="sex" />
+        <result property="status" column="status_" />
+        <result property="authStatus" column="auth_status" />
+        <result property="tencentToken" column="tencent_token" />
+        <result property="createDate" column="create_date" />
+        <result property="initCount" column="init_count" />
+        <result property="alreadyCount" column="already_count" />
+        <result property="cancelCount" column="cancel_count" />
+     </resultMap>
+     <sql id="zd">
+        a.id,
+		a.name_,
+		a.id_card,
+		a.id_card_obv,
+		a.id_card_rev,
+		a.tel,
+		a.icon,
+		a.address,
+		a.sex,
+		a.status_,
+		a.auth_status,
+		a.tencent_token,
+		a.create_date
+     </sql>   
+     
+     <select id="getRecyclersById" resultType="Recyclers" parameterType="com.tzj.collect.core.param.business.BusinessRecyclerBean">
+	   SELECT
+	   DISTINCT
+			sr.id,
+			sr.name_,
+			sr.sex,
+			sr.tel,
+			sr.address,
+			sr.id_card,
+			sr.id_card_obv,
+			sr.id_card_rev,
+			sr.head_pic_url
+		FROM
+			sb_recyclers sr
+		INNER JOIN sb_company_recycler scr ON sr.id = scr.recycler_id
+		WHERE
+			scr.status_ = '1'
+		AND scr.company_id = #{recyclerBean.companyId}
+		AND scr.recycler_id = #{recyclerBean.id}
+		      
+     </select>
+     
+     <select id="getRecyclersApply" resultType="Recyclers" parameterType="Object">
+	        SELECT
+	        sr.id,
+		sr.name_,
+		sr.sex,
+		sr.tel,
+		sr.address,
+		sr.id_card
+	FROM
+		sb_recyclers sr
+	INNER JOIN sb_company_recycler scr ON sr.id = scr.recycler_id
+	WHERE
+		scr.status_ = '0' and scr.company_id= #{companyId}
+		 <choose>
+			 <when test=" isBigRecycle == 'Y'.toString() ">
+				 and scr.type_ = '4'
+			 </when>
+			 <otherwise>
+				 and scr.type_ = '1'
+			 </otherwise>
+		 </choose>
+      ORDER BY scr.id
+     </select>
+     <select id="getRecyclers" parameterType="String" resultType="Map">
+		SELECT
+		 	distinct
+			a.company_id,
+			b.id,
+			b.name_,
+			a.is_manager,
+			c.area_name,
+			d.area_name AS provinceName
+		FROM
+			sb_company_recycler a
+		INNER JOIN sb_recyclers b ON a.recycler_id = b.id
+		LEFT JOIN sb_area c ON a.city = c.id
+		LEFT JOIN sb_area d ON a.province = d.id
+		WHERE
+			a.del_flag = 0
+		AND a.company_id = #{companyId}
+		AND a.status_ = 1
+		AND a.is_manager = 1
+		 <choose>
+			 <when test=" isBigRecycle == 'Y'.toString() ">
+				 and a.type_ = '4'
+			 </when>
+			 <otherwise>
+				 and a.type_ = '1'
+			 </otherwise>
+		 </choose>
+	 </select>
+    	<select id="getAreaRecyclersRange" parameterType="String" resultType="Map">
+			SELECT DISTINCT
+				a.id,
+				a.area_name,
+			IF (b.id IS NULL, 1, 2) AS isChoose,
+			(SELECT COUNT(*) FROM (	SELECT * FROM sb_recyclers_service_range a WHERE a.recyclers_id = #{recycleId} AND a.del_flag = 0) b WHERE b.area_parents_id = a.id) AS num
+			FROM
+				sb_area a
+			LEFT JOIN (
+				SELECT
+					*
+				FROM
+					sb_recyclers_service_range a
+				WHERE
+					a.recyclers_id = #{recycleId}
+				AND a.del_flag = 0
+			) b ON a.id = b.area_parents_id
+			WHERE
+				a.parent_id = #{cityId}
+		</select>
+	<select id="getStreeRecyclersRange" parameterType="String" resultType="Map">
+			SELECT DISTINCT
+				a.id,
+				a.area_name,
+			IF (b.id IS NULL, 1, 2) AS isChoose
+			FROM
+				sb_area a
+			LEFT JOIN (
+				SELECT
+					*
+				FROM
+					sb_recyclers_service_range a
+				WHERE
+					a.recyclers_id = #{recycleId}
+				AND a.del_flag = 0
+			) b ON a.id = b.area_id
+			WHERE
+				a.parent_id = #{areaId}
+	</select>
+		<select id="getRangeRecyclersList" resultType="Map" parameterType="Object">
+			SELECT
+				b.id,
+				b.name_,
+				a.city AS cityId,
+				a.province AS provinceId,
+				CONCAT(d.area_name,'-',c.area_name) AS area_name,
+				IF(a.del_flag=0,"A","B") AS delFlag,
+				IF(f.recycleNum is NULL,0,f.recycleNum) AS recycleNum
+			FROM
+				sb_company_recycler a
+			INNER JOIN sb_recyclers b ON a.recycler_id = b.id
+			LEFT JOIN sb_area c ON c.id = a.city
+			LEFT JOIN sb_area d ON d.id = a.province
+			LEFT JOIN (
+				SELECT b.parents_id ,COUNT(*) AS recycleNum
+				FROM  sb_company_recycler b
+				WHERE b.del_flag = 0
+				and b.status_ = 1
+				AND b.company_id = #{companyId}
+				<choose>
+					<when test=" isBigRecycle == 'Y'.toString() ">
+						and b.type_ = '4'
+					</when>
+					<otherwise>
+						and b.type_ = '1'
+					</otherwise>
+				</choose>
+				GROUP BY b.parents_id
+				) f ON f.parents_id = b.id
+			WHERE
+				 a.company_id = #{companyId}
+			AND a.status_ = 1
+			AND a.is_manager = '1'
+			<if test="cityId != null and cityId != ''">
+				AND a.city = #{cityId}
+			</if>
+			<if test="recycleName != null and recycleName != ''">
+				AND b.name_ = #{recycleName}
+			</if>
+			<if test="tel != null and tel != ''">
+				AND b.tel = #{tel}
+			</if>
+			<choose>
+				<when test=" isBigRecycle == 'Y'.toString() ">
+					and a.type_ = '4'
+				</when>
+				<otherwise>
+					and a.type_ = '1'
+				</otherwise>
+			</choose>
+			GROUP BY b.id
+			LIMIT #{pageStartCount},#{pageSize}
+		</select>
+	<select id="getRangeRecyclersListCount" resultType="int" parameterType="Object">
+select count(1) from (
+		SELECT
+		count(1)
+		FROM
+		sb_company_recycler a
+		INNER JOIN sb_recyclers b ON a.recycler_id = b.id
+		LEFT JOIN sb_area c ON c.id = a.city
+		LEFT JOIN sb_area d ON d.id = a.province
+		LEFT JOIN (SELECT b.parents_id ,COUNT(*) AS recycleNum FROM  sb_company_recycler b WHERE b.del_flag = 0 and b.status_ = 1 AND b.company_id = #{companyId} GROUP BY b.parents_id) f ON f.parents_id = b.id
+		WHERE
+		a.company_id = #{companyId}
+		AND a.status_ = 1
+		AND a.is_manager = '1'
+		<if test="cityId != null and cityId != ''">
+			AND a.city = #{cityId}
+		</if>
+		<if test="recycleName != null and recycleName != ''">
+			AND b.name_ = #{recycleName}
+		</if>
+		<if test="tel != null and tel != ''">
+			AND b.tel = #{tel}
+		</if>
+		<choose>
+			<when test=" isBigRecycle == 'Y'.toString() ">
+				and a.type_ = '4'
+			</when>
+			<otherwise>
+				and a.type_ = '1'
+			</otherwise>
+		</choose>
+		GROUP BY b.id
+		) countFrom
+	</select>
+	<select id="getRecycleDetails" resultType="Map" parameterType="Object">
+			<choose>
+				<when test=" isBigRecycle == 'Y'.toString() ">
+					SELECT
+					a.id,
+					a.name_,
+					b.area_id,
+					c.area_name AS cityName,
+					d.area_name AS areaName
+					FROM
+					sb_recyclers a
+					LEFT JOIN sb_company_recycler cr ON a.id = cr.recycler_id
+					LEFT JOIN sb_recyclers_range_big b ON a.id = b.recyclers_id
+					LEFT JOIN sb_area c ON cr.city = c.id
+					LEFT JOIN sb_area d ON d.id = b.area_id
+					WHERE
+					a.del_flag = 0
+					AND cr.company_id = #{companyId}
+					AND cr.type_ = 4
+					AND b.del_flag = 0
+					AND a.id = #{recyclerId}
+					GROUP BY b.area_id
+				</when>
+				<otherwise>
+					SELECT
+					a.id,
+					a.name_,
+					b.area_id,
+					c.area_name AS cityName,
+					d.area_name AS areaName
+					FROM
+					sb_recyclers a
+					LEFT JOIN sb_company_recycler cr ON a.id = cr.recycler_id
+					LEFT JOIN sb_recyclers_range_appliance b ON a.id = b.recyclers_id
+					LEFT JOIN sb_area c ON cr.city = c.id
+					LEFT JOIN sb_area d ON d.id = b.area_id
+					WHERE
+					a.del_flag = 0
+					AND cr.company_id = #{companyId}
+					AND cr.type_ = 1
+					AND b.del_flag = 0
+					AND a.id = #{recyclerId}
+					GROUP BY b.area_id
+					UNION
+					SELECT
+					a.id,
+					a.name_,
+					b.area_id,
+					c.area_name AS cityName,
+					d.area_name AS areaName
+					FROM
+					sb_recyclers a
+					LEFT JOIN sb_company_recycler cr ON a.id = cr.recycler_id
+					LEFT JOIN sb_recyclers_range_house b ON a.id = b.recyclers_id
+					LEFT JOIN sb_area c ON cr.city = c.id
+					LEFT JOIN sb_area d ON d.id = b.area_id
+					WHERE
+					a.del_flag = 0
+					AND cr.company_id = #{companyId}
+					AND cr.type_ = 1
+					AND b.del_flag = 0
+					AND a.id = #{recyclerId}
+					GROUP BY b.area_id;
+				</otherwise>
+			</choose>
+	</select>
+	<select id="getRecyclersListByParentId" resultType="com.tzj.collect.entity.Recyclers">
+		  SELECT
+			srr.*
+		FROM
+			sb_recyclers srr
+		LEFT JOIN sb_company_recycler scr ON srr.id = scr.recycler_id
+		WHERE
+			srr.del_flag = 0
+		AND scr.del_flag = 0
+		AND scr.parents_id = #{recycleId}
+		AND scr.company_id = #{companyId}
+		AND scr.status_ = 1
+		<choose>
+			<when test=" isBigRecycle == 'Y'.toString() ">
+				and scr.type_ = '4'
+			</when>
+			<otherwise>
+				and scr.type_ = '1'
+			</otherwise>
+		</choose>
+	</select>
+	<select id="getRecyclersCountByLj" parameterType="String" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			sb_company_recycler a
+		INNER JOIN sb_recyclers b ON a.recycler_id = b.id
+		WHERE
+			a.status_ = '1'
+		AND a.type_ = '1'
+		<if test="companyId != '-1'">
+			AND a.company_id = #{companyId}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.VoucherMemberMapper">
+
+<select id="getVoucherForOrder" parameterType="Integer" resultType="com.tzj.collect.entity.VoucherMember">
+	SELECT 
+		d.id,d.`voucher_name`,d.`order_type`,d.`voucher_type`,d.`dis`,d.`money`,d.`low_money`,d.`top_money`,
+		d.`valid_start`,d.`valid_end`,d.`voucher_code`
+ 	FROM `sb_voucher_member` d
+ 	WHERE d.`del_flag`='0' AND d.`voucher_status` = 'CREATE' AND d.`member_id`=#{memberId}
+</select>
+
+
+
+
+
+
+
+</mapper>

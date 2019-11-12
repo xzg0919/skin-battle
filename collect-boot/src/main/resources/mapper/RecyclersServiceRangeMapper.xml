@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.RecyclersServiceRangeMapper">
+    <insert id="saveRangeRecycleByAreaId" parameterType="Integer" >
+        INSERT INTO sb_recyclers_service_range (
+            recyclers_id,
+            area_id,
+            area_parents_id,
+            create_date,
+            update_date
+        ) SELECT
+            #{recycleId},
+            id,
+            parent_id,
+            NOW(),
+            NOW()
+        FROM
+            sb_area
+        WHERE
+            parent_id = #{areaId}
+    </insert>
+
+</mapper>
