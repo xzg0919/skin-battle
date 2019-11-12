@@ -154,6 +154,26 @@
                 <artifactId>collect-module-dailyda</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+
+
+
+
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>collect-module-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>collect-module-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>collect-module-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- 收呗模块包 -->
 
             <!-- 连接池 -->
@@ -163,6 +183,30 @@
                 <version>${druid.version}</version>
             </dependency>
             <!-- 连接池 -->
+
+
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.4</version>
+                <scope>provided</scope>
+            </dependency>
+
+
+
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>3.7.73.ALL</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>6.0.16.Final</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

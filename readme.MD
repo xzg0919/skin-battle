@@ -8,7 +8,7 @@
 所有实体类（PO，VO）以及定义的接口，包含所有子模块的（权益、分类查询，哒哒哒的）
 
 3、collect-module-core
-收呗主实现Service的代码，将来在拆分为几个模块： member ，order 等。 
+收呗实现Service和Mapper的代码，将来在拆分为几个模块： member ，order 等。 
 
 4、collect-boot
 收呗 boot 启动应用

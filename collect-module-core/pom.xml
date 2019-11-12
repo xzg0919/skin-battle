@@ -11,5 +11,14 @@
 
     <artifactId>collect-module-core</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>
