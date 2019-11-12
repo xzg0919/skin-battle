@@ -29,6 +29,9 @@
         <module>collect-module-dailyda</module>
         <module>collect-module-dailyda-boot</module>
         <module>collect-module-iot</module>
+        <module>collect-module-api</module>
+        <module>collect-module-common</module>
+        <module>collect-module-core</module>
     </modules>
 
     <repositories>
