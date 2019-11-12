@@ -3960,4 +3960,44 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		return resultMap;
 	}
+	@Override
+	public Map<String, Object> getOrderAchItemDatail(OrderBean orderBean){
+		//未完成订单的数据
+
+		Order order = this.selectById(orderBean.getId());
+		List<OrderItemAch> orderItemAches = orderItemAchService.selectByOrderId(orderBean.getId());
+		List<ComCatePrice> comCatePrices = orderItemService.selectCateAchName(orderBean.getId());
+		Map<String, String> map = null;
+		float price = 0l;
+		List<Map<String, String>> listMap = null;
+		Map<String, Object> mapListMap = null;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		List<Map<String, Object>> listMapObject = new ArrayList<>();
+		//首先取得分类name, 去重
+		for (ComCatePrice name : comCatePrices) {
+			mapListMap = new HashMap<>();
+			price = 0l;
+			listMap = new ArrayList<>();
+			for (OrderItemAch list : orderItemAches) {
+				map = new HashMap<>();
+				//listMap = new ArrayList<>();
+				if (name.getId() == list.getParentId()) {
+					map.put("cateName", list.getCategoryName());
+					map.put("price", list.getPrice() + "");
+					map.put("unit", list.getUnit());
+					map.put("amount", list.getAmount() + "");
+					price += list.getPrice() * list.getAmount();
+					listMap.add(map);
+				}
+			}
+			mapListMap.put("list", listMap);
+			mapListMap.put("name", name == null ? null : name.getName());
+			mapListMap.put("price", price);
+			listMapObject.add(mapListMap);
+		}
+		resultMap.put("listMapObject", listMapObject);
+		resultMap.put("order", order);
+		return resultMap;
+	}
+
 }

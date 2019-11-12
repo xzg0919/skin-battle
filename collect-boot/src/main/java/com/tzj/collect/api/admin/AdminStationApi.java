@@ -89,7 +89,7 @@ public class AdminStationApi {
     public Object httpPost(TransStationBean transStationBean,String name) throws Exception{
         String token = JwtUtils.generateToken("1", ADMIN_API_EXPRIRE, ADMIN_API_TOKEN_SECRET_KEY);
         String securityToken = JwtUtils.generateEncryptToken(token, ADMIN_API_TOKEN_CYPTO_KEY);
-        String api="http://localhost:9001/admin/api";
+        String api="http://station.mayishoubei.com/admin/api";
 
         HashMap<String,Object> param=new HashMap<>();
         param.put("name",name);
