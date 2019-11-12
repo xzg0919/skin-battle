@@ -30,6 +30,7 @@
         <module>collect-module-point</module>
         <module>collect-module-dailyda</module>
         <module>collect-module-dailyda-boot</module>
+        <module>collect-module-iot</module>
     </modules>
 
     <repositories>

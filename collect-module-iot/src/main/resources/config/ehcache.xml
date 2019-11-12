@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache updateCheck="false" name="defaultCache">
+
+    <diskStore path="${java.io.tmpdir}/temp/collect/ehcache" />
+
+    <!-- 默认缓存-->
+    <defaultCache maxEntriesLocalHeap="100" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600"
+                  overflowToDisk="true" maxEntriesLocalDisk="100000" />
+
+    <!-- 用户缓存 -->
+    <cache name="adminCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+
+    <!-- 用户缓存 -->
+    <cache name="adminReceptionCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+
+    <!-- 用户缓存 -->
+    <cache name="memberCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+
+    <!-- 用户缓存 -->
+    <cache name="recyclersCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+
+    <!-- 用户缓存 -->
+    <cache name="companyCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+
+    <!-- 用户缓存 -->
+    <cache name="enterpriseCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+
+    <!-- 用户缓存 -->
+    <cache name="terminalCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+
+    <!-- 用户缓存 -->
+    <cache name="piccCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000" eternal="true" overflowToDisk="true"/>
+
+    <!-- 随机数缓存 -->
+    <cache name="noceCache" maxElementsInMemory="10000" maxElementsOnDisk="10000000"
+           timeToIdleSeconds="300" timeToLiveSeconds="300" eternal="false" overflowToDisk="true" memoryStoreEvictionPolicy="FIFO" />
+    <!-- 随机数缓存 -->
+    <cache name="dailyLexiconList" maxElementsInMemory="10000" maxElementsOnDisk="10000000"
+           timeToIdleSeconds="300" timeToLiveSeconds="82800" eternal="false" overflowToDisk="true" memoryStoreEvictionPolicy="FIFO" />
+    <!-- 小程序首页缓存 -->
+    <cache name="getCollectDetail" maxElementsInMemory="10000" maxElementsOnDisk="10000000"
+           timeToIdleSeconds="300" timeToLiveSeconds="19800" eternal="false" overflowToDisk="true" memoryStoreEvictionPolicy="FIFO" />
+
+</ehcache>
