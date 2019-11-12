@@ -20,5 +20,50 @@
             <groupId>com.tzj</groupId>
             <artifactId>collect-module-api</artifactId>
         </dependency>
+
+
+        <!-- JUnit test dependency -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.restassured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>2.9.0</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- API 框架 -->
+        <dependency>
+            <groupId>com.hufm</groupId>
+            <artifactId>hufm-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hufm</groupId>
+            <artifactId>hufm-module-common</artifactId>
+        </dependency>
+        <!-- API 框架 -->
+        
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dyplsapi</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.aliyun.mns</groupId>
+            <artifactId>aliyun-sdk-mns</artifactId>
+            <version>1.1.8</version>
+            <classifier>jar-with-dependencies</classifier>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

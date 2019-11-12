@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 @ApiService
 public class BusinessCompanyApi {

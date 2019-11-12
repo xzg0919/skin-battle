@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.tzj.collect.common.constant.TokenConst.*;
+import static com.tzj.common.constant.TokenConst.*;
 
 @ApiService
 public class AdminTokenApi {

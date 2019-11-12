@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 /**
  * 订单接口列表

@@ -13,7 +13,7 @@ import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.tzj.collect.common.constant.TokenConst.*;
+import static com.tzj.common.constant.TokenConst.*;
 
 @ApiService
 public class BusinessTokenApi {

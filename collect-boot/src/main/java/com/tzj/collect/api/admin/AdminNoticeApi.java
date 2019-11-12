@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 /**
  * Created on 2019/9/6

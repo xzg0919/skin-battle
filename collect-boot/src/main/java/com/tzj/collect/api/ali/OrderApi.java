@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 /**
  * 订单相关api

@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 /**
  * 大件订单信息

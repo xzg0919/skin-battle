@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 @ApiService
 public class BusinessRecyclerApi {

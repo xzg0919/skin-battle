@@ -51,7 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 /**
  * 回收人员api

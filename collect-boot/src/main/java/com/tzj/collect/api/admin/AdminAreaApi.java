@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 /**
  * 管理员小区管理

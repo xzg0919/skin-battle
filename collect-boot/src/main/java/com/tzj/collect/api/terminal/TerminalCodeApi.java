@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.TERMINAL_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.TERMINAL_API_COMMON_AUTHORITY;
 
 /**
  * 券码相关接口

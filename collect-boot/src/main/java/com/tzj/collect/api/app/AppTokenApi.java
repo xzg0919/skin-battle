@@ -26,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-import static com.tzj.collect.common.constant.TokenConst.*;
+import static com.tzj.common.constant.TokenConst.*;
 
 /**
  * token api

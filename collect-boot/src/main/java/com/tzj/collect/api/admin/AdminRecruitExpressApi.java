@@ -8,7 +8,7 @@ import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
+import static com.tzj.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 @ApiService
 public class AdminRecruitExpressApi {
