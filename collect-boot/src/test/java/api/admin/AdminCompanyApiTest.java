@@ -11,6 +11,7 @@ package api.admin;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.admin.CategoryBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.admin.TransStationBean;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
@@ -47,39 +48,23 @@ public class AdminCompanyApiTest {
 
 
 	        String api="http://localhost:9090/admin/api";
-//		 RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
-//		 recyclersServiceRangeBean.setTitle("1");
-//		 recyclersServiceRangeBean.setCompanyId(1);
-//		 List<AreaBean> areaList = new ArrayList<>();
-//		 AreaBean areaBean = new AreaBean();
-//		 areaBean.setAreaId("4282");
-//		 areaBean.setStreeId("4622");
-//		 areaBean.setSaveOrDelete("0");
-//		 AreaBean areaBean1 = new AreaBean();
-//		 areaBean1.setAreaId("4282");
-//		 areaBean1.setStreeId("4621");
-//		 areaBean1.setSaveOrDelete("1");
-//		 AreaBean areaBean2 = new AreaBean();
-//		 areaBean2.setAreaId("4282");
-//		 areaBean2.setStreeId("4623");
-//		 areaBean2.setSaveOrDelete("0");
-//		 AreaBean areaBean3 = new AreaBean();
-//		 areaBean3.setAreaId("4282");
-//		 areaBean3.setStreeId("4624");
-//		 areaBean3.setSaveOrDelete("0");
-//		 areaList.add(areaBean);
-//		 areaList.add(areaBean1);
-//		 areaList.add(areaBean2);
-//		 areaList.add(areaBean3);
-//
-//		 recyclersServiceRangeBean.setAreaList(areaList);
 
-		 OrderBean orderbean = new OrderBean();
-		 orderbean.setId(70212);
+		 TransStationBean transStationBean = new TransStationBean();
+
+		 transStationBean.setTransStationId("6");
+		 transStationBean.setName("中转站名字");
+		 transStationBean.setContacts("wangcan");
+		 transStationBean.setTel("18375336388");
+		 transStationBean.setPassword("test1");
+		 transStationBean.setAddress("我是测试地址1");
+		 transStationBean.setCompanyId("1");
+		 transStationBean.setLongitude("121.12022");
+		 transStationBean.setLatitude("96.23232");
+
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.getOrderDetailByOrderId");
+	        param.put("name","admin.updateTransStion");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -87,7 +72,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",orderbean);
+	        param.put("data",transStationBean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");
