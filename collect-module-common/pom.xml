@@ -10,6 +10,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>collect-module-common</artifactId>
+    <description>工具类模块</description>
 
+
+    <dependencies>
+        <!-- 工具类 -->
+        <dependency>
+            <groupId>com.github.icecooly</groupId>
+            <artifactId>FastHttpClient</artifactId>
+        </dependency>
+        <!-- 工具类 -->
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+
+
+    </dependencies>
 
 </project>
