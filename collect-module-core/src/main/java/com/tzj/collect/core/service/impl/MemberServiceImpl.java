@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.api.commom.redis.RedisUtil;
 import com.tzj.collect.common.utils.AlipayConst;
-import com.tzj.collect.common.utils.TableNameUtils;
+import com.tzj.collect.core.utils.TableNameUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.MemberMapper;
 import com.tzj.collect.core.param.ali.MemberBean;

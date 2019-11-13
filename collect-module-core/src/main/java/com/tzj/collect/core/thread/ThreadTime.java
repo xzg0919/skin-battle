@@ -1,4 +1,4 @@
-package com.tzj.collect.common.thread;
+package com.tzj.collect.core.thread;
 
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;

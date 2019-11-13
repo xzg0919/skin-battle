@@ -3,7 +3,7 @@ package com.tzj.collect.core.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.common.utils.TableNameUtils;
+import com.tzj.collect.core.utils.TableNameUtils;
 import com.tzj.collect.core.mapper.MemberAddressMapper;
 import com.tzj.collect.core.param.ali.MapAddressBean;
 import com.tzj.collect.core.param.ali.MemberAddressBean;

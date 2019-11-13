@@ -1,4 +1,4 @@
-package com.tzj.collect.common.utils;
+package com.tzj.collect.core.utils;
 
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.MemberAddress;

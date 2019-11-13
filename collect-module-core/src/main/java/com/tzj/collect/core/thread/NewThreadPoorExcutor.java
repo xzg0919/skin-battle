@@ -1,4 +1,4 @@
-package com.tzj.collect.common.thread;
+package com.tzj.collect.core.thread;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;

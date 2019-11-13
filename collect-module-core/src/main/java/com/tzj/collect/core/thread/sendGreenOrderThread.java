@@ -1,4 +1,4 @@
-package com.tzj.collect.common.thread;
+package com.tzj.collect.core.thread;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.common.constant.MD5Util;
