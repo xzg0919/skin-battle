@@ -1,7 +1,10 @@
 package com.tzj.collect.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * 公司所对应设备错误记录
@@ -30,5 +33,9 @@ public class EquipmentErrorList extends  DataEntity<Long> {
     private String linkName;//联系人名称
 
     private String mobile;//联系电话
+    @TableField(value = "status_")
+    private String status;//是否处理（0:未处理；1:已处理）
+
+    private Date completeTime;//处理完成时间
 
 }

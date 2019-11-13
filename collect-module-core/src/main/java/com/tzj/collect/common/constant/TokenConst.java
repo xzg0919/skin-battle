@@ -77,4 +77,12 @@ public class TokenConst {
     public static final String PICC_API_TOKEN_CYPTO_KEY="Poasdasdadasasd231dasdsad2L";
     public static final String PICC_API_TOKEN_SECRET_KEY="2012p0876jnx42a8888ForShenZhenBgsdf561869839";
     public static final String PICC_API_TOKEN_SIGN_KEY="llsbadokx7s43dflkasda12kkkk";
+
+    //iot设备app 客户端的一些常量======================
+    public static final long EQUIPMENT_APP_API_EXPRIRE=60*60*24*30;
+    public static final String EQUIPMENT_APP_API_COMMON_AUTHORITY="ali:app";
+
+    public static final String EQUIPMENT_APP_API_TOKEN_CYPTO_KEY="Poasdasdadasasd231dasdsad2L";
+    public static final String EQUIPMENT_APP_API_TOKEN_SECRET_KEY="2012p0876jnx42a8888ForShenZhenBgsdf561869839";
+    public static final String EQUIPMENT_APP_API_TOKEN_SIGN_KEY="llsbadokx7s43dflkasda12kkkk";
 }

@@ -1,7 +1,6 @@
 package com.tzj.iot.api.mqtt;
 
 import com.tzj.collect.core.param.iot.MqttAppBean;
-import com.tzj.iot.common.mqtt.util.ConnectionOptionWrapper;
 import com.tzj.iot.common.mqtt.util.Tools;
 import com.tzj.iot.config.MQTTConfig;
 import com.tzj.module.api.annotation.*;
@@ -14,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 /**
  * iot数据通道
@@ -59,6 +57,7 @@ public class MQTTApi {
         }
         returnMap.put("instanceId", mqttConfig.getInstanceId());
         returnMap.put("accessKey", mqttConfig.getAccessKey());
+        returnMap.put("endPoint", mqttConfig.getEndPoint());
         return returnMap;
     }
 

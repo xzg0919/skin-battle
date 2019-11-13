@@ -151,10 +151,10 @@ public class MQ4IoTSendMessageToMQ4IoTUseSignatureMode {
          * MQ4IoT支持点对点消息，即如果发送方明确知道该消息只需要给特定的一个设备接收，且知道对端的 clientId，则可以直接发送点对点消息。
          * 点对点消息不需要经过订阅关系匹配，可以简化订阅方的逻辑。点对点消息的 topic 格式规范是  {{parentTopic}}/p2p/{{targetClientId}}
          */
-//        final String p2pSendTopic = parentTopic + "/p2p/" + "admin";
+        final String p2pSendTopic = parentTopic + "/p2p/" + "admin";
         message = new MqttMessage("hello mq4Iot p2p msg".getBytes());
         message.setQos(qosLevel);
-//        mqttClient.publish(p2pSendTopic, message);
-//        Thread.sleep(Long.MAX_VALUE);
+        mqttClient.publish(p2pSendTopic, message);
+        Thread.sleep(Long.MAX_VALUE);
     }
 }
