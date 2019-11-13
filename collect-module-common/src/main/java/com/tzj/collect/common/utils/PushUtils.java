@@ -7,83 +7,81 @@ import com.aliyuncs.push.model.v20160801.PushRequest;
 import com.aliyuncs.push.model.v20160801.PushResponse;
 import com.aliyuncs.utils.ParameterHelper;
 import com.tzj.collect.common.constant.Const;
-import com.tzj.collect.common.utils.PushConst;
-
 import java.util.Date;
 
 public class PushUtils {
 
-
-
     /**
      * 阿里推送接口
-     * @param title  推送标题
+     *
+     * @param title 推送标题
      * @return
      */
-    public static PushResponse getAcsResponse(String recycleTel,String status,String title){
-        String aliYunAppId= "";
-        String aliYunAccessKeyId= "";
-        String aliYunSercret= "";
-        String targetValue= recycleTel;
-        String titles= PushConst.APP_TITLE;
-        String body= "";
-        String code= "";
-        String message= "";
-        String activity= "";
-        String channel= "";
-        if ("1".equals(status)){
-            channel= "1001";
-            body= PushConst.APP_CODE_01_MESSAGE;
-            code= PushConst.APP_CODE_01;
-            message= PushConst.APP_CODE_01_MESSAGE;
-        }else if ("4".equals(status)){
-            channel= "1003";
-            body= PushConst.APP_CODE_03_MESSAGE;
-            code= PushConst.APP_CODE_03;
-            message= PushConst.APP_CODE_03_MESSAGE;
-        }else if ("5".equals(status)){
-            channel= "1003";
-            body= PushConst.APP_CODE_06_MESSAGE;
-            code= PushConst.APP_CODE_06;
-            message= PushConst.APP_CODE_06_MESSAGE;
-        }else if ("2".equals(status)){
-            channel= "2000";
-            body= PushConst.APP_CODE_20_MESSAGE;
-            code= PushConst.APP_CODE_20;
-            message= PushConst.APP_CODE_20_MESSAGE;
-        }else if ("3".equals(status)){
-            channel= "2000";
-            body= PushConst.APP_CODE_20_MESSAGE;
-            code= PushConst.APP_CODE_20;
-            message= PushConst.APP_CODE_20_MESSAGE;
-        }else if ("No".equals(status)){
+    public static PushResponse getAcsResponse(String recycleTel, String status, String title) {
+        String aliYunAppId = "";
+        String aliYunAccessKeyId = "";
+        String aliYunSercret = "";
+        String targetValue = recycleTel;
+        String titles = PushConst.APP_TITLE;
+        String body = "";
+        String code = "";
+        String message = "";
+        String activity = "";
+        String channel = "";
+        if ("1".equals(status)) {
+            channel = "1001";
+            body = PushConst.APP_CODE_01_MESSAGE;
+            code = PushConst.APP_CODE_01;
+            message = PushConst.APP_CODE_01_MESSAGE;
+        } else if ("4".equals(status)) {
+            channel = "1003";
+            body = PushConst.APP_CODE_03_MESSAGE;
+            code = PushConst.APP_CODE_03;
+            message = PushConst.APP_CODE_03_MESSAGE;
+        } else if ("5".equals(status)) {
+            channel = "1003";
+            body = PushConst.APP_CODE_06_MESSAGE;
+            code = PushConst.APP_CODE_06;
+            message = PushConst.APP_CODE_06_MESSAGE;
+        } else if ("2".equals(status)) {
+            channel = "2000";
+            body = PushConst.APP_CODE_20_MESSAGE;
+            code = PushConst.APP_CODE_20;
+            message = PushConst.APP_CODE_20_MESSAGE;
+        } else if ("3".equals(status)) {
+            channel = "2000";
+            body = PushConst.APP_CODE_20_MESSAGE;
+            code = PushConst.APP_CODE_20;
+            message = PushConst.APP_CODE_20_MESSAGE;
+        } else if ("No".equals(status)) {
             //公司关闭蓝牙
             channel = PushConst.APP_CODE_31;
             body = PushConst.APP_CODE_31_MESSAGE;
             code = PushConst.APP_CODE_31;
             message = PushConst.APP_CODE_31_MESSAGE;
-        }else if ("Yes".equals(status)){
+        } else if ("Yes".equals(status)) {
             //公司开启蓝牙
             channel = PushConst.APP_CODE_30;
             body = PushConst.APP_CODE_30_MESSAGE;
             code = PushConst.APP_CODE_30;
             message = PushConst.APP_CODE_30_MESSAGE;
         }
-        if ("4".equals(title)){
+        if ("4".equals(title)) {
             aliYunAppId = Const.APP_ID_3;
             aliYunAccessKeyId = Const.ALIYUN_ACCESS_KEY_ID_3;
             aliYunSercret = Const.ALIYUN_SECRET_3;
-            activity= Const.APP_ACTIVITY_3;
-        }else {
+            activity = Const.APP_ACTIVITY_3;
+        } else {
             aliYunAppId = Const.APP_ID_1;
             aliYunAccessKeyId = Const.ALIYUN_ACCESS_KEY_ID_1;
             aliYunSercret = Const.ALIYUN_SECRET_1;
-            activity= Const.APP_ACTIVITY_1;
+            activity = Const.APP_ACTIVITY_1;
         }
-        getAcsResponse(aliYunAppId,aliYunAccessKeyId,aliYunSercret,targetValue,titles,body,code,message,activity,channel);
+        getAcsResponse(aliYunAppId, aliYunAccessKeyId, aliYunSercret, targetValue, titles, body, code, message, activity, channel);
         return null;
     }
-    public static PushResponse getAcsResponse(String aliYunAppId,String aliYunAccessKeyId,String aliYunSercret,String targetValue,String title,String body,String code,String message,String activity,String channel){
+
+    public static PushResponse getAcsResponse(String aliYunAppId, String aliYunAccessKeyId, String aliYunSercret, String targetValue, String title, String body, String code, String message, String activity, String channel) {
         PushRequest pushRequest = new PushRequest();
         pushRequest.setAppKey(Long.parseLong(aliYunAppId));
         pushRequest.setTarget("ACCOUNT"); //推送目标: DEVICE:推送给设备; ACCOUNT:推送给指定帐号,TAG:推送给自定义标签; ALIAS: 按别名推送; ALL: 全推
@@ -120,7 +118,7 @@ public class PushUtils {
 //        pushRequest.setAndroidXiaoMiActivity("com.tzj.pro.tzj.base.PopupPushActivity");//设置该参数后启动小米托管弹窗功能, 此处指定通知点击后跳转的Activity（托管弹窗的前提条件：1. 集成小米辅助通道；2. StoreOffline参数设为true）
 //        pushRequest.setAndroidXiaoMiNotifyTitle("Popup Title");
 //        pushRequest.setAndroidXiaoMiNotifyBody("Popup Body");
-        pushRequest.setAndroidExtParameters("{\"code\":\""+code+"\",\"message\":\""+message+"\"}"); //设定通知的扩展属性。(注意 : 该参数要以 json map 的格式传入,否则会解析出错)
+        pushRequest.setAndroidExtParameters("{\"code\":\"" + code + "\",\"message\":\"" + message + "\"}"); //设定通知的扩展属性。(注意 : 该参数要以 json map 的格式传入,否则会解析出错)
 //        // 推送控制
 //        Date pushDate = new Date(System.currentTimeMillis()); // 30秒之间的时间点, 也可以设置成你指定固定时间
 //        String pushTime = ParameterHelper.getISO8601Time(pushDate);
@@ -132,19 +130,17 @@ public class PushUtils {
         IClientProfile profile = DefaultProfile.getProfile("cn-shanghai", aliYunAccessKeyId, aliYunSercret);
         DefaultAcsClient client = new DefaultAcsClient(profile);
         PushResponse pushResponse = null;
-        try{
-            System.out.println("开始给用户推送信息了 ："+targetValue);
+        try {
+            System.out.println("开始给用户推送信息了 ：" + targetValue);
             pushResponse = client.getAcsResponse(pushRequest);
-            System.out.println( pushResponse.getRequestId()+"......."+ pushResponse.getMessageId());
-        }catch (Exception e){
+            System.out.println(pushResponse.getRequestId() + "......." + pushResponse.getMessageId());
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return pushResponse;
     }
 
-
-
     public static void main(String[] args) {
-       // PushUtils.getAcsResponse("15691728708","垃圾分类回收","垃圾分类回收内容","1002","垃圾是龙建");
+        // PushUtils.getAcsResponse("15691728708","垃圾分类回收","垃圾分类回收内容","1002","垃圾是龙建");
     }
 }
