@@ -1,7 +1,7 @@
 package com.tzj.collect.api.business;
 
 import com.taobao.api.ApiException;
-import com.tzj.collect.api.business.result.BusinessCategoryResult;
+import com.tzj.collect.core.result.business.BusinessCategoryResult;
 import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.business.CategoryBean;

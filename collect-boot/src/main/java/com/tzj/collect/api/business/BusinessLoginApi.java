@@ -6,7 +6,7 @@ import com.tzj.collect.core.service.CompanyAccountService;
 import com.tzj.collect.core.service.CompanyService;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.param.TokenBean;
+import com.tzj.collect.core.param.token.TokenBean;
 import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

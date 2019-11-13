@@ -6,7 +6,7 @@ import com.tzj.collect.core.mapper.CompanyAccountMapper;
 import com.tzj.collect.core.param.business.CompanyAccountBean;
 import com.tzj.collect.core.service.CompanyAccountService;
 import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.param.TokenBean;
+import com.tzj.collect.core.param.token.TokenBean;
 import static com.tzj.common.constant.TokenConst.BUSINESS_API_EXPRIRE;
 import static com.tzj.common.constant.TokenConst.BUSINESS_API_TOKEN_CYPTO_KEY;
 import static com.tzj.common.constant.TokenConst.BUSINESS_API_TOKEN_SECRET_KEY;

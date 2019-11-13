@@ -1,7 +1,7 @@
 package com.tzj.collect.core.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.tzj.collect.api.business.result.BusinessCategoryResult;
+import com.tzj.collect.core.result.business.BusinessCategoryResult;
 import com.tzj.collect.core.param.ali.AliCategoryAttrOptionBean;
 import com.tzj.collect.entity.CompanyCategoryAttrOptionCity;
 import org.apache.ibatis.annotations.Param;

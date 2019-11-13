@@ -6,7 +6,7 @@ import com.tzj.collect.core.param.enterprise.EnterpriseTerminalBean;
 import com.tzj.collect.core.service.EnterpriseTerminalService;
 import com.tzj.collect.core.service.MessageService;
 import com.tzj.collect.entity.EnterpriseTerminal;
-import com.tzj.collect.param.TokenBean;
+import com.tzj.collect.core.param.token.TokenBean;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;

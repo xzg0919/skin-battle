@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
-import com.tzj.collect.api.business.result.BusinessCategoryResult;
+import com.tzj.collect.core.result.business.BusinessCategoryResult;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.CompanyCategory;

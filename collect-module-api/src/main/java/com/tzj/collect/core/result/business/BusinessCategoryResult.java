@@ -1,4 +1,4 @@
-package com.tzj.collect.api.business.result;
+package com.tzj.collect.core.result.business;
 
 public class BusinessCategoryResult {
 

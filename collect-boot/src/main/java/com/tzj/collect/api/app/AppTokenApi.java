@@ -8,7 +8,7 @@ import com.tzj.collect.core.service.MessageService;
 import com.tzj.collect.core.service.RecyclersService;
 import com.tzj.collect.core.service.RecyclersTitleService;
 import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.param.TokenBean;
+import com.tzj.collect.core.param.token.TokenBean;
 import static com.tzj.common.constant.TokenConst.*;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;

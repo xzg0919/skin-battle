@@ -3,7 +3,7 @@ package com.tzj.collect.core.service.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.api.business.result.BusinessCategoryResult;
+import com.tzj.collect.core.result.business.BusinessCategoryResult;
 import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.common.utils.AmapUtil;
 import com.tzj.collect.core.mapper.CategoryAttrOptionMapper;

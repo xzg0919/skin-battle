@@ -1,4 +1,4 @@
-package com.tzj.collect.param;
+package com.tzj.collect.core.param.token;
 
 import com.tzj.module.easyopen.doc.annotation.ApiDocField;
 
