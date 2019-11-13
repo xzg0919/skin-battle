@@ -8,6 +8,8 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
+import com.tzj.collect.common.constant.AlipayConst;
+import com.tzj.collect.common.constant.RocketMqConst;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.Member;
 import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
@@ -313,7 +315,7 @@ public class AliPayServiceImpl implements AliPayService {
             if (!response.isSuccess()) {
                 System.out.println("更新会员卡积分失败");
                 DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName(),
-                         Thread.currentThread().getStackTrace()[1].getMethodName(), "更新会员卡积分失败",
+                        Thread.currentThread().getStackTrace()[1].getMethodName(), "更新会员卡积分失败",
                         RocketMqConst.DINGDING_ERROR, response.getBody());
             } else {
                 System.out.println("更新会员卡积分成功");

@@ -87,6 +87,19 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
         </dependency>
-
+        
+        
+        
+        <dependency>
+            <groupId>com.alipay</groupId>
+            <artifactId>ali-dayu</artifactId>
+            <version>20160607</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>4.1.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 </project>
