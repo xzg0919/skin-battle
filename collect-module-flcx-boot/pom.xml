@@ -142,6 +142,17 @@
             <artifactId>alipay-sdk</artifactId>
             <version>${alipay-sdk.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+        
+        
     </dependencies>
 
 
