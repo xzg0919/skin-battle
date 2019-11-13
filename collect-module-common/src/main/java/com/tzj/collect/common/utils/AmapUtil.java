@@ -1,5 +1,6 @@
 package com.tzj.collect.common.utils;
 
+import com.tzj.collect.api.commom.excel.AmapConst;
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.json.AmapRegeoJson;
 import com.tzj.collect.core.result.ali.AmapResult;

@@ -7,6 +7,7 @@ import com.aliyuncs.push.model.v20160801.PushRequest;
 import com.aliyuncs.push.model.v20160801.PushResponse;
 import com.aliyuncs.utils.ParameterHelper;
 import com.tzj.collect.common.constant.Const;
+import com.tzj.collect.common.utils.PushConst;
 
 import java.util.Date;
 
