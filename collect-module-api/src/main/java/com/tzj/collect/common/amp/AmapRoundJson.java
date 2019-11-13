@@ -1,4 +1,4 @@
-package com.tzj.collect.api.ali.json;
+package com.tzj.collect.common.amp;
 
 import java.util.List;
 

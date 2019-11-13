@@ -1,8 +1,8 @@
 package com.tzj.collect.api.ali;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.json.AmapRegeoJson;
-import com.tzj.collect.api.ali.json.AmapRoundJson;
+import com.tzj.collect.common.amp.AmapRegeoJson;
+import com.tzj.collect.common.amp.AmapRoundJson;
 import com.tzj.collect.common.constant.AmapConst;
 import com.tzj.collect.core.param.ali.AmapAroundParam;
 import com.tzj.collect.core.result.ali.AmapResult;
