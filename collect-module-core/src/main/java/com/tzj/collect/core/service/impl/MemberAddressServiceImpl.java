@@ -13,7 +13,7 @@ import com.tzj.collect.core.service.MemberAddressService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Community;
 import com.tzj.collect.entity.MemberAddress;
-import com.tzj.collect.module.common.shard.ShardTableHelper;
+import com.tzj.collect.common.shard.ShardTableHelper;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

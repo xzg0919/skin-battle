@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import static com.tzj.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 /**
  * 积分商城相关Api

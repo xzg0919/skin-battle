@@ -7,7 +7,7 @@ import com.aliyun.mns.client.MNSClient;
 import com.aliyun.mns.model.RawTopicMessage;
 import com.aliyun.mns.model.TopicMessage;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.mq.RocketMqConst;
 import com.tzj.collect.core.mapper.SendRocketmqMessageMapper;
 import com.tzj.collect.core.service.SendRocketmqMessageService;
 import com.tzj.collect.entity.SendRocketmqMessage;

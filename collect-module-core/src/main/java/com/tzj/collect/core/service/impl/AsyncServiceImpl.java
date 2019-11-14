@@ -16,7 +16,7 @@ import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.AsyncService;
-import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
+import com.tzj.collect.common.notify.DingTalkNotify;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import javax.crypto.Mac;

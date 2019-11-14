@@ -12,7 +12,7 @@ import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.tzj.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 
 /**
  * 上门回收时间日志

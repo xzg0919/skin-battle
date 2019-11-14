@@ -2,7 +2,7 @@ package com.tzj.iot.validator.app;
 
 import com.tzj.collect.core.service.RecyclersService;
 import com.tzj.collect.entity.Recyclers;
-import static com.tzj.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.util.EhCache2Utils;

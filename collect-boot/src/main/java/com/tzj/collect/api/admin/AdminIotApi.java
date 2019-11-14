@@ -11,7 +11,7 @@ import com.tzj.module.api.annotation.SignIgnore;
 import javax.annotation.Resource;
 import java.util.Map;
 
-import static com.tzj.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 @ApiService
 public class AdminIotApi {

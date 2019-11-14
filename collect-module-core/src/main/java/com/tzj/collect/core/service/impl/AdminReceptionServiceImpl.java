@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.AdminReceptionMapper;
 import com.tzj.collect.core.service.AdminReceptionService;
 import com.tzj.collect.entity.AdminReception;
-import static com.tzj.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.*;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import java.util.HashMap;

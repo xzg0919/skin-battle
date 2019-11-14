@@ -1,9 +1,9 @@
 package com.tzj.collect.controller.admin;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.commom.excel.ExcelData;
-import com.tzj.collect.api.commom.excel.ExcelUtils;
-import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.common.excel.ExcelData;
+import com.tzj.collect.common.excel.ExcelUtils;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.SnUtils;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.OrderBean;

@@ -2,7 +2,7 @@ package com.tzj.collect.core.utils;
 
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.MemberAddress;
-import com.tzj.collect.module.common.shard.ShardTableHelper;
+import com.tzj.collect.common.shard.ShardTableHelper;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,7 +1,7 @@
 package com.tzj.collect.api.ali;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.config.ApplicationInit;
 import com.tzj.collect.core.param.ali.CategoryBean;
@@ -11,7 +11,7 @@ import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Order.OrderType;
-import static com.tzj.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import java.text.SimpleDateFormat;

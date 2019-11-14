@@ -6,7 +6,7 @@ import com.tzj.collect.entity.Admin;
 import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.tzj.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 @ApiService
 public class AdminApi {

@@ -1,7 +1,7 @@
 package com.tzj.collect.flcx.controller;
 
 
-import com.tzj.collect.api.commom.excel.ExcelUtils;
+import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.service.FlcxTypeService;
 import com.tzj.module.easyopen.ApiConfig;
 import com.tzj.module.easyopen.support.ApiController;

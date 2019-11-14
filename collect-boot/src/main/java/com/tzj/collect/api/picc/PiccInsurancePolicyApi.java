@@ -8,7 +8,7 @@ import com.tzj.collect.core.service.PiccInsurancePolicyService;
 import com.tzj.collect.entity.PiccCompany;
 import com.tzj.collect.entity.PiccInsurancePolicyAgreement;
 import com.tzj.collect.entity.PiccInsurancePolicyContent;
-import static com.tzj.common.constant.TokenConst.PICC_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.PICC_API_COMMON_AUTHORITY;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;

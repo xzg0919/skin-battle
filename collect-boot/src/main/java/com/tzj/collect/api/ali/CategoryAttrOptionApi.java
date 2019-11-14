@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.tzj.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 /**
  * 分类属性相关api

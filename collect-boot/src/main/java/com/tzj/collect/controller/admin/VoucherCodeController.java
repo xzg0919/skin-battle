@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.common.utils.VoucherConst;
+import com.tzj.collect.common.constant.VoucherConst;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.service.AreaService;
 import com.tzj.collect.core.service.VoucherAliService;

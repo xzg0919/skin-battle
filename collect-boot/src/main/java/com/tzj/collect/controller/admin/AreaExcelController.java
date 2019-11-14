@@ -1,6 +1,6 @@
 package com.tzj.collect.controller.admin;
 
-import com.tzj.collect.api.commom.excel.ExcelUtils;
+import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.core.service.AreaService;
 import java.util.ArrayList;
 import java.util.Arrays;

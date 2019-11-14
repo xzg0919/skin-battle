@@ -1,8 +1,8 @@
 package com.tzj.collect.controller;
 
-import static com.tzj.common.constant.TokenConst.BUSINESS_API_TOKEN_CYPTO_KEY;
-import static com.tzj.common.constant.TokenConst.BUSINESS_API_TOKEN_SECRET_KEY;
-import static com.tzj.common.constant.TokenConst.BUSINESS_API_TOKEN_SIGN_KEY;
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_CYPTO_KEY;
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_SECRET_KEY;
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_TOKEN_SIGN_KEY;
 
 import java.util.HashMap;
 import java.util.Map;

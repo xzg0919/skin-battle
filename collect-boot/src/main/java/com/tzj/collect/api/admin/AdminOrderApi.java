@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Map;
 
-import static com.tzj.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 @ApiService
 public class AdminOrderApi {

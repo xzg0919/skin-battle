@@ -10,7 +10,7 @@ import com.tzj.collect.core.param.token.TokenBean;
 import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.tzj.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 @ApiService
 public class BusinessLoginApi {

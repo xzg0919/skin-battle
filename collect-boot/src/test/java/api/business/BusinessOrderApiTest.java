@@ -24,7 +24,7 @@ import org.springframework.data.annotation.Id;
 
 import java.util.*;
 
-import static com.tzj.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * @ClassName: BusinessOrderApiTest

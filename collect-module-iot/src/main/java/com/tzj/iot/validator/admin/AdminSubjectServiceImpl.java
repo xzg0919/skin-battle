@@ -2,7 +2,7 @@ package com.tzj.iot.validator.admin;
 
 import com.tzj.collect.core.service.AdminService;
 import com.tzj.collect.entity.Admin;
-import static com.tzj.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.util.EhCache2Utils;

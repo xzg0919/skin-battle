@@ -1,6 +1,6 @@
 package com.tzj.collect.api.picc;
 
-import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.PiccCompanyUtils;
 import com.tzj.collect.core.param.ali.PiccOrderBean;
 import com.tzj.collect.core.service.PiccNumService;
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.tzj.common.constant.TokenConst.PICC_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.PICC_API_COMMON_AUTHORITY;
 
 /**
  * 保险订单表

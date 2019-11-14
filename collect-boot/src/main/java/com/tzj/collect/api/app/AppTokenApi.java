@@ -9,7 +9,7 @@ import com.tzj.collect.core.service.RecyclersService;
 import com.tzj.collect.core.service.RecyclersTitleService;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.core.param.token.TokenBean;
-import static com.tzj.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.*;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;

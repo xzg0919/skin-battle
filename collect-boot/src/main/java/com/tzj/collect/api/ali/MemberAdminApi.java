@@ -12,7 +12,7 @@ import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.tzj.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 /**
  * 会员个人中心相关接口

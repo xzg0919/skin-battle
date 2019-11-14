@@ -1,7 +1,7 @@
 package com.tzj.collect.controller.admin;
 
 
-import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.core.service.PiccOrderService;
 import com.tzj.collect.entity.PiccOrder;
 import org.springframework.beans.factory.annotation.Autowired;

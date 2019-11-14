@@ -7,7 +7,7 @@ import com.tzj.collect.core.param.enterprise.EnterpriseTerminalBean;
 import com.tzj.collect.core.service.EnterpriseTerminalService;
 import com.tzj.collect.entity.EnterpriseAccount;
 import com.tzj.collect.entity.EnterpriseTerminal;
-import static com.tzj.common.constant.TokenConst.ENTERPRISE_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ENTERPRISE_API_COMMON_AUTHORITY;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;

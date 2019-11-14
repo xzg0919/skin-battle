@@ -32,8 +32,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.tzj.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
-import static com.tzj.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 /**
  * iot设备接口

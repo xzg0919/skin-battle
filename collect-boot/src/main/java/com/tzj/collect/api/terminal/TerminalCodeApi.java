@@ -8,7 +8,7 @@ import com.tzj.collect.core.service.EnterpriseCodeService;
 import com.tzj.collect.core.service.MessageService;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.EnterpriseTerminal;
-import static com.tzj.common.constant.TokenConst.TERMINAL_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.TERMINAL_API_COMMON_AUTHORITY;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;

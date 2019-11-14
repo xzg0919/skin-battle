@@ -1,7 +1,7 @@
 package com.tzj.collect.core.thread;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.common.constant.MD5Util;
+import com.tzj.collect.common.security.MD5Util;
 import com.tzj.collect.core.service.AreaService;
 import com.tzj.collect.core.service.OrderItemAchService;
 import com.tzj.collect.core.service.OrderService;

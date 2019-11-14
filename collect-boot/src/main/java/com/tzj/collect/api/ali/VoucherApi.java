@@ -4,7 +4,7 @@ package com.tzj.collect.api.ali;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.tzj.collect.common.util.MemberUtils;
-import com.tzj.collect.common.utils.VoucherConst;
+import com.tzj.collect.common.constant.VoucherConst;
 import com.tzj.collect.core.param.ali.VoucherBean;
 import com.tzj.collect.core.service.VoucherAliService;
 import com.tzj.collect.core.service.VoucherMemberService;
@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tzj.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 @ApiService
 public class VoucherApi {

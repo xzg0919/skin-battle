@@ -1,6 +1,6 @@
 package com.tzj.collect.api.common.async;
 
-import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.api.iot.IotApi;
 import com.tzj.collect.api.iot.localmap.LatchMap;
 import org.springframework.beans.factory.annotation.Autowired;

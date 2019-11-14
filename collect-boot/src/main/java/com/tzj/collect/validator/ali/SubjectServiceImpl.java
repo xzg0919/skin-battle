@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static com.tzj.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 /**
  * @Author 胡方明（12795880@qq.com）

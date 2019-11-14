@@ -1,6 +1,6 @@
 package com.tzj.collect.core.service.impl;
 
-import com.tzj.collect.common.PostTool;
+import com.tzj.collect.common.http.PostTool;
 import com.tzj.collect.common.constant.XingeConstant;
 import com.tzj.collect.common.constant.XingeMessageCode;
 import com.tzj.collect.core.service.XingeMessageService;

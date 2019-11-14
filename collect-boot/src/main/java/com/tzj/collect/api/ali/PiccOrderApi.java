@@ -6,7 +6,7 @@ import com.tzj.collect.core.param.ali.PiccOrderBean;
 import com.tzj.collect.core.service.PiccOrderService;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.PiccOrder;
-import static com.tzj.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
