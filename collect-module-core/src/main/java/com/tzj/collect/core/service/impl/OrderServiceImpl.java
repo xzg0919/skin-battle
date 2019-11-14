@@ -570,7 +570,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 							orderItem.setPrice(companyCategory.getPrice());
 							orderItem.setUnit(companyCategory.getUnit());
 						}
-						if ("1".equals(item.getIsCash())){
+						if ("1".equals(isCash)){
 							orderItem.setPrice(0);
 						}
 						orderItemAchService.insert(orderItem);

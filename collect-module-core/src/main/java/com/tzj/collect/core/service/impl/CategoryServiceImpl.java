@@ -535,6 +535,11 @@ public class CategoryServiceImpl  extends  ServiceImpl<CategoryMapper, Category>
 		Order order = orderService.selectById(orderId);
 		Area area = areaService.selectById(order.getAreaId());
 		List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(categoryId,order.getCompanyId(),area.getParentId(),"0");
+		if ("1".equals(order.getIsCash())){
+			categoryList.stream().forEach(category -> {
+				category.setPrice(new BigDecimal("0"));
+			});
+		}
 //		List<ComCatePrice> priceList = null;
 //		priceList = companyCategoryCityService.getOwnnerPriceAppByCity(categoryId.toString(),order.getCompanyId().toString(),area.getParentId().toString());
 //		if (null==priceList||priceList.isEmpty()) {
