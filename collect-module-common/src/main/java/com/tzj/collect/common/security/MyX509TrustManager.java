@@ -1,4 +1,4 @@
-package com.tzj.collect.api.common;
+package com.tzj.collect.common.security;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

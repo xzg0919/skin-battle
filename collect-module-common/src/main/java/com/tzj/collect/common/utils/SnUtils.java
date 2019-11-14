@@ -1,4 +1,4 @@
-package com.tzj.collect.common.util;
+package com.tzj.collect.common.utils;
 
 import org.apache.commons.lang3.StringUtils;
 

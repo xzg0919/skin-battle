@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.excel.ExcelData;
 import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.commom.redis.RedisUtil;
-import com.tzj.collect.common.util.SnUtils;
+import com.tzj.collect.common.utils.SnUtils;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PiccOrderBean;
