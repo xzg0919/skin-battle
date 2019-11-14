@@ -12,3 +12,13 @@
 
 4、collect-boot
 收呗 boot 启动应用
+
+
+
+
+二、注意包名规范
+1、collect-module-common 里面的包名规范
+com.tzj.collect.common.具体的工具类型
+
+
+2、
