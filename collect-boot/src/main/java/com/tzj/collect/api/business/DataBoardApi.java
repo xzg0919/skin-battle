@@ -26,7 +26,7 @@ import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUT
  *
  */
 @ApiService
-public class DataBoard {
+public class DataBoardApi {
 	
 	@Autowired
 	private OrderLogService orderLogService;

@@ -1,4 +1,4 @@
-package com.tzj.collect.api.commom.redis;
+package com.tzj.collect.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

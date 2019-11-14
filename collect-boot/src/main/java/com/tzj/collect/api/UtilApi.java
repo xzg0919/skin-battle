@@ -1,4 +1,4 @@
-package com.tzj.collect.common;
+package com.tzj.collect.api;
 
 
 import com.alibaba.fastjson.JSONObject;

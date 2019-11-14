@@ -1,4 +1,4 @@
-package com.tzj.collect.api.ali.utils;
+package com.tzj.collect.common.util;
 
 import java.io.Serializable;
 
