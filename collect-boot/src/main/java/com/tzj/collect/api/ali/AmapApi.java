@@ -1,14 +1,14 @@
 package com.tzj.collect.api.ali;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.commom.constant.AmapConst;
+import com.tzj.collect.common.amap.AmapConst;
 import com.tzj.collect.common.amap.AmapRegeoJson;
 import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.common.amap.AmapRoundJson;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import com.tzj.collect.core.param.ali.AmapAroundParam;
 import com.tzj.collect.core.service.CommunityService;
 import com.tzj.collect.entity.Community;
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
