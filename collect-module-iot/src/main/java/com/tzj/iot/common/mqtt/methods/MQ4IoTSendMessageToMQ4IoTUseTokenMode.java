@@ -1,7 +1,7 @@
 package com.tzj.iot.common.mqtt.methods;
 
-import com.tzj.iot.common.mqtt.util.ConnectionOptionWrapper;
-import com.tzj.iot.common.mqtt.util.Tools;
+import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
+import com.tzj.collect.api.commom.mqtt.util.Tools;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Value;

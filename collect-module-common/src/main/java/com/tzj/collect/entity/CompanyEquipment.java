@@ -2,6 +2,7 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IEnum;
 import lombok.Data;
 
 import java.util.Date;
@@ -54,10 +55,58 @@ public class CompanyEquipment extends  DataEntity<Long> {
 
     private String activateTel;//激活手机号
 
-    private String captcha;//手机激活码
+    private String captcha;//开箱码（使用过后变更）
 
     private double setValue;//满溢设定值
 
     private double currentValue;//满溢当前值
+    
+    
+    /**
+     * 设备动作指令
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/11/15 0015
+     * @Param: 
+     * @return: 
+     */
+    public static class EquipmentAction{
+        public enum  EquipmentActionCode implements IEnum {
+            EQUIPMENT_OPEN("20000", "打开箱门"),   	 //打开箱门
+            EQUIPMENT_CLOSE("20001", "关闭箱门"),   	 //关闭箱门
+            RECYCLE_OPEN("30001", "清运开门"),   	 //清运开门
+            RECYCLE_CLOSE("30002", "清运关门"),       //清运关门
+            UPLOAD_STATUS("40001", "上传设备满溢状态"),
+            DISCERN_FINISH("50001", "识别完成"),
+            DISCERN_ERROR("50002", "识别错误"),
+            CHANGE_ADVENT("60001", "更换广告"),
+            FLIP_BAFFLE("70001", "翻转挡板");
+            private String key;
+
+            private String value;
+
+            EquipmentActionCode(final String key, final String value) {
+                this.key = key;
+                this.value = value;
+            }
+
+            public String getKey() {
+                return key;
+            }
+
+            public String getValue() {
+                return value;
+            }
+
+            public static String getValueByKey(String key) {
+                EquipmentActionCode[] enums = EquipmentActionCode.values();
+                for (int i = 0; i < enums.length; i++) {
+                    if (enums[i].getKey().equals(key)) {
+                        return enums[i].getValue();
+                    }
+                }
+                return "";
+            }
+        }
+    }
 
 }

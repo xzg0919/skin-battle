@@ -1,8 +1,8 @@
 package com.tzj.iot.api.mqtt;
 
+import com.tzj.collect.api.commom.mqtt.util.Tools;
 import com.tzj.collect.core.param.iot.MqttAppBean;
-import com.tzj.iot.common.mqtt.util.Tools;
-import com.tzj.iot.config.MQTTConfig;
+import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.module.api.annotation.*;
 
 import javax.annotation.Resource;

@@ -15,7 +15,7 @@ public class MqttTest {
     public static void main(String[] args) throws Exception {
         String api="http://localhost:9006/equipment/app/api";
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","equipment.token.get");
+        param.put("name","equipment.advert");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_8");

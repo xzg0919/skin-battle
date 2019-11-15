@@ -1,9 +1,10 @@
 package com.tzj.iot.common.mqtt.methods;
 
-import com.tzj.iot.common.mqtt.util.ConnectionOptionWrapper;
+import com.tzj.collect.api.commom.mqtt.MQTTConfig;
+import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.concurrent.ExecutorService;
@@ -17,17 +18,20 @@ import java.util.concurrent.TimeUnit;
  * @author sgmark
  * @create 2019-11-06 10:29
  **/
+@Service
 public class MQ4IoTSendMessageToMQ4IoTUseSignatureMode {
 
     final int qosLevel = 0;
     @Resource(name = "connectionOptionWrapperSignature")
     private ConnectionOptionWrapper connectionOptionWrapperSignature;
-    @Value("${mqtt-config.instanceId}")
-    private String  instanceId;
-    @Value("${mqtt-config.clientId}")
-    private String clientId;
-    @Value("${mqtt-config.parentTopic}")
-    private String parentTopic;
+//    @Value("${mqtt-config.instanceId}")
+//    private String  instanceId;
+//    @Value("${mqtt-config.clientId}")
+//    private String clientId;
+//    @Value("${mqtt-config.parentTopic}")
+//    private String parentTopic;
+    @Resource
+    private MQTTConfig mqttConfig;
 
     public void sendMessageToMQ4IoTUseSignatureMode(String message, String sendTo) throws MqttException {
         MqttMessage mqttMessage = new MqttMessage(message.getBytes());
@@ -37,13 +41,13 @@ public class MQ4IoTSendMessageToMQ4IoTUseSignatureMode {
          * 客户端使用的协议和端口必须匹配，具体参考文档 https://help.aliyun.com/document_detail/44866.html?spm=a2c4g.11186623.6.552.25302386RcuYFB
          * 如果是 SSL 加密则设置ssl://endpoint:8883
          */
-        final MqttClient mqttClient = new MqttClient("tcp://" +  instanceId + ":1883", clientId, memoryPersistence);
+        final MqttClient mqttClient = new MqttClient("tcp://" +  mqttConfig.getInstanceId() + ":1883", mqttConfig.getClientId(), memoryPersistence);
         mqttClient.connect(connectionOptionWrapperSignature.getMqttConnectOptions());
         /**
          * 客户端设置好发送超时时间，防止无限阻塞
          */
         mqttClient.setTimeToWait(5000);
-        mqttClient.publish(parentTopic + "/" + sendTo, mqttMessage);
+        mqttClient.publish(mqttConfig.getParentTopic() + "/" + sendTo, mqttMessage);
     }
 
 

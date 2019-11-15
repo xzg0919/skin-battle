@@ -1,4 +1,4 @@
-package com.tzj.iot.common.mqtt.util;
+package com.tzj.collect.api.commom.mqtt.util;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 
