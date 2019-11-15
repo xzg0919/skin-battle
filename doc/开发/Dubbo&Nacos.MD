@@ -34,6 +34,9 @@
 dubbo.application.name = your-dubbo-application
 dubbo.registry.address = nacos://10.20.153.10:8848
 
+dubbo.protocol.name = dubbo
+dubbo.protocol.port = -1
+
 3、Application增加
 @EnableDubbo(scanBasePackages = "com.alibaba.dubbo.demo.service")
 @PropertySource(value = "classpath:/provider-config.properties")
