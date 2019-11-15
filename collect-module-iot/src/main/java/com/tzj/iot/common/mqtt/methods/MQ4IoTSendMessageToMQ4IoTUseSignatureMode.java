@@ -24,12 +24,6 @@ public class MQ4IoTSendMessageToMQ4IoTUseSignatureMode {
     final int qosLevel = 0;
     @Resource(name = "connectionOptionWrapperSignature")
     private ConnectionOptionWrapper connectionOptionWrapperSignature;
-//    @Value("${mqtt-config.instanceId}")
-//    private String  instanceId;
-//    @Value("${mqtt-config.clientId}")
-//    private String clientId;
-//    @Value("${mqtt-config.parentTopic}")
-//    private String parentTopic;
     @Resource
     private MQTTConfig mqttConfig;
 
@@ -48,6 +42,7 @@ public class MQ4IoTSendMessageToMQ4IoTUseSignatureMode {
          */
         mqttClient.setTimeToWait(5000);
         mqttClient.publish(mqttConfig.getParentTopic() + "/" + sendTo, mqttMessage);
+        mqttClient.close();
     }
 
 

@@ -61,4 +61,13 @@ public interface PaymentService extends IService<Payment> {
      * @return
      */
      AlipayTradeCloseResponse paymentCloseByTradeNo(String outTradeNo);
+
+     /**
+      * iot定金回退接口
+      * @author: sgmark@aliyun.com
+      * @Date: 2019/11/15 0015
+      * @Param: 
+      * @return: 
+      */
+    AlipayFundTransToaccountTransferResponse iotTransfer(String aliUserId, String price, String outBizNo);
 }

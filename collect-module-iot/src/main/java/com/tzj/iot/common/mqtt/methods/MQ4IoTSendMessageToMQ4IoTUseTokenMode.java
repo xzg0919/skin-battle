@@ -24,7 +24,7 @@ public class MQ4IoTSendMessageToMQ4IoTUseTokenMode {
 
     final int qosLevel = 0;
     @Resource(name = "connectionOptionWrapperToken")
-    private ConnectionOptionWrapper connectionOptionWrapperSignature;
+    private ConnectionOptionWrapper connectionOptionWrapperToken;
     @Value("${mqtt-config.instanceId}")
     private String  instanceId;
     @Value("${mqtt-config.clientId}")
@@ -41,12 +41,13 @@ public class MQ4IoTSendMessageToMQ4IoTUseTokenMode {
          * 如果是 SSL 加密则设置ssl://endpoint:8883
          */
         final MqttClient mqttClient = new MqttClient("tcp://" +  instanceId + ":1883", clientId, memoryPersistence);
-        mqttClient.connect(connectionOptionWrapperSignature.getMqttConnectOptions());
+        mqttClient.connect(connectionOptionWrapperToken.getMqttConnectOptions());
         /**
          * 客户端设置好发送超时时间，防止无限阻塞
          */
         mqttClient.setTimeToWait(5000);
         mqttClient.publish(parentTopic + "/" + sendTo, mqttMessage);
+        mqttClient.close();
     }
 
     public static void main(String[] args) throws Exception {

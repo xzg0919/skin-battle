@@ -368,4 +368,22 @@
 				scr.recycler_id
 		) scrsc ON scrsc.recycler_id = srr.id
 	</select>
+	<select id="selectRecByHardwareCode" resultType="Map">
+		SELECT
+			scr.recycler_id AS recId,
+			sce.equipment_code AS equipmentCode,
+			sce.address,
+			sce.company_id as comId,
+			sce.area_id as areaId
+		FROM
+			sb_company_recycler scr
+		INNER JOIN sb_company_equipment sce
+		WHERE
+			sce.del_flag = 0
+		AND scr.del_flag = 0
+		AND sce.hardware_code = #{topic}
+		ORDER BY
+			RAND()
+		LIMIT 1
+	</select>
 </mapper>

@@ -8,7 +8,6 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
 import java.security.InvalidKeyException;
@@ -17,6 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static com.tzj.collect.api.commom.constant.MQTTConst.*;
 
 /**
  * mqtt消息监听
@@ -27,18 +28,12 @@ import java.util.concurrent.TimeUnit;
 public class MQTTMessageListener {
     protected final static Logger logger = LoggerFactory.getLogger(MQTTConfig.class);
 
-    @Value("${mqtt-config.instanceId}")
-    private String  instanceId;
-    @Value("${mqtt-config.accessKey}")
-    private String accessKey;
-    @Value("${mqtt-config.secretKey}")
-    private String secretKey;
-    @Value("${mqtt-config.clientId}")
-    private String clientId;
-    @Value("${mqtt-config.parentTopic}")
-    private String parentTopic;
-    @Value("${mqtt-config.endPoint}")
-    private String endPoint;
+    private String  instanceId = INSTANCE_ID;
+    private String accessKey = ACCESS_KEY;
+    private String secretKey = SECRET_KEY;
+    private String clientId = CLIENT_ID;
+    private String parentTopic = PARENT_TOPIC;
+    private String endPoint = END_POINT;
 
     final String tokenServerUrl = "https://mqauth.aliyuncs.com";
 
@@ -55,7 +50,7 @@ public class MQTTMessageListener {
         /**
          * QoS参数代表传输质量，可选0，1，2，根据实际需求合理设置，具体参考 https://help.aliyun.com/document_detail/42420.html?spm=a2c4g.11186623.6.544.1ea529cfAO5zV3
          */
-        final int qosLevel = 0;
+        final int qosLevel = 1;
         ConnectionOptionWrapper connectionOptionWrapper = new ConnectionOptionWrapper(instanceId, accessKey, secretKey, clientId);
         final MemoryPersistence memoryPersistence = new MemoryPersistence();
         /**

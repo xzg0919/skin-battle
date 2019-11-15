@@ -328,4 +328,27 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         System.out.println(response.getBody());
         return response;
     }
+
+
+    public  AlipayFundTransToaccountTransferResponse iotTransfer(String aliUserId, String price, String outBizNo){
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+
+        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
+        model.setOutBizNo(outBizNo);
+        model.setPayeeType("ALIPAY_USERID");
+        model.setPayeeAccount(aliUserId);
+        model.setAmount(price);
+        model.setPayerShowName("支付宝垃圾分类回收");
+        model.setRemark("定金回退");
+        request.setBizModel(model);
+        AlipayFundTransToaccountTransferResponse response =null;
+        try {
+            response  = alipayClient.execute(request);
+//            System.out.println(response);
+        }catch (AlipayApiException e){
+            throw new ApiException("系统异常：" + e.getErrMsg());
+        }
+        return response;
+    }
 }

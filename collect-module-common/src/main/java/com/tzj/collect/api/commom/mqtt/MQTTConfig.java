@@ -7,16 +7,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.tzj.collect.api.commom.constant.MQTTConst.*;
 
 /**
  * @author sgmark
@@ -28,18 +28,12 @@ public class MQTTConfig  {
 
     protected final static Logger logger = LoggerFactory.getLogger(MQTTConfig.class);
 
-    @Value("${mqtt-config.instanceId}")
-    private String  instanceId;
-    @Value("${mqtt-config.accessKey}")
-    private String accessKey;
-    @Value("${mqtt-config.secretKey}")
-    private String secretKey;
-    @Value("${mqtt-config.clientId}")
-    private String clientId;
-    @Value("${mqtt-config.parentTopic}")
-    private String parentTopic;
-    @Value("${mqtt-config.endPoint}")
-    private String endPoint;
+    private String  instanceId = INSTANCE_ID;
+    private String accessKey = ACCESS_KEY;
+    private String secretKey = SECRET_KEY;
+    private String clientId = CLIENT_ID;
+    private String parentTopic = PARENT_TOPIC;
+    private String endPoint = END_POINT;
 
     final String tokenServerUrl = "https://mqauth.aliyuncs.com";
     /**

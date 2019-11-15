@@ -501,4 +501,16 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		return "No";
 	}
 
+	/**
+	 * 根据硬件编号找回收人员信息
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2019/11/15 0015
+	 * @Param: 
+	 * @return: 
+	 */
+	@Override
+	public Map<String, Object> selectRecByHardwareCode(String topic) {
+		return mapper.selectRecByHardwareCode(topic);
+	}
+
 }

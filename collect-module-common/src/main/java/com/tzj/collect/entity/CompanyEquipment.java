@@ -79,7 +79,8 @@ public class CompanyEquipment extends  DataEntity<Long> {
             DISCERN_FINISH("50001", "识别完成"),
             DISCERN_ERROR("50002", "识别错误"),
             CHANGE_ADVENT("60001", "更换广告"),
-            FLIP_BAFFLE("70001", "翻转挡板");
+            FLIP_BAFFLE("70001", "翻转挡板"),
+            ERROR("00000", "错误");
             private String key;
 
             private String value;

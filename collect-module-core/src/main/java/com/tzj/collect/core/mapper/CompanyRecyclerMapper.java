@@ -103,4 +103,6 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 	 * @return: 
 	 */
 	List<Map<String, Object>> selectRecycleInfoByCompanyId(@Param("recId")Long companyId, @Param("title")String title);
+
+    Map<String, Object> selectRecByHardwareCode(@Param("topic")String topic);
 }
