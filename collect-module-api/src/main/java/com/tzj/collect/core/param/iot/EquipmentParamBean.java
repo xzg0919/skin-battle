@@ -1,4 +1,4 @@
-package com.tzj.collect.core.param.app;
+package com.tzj.collect.core.param.iot;
 
 import lombok.Data;
 

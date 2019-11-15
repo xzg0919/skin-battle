@@ -1,26 +1,12 @@
 package com.tzj.iot.api.equipment.app;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.common.utils.MemberUtils;
-import com.tzj.collect.core.param.app.EquipmentParamBean;
+import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.iot.IotErrorParamBean;
 import com.tzj.collect.core.service.*;
-import com.tzj.collect.entity.CompanyEquipment;
-import com.tzj.collect.entity.EquipmentAdvert;
-import com.tzj.collect.param.TokenBean;
 import com.tzj.module.api.annotation.*;
-import com.tzj.module.api.entity.Subject;
-import com.tzj.module.api.utils.JwtUtils;
-import com.tzj.module.easyopen.ApiContext;
-import com.tzj.module.easyopen.doc.DataType;
 import com.tzj.module.easyopen.doc.annotation.ApiDoc;
-import com.tzj.module.easyopen.doc.annotation.ApiDocField;
-import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
-import com.tzj.module.easyopen.exception.ApiException;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 

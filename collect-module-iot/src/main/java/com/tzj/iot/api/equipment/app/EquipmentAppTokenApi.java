@@ -1,11 +1,11 @@
 package com.tzj.iot.api.equipment.app;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.core.param.app.EquipmentParamBean;
+import com.tzj.collect.core.param.iot.EquipmentParamBean;
+import com.tzj.collect.core.param.token.TokenBean;
 import com.tzj.collect.core.service.CompanyEquipmentService;
 import com.tzj.collect.core.service.MessageService;
 import com.tzj.collect.entity.CompanyEquipment;
-import com.tzj.collect.param.TokenBean;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;

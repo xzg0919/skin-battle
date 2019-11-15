@@ -1,24 +1,16 @@
 package com.tzj.collect.core.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.EquipmentAdvertMapper;
-import com.tzj.collect.core.mapper.EquipmentErrorListMapper;
-import com.tzj.collect.core.param.iot.AdminIotErrorBean;
-import com.tzj.collect.core.param.iot.IotErrorParamBean;
 import com.tzj.collect.core.service.EquipmentAdvertService;
-import com.tzj.collect.core.service.EquipmentErrorListService;
+import com.tzj.collect.entity.AbstractEntity;
 import com.tzj.collect.entity.EquipmentAdvert;
-import com.tzj.collect.entity.EquipmentErrorList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
