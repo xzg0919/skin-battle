@@ -3,7 +3,7 @@ package com.tzj.collect.controller.admin;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.mq.RocketMqConst;
 import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.core.service.RocketmqMessageService;
@@ -11,7 +11,7 @@ import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.RocketmqMessage;
 import com.tzj.module.common.aliyun.mns.Notification;
 import com.tzj.module.common.aliyun.mns.XMLUtils;
-import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
+import com.tzj.collect.common.notify.DingTalkNotify;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

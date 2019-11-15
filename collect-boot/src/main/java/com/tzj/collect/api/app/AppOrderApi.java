@@ -1,6 +1,6 @@
 package com.tzj.collect.api.app;
 
-import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.result.app.AppOrderResult;

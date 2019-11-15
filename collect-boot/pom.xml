@@ -109,21 +109,23 @@
         </dependency>
         <!-- JSON -->
 
-        <!-- 收呗本身的模块 -->
+
+
+
+
+
         <dependency>
-            <groupId>com.tzj</groupId>
-            <artifactId>collect-module-common</artifactId>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dyplsapi</artifactId>
+            <version>1.1.1</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.tzj</groupId>
-            <artifactId>collect-module-core</artifactId>
+            <groupId>com.aliyun.mns</groupId>
+            <artifactId>aliyun-sdk-mns</artifactId>
+            <version>1.1.8</version>
+            <classifier>jar-with-dependencies</classifier>
         </dependency>
-        <!-- 收呗本身的模块 -->
-
-
-
-
-
 
 
 
@@ -223,7 +225,6 @@
         <dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
-            <version>3.7.73.ALL</version>
         </dependency>
 
         <dependency>
@@ -269,8 +270,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.4</version>
-            <scope>provided</scope>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>com.tzj</groupId>-->
@@ -285,6 +284,23 @@
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-dyplsapi</artifactId>
             <version>1.1.1</version>
+        </dependency>
+
+
+
+
+
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-core</artifactId>
         </dependency>
 
     </dependencies>

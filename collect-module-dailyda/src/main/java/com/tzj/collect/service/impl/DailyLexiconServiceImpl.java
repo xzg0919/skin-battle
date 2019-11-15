@@ -7,7 +7,7 @@ import com.tzj.collect.api.lexicon.utils.JedisUtil;
 import com.tzj.collect.mapper.DailyLexiconMapper;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.module.common.shard.ShardTableHelper;
+import com.tzj.collect.common.shard.ShardTableHelper;
 import com.tzj.collect.service.DailyLexiconService;
 import com.tzj.collect.service.DailyMemberService;
 import com.tzj.module.easyopen.exception.ApiException;

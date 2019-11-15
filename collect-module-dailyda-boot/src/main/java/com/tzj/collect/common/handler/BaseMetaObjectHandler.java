@@ -2,7 +2,6 @@ package com.tzj.collect.common.handler;
 
 
 import com.baomidou.mybatisplus.mapper.MetaObjectHandler;
-import com.tzj.collect.common.constant.DataBaseConstant;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.util.Date;

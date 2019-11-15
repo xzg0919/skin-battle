@@ -1,7 +1,7 @@
 package com.tzj.collect.core.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.tzj.collect.api.business.result.BusinessCategoryResult;
+import com.tzj.collect.core.result.business.BusinessCategoryResult;
 import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
 import com.tzj.collect.core.result.ali.ComCatePrice;

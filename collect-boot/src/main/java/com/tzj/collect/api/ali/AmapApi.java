@@ -1,11 +1,12 @@
 package com.tzj.collect.api.ali;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.api.ali.json.AmapRegeoJson;
-import com.tzj.collect.api.ali.json.AmapRoundJson;
-import com.tzj.collect.common.constant.AmapConst;
+import com.tzj.collect.common.amap.AmapConst;
+import com.tzj.collect.common.amap.AmapRegeoJson;
+import com.tzj.collect.common.amap.AmapResult;
+import com.tzj.collect.common.amap.AmapRoundJson;
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import com.tzj.collect.core.param.ali.AmapAroundParam;
-import com.tzj.collect.core.result.ali.AmapResult;
 import com.tzj.collect.core.service.CommunityService;
 import com.tzj.collect.entity.Community;
 import com.tzj.module.api.annotation.Api;
@@ -18,15 +19,12 @@ import com.tzj.module.easyopen.exception.ApiException;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.lang.Assert;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
 /**
  * 高德地图相关API
@@ -67,13 +65,14 @@ public class AmapApi {
 
         Assert.hasLength(location, "请输入当前经纬度");
 
-       return this.getAmap(location);
+        return this.getAmap(location);
 
     }
 
     @Api(name = "amap.around", version = "1.0", ignoreSign = true)
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    @ApiDocMethod(description = "周边搜索", remark = "关键字可以为空", results = {@ApiDocField(description = "周边地址信息", name = "amapResults", elementClass = AmapResult.class)})
+    @ApiDocMethod(description = "周边搜索", remark = "关键字可以为空", results = {
+        @ApiDocField(description = "周边地址信息", name = "amapResults", elementClass = AmapResult.class)})
     public List<AmapResult> around(AmapAroundParam aroundParam) throws Exception {
 
         Assert.notNull(aroundParam);
@@ -125,12 +124,11 @@ public class AmapApi {
             throw new ApiException("调用高德地图服务出错啦！原因：高德API结果返回为空！");
         }
 
-
         return amapResults;
     }
 
-    public static  AmapResult getAmap(String location) throws Exception{
-        if(StringUtils.isBlank(location)){
+    public static AmapResult getAmap(String location) throws Exception {
+        if (StringUtils.isBlank(location)) {
             throw new ApiException("经纬度不能为空");
         }
 
@@ -203,7 +201,6 @@ public class AmapApi {
                                 result.setName(name);
                             }
                         }*/
-
                         if (neighborhood != null) {
                             if (neighborhood.getName() != null && neighborhood.getName().size() > 0) {
                                 String neighborhoodName = neighborhood.getName().get(0).toString();
@@ -215,14 +212,12 @@ public class AmapApi {
                             }
                         }
 
-
                         //还为空，那么截取
                         String formattedName = address.substring(address.lastIndexOf(township) + township.length(), address.length());
                         result.setFormattedAd(formattedName);
                         if (org.apache.commons.lang3.StringUtils.isBlank(result.getName())) {
                             result.setName(formattedName);
                         }
-
 
                     }
                 }

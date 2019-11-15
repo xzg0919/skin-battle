@@ -1,26 +1,25 @@
 package com.tzj.collect.controller.admin;
 
-import com.taobao.api.ApiException;
-import com.tzj.collect.api.commom.excel.ExcelUtils;
+import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.core.service.AreaService;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 垃圾分类查询excel处理
  *
  * @author sgmark
  * @create 2019-06-24 14:19
- **/
+ *
+ */
 @Controller
 @RequestMapping("area")
 public class AreaExcelController {
@@ -30,10 +29,10 @@ public class AreaExcelController {
 
     @RequestMapping("inportxls")
     @ResponseBody
-    public Map<String, Object> flcxExcelInput(final MultipartFile file)throws ApiException {
+    public Map<String, Object> flcxExcelInput(final MultipartFile file) throws Exception {
         List<Map<String, String>> mapList = new ArrayList<>();
         List<Map<String, String>> list = null;
-        List<String> keyArray = Arrays.asList("id","name","parentCode","parent","code");
+        List<String> keyArray = Arrays.asList("id", "name", "parentCode", "parent", "code");
         try {
             list = ExcelUtils.getDataListByXLSExcel(file.getInputStream(), keyArray, 0);
         } catch (Exception e) {
@@ -50,10 +49,10 @@ public class AreaExcelController {
 
     @RequestMapping("add/inportxls")
     @ResponseBody
-    public Map<String, Object> addAreaExcelInput(final MultipartFile file)throws ApiException {
+    public Map<String, Object> addAreaExcelInput(final MultipartFile file) throws Exception {
         List<Map<String, String>> mapList = new ArrayList<>();
         List<Map<String, String>> list = null;
-        List<String> keyArray = Arrays.asList("id","pri","city","area","address","all","code");
+        List<String> keyArray = Arrays.asList("id", "pri", "city", "area", "address", "all", "code");
         try {
             list = ExcelUtils.getDataListByXLSExcel(file.getInputStream(), keyArray, 0);
         } catch (Exception e) {

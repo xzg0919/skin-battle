@@ -1,11 +1,10 @@
 package com.tzj.collect.service.impl;
 
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.tzj.collect.api.commom.constant.AlipayConst;
+import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.service.FlcxFileUploadService;
 import com.tzj.module.common.file.upload.FileUpload;
 import com.tzj.module.common.utils.FileUtil;
@@ -13,6 +12,20 @@ import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import javax.imageio.ImageIO;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -29,24 +42,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
-import javax.imageio.ImageIO;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URLEncoder;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 /**
  * @Author 胡方明（12795880@qq.com）
- **/
+ *
+ */
 @Service
 public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
 
@@ -57,30 +56,30 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
     public Map<String, Object> upload(HttpServletRequest request) {
         HashMap<String, Object> map = new HashMap<>();
 
-        if(request instanceof StandardMultipartHttpServletRequest){
-            StandardMultipartHttpServletRequest multipartHttpServletRequest= (StandardMultipartHttpServletRequest) request;
-            Map<String, String[]> parameterMaps=multipartHttpServletRequest.getParameterMap();
+        if (request instanceof StandardMultipartHttpServletRequest) {
+            StandardMultipartHttpServletRequest multipartHttpServletRequest = (StandardMultipartHttpServletRequest) request;
+            Map<String, String[]> parameterMaps = multipartHttpServletRequest.getParameterMap();
 
             for (Map.Entry<String, String[]> entry : parameterMaps.entrySet()) {
                 String key = entry.getKey();
                 String[] value = entry.getValue();
                 if (value.length <= 1) {
-                    map.put(key,value[0]);
+                    map.put(key, value[0]);
                 } else {
                     map.put(key, org.apache.commons.lang3.StringUtils.join(value, ","));
                 }
             }
 
             MultipartFile multipartFile = null;
-            Iterator<String> itr =  multipartHttpServletRequest.getFileNames();
-            List<FileBean> fileBeanList=new LinkedList<>();
-            while(itr.hasNext()){
+            Iterator<String> itr = multipartHttpServletRequest.getFileNames();
+            List<FileBean> fileBeanList = new LinkedList<>();
+            while (itr.hasNext()) {
                 String str = itr.next();
                 multipartFile = multipartHttpServletRequest.getFile(str);
                 String fileName = multipartFile.getOriginalFilename();   //原文件名
                 MultipartFile mpf = multipartHttpServletRequest.getFile(str);
 
-                FileBean fileBean=handleUploadField(fileName,mpf);
+                FileBean fileBean = handleUploadField(fileName, mpf);
                 fileBeanList.add(fileBean);
             }
             map.put("data", JSON.toJSONString(fileBeanList));
@@ -89,33 +88,32 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
         return map;
     }
 
-    
     /**
      * 上传图片 base64加密过的
+     *
      * @return
      */
     @Override
     public List<FileBean> uploadImage(List<FileBase64Param> list) {
 
 //    	Base64.Decoder decoder = Base64.getDecoder();
-    	String tempPath = System.getProperty("java.io.tmpdir");
-    	
+        String tempPath = System.getProperty("java.io.tmpdir");
 
-    	 FileBean fileBean=new FileBean();
-    	 List<FileBean> fileBeanList=new LinkedList<>();
-    	 //开始上传文件
-    	for(FileBase64Param file : list){
-    		String extensionName = FileUtil.getExtension(file.getFileName());
-    		
-    		 if (StringUtils.isBlank(extensionName)) {
-    	            extensionName = "jpg";
-    	        }
-    		
-    		String uuid = UUID.randomUUID().toString();
-       	 	//先把文件放入临时的地方
-           File tempFile = new File(
-                   tempPath + "/original_" + uuid + "." +extensionName);
-           
+        FileBean fileBean = new FileBean();
+        List<FileBean> fileBeanList = new LinkedList<>();
+        //开始上传文件
+        for (FileBase64Param file : list) {
+            String extensionName = FileUtil.getExtension(file.getFileName());
+
+            if (StringUtils.isBlank(extensionName)) {
+                extensionName = "jpg";
+            }
+
+            String uuid = UUID.randomUUID().toString();
+            //先把文件放入临时的地方
+            File tempFile = new File(
+                    tempPath + "/original_" + uuid + "." + extensionName);
+
 //	        byte[] bytes;
 //			try {
 //				bytes = new String(decoder.decode(file.getFileContentBase64().substring(file.getFileContentBase64().lastIndexOf(",")+1,file.getFileContentBase64().length())), "UTF-8").getBytes();
@@ -131,61 +129,55 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
 //				}catch (IOException e) {
 //					e.printStackTrace();
 //			}
-			
-			
-			  BufferedImage image = null;
-				byte[] imageByte = null;
-				
-				try {
-					imageByte = DatatypeConverter.parseBase64Binary(file.getFileContentBase64().
-							substring(file.getFileContentBase64().lastIndexOf(",")+1,file.getFileContentBase64().length()));
-					ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
-					image = ImageIO.read(new ByteArrayInputStream(imageByte));
-					bis.close();
+            BufferedImage image = null;
+            byte[] imageByte = null;
 
-					ImageIO.write(image,extensionName,tempFile);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-         
-       	
+            try {
+                imageByte = DatatypeConverter.parseBase64Binary(file.getFileContentBase64().
+                        substring(file.getFileContentBase64().lastIndexOf(",") + 1, file.getFileContentBase64().length()));
+                ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+                image = ImageIO.read(new ByteArrayInputStream(imageByte));
+                bis.close();
 
-
-
-           String savePath = "collect/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
-
-           String saveLargeFile=savePath+"/bigpicture_" + uuid + "." +extensionName;
-
-           fileUpload.upload(saveLargeFile,tempFile,null);
-
-           fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveLargeFile);
-           fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveLargeFile);
-           fileBean.setOriginal(fileUpload.getImageDomain()+"/"+saveLargeFile);
-
-            //上传到OSS后，删除临时文件
-            try{
-                tempFile.delete();
-            }catch (Exception e){
+                ImageIO.write(image, extensionName, tempFile);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-           
-           fileBeanList.add(fileBean);
-    	}
-    	 
-    	return fileBeanList;
+
+            String savePath = "collect/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
+
+            String saveLargeFile = savePath + "/bigpicture_" + uuid + "." + extensionName;
+
+            fileUpload.upload(saveLargeFile, tempFile, null);
+
+            fileBean.setThumbnail(fileUpload.getImageDomain() + "/" + saveLargeFile);
+            fileBean.setBigPicture(fileUpload.getImageDomain() + "/" + saveLargeFile);
+            fileBean.setOriginal(fileUpload.getImageDomain() + "/" + saveLargeFile);
+
+            //上传到OSS后，删除临时文件
+            try {
+                tempFile.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            fileBeanList.add(fileBean);
+        }
+
+        return fileBeanList;
     }
 
     @Override
     public List<FileBean> uploadImage() {
-        List<MultipartFile> multipartFiles= ApiContext.getUploadContext().getAllFile();
-        if(multipartFiles==null || multipartFiles.size()<=0){
+        List<MultipartFile> multipartFiles = ApiContext.getUploadContext().getAllFile();
+        if (multipartFiles == null || multipartFiles.size() <= 0) {
             return new LinkedList<>();
         }
 
         String tempPath = System.getProperty("java.io.tmpdir");
-        List<FileBean> fileBeanList=new LinkedList<>();
+        List<FileBean> fileBeanList = new LinkedList<>();
 
-        for(MultipartFile multipartFile:multipartFiles){
+        for (MultipartFile multipartFile : multipartFiles) {
             String fileName = multipartFile.getOriginalFilename();
             String extensionName = FileUtil.getExtension(fileName);
 
@@ -196,7 +188,7 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
             String uuid = UUID.randomUUID().toString();
             //先把文件放入临时的地方
             File tempFile = new File(
-                    tempPath + "/original_" + uuid + "." +extensionName);
+                    tempPath + "/original_" + uuid + "." + extensionName);
             if (!tempFile.getParentFile().exists()) {
                 tempFile.getParentFile().mkdirs();
             }
@@ -207,33 +199,33 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
             if (!multipartFile.isEmpty()) {
                 try {
                     byte[] bytes = multipartFile.getBytes();
-                    BufferedOutputStream buffStream =
-                            new BufferedOutputStream(new FileOutputStream(tempFile));
+                    BufferedOutputStream buffStream
+                            = new BufferedOutputStream(new FileOutputStream(tempFile));
                     buffStream.write(bytes);
                     buffStream.close();
                 } catch (Exception e) {
-                    throw new ApiException("api文件上传发生异常："+e.getMessage());
+                    throw new ApiException("api文件上传发生异常：" + e.getMessage());
                 }
             }
 
             //保存的路径
             String savePath = "erp/supplier/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
 
-            String saveFile=savePath+"/" + uuid + "." +extensionName;
+            String saveFile = savePath + "/" + uuid + "." + extensionName;
 
-            fileUpload.upload(saveFile,tempFile,multipartFile.getContentType());
+            fileUpload.upload(saveFile, tempFile, multipartFile.getContentType());
 
-            FileBean fileBean=new FileBean();
-            fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveFile);
-            fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveFile);
-            fileBean.setOriginal(fileUpload.getImageDomain()+"/"+saveFile);
+            FileBean fileBean = new FileBean();
+            fileBean.setThumbnail(fileUpload.getImageDomain() + "/" + saveFile);
+            fileBean.setBigPicture(fileUpload.getImageDomain() + "/" + saveFile);
+            fileBean.setOriginal(fileUpload.getImageDomain() + "/" + saveFile);
 
             fileBeanList.add(fileBean);
 
             //上传到OSS后，删除临时文件
-            try{
+            try {
                 tempFile.delete();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -244,9 +236,9 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
     /**
      * 处理文件信息
      */
-    public FileBean handleUploadField(String fileName,MultipartFile mpf) {
+    public FileBean handleUploadField(String fileName, MultipartFile mpf) {
 
-        FileBean fileBean=new FileBean();
+        FileBean fileBean = new FileBean();
         String extensionName = FileUtil.getExtension(fileName);
 
         if (StringUtils.isBlank(extensionName)) {
@@ -257,12 +249,11 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
 
         //tempPath="/Volumes/Macintosh HD/temp/";
         //System.out.println("tempPath:"+tempPath);
-
         String uuid = UUID.randomUUID().toString();
 
         //先把文件放入临时的地方
         File tempFile = new File(
-                tempPath + "/original_" + uuid + "." +extensionName);
+                tempPath + "/original_" + uuid + "." + extensionName);
 
         if (!tempFile.getParentFile().exists()) {
             tempFile.getParentFile().mkdirs();
@@ -271,28 +262,28 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
         if (!mpf.isEmpty()) {
             try {
                 byte[] bytes = mpf.getBytes();
-                BufferedOutputStream buffStream =
-                        new BufferedOutputStream(new FileOutputStream(tempFile));
+                BufferedOutputStream buffStream
+                        = new BufferedOutputStream(new FileOutputStream(tempFile));
                 buffStream.write(bytes);
                 buffStream.close();
             } catch (Exception e) {
-                throw new ApiException("api文件上传发生异常："+e.getMessage());
+                throw new ApiException("api文件上传发生异常：" + e.getMessage());
             }
         }
 
         String savePath = "collect/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
-        String saveOriginalFile=savePath+"/original_" + uuid + "." +extensionName;
+        String saveOriginalFile = savePath + "/original_" + uuid + "." + extensionName;
 
-        fileUpload.upload(saveOriginalFile,tempFile,mpf.getContentType());
+        fileUpload.upload(saveOriginalFile, tempFile, mpf.getContentType());
 
-        fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveOriginalFile);
-        fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveOriginalFile);
-        fileBean.setOriginal(fileUpload.getImageDomain()+"/"+saveOriginalFile);
+        fileBean.setThumbnail(fileUpload.getImageDomain() + "/" + saveOriginalFile);
+        fileBean.setBigPicture(fileUpload.getImageDomain() + "/" + saveOriginalFile);
+        fileBean.setOriginal(fileUpload.getImageDomain() + "/" + saveOriginalFile);
 
         //上传到OSS后，删除临时文件
-        try{
+        try {
             tempFile.delete();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return fileBean;
@@ -301,8 +292,8 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
     /**
      * 上传身份证图片
      */
-    public Map<String,Object> aliUploadImage(String fileContentBase64,String side){
-        Map<String,Object> resultMap = new HashMap<String,Object>();
+    public Map<String, Object> aliUploadImage(String fileContentBase64, String side) {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
 
         String host = AlipayConst.ALI_host;
         String path = AlipayConst.ALI_path;
@@ -339,18 +330,18 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
         // 拼装请求body的json字符串
         JSONObject requestObj = new JSONObject();
         try {
-            if(is_old_format) {
+            if (is_old_format) {
                 JSONObject obj = new JSONObject();
                 obj.put("image", getParam(50, imgBase64));
-                if(config_str.length() > 0) {
+                if (config_str.length() > 0) {
                     obj.put("configure", getParam(50, config_str));
                 }
                 JSONArray inputArray = new JSONArray();
                 inputArray.add(obj);
                 requestObj.put("inputs", inputArray);
-            }else{
+            } else {
                 requestObj.put("image", imgBase64);
-                if(config_str.length() > 0) {
+                if (config_str.length() > 0) {
                     requestObj.put("configure", config_str);
                 }
             }
@@ -358,11 +349,10 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
             e.printStackTrace();
         }
         String bodys = requestObj.toString();
-        String  results = "";
+        String results = "";
         try {
             /**
-             * 重要提示如下:
-             * HttpUtils请从
+             * 重要提示如下: HttpUtils请从
              * https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/src/main/java/com/aliyun/api/gateway/demo/util/HttpUtils.java
              * 下载
              *
@@ -371,10 +361,10 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
              */
             HttpResponse response = doPost(host, path, method, headers, querys, bodys);
             int stat = response.getStatusLine().getStatusCode();
-            resultMap.put("stat",stat);
-            if(stat != 200){
+            resultMap.put("stat", stat);
+            if (stat != 200) {
                 System.out.println("Http code: " + stat);
-                System.out.println("http header error msg: "+ response.getFirstHeader("X-Ca-Error-Message"));
+                System.out.println("http header error msg: " + response.getFirstHeader("X-Ca-Error-Message"));
                 System.out.println("Http body error msg:" + EntityUtils.toString(response.getEntity()));
                 return resultMap;
             }
@@ -382,22 +372,23 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
             String res = EntityUtils.toString(response.getEntity());
             JSONObject res_obj = JSON.parseObject(res);
 
-            if(is_old_format) {
+            if (is_old_format) {
                 JSONArray outputArray = res_obj.getJSONArray("outputs");
                 String output = outputArray.getJSONObject(0).getJSONObject("outputValue").getString("dataValue");
                 JSONObject out = JSON.parseObject(output);
                 System.out.println(out.toJSONString());
                 results = out.toJSONString();
-            }else{
+            } else {
                 System.out.println(res_obj.toJSONString());
                 results = res_obj.toJSONString();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        resultMap.put("getBody",results);
+        resultMap.put("getBody", results);
         return resultMap;
     }
+
     /*
      * 获取参数的json对象
      */
@@ -411,10 +402,11 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
         }
         return obj;
     }
+
     public HttpResponse doPost(String host, String path, String method,
-                                      Map<String, String> headers,
-                                      Map<String, String> querys,
-                                      String body)
+            Map<String, String> headers,
+            Map<String, String> querys,
+            String body)
             throws Exception {
         HttpClient httpClient = wrapClient(host);
 
@@ -429,6 +421,7 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
 
         return httpClient.execute(request);
     }
+
     private String buildUrl(String host, String path, Map<String, String> querys) throws UnsupportedEncodingException {
         StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(host);
@@ -459,6 +452,7 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
 
         return sbUrl.toString();
     }
+
     private HttpClient wrapClient(String host) {
         HttpClient httpClient = new DefaultHttpClient();
         if (host.startsWith("https://")) {
@@ -467,6 +461,7 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
 
         return httpClient;
     }
+
     private void sslClient(HttpClient httpClient) {
         try {
             SSLContext ctx = SSLContext.getInstance("TLS");
@@ -474,14 +469,16 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
                 public X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }
+
                 public void checkClientTrusted(X509Certificate[] xcs, String str) {
 
                 }
+
                 public void checkServerTrusted(X509Certificate[] xcs, String str) {
 
                 }
             };
-            ctx.init(null, new TrustManager[] { tm }, null);
+            ctx.init(null, new TrustManager[]{tm}, null);
             SSLSocketFactory ssf = new SSLSocketFactory(ctx);
             ssf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
             ClientConnectionManager ccm = httpClient.getConnectionManager();
@@ -494,11 +491,9 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
         }
     }
 
-
     public static void main(String[] args) {
-		System.out.println(FileUtil.getExtension(""));
-    	  
-	}
+        System.out.println(FileUtil.getExtension(""));
 
+    }
 
 }

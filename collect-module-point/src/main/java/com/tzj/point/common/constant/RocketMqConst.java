@@ -9,7 +9,7 @@ import com.aliyun.mns.model.TopicMessage;
 import com.tzj.module.common.aliyun.mns.Notification;
 import com.tzj.module.common.aliyun.mns.XMLUtils;
 import com.tzj.module.common.exception.BusiException;
-import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
+import com.tzj.collect.common.notify.DingTalkNotify;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -36,8 +36,8 @@ public class RocketMqConst {
 
     //向socket发送消息
     public static void sendDeliveryOrder(String param,String topicName) {
-        CloudAccount account = new CloudAccount(com.tzj.collect.common.constant.RocketMqConst.TOPIC_ACCESS_ID, com.tzj.collect.common.constant.RocketMqConst.TOPIC_ACCESS_KEY,
-                com.tzj.collect.common.constant.RocketMqConst.TOPIC_URL);
+        CloudAccount account = new CloudAccount(com.tzj.collect.common.mq.RocketMqConst.TOPIC_ACCESS_ID, com.tzj.collect.common.mq.RocketMqConst.TOPIC_ACCESS_KEY,
+                com.tzj.collect.common.mq.RocketMqConst.TOPIC_URL);
         MNSClient client = account.getMNSClient(); // 在程序中，CloudAccount以及MNSClient单例实现即可，多线程安全
         CloudTopic topic = client.getTopicRef(topicName);
         try {
@@ -67,14 +67,14 @@ public class RocketMqConst {
         }catch(Exception e){
             DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
                     ,Thread.currentThread().getStackTrace()[1].getMethodName(),"解析JSON出错！可能不是MNS消息",
-                    com.tzj.collect.common.constant.RocketMqConst.DINGDING_ERROR,body);
+                    com.tzj.collect.common.mq.RocketMqConst.DINGDING_ERROR,body);
             throw new BusiException("解析JSON出错！可能不是MNS消息");
         }
         if(!notification.getTopicName().equals(topicName)){
             //说明不是这个TOPIC的Message，不需要处理，直接return
             DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
                     ,Thread.currentThread().getStackTrace()[1].getMethodName(),"topicName不一致！",
-                    com.tzj.collect.common.constant.RocketMqConst.DINGDING_ERROR,topicName);
+                    com.tzj.collect.common.mq.RocketMqConst.DINGDING_ERROR,topicName);
             throw new BusiException("topicName不一致！");
         }
         String messageId=notification.getMessageId();
@@ -82,7 +82,7 @@ public class RocketMqConst {
             //说明不是MNS通知的，直接return
             DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
                     ,Thread.currentThread().getStackTrace()[1].getMethodName(),"messageId不能为空！",
-                    com.tzj.collect.common.constant.RocketMqConst.DINGDING_ERROR,messageId);
+                    com.tzj.collect.common.mq.RocketMqConst.DINGDING_ERROR,messageId);
             throw new BusiException("messageId不能为空！");
         }
         return notification;

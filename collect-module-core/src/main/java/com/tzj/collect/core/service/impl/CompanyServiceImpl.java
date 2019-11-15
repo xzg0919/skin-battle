@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.common.utils.PushUtils;
+import com.tzj.collect.common.push.PushUtils;
 import com.tzj.collect.core.mapper.CompanyMapper;
 import com.tzj.collect.core.mapper.CompanyRecyclerMapper;
 import com.tzj.collect.core.param.admin.CompanyBean;

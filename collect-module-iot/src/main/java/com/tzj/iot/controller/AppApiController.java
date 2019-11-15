@@ -1,33 +1,34 @@
 package com.tzj.iot.controller;
 
+import static com.tzj.collect.common.constant.TokenConst.APP_API_TOKEN_CYPTO_KEY;
+import static com.tzj.collect.common.constant.TokenConst.APP_API_TOKEN_SECRET_KEY;
+import static com.tzj.collect.common.constant.TokenConst.APP_API_TOKEN_SIGN_KEY;
 import com.tzj.module.api.service.NoceService;
 import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.ApiConfig;
 import com.tzj.module.easyopen.ApiKeys;
 import com.tzj.module.easyopen.support.ApiController;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.tzj.collect.common.constant.TokenConst.*;
+import javax.annotation.Resource;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
  * 客户端APP的api统一入口
  *
  * @Author 胡方明（12795880@qq.com）
- **/
+ *
+ */
 @Controller
 @RequestMapping(value = "/app/api")
 public class AppApiController extends ApiController {
 
-    @Resource(name="apiNonceServiceImpl")
+    @Resource(name = "apiNonceServiceImpl")
     private NoceService noceService;
 
-    @Resource(name="appApiSubjectServiceImpl")
+    @Resource(name = "appApiSubjectServiceImpl")
     private SubjectService subjectService;
 
     @Override
@@ -40,7 +41,7 @@ public class AppApiController extends ApiController {
         appSecretStore.put("app_id_2", "sign_key_55667788");
         apiConfig.addAppSecret(appSecretStore);
 
-        ApiKeys apiKeys=new ApiKeys();
+        ApiKeys apiKeys = new ApiKeys();
         apiKeys.setTokenSignKey(false); //使用 appid的签名key
         apiKeys.setProduceSignKey(APP_API_TOKEN_SIGN_KEY);
         apiKeys.setTokenCyptoKey(APP_API_TOKEN_CYPTO_KEY);

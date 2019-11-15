@@ -136,15 +136,23 @@
             <groupId>com.tzj</groupId>
             <artifactId>collect-module-flcx</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.tzj</groupId>
-            <artifactId>collect-module-common</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.alipay</groupId>
             <artifactId>alipay-sdk</artifactId>
             <version>${alipay-sdk.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+        
+        
     </dependencies>
 
 

@@ -9,7 +9,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.tzj.collect.api.common.MyX509TrustManager;
+import com.tzj.collect.common.security.MyX509TrustManager;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.param.ali.PageBean;

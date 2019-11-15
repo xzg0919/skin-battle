@@ -65,16 +65,7 @@
         </dependency>
         <!-- JSON -->
 
-        <!-- 收呗本身的模块 -->
-        <dependency>
-            <groupId>com.tzj</groupId>
-            <artifactId>collect-module-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.tzj</groupId>
-            <artifactId>collect-module-core</artifactId>
-        </dependency>
-        <!-- 收呗本身的模块 -->
+
 
         <dependency>
             <groupId>com.h2database</groupId>
@@ -231,6 +222,29 @@
             <artifactId>aliyun-java-sdk-dyplsapi</artifactId>
             <version>1.1.1</version>
         </dependency>
+        <!-- mqtt + mq -->
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
+        </dependency>
+        
+        
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+        
+        
     </dependencies>
 
     <build>

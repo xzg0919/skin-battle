@@ -2,12 +2,12 @@ package com.tzj.collect.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.entity.FlcxRecords;
 import com.tzj.collect.entity.FlcxType;
 import com.tzj.collect.mapper.FlcxRecordsMapper;
 import com.tzj.collect.mapper.FlcxTypeMapper;
-import com.tzj.collect.module.common.shard.ShardTableHelper;
+import com.tzj.collect.common.shard.ShardTableHelper;
 import com.tzj.collect.service.FlcxRecordsService;
 import com.tzj.collect.service.FlcxTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
