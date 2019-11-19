@@ -32,5 +32,9 @@ public class TransStationBean {
 
     private Integer pageNum = 1;
 
+    private String aliUserId;
+
+    private String id;
+
 
 }

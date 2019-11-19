@@ -1,6 +1,7 @@
 package com.tzj.collect.api.admin;
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.common.constant.ApplicaInit;
 import com.tzj.collect.core.param.admin.TransStationBean;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
@@ -8,6 +9,7 @@ import com.tzj.module.api.utils.SignUtils;
 import com.tzj.module.easyopen.util.ApiUtil;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -20,6 +22,9 @@ import static com.tzj.collect.common.constant.TokenConst.*;
  **/
 @ApiService
 public class AdminStationApi {
+
+    @Autowired
+    private ApplicaInit applicaInit;
 
 
     /**
@@ -84,12 +89,64 @@ public class AdminStationApi {
     public Object updateIsEnableTransStion(TransStationBean transStationBean) throws Exception{
         return this.httpPost(transStationBean,"admin.updateIsEnableTransStion");
     }
+    /**
+     * 提供所有中转站信息列表
+     * @author wangcan
+     * @param
+     * @return
+     */
+    @Api(name = "collect.getTransStationList", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object getTransStationListByCollect() throws Exception {
+        return this.httpPost(null,"collect.getTransStationList");
+    }
+
+    /**
+     * 提供所有中转站信息列表
+     * @author wangcan
+     * @param
+     * @return
+     */
+    @Api(name = "collect.getCategoryListByStation", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object getCategoryListByStation(TransStationBean transStationBean) throws Exception{
+        return this.httpPost(transStationBean,"collect.getCategoryListByStation");
+    }
+    /**
+     * 提供ali_user_id所属的入库列表
+     * @author wangcan
+     * @param
+     * @return
+     */
+    @Api(name = "collect.getInflowOrderListByAliUserId", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object getInflowOrderListByAliUserId(TransStationBean transStationBean) throws Exception{
+        return this.httpPost(transStationBean,"collect.getInflowOrderListByAliUserId");
+    }
+    /**
+     * 根据入库ID查询详细信息
+     * @author wangcan
+     * @param
+     * @return
+     */
+    @Api(name = "collect.getInflowOrderDetailByCollect", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object getInflowOrderDetailByCollect(TransStationBean transStationBean) throws Exception{
+        return this.httpPost(transStationBean,"collect.getInflowOrderDetailByCollect");
+    }
+
+
 
 
     public Object httpPost(TransStationBean transStationBean,String name) throws Exception{
         String token = JwtUtils.generateToken("1", ADMIN_API_EXPRIRE, ADMIN_API_TOKEN_SECRET_KEY);
         String securityToken = JwtUtils.generateEncryptToken(token, ADMIN_API_TOKEN_CYPTO_KEY);
-        String api="http://station.mayishoubei.com/admin/api";
+
+        String api = applicaInit.getStationUrl();
 
         HashMap<String,Object> param=new HashMap<>();
         param.put("name",name);

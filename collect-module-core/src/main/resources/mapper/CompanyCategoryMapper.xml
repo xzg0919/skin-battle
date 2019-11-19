@@ -331,7 +331,7 @@
 
 
 	
-	<select id="selectComCateAttOptPrice" parameterType="com.tzj.collect.core.param.business.ComIdAndCateOptIdBean" resultType="com.tzj.collect.api.business.result.BusinessCategoryResult">
+	<select id="selectComCateAttOptPrice" parameterType="com.tzj.collect.core.param.business.ComIdAndCateOptIdBean" resultType="com.tzj.collect.core.result.business.BusinessCategoryResult">
 		SELECT
 			acao.id AS attOptionId,
 			acao.name_ AS attOptionName,

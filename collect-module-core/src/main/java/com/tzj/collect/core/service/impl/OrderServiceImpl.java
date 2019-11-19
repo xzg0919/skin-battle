@@ -12,13 +12,12 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.commom.redis.RedisUtil;
+import com.tzj.collect.common.amap.AmapResult;
+import com.tzj.collect.common.amap.AmapUtil;
 import com.tzj.collect.common.constant.AlipayConst;
-import com.tzj.collect.common.thread.NewThreadPoorExcutor;
-import com.tzj.collect.common.thread.sendGreenOrderThread;
-import com.tzj.collect.common.utils.AmapUtil;
-import com.tzj.collect.common.utils.MiniTemplatemessageUtil;
-import com.tzj.collect.common.utils.PushUtils;
+import com.tzj.collect.common.constant.MiniTemplatemessageUtil;
+import com.tzj.collect.common.push.PushUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
@@ -32,7 +31,6 @@ import com.tzj.collect.core.param.app.TimeBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.business.CompanyBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
-import com.tzj.collect.core.result.ali.AmapResult;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.result.ali.CommToken;
 import com.tzj.collect.core.result.app.AppOrderResult;
@@ -43,6 +41,8 @@ import com.tzj.collect.core.result.business.ApiUtils;
 import com.tzj.collect.core.result.business.CancelResult;
 import com.tzj.collect.core.result.third.ThirdOrderResult;
 import com.tzj.collect.core.service.*;
+import com.tzj.collect.core.thread.NewThreadPoorExcutor;
+import com.tzj.collect.core.thread.sendGreenOrderThread;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
 import com.tzj.collect.entity.Order.OrderType;
@@ -1617,10 +1617,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				orderLog.setOp("已派单");
 				order.setIsDistributed("1");//是否被派送过
 				this.updateById(order);//放这里的目的是为了取得order中回收员id
-				CommToken commToken = orderMapper.getCommToken(order.getOrderNo());
-				if (commToken != null) {
-					xingeService.sendPostMessage("您有一笔新的收呗订单", "订单来自" + commToken.getCommName() + "，点击查看", commToken.getTencentToken(), XingeMessageServiceImp.XingeMessageCode.order);
-				}
 				//查询回收人员信息
 				Recyclers recyclers = recyclersService.selectById(recyclerId);
 				PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");

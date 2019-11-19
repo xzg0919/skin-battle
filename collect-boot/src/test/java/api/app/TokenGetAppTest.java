@@ -1,6 +1,7 @@
 package api.app;
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.core.param.admin.TransStationBean;
 import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
@@ -40,16 +41,11 @@ public class TokenGetAppTest {
 		 // String api="http://localhost:9000/app/api";
 		  String api="http://localhost:9090/app/api";
 
-		 	OrderBean orderBean = new OrderBean();
-				 orderBean.setId(8941);
-		 orderBean.setAchPrice("0.0");
-
-		 CategoryBean categoryBean = new CategoryBean();
-		 categoryBean.setOrderId("115417");
-		 categoryBean.setId(45);
+		 TransStationBean transStationBean = new TransStationBean();
+		 transStationBean.setId("8308");
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.category.getTwoCategoryListByOrder");
+	        param.put("name", "collect.getInflowOrderDetailByCollect");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -57,7 +53,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", categoryBean);
+	        param.put("data", transStationBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");
