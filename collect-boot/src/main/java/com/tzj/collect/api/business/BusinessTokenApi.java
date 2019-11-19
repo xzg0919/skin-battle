@@ -4,7 +4,7 @@ import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.core.param.business.CompanyAccountBean;
 import com.tzj.collect.core.service.CompanyAccountService;
 import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.param.TokenBean;
+import com.tzj.collect.core.param.token.TokenBean;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;

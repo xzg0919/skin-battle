@@ -11,11 +11,11 @@ import com.alipay.api.request.AntMerchantExpandTradeorderSyncRequest;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.ApplicaInit;
-import com.tzj.collect.common.constant.RocketMqConst;
+import com.tzj.collect.common.mq.RocketMqConst;
 import com.tzj.collect.core.service.AnsycMyslService;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Order;
-import com.tzj.module.common.notify.dingtalk.DingTalkNotify;
+import com.tzj.collect.common.notify.DingTalkNotify;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

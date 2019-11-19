@@ -3,9 +3,9 @@ package com.tzj.collect.controller;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.tzj.collect.common.thread.NewThreadPoorExcutor;
-import com.tzj.collect.common.thread.sendGreenOrderThread;
-import com.tzj.collect.common.utils.PushUtils;
+import com.tzj.collect.core.thread.NewThreadPoorExcutor;
+import com.tzj.collect.core.thread.sendGreenOrderThread;
+import com.tzj.collect.common.push.PushUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -19,8 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static com.tzj.collect.api.common.constant.Const.ALI_APPID;
-import static com.tzj.collect.api.common.constant.Const.ALI_PUBLIC_KEY;
+import static com.tzj.collect.common.constant.Const.ALI_APPID;
+import static com.tzj.collect.common.constant.Const.ALI_PUBLIC_KEY;
 
 /**
  * 支付通知

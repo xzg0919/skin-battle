@@ -19,17 +19,19 @@
     </parent>
 
     <modules>
-        <module>collect-module-core</module>
+
         <module>collect-boot</module>
         <module>collect-module-task-collect</module>
         <module>collect-module-task-flcx</module>
-        <module>collect-module-common</module>
-        <module>collect-module-member</module>
         <module>collect-module-flcx</module>
         <module>collect-module-flcx-boot</module>
         <module>collect-module-point</module>
         <module>collect-module-dailyda</module>
         <module>collect-module-dailyda-boot</module>
+        <module>collect-module-iot</module>
+        <module>collect-module-api</module>
+        <module>collect-module-common</module>
+        <module>collect-module-core</module>
     </modules>
 
     <repositories>
@@ -69,13 +71,7 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- 友盟OpenAPI -->
-            <dependency>
-                <groupId>com.tzj</groupId>
-                <artifactId>umeng-openapi</artifactId>
-                <version>1.0.9</version>
-            </dependency>
-            <!-- 友盟OpenAPI -->
+
 
             <!-- Mybatis plus -->
             <dependency>
@@ -147,21 +143,7 @@
             <!-- JSON -->
 
             <!-- 收呗模块包 -->
-            <dependency>
-                <groupId>com.tzj</groupId>
-                <artifactId>collect-module-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.tzj</groupId>
-                <artifactId>collect-module-umeng</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.tzj</groupId>
-                <artifactId>collect-module-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>com.tzj</groupId>
                 <artifactId>collect-module-flcx</artifactId>
@@ -170,6 +152,26 @@
             <dependency>
                 <groupId>com.tzj</groupId>
                 <artifactId>collect-module-dailyda</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+
+
+
+
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>collect-module-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>collect-module-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tzj</groupId>
+                <artifactId>collect-module-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- 收呗模块包 -->
@@ -181,6 +183,30 @@
                 <version>${druid.version}</version>
             </dependency>
             <!-- 连接池 -->
+
+
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.4</version>
+                <scope>provided</scope>
+            </dependency>
+
+
+
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>3.7.73.ALL</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>6.0.16.Final</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

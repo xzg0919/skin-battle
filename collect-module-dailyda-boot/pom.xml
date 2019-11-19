@@ -132,10 +132,6 @@
 
         <!-- 自身模块 -->
         <dependency>
-            <groupId>com.tzj</groupId>
-            <artifactId>collect-module-common</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.alipay</groupId>
             <artifactId>alipay-sdk</artifactId>
             <version>${alipay-sdk.version}</version>
@@ -144,6 +140,18 @@
             <groupId>com.tzj</groupId>
             <artifactId>collect-module-dailyda</artifactId>
         </dependency>
+        
+        
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+        
+        
     </dependencies>
 
     <build>

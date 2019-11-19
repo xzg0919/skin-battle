@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import com.tzj.collect.common.utils.VoucherConst;
+import com.tzj.collect.common.constant.VoucherConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

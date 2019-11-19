@@ -122,6 +122,17 @@
             <artifactId>alipay-sdk-java</artifactId>
             <version>4.5.0.ALL</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+        
+        
     </dependencies>
 
     <build>

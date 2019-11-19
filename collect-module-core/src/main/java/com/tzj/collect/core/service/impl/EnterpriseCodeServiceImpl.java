@@ -1,7 +1,6 @@
 package com.tzj.collect.core.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.taobao.api.ApiException;
 import com.tzj.collect.core.mapper.EnterpriseCodeMapper;
 import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.service.AsyncService;
@@ -11,16 +10,16 @@ import com.tzj.collect.core.service.EnterpriseTerminalService;
 import com.tzj.collect.entity.EnterpriseCode;
 import com.tzj.collect.entity.EnterpriseProduct;
 import com.tzj.collect.entity.EnterpriseTerminal;
+import com.tzj.module.easyopen.exception.ApiException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 @Service
 @Transactional(readOnly = true)
-public class EnterpriseCodeServiceImpl extends ServiceImpl<EnterpriseCodeMapper,EnterpriseCode> implements EnterpriseCodeService {
+public class EnterpriseCodeServiceImpl extends ServiceImpl<EnterpriseCodeMapper, EnterpriseCode> implements EnterpriseCodeService {
 
     @Autowired
     private EnterpriseCodeMapper enterpriseCodeMapper;
@@ -32,20 +31,20 @@ public class EnterpriseCodeServiceImpl extends ServiceImpl<EnterpriseCodeMapper,
     private AsyncService asyncService;
 
     /**
-     * 新增以旧换新的相关券的信息
-     * wangcan
+     * 新增以旧换新的相关券的信息 wangcan
+     *
      * @param
      * @return
      */
     @Override
     @Transactional
-    public Object saveEnterpriseCode(long erminalId, EnterpriseCodeBean enterpriseCodeBean) throws ApiException{
+    public Object saveEnterpriseCode(long erminalId, EnterpriseCodeBean enterpriseCodeBean) throws Exception {
 
         //随机生成券码
-        String code = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(9));
+        String code = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(9));
         //根据终端id查询相关信息
         EnterpriseTerminal enterpriseTerminal = enterpriseTerminalService.selectById(erminalId);
-        if(enterpriseTerminal==null){
+        if (enterpriseTerminal == null) {
             throw new ApiException("未查询到该用户");
         }
         //根据商品Id查询商品信息
@@ -65,52 +64,53 @@ public class EnterpriseCodeServiceImpl extends ServiceImpl<EnterpriseCodeMapper,
         enterpriseCode.setInvoicePic(enterpriseCodeBean.getInvoicePic());
         enterpriseCode.setIsUse("0");
         enterpriseCode.setCategoryId(null);
-        try{
+        try {
             this.insert(enterpriseCode);
-        }catch (Exception e){
-            throw  new ApiException("保存失败");
+        } catch (Exception e) {
+            throw new ApiException("保存失败");
         }
         //发送接单短信
-        asyncService.sendEnterprise("垃圾分类回收", enterpriseCodeBean.getCustomerTel(), "SMS_154588941", code,enterpriseProduct.getName() );
+        asyncService.sendEnterprise("垃圾分类回收", enterpriseCodeBean.getCustomerTel(), "SMS_154588941", code, enterpriseProduct.getName());
         return "操作成功";
     }
 
     /**
-     * 以旧换新的券的列表
-     * 王灿
+     * 以旧换新的券的列表 王灿
+     *
      * @param enterpriseCodeBean
      * @return
      */
     @Override
-    public Object enterpriseCodeList(EnterpriseCodeBean enterpriseCodeBean,Integer enterpriseId)throws ApiException{
-        List<Map<String,Object>>  list = enterpriseCodeMapper.enterpriseCodeList(enterpriseCodeBean.getStartTime(),enterpriseCodeBean.getEndTime(),enterpriseCodeBean.getIsUse(),enterpriseId,(enterpriseCodeBean.getPageBean().getPageNumber()-1)*enterpriseCodeBean.getPageBean().getPageSize(),enterpriseCodeBean.getPageBean().getPageSize());
+    public Object enterpriseCodeList(EnterpriseCodeBean enterpriseCodeBean, Integer enterpriseId) throws ApiException {
+        List<Map<String, Object>> list = enterpriseCodeMapper.enterpriseCodeList(enterpriseCodeBean.getStartTime(), enterpriseCodeBean.getEndTime(), enterpriseCodeBean.getIsUse(), enterpriseId, (enterpriseCodeBean.getPageBean().getPageNumber() - 1) * enterpriseCodeBean.getPageBean().getPageSize(), enterpriseCodeBean.getPageBean().getPageSize());
         Integer count = enterpriseCodeMapper.enterpriseCodeListCount(enterpriseCodeBean.getStartTime(), enterpriseCodeBean.getEndTime(), enterpriseCodeBean.getIsUse(), enterpriseId);
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("enterpriseCodeList",list);
-        map.put("count",count);
-        map.put("pageNumber",enterpriseCodeBean.getPageBean().getPageNumber());
-        return  map;
-    }
-    /**
-     * 旧换新的券的excel列表
-     * 王灿
-     * @param enterpriseCodeBean
-     * @return
-     */
-    @Override
-    public List<Map<String,Object>> outEnterpriseCodeExcel(EnterpriseCodeBean enterpriseCodeBean,Integer enterpriseId)throws ApiException{
-        List<Map<String,Object>>  list = enterpriseCodeMapper.outEnterpriseCodeExcel(enterpriseCodeBean.getStartTime(),enterpriseCodeBean.getEndTime(),enterpriseCodeBean.getIsUse(),enterpriseId);
-        return  list;
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("enterpriseCodeList", list);
+        map.put("count", count);
+        map.put("pageNumber", enterpriseCodeBean.getPageBean().getPageNumber());
+        return map;
     }
 
     /**
-     * 以旧换新的券的详情
-     * 王灿
+     * 旧换新的券的excel列表 王灿
+     *
+     * @param enterpriseCodeBean
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> outEnterpriseCodeExcel(EnterpriseCodeBean enterpriseCodeBean, Integer enterpriseId) throws ApiException {
+        List<Map<String, Object>> list = enterpriseCodeMapper.outEnterpriseCodeExcel(enterpriseCodeBean.getStartTime(), enterpriseCodeBean.getEndTime(), enterpriseCodeBean.getIsUse(), enterpriseId);
+        return list;
+    }
+
+    /**
+     * 以旧换新的券的详情 王灿
+     *
      * @param enterpriseCodeId
      * @return
      */
     @Override
-    public Object enterpriseCodeDetil(String enterpriseCodeId){
-       return enterpriseCodeMapper.enterpriseCodeDetil(enterpriseCodeId);
+    public Object enterpriseCodeDetil(String enterpriseCodeId) {
+        return enterpriseCodeMapper.enterpriseCodeDetil(enterpriseCodeId);
     }
 }

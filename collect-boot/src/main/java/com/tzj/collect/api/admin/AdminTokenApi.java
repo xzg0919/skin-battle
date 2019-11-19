@@ -3,7 +3,7 @@ package com.tzj.collect.api.admin;
 import com.tzj.collect.core.param.admin.AdminBean;
 import com.tzj.collect.core.service.AdminService;
 import com.tzj.collect.entity.Admin;
-import com.tzj.collect.param.TokenBean;
+import com.tzj.collect.core.param.token.TokenBean;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;

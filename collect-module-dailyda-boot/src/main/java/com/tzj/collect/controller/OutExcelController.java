@@ -1,8 +1,8 @@
 package com.tzj.collect.controller;
 
 
-import com.tzj.collect.api.commom.excel.ExcelData;
-import com.tzj.collect.api.commom.excel.ExcelUtils;
+import com.tzj.collect.common.excel.ExcelData;
+import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.service.DailyLexiconService;
 import com.tzj.collect.service.impl.DailyWeekRankingServiceImpl;
 import org.springframework.stereotype.Controller;

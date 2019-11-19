@@ -1,6 +1,5 @@
 package com.tzj.collect.api.picc;
 
-import com.taobao.api.ApiException;
 import com.tzj.collect.common.util.PiccCompanyUtils;
 import com.tzj.collect.core.param.picc.PiccInsurancePolicyBean;
 import com.tzj.collect.core.service.PiccInsurancePolicyAgreementService;
@@ -9,13 +8,12 @@ import com.tzj.collect.core.service.PiccInsurancePolicyService;
 import com.tzj.collect.entity.PiccCompany;
 import com.tzj.collect.entity.PiccInsurancePolicyAgreement;
 import com.tzj.collect.entity.PiccInsurancePolicyContent;
+import static com.tzj.collect.common.constant.TokenConst.PICC_API_COMMON_AUTHORITY;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static com.tzj.collect.common.constant.TokenConst.PICC_API_COMMON_AUTHORITY;
 
 /**
  * picc相关产品表
@@ -31,58 +29,59 @@ public class PiccInsurancePolicyApi {
     private PiccInsurancePolicyAgreementService piccInsurancePolicyAgreementService;
 
     /**
-     * picc新增/修改 产品
-     * wangcan
+     * picc新增/修改 产品 wangcan
+     *
      * @param
      * @return
      */
-    @Api(name="picc.updateInsurance",version="1.0")
+    @Api(name = "picc.updateInsurance", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = PICC_API_COMMON_AUTHORITY)
-    public Object updateInsurance(PiccInsurancePolicyBean piccInsurancePolicyBean) throws ApiException{
+    public Object updateInsurance(PiccInsurancePolicyBean piccInsurancePolicyBean) throws Exception {
         PiccCompany piccCompany = PiccCompanyUtils.getPiccCompany();
-        return  piccInsurancePolicyService.updateInsurance(piccCompany.getId(),piccInsurancePolicyBean);
+        return piccInsurancePolicyService.updateInsurance(piccCompany.getId(), piccInsurancePolicyBean);
     }
 
     /**
-     * picc保险产品详细信息
-     * wangcan
+     * picc保险产品详细信息 wangcan
+     *
      * @param
      * @return
      */
-    @Api(name="picc.getInsurancePolicy",version="1.0")
+    @Api(name = "picc.getInsurancePolicy", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = PICC_API_COMMON_AUTHORITY)
-    public Object getInsurancePolicy() throws ApiException{
+    public Object getInsurancePolicy() throws Exception {
         PiccCompany piccCompany = PiccCompanyUtils.getPiccCompany();
-        return  piccInsurancePolicyService.getInsurancePolicy(piccCompany.getId());
+        return piccInsurancePolicyService.getInsurancePolicy(piccCompany.getId());
     }
 
     /**
-     * picc删除产品协议
-     * wangcan
+     * picc删除产品协议 wangcan
+     *
      * @param
      * @return
      */
-    @Api(name="picc.deleteInsuranceAgreement",version="1.0")
+    @Api(name = "picc.deleteInsuranceAgreement", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = PICC_API_COMMON_AUTHORITY)
-    public Object deleteInsuranceAgreement(PiccInsurancePolicyBean piccInsurancePolicyBean) throws ApiException{
+    public Object deleteInsuranceAgreement(PiccInsurancePolicyBean piccInsurancePolicyBean) throws Exception {
         PiccInsurancePolicyAgreement piccInsurancePolicyAgreement = piccInsurancePolicyAgreementService.selectById(piccInsurancePolicyBean.getId());
         piccInsurancePolicyAgreement.setDelFlag("1");
         piccInsurancePolicyAgreementService.updateById(piccInsurancePolicyAgreement);
         return "操作成功";
     }
+
     /**
-     * picc删除产品内容
-     * wangcan
+     * picc删除产品内容 wangcan
+     *
      * @param
      * @return
      */
-    @Api(name="picc.deleteInsuranceContent",version="1.0")
+    @Api(name = "picc.deleteInsuranceContent", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = PICC_API_COMMON_AUTHORITY)
-    public Object deleteInsuranceContent(PiccInsurancePolicyBean piccInsurancePolicyBean) throws ApiException{
+    public Object deleteInsuranceContent(PiccInsurancePolicyBean piccInsurancePolicyBean) throws Exception {
         PiccInsurancePolicyContent piccInsurancePolicyContent = piccInsurancePolicyContentService.selectById(piccInsurancePolicyBean.getId());
         piccInsurancePolicyContent.setDelFlag("1");
         piccInsurancePolicyContentService.updateById(piccInsurancePolicyContent);

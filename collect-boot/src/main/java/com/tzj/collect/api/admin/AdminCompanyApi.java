@@ -2,7 +2,7 @@ package com.tzj.collect.api.admin;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.tzj.collect.common.util.SnUtils;
+import com.tzj.collect.common.utils.SnUtils;
 import com.tzj.collect.core.param.admin.AdminCommunityBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.PageBean;

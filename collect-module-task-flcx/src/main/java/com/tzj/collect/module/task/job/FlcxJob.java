@@ -1,6 +1,6 @@
 package com.tzj.collect.module.task.job;
 
-import com.tzj.collect.api.commom.redis.RedisUtil;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.module.task.job.thread.NewThreadPoorExcutor;
 import com.tzj.collect.service.FlcxLexiconService;
 import com.tzj.collect.service.FlcxRecordsService;

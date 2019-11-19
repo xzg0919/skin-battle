@@ -1,0 +1,39 @@
+spring:
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    dynamic:
+      #p6spy: true
+      druid: #全局设置
+        initial-size: 10
+        max-active: 200
+        min-idle: 10
+        max-wait: 60000
+        pool-prepared-statements: true
+        max-pool-prepared-statement-per-connection-size: 20
+        max-open-prepared-statements: 20
+        validation-query: SELECT 1 from dual
+        test-on-borrow: false
+        test-on-return: false
+        test-while-idle: true
+        time-between-eviction-runs-millis: 60000
+        spring.datasource.druid.min-evictable-idle-time-millis: 300000
+      primary: master #设置默认的数据源或者数据源组,默认值即为master,如果你主从默认下主库的名称就是master可不定义此项。
+      datasource:
+        master:
+#          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+#          username: sb_admin
+#          password: shoubei_123
+          url: jdbc:mysql://172.19.182.62:3306/collect?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          username: devuser
+          password: dev123456@1
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          #driver-class-name: com.mysql.jdbc.Driver
+
+  #配置MQ
+  rabbitmq:
+    host: 106.15.72.157 #内网IP 172.19.182.81
+    port: 5672
+    username: rabbitadmin
+    password: FeiLei@123
+    publisher-confirms: false

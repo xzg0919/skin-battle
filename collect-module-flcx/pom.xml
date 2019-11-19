@@ -43,10 +43,7 @@
             <groupId>com.hufm</groupId>
             <artifactId>hufm-module-common</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.tzj</groupId>
-            <artifactId>collect-module-common</artifactId>
-        </dependency>
+
         <!-- API 框架 -->
 
         <dependency>
@@ -69,5 +66,16 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+        
+        
     </dependencies>
 </project>
