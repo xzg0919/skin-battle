@@ -42,6 +42,8 @@ dubbo.protocol.port = -1
 @PropertySource(value = "classpath:/provider-config.properties")
 
 4、业务逻辑Service把 Spring的Service注解改为 @Component，增加 com.alibaba.dubbo.config.annotation.Service 注解
+com.alibaba.dubbo.config.annotation.Service(有可能需要增加 interfaceName =，必须增加 version= 版本号，方便以后正式环境与测试环境版本之间的更替)
+
 
 5、消费引用（远程Service）
 @Reference(version = "${demo.service.version}")
