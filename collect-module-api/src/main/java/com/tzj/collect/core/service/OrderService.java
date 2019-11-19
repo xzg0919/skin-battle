@@ -418,4 +418,7 @@ public interface OrderService extends IService<Order> {
 	Object getOrderComplaintDetail(String orderNo);
 
 	Object addOrderComplaintBack(Integer id,String complaintBack);
+	@DS("slave")
+	Map<String, Object> getOrderAchItemDatail(OrderBean orderBean);
+
 }

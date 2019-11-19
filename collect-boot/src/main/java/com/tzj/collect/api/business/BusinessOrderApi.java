@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 
@@ -367,6 +368,16 @@ public class BusinessOrderApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object addOrderComplaintBack(OrderBean orderBean){
 		return orderService.addOrderComplaintBack(orderBean.getId(),orderBean.getComplaintBack());
+	}
+
+	/** 根据订单Id获取编辑后的回收物明细
+	 * @author wangcan
+	 * @return
+	 */
+	@Api(name = "order.getOrderAchItemDatail", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Map<String, Object> getOrderAchItemDatail(OrderBean orderbean){
+		return orderService.getOrderAchItemDatail(orderbean);
 	}
 
 }

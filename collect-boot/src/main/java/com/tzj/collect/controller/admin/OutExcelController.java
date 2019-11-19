@@ -558,6 +558,7 @@ public class OutExcelController {
         //for(String title: excelInfo.getNames())
         titles.add("订单号");
         titles.add("下单时间");
+        titles.add("预约上门时间");
         titles.add("用户手机号");
         titles.add("回收商名称");
         titles.add("回收员姓名");
@@ -578,6 +579,7 @@ public class OutExcelController {
             outComplaintOrderMap = list.get(i);
             row.add(outComplaintOrderMap.get("orderNo"));
             row.add(outComplaintOrderMap.get("createDate"));
+            row.add(outComplaintOrderMap.get("arrivalTime")+" "+outComplaintOrderMap.get("arrivalPeriod"));
             row.add(outComplaintOrderMap.get("tel"));
             row.add(outComplaintOrderMap.get("companyName"));
             row.add(outComplaintOrderMap.get("recycleerName"));

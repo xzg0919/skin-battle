@@ -3,9 +3,10 @@ package com.tzj.collect.core.service.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.core.result.business.BusinessCategoryResult;
-import com.tzj.collect.common.mq.RocketMqConst;
+import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.common.amap.AmapUtil;
+import com.tzj.collect.common.mq.RocketMqConst;
+import com.tzj.collect.common.notify.DingTalkNotify;
 import com.tzj.collect.core.mapper.CategoryAttrOptionMapper;
 import com.tzj.collect.core.mapper.CategoryMapper;
 import com.tzj.collect.core.mapper.CompanyCategoryMapper;
@@ -13,23 +14,24 @@ import com.tzj.collect.core.param.ali.AliCategoryAttrOptionBean;
 import com.tzj.collect.core.param.ali.CategoryAttrBean;
 import com.tzj.collect.core.param.business.CategoryBean;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
-import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.core.result.ali.ClassifyAndMoney;
 import com.tzj.collect.core.result.ali.ComCatePrice;
+import com.tzj.collect.core.result.business.BusinessCategoryResult;
 import com.tzj.collect.core.result.business.CategoryResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
-import com.tzj.collect.common.notify.DingTalkNotify;
 import com.tzj.module.common.utils.StringUtils;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -520,6 +522,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         Order order = orderService.selectById(orderId);
         Area area = areaService.selectById(order.getAreaId());
         List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(categoryId, order.getCompanyId(), area.getParentId(), "0");
+		if ("1".equals(order.getIsCash())){
+			categoryList.stream().forEach(category -> {
+				category.setPrice(new BigDecimal("0"));
+			});
+		}
 //		List<ComCatePrice> priceList = null;
 //		priceList = companyCategoryCityService.getOwnnerPriceAppByCity(categoryId.toString(),order.getCompanyId().toString(),area.getParentId().toString());
 //		if (null==priceList||priceList.isEmpty()) {

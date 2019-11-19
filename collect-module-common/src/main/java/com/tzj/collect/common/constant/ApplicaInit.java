@@ -7,7 +7,9 @@ public class ApplicaInit {
 
     private String isMysl;
 
-    private String isPayment;
+    private String notifyUrl;
+
+    private String stationUrl;
 
     private Boolean isOpenTransferThread;//是否开启转账线程
 

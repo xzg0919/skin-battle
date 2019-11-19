@@ -45,10 +45,10 @@ public class BusinessOrderApiTest {
 		String subjectStr = claims.getSubject();
 		System.out.println("反向編譯 token是："+subjectStr);
 
-		String api="http://shoubeics.mayishoubei.com:9090/business/api";
+		String api="http://localhost:9090/business/api";
 
 		OrderBean orderBean = new OrderBean();
-			orderBean.setId(70240);
+			orderBean.setId(70232);
 			orderBean.setAchPrice("20");
 		List<IdAmountListBean> list = new ArrayList<>();
 		IdAmountListBean idAmountListBean = new IdAmountListBean();
@@ -79,10 +79,12 @@ public class BusinessOrderApiTest {
 		list.add(idAmountListBean1);
 		list.add(idAmountListBean);
 		orderBean.setIdAndListList(list);
+//		OrderBean orderBean = new OrderBean();
+//		orderBean.setId(70120);
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.order.updateOrderAchItem");
+		param.put("name","order.getOrderAchItemDatail");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
