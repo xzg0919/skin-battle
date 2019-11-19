@@ -15,21 +15,23 @@ public class ApplicationInits {
     @Value("${isMysl}")
     private String isMysl;
 
-    @Value("${isPayment}")
-    private String isPayment;
-
     @Value("${isOpenTransferThread}")
     private Boolean isOpenTransferThread;
+
+    @Value("${notifyUrl}")
+    private String notifyUrl;
+
+    @Value("${stationUrl}")
+    private String stationUrl;
 
     @Bean
     public ApplicaInit applicaInitConfig() {
         ApplicaInit applicaInit  = new ApplicaInit();
         applicaInit.setIsMysl(isMysl);
-        applicaInit.setIsPayment(isPayment);
+        applicaInit.setNotifyUrl(notifyUrl);
+        applicaInit.setStationUrl(stationUrl);
         applicaInit.setIsOpenTransferThread(isOpenTransferThread);
         return applicaInit;
 
     }
-
-
 }

@@ -28,10 +28,10 @@ import static com.tzj.collect.common.constant.Const.ALI_APPID;
 import static com.tzj.collect.common.constant.Const.ALI_PUBLIC_KEY;
 
 /**
- * 支付通知
+ * mqtt清运人员支付通知
  */
 @Controller
-@RequestMapping(value = "/notify")
+@RequestMapping(value = "/mqtt/notify")
 public class MQTTNotifyController {
 
     @Autowired
@@ -85,41 +85,18 @@ public class MQTTNotifyController {
                     //未找到相对应的订单
                     return "failure";
                 }
-//                if (payment.getPrice().compareTo(new BigDecimal(totalAmount)) != 0) {
-//                    //金额不匹配
-//                    return "failure";
-//                }
-                //根據order_no查询相关订单
-                Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", payment.getOrderSn()).eq("del_flag", 0));
-
                 if (tradeStatus.equalsIgnoreCase("TRADE_SUCCESS") ||
                         tradeStatus.equalsIgnoreCase("TRADE_FINISHED")) {
                     //说明交易完成，记录下一些交易的信息
-
                     payment.setNotifyUrl(AlipaySignature.getSignCheckContentV1(params));
-
                     payment.setTradeNo(params.get("trade_no"));
                     payment.setNotifyTime(params.get("notify_time"));
                     payment.setBuyerId(params.get("buyer_id"));
                     payment.setSellerId(params.get("seller_id"));
                     payment.setStatus(Payment.STATUS_PAYED);
                     payment.setBuyerLogonId(params.get("buyer_logon_id"));
-
                     paymentService.insertOrUpdate(payment);
-                    payment.setTotalAmount(totalAmount);
-                    paymentService.transfer(payment);
-                    if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
-                        //给用户增加蚂蚁能量
-                        OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
-					}
-//                    Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
-//                    if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-//                        PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
-//                    }
                 }else if (tradeStatus.equalsIgnoreCase("TRADE_CLOSED")){
-//                    if(null != voucherMember){
-//                        voucherMemberService.updateVoucherCreate(voucherMember.getId());
-//                    }
                     return "failure";
                 }
 
