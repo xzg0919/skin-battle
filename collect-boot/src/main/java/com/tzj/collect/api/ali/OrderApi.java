@@ -666,8 +666,6 @@ public class OrderApi {
     @SignIgnore
     @Cacheable(value = "getCollectDetail", key = "#root.methodName", sync = true)
     public Object getCollectDetail() throws ApiException {
-        Object collectDetail = redisUtil.get("collectDetail");
-        if (null == collectDetail) {
             //注册总用户数量
             long memberCount = memberService.getMemberCount();
             int OrderCount = orderService.selectCount(new EntityWrapper<Order>());
@@ -700,9 +698,6 @@ public class OrderApi {
             resultMap.put("greenCount", greenCount);
             redisUtil.set("collectDetail", resultMap, 19800);
             return resultMap;
-        } else {
-            return collectDetail;
-        }
     }
 
     /**
