@@ -355,10 +355,10 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(price, voucherId);
          payment.setPrice(discountPrice);
         //判断优惠又的价格是否和原价相等，如果不一样即说明优惠了
-        if (!(price.compareTo(discountPrice)== 0)){
-            //将券进行绑定
-            this.updateVoucherUseing(order.getId(),order.getOrderNo(),order.getAliUserId(),Long.parseLong(voucherId));
-        }
+//        if (!(price.compareTo(discountPrice)== 0)){
+//            //将券进行绑定
+//            this.updateVoucherUseing(order.getId(),order.getOrderNo(),order.getAliUserId(),Long.parseLong(voucherId));
+//        }
         return  paymentService.genalPayXcx(payment);
     }
     /**
