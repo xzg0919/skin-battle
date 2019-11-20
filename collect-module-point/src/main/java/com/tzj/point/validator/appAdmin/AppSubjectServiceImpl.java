@@ -3,8 +3,8 @@ package com.tzj.point.validator.appAdmin;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.util.EhCache2Utils;
-import com.tzj.point.entity.JfappRecycler;
-import com.tzj.point.service.JfappRecyclerService;
+import com.tzj.collect.entity.JfappRecycler;
+import com.tzj.collect.core.service.JfappRecyclerService;
 import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static com.tzj.point.common.constant.TokenConst.JFAPP_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.JFAPP_API_COMMON_AUTHORITY;
 
 
 /**

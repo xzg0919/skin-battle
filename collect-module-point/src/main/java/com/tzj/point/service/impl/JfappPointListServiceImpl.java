@@ -1,15 +1,15 @@
 package com.tzj.point.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Point;
 import com.tzj.collect.entity.PointList;
 import com.tzj.module.easyopen.exception.ApiException;
-import com.tzj.point.api.app.param.JfappRecyclerBean;
-import com.tzj.point.api.app.param.PageBean;
-import com.tzj.point.entity.JfappPointList;
+import com.tzj.collect.core.param.jfapp.JfappRecyclerBean;
+import com.tzj.collect.core.param.jfapp.PageBean;
+import com.tzj.collect.entity.JfappPointList;
 import com.tzj.point.mapper.JfappPointListMapper;
-import com.tzj.point.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,22 +23,22 @@ import java.util.*;
 public class JfappPointListServiceImpl extends ServiceImpl<JfappPointListMapper, JfappPointList> implements JfappPointListService {
 
     @Autowired
-    private PointService pointService;
+    private Point4JfAppService point4JfAppService;
     @Autowired
-    private PointListService pointListService;
+    private PointList4JfAppService pointList4JfAppService;
     @Autowired
-    private MemberService memberService;
+    private Member4JfAppService member4JfAppService;
     @Autowired
-    private AliPayService aliPayService;
+    private AliPay4JfAppService aliPay4JfAppService;
     @Autowired
     private JfappPointListMapper jfappPointListMapper;
 
     @Override
     @Transactional
     public Object addOrDeleteUserPoint(JfappRecyclerBean jfappRecyclerBean, long jfappRecyclerId) {
-        Member member = memberService.selectMemberByAliUserId(jfappRecyclerBean.getAliUserId());
+        Member member = member4JfAppService.selectMemberByAliUserId(jfappRecyclerBean.getAliUserId());
         //查询用户积分
-        Point point = pointService.getPoint(jfappRecyclerBean.getAliUserId());
+        Point point = point4JfAppService.getPoint(jfappRecyclerBean.getAliUserId());
              PointList pointList =new  PointList();
         JfappPointList jfappPointList = new JfappPointList();
         if ("0".equals(jfappRecyclerBean.getType())){
@@ -47,11 +47,11 @@ public class JfappPointListServiceImpl extends ServiceImpl<JfappPointListMapper,
                 point.setAliUserId(jfappRecyclerBean.getAliUserId());
                 point.setPoint(Double.parseDouble(jfappRecyclerBean.getPoint()));
                 point.setRemainPoint(Double.parseDouble(jfappRecyclerBean.getPoint()));
-                pointService.insert(point);
+                point4JfAppService.insert(point);
             }else {
                 point.setPoint(point.getPoint()+Double.parseDouble(jfappRecyclerBean.getPoint()));
                 point.setRemainPoint(point.getRemainPoint()+Double.parseDouble(jfappRecyclerBean.getPoint()));
-                pointService.updateById(point);
+                point4JfAppService.updateById(point);
             }
             pointList.setPoint(jfappRecyclerBean.getPoint());
             pointList.setDescrb("扫码加分");
@@ -61,7 +61,7 @@ public class JfappPointListServiceImpl extends ServiceImpl<JfappPointListMapper,
                 throw new ApiException("用户积分不足");
             }else {
                 point.setRemainPoint(point.getRemainPoint()-Double.parseDouble(jfappRecyclerBean.getPoint()));
-                pointService.updateById(point);
+                point4JfAppService.updateById(point);
             }
             pointList.setPoint("-"+jfappRecyclerBean.getPoint());
             pointList.setDescrb("扫码减分");
@@ -70,7 +70,7 @@ public class JfappPointListServiceImpl extends ServiceImpl<JfappPointListMapper,
         pointList.setAliUserId(jfappRecyclerBean.getAliUserId());
         pointList.setType(jfappRecyclerBean.getType());
         pointList.setDocumentNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000));
-        pointListService.insert(pointList);
+        pointList4JfAppService.insert(pointList);
         jfappPointList.setAliUserId(jfappRecyclerBean.getAliUserId());
         jfappPointList.setPoint(jfappRecyclerBean.getPoint());
         jfappPointList.setType(jfappRecyclerBean.getType());
@@ -79,7 +79,7 @@ public class JfappPointListServiceImpl extends ServiceImpl<JfappPointListMapper,
         jfappPointList.setMobile(jfappRecyclerBean.getMobile());
         this.insert(jfappPointList);
         DecimalFormat df   = new DecimalFormat("######0.00");
-        aliPayService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), Double.parseDouble(df.format(point.getRemainPoint())) + "", null);
+        aliPay4JfAppService.updatePoint(member.getAliCardNo(), member.getOpenCardDate(), Double.parseDouble(df.format(point.getRemainPoint())) + "", null);
         return "success";
     }
 

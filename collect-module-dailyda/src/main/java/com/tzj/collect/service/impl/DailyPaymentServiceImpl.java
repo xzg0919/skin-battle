@@ -8,13 +8,13 @@ import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.common.constant.AlipayConst;
-import static com.tzj.collect.common.constant.Const.*;
+import static com.tzj.collect.common.mqtt.constant.Const.*;
 import com.tzj.collect.common.mq.RocketMqConst;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.mapper.DailyPaymentMapper;
-import com.tzj.collect.service.DailyMemberService;
-import com.tzj.collect.service.DailyPaymentService;
-import com.tzj.collect.service.DailyPointService;
+import com.tzj.collect.core.service.DailyMemberService;
+import com.tzj.collect.core.service.DailyPaymentService;
+import com.tzj.collect.core.service.DailyPointService;
 import com.tzj.collect.common.notify.DingTalkNotify;
 import com.tzj.module.easyopen.exception.ApiException;
 import java.text.DecimalFormat;
@@ -43,6 +43,7 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
     @Resource
     private DailyMemberService dailyMemberService;
 
+    @Override
     public AlipayFundTransToaccountTransferResponse dailyDaTransfer(String aliUserId, String price, String outBizNo) {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
@@ -68,6 +69,7 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
     /**
      * 查询转账信息
      */
+    @Override
     public AlipayFundTransOrderQueryResponse getTransfer(String paymentId) {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
@@ -143,6 +145,7 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
      * @param OrderNo:订单编号
      * @author 王灿
      */
+    @Override
     @Transactional(readOnly = false)
     public void updateMemberPoint(String aliUserId, String OrderNo, double amount, String descrb) {
         DecimalFormat df = new DecimalFormat("######0.00");

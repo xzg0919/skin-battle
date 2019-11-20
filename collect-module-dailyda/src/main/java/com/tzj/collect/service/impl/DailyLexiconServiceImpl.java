@@ -1,15 +1,15 @@
 package com.tzj.collect.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.api.lexicon.param.DailyDaParam;
-import com.tzj.collect.api.lexicon.param.MemberBean;
-import com.tzj.collect.api.lexicon.utils.JedisUtil;
+import com.tzj.collect.core.param.daily.DailyDaParam;
+import com.tzj.collect.core.param.daily.MemberBean;
+import com.tzj.collect.common.util.JedisUtil;
 import com.tzj.collect.mapper.DailyLexiconMapper;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.common.shard.ShardTableHelper;
-import com.tzj.collect.service.DailyLexiconService;
-import com.tzj.collect.service.DailyMemberService;
+import com.tzj.collect.core.service.DailyLexiconService;
+import com.tzj.collect.core.service.DailyMemberService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -54,6 +54,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
       * @param
       * @return
       */
+    @Override
     public  Set<Map<String, Object>> isAnswerDaily(String aliUserId){
         //本周记录表若没有创建新表
         if(dailyLexiconMapper.existTable(tableName(System.currentTimeMillis())) <= 0){
@@ -333,6 +334,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
      * @Param: 
      * @return: 
      */
+    @Override
     public String weekRankingByTime(Jedis jedis, Member member, String redisKeyName){
         String redisTableName = redisKeyName + ":" + "user_input_date";
         String weekRanking = "999+";
@@ -524,6 +526,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     }
 
     //根据周取出当前redis前50 排行
+    @Override
     public List<Map<String, Object>> weekRankingTop50(Jedis jedis, String redisKeyName){
         List<Map<String, Object>> aliUserIdScoreList = new ArrayList<>();
 

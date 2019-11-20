@@ -4,18 +4,19 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
-import com.tzj.point.api.app.param.JfappRecyclerBean;
-import com.tzj.point.common.util.PushUtils;
-import com.tzj.point.entity.JfappRecycler;
+import com.tzj.collect.core.param.jfapp.JfappRecyclerBean;
+import com.tzj.collect.common.utils.PushUtils;
+import com.tzj.collect.entity.JfappRecycler;
 import com.tzj.point.mapper.JfappRecyclerMapper;
-import com.tzj.point.service.JfappRecyclerService;
+import com.tzj.collect.core.service.JfappRecyclerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tzj.point.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.*;
+
 
 @Service
 @Transactional(readOnly = true)

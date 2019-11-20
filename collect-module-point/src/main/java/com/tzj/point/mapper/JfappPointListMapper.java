@@ -1,7 +1,7 @@
 package com.tzj.point.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.tzj.point.entity.JfappPointList;
+import com.tzj.collect.entity.JfappPointList;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

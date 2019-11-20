@@ -6,15 +6,15 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.commom.redis.RedisUtil;
-import com.tzj.collect.api.lexicon.param.FlcxBean;
-import com.tzj.collect.api.lexicon.param.FlcxLexiconBean;
-import com.tzj.collect.api.lexicon.result.FlcxResult;
+import com.tzj.collect.core.param.flcx.FlcxBean;
+import com.tzj.collect.core.param.flcx.FlcxLexiconBean;
+import com.tzj.collect.core.result.flcx.FlcxResult;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.FlcxEggshell;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.collect.entity.FlcxLexiconType;
 import com.tzj.collect.entity.FlcxRecords;
 import com.tzj.collect.mapper.FlcxLexiconMapper;
-import com.tzj.collect.service.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +48,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
     private AliFlcxService aliFlcxService;
 
 
+    @Override
     @Transactional(readOnly = false)
     @Cacheable(value = "lexCheckMap" , key = "#flcxBean.cityName + '_'+ #flcxBean.cityId + '_' + #flcxBean.name + '_' + #flcxBean.typeId",   sync = true)
     public Map lexCheck(FlcxBean flcxBean) throws ApiException {
@@ -114,12 +115,14 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         }
     }
 
+    @Override
     @Cacheable(value = "lexCheckList" , key = "#flcxString", sync = true)
     public List<FlcxLexicon> keySearch(String flcxString) throws ApiException {
         return flcxLexiconMapper.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0));
     }
 
 
+    @Override
     public Map keySearchInRedis(FlcxBean flcxBean) throws ApiException {
         HashMap<String, Object> map = new HashMap<>();
         List<FlcxLexicon> flcxLexiconList = this.selectList(new EntityWrapper<FlcxLexicon>().eq("del_flag", 0));
@@ -192,6 +195,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
      * @return
      * @throws ApiException
      */
+    @Override
     @DS("slave")
     public Page searchByName(FlcxBean flcxBean){
         Page<FlcxLexicon> page = null;
@@ -213,6 +217,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
      * @return
      * @throws ApiException
      */
+    @Override
     @Transactional(readOnly = false)
     public Map addFlcxLexiconBean (FlcxLexiconBean flcxLexiconBean){
         HashMap<String, Object> map = new HashMap<>();
@@ -259,6 +264,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
      * @return
      * @throws ApiException
      */
+    @Override
     @DS("slave")
     public boolean isExistFlcxLexicon (FlcxLexiconBean flcxLexiconBean){
         EntityWrapper<FlcxLexicon> wrapper = new EntityWrapper<FlcxLexicon>();
@@ -277,6 +283,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
      * @return
      * @throws ApiException
      */
+    @Override
     @Transactional(readOnly = false)
     public Map deleteFlcxLexicon (FlcxLexiconBean flcxLexiconBean){
         HashMap<String, Object> map = new HashMap<>();
@@ -321,6 +328,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
      * @return
      * @throws ApiException
      */
+    @Override
     @Transactional(readOnly = false)
     public Map updateFlcxLexicon (FlcxLexiconBean flcxLexiconBean){
         HashMap<String, Object> map = new HashMap<>();

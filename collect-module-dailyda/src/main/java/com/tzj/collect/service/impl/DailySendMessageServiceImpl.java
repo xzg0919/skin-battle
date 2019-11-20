@@ -8,7 +8,7 @@ import com.alipay.api.domain.AlipayOpenAppMiniTemplatemessageSendModel;
 import com.alipay.api.request.AlipayOpenAppMiniTemplatemessageSendRequest;
 import com.alipay.api.response.AlipayOpenAppMiniTemplatemessageSendResponse;
 import com.tzj.collect.common.constant.AlipayConst;
-import com.tzj.collect.service.DailySendMessageService;
+import com.tzj.collect.core.service.DailySendMessageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
-import com.tzj.point.api.app.param.JfappRecyclerBean;
-import com.tzj.point.api.app.param.PageBean;
+import com.tzj.collect.core.param.jfapp.JfappRecyclerBean;
+import com.tzj.collect.core.param.jfapp.PageBean;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
@@ -14,7 +14,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
-import static com.tzj.point.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.*;
+
 
 /**
  *

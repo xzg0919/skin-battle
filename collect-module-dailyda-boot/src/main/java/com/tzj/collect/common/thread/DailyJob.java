@@ -1,12 +1,7 @@
 package com.tzj.collect.common.thread;
 
-import com.tzj.collect.service.DailyMemberService;
-import com.tzj.collect.service.DailyWeekRankingService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * 答答答定时任务

@@ -136,7 +136,7 @@
 		AND #{localDateEnd}
 		order by  ddr.user_type_id DESC
 	</select>
-	<resultMap id="lexResultMap" type="com.tzj.collect.api.lexicon.result.LexResult">
+	<resultMap id="lexResultMap" type="com.tzj.collect.core.result.daily.LexResult">
 		<result  property="name" column="name_"/>
 		<result property="lexType" column="type_id" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
 		<result property="userLexType" column="user_type_id" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>

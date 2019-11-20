@@ -1,20 +1,18 @@
 package com.tzj.collect.flcx.api;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.tzj.collect.api.lexicon.param.FlcxBean;
-import com.tzj.collect.api.lexicon.param.FlcxEggshellBean;
-import com.tzj.collect.api.lexicon.param.FlcxLexiconBean;
-import com.tzj.collect.api.lexicon.param.FlcxTypeBean;
-import com.tzj.collect.entity.FlcxType;
-import com.tzj.collect.service.FlcxEggshellService;
-import com.tzj.collect.service.FlcxLexiconService;
-import com.tzj.collect.service.FlcxTypeService;
+import com.tzj.collect.core.param.flcx.FlcxBean;
+import com.tzj.collect.core.param.flcx.FlcxEggshellBean;
+import com.tzj.collect.core.param.flcx.FlcxLexiconBean;
+import com.tzj.collect.core.param.flcx.FlcxTypeBean;
+import com.tzj.collect.core.service.FlcxEggshellService;
+import com.tzj.collect.core.service.FlcxLexiconService;
+import com.tzj.collect.core.service.FlcxTypeService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;

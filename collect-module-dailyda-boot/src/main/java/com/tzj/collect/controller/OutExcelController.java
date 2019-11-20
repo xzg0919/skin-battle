@@ -3,8 +3,7 @@ package com.tzj.collect.controller;
 
 import com.tzj.collect.common.excel.ExcelData;
 import com.tzj.collect.common.excel.ExcelUtils;
-import com.tzj.collect.service.DailyLexiconService;
-import com.tzj.collect.service.impl.DailyWeekRankingServiceImpl;
+import com.tzj.collect.core.service.DailyLexiconService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 

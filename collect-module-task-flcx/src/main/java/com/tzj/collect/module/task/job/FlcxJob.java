@@ -2,10 +2,8 @@ package com.tzj.collect.module.task.job;
 
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.module.task.job.thread.NewThreadPoorExcutor;
-import com.tzj.collect.service.FlcxLexiconService;
-import com.tzj.collect.service.FlcxRecordsService;
-import com.tzj.module.api.utils.SignUtils;
-import com.tzj.module.common.api.SignUtil;
+import com.tzj.collect.core.service.FlcxLexiconService;
+import com.tzj.collect.core.service.FlcxRecordsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.mapper.DailyMemberMapper;
 import com.tzj.collect.common.shard.ShardTableHelper;
-import com.tzj.collect.service.DailyMemberService;
-import com.tzj.collect.service.DailySendMessageService;
+import com.tzj.collect.core.service.DailyMemberService;
+import com.tzj.collect.core.service.DailySendMessageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

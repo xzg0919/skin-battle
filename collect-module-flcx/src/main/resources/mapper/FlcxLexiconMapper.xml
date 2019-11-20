@@ -219,7 +219,7 @@
         ) fllFlt ON ftt.id = fllFlt.type_id  AND ftt.parent_id =  #{parentId}
     </select>
 
-    <resultMap id="getCheckMap" type="com.tzj.collect.api.lexicon.result.FlcxResult">
+    <resultMap id="getCheckMap" type="com.tzj.collect.core.result.flcx.FlcxResult">
         <result property="parentName" column="name_" />
         <result property="lexicon" column="lexiconName"/>
         <result property="lexiconId" column="lexicon_id"/>
@@ -235,7 +235,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="getCheckMapSpecial" type="com.tzj.collect.api.lexicon.result.FlcxResult">
+    <resultMap id="getCheckMapSpecial" type="com.tzj.collect.core.result.flcx.FlcxResult">
         <result property="parentName" column="name_" />
         <result property="lexicon" column="lexiconName"/>
         <result property="lexiconId" column="lexicon_id"/>

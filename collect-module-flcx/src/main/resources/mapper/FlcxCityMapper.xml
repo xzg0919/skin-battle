@@ -23,7 +23,7 @@
     </select>
 
 
-	<resultMap type="com.tzj.collect.api.lexicon.result.FlcxCityResult" id="openCity">
+	<resultMap type="com.tzj.collect.core.result.flcx.FlcxCityResult" id="openCity">
 		<result property="id" column="id"/>
 		<result property="city" column="city_name"/>
 		<result property="adCode" column="code_"/>

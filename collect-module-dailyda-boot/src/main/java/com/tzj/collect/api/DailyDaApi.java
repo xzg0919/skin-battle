@@ -2,13 +2,13 @@ package com.tzj.collect.api;
 
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.tzj.collect.api.lexicon.param.DailyDaParam;
-import com.tzj.collect.api.lexicon.param.PageBean;
-import com.tzj.collect.api.lexicon.utils.MemberUtils;
+import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.daily.DailyDaParam;
+import com.tzj.collect.core.param.daily.PageBean;
 import com.tzj.collect.entity.DailyWeekRanking;
-import com.tzj.collect.service.DailyLexiconService;
-import com.tzj.collect.service.DailyReceivingService;
-import com.tzj.collect.service.DailyWeekRankingService;
+import com.tzj.collect.core.service.DailyLexiconService;
+import com.tzj.collect.core.service.DailyReceivingService;
+import com.tzj.collect.core.service.DailyWeekRankingService;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

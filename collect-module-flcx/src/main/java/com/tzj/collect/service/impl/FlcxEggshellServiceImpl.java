@@ -4,14 +4,10 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.api.lexicon.param.FlcxEggshellBean;
+import com.tzj.collect.core.param.flcx.FlcxEggshellBean;
 import com.tzj.collect.entity.FlcxEggshell;
-import com.tzj.collect.entity.FlcxLexicon;
-import com.tzj.collect.entity.FlcxLexiconType;
 import com.tzj.collect.mapper.FlcxEggshellMapper;
-import com.tzj.collect.mapper.FlcxLexiconTypeMapper;
-import com.tzj.collect.service.FlcxEggshellService;
-import com.tzj.collect.service.FlcxLexiconTypeService;
+import com.tzj.collect.core.service.FlcxEggshellService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -37,6 +33,7 @@ public class FlcxEggshellServiceImpl extends ServiceImpl<FlcxEggshellMapper, Flc
      * @return
      * @throws ApiException
      */
+    @Override
     public Page<FlcxEggshell> searchEggshellByKey(FlcxEggshellBean flcxEggshellBean){
         Page<FlcxEggshell> page = null;
         if(null == flcxEggshellBean.getPageBean()){
@@ -55,6 +52,7 @@ public class FlcxEggshellServiceImpl extends ServiceImpl<FlcxEggshellMapper, Flc
     /**
      * 判断彩蛋是否已经存在
      */
+    @Override
     @DS("slave")
     public boolean isExistEggShell(FlcxEggshellBean flcxEggshellBean){
         EntityWrapper<FlcxEggshell> wrapper = new EntityWrapper<FlcxEggshell>();
@@ -74,6 +72,7 @@ public class FlcxEggshellServiceImpl extends ServiceImpl<FlcxEggshellMapper, Flc
      * @return
      * @throws ApiException
      */
+    @Override
     @Transactional(readOnly = false)
     public Map addEggShell (FlcxEggshellBean flcxEggshellBean){
         HashMap<String, Object> map = new HashMap<>();
@@ -104,6 +103,7 @@ public class FlcxEggshellServiceImpl extends ServiceImpl<FlcxEggshellMapper, Flc
      * @return
      * @throws ApiException
      */
+    @Override
     @Transactional(readOnly = false)
     public Map updateEggShell (FlcxEggshellBean flcxEggshellBean){
         HashMap<String, Object> map = new HashMap<>();
@@ -144,6 +144,7 @@ public class FlcxEggshellServiceImpl extends ServiceImpl<FlcxEggshellMapper, Flc
      * @return
      * @throws ApiException
      */
+    @Override
     @Transactional(readOnly = false)
     public Map deleteEggShell (FlcxEggshellBean flcxEggshellBean){
         HashMap<String, Object> map = new HashMap<>();

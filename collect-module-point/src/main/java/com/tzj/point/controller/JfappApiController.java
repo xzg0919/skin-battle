@@ -12,7 +12,8 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tzj.point.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.*;
+
 
 /**
  *

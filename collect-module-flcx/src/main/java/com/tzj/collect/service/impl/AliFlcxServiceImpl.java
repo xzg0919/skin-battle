@@ -12,7 +12,7 @@ import com.alipay.api.response.AlipayIserviceCognitiveClassificationCategorySync
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationFeedbackSyncResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
 import com.tzj.collect.common.constant.AlipayConst;
-import com.tzj.collect.service.AliFlcxService;
+import com.tzj.collect.core.service.AliFlcxService;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AliFlcxServiceImpl implements AliFlcxService {
 
+    @Override
     public AlipayIserviceCognitiveClassificationWasteQueryResponse returnTypeByPicOrVoice(String picUrl, String voiceString, String source) {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
         AlipayIserviceCognitiveClassificationWasteQueryRequest request = new AlipayIserviceCognitiveClassificationWasteQueryRequest();
@@ -48,6 +49,7 @@ public class AliFlcxServiceImpl implements AliFlcxService {
         return execute;
     }
 
+    @Override
     public void returnTypeVoice(String voiceString) {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
         AlipayIserviceCognitiveClassificationWasteQueryRequest request = new AlipayIserviceCognitiveClassificationWasteQueryRequest();
@@ -183,6 +185,7 @@ public class AliFlcxServiceImpl implements AliFlcxService {
      * @param
      * @return
      */
+    @Override
     public void lexTagging(String lexName, String bizCode, String cityName) throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
         AlipayIserviceCognitiveClassificationCategorySyncRequest request = new AlipayIserviceCognitiveClassificationCategorySyncRequest();

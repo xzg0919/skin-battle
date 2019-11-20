@@ -1,11 +1,10 @@
 package com.tzj.collect.module.task.mq;
 
-import com.alibaba.fastjson.JSON;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.rabbitmq.client.Channel;
 import com.tzj.collect.entity.Payment;
-import com.tzj.collect.service.DailyPaymentService;
+import com.tzj.collect.core.service.DailyPaymentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;

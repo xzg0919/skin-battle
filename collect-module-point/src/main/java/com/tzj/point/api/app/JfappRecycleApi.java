@@ -1,24 +1,24 @@
 package com.tzj.point.api.app;
 
 
+import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Point;
 import com.tzj.module.api.annotation.*;
-import com.tzj.point.api.app.param.JfappRecyclerBean;
-import com.tzj.point.api.app.param.PageBean;
-import com.tzj.point.common.util.JfappRecyclerUtils;
-import com.tzj.point.common.util.ToolUtils;
-import com.tzj.point.entity.JfappRecycler;
-import com.tzj.point.service.JfappPointListService;
-import com.tzj.point.service.JfappRecyclerService;
-import com.tzj.point.service.MemberService;
-import com.tzj.point.service.PointService;
+import com.tzj.collect.core.param.jfapp.JfappRecyclerBean;
+import com.tzj.collect.core.param.jfapp.PageBean;
+import com.tzj.collect.common.util.JfappRecyclerUtils;
+import com.tzj.collect.entity.JfappRecycler;
+import com.tzj.collect.core.service.JfappPointListService;
+import com.tzj.collect.core.service.JfappRecyclerService;
+import com.tzj.collect.core.service.Member4JfAppService;
+import com.tzj.collect.core.service.Point4JfAppService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tzj.point.common.constant.TokenConst.JFAPP_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.JFAPP_API_COMMON_AUTHORITY;
 
 @ApiService
 public class JfappRecycleApi {
@@ -26,11 +26,11 @@ public class JfappRecycleApi {
     @Autowired
     private JfappRecyclerService jfappRecyclerService;
     @Autowired
-    private MemberService memberService;
+    private Member4JfAppService member4JfAppService;
     @Autowired
     private JfappPointListService jfappPointListService;
     @Autowired
-    private PointService pointService;
+    private Point4JfAppService point4JfAppService;
 
     @Api(name = "jfapp.get.token", version = "1.0")
     @SignIgnore
@@ -44,8 +44,8 @@ public class JfappRecycleApi {
     public Object getUserByCardNo(JfappRecyclerBean jfappRecyclerBean){
         Map<String,Object> resultMap = new HashMap<String,Object>();
         String aliUserId = ToolUtils.getAliUserIdByOrderNo(jfappRecyclerBean.getCardNo());
-        Member member = memberService.selectMemberByAliUserId(aliUserId);
-        Point point = pointService.getPoint(aliUserId);
+        Member member = member4JfAppService.selectMemberByAliUserId(aliUserId);
+        Point point = point4JfAppService.getPoint(aliUserId);
         if(member==null) {
             resultMap.put("code", "500");
             resultMap.put("member", "该卡号不存在");

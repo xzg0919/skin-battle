@@ -2,17 +2,16 @@ package com.tzj.collect.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.tzj.collect.api.lexicon.param.FlcxBean;
-import com.tzj.collect.api.lexicon.param.FlcxTypeBean;
+import com.tzj.collect.core.param.flcx.FlcxBean;
+import com.tzj.collect.core.param.flcx.FlcxTypeBean;
 import com.tzj.collect.entity.FlcxLexicon;
-import com.tzj.collect.entity.FlcxLexiconType;
 import com.tzj.collect.entity.FlcxType;
 import com.tzj.collect.mapper.FlcxCityMapper;
 import com.tzj.collect.mapper.FlcxLexiconMapper;
 import com.tzj.collect.mapper.FlcxLexiconTypeMapper;
 import com.tzj.collect.mapper.FlcxTypeMapper;
-import com.tzj.collect.service.FlcxLexiconService;
-import com.tzj.collect.service.FlcxTypeService;
+import com.tzj.collect.core.service.FlcxLexiconService;
+import com.tzj.collect.core.service.FlcxTypeService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -107,6 +106,7 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
         });
     }
 
+    @Override
     @Transactional(readOnly = false)
     public void updateType(List<Map<String, String>> mapList) {
         List<FlcxType> flcxTypes = flcxTypeMapper.selectList(new EntityWrapper<FlcxType>().eq("del_flag", 0).eq("level_", 1));

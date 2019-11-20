@@ -2,9 +2,9 @@ package com.tzj.collect.module.task.mq;
 
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
-import com.tzj.collect.api.lexicon.param.FlcxBean;
+import com.tzj.collect.core.param.flcx.FlcxBean;
 import com.tzj.collect.entity.FlcxRecords;
-import com.tzj.collect.service.FlcxRecordsService;
+import com.tzj.collect.core.service.FlcxRecordsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * 查询消息监听器

@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.common.constant.AlipayConst;
-import com.tzj.collect.service.FlcxFileUploadService;
+import com.tzj.collect.core.service.FlcxFileUploadService;
 import com.tzj.module.common.file.upload.FileUpload;
 import com.tzj.module.common.utils.FileUtil;
 import com.tzj.module.easyopen.ApiContext;
@@ -236,6 +236,7 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
     /**
      * 处理文件信息
      */
+    @Override
     public FileBean handleUploadField(String fileName, MultipartFile mpf) {
 
         FileBean fileBean = new FileBean();

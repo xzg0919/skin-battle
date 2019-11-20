@@ -1,13 +1,12 @@
 package com.tzj.collect.module.task.job;
 
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
-import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.entity.Payment;
 import com.tzj.collect.module.task.job.thread.NewThreadPoorExcutor;
-import com.tzj.collect.service.DailyMemberService;
-import com.tzj.collect.service.DailyPaymentService;
-import com.tzj.collect.service.DailyWeekRankingService;
+import com.tzj.collect.core.service.DailyMemberService;
+import com.tzj.collect.core.service.DailyPaymentService;
+import com.tzj.collect.core.service.DailyWeekRankingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
