@@ -206,6 +206,13 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>6.0.16.Final</version>
             </dependency>
+            
+            
+            <dependency>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+                <version>1.2.2</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
