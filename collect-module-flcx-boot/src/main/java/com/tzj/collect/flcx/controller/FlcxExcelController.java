@@ -1,17 +1,16 @@
 package com.tzj.collect.flcx.controller;
 
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.core.service.FlcxTypeService;
 import com.tzj.module.easyopen.ApiConfig;
 import com.tzj.module.easyopen.support.ApiController;
-import jdk.nashorn.internal.ir.annotations.Reference;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
 @RequestMapping("flcx")
 public class FlcxExcelController  extends ApiController{
 
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private FlcxTypeService flcxTypeService;
 
     @RequestMapping("inportxls")

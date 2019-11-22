@@ -42,19 +42,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ApiService
 public class LexiconApi {
 
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private FlcxLexiconService flcxLexiconService;
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private FlcxTypeService flcxTypeService;
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private FlcxRecordsService flcxRecordsService;
     @Resource
     private RabbitTemplate rabbitTemplate;
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private AliFlcxService aliFlcxService;
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private FlcxFileUploadService fileUploadService;
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private FlcxCityService flcxCityService;
 
     @Resource

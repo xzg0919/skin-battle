@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
   * @return 
   */
 @Component
-@Service
+@Service(version = "${flcx.service.version}")
 @Transactional(readOnly = true)
 public class FlcxLexiconTypeServiceImpl extends ServiceImpl<FlcxLexiconTypeMapper, FlcxLexiconType> implements FlcxLexiconTypeService {
 

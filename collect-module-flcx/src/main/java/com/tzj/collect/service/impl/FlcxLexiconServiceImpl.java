@@ -33,7 +33,7 @@ import java.util.*;
   * @return 
   */
 @Component
-@Service
+@Service(version = "${flcx.service.version}")
 @Transactional(readOnly = true)
 public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxLexicon> implements FlcxLexiconService {
     @Resource

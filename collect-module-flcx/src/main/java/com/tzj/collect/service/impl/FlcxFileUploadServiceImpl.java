@@ -48,7 +48,7 @@ import org.springframework.web.multipart.support.StandardMultipartHttpServletReq
  *
  */
 @Component
-@Service
+@Service(version = "${flcx.service.version}")
 public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
 
     @Autowired

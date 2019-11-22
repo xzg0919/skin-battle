@@ -31,7 +31,7 @@ import java.util.*;
  * @return
  */
 @Component
-@Service
+@Service(version = "${flcx.service.version}")
 @Transactional(readOnly = true)
 public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> implements FlcxTypeService {
 

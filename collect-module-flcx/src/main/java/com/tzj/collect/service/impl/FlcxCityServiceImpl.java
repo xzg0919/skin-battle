@@ -18,7 +18,7 @@ import java.util.List;
   * @return 
   */
 @Component
-@Service
+@Service(version = "${flcx.service.version}")
 @Transactional(readOnly = true)
 public class FlcxCityServiceImpl extends ServiceImpl<FlcxCityMapper, FlcxCity> implements FlcxCityService {
     @Resource

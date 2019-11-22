@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-@Service
+@Service(version = "${flcx.service.version}")
 public class AliFlcxServiceImpl implements AliFlcxService {
 
     @Override

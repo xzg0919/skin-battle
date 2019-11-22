@@ -23,7 +23,7 @@ import java.util.*;
   * @return 
   */
 @Component
-@Service
+@Service(version = "${flcx.service.version}")
 @Transactional(readOnly = true)
 public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxRecords> implements FlcxRecordsService {
 

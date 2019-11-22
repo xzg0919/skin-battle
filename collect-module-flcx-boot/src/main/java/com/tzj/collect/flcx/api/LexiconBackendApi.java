@@ -32,13 +32,13 @@ import java.util.Map;
  **/
 @ApiService
 public class LexiconBackendApi {
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private FlcxLexiconService flcxLexiconService;
 
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private FlcxTypeService flcxTypeService;
 
-    @Reference
+    @Reference(version = "${flcx.service.version}")
     private FlcxEggshellService flcxEggshellService;
 
 

@@ -25,7 +25,7 @@ import java.util.Map;
   * @return 
   */
 @Component
-@Service
+@Service(version = "${flcx.service.version}")
 @Transactional(readOnly = true)
 public class FlcxEggshellServiceImpl extends ServiceImpl<FlcxEggshellMapper, FlcxEggshell> implements FlcxEggshellService {
 
