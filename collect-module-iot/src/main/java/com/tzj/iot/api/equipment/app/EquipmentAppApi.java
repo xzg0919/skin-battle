@@ -3,8 +3,11 @@ package com.tzj.iot.api.equipment.app;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.iot.IotErrorParamBean;
 import com.tzj.collect.core.service.*;
+import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.doc.annotation.ApiDoc;
+import com.tzj.module.easyopen.file.FileBase64Param;
+import com.tzj.module.easyopen.file.FileBean;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -29,6 +32,8 @@ public class EquipmentAppApi {
     private EquipmentErrorListService equipmentErrorListService;
     @Resource
     private EquipmentErrorCodeService equipmentErrorCodeService;
+    @Resource
+    private FileUploadServiceImpl fileUploadServiceImpl;
     /**
      * 广告位
      * @author: sgmark@aliyun.com
@@ -66,6 +71,14 @@ public class EquipmentAppApi {
     public Map<String, Object>  iotErrorListByMember(IotErrorParamBean iotErrorParamBean){
         iotErrorParamBean.setMember(MemberUtils.getMember());
         return equipmentErrorListService.iotErrorListByMember(iotErrorParamBean);
+    }
+    /**
+     * 上传文件0
+     */
+    @Api(name = "equipment.upload.image", version = "1.0")
+    @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    public List<FileBean> uploadImage(List<FileBase64Param> fileBase64ParamLists){
+        return fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
     }
 
 }

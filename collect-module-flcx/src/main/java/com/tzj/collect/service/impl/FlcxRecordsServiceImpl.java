@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.entity.FlcxRecords;
@@ -8,7 +9,7 @@ import com.tzj.collect.common.shard.ShardTableHelper;
 import com.tzj.collect.core.service.FlcxRecordsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -21,6 +22,7 @@ import java.util.*;
   * @param 
   * @return 
   */
+@Component
 @Service
 @Transactional(readOnly = true)
 public class FlcxRecordsServiceImpl extends ServiceImpl<FlcxRecordsMapper, FlcxRecords> implements FlcxRecordsService {

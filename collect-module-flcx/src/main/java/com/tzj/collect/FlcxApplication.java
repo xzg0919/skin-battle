@@ -1,4 +1,4 @@
-package com.tzj.collect.flcx;
+package com.tzj.collect;
 
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCaching
 @EnableAsync
 @EnableScheduling
-@EnableDubbo(scanBasePackages = "com.tzj.collect")
+@EnableDubbo(scanBasePackages = "com.tzj.collect.service.impl")
 @PropertySource(value = "classpath:/dubbo-config.properties")
 public class FlcxApplication {
 

@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -10,7 +11,7 @@ import com.tzj.collect.mapper.FlcxEggshellMapper;
 import com.tzj.collect.core.service.FlcxEggshellService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
@@ -23,6 +24,7 @@ import java.util.Map;
   * @param 
   * @return 
   */
+@Component
 @Service
 @Transactional(readOnly = true)
 public class FlcxEggshellServiceImpl extends ServiceImpl<FlcxEggshellMapper, FlcxEggshell> implements FlcxEggshellService {

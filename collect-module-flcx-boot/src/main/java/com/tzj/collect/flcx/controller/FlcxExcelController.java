@@ -5,6 +5,7 @@ import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.core.service.FlcxTypeService;
 import com.tzj.module.easyopen.ApiConfig;
 import com.tzj.module.easyopen.support.ApiController;
+import jdk.nashorn.internal.ir.annotations.Reference;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 @RequestMapping("flcx")
 public class FlcxExcelController  extends ApiController{
 
-    @Resource
+    @Reference
     private FlcxTypeService flcxTypeService;
 
     @RequestMapping("inportxls")

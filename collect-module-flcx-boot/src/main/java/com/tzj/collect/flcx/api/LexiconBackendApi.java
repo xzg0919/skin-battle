@@ -1,5 +1,6 @@
 package com.tzj.collect.flcx.api;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.tzj.collect.core.param.flcx.FlcxBean;
 import com.tzj.collect.core.param.flcx.FlcxEggshellBean;
@@ -31,13 +32,13 @@ import java.util.Map;
  **/
 @ApiService
 public class LexiconBackendApi {
-    @Resource
+    @Reference
     private FlcxLexiconService flcxLexiconService;
 
-    @Resource
+    @Reference
     private FlcxTypeService flcxTypeService;
 
-    @Resource
+    @Reference
     private FlcxEggshellService flcxEggshellService;
 
 

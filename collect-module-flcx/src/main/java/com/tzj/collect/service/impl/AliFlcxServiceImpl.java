@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -15,13 +16,14 @@ import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.service.AliFlcxService;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  * @author sgmark
  * @create 2019-07-04 15:30
  *
  */
+@Component
 @Service
 public class AliFlcxServiceImpl implements AliFlcxService {
 

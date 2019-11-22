@@ -1,5 +1,6 @@
 package com.tzj.collect.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.param.flcx.FlcxBean;
@@ -14,7 +15,7 @@ import com.tzj.collect.core.service.FlcxLexiconService;
 import com.tzj.collect.core.service.FlcxTypeService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -22,12 +23,14 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.util.*;
 
+
 /**
-  * @author sgmark@aliyun.com
-  * @date 2019/6/19 0019
-  * @param 
-  * @return 
-  */
+ * @author sgmark@aliyun.com
+ * @date 2019/6/19 0019
+ * @param
+ * @return
+ */
+@Component
 @Service
 @Transactional(readOnly = true)
 public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> implements FlcxTypeService {
@@ -200,3 +203,5 @@ public class FlcxTypeServiceImpl extends ServiceImpl<FlcxTypeMapper, FlcxType> i
     }
 
 }
+
+

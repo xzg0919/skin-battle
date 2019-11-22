@@ -1,10 +1,11 @@
 package com.tzj.collect.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.core.service.FlcxCityService;
 import com.tzj.collect.entity.FlcxCity;
 import com.tzj.collect.mapper.FlcxCityMapper;
-import com.tzj.collect.core.service.FlcxCityService;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -16,6 +17,7 @@ import java.util.List;
   * @param 
   * @return 
   */
+@Component
 @Service
 @Transactional(readOnly = true)
 public class FlcxCityServiceImpl extends ServiceImpl<FlcxCityMapper, FlcxCity> implements FlcxCityService {

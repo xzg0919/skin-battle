@@ -1,5 +1,6 @@
 package com.tzj.collect.flcx.api;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.domain.KeyWordDTO;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationFeedbackSyncResponse;
@@ -41,22 +42,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ApiService
 public class LexiconApi {
 
-    @Resource
+    @Reference
     private FlcxLexiconService flcxLexiconService;
-    @Resource
+    @Reference
     private FlcxTypeService flcxTypeService;
-    @Resource
+    @Reference
     private FlcxRecordsService flcxRecordsService;
-    @Autowired
+    @Resource
     private RabbitTemplate rabbitTemplate;
-    @Resource
+    @Reference
     private AliFlcxService aliFlcxService;
-    @Resource
+    @Reference
     private FlcxFileUploadService fileUploadService;
-    @Resource
+    @Reference
     private FlcxCityService flcxCityService;
 
-    @Autowired
+    @Resource
     private RedisUtil redisUtil;
 
     @Api(name = "lex.check.before", version = "1.0")
@@ -360,7 +361,9 @@ public class LexiconApi {
             resultJson = resultJson.replaceAll("\n", "");
             try {
                 AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
-                if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
+                if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getDistrict().contains("市")){
+                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getDistrict().replace("市", ""));
+                }else if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
                     resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString().replace("市", ""));
                 } else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())) {
                     //定位没找到城市(配合支付宝页面展示，去掉市)
@@ -396,14 +399,16 @@ public class LexiconApi {
         Response response = null;
         response = FastHttpClient.get().url(url)
                 .addParams("key", AmapConst.AMAP_KEY)
-                .addParams("location", "111.752206" + "," + "40.849938")
+                .addParams("location", "105.379" + "," + "30.8671")
                 .build().execute();
         String resultJson = response.body().string();
         if (StringUtils.isNotEmpty(resultJson)) {
             resultJson = resultJson.replaceAll("\n", "");
             try {
                 AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
-                if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
+                if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getDistrict().contains("市")){
+                    resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getDistrict().replace("市", ""));
+                }else if (null != amapRegeoJson && amapRegeoJson.getRegeocode().getAddressComponent().getCity().size() > 0) {
                     resultMap.put("city", amapRegeoJson.getRegeocode().getAddressComponent().getCity().get(0).toString());
                 } else if (StringUtils.isNotEmpty(amapRegeoJson.getRegeocode().getAddressComponent().getProvince())) {
                     //定位没找到城市

@@ -51,13 +51,6 @@
         </dependency>
         <!-- API 框架 -->
 
-        <!-- 工具类 -->
-        <dependency>
-            <groupId>com.github.icecooly</groupId>
-            <artifactId>FastHttpClient</artifactId>
-        </dependency>
-        <!-- 工具类 -->
-
         <!-- JSON -->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -178,12 +171,6 @@
             <artifactId>aliyun-java-sdk-push</artifactId>
             <version>3.10.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-core</artifactId>
-            <version>3.2.8</version>
-        </dependency>
-
         <!--添加导入/出表格依赖-->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -242,17 +229,6 @@
         <dependency>
             <groupId>com.tzj</groupId>
             <artifactId>collect-module-common</artifactId>
-        </dependency>
-        <!-- mqtt + mq -->
-        <dependency>
-            <groupId>org.eclipse.paho</groupId>
-            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-            <version>1.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
         </dependency>
         <dependency>
             <groupId>com.tzj</groupId>

@@ -5,7 +5,7 @@ server:
         max-threads: 1000
         max-connections: 2000
     #    min-spare-threads: 30
-    port: 9003
+    port: 9013
     #context-path: /collect
     jetty:
       acceptors: 2
