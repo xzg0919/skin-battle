@@ -168,13 +168,15 @@ public class Payment extends DataEntity<Long>{
     public enum PayType implements IEnum {
         COLLECT(0), // 收呗订单
         RED_BAG(1), // 答答答红包转账
-        CASH_BAG(2);//马上回收现金红包
+        CASH_BAG(2),//马上回收现金红包
+        RECYCLE_IOT(3);//iot清运回退
         private int value;
 
         PayType(final int value) {
             this.value = value;
         }
 
+        @Override
         public Serializable getValue() {
             return this.value;
         }

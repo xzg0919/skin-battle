@@ -2,18 +2,13 @@ package com.tzj.collect.core.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
 import com.tzj.collect.core.param.iot.IotParamBean;
-import com.tzj.collect.core.service.CompanyEquipmentService;
-import com.tzj.collect.core.service.CompanyRecyclerService;
-import com.tzj.collect.core.service.EquipmentMessageService;
-import com.tzj.collect.core.service.OrderService;
-import com.tzj.collect.entity.CompanyEquipment;
-import com.tzj.collect.entity.CompanyRecycler;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.OrdersType;
+import com.tzj.collect.core.service.*;
+import com.tzj.collect.entity.*;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import io.jsonwebtoken.Claims;
@@ -57,6 +52,8 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     @Resource
     private OrderService orderService;
     @Resource
+    private PaymentService paymentService;
+    @Resource
     private CompanyEquipmentService companyEquipmentService;
 
     @Override
@@ -79,6 +76,27 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
             }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_CLOSE.getKey().equals(messageMap.get("code"))){
                 //清运关门（根據回收員付款成功的交易號，退回金額）
+                //先查出所生成的交易订单，据此回退金额（哪儿来回哪儿去）
+                Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("del_flag", 0).eq("seller_id", messageMap.get("sellerId")).eq("status_", Payment.STATUS_PAYED).eq("is_success", 0).eq("pay_type", Payment.PayType.RECYCLE_IOT).last("1"));
+                if(null != payment){
+                    AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = paymentService.iotTransfer(payment.getOrderSn(), payment.getPrice()+"", payment.getTradeNo());
+                    if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())){
+                        //更新交易状态
+                        payment.setStatus(Payment.STATUS_TRANSFER);
+                        payment.setIsSuccess("1");
+                        paymentService.updateById(payment);
+                        messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getKey());
+                        messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getValue());
+                        this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
+                    }else {
+                        payment.setIsSuccess("1");
+                        payment.setRemarks(alipayFundTransToaccountTransferResponse.getSubMsg());
+                        paymentService.updateById(payment);
+                        messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getKey());
+                        messageMap.put("msg", "交易失败");
+                        this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
+                    }
+                }
 
             }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.UPLOAD_STATUS.getKey().equals(messageMap.get("code"))){
                 //上传满溢值

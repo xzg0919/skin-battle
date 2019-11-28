@@ -222,6 +222,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
      * 根据支付宝交易号查询该交易的详细信息
      * @param tradeNo
      */
+    @Override
     public AlipayTradeQueryResponse getAliPayment(String tradeNo){
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
@@ -271,6 +272,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
        return response;
     }
 
+    @Override
     public  AlipayFundTransToaccountTransferResponse receivingMoneyTransfer(String aliUserId, String price, String outBizNo){
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
@@ -322,7 +324,14 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         return response;
     }
 
-
+    /**
+     * iot定金回退接口
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/11/15 0015
+     * @Param:
+     * @return:
+     */
+    @Override
     public  AlipayFundTransToaccountTransferResponse iotTransfer(String aliUserId, String price, String outBizNo){
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();

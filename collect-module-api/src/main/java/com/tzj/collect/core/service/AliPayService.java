@@ -75,4 +75,20 @@ public interface AliPayService {
     AlipayUserCertifyOpenCertifyResponse certifyAlipayUser(String certifyId);
 
     AlipayUserCertifyOpenQueryResponse  certifyOpenQuery(String certifyId);
+    /**
+     * 刷脸支付初始化
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/11/26 0026
+     * @Param:
+     * @return:
+     */
+    ZolozAuthenticationCustomerSmilepayInitializeResponse smilePayInitialize(String apdidToken, String appName, String appVersion, String bioMetaInfo);
+    /**
+     *人脸ftoken查询消费接口(获取uId)
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/11/26 0026
+     * @Param:
+     * @return:
+     */
+    ZolozAuthenticationCustomerFtokenQueryResponse  customerFtokenQuery(String fToken);
 }

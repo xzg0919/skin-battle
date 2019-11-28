@@ -89,4 +89,8 @@ public class ToolUtils {
 		Long s = (Long.parseLong(AliUserId)+(long)99)*2-99;
 		return LocalDate.now().getYear()+""+s;
 	}
+
+	public static void main(String[] args) {
+		System.out.println(getAliUserIdByOrderNo("20194177825385253103"));
+	}
 }

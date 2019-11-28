@@ -81,6 +81,7 @@ public class CompanyEquipment extends  DataEntity<Long> {
             DISCERN_ERROR("50002", "识别错误"),
             CHANGE_ADVENT("60001", "更换广告"),
             FLIP_BAFFLE("70001", "翻转挡板"),
+            TRADE_SUCCESS("80001", "交易完成"),
             ERROR("00000", "错误");
             private String key;
 

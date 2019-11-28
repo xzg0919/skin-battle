@@ -22,21 +22,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class AliPayServiceImpl implements AliPayService {
 
-    @Autowired
-    private OrderService orderService;
-    @Autowired
-    private OrderItemAchService orderItemAchService;
-    @Autowired
-    private OrderItemService orderItemService;
-    @Autowired
-    private CategoryService categoryService;
-
     /**
      * 根据用户授权的具体authCode查询是用户的userid和token
      *
      * @author 王灿
      * @return
      */
+    @Override
     public AlipaySystemOauthTokenResponse selectUserToken(String userCode, String appId) {
         System.out.println("-------hua用户信息接口 userCode是：" + userCode);
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
@@ -62,6 +54,7 @@ public class AliPayServiceImpl implements AliPayService {
         return response;
     }
 
+    @Override
     public AlipaySystemOauthTokenResponse flcxToken(String userCode, String appId) {
         System.out.println("-------hua用户信息接口 userCode是：" + userCode);
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, appId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
@@ -93,6 +86,7 @@ public class AliPayServiceImpl implements AliPayService {
      * @author 王灿
      * @return
      */
+    @Override
     public AlipayUserInfoShareResponse selectUser(String userToken, String appId) {
         System.out.println("-------进入了查询用户信息接口 token是：" + userToken);
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
@@ -188,6 +182,7 @@ public class AliPayServiceImpl implements AliPayService {
     }
 
     //删除会员卡
+    @Override
     public void deleteCard(Member member) {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", member.getAppId(), AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
         AlipayMarketingCardDeleteRequest request = new AlipayMarketingCardDeleteRequest();
@@ -333,11 +328,12 @@ public class AliPayServiceImpl implements AliPayService {
      * @author:[王灿]
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      */
+    @Override
     public ZhimaCustomerCertificationInitializeResponse initialize(String certName, String certNo) {
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.TZJ_appId, AlipayConst.TZJ_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.TZJ_ali_public_key, AlipayConst.sign_type);
         ZhimaCustomerCertificationInitializeRequest request = new ZhimaCustomerCertificationInitializeRequest();
         ZhimaCustomerCertificationInitializeModel model = new ZhimaCustomerCertificationInitializeModel();
-        model.setTransactionId(new Date().getTime() + "" + (new Random().nextInt(999999) + 100000));
+        model.setTransactionId(System.currentTimeMillis() + "" + (new Random().nextInt(999999) + 100000));
         model.setProductCode("w1010100000000002978");
         model.setBizCode("FACE");
         Map<String, Object> map = new HashMap<String, Object>();
@@ -370,6 +366,7 @@ public class AliPayServiceImpl implements AliPayService {
      * @author:[王灿]
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      */
+    @Override
     public ZhimaCustomerCertificationCertifyResponse getInitializeUrl(String bizNo) {
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.TZJ_appId, AlipayConst.TZJ_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.TZJ_ali_public_key, AlipayConst.sign_type);
         ZhimaCustomerCertificationCertifyRequest request1 = new ZhimaCustomerCertificationCertifyRequest();
@@ -404,6 +401,7 @@ public class AliPayServiceImpl implements AliPayService {
      * @author:[王灿]
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      */
+    @Override
     public ZhimaCustomerCertificationQueryResponse certify(String bizNo) {
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.TZJ_appId, AlipayConst.TZJ_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.TZJ_ali_public_key, AlipayConst.sign_type);
         ZhimaCustomerCertificationQueryRequest request = new ZhimaCustomerCertificationQueryRequest();
@@ -424,6 +422,7 @@ public class AliPayServiceImpl implements AliPayService {
         return response;
     }
 
+    @Override
     public AlipayMarketingCardQueryResponse getPassIdUrl(String aliCardNo, String aliUserId) {
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
         AlipayMarketingCardQueryRequest request = new AlipayMarketingCardQueryRequest();
@@ -457,6 +456,7 @@ public class AliPayServiceImpl implements AliPayService {
      * @param
      * @return
      */
+    @Override
     public AlipayUserCertifyOpenInitializeResponse initializeAlipayUser(String certName, String certNo) throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
         AlipayUserCertifyOpenInitializeRequest request = new AlipayUserCertifyOpenInitializeRequest();
@@ -502,6 +502,7 @@ public class AliPayServiceImpl implements AliPayService {
      * @param
      * @return
      */
+    @Override
     public AlipayUserCertifyOpenCertifyResponse certifyAlipayUser(String certifyId) {
         //获取alipay client
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
@@ -551,21 +552,93 @@ public class AliPayServiceImpl implements AliPayService {
     }
 
     public static void main(String[] args) {
-        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
-        AlipayUserCertifyOpenQueryRequest request = new AlipayUserCertifyOpenQueryRequest();
-        request.setBizContent("{"
-                + "\"certify_id\":\"" + "432bb2eeb6ee9f08e7925087c32585df" + "\" }");
-        AlipayUserCertifyOpenQueryResponse response = null;
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.iotAppId, AlipayConst.iot_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.iot_ali_public_key, AlipayConst.sign_type);
+        ZolozAuthenticationCustomerSmilepayInitializeRequest request = new ZolozAuthenticationCustomerSmilepayInitializeRequest();
+        request.setBizContent("{\"apdidToken\":\"Hk4Flm7iFcTVXAV3qg5GUsDUi-Ua4tSB9LYcxVxbYfErUqivbgEAAA==\"" +
+                ",\"appName\":\"com.alipay.zoloz.smile\"" +
+                ",\"appVersion\":\"3.10.0.354\"" +
+                ",\"bioMetaInfo\":\"4.2.0:287358976,2\"" +
+                ",\"deviceModel\":\"msm8953 for arm64\"" +
+                ",\"deviceType\":\"android\"" +
+                ",\"machineInfo\":{\"cameraDriveVer\":\"\",\"cameraModel\":\"AstraD2\",\"cameraName\":\"AstraD2\",\"cameraVer\":\"\",\"ext\":\"\",\"group\":\"\",\"machineCode\":\"Xd3k14OaCg4DAJ61ZbLEYeV3\",\"machineModel\":\"msm8953 for arm64\",\"machineVer\":\"7.1.2\"}" +
+                ",\"merchantInfo\":{\"alipayStoreCode\":\"TEST\",\"appId\":\"2019110668924840\",\"areaCode\":\"TEST\",\"brandCode\":\"TEST\",\"deviceMac\":\"TEST\",\"deviceNum\":\"TEST_ZOLOZ_TEST\",\"geo\":\"0.000000,0.000000\",\"merchantId\":\"2088421446748170\",\"partnerId\":\"2088421446748170\",\"storeCode\":\"TEST\",\"wifiMac\":\"TEST\",\"wifiName\":\"TEST\"}" +
+                ",\"osVersion\":\"7.1.2\"" +
+                ",\"remoteLogID\":\"bb9bc74d22e2448498dd302f93ff735d1275978627\"" +
+                ",\"zimVer\":\"1.0.0\"}");
+        ZolozAuthenticationCustomerSmilepayInitializeResponse response = null;
         try {
             response = alipayClient.execute(request);
-            if (response.isSuccess()) {
-                System.out.println("调用成功");
-            } else {
-                System.out.println("调用失败");
-            }
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+        }
     }
-
+    /**
+     * 刷脸支付初始化
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/11/26 0026
+     * @Param: 
+     * @return: 
+     */
+    @Override
+    public ZolozAuthenticationCustomerSmilepayInitializeResponse smilePayInitialize(String apdidToken, String appName, String appVersion, String bioMetaInfo){
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.iotAppId, AlipayConst.iot_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.iot_ali_public_key, AlipayConst.sign_type);
+        ZolozAuthenticationCustomerSmilepayInitializeRequest request = new ZolozAuthenticationCustomerSmilepayInitializeRequest();
+        request.setBizContent("{\"apdidToken\":" + apdidToken +
+                ",\"appName\":" + appName +
+                ",\"appVersion\":" + appVersion +
+                ",\"bioMetaInfo\":" + bioMetaInfo +
+                ",\"deviceModel\":\"msm8953 for arm64\"" +
+                ",\"deviceType\":\"android\"" +
+                ",\"machineInfo\":{\"cameraDriveVer\":\"\",\"cameraModel\":\"AstraD2\",\"cameraName\":\"AstraD2\",\"cameraVer\":\"\",\"ext\":\"\",\"group\":\"\",\"machineCode\":\"Xd3k14OaCg4DAJ61ZbLEYeV3\",\"machineModel\":\"msm8953 for arm64\",\"machineVer\":\"7.1.2\"}" +
+                ",\"merchantInfo\":{\"alipayStoreCode\":\"TEST\",\"appId\":\"2019110668924840\",\"areaCode\":\"TEST\",\"brandCode\":\"TEST\",\"deviceMac\":\"TEST\",\"deviceNum\":\"TEST_ZOLOZ_TEST\",\"geo\":\"0.000000,0.000000\",\"merchantId\":\"2088421446748170\",\"partnerId\":\"2088421446748170\",\"storeCode\":\"TEST\",\"wifiMac\":\"TEST\",\"wifiName\":\"TEST\"}" +
+                ",\"osVersion\":\"7.1.2\",\"remoteLogID\":\"bb9bc74d22e2448498dd302f93ff735d1275978627\",\"zimVer\":\"1.0.0\"}");
+        ZolozAuthenticationCustomerSmilepayInitializeResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+        }
+        return response;
+    }
+    /**
+     *人脸ftoken查询消费接口(获取uId)
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/11/26 0026
+     * @Param: 
+     * @return:
+     */
+    @Override
+    public ZolozAuthenticationCustomerFtokenQueryResponse  customerFtokenQuery(String fToken){
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.iotAppId, AlipayConst.iot_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.iot_ali_public_key, AlipayConst.sign_type);
+        ZolozAuthenticationCustomerFtokenQueryRequest request = new ZolozAuthenticationCustomerFtokenQueryRequest();
+        request.setBizContent("{" +
+                "\"ftoken\":" + fToken + "," +
+                "\"biz_type\":\"1\"," +
+                "\"ext_info\":{" +
+                "\"query_type\":\"\"" +
+                "    }" +
+                "  }");
+        ZolozAuthenticationCustomerFtokenQueryResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
+        if(response.isSuccess()){
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
+        }
+        return response;
+    }
 }

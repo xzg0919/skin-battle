@@ -15,7 +15,7 @@ public class MqttTest {
     public static void main(String[] args) throws Exception {
         String api="http://localhost:9006/equipment/app/api";
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","equipment.advert");
+        param.put("name","mqtt.equipment.token");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_8");
@@ -23,7 +23,7 @@ public class MqttTest {
         param.put("token", "F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CEQW5RP3OOKLBZCXYZ6NNZ2UHHOENJRSLSAGIQADKOPILWSLWSGDAA52GQ764L3D57RNN7S32DPJR6FCAV5YLDHOQ2GQ3IGII6KG6HHIPOEFCHKDYDWZRMA33TUHZLFHONL3DZGECBNF4TVZOB62UCQU4MD4QRM5NKXMC3AXSCLF3MIKAULORAN36AYYOI5DXG32T5X37ILQI53VAX7BHZQBR6LLA");
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID().toString());
-        param.put("data","{\"hardwareCode\":\"SH0024\",\"captcha\":\"910998\"}");
+        param.put("data","{\"clientId\":\"SH0024\",\"captcha\":\"910998\"}");
 
         String jsonStr= JSON.toJSONString(param);
         String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_55667788");

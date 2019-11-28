@@ -2,15 +2,19 @@ package com.tzj.iot.common.mqtt.methods;
 
 import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
+import com.tzj.collect.api.commom.mqtt.util.Tools;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static org.eclipse.paho.client.mqttv3.MqttConnectOptions.MQTT_VERSION_3_1_1;
 
 /**
  * mqtt客户端发送到客户端消息
@@ -69,7 +73,7 @@ public class MQ4IoTSendMessageToMQ4IoTUseSignatureMode {
          * MQ4IOT clientId，由业务系统分配，需要保证每个 tcp 连接都不一样，保证全局唯一，如果不同的客户端对象（tcp 连接）使用了相同的 clientId 会导致连接异常断开。
          * clientId 由两部分组成，格式为 GroupID@@@DeviceId，其中 groupId 在 MQ4IOT 控制台申请，DeviceId 由业务方自己设置，clientId 总长度不得超过64个字符。
          */
-        String clientId = "GID-IOT-MQTT@@@SH0066";
+        String clientId = "GID-IOT-MQTT@@@admin";
         /**
          * MQ4IOT 消息的一级 topic，需要在控制台申请才能使用。
          * 如果使用了没有申请或者没有被授权的 topic 会导致鉴权失败，服务端会断开客户端连接。
@@ -108,7 +112,7 @@ public class MQ4IoTSendMessageToMQ4IoTUseSignatureMode {
                     @Override
                     public void run() {
                         try {
-                            final String topicFilter[] = {parentTopic + "/" + "SH0066"};
+                            final String topicFilter[] = {"iot_topic" + "/" + "admin"};
                             final int[] qos = {qosLevel};
                             mqttClient.subscribe(topicFilter, qos);
                         } catch (MqttException e) {
@@ -139,18 +143,26 @@ public class MQ4IoTSendMessageToMQ4IoTUseSignatureMode {
                 System.out.println("send msg succeed topic is : " + iMqttDeliveryToken.getTopics()[0]);
             }
         });
-        mqttClient.connect(connectionOptionWrapper.getMqttConnectOptions());
+        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+        mqttConnectOptions.setUserName("Signature|" + accessKey + "|" + instanceId);
+        mqttConnectOptions.setPassword(Tools.macSignature(clientId, secretKey).toCharArray());
+        mqttConnectOptions.setCleanSession(true);
+        mqttConnectOptions.setKeepAliveInterval(90);
+        mqttConnectOptions.setAutomaticReconnect(true);
+        mqttConnectOptions.setMqttVersion(MQTT_VERSION_3_1_1);
+        mqttConnectOptions.setConnectionTimeout(5000);
+        mqttClient.connect(mqttConnectOptions);
         MqttMessage message = new MqttMessage("hello mq4Iot pub sub msg".getBytes());
         message.setQos(qosLevel);
         /**
          *  发送普通消息时，topic 必须和接收方订阅的 topic 一致，或者符合通配符匹配规则
          */
-        mqttClient.publish(mq4IotTopic, message);
+        mqttClient.publish(parentTopic+"/qfdsfdffggbhjmh", message);
         /**
          * MQ4IoT支持点对点消息，即如果发送方明确知道该消息只需要给特定的一个设备接收，且知道对端的 clientId，则可以直接发送点对点消息。
          * 点对点消息不需要经过订阅关系匹配，可以简化订阅方的逻辑。点对点消息的 topic 格式规范是  {{parentTopic}}/p2p/{{targetClientId}}
          */
-        final String p2pSendTopic = parentTopic + "/p2p/" + "admin";
+        final String p2pSendTopic = parentTopic + "/p2p/" + "qfdsfdffggbhjmh";
         message = new MqttMessage("hello mq4Iot p2p msg".getBytes());
         message.setQos(qosLevel);
         mqttClient.publish(p2pSendTopic, message);

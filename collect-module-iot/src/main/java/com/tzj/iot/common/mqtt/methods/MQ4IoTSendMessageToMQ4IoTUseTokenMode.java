@@ -81,7 +81,7 @@ public class MQ4IoTSendMessageToMQ4IoTUseTokenMode {
          * MQ4IOT支持子级 topic，用来做自定义的过滤，此处为示意，可以填写任何字符串，具体参考https://help.aliyun.com/document_detail/42420.html?spm=a2c4g.11186623.6.544.1ea529cfAO5zV3
          * 需要注意的是，完整的 topic 长度不得超过128个字符。
          */
-        final String mq4IotTopic = parentTopic + "/" + "testMq4Iot";
+        final String mq4IotTopic = parentTopic + "/" + "admin";
         /**
          * QoS参数代表传输质量，可选0，1，2，根据实际需求合理设置，具体参考 https://help.aliyun.com/document_detail/42420.html?spm=a2c4g.11186623.6.544.1ea529cfAO5zV3
          */
@@ -165,7 +165,7 @@ public class MQ4IoTSendMessageToMQ4IoTUseTokenMode {
             /**
              *  发送普通消息时，topic 必须和接收方订阅的 topic 一致，或者符合通配符匹配规则
              */
-//            mqttClient.publish(mq4IotTopic, message);
+            mqttClient.publish(mq4IotTopic, message);
             /**
              * MQ4IoT支持点对点消息，即如果发送方明确知道该消息只需要给特定的一个设备接收，且知道对端的 clientId，则可以直接发送点对点消息。
              * 点对点消息不需要经过订阅关系匹配，可以简化订阅方的逻辑。点对点消息的 topic 格式规范是  {{parentTopic}}/p2p/{{targetClientId}}
