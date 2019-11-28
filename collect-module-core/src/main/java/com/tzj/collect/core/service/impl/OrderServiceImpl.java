@@ -2376,8 +2376,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		order.setCompleteDate(new Date());
 		order.setIsEvaluated("0");
 		order.setLevel("0");
-		order.setArrivalTime(new Date());
-		order.setArrivalPeriod("am");
 		order.setAliUserId(member.getAliUserId());
 		order.setIsCash("0");
 		order.setIsDistributed("0");
