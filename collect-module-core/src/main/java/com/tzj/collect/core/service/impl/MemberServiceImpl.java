@@ -69,6 +69,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         member.setGreenCode(memberBean.getGreenSn());
         member.setIdCard(memberBean.getCertNo());
         member.setName(memberBean.getUserName());
+        member.setAliCardNo(ToolUtils.getIdCardByAliUserId(memberBean.getAliMemberId()));
         this.insertMember(member);
         return member;
     }
@@ -368,7 +369,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Override
     public Map<String, Object> memberIsExist(MemberBean memberBean) {
         Map<String, Object> map = new HashMap<>();
-        Member member = this.selectOne(new EntityWrapper<Member>().eq("card_no", memberBean.getCardNo()));
+        String aliUid = ToolUtils.getAliUserIdByOrderNo(memberBean.getCardNo());
+        Member member = this.selectMemberByAliUserId(aliUid);
         if (member != null) {
             map.put("isExist", true);
             map.put("tel", member.getMobile());
