@@ -22,7 +22,7 @@ import static com.tzj.collect.common.constant.TokenConst.EQUIPMENT_APP_API_TOKEN
  * @Author 胡方明（12795880@qq.com）
  **/
 @Controller
-@RequestMapping(value = "/equipment/app/api")
+@RequestMapping(value = "/equipment/iot/app/api")
 public class EquipmentAppApiController extends ApiController {
 
     @Resource(name="apiNonceServiceImpl")

@@ -25,4 +25,8 @@ public class SmilePayBean {
      * 所要登录的设备编号的硬件编号
      */
     private String hardwareCode;
+    /**
+     * 识别信息
+     */
+    private String metaInfo;
 }

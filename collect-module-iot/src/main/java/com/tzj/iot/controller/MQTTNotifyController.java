@@ -31,7 +31,7 @@ import static com.tzj.collect.common.constant.Const.ALI_PUBLIC_KEY;
  * mqtt清运人员支付通知
  */
 @Controller
-@RequestMapping(value = "/mqtt/notify")
+@RequestMapping(value = "/equipment/mqtt/notify")
 public class MQTTNotifyController {
 
     @Autowired

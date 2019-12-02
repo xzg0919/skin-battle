@@ -56,7 +56,7 @@ public class DailyJob {
      * @param
      * @return
      */
-    @Scheduled(cron = "00 25 05 ? * MON")
+    @Scheduled(cron = "00 04 14 ? * MON")
     public void downloadExcel(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new UploadExcelThread(dailyWeekRankingService)));
     }

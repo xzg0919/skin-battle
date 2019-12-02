@@ -96,6 +96,7 @@ public class CompanyEquipment extends  DataEntity<Long> {
                 return key;
             }
 
+            @Override
             public String getValue() {
                 return value;
             }

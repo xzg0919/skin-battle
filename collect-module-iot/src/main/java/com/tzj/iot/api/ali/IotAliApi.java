@@ -8,11 +8,17 @@ import com.tzj.collect.core.param.iot.SmilePayBean;
 import com.tzj.collect.core.param.token.TokenBean;
 import com.tzj.collect.core.service.AliPayService;
 import com.tzj.module.api.annotation.Api;
+import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.easyopen.doc.annotation.ApiDoc;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -20,6 +26,8 @@ import static com.tzj.collect.common.constant.TokenConst.*;
  * @author sgmark
  * @create 2019-11-26 11:17
  **/
+@ApiService
+@ApiDoc(value = "APP iot 设备端ali模块",appModule = "ali")
 public class IotAliApi {
 
     @Resource
@@ -35,11 +43,16 @@ public class IotAliApi {
     @Api(name = "smile.pay.initialize", version = "1.0")
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
     public Object smilePayInitialize(SmilePayBean smilePayBean){
-        if (null == smilePayBean || StringUtils.isEmpty(smilePayBean.getApdidToken()) || StringUtils.isEmpty(smilePayBean.getAppName())
-        || StringUtils.isEmpty(smilePayBean.getAppVersion()) || StringUtils.isEmpty(smilePayBean.getBioMetaInfo())){
+        Map<String, Object> metaInfo = null;
+        if (null == smilePayBean || StringUtils.isEmpty(smilePayBean.getMetaInfo())){
             throw new ApiException("参数错误");
+        }else {
+            metaInfo = JSONObject.parseObject(smilePayBean.getMetaInfo());
+            if (!CollectionUtils.isEmpty(metaInfo)){
+                return JSONObject.parseObject(aliPayService.smilePayInitialize(metaInfo.get("apdidToken")+"", metaInfo.get("appName") +"", metaInfo.get("appVersion")+"", metaInfo.get("bioMetaInfo")+"").getResult());
+            }
         }
-       return JSONObject.parseObject(aliPayService.smilePayInitialize(smilePayBean.getApdidToken(), smilePayBean.getAppName(), smilePayBean.getAppVersion(), smilePayBean.getBioMetaInfo()).getResult());
+        return null;
     }
     /**
      * 人脸识别获取用户token
