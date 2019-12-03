@@ -65,6 +65,7 @@ public class ConnectionOptionWrapper {
         if (builder.length() > 0) {
             builder.setLength(builder.length() - 1);
         }
+        System.out.println(builder.toString());
         mqttConnectOptions.setPassword(builder.toString().toCharArray());
         mqttConnectOptions.setCleanSession(true);
         mqttConnectOptions.setKeepAliveInterval(90);

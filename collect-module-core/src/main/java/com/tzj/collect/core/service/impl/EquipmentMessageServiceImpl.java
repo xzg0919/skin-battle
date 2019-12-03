@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.api.commom.constant.MQTTConst;
 import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
+import com.tzj.collect.api.commom.mqtt.util.Tools;
 import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -14,9 +16,7 @@ import com.tzj.module.common.utils.security.CipherTools;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.weaver.ast.Or;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,13 +26,20 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
+import static org.eclipse.paho.client.mqttv3.MqttConnectOptions.MQTT_VERSION_3_1_1;
 
 /**
  * @author sgmark
@@ -46,8 +53,6 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     @Resource(name = "connectionOptionWrapperSignature")
     private ConnectionOptionWrapper connectionOptionWrapper;
     @Resource
-    private MQTTConfig mqttConfig;
-    @Resource
     private CompanyRecyclerService companyRecyclerService;
     @Resource
     private OrderService orderService;
@@ -55,12 +60,16 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     private PaymentService paymentService;
     @Resource
     private CompanyEquipmentService companyEquipmentService;
+    @Resource
+    private MqttClient mqttClient;
 
     @Override
     public void dealWithMessage(String topic,String message) {
-        Map<String, Object> messageMap = new HashMap<>();
+        Map<String, Object>  messageMap = JSONObject.parseObject(message);
+        if (CollectionUtils.isEmpty(messageMap)){
+            return;
+        }
         try {
-            messageMap = JSONObject.parseObject(message);
             //关闭箱门
             if(CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_CLOSE.getKey().equals(messageMap.get("code"))){
                 //拿到物品识别图片地址,返回识别结果(挡板翻转)
@@ -72,6 +81,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 messageMap.put("imgUrl", "http://images.sqmall.top/collect/20180427_category_pic/11.png");
                 messageMap.put("action", nextInt);
                 messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getKey());
+                messageMap.put("msg",  CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getValue());
                 //發送消息
                 this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
             }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_CLOSE.getKey().equals(messageMap.get("code"))){
@@ -139,6 +149,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
         }catch (Exception e){
             //消息体错误
             try {
+                messageMap = new HashMap<>();
                 messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getKey());
                 messageMap.put("message", "消息错误---"+e.getMessage());
                 this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
@@ -193,19 +204,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     public void sendMessageToMQ4IoTUseSignatureMode(String message, String topic) throws MqttException {
         MqttMessage mqttMessage = new MqttMessage(message.getBytes());
         mqttMessage.setQos(qosLevel);
-        final MemoryPersistence memoryPersistence = new MemoryPersistence();
-        /**
-         * 客户端使用的协议和端口必须匹配，具体参考文档 https://help.aliyun.com/document_detail/44866.html?spm=a2c4g.11186623.6.552.25302386RcuYFB
-         * 如果是 SSL 加密则设置ssl://endpoint:8883
-         */
-        final MqttClient mqttClient = new MqttClient("tcp://" +  mqttConfig.getInstanceId() + ":1883", mqttConfig.getClientId(), memoryPersistence);
-        mqttClient.connect(connectionOptionWrapper.getMqttConnectOptions());
-        /**
-         * 客户端设置好发送超时时间，防止无限阻塞
-         */
-        mqttClient.setTimeToWait(5000);
-        mqttClient.publish(mqttConfig.getParentTopic() + "/" + topic, mqttMessage);
-        mqttClient.close();
+        mqttClient.publish(MQTTConst.PARENT_TOPIC + "/" + topic, mqttMessage);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.tzj.iot.config;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
 import com.tzj.collect.core.service.EquipmentMessageService;
@@ -9,9 +10,14 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -25,7 +31,12 @@ import static com.tzj.collect.api.commom.constant.MQTTConst.*;
  * @author sgmark
  * @create 2019-11-15 10:50
  **/
+@Configuration
 public class MQTTMessageListener {
+
+    @Resource
+    private EquipmentMessageService messageService;
+
     protected final static Logger logger = LoggerFactory.getLogger(MQTTConfig.class);
 
     private String  instanceId = INSTANCE_ID;
@@ -45,7 +56,7 @@ public class MQTTMessageListener {
      //     * @return:
      //     */
     @Bean
-    public void mqttMessageListener() throws MqttException, NoSuchAlgorithmException, InvalidKeyException {
+    public MqttClient mqttMessageListener() throws MqttException, NoSuchAlgorithmException, InvalidKeyException {
         final String mq4IotTopic = parentTopic + "/" + "admin";
         /**
          * QoS参数代表传输质量，可选0，1，2，根据实际需求合理设置，具体参考 https://help.aliyun.com/document_detail/42420.html?spm=a2c4g.11186623.6.544.1ea529cfAO5zV3
@@ -97,11 +108,17 @@ public class MQTTMessageListener {
                  * 消费消息需要保证在规定时间内完成，如果消费耗时超过服务端约定的超时时间，对于可靠传输的模式，服务端可能会重试推送，业务需要做好幂等去重处理。超时时间约定参考限制
                  * https://help.aliyun.com/document_detail/63620.html?spm=a2c4g.11186623.6.546.229f1f6ago55Fj
                  */
-                System.out.println(
-                        "receive msg from topic " + topic + " , body is " + new String(mqttMessage.getPayload()));
-                //处理业务逻辑
-                EquipmentMessageService messageService = new EquipmentMessageServiceImpl();
-                messageService.dealWithMessage(topic, new String(mqttMessage.getPayload()));
+                Map<String, Object> mqttMessageMap = JSONObject.parseObject(new String(mqttMessage.getPayload()));
+                if (CollectionUtils.isEmpty(mqttMessageMap)){
+                    return;
+                }
+                String clientTopic = mqttMessageMap.get("clientTopic")+"";
+                if (StringUtils.isEmpty(clientTopic)){
+                    return;
+                }
+                logger.info("receive msg from topic " + topic + " , body is " + new String(mqttMessage.getPayload()));
+                //处理客户端消息
+                messageService.dealWithMessage(clientTopic, new String(mqttMessage.getPayload()));
             }
 
             @Override
@@ -110,6 +127,7 @@ public class MQTTMessageListener {
             }
         });
         mqttClient.connect(connectionOptionWrapper.getMqttConnectOptions());
+        return mqttClient;
     }
 
 }

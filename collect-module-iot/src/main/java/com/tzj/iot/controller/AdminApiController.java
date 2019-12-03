@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  *
  */
 @Controller
-@RequestMapping(value = "/admin/api")
+@RequestMapping(value = "/equipment/admin/api")
 public class AdminApiController extends ApiController {
 
     @Resource(name = "apiNonceServiceImpl")
