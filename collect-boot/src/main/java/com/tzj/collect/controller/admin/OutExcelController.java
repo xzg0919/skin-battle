@@ -13,10 +13,7 @@ import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.result.admin.RecruitExpressResult;
 import com.tzj.collect.core.service.*;
-import com.tzj.collect.entity.EnterpriseCode;
-import com.tzj.collect.entity.OrderComplaint;
-import com.tzj.collect.entity.OrderItem;
-import com.tzj.collect.entity.OrderItemAch;
+import com.tzj.collect.entity.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,17 +42,15 @@ public class OutExcelController {
     @Autowired
     private PiccOrderService piccOrderService;
     @Autowired
-    private PiccNumService piccNumService;
+    private CompanyService companyService;
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private OrderComplaintService orderComplaintService;
-    @Autowired
-    private OrderItemAchService orderItemAchService;
     @Autowired
     private AreaService areaService;
     @Resource
     private JedisPool jedisPool;
+    @Autowired
+    private RecyclersService recyclersService;
     /**
      * 根据企业导出以旧换新的券的excel列表
      * @param response
@@ -394,23 +389,6 @@ public class OutExcelController {
         ExcelUtils.exportExcel(response, fileName, data);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public String getOrderStatus(String status){
         String statusPage = null;
         switch (status) {
@@ -598,4 +576,404 @@ public class OutExcelController {
         String fileName=fdate.format(new Date())+".xlsx";
         ExcelUtils.exportExcel(response, fileName, data);
     }
+
+    /**
+     *各品类订单完成情况导出
+     * @param response
+     * @param orderBean
+     * @throws Exception
+     */
+    @RequestMapping("/gary/outTitleOrderCount")
+    public void  outTitleOrderCount(HttpServletResponse response, OrderBean orderBean) throws Exception {
+        //服务商列表
+        List<Company> companyNameList = companyService.getCompanyNameList();
+        //订单总数
+        List<Long> orderList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),null,null);
+        //完成数量
+        List<Long> orderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),null,"3");
+        //家电覆盖街道到数
+        List<Long> applianceStreetNum =  companyService.getStreetNumByTableName("sb_company_street_appliance");
+        //家电订单总数
+        List<Long> applianceOrderList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"1",null);
+        //家电进行中订单总数
+        List<Long> applianceOrderIngList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"1","0,1,2");
+        //家电用户取消订单总数
+        List<Long> applianceOrderCancelList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"1","4");
+        //家电平台取消订单总数
+        List<Long> applianceOrderRejectList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"1","5");
+        //家电完成订单总数
+        List<Long> applianceOrderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"1","3");
+        //生活垃圾覆盖街道到数
+        List<Long> houseStreetNum =  companyService.getStreetNumByTableName("sb_company_street_house");
+        //生活垃圾订单总数
+        List<Long> houseOrderList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"2",null);
+        //生活垃圾进行中订单总数
+        List<Long> houseOrderIngList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"2","0,1,2");
+        //生活垃圾用户取消订单总数
+        List<Long> houseOrderCancelList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"2","4");
+        //生活垃圾平台取消订单总数
+        List<Long> houseOrderRejectList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"2","5");
+        //生活垃圾完成订单总数
+        List<Long> houseOrderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"2","3");
+        //五公斤覆盖街道到数
+        List<Long> fiveStreetNum =  companyService.getStreetNumByTableName("sb_company_stree");
+        //五公斤订单总数
+        List<Long> fiveOrderList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"3",null);
+        //五公斤进行中订单总数
+        List<Long> fiveOrderIngList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"3","0,1,2");
+        //五公斤用户取消订单总数
+        List<Long> fiveOrderCancelList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"3","4");
+        //五公斤平台取消订单总数
+        List<Long> fiveOrderRejectList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"3","5");
+        //五公斤完成订单总数
+        List<Long> fiveOrderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"3","3");
+        //大件覆盖街道到数
+        List<Long> bigStreetNum =  companyService.getStreetNumByTableName("sb_company_street_big");
+        //大件订单总数
+        List<Long> bigOrderList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"4",null);
+        //大件进行中订单总数
+        List<Long> bigOrderIngList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"4","0,1,2");
+        //大件用户取消订单总数
+        List<Long> bigOrderCancelList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"4","4");
+        //大件平台取消订单总数
+        List<Long> bigOrderRejectList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"4","5");
+        //大件完成订单总数
+        List<Long> bigOrderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),"4","3");
+
+        ExcelData data = new ExcelData();
+        data.setName("各个品类订单完成情况");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("服务商");
+        titles.add("订单总数");
+        titles.add("完成数量");
+        titles.add("家电覆盖街道数量");
+        titles.add("家电订单总数");
+        titles.add("家电进行中的数量");
+        titles.add("家电用户取消");
+        titles.add("家电平台取消");
+        titles.add("家电完成数量");
+        titles.add("生活垃圾覆盖街道数量");
+        titles.add("生活垃圾订单总数");
+        titles.add("生活垃圾进行中的数量");
+        titles.add("生活垃圾用户取消");
+        titles.add("生活垃圾平台取消");
+        titles.add("生活垃圾完成数量");
+        titles.add("五公斤覆盖街道数量");
+        titles.add("五公斤订单总数");
+        titles.add("五公斤进行中的数量");
+        titles.add("五公斤用户取消");
+        titles.add("五公斤平台取消");
+        titles.add("五公斤完成数量");
+        titles.add("大件覆盖街道数量");
+        titles.add("大件订单总数");
+        titles.add("大件进行中的数量");
+        titles.add("大件用户取消");
+        titles.add("大件平台取消");
+        titles.add("大件完成数量");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        Map<String,Object> outComplaintOrderMap  = null;
+        for(int i=0,j = companyNameList.size(); i<j;i++){
+            row= new ArrayList();
+            row.add(companyNameList.get(i).getName());
+            row.add(orderList.get(i));
+            row.add(orderCompleteList.get(i));
+            row.add(applianceStreetNum.get(i));
+            row.add(applianceOrderList.get(i));
+            row.add(applianceOrderIngList.get(i));
+            row.add(applianceOrderCancelList.get(i));
+            row.add(applianceOrderRejectList.get(i));
+            row.add(applianceOrderCompleteList.get(i));
+            row.add(houseStreetNum.get(i));
+            row.add(houseOrderList.get(i));
+            row.add(houseOrderIngList.get(i));
+            row.add(houseOrderCancelList.get(i));
+            row.add(houseOrderRejectList.get(i));
+            row.add(houseOrderCompleteList.get(i));
+            row.add(fiveStreetNum.get(i));
+            row.add(fiveOrderList.get(i));
+            row.add(fiveOrderIngList.get(i));
+            row.add(fiveOrderCancelList.get(i));
+            row.add(fiveOrderRejectList.get(i));
+            row.add(fiveOrderCompleteList.get(i));
+            row.add(bigStreetNum.get(i));
+            row.add(bigOrderList.get(i));
+            row.add(bigOrderIngList.get(i));
+            row.add(bigOrderCancelList.get(i));
+            row.add(bigOrderRejectList.get(i));
+            row.add(bigOrderCompleteList.get(i));
+            rows.add(row);
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
+
+    /**
+     *各品类订单完成情况导出
+     * @param response
+     * @param orderBean
+     * @throws Exception
+     */
+    @RequestMapping("/gary/outOrderCountByCity")
+    public void  outOrderCountByCity(HttpServletResponse response, OrderBean orderBean) throws Exception {
+        //查询所有城市
+        List<Map<String,Object>> cityList = areaService.getCityListByGary();
+        //查询家电订单数量
+        List<Long> applianceOrderList = orderService.getOrderListByCity(orderBean.getStartTime(),orderBean.getEndTime(),"1");
+        //查询生活垃圾订单数量
+        List<Long> houseOrderList = orderService.getOrderListByCity(orderBean.getStartTime(),orderBean.getEndTime(),"2");
+        //查询大件订单数量
+        List<Long> bigOrderList = orderService.getOrderListByCity(orderBean.getStartTime(),orderBean.getEndTime(),"4");
+        //查询大件订单数量
+        List<Long> fiveOrderList = orderService.getOrderListByCity(orderBean.getStartTime(),orderBean.getEndTime(),"3");
+
+        ExcelData data = new ExcelData();
+        data.setName("各个品类订单完成情况");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("省");
+        titles.add("城市");
+        titles.add("家电订单数量");
+        titles.add("生活垃圾订单数量");
+        titles.add("大件订单数量");
+        titles.add("五公斤订单数量");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        Map<String,Object> outComplaintOrderMap  = null;
+        for(int i=0,j = cityList.size(); i<j;i++){
+            row= new ArrayList();
+            row.add(cityList.get(i).get("province"));
+            row.add(cityList.get(i).get("city"));
+            row.add(applianceOrderList.get(i));
+            row.add(houseOrderList.get(i));
+            row.add(bigOrderList.get(i));
+            row.add(fiveOrderList.get(i));
+            rows.add(row);
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
+
+    /**
+     *订单取消原因汇总导出
+     * @param response
+     * @param orderBean
+     * @throws Exception
+     */
+    @RequestMapping("/gary/outOrderCancelByCompany")
+    public void  outOrderCancelByCompany(HttpServletResponse response, OrderBean orderBean) throws Exception {
+        List<Map<String,Object>> cancelOrderList = orderService.getOrderCancelByCompany(orderBean.getStartTime(),orderBean.getEndTime());
+        ExcelData data = new ExcelData();
+        data.setName("订单取消原因汇总导出");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("服务商");
+        titles.add("订单号");
+        titles.add("回收类型");
+        titles.add("下单时间");
+        titles.add("取消原因");
+        titles.add("取消类型");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        Map<String,Object> outComplaintOrderMap  = null;
+        for(int i=0,j = cancelOrderList.size(); i<j;i++){
+            row= new ArrayList();
+            Map<String, Object> objectMap = cancelOrderList.get(i);
+            row.add(objectMap.get("name"));
+            row.add(objectMap.get("orderNo"));
+            row.add(objectMap.get("title"));
+            row.add(objectMap.get("createDate"));
+            row.add(objectMap.get("cancelReason"));
+            row.add(objectMap.get("status"));
+            rows.add(row);
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+
+    }
+    /**
+     *回收人员订单完成情况
+     * @param response
+     * @param orderBean
+     * @throws Exception
+     */
+    @RequestMapping("/gary/outOrderListByRecycler")
+    public void  outOrderListByRecycler(HttpServletResponse response, OrderBean orderBean) throws Exception {
+        //完成总订单
+        List<Long> completeOrderList = orderService.outOrderListByRecycler(orderBean.getStartTime(), orderBean.getEndTime(), null);
+        //超时订单
+        List<Long> overTimeOrderList = orderService.outOrderListByRecycler(orderBean.getStartTime(), orderBean.getEndTime(), "1");
+        //不超时完成订单
+        List<Long> notOverTimeOrderList = orderService.outOrderListByRecycler(orderBean.getStartTime(), orderBean.getEndTime(), "0");
+
+        List<Map<String, Object>> recyclerCityList = recyclersService.getRecyclerCityList();
+
+        ExcelData data = new ExcelData();
+        data.setName("回收人员完成订单情况");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("回收人员姓名");
+        titles.add("所属服务商");
+        titles.add("管辖省");
+        titles.add("管辖市");
+        titles.add("完成订单数量");
+        titles.add("预约时间内完成");
+        titles.add("超时完成");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        Map<String,Object> outComplaintOrderMap  = null;
+        for(int i=0,j = recyclerCityList.size(); i<j;i++){
+            row= new ArrayList();
+            Map<String, Object> objectMap = recyclerCityList.get(i);
+            row.add(objectMap.get("name"));
+            row.add(objectMap.get("companyName"));
+            row.add(objectMap.get("province"));
+            row.add(objectMap.get("city"));
+            row.add(completeOrderList.get(i));
+            row.add(notOverTimeOrderList.get(i));
+            row.add(overTimeOrderList.get(i));
+            rows.add(row);
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+
+    }
+    /**
+     *某个时间段订单完成情况
+     * @param response
+     * @param orderBean
+     * @throws Exception
+     */
+    @RequestMapping("/gary/outOrderListByGary")
+    public void  outOrderListByGary(HttpServletResponse response, OrderBean orderBean) throws Exception {
+        //服务商列表
+        List<Company> companyNameList = companyService.getCompanyNameList();
+        //订单总数
+        List<Long> orderList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),null,null);
+        //完成数量
+        List<Long> orderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),null,"3");
+        //总取消数量
+        List<Long> orderCancelList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),null,"4,5");
+        //用户取消数量
+        List<Long> orderUserCancelList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),null,"4");
+        //平台数量
+        List<Long> orderCompanyCancelList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(),orderBean.getEndTime(),null,"5");
+        //回收人员数量
+        List<Long> recyclersList = recyclersService.getRecyclerListGroupCompany();
+        //获取街道覆盖数量
+        List<Long> streetCountList =  recyclersService.getStreetListGroupCompany();
+        //超时订单数
+        List<Long> orderOverTimeList = orderService.outOrderListGroupCompany(orderBean.getStartTime(), orderBean.getEndTime());
+
+        ExcelData data = new ExcelData();
+        data.setName("回收人员完成订单情况");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("服务商");
+        titles.add("回收人员人数");
+        titles.add("街道覆盖");
+        titles.add("用户总下订单");
+        titles.add("总完成");
+        titles.add("总取消");
+        titles.add("用户取消");
+        titles.add("服务商取消");
+        titles.add("超时完成订单数");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row = null;
+        for(int i=0,j = companyNameList.size(); i<j;i++){
+            row= new ArrayList();
+            row.add(companyNameList.get(i).getName());
+            row.add(recyclersList.get(i));
+            row.add(streetCountList.get(i));
+            row.add(orderList.get(i));
+            row.add(orderCompleteList.get(i));
+            row.add(orderCancelList.get(i));
+            row.add(orderUserCancelList.get(i));
+            row.add(orderCompanyCancelList.get(i));
+            row.add(orderOverTimeList.get(i));
+            rows.add(row);
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
+    /**
+     *某个时间段多次下单统计
+     * @param response
+     * @param orderBean
+     * @throws Exception
+     */
+    @RequestMapping("/gary/outManyOrderListByGary")
+    public void  outManyOrderListByGary(HttpServletResponse response, OrderBean orderBean) throws Exception {
+        Integer applianceCompleteNum = orderService.getOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "1", "3");
+        Integer houseCompleteNum = orderService.getOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "2", "3");
+        Integer fiveCompleteNum = orderService.getOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "3", "3");
+        Integer bigCompleteNum = orderService.getOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "4", "3");
+
+        Integer applianceManyNum = orderService.getManyOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "1", null);
+        Integer houseManyNum = orderService.getManyOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "2", null);
+        Integer fiveManyNum = orderService.getManyOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "3", null);
+        Integer bigManyNum = orderService.getManyOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "4", null);
+
+        ExcelData data = new ExcelData();
+        data.setName("某个时间段多次下单统计");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        //for(String title: excelInfo.getNames())
+        titles.add("回收品类");
+        titles.add("大家电");
+        titles.add("生活五废");
+        titles.add("五公斤");
+        titles.add("大家具");
+        data.setTitles(titles);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row =  new ArrayList();
+            row.add("选择时间段完成订单数量");
+            row.add(applianceCompleteNum);
+            row.add(houseCompleteNum);
+            row.add(fiveCompleteNum);
+            row.add(bigCompleteNum);
+            rows.add(row);
+        List<Object> row1 =  new ArrayList();
+            row1.add("选择时间段完多次下单数量");
+            row1.add(applianceManyNum);
+            row1.add(houseManyNum);
+            row1.add(fiveManyNum);
+            row1.add(bigManyNum);
+            rows.add(row1);
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        ExcelUtils.exportExcel(response, fileName, data);
+    }
+
+
+
+
 }

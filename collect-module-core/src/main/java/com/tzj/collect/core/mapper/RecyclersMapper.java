@@ -125,4 +125,10 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	List<Recyclers> getRecycleSon(@Param("recyclerId") Long recyclerId,@Param("isBigRecycle") String isBigRecycle,@Param("recyclerName") String recyclerName);
 
 	Integer getRecyclersCountByLj(@Param("companyId")String companyId);
+
+	List<Map<String,Object>> getRecyclerCityList();
+
+	List<Long> getRecyclerListGroupCompany();
+
+	List<Long> getStreetListGroupCompany();
 }

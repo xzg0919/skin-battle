@@ -140,7 +140,7 @@ public class FiveKgController {
                     if(null != object.getString("logisticsName")&&StringUtils.isNotBlank(object.getString("logisticsName")+"")){
                         order.setLogisticsName(object.getString("logisticsName"));
                     }
-                    order.setGreenCount(Double.parseDouble(object.getString("expressAmount"))*10*2);
+                    order.setGreenCount(Double.parseDouble(object.getString("expressAmount"))*10);
                     order.setStatus(Order.OrderType.COMPLETE);
                     order.setExpressAmount(new BigDecimal(object.getString("expressAmount")));
                     order.setCompleteDate(new Date());

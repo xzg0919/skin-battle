@@ -243,12 +243,22 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         if ("1".equals(recyclersServiceRangeBean.getIsEnable())) {
             //根据经理Id查询经理信息
             Recyclers ManagerRecyclers = recyclerService.selectById(recyclersServiceRangeBean.getManagerId());
+            //根据企业Id和经理人员Id获取关联信息
+            Wrapper<CompanyRecycler> wrappers = new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclersServiceRangeBean.getManagerId()).eq("company_id", companyId).eq("status_", "1");
+            if ("Y".equals(recyclersServiceRangeBean.getIsBigRecycle())) {
+                wrappers.eq("type_", "4");
+            } else {
+                wrappers.eq("type_", "1");
+            }
+            CompanyRecycler companyRecyclers = companyRecyclerService.selectOne(wrappers);
             if (ManagerRecyclers == null) {
                 return "查询不到传入的经理信息";
             }
             companyRecycler.setIsManager("0");
             companyRecycler.setParentsId(ManagerRecyclers.getId().intValue());
             companyRecycler.setStatus("1");
+            companyRecycler.setProvince(companyRecyclers.getProvince());
+            companyRecycler.setCity(companyRecyclers.getCity());
             companyRecyclerService.updateById(companyRecycler);
             return "操作成功";
         }
@@ -507,5 +517,17 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     @Override
     public Integer getRecyclersCountByLj(LjAdminBean ljAdminBean) {
         return recyclersMapper.getRecyclersCountByLj(ljAdminBean.getCompanyId());
+    }
+    @Override
+    public List<Map<String,Object>> getRecyclerCityList(){
+        return recyclersMapper.getRecyclerCityList();
+    }
+    @Override
+    public List<Long> getRecyclerListGroupCompany(){
+        return recyclersMapper.getRecyclerListGroupCompany();
+    }
+    @Override
+    public List<Long> getStreetListGroupCompany(){
+        return recyclersMapper.getStreetListGroupCompany();
     }
 }

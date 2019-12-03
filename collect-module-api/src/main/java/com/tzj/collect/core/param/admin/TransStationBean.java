@@ -36,5 +36,9 @@ public class TransStationBean {
 
     private String id;
 
+    private String startTime;
+
+    private String endTime;
+
 
 }

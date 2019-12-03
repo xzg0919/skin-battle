@@ -3033,6 +3033,179 @@
 			</choose>
 		</if>
 	</select>
+	<select id="getOrderListByTitleStatus" parameterType="String" resultType="Long">
+		SELECT
+			IF(b.count is null,'0',b.count) AS count
+		FROM
+			sb_company a
+		LEFT JOIN (
+			SELECT
+				a.company_id,
+				COUNT(1) AS count
+			FROM
+				sb_order a
+			WHERE
+				a.del_flag = 0
+		<if test="title != null and title !='' ">
+			AND	a.title = #{title}
+		</if>
+		<if test="status != null and status !='' ">
+			AND a.status_ in(#{status})
+		</if>
+		<if test="startTime != null and startTime !='' ">
+			AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime !='' ">
+			AND CONCAT(#{endTime},' 23:59:59')> a.create_date
+		</if>
+			GROUP BY
+				a.company_id
+		) b ON a.id = b.company_id
+		ORDER BY a.name_;
+	</select>
+	<select id="getOrderListByCity" parameterType="String" resultType="Long">
+		SELECT
+			IF (b.count IS NULL, '0', b.count) AS count
+		FROM
+			sb_area a
+		LEFT JOIN (
+		SELECT
+			b.parent_id,
+			COUNT(1) AS count
+		FROM
+			sb_order a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+			a.del_flag = 0
+		<if test="title != null and title !='' ">
+			AND	a.title = #{title}
+		</if>
+		<if test="startTime != null and startTime !='' ">
+			AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime !='' ">
+			AND CONCAT(#{endTime},' 23:59:59')> a.create_date
+		</if>
+		GROUP BY
+			b.parent_id
+		) b ON a.id = b.parent_id
+		LEFT JOIN sb_area c ON a.parent_id = c.id
+		WHERE
+			a.type = 1
+		ORDER BY
+			a.area_name
+	</select>
+	<select id="getOrderCancelByCompany" parameterType="String" resultType="Map">
+		SELECT
+			b.name_ AS name,
+			a.order_no AS orderNo,
+			IF(a.title = '1','家电',IF(a.title = '4','大件','生活垃圾')) AS title,
+			DATE_FORMAT(a.create_date, '%Y-%m-%d %k:%i:%s') AS createDate,
+			a.cancel_reason AS cancelReason,
+			IF(a.status_ = '4','用户取消','平台取消') AS status
+		FROM
+			sb_order a
+		LEFT JOIN sb_company b ON a.company_id = b.id
+		WHERE
+			a.del_flag = 0
+		<if test="startTime != null and startTime !='' ">
+			AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime !='' ">
+			AND CONCAT(#{endTime},' 23:59:59')> a.create_date
+		</if>
+		AND a.status_ in ('4','5')
+		ORDER BY a.create_date
+	</select>
+	<select id="outOrderListByRecycler" parameterType="String" resultType="Long">
+		SELECT
+			IF(b.count is null,'0',b.count) as count
+		FROM
+			sb_recyclers a
+		LEFT JOIN (
+		SELECT
+			a.recycler_id,
+			COUNT(1) AS count
+		FROM
+			sb_order a
+		WHERE
+			a.status_ = 3
+		<if test="startTime != null and startTime !='' ">
+			AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime !='' ">
+			AND CONCAT(#{endTime},' 23:59:59')> a.create_date
+		</if>
+		<if test="isOverTime != null and isOverTime !='' ">
+			<choose>
+				<when test="isOverTime == '0'.toString()">
+					AND CONCAT(a.arrival_time,IF(a.arrival_period = 'am',' 12:00:00',if(a.arrival_period = ' pm',' 18:00:00',CONCAT(' ',SUBSTR(a.arrival_period,1,5),':00')))) > a.complete_date
+				</when>
+				<otherwise>
+					AND a.complete_date > CONCAT(a.arrival_time,IF(a.arrival_period = 'am',' 12:00:00',if(a.arrival_period = ' pm',' 18:00:00',CONCAT(' ',SUBSTR(a.arrival_period,1,5),':00'))))
+				</otherwise>
+			</choose>
+		</if>
+		GROUP BY
+			a.recycler_id
+		) b ON a.id = b.recycler_id
+		ORDER BY a.name_;
+	</select>
+	<select id="outOrderListGroupCompany" parameterType="String" resultType="Long">
+		SELECT
+			IF(b.count is null,'0',b.count)
+		FROM
+			sb_company a
+		LEFT JOIN (
+			SELECT
+				a.company_id,
+				COUNT(1) AS count
+			FROM
+				sb_order a
+			WHERE
+				a.status_ = 3
+				<if test="startTime != null and startTime !='' ">
+					AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+				</if>
+				<if test="endTime != null and endTime !='' ">
+					AND CONCAT(#{endTime},' 23:59:59')> a.create_date
+				</if>
+				AND a.complete_date > CONCAT(a.arrival_time,IF(a.arrival_period = 'am',' 12:00:00',if(a.arrival_period = 'pm',' 18:00:00',CONCAT(' ',SUBSTR(a.arrival_period,1,5),':00'))))
+			GROUP BY
+			a.company_id
+		) b ON a.id = b.company_id
+		ORDER BY a.name_
+	</select>
+	<select id="getManyOrderListByDate" parameterType="String" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			(
+				SELECT
+					a.ali_user_id,
+					count(1) AS count
+				FROM
+					sb_order a
+				WHERE
+					a.del_flag = 0
+			<if test="status != null and status !='' ">
+				AND a.status_ = #{status}
+			</if>
+			<if test="title != null and title !='' ">
+				AND a.title = #{title}
+			</if>
+			<if test="startTime != null and startTime !='' ">
+				AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+			</if>
+			<if test="endTime != null and endTime !='' ">
+				AND CONCAT(#{endTime},' 23:59:59')> a.create_date
+			</if>
+				GROUP BY
+					a.ali_user_id
+			) a
+		WHERE
+			a.count > 1
+	</select>
 
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">

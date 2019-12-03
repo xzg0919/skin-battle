@@ -255,6 +255,24 @@
 			</if>
 		) a
 	</select>
+
+	<select id="getStreetNumByTableName" parameterType="String" resultType="Long">
+		SELECT
+			IF(b.count is null,0,b.count) AS count
+		FROM
+			sb_company a
+		LEFT JOIN (
+			SELECT
+				a.company_id,
+				COUNT(1) AS count
+			FROM
+				${tableName} a
+			GROUP BY
+				a.company_id
+		) b ON a.id = b.company_id
+		ORDER BY
+			a.name_;
+	</select>
 	 
 	 <resultMap type="com.tzj.collect.entity.Company" id="companyResultMap">
         <id property="id" column="id" />  
