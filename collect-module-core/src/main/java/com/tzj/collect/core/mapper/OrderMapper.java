@@ -234,5 +234,16 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 */
 	Map<String, Object> getOrderComplaint(@Param("orderNo") String orderNo);
 
+	List<Long> getOrderListByTitleStatus(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("title")String title,@Param("status")String status);
+
+	List<Long> getOrderListByCity(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("title")String title);
+
+	List<Map<String,Object>> getOrderCancelByCompany(@Param("startTime")String startTime,@Param("endTime")String endTime);
+
+	List<Long> outOrderListByRecycler(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("isOverTime")String isOverTime);
+
+	List<Long> outOrderListGroupCompany(@Param("startTime")String startTime,@Param("endTime")String endTime);
+
+	Integer getManyOrderListByDate(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("title")String title,@Param("status")String status);
 }
 

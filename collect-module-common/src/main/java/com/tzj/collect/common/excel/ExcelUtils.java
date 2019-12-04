@@ -165,7 +165,7 @@ public class ExcelUtils {
     }
 
     private static void autoSizeColumns(Sheet sheet, int columnNumber) {
-
+        sheet.createFreezePane(1,1,1,1);
         for (int i = 0; i < columnNumber; i++) {
             int orgWidth = sheet.getColumnWidth(i);
             sheet.autoSizeColumn(i, true);

@@ -613,4 +613,8 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	public List<Map<String, Object>> getCompanyServiceOutList(AreaBean areaBean){
 		return  mapper.getCompanyServiceOutList(areaBean.getCompanyId(), areaBean.getCityId(), areaBean.getAreaId());
 	}
+	@Override
+	public List<Map<String, Object>> getCityListByGary(){
+		return  mapper.getCityListByGary();
+	}
 }

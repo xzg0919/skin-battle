@@ -555,9 +555,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						orderItem.setAmount(item.getAmount());
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
 						if("1".equals(isCash)){
-							amount += item.getAmount()*10*2;
+							amount += item.getAmount()*10;
 						}else{
-							amount += item.getAmount()*2;
+							amount += item.getAmount();
 						}
 						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
@@ -3994,5 +3994,39 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("order", order);
 		return resultMap;
 	}
+
+	@Override
+	public List<Long> getOrderListByTitleStatus(String startTime,String endTime,String title,String status){
+        return orderMapper.getOrderListByTitleStatus(startTime,endTime,title,status);
+    }
+    @Override
+    public List<Long> getOrderListByCity(String startTime,String endTime,String title){
+        return orderMapper.getOrderListByCity(startTime,endTime,title);
+    }
+    @Override
+    public List<Map<String,Object>> getOrderCancelByCompany(String startTime,String endTime){
+        return orderMapper.getOrderCancelByCompany(startTime,endTime);
+    }
+    @Override
+    public List<Long> outOrderListByRecycler(String startTime,String endTime,String isOverTime){
+        return orderMapper.outOrderListByRecycler(startTime,endTime,isOverTime);
+    }
+    @Override
+    public List<Long> outOrderListGroupCompany(String startTime,String endTime){
+        return orderMapper.outOrderListGroupCompany(startTime,endTime);
+    }
+    @Override
+    public Integer getManyOrderListByDate(String startTime,String endTime,String title,String status){
+        return orderMapper.getManyOrderListByDate(startTime,endTime,title,status);
+    }
+    @Override
+    public Integer getOrderListByDate(String startTime,String endTime,String title,String status){
+        EntityWrapper<Order> wrapper = new EntityWrapper<>();
+        wrapper.eq("title",title);
+        wrapper.eq("status_",status);
+        wrapper.ge("create_date", startTime+" 00:00:01");
+        wrapper.le("create_date", endTime+" 23:59:59");
+        return this.selectCount(wrapper);
+    }
 
 }

@@ -420,5 +420,19 @@ public interface OrderService extends IService<Order> {
 	Object addOrderComplaintBack(Integer id,String complaintBack);
 	@DS("slave")
 	Map<String, Object> getOrderAchItemDatail(OrderBean orderBean);
+	@DS("slave")
+	List<Long> getOrderListByTitleStatus(String startTime,String endTime,String title,String status);
+	@DS("slave")
+	List<Long> getOrderListByCity(String startTime,String endTime,String title);
+	@DS("slave")
+	List<Map<String,Object>> getOrderCancelByCompany(String startTime,String endTime);
+	@DS("slave")
+	List<Long> outOrderListByRecycler(String startTime,String endTime,String isOverTime);
+	@DS("slave")
+	List<Long> outOrderListGroupCompany(String startTime,String endTime);
+	@DS("slave")
+	Integer getManyOrderListByDate(String startTime,String endTime,String title,String status);
+	@DS("slave")
+	Integer getOrderListByDate(String startTime,String endTime,String title,String status);
 
 }

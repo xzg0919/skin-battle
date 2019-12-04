@@ -39,7 +39,7 @@ public class TokenGetAppTest {
 		 String subjectStr = claims.getSubject();
 		 System.out.println("反向編譯 token是："+subjectStr);
 		 // String api="http://localhost:9000/app/api";
-		  String api="http://localhost:9090/app/api";
+		  String api="http://172.19.182.90:9090/app/api";
 
 		 TransStationBean transStationBean = new TransStationBean();
 		 transStationBean.setId("8308");

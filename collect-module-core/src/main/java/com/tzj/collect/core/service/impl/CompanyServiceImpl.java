@@ -313,4 +313,13 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		}
 		return this.selectList(wrapper);
 	}
+
+	@Override
+	public List<Company> getCompanyNameList(){
+		return this.selectList(new EntityWrapper<Company>().orderBy("name_",true));
+	}
+	@Override
+	public List<Long> getStreetNumByTableName(String tableName){
+		return companyMapper.getStreetNumByTableName(tableName);
+	}
 }

@@ -562,4 +562,82 @@ select count(1) from (
 			AND a.company_id = #{companyId}
 		</if>
 	</select>
+	<select id="getRecyclerCityList" resultType="Map">
+		SELECT
+			a.name_ AS name,
+			b.name_ as companyName,
+			d.area_name AS province,
+			f.area_name AS city
+		FROM
+			sb_recyclers a
+		LEFT JOIN sb_company_recycler c ON a.id = c.recycler_id
+		LEFT JOIN sb_company b ON c.company_id = b.id
+		LEFT JOIN sb_area d ON c.province = d.id
+		LEFT JOIN sb_area f ON c.city = f.id
+		GROUP BY a.id
+		ORDER BY a.name_
+	</select>
+	<select id="getRecyclerListGroupCompany" resultType="Long">
+		SELECT
+			IF (b.count is null,'0',b.count) AS count
+		FROM
+			sb_company a
+		LEFT JOIN (
+			SELECT
+				a.company_id,
+				a.name_,
+				COUNT(1) AS count
+			FROM
+				(
+					SELECT DISTINCT
+						a.id AS company_id,
+						a.name_,
+						b.id
+					FROM
+						sb_company a
+					LEFT JOIN sb_company_recycler b ON a.id = b.company_id
+					WHERE
+						b.status_ = 1
+				) a
+			GROUP BY
+				a.name_
+		) b ON a.id = b.company_id
+		ORDER BY
+				a.name_
+	</select>
+	<select id="getStreetListGroupCompany" resultType="Long">
+		SELECT
+			IF(b.company_id is null,0,b.count) AS count
+		FROM
+			sb_company a
+		LEFT JOIN (
+			SELECT
+				b.company_id,
+				COUNT(1) AS count
+			FROM
+				(
+					SELECT
+						b.company_id,
+						b.street_id
+					FROM
+						sb_company_street_appliance b
+					UNION
+					SELECT
+						b.company_id,
+						b.street_id
+					FROM
+						sb_company_street_house b
+					UNION
+					SELECT
+						b.company_id,
+						b.street_id
+					FROM
+						sb_company_street_big b
+				) b
+			GROUP BY
+				b.company_id
+		) b ON a.id = b.company_id
+		ORDER BY
+			a.name_
+	</select>
 </mapper>

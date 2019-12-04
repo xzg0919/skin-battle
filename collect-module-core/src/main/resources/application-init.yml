@@ -5,10 +5,10 @@ isDd: true
 #五公斤推送是否用正式
 isWuGongJin: true
 #是否开启转账线程
-isOpenTransferThread: false
+isOpenTransferThread: true
 #是否是正式支付通知
 #notifyUrl: http://open.mayishoubei.com/notify/alipay
 notifyUrl: http://shoubeics.mayishoubei.com/notify/alipay
 #中转站Url
-#stationUrl: http://station.mayishoubei.com/admin/api
+#stationUrl: http://172.19.182.58:9001/app/api
 stationUrl: http://172.19.182.84:9001/admin/api

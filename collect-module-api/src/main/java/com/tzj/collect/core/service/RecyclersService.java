@@ -222,4 +222,10 @@ public interface RecyclersService extends IService<Recyclers>{
 	Object getRecycleSon(Long recyclerId, com.tzj.collect.core.param.app.RecyclersBean recyclersBean);
 	@DS("slave")
 	Integer getRecyclersCountByLj(LjAdminBean ljAdminBean);
+	@DS("slave")
+	List<Map<String,Object>> getRecyclerCityList();
+	@DS("slave")
+	List<Long> getRecyclerListGroupCompany();
+	@DS("slave")
+	List<Long> getStreetListGroupCompany();
 }

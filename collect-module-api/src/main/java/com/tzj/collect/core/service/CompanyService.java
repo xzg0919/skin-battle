@@ -110,4 +110,8 @@ public interface CompanyService  extends IService<Company>{
 	Object adminCompanyRangeById(Integer companyId);
 	@DS("slave")
 	List<Company>  getCompanyList(String companyName);
+	@DS("slave")
+	List<Company> getCompanyNameList();
+	@DS("slave")
+	List<Long> getStreetNumByTableName(String tableName);
 }

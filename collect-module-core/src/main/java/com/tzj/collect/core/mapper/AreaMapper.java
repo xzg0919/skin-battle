@@ -53,4 +53,6 @@ public interface AreaMapper extends BaseMapper<Area> {
 	List<Map<String, Object>> getCompanyStreetAllList(@Param("companyId")String companyId,@Param("areaId")String areaId);
 
 	List<Map<String, Object>> getCompanyServiceOutList(@Param("companyId")String companyId,@Param("cityId")String cityId,@Param("areaId")String areaId);
+
+	List<Map<String, Object>> getCityListByGary();
 }

@@ -610,4 +610,16 @@
 		) a
 		ORDER BY a.companyName,a.areaName
 	</select>
+	<select id="getCityListByGary" resultType="Map">
+		SELECT
+			c.area_name AS province,
+			a.area_name AS city
+		FROM
+			sb_area a
+		LEFT JOIN sb_area c ON a.parent_id = c.id
+		WHERE
+			a.type = 1
+		ORDER BY
+			a.area_name
+	</select>
 </mapper>
