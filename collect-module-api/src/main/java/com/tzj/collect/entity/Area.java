@@ -2,8 +2,12 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
+
+import java.math.BigDecimal;
 
 @TableName("sb_area")
+@Data
 public class Area extends DataEntity<Long> {
 	private Long id;
 	private Integer parentId;   //父级编号
@@ -18,6 +22,8 @@ public class Area extends DataEntity<Long> {
     private Area area;
 	@TableField(exist=false)
 	private String name;
+
+	private BigDecimal ratio; //城市系数
 
 	public String getName() {
 		return areaName;

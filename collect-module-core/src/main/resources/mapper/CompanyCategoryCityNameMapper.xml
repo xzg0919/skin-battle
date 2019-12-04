@@ -63,6 +63,7 @@
 		AND a.city_id = #{cityId}
 		AND b.title = 2
 		AND b.unuseful = 0
+		ORDER BY b.code_ ASC
 	</select>
 	<select id="getHouseCategoryByCategoryId" parameterType="Integer" resultType="com.tzj.collect.entity.Category">
 		SELECT DISTINCT

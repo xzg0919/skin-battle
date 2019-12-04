@@ -3139,10 +3139,10 @@
 		<if test="isOverTime != null and isOverTime !='' ">
 			<choose>
 				<when test="isOverTime == '0'.toString()">
-					AND CONCAT(a.arrival_time,IF(a.arrival_period = 'am',' 12:00:00',if(a.arrival_period = ' pm',' 18:00:00',CONCAT(' ',SUBSTR(a.arrival_period,1,5),':00')))) > a.complete_date
+					AND CONCAT(a.arrival_time,IF(a.arrival_period = 'am',' 12:00:00',if(a.arrival_period = 'pm',' 18:00:00',CONCAT(' ',SUBSTR(a.arrival_period,7,5),':00')))) > a.complete_date
 				</when>
 				<otherwise>
-					AND a.complete_date > CONCAT(a.arrival_time,IF(a.arrival_period = 'am',' 12:00:00',if(a.arrival_period = ' pm',' 18:00:00',CONCAT(' ',SUBSTR(a.arrival_period,1,5),':00'))))
+					AND a.complete_date > CONCAT(a.arrival_time,IF(a.arrival_period = 'am',' 12:00:00',if(a.arrival_period = 'pm',' 18:00:00',CONCAT(' ',SUBSTR(a.arrival_period,7,5),':00'))))
 				</otherwise>
 			</choose>
 		</if>
