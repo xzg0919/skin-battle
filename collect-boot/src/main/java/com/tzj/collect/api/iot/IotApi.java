@@ -13,6 +13,7 @@ import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.param.iot.IotPostParamBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
+import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.exception.ApiException;
@@ -23,6 +24,7 @@ import com.tzj.module.easyopen.util.ApiUtil;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
@@ -58,6 +60,10 @@ public class IotApi {
     private EquipmentErrorListService equipmentErrorListService;
     @Resource
     private FileUploadServiceImpl fileUploadServiceImpl;
+    @Resource
+    private EquipmentMessageService equipmentMessageService;
+    @Resource
+    private MqttClient mqttClient;
 
 
     public static AtomicBoolean flag = new AtomicBoolean(true);//保证当前线程能执行
@@ -134,7 +140,7 @@ public class IotApi {
             String encryptData = encrypt(iotPostParamBean);
             iotPostParamBean.setAPIName("OpnBox");
             String jsonStr= JSON.toJSONString(iotPostParamBean);
-            String sign= this.buildSign(JSON.parseObject(jsonStr));
+            String sign= buildSign(JSON.parseObject(jsonStr));
             iotPostParamBean.setSign(sign);
             // encryptData 加密数据：方式--- md5(md5(app_id&app_key&cabinetNo&mobile&memberId&tranTime)&tranTime)
             if (StringUtils.isEmpty(iotCompanyResult.getIotUrl()) || StringUtils.isEmpty(iotPostParamBean.getCabinetNo())){
@@ -151,6 +157,27 @@ public class IotApi {
             System.out.println(iotUrl);
             Response response = null;
             try {
+                long codeTime = System.currentTimeMillis() - Long.parseLong(String.valueOf(iotPostParamBean.getTranTime()));
+                //自己的设备增加检测
+                if (iotUrl.contains("mayishoubei.com")){
+                    //动态二维码检测
+                    if(equipmentMessageService.redisSetCheck("IoT:Equipment:Uid", iotPostParamBean.getEcUuid())){
+                        throw new ApiException("二维码已被使用");
+                    }if (Long.parseLong("5000") < codeTime || codeTime <= 0) {
+                        throw new ApiException("二维码已过期");
+                    }
+                    else {
+                        equipmentMessageService.redisSetAdd("IoT:Equipment:Uid", iotPostParamBean.getEcUuid());
+                    }
+                    //发送开启箱门指令使用过后更新动态二维码
+                    Map<String, String> messageMap = new HashMap<>();
+                    messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getKey());
+                    messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getValue());
+                    equipmentMessageService.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap),iotCompanyResult.getHardwareCode(), mqttClient);
+                    map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
+                    map.put("status", MessageCode.SUCCESS_OPEN.getKey());
+                    return map;
+                }
                 response =  FastHttpClient.get().url(iotUrl).build().execute();
             }catch (Exception e){
                 map.put("msg", "连接超时");
@@ -309,4 +336,5 @@ public class IotApi {
         list = Arrays.asList(strings);
         return ApiUtil.md5(StringUtils.join(list, "&"));
     }
+
 }

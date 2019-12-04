@@ -711,4 +711,43 @@ public class RedisUtil {
         });
         return mapList;
     }
+    /**
+     * redis 使用set 增加元素
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/2 0002
+     * @Param: 
+     * @return: 
+     */
+    public boolean redisSetAdd(String key, String value, JedisPool jedisPool){
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.sadd(key, value);
+            jedis.expire(key, 300);
+            jedis.close();
+        }catch (Exception e){
+            return Boolean.FALSE;
+        }
+        return Boolean.TRUE;
+    }
+    /**
+     * 判断set里面是否存在该元素
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/2 0002
+     * @Param: 
+     * @return: 
+     */
+    public boolean redisSetCheck(String key, String value, JedisPool jedisPool){
+        Jedis jedis = null;
+        Boolean flag = Boolean.FALSE;
+        try {
+            jedis = jedisPool.getResource();
+            flag = jedis.sismember(key, value).booleanValue();
+            jedis.close();
+        }catch (Exception e){
+            return Boolean.FALSE;
+        }
+        return flag;
+    }
+
 }

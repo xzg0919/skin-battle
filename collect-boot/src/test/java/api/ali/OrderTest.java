@@ -36,9 +36,9 @@ public class OrderTest {
                 String subjectStr = claims.getSubject();
                 System.out.println("反向編譯 token是："+subjectStr);
 
-                //String api="http://open.mayishoubei.com/ali/api";
+                String api="http://open.mayishoubei.com/ali/api";
                 //String api="http://dog.mayishoubei.com:9090/ali/api";
-                 String api="http://localhost:9090/ali/api";
+//                 String api="http://localhost:9090/ali/api";
 
 //                String  location = "121.446438,30.915836";
 //
@@ -78,7 +78,7 @@ public class OrderTest {
                 orderPayParam.setVoucherId("280");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","order.getCollectDetail");
+                param.put("name","member.isexist");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -86,7 +86,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",null);
+                param.put("data","{\"cardNo\":\"20194177825385253103\"}");
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

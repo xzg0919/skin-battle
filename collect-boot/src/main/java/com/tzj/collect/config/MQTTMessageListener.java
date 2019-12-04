@@ -1,10 +1,9 @@
-package com.tzj.iot.config;
+package com.tzj.collect.config;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
 import com.tzj.collect.core.service.EquipmentMessageService;
-import com.tzj.collect.core.service.impl.EquipmentMessageServiceImpl;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
@@ -42,7 +41,7 @@ public class MQTTMessageListener {
     private String  instanceId = INSTANCE_ID;
     private String accessKey = ACCESS_KEY;
     private String secretKey = SECRET_KEY;
-    private String clientId = CLIENT_ID;
+    private String clientId = "GID-IOT-MQTT@@@admin_collect";
     private String parentTopic = PARENT_TOPIC;
     private String endPoint = END_POINT;
 
@@ -57,7 +56,7 @@ public class MQTTMessageListener {
      //     */
     @Bean
     public MqttClient mqttMessageListener() throws MqttException, NoSuchAlgorithmException, InvalidKeyException {
-        final String mq4IotTopic = parentTopic + "/" + "admin";
+        final String mq4IotTopic = parentTopic + "/" + "admin_collect";
         /**
          * QoS参数代表传输质量，可选0，1，2，根据实际需求合理设置，具体参考 https://help.aliyun.com/document_detail/42420.html?spm=a2c4g.11186623.6.544.1ea529cfAO5zV3
          */
@@ -116,9 +115,8 @@ public class MQTTMessageListener {
                 if (StringUtils.isEmpty(clientTopic)){
                     return;
                 }
-                logger.info("receive msg from topic " + topic + " , body is " + new String(mqttMessage.getPayload()));
+                logger.info("不要向我这边发消息了，我也是生产者，不处理消息");
                 //处理客户端消息
-                messageService.dealWithMessage(clientTopic, new String(mqttMessage.getPayload()), mqttClient);
             }
 
             @Override

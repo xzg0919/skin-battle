@@ -1022,6 +1022,7 @@ public class Order extends DataEntity<Long> {
 			this.value = value;
 		}
 
+		@Override
 		public Serializable getValue() {
 			return this.value;
 		}

@@ -8,6 +8,7 @@ import com.tzj.collect.api.commom.constant.MQTTConst;
 import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
 import com.tzj.collect.api.commom.mqtt.util.Tools;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -60,11 +62,13 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     private PaymentService paymentService;
     @Resource
     private CompanyEquipmentService companyEquipmentService;
+    @Autowired
+    private RedisUtil redisUtil;
     @Resource
-    private MqttClient mqttClient;
+    private  JedisPool jedisPool;
 
     @Override
-    public void dealWithMessage(String topic,String message) {
+    public void dealWithMessage(String topic,String message, MqttClient mqttClient) {
         Map<String, Object>  messageMap = JSONObject.parseObject(message);
         if (CollectionUtils.isEmpty(messageMap)){
             return;
@@ -83,7 +87,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getKey());
                 messageMap.put("msg",  CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getValue());
                 //發送消息
-                this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
+                this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
             }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_CLOSE.getKey().equals(messageMap.get("code"))){
                 //清运关门（根據回收員付款成功的交易號，退回金額）
                 //先查出所生成的交易订单，据此回退金额（哪儿来回哪儿去）
@@ -97,14 +101,14 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                         paymentService.updateById(payment);
                         messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getKey());
                         messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getValue());
-                        this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
+                        this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
                     }else {
                         payment.setIsSuccess("1");
                         payment.setRemarks(alipayFundTransToaccountTransferResponse.getSubMsg());
                         paymentService.updateById(payment);
                         messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getKey());
                         messageMap.put("msg", "交易失败");
-                        this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
+                        this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
                     }
                 }
 
@@ -144,7 +148,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 }
             }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.UPLOAD_ORDER.getKey().equals(messageMap.get("code"))){
                 //上传订单数据(用户投递)
-                this.creatIotOrderByMqtt(topic, message);
+                this.creatIotOrderByMqtt(topic, message, mqttClient);
             }
         }catch (Exception e){
             //消息体错误
@@ -152,7 +156,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 messageMap = new HashMap<>();
                 messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getKey());
                 messageMap.put("message", "消息错误---"+e.getMessage());
-                this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
+                this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
             } catch (MqttException ex) {
                 ex.printStackTrace();
             }
@@ -160,7 +164,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
 
     }
 
-    private void creatIotOrderByMqtt(String topic, String message) {
+    private void creatIotOrderByMqtt(String topic, String message, MqttClient mqttClient) {
         IotParamBean iotParamBean = new IotParamBean();
         JSONObject object = JSON.parseObject(message);
         String subjectStr = "";
@@ -193,7 +197,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
             try {
                 messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getKey());
                 messageMap.put("message", "消息错误---"+e.getMessage());
-                this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic);
+                this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
             } catch (MqttException ex) {
                 ex.printStackTrace();
             }
@@ -201,14 +205,36 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     }
 
     @Override
-    public void sendMessageToMQ4IoTUseSignatureMode(String message, String topic) throws MqttException {
+    public void sendMessageToMQ4IoTUseSignatureMode(String message, String topic, MqttClient mqttClient) throws MqttException {
         MqttMessage mqttMessage = new MqttMessage(message.getBytes());
         mqttMessage.setQos(qosLevel);
         mqttClient.publish(MQTTConst.PARENT_TOPIC + "/" + topic, mqttMessage);
     }
 
     @Override
-    public void sendMessageToMQ4IoTUseTokenMode(String message, String sendTo) throws MqttException {
+    public void sendMessageToMQ4IoTUseTokenMode(String message, String sendTo, MqttClient mqttClient) throws MqttException {
 
+    }
+    /**
+     * redis 保存set
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/2 0002
+     * @Param: 
+     * @return: 
+     */
+    @Override
+    public Boolean redisSetAdd(String key, String value){
+        return redisUtil.redisSetAdd(key, value, jedisPool);
+    }
+    /**
+     * 查找redis set 中是否存在该值
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/2 0002
+     * @Param: 
+     * @return: 
+     */
+    @Override
+    public Boolean redisSetCheck(String key, String value){
+        return redisUtil.redisSetCheck(key, value, jedisPool);
     }
 }

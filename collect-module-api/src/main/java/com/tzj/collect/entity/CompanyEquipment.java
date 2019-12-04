@@ -82,6 +82,7 @@ public class CompanyEquipment extends  DataEntity<Long> {
             CHANGE_ADVENT("60001", "更换广告"),
             FLIP_BAFFLE("70001", "翻转挡板"),
             TRADE_SUCCESS("80001", "交易完成"),
+            CHANGE_QRCODE("90001", "更换二维码"),
             ERROR("00000", "错误");
             private String key;
 
