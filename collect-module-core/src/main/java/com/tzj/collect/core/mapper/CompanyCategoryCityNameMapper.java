@@ -26,4 +26,6 @@ public interface CompanyCategoryCityNameMapper extends BaseMapper<CompanyCategor
     List<Category> getOneCategoryList(@Param("companyId") Integer companyId, @Param("cityId") Integer cityId, @Param("isCash") String isCash);
 
     List<Category> getTwoCategoryList(@Param("categoryId") Integer categoryId, @Param("companyId") Integer companyId, @Param("cityId") Integer cityId, @Param("isCash") String isCash);
+
+    List<Category> getTwoCategoryListLocal(@Param("categoryId") Integer categoryId, @Param("companyId") Integer companyId, @Param("cityId") Integer cityId, @Param("isCash") String isCash);
 }

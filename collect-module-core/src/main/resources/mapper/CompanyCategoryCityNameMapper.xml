@@ -177,6 +177,36 @@
 		AND a.city_id = #{cityId}
 		AND a.parent_id = #{categoryId}
 	</select>
+	<select id="getTwoCategoryListLocal" parameterType="Object" resultType="com.tzj.collect.entity.Category">
+		SELECT DISTINCT
+			b.id,
+			b.parent_id,
+			b.parent_ids,
+			b.name_,
+			b.sort_,
+			b.code_,
+			b.level_,
+			b.icon,
+			if(c.id is NOT null,c.price,d.price) AS price,
+			b.market_price,
+			b.unit,
+			b.rec_notes,
+			b.rec_type_exp,
+			b.green_count,
+			b.ant_forest_pic,
+			b.icon_img,
+			b.icon_pic
+		FROM
+			sb_company_category_city_name a
+		INNER JOIN sb_category b ON a.category_id = b.id
+		INNER JOIN sb_company_category cc ON a.company_id = cc.company_id AND a.category_id = cc.category_id
+		LEFT JOIN sb_company_category_city_locale c ON a.company_id = c.company_id AND a.city_id = c.city_id AND a.category_id = c.category_id
+		LEFT JOIN sb_company_category d ON a.company_id = d.company_id AND a.category_id = d.category_id
+		WHERE
+			a.company_id = #{companyId}
+		AND a.city_id = #{cityId}
+		AND a.parent_id = #{categoryId}
+	</select>
 
 
 </mapper>

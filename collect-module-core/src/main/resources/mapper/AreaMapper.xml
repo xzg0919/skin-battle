@@ -622,4 +622,41 @@
 		ORDER BY
 			a.area_name
 	</select>
+	<select id="getAreaCityRatioLists" parameterType="Object" resultType="Map">
+		SELECT
+			b.area_name AS provinceName,
+			a.area_name AS cityName,
+			b.id AS provinceId,
+			a.id AS cityId,
+			a.ratio
+		FROM
+			sb_area a
+		LEFT JOIN sb_area b ON a.parent_id = b.id
+		WHERE
+			a.del_flag = 0
+		AND  a.type = 1
+		<if test="cityId != null and cityId != ''">
+			AND a.id = #{cityId}
+		</if>
+		<if test="provinceId != null and provinceId != ''">
+			AND b.id = #{provinceId}
+		</if>
+		LIMIT #{pageStart} , #{pageSize}
+	</select>
+	<select id="getAreaCityRatioCount" parameterType="String" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+		sb_area a
+		LEFT JOIN sb_area b ON a.parent_id = b.id
+		WHERE
+		a.del_flag = 0
+		AND  a.type = 1
+		<if test="cityId != null and cityId != ''">
+			AND a.id = #{cityId}
+		</if>
+		<if test="provinceId != null and provinceId != ''">
+			AND b.id = #{provinceId}
+		</if>
+	</select>
 </mapper>

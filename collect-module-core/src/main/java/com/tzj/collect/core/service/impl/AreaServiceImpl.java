@@ -2,6 +2,7 @@ package com.tzj.collect.core.service.impl;
 
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.taobao.api.ApiException;
 import com.tzj.collect.common.amap.AmapUtil;
@@ -616,5 +617,37 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	@Override
 	public List<Map<String, Object>> getCityListByGary(){
 		return  mapper.getCityListByGary();
+	}
+	@Override
+	public List<Area> provinceList(AreaBean areaBean){
+		Wrapper<Area> wrapper = new EntityWrapper<Area>().eq("type", "0");
+		if(StringUtils.isNotBlank(areaBean.getAreaName())){
+			wrapper.like("area_name",areaBean.getAreaName());
+		}
+		return this.selectList(wrapper);
+	}
+	@Override
+	public List<Area> cityListByProvinceId(AreaBean areaBean){
+		Wrapper<Area> wrapper = new EntityWrapper<Area>().eq("type", "1");
+		if(StringUtils.isNotBlank(areaBean.getProvinceId())){
+			wrapper.eq("parent_id",areaBean.getProvinceId());
+		}
+		return this.selectList(wrapper);
+	}
+	@Override
+	public Map<String,Object> getAreaCityRatioLists(AreaBean areaBean){
+		PageBean pageBean = areaBean.getPageBean();
+		if(pageBean == null){
+			pageBean = new PageBean();
+		}
+		Integer pageStart = (pageBean.getPageNumber() - 1)*pageBean.getPageSize();
+		Map<String,Object> resultMap = new HashMap<>();
+		List<Map<String, Object>> areaCityRatioLists = mapper.getAreaCityRatioLists(areaBean.getProvinceId(), areaBean.getCityId(), pageStart, pageBean.getPageSize());
+		Integer count = mapper.getAreaCityRatioCount(areaBean.getProvinceId(), areaBean.getCityId());
+		resultMap.put("count",count);
+		resultMap.put("areaCityRatioLists",areaCityRatioLists);
+		resultMap.put("pageNum",pageBean.getPageNumber());
+
+		return resultMap;
 	}
 }

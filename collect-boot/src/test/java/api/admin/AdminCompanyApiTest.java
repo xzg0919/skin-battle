@@ -49,22 +49,15 @@ public class AdminCompanyApiTest {
 
 	        String api="http://localhost:9090/admin/api";
 
-		 TransStationBean transStationBean = new TransStationBean();
-
-		 transStationBean.setTransStationId("6");
-		 transStationBean.setName("中转站名字");
-		 transStationBean.setContacts("wangcan");
-		 transStationBean.setTel("18375336388");
-		 transStationBean.setPassword("test1");
-		 transStationBean.setAddress("我是测试地址1");
-		 transStationBean.setCompanyId("1");
-		 transStationBean.setLongitude("121.12022");
-		 transStationBean.setLatitude("96.23232");
+		 AreaBean areaBean = new AreaBean();
+		 areaBean.setProvinceId("679");
+		 areaBean.setCityId("680");
+		 areaBean.setPageBean(new PageBean());
 
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.updateTransStion");
+	        param.put("name","admin.getAreaCityRatioLists");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -72,7 +65,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",transStationBean);
+	        param.put("data",areaBean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");
