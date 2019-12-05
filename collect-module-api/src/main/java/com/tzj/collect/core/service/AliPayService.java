@@ -82,7 +82,7 @@ public interface AliPayService {
      * @Param:
      * @return:
      */
-    ZolozAuthenticationCustomerSmilepayInitializeResponse smilePayInitialize(String apdidToken, String appName, String appVersion, String bioMetaInfo);
+    ZolozAuthenticationCustomerSmilepayInitializeResponse smilePayInitialize(String metaInfo);
     /**
      *人脸ftoken查询消费接口(获取uId)
      * @author: sgmark@aliyun.com

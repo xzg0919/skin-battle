@@ -553,19 +553,12 @@ public class AliPayServiceImpl implements AliPayService {
 
     public static void main(String[] args) {
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.iotAppId, AlipayConst.iot_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.iot_ali_public_key, AlipayConst.sign_type);
-        ZolozAuthenticationCustomerSmilepayInitializeRequest request = new ZolozAuthenticationCustomerSmilepayInitializeRequest();
-        request.setBizContent("{\"apdidToken\":\"Hk4Flm7iFcTVXAV3qg5GUsDUi-Ua4tSB9LYcxVxbYfErUqivbgEAAA==\"" +
-                ",\"appName\":\"com.alipay.zoloz.smile\"" +
-                ",\"appVersion\":\"3.10.0.354\"" +
-                ",\"bioMetaInfo\":\"4.2.0:287358976,2\"" +
-                ",\"deviceModel\":\"msm8953 for arm64\"" +
-                ",\"deviceType\":\"android\"" +
-                ",\"machineInfo\":{\"cameraDriveVer\":\"\",\"cameraModel\":\"AstraD2\",\"cameraName\":\"AstraD2\",\"cameraVer\":\"\",\"ext\":\"\",\"group\":\"\",\"machineCode\":\"Xd3k14OaCg4DAJ61ZbLEYeV3\",\"machineModel\":\"msm8953 for arm64\",\"machineVer\":\"7.1.2\"}" +
-                ",\"merchantInfo\":{\"alipayStoreCode\":\"TEST\",\"appId\":\"2019110668924840\",\"areaCode\":\"TEST\",\"brandCode\":\"TEST\",\"deviceMac\":\"TEST\",\"deviceNum\":\"TEST_ZOLOZ_TEST\",\"geo\":\"0.000000,0.000000\",\"merchantId\":\"2088421446748170\",\"partnerId\":\"2088421446748170\",\"storeCode\":\"TEST\",\"wifiMac\":\"TEST\",\"wifiName\":\"TEST\"}" +
-                ",\"osVersion\":\"7.1.2\"" +
-                ",\"remoteLogID\":\"bb9bc74d22e2448498dd302f93ff735d1275978627\"" +
-                ",\"zimVer\":\"1.0.0\"}");
-        ZolozAuthenticationCustomerSmilepayInitializeResponse response = null;
+        ZolozAuthenticationCustomerFtokenQueryRequest request = new ZolozAuthenticationCustomerFtokenQueryRequest();
+        Map<String, Object> map = new HashMap<>();
+        map.put("ftoken", "fp0860f1c751009169020b32a7303362c4c");
+        request.setBizContent("{" +
+                "\"ftoken\":\"fp0860f1c751009169020b32a7303362c4c\"}");
+        ZolozAuthenticationCustomerFtokenQueryResponse response = null;
         try {
             response = alipayClient.execute(request);
         } catch (AlipayApiException e) {
@@ -581,22 +574,14 @@ public class AliPayServiceImpl implements AliPayService {
      * 刷脸支付初始化
      * @author: sgmark@aliyun.com
      * @Date: 2019/11/26 0026
-     * @Param: 
-     * @return: 
+     * @Param:
+     * @return:
      */
     @Override
-    public ZolozAuthenticationCustomerSmilepayInitializeResponse smilePayInitialize(String apdidToken, String appName, String appVersion, String bioMetaInfo){
+    public ZolozAuthenticationCustomerSmilepayInitializeResponse smilePayInitialize(String metaInfo){
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.iotAppId, AlipayConst.iot_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.iot_ali_public_key, AlipayConst.sign_type);
         ZolozAuthenticationCustomerSmilepayInitializeRequest request = new ZolozAuthenticationCustomerSmilepayInitializeRequest();
-        request.setBizContent("{\"apdidToken\":" + apdidToken +
-                ",\"appName\":" + appName +
-                ",\"appVersion\":" + appVersion +
-                ",\"bioMetaInfo\":" + bioMetaInfo +
-                ",\"deviceModel\":\"msm8953 for arm64\"" +
-                ",\"deviceType\":\"android\"" +
-                ",\"machineInfo\":{\"cameraDriveVer\":\"\",\"cameraModel\":\"AstraD2\",\"cameraName\":\"AstraD2\",\"cameraVer\":\"\",\"ext\":\"\",\"group\":\"\",\"machineCode\":\"Xd3k14OaCg4DAJ61ZbLEYeV3\",\"machineModel\":\"msm8953 for arm64\",\"machineVer\":\"7.1.2\"}" +
-                ",\"merchantInfo\":{\"alipayStoreCode\":\"TEST\",\"appId\":\"2019110668924840\",\"areaCode\":\"TEST\",\"brandCode\":\"TEST\",\"deviceMac\":\"TEST\",\"deviceNum\":\"TEST_ZOLOZ_TEST\",\"geo\":\"0.000000,0.000000\",\"merchantId\":\"2088421446748170\",\"partnerId\":\"2088421446748170\",\"storeCode\":\"TEST\",\"wifiMac\":\"TEST\",\"wifiName\":\"TEST\"}" +
-                ",\"osVersion\":\"7.1.2\",\"remoteLogID\":\"bb9bc74d22e2448498dd302f93ff735d1275978627\",\"zimVer\":\"1.0.0\"}");
+        request.setBizContent(metaInfo);
         ZolozAuthenticationCustomerSmilepayInitializeResponse response = null;
         try {
             response = alipayClient.execute(request);
@@ -614,20 +599,16 @@ public class AliPayServiceImpl implements AliPayService {
      *人脸ftoken查询消费接口(获取uId)
      * @author: sgmark@aliyun.com
      * @Date: 2019/11/26 0026
-     * @Param: 
+     * @Param:
      * @return:
      */
     @Override
     public ZolozAuthenticationCustomerFtokenQueryResponse  customerFtokenQuery(String fToken){
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.iotAppId, AlipayConst.iot_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.iot_ali_public_key, AlipayConst.sign_type);
         ZolozAuthenticationCustomerFtokenQueryRequest request = new ZolozAuthenticationCustomerFtokenQueryRequest();
-        request.setBizContent("{" +
-                "\"ftoken\":" + fToken + "," +
-                "\"biz_type\":\"1\"," +
-                "\"ext_info\":{" +
-                "\"query_type\":\"\"" +
-                "    }" +
-                "  }");
+        Map<String, Object> map = new HashMap<>();
+        map.put("ftoken", fToken);
+        request.setBizContent(JSONObject.toJSONString(map));
         ZolozAuthenticationCustomerFtokenQueryResponse response = null;
         try {
             response = alipayClient.execute(request);

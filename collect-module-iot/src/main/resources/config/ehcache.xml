@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache updateCheck="false" name="defaultCache">
 
-    <diskStore path="${java.io.tmpdir}/temp/collect/ehcache" />
+    <diskStore path="${java.io.tmpdir}/equipment/temp/ehcache" />
 
     <!-- 默认缓存-->
     <defaultCache maxEntriesLocalHeap="100" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600"
