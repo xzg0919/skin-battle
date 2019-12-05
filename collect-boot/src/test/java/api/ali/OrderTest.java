@@ -25,7 +25,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("2088212854989662", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088612556927296", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -36,7 +36,7 @@ public class OrderTest {
                 String subjectStr = claims.getSubject();
                 System.out.println("反向編譯 token是："+subjectStr);
 
-                String api="http://open.mayishoubei.com/ali/api";
+                String api="http://localhost:9090/ali/api";
                 //String api="http://dog.mayishoubei.com:9090/ali/api";
 //                 String api="http://localhost:9090/ali/api";
 
@@ -78,7 +78,7 @@ public class OrderTest {
                 orderPayParam.setVoucherId("280");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","member.isexist");
+                param.put("name","category.categoryNewHouseListByToken");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -86,7 +86,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data","{\"cardNo\":\"20194177825385253103\"}");
+                param.put("data",null);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

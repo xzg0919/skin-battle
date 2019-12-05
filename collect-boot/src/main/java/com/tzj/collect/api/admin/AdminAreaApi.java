@@ -221,4 +221,27 @@ public class AdminAreaApi {
 	public Object updateCompanyServiceByStreetId(AreaBean areaBean){
 		return areaService.updateCompanyServiceByStreetId(areaBean);
 	}
+
+	/**
+	 * 获取省级列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.provinceList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object provinceList(AreaBean areaBean){
+		return areaService.provinceList(areaBean);
+	}
+	/**
+	 * 根据省级Id获取市级列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.cityListByProvinceId", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object cityListByProvinceId(AreaBean areaBean){
+		return areaService.cityListByProvinceId(areaBean);
+	}
 }

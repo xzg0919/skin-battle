@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -103,5 +105,9 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
     @Override
     public List<Category> getTwoCategoryList(Integer categoryId,Integer companyId,Integer cityId, String isCash){
         return companyCategoryCityNameMapper.getTwoCategoryList(categoryId,companyId,cityId,isCash);
+    }
+    @Override
+    public List<Category> getTwoCategoryListLocal(Integer categoryId,Integer companyId,Integer cityId, String isCash){
+        return companyCategoryCityNameMapper.getTwoCategoryListLocal(categoryId,companyId,cityId,isCash);
     }
 }

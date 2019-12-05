@@ -560,7 +560,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             return "您暂未添加回收公司";
         }
         companyId = companyRecyclerList.get(0).getCompanyId();
-        List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(categoryId, companyId, cityId, "0");
+        List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryListLocal(categoryId, companyId, cityId, "0");
         List<ComCatePrice> priceList = null;
 //		priceList = companyCategoryCityLocaleService.getTwoCategoryListLocale(categoryId.toString(),companyId+"",cityId+"");
 //		if (priceList.isEmpty()) {
@@ -601,6 +601,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
             category.setCategoryList(categoryList1);
         });
+        categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getCode)).collect(Collectors.toList());
         resultMap.put("categoryList", categoryList);
         return resultMap;
     }
@@ -631,7 +632,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 category.setCategoryList(categoryList1);
             });
         }
-        categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getName)).collect(Collectors.toList());
+        categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getCode)).collect(Collectors.toList());
         resultMap.put("categoryList", categoryList);
         return resultMap;
     }

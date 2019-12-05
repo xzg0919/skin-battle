@@ -51,6 +51,8 @@ public class AreaBean {
 	 */
 	private String saveOrDelete;
 
+	private String provinceId;
+
 	private PageBean pageBean;
 
 	private String companyId;
