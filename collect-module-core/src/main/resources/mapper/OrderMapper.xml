@@ -1492,6 +1492,7 @@
 		LEFT JOIN sb_company d ON a.company_id = d.id
 		WHERE
 		a.del_flag = 0
+		and a.title != 5
 		<if test="companyId != null and companyId !='' ">
 			AND	a.company_id = #{companyId}
 		</if>
@@ -1548,6 +1549,7 @@
 		LEFT JOIN sb_company d ON a.company_id = d.id
 		WHERE
 		a.del_flag = 0
+		and a.title != 5
 		<if test="companyId != null and companyId !='' ">
 			AND	a.company_id = #{companyId}
 		</if>
@@ -1614,6 +1616,7 @@
 			LEFT JOIN sb_company d ON a.company_id = d.id
 	WHERE
 			a.del_flag = 0
+		and a.title != 5
 		<if test="companyId != null and companyId !='' ">
 			AND	a.company_id = #{companyId}
 		</if>
@@ -1678,6 +1681,7 @@
 	LEFT JOIN sb_company d ON a.company_id = d.id
 	WHERE
 	a.del_flag = 0
+	and a.title != 5
 	<if test="companyId != null and companyId !='' ">
 		AND	a.company_id = #{companyId}
 	</if>

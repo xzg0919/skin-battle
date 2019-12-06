@@ -70,12 +70,17 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     @Override
     public void dealWithMessage(String topic,String message, MqttClient mqttClient) {
         Map<String, Object>  messageMap = JSONObject.parseObject(message);
-        if (CollectionUtils.isEmpty(messageMap)){
-            return;
-        }
+        CompanyEquipment companyEquipment = companyEquipmentService.selectOne(new EntityWrapper<CompanyEquipment>().eq("del_flag", 0).eq("hardware_code", topic));
         try {
-            //关闭箱门
-            if(CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_CLOSE.getKey().equals(messageMap.get("code"))){
+            if (CollectionUtils.isEmpty(messageMap)){
+                messageMap = new HashMap<>();
+                messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getKey());
+                messageMap.put("message", "---消息格式错误---");
+                this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
+                return;
+            }
+            //关闭（识别图片）
+            if(CompanyEquipment.EquipmentAction.EquipmentActionCode.IDENTIFYING_PICTURES.getKey().equals(messageMap.get("code"))){
                 //拿到物品识别图片地址,返回识别结果(挡板翻转)
                 messageMap.get("imgUrl");
                 //调用阿里的物品识别接口 todo
@@ -102,6 +107,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                         messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getKey());
                         messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getValue());
                         this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
+                        //更改订单状态
                     }else {
                         payment.setIsSuccess("1");
                         payment.setRemarks(alipayFundTransToaccountTransferResponse.getSubMsg());
@@ -114,7 +120,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
 
             }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.UPLOAD_STATUS.getKey().equals(messageMap.get("code"))){
                 //上传满溢值
-                CompanyEquipment companyEquipment = companyEquipmentService.selectOne(new EntityWrapper<CompanyEquipment>().eq("del_flag", 0).eq("hardware_code", topic));
+
                 //该公司下随机取一个回收人员（硬件编号找信息）
                 Map<String, Object> map = companyRecyclerService.selectRecByHardwareCode(topic);
                 if (Double.parseDouble(messageMap.get("currentValue")+"")>= Double.parseDouble(map.get("setValue")+"")){
@@ -124,7 +130,6 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                     order.setStatus(Order.OrderType.TOSEND);
                     order.setPrice(BigDecimal.ONE);
                     order.setAchPrice(BigDecimal.ONE);
-
                     if (!CollectionUtils.isEmpty(map)){
                         //当前设备存在未清运订单，不再重新生成订单
                         List<Order> orderList = orderService.selectList(new EntityWrapper<Order>().eq("iot_equipment_code", map.get("equipmentCode")).notLike("status_", Order.OrderType.COMPLETE.getValue()+""));
@@ -132,7 +137,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                             return;
                         }
                         order.setRecyclerId(Integer.parseInt(map.get("recId")+""));
-                        order.setIotEquipmentCode(map.get("equipmentCode")+"");
+                        order.setIotEquipmentCode(companyEquipment.getEquipmentCode());
                         order.setAddress(map.get("address")+"");
                         order.setMemberId(Integer.parseInt(map.get("comId")+""));//
                         order.setAreaId(Integer.parseInt(map.get("areaId")+""));
@@ -170,6 +175,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
         String subjectStr = "";
         //验证token是否有效，若无效，直接丢弃消息
         try {
+            Map<String, Object> messageMap = new HashMap<>();
             String token = object.get("token")+"";
             if (StringUtils.isEmpty(token)){
                 //说明接收到的消息token不存在，直接丢弃掉
@@ -190,7 +196,14 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 iotParamBean.setParentLists(object.getJSONArray("parentLists").toJavaList(IotParamBean.ParentList.class));
                 //消息保存成功之后再处理
                 orderService.iotCreatOrder(iotParamBean);
+                messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.UPLOAD_SUCCESS.getKey());
+                messageMap.put("message", CompanyEquipment.EquipmentAction.EquipmentActionCode.UPLOAD_SUCCESS.getValue());
+            }else {
+                messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getKey());
+                messageMap.put("message", "解析用户信息错误:" + CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getValue());
             }
+            this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
+
         }catch (Exception e){
             //说明接收到的消息有问题，直接丢弃掉
             Map<String, Object> messageMap = new HashMap<>();

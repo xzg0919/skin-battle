@@ -72,8 +72,10 @@ public class CompanyEquipment extends  DataEntity<Long> {
     public static class EquipmentAction{
         public enum  EquipmentActionCode implements IEnum {
             UPLOAD_ORDER("10000", "上传订单数据"),
+            UPLOAD_SUCCESS("11111", "数据上传成功"),
             EQUIPMENT_OPEN("20000", "打开箱门"),   	 //打开箱门
             EQUIPMENT_CLOSE("20001", "关闭箱门"),   	 //关闭箱门
+            IDENTIFYING_PICTURES("20002", "识别图片"),
             RECYCLE_OPEN("30001", "清运开门"),   	 //清运开门
             RECYCLE_CLOSE("30002", "清运关门"),       //清运关门
             UPLOAD_STATUS("40001", "上传设备满溢状态"),
