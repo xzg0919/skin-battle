@@ -244,4 +244,39 @@ public class AdminAreaApi {
 	public Object cityListByProvinceId(AreaBean areaBean){
 		return areaService.cityListByProvinceId(areaBean);
 	}
+
+	/**
+	 * 根据城市Id更改城市系数
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.updateCityRatio", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object updateCityRatio(AreaBean areaBean) throws Exception{
+		return areaService.updateCityRatio(areaBean);
+	}
+
+	/**
+	 * 根据服务商Id获取服务商服务的所有城市
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.getAllCityListByCompanyId", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getAllCityListByCompanyId(AreaBean areaBean) throws Exception{
+		return areaService.getAllCityListByCompanyId(areaBean);
+	}
+	/**
+	 * 根据服务商ID和城市Id获取服务商回收的类型
+	 * @param
+	 * @return
+	 */
+	@Api(name = "admin.getTitleByCompanyId", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Object getTitleByCompanyId(AreaBean areaBean) throws Exception{
+		return areaService.getTitleByCompanyId(areaBean);
+	}
 }

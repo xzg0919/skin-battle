@@ -59,4 +59,10 @@ public interface AreaMapper extends BaseMapper<Area> {
 	List<Map<String, Object>> getAreaCityRatioLists(@Param("provinceId")String provinceId,@Param("cityId")String cityId,@Param("pageStart")Integer pageStart,@Param("pageSize")Integer  pageSize);
 
 	Integer getAreaCityRatioCount(@Param("provinceId")String provinceId,@Param("cityId")String cityId);
+
+	List<Map<String, Object>> getAllCityListByCompanyId(@Param("companyId") String companyId);
+
+	Integer getTitleByCompanyId(@Param("tableName")String tableName,@Param("companyId")String companyId,@Param("cityId")String cityId);
+
+	Integer getCategoryTitleByCompanyId(@Param("companyId")String companyId,@Param("title")String title);
 }

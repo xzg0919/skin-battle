@@ -64,6 +64,8 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	private CompanyCategoryCityNameService companyCategoryCityNameService;
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private CompanyCityRatioService companyCityRatioService;
 
 	@Override
 	public List<Area> getByArea(int level,String cityId) {
@@ -648,6 +650,61 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		resultMap.put("areaCityRatioLists",areaCityRatioLists);
 		resultMap.put("pageNum",pageBean.getPageNumber());
 
+		return resultMap;
+	}
+	@Transactional
+	public String updateCityRatio(AreaBean areaBean) throws Exception{
+		Area area = this.selectById(areaBean.getCityId());
+		if (StringUtils.isBlank(areaBean.getRatio())){
+			throw new ApiException("城市价格系数不能为空");
+		}
+		if (null == area){
+			throw new ApiException("城市Id传入错误");
+		}
+		area.setRatio(new BigDecimal(areaBean.getRatio()));
+		this.updateById(area);
+		return "操作成功";
+	}
+	@Override
+	public List<Map<String,Object>> getAllCityListByCompanyId(AreaBean areaBean){
+		return mapper.getAllCityListByCompanyId(areaBean.getCompanyId());
+	}
+	@Override
+	public Map<String,Object> getTitleByCompanyId(AreaBean areaBean){
+		Integer applianceCityNum = mapper.getTitleByCompanyId("sb_company_street_appliance", areaBean.getCompanyId(), areaBean.getCityId());
+		Integer houseCityNum = mapper.getTitleByCompanyId("sb_company_street_house",areaBean.getCompanyId(),areaBean.getCityId());
+		Integer fiveCityNum = mapper.getTitleByCompanyId("sb_company_stree",areaBean.getCompanyId(),areaBean.getCityId());
+		Integer bigCityNum = mapper.getTitleByCompanyId("sb_company_street_big",areaBean.getCompanyId(),areaBean.getCityId());
+		CompanyCityRatio companyCityRatio = companyCityRatioService.selectOne(new EntityWrapper<CompanyCityRatio>().eq("company_id", areaBean.getCompanyId()).eq("city_id", areaBean.getCityId()));
+		BigDecimal cityRatio = new BigDecimal("");
+		if (null == companyCityRatio){
+			Area area = this.selectById(areaBean.getCityId());
+			if (null!=area){
+				cityRatio = area.getRatio();
+			}
+		}else {
+			cityRatio = companyCityRatio.getRatio();
+		}
+		Map<String,Object> resultMap = new HashMap<>();
+		if (applianceCityNum!=null&&applianceCityNum>0) {
+			Integer count = mapper.getCategoryTitleByCompanyId(areaBean.getCompanyId(),"1");
+			if (count!=null&&count>0) {
+				resultMap.put("appliance","1");
+			}
+		}
+		if (bigCityNum!=null&&bigCityNum>0) {
+			Integer count = mapper.getCategoryTitleByCompanyId(areaBean.getCompanyId(),"4");
+			if (count!=null&&count>0) {
+				resultMap.put("big", "4");
+			}
+		}
+		if (houseCityNum!=null&&houseCityNum>0||fiveCityNum!=null&&fiveCityNum>0) {
+			Integer count = mapper.getCategoryTitleByCompanyId(areaBean.getCompanyId(),"2");
+			if (count!=null&&count>0) {
+				resultMap.put("house", "2");
+			}
+		}
+		resultMap.put("cityRatio",cityRatio);
 		return resultMap;
 	}
 }

@@ -2,6 +2,9 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  *
@@ -10,6 +13,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
  * @Author 王灿
  **/
 @TableName("sb_company_category")
+@Data
 public class CompanyCategory extends  DataEntity<Long> {
     private Long id;
     /**
@@ -36,6 +40,10 @@ public class CompanyCategory extends  DataEntity<Long> {
     private String unit;//单位
     
     private float price; //单价
+
+	private BigDecimal adminCommissions;//平台佣金
+
+	private BigDecimal companyCommissions;//服务商返佣
     
     
 	public Long getId() {

@@ -2,6 +2,7 @@ package com.tzj.collect.entity;
 
 
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
  * @Author 王灿
  **/
 @TableName("sb_company_category_attr_option_city")
+@Data
 public class CompanyCategoryAttrOptionCity extends  DataEntity<Long> {
     private Long id;
     /**
@@ -34,6 +36,14 @@ public class CompanyCategoryAttrOptionCity extends  DataEntity<Long> {
      * 特殊价格
      */
     private BigDecimal specialPrice;
+    /**
+     * 是否回收 0回收  1不回收
+     */
+    private String isRecovery = "0";
+    /**
+     * 是否是特殊标签 0不是  1是
+     */
+    private String isSpecial = "0";
 
     @Override
     public Long getId() {

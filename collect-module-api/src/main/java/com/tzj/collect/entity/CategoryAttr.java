@@ -3,10 +3,13 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.tzj.collect.core.result.business.BusinessCategoryResult;
+import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @TableName("sb_category_attr")
+@Data
 public class CategoryAttr extends DataEntity<Long> {
 	private Long id;
 	@TableField(value="name_")
@@ -23,6 +26,8 @@ public class CategoryAttr extends DataEntity<Long> {
 	private List<CategoryAttrOption>  CategoryAttrOptionList;
 	@TableField(exist=false)
 	private List<BusinessCategoryResult> resultList;
+	@TableField(exist=false)
+	private List<Map<String,Object>> objectMap;
 	/**
 	 * 企业Id
 	 */

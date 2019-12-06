@@ -4,6 +4,7 @@ package com.tzj.collect.core.param.ali;
 import com.tzj.collect.core.param.business.CommunityBean;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -62,6 +63,8 @@ public class AreaBean {
 	private List<String> titleList;
 
 	private List<CommunityBean> communityIdList;
+
+	private String ratio; //城市系数
 
 	public String getSaveOrDelete() {
 		return saveOrDelete;

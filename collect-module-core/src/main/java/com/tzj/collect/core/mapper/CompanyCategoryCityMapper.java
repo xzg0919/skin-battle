@@ -8,6 +8,7 @@ import com.tzj.collect.entity.CompanyCategoryCity;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CompanyCategoryCityMapper extends BaseMapper<CompanyCategoryCity> {
 
@@ -22,4 +23,8 @@ public interface CompanyCategoryCityMapper extends BaseMapper<CompanyCategoryCit
     List<ComCatePrice> getOwnnerPriceAppByCity(@Param("categoryId") String categoryId, @Param("companyId") String companyId, @Param("cityId") String cityId);
 
     List<Category>  getOneCategoryListByOrder(@Param("companyId")Integer companyId,@Param("cityId")Integer cityId);
+
+    List<Map<String,Object>> getCompanyCategoryListByCityTitle(@Param("companyId")Integer companyId,@Param("cityId") Integer cityId,@Param("categoryId")Integer categoryId);
+
+    List<Map<String,Object>> getCompanyCategoryAttrOptionCityLists(@Param("companyId")Integer companyId,@Param("cityId") Integer cityId, @Param("categoryAttrId") Integer categoryAttrId);
 }

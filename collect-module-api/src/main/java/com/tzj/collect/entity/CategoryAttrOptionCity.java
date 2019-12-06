@@ -27,11 +27,11 @@ public class CategoryAttrOptionCity extends  DataEntity<Long> {
     /**
      * 是否回收 0回收  1不回收
      */
-    private String isRecovery;
+    private String isRecovery = "0";
     /**
      * 是否是特殊标签 0不是  1是
      */
-    private String isSpecial;
+    private String isSpecial = "0";
     /**
      * 特殊价格
      */

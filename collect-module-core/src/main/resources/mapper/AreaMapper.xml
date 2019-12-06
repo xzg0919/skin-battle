@@ -659,4 +659,68 @@
 			AND b.id = #{provinceId}
 		</if>
 	</select>
+	<select id="getAllCityListByCompanyId" parameterType="String" resultType="Map">
+		SELECT DISTINCT
+			d.area_name AS provinceName,
+			c.area_name AS cityName,
+			c.id
+		FROM
+			(
+				SELECT
+					a.area_id
+				FROM
+					sb_company_street_appliance a
+				WHERE
+					a.company_id = #{companyId}
+				UNION
+					SELECT
+						a.area_id
+					FROM
+						sb_company_street_house a
+					WHERE
+						a.company_id = #{companyId}
+				UNION
+					SELECT
+						a.area_id
+					FROM
+						sb_company_stree a
+					WHERE
+						a.company_id = #{companyId}
+				UNION
+					SELECT
+						a.area_id
+					FROM
+						sb_company_street_big a
+					WHERE
+						a.company_id = #{companyId}
+			) a
+		LEFT JOIN sb_area b ON a.area_id = b.id
+		LEFT JOIN sb_area c ON b.parent_id = c.id
+		LEFT JOIN sb_area d ON c.parent_id = d.id
+	</select>
+	<select id="getTitleByCompanyId" parameterType="String" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			${tableName} a LEFT JOIN sb_area b ON a.area_id = b.id
+		WHERE
+			a.company_id = #{companyId}
+		AND b.parent_id = #{cityId}
+	</select>
+	<select id="getCategoryTitleByCompanyId" resultType="Integer" parameterType="String">
+		SELECT
+			COUNT(1)
+		FROM
+			sb_category a
+		INNER JOIN (
+			SELECT
+				*
+			FROM
+				sb_company_category a
+			WHERE
+				a.company_id = #{companyId}
+		) b ON a.id = b.category_id
+		WHERE
+			a.title = #{title}
+	</select>
 </mapper>

@@ -87,4 +87,10 @@ public interface AreaService  extends IService<Area>{
 	List<Area> cityListByProvinceId(AreaBean areaBean);
 	@DS("slave")
 	Map<String,Object> getAreaCityRatioLists(AreaBean areaBean);
+
+	String updateCityRatio(AreaBean areaBean)throws Exception;
+	@DS("slave")
+	List<Map<String,Object>> getAllCityListByCompanyId(AreaBean areaBean);
+	@DS("slave")
+	Map<String,Object> getTitleByCompanyId(AreaBean areaBean);
 }

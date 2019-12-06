@@ -2,6 +2,7 @@ package com.tzj.collect.core.param.ali;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -59,6 +60,28 @@ public class CategoryBean {
 	 * 经纬度
 	 */
 	private String location;
+
+	private String categoryId;
+
+	private String price;
+
+	private String attrOptionId;
+	/**
+	 * 是否回收 0回收  1不回收
+	 */
+	private String isRecovery ;
+	/**
+	 * 是否是特殊标签 0不是  1是
+	 */
+	private String isSpecial ;
+	/**
+	 * 特殊价格
+	 */
+	private String specialPrice;
+
+	private String adminCommissions;//平台佣金
+
+	private String companyCommissions;//服务商返佣
 	
 	//分类属性
 	private List<CategoryAttrBean> categoryAttr;

@@ -4,6 +4,8 @@ package com.tzj.collect.entity;
 import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @TableName("sb_category_city")
 @Data
 public class CategoryCity extends  DataEntity<Long> {
@@ -13,13 +15,13 @@ public class CategoryCity extends  DataEntity<Long> {
     /**
      * 分类id
      */
-    private  String categoryId;
+    private  Integer categoryId;
     /**
      * 城市Id
      */
     private String cityId;
 
-    private Long parentId;//父类id
+    private Integer parentId;//父类id
 
     private String parentName;//父类id
 
@@ -27,6 +29,6 @@ public class CategoryCity extends  DataEntity<Long> {
 
     private String unit;//单位
 
-    private float price; //单价
+    private BigDecimal price; //单价
 
 }
