@@ -156,28 +156,28 @@ public class IotApi {
                     + "&encryptData=" + encryptData + "&appId="+ iotPostParamBean.getAppId();
             System.out.println(iotUrl);
             Response response = null;
-            try {
-                long codeTime = System.currentTimeMillis() - Long.parseLong(String.valueOf(iotPostParamBean.getTranTime()));
-                //自己的设备增加检测
-                if (iotUrl.contains("mayishoubei.com")){
-                    //动态二维码检测
-                    if(equipmentMessageService.redisSetCheck("IoT:Equipment:Uid", iotPostParamBean.getEcUuid())){
-                        throw new ApiException("二维码已被使用");
-                    }if (Long.parseLong("5000") < codeTime || codeTime <= 0) {
-                        throw new ApiException("二维码已过期");
-                    }
-                    else {
-                        equipmentMessageService.redisSetAdd("IoT:Equipment:Uid", iotPostParamBean.getEcUuid());
-                    }
-                    //发送开启箱门指令使用过后更新动态二维码
-                    Map<String, String> messageMap = new HashMap<>();
-                    messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getKey());
-                    messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getValue());
-                    equipmentMessageService.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap),iotCompanyResult.getHardwareCode(), mqttClient);
-                    map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
-                    map.put("status", MessageCode.SUCCESS_OPEN.getKey());
-                    return map;
+            long codeTime = System.currentTimeMillis() - Long.parseLong(String.valueOf(iotPostParamBean.getTranTime()));
+            //自己的设备增加检测
+            if (iotUrl.contains("mayishoubei.com")){
+                //动态二维码检测
+                if(equipmentMessageService.redisSetCheck("IoT:Equipment:Uid", iotPostParamBean.getEcUuid())){
+                    throw new ApiException("二维码已被使用");
+                }if (Long.parseLong("5000") < codeTime || codeTime <= 0) {
+                    throw new ApiException("二维码已过期");
                 }
+                else {
+                    equipmentMessageService.redisSetAdd("IoT:Equipment:Uid", iotPostParamBean.getEcUuid());
+                }
+                //发送开启箱门指令使用过后更新动态二维码
+                Map<String, String> messageMap = new HashMap<>();
+                messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getKey());
+                messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getValue());
+                equipmentMessageService.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap),iotCompanyResult.getHardwareCode(), mqttClient);
+                map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
+                map.put("status", MessageCode.SUCCESS_OPEN.getKey());
+                return map;
+            }
+            try {
                 response =  FastHttpClient.get().url(iotUrl).build().execute();
             }catch (Exception e){
                 map.put("msg", "连接超时");

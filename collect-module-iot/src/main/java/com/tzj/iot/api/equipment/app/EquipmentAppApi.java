@@ -55,6 +55,13 @@ public class EquipmentAppApi {
     public List<Map<String, Object>> advertList() {
         return advertService.iotEquipmentAdvertList();
     }
+    /**
+     *  获取动态二维码
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/10 0010
+     * @Param: 
+     * @return: 
+     */
     @Api(name = "equipment.qrcode", version = "1.0")
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
     public Map<String, Object> qrCode() {
@@ -62,9 +69,8 @@ public class EquipmentAppApi {
         CompanyEquipment equipment = CompanyEquipmentUtils.getMember();
         IotCompanyResult iotCompanyResult = companyService.selectIotUrlByEquipmentCode(equipment.getEquipmentCode());
         String aliUrl = "alipays://platformapi/startapp?appId=2018060660292753&page=pages/view/index/index&query=";
-        String encodeString = URLEncoder.encode("qrCode=Y&type=appliance&sourceId="+equipment.getEquipmentCode()
-                +"?"+ "tranTime="+ System.currentTimeMillis()+ "&ecUuid="+ UUID.randomUUID()+ "&cabinetNo="+equipment.getEquipmentCode());
-        returnMap.put("qrCode", aliUrl+URLEncoder.encode(URLEncoder.encode(encodeString)));
+        String encodeString = URLEncoder.encode("tranTime="+ System.currentTimeMillis()+ "&ecUuid="+UUID.randomUUID().toString().substring(0,15)+ "&cabinetNo="+equipment.getEquipmentCode());
+        returnMap.put("qrCode", aliUrl+URLEncoder.encode("qrCode=Y&type=appliance&sourceId="+equipment.getEquipmentCode()+"&iotNum="+iotCompanyResult.getIotUrl()+"?"+encodeString));
         return returnMap;
     }
 
