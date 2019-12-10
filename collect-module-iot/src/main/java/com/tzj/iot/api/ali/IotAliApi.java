@@ -3,7 +3,6 @@ package com.tzj.iot.api.ali;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.ZolozAuthenticationCustomerFtokenQueryResponse;
 import com.tzj.collect.core.param.ali.MemberBean;
-import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.param.iot.SmilePayBean;
 import com.tzj.collect.core.param.token.TokenBean;
 import com.tzj.collect.core.service.AliPayService;
@@ -16,12 +15,8 @@ import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.doc.annotation.ApiDoc;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 

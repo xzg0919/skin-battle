@@ -3,6 +3,8 @@ package com.tzj.collect.api.business;
 import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.core.param.business.CompanyAccountBean;
 import com.tzj.collect.core.service.CompanyAccountService;
+import com.tzj.collect.core.service.CompanyService;
+import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.core.param.token.TokenBean;
 import com.tzj.module.api.annotation.*;
@@ -13,12 +15,16 @@ import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
+
 import static com.tzj.collect.common.constant.TokenConst.*;
 
 @ApiService
 public class BusinessTokenApi {
 	@Autowired
 	private CompanyAccountService companyAccountService;
+	@Resource
+	private CompanyService companyService;
 
     /**
      * 回收企业获取token
@@ -39,6 +45,11 @@ public class BusinessTokenApi {
             tokenBean.setExpire(BUSINESS_API_EXPRIRE);
             tokenBean.setSignKey(SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY));
             tokenBean.setToken(securityToken);
+            /**
+             * 增加是否启用蓝牙
+             */
+            Company company = companyService.selectById(companyAccount.getId().toString());
+            tokenBean.setBlueTooth("1".equals(company.getBlueTooth()+"") ? "Y": "N");
             return tokenBean;
         }else{
         	  throw new ApiException("用户名或者密码错误!");

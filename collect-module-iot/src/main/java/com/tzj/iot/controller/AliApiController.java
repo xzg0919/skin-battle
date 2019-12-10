@@ -21,7 +21,7 @@ import static com.tzj.collect.common.constant.TokenConst.*;
  * @Author 胡方明（12795880@qq.com）
  **/
 @Controller
-@RequestMapping(value = "/ali/api")
+@RequestMapping(value = "/equipment/ali/api")
 public class AliApiController extends ApiController {
 
     @Resource(name="apiNonceServiceImpl")
