@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.Resource;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -43,6 +45,11 @@ public class IotAppApi {
     private PaymentService paymentService;
     @Resource
     private RecyclersService recyclersService;
+    @Api(name = "app.order.list", version = "1.0")
+    @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+    public List<Map<String, Object>> orderList(){
+        return null;
+    }
 
     @Api(name = "app.order.tradePay", version = "1.0")
     @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
