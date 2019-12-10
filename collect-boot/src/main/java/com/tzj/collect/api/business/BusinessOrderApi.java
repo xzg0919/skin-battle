@@ -131,7 +131,26 @@ public class BusinessOrderApi {
 		List<OrderCancleExamine> orderCancleExamineList = orderCancleExamineService.selectList(new EntityWrapper<OrderCancleExamine>().eq("order_no", bOrderBean.getOrderNo()));
 		return orderCancleExamineList;
 	}
- /**
+
+	/**
+	 * 撤回申请
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2019/12/9 0009
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "business.order.withdraw.application", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object withdrawApplication(BOrderBean bOrderBean){
+		//查询订单详情
+		if (orderCancleExamineService.delete(new EntityWrapper<OrderCancleExamine>().eq("order_no", bOrderBean.getOrderNo()))){
+			return "Y";
+		}
+		return "N";
+	}
+
+
+	/**
 	 * 获取用户提交生活垃圾订单id详情
 	 * @author 王灿
 	 * @param

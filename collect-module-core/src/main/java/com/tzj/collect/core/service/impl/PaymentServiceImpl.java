@@ -324,6 +324,38 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         return response;
     }
 
+    @Override
+    public String iotPay(String hardwareCode, String orderNo, String price, String outTradeNo){
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+
+        String sn = orderNo;
+        String subject = "垃圾分类清运订单(收呗):" + sn;
+
+        model.setBody(subject);
+        model.setSubject(subject);
+        model.setOutTradeNo(outTradeNo);
+        model.setTimeoutExpress("2m");
+        ExtendParams extendParams = new ExtendParams();
+        extendParams.setSysServiceProviderId("2017011905224137");
+        model.setExtendParams(extendParams);
+        model.setTotalAmount(price);
+        model.setProductCode("QUICK_MSECURITY_PAY");
+        /**
+         * 多增加设备硬件编号（获取时，不用重新查，知道开启哪台设备箱门）
+         */
+        model.setPassbackParams(hardwareCode);
+        request.setBizModel(model);
+        request.setNotifyUrl("test.equip.mayishoubei.com/equipment/mqtt/notify/alipay");
+        try {
+            //这里和普通的接口调用不同，使用的是sdkExecute
+            AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+            return response.getBody();
+        } catch (AlipayApiException e) {
+            throw new ApiException("系统异常：" + e.getErrMsg());
+        }
+    }
     /**
      * iot定金回退接口
      * @author: sgmark@aliyun.com

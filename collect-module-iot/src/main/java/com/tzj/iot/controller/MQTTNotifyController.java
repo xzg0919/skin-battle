@@ -1,6 +1,7 @@
 package com.tzj.iot.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.push.PushUtils;
@@ -8,16 +9,15 @@ import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.thread.sendGreenOrderThread;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.Payment;
-import com.tzj.collect.entity.Recyclers;
-import com.tzj.collect.entity.VoucherMember;
+import com.tzj.collect.entity.*;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -34,10 +34,12 @@ import static com.tzj.collect.common.constant.Const.ALI_PUBLIC_KEY;
 @RequestMapping(value = "/equipment/mqtt/notify")
 public class MQTTNotifyController {
 
-    @Autowired
+    @Resource
     private PaymentService paymentService;
-    @Autowired
-    private OrderService orderService;
+    @Resource
+    private EquipmentMessageService equipmentMessageService;
+    @Resource
+    private MqttClient mqttClient;
     /**
      * 支付宝支付通知
      * @param request
@@ -71,6 +73,7 @@ public class MQTTNotifyController {
                 String appId = params.get("app_id");
                 String tradeStatus = params.get("trade_status");
                 String totalAmount = params.get("total_amount");
+                String hardwareCode = params.get("passback_params");
                 //1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
                 //2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额
                 //4、验证app_id是否为该商户本身
@@ -96,6 +99,11 @@ public class MQTTNotifyController {
                     payment.setStatus(Payment.STATUS_PAYED);
                     payment.setBuyerLogonId(params.get("buyer_logon_id"));
                     paymentService.insertOrUpdate(payment);
+                    //调用开启清运箱门
+                    Map<String, String> messageMap = new HashMap<>();
+                    messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_OPEN.getKey());
+                    messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_OPEN.getValue());
+                    equipmentMessageService.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), hardwareCode, mqttClient);
                 }else if (tradeStatus.equalsIgnoreCase("TRADE_CLOSED")){
                     return "failure";
                 }

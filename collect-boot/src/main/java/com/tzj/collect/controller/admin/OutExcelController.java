@@ -973,7 +973,51 @@ public class OutExcelController {
         ExcelUtils.exportExcel(response, fileName, data);
     }
 
-
+    /**
+     * 服务区域总表---未覆盖区域
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/9 0009
+     * @Param: 
+     * @return: 
+     */
+    @RequestMapping("/admin/other/areas")
+    public void adminOtherAreas(HttpServletResponse response, OrderBean orderBean){
+        String title = orderBean.getTitle();
+        String city = orderBean.getCityId();
+        Integer street = orderBean.getStreetId();
+        if (StringUtils.isEmpty(title) || StringUtils.isEmpty(city) || street <= 0){
+            throw new ApiException("参数错误");
+        }
+        ExcelData data = new ExcelData();
+        data.setName("某个时间段多次下单统计");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        titles.add("回收类型");
+        titles.add("省");
+        titles.add("市");
+        titles.add("区");
+        titles.add("街道");
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row =  new ArrayList();
+//        for(int i=0,j = companyNameList.size(); i<j;i++){
+//            row= new ArrayList();
+//            row.add(companyNameList.get(i).getName());
+//            row.add(recyclersList.get(i));
+//            row.add(streetCountList.get(i));
+//            row.add(orderList.get(i));
+//            row.add(orderCompleteList.get(i));
+//            rows.add(row);
+//        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        try {
+            ExcelUtils.exportExcel(response, fileName, data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

@@ -12,6 +12,8 @@ public class TokenBean {
     private long expire;
     @ApiDocField(description = "api签名key")
     private String signKey;
+    @ApiDocField(description = "蓝牙")
+    private String blueTooth;
 
     public String getToken() {
         return token;
@@ -35,5 +37,13 @@ public class TokenBean {
 
     public void setSignKey(String signKey) {
         this.signKey = signKey;
+    }
+
+    public String getBlueTooth() {
+        return blueTooth;
+    }
+
+    public void setBlueTooth(String blueTooth) {
+        this.blueTooth = blueTooth;
     }
 }

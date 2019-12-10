@@ -15,16 +15,16 @@ public class MqttTest {
     public static void main(String[] args) throws Exception {
         String api="http://localhost:9006/equipment/iot/app/api";
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","equipment.message.getcode");
+        param.put("name","smile.pay.ali.token");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_8");
         param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-//        param.put("token", "F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFAQ3OS7QZLDALZ662CEVHWOWPJBRDSC4DVQ6XJ3NSZ3XCMIYO27WU6264ZVHDB2AGXDIIE4MHXSKSVWJO5IXDE5LBG6XISMWPIJD664OL56IKCIWTK4ZMN6ECKN7OW7WLS437XKKMIKMD2NIVPHT3YC3PWAT4HRXFP7KSYKUY2BTVZPDWOERZISSR5CQ7SU7LTME2RBOG3NIYI5THETVHSWQB346Q6CUU2LJWBFDA");
+        param.put("token", "F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFAQ3OS7QZLDALZ662CEVHWOWPJBRDSC4DVQ6XJ3NSZ3XCMIYO27WU6264ZVHDB2AGXDIIE4MHXSKSVWJO5IXDE5LBG6XISMWPIJD664OL56IKCIWTK4ZMN6ECKN7OW7WLS437XKKMIKMD2NIVPHT3YC3PWAT4HRXFP7KSYKUY2BTVZPDWOERZISSR5CQ7SU7LTME2RBOG3NIYI5THETVHSWQB346Q6CUU2LJWBFDA");
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID().toString());
 
-        param.put("data","{\"hardwareCode\":\"SH0024\"}");
+        param.put("data","{\"fToken\":\"fp0a0a5b3a368bc50a6dcabd677784d20a0\"}");
 
         String jsonStr= JSON.toJSONString(param);
         String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_55667788");
