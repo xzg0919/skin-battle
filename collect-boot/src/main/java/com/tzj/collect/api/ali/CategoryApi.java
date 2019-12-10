@@ -241,9 +241,11 @@ public class CategoryApi {
 	 */
 	@Api(name = "category.listCategoryAttrsXCX", version = "1.0")
 	@SignIgnore
-	@AuthIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object listCategoryAttrsXCX(CategoryBean categoryBean){
-		return categoryAttrService.getCategoryAttrListss(categoryBean.getId());
+		Member member = MemberUtils.getMember();
+		String aliUserId = member.getAliUserId();
+		return categoryAttrService.getCategoryAttrListss(categoryBean.getId(),aliUserId,categoryBean.getType());
 	}
 	/**
 	 * 小程序计算价格

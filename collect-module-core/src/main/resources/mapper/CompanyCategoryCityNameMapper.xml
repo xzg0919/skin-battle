@@ -32,7 +32,6 @@
 			b.*
 		FROM
 			sb_company_category_city_name a
-		INNER JOIN sb_company_category c ON a.company_id = c.company_id AND a.category_id = c.category_id
 		INNER JOIN sb_category b ON a.parent_id = b.id
 		WHERE
 			a.company_id = #{companyId}
@@ -44,7 +43,6 @@
 			b.*
 		FROM
 			sb_company_category_city_name a
-		INNER JOIN sb_company_category c ON a.company_id = c.company_id AND a.category_id = c.category_id
 		INNER JOIN sb_category b ON a.parent_id = b.id
 		WHERE
 			a.company_id = #{companyId}
@@ -75,7 +73,7 @@
 			b.code_,
 			b.level_,
 			b.icon,
-			if(c.id is NOT null,c.price,d.price) AS price,
+			if(c.id is NOT null,c.price,IF(e.price is NULL,d.price,e.price)) AS price,
 			b.market_price,
 			b.unit,
 			b.rec_notes,
@@ -87,9 +85,9 @@
 		FROM
 			sb_company_category_city_name a
 		LEFT JOIN sb_category b ON a.category_id = b.id
-		INNER JOIN sb_company_category cc ON a.company_id = cc.company_id AND a.category_id = cc.category_id
 		LEFT JOIN sb_company_category_city c ON a.company_id = c.company_id AND a.city_id = c.city_id AND a.category_id = c.category_id
 		LEFT JOIN sb_company_category d ON a.company_id = d.company_id AND a.category_id = d.category_id
+		LEFT JOIN (SELECT * FROM sb_category_city a WHERE a.parent_id = 25 AND a.city_id = 11214) e ON a.category_id = e.category_id
 		WHERE
 			a.company_id = #{companyId}
 		AND a.city_id = #{cityId}

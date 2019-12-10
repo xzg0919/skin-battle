@@ -47,11 +47,12 @@ public class CategoryAttrApi {
     public Object getCategoryAttrList(CategoryBean categoryBean){
 		//查询用户的默认地址
 		Member member = MemberUtils.getMember();
+		String aliUserId = member.getAliUserId();
 		System.out.println("------memberId参数是 ："+member.getAliUserId()+"------category参数是 ："+categoryBean.getId()+"-------cityId是 ："+categoryBean.getCityId());
 		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
     	if(memberAddress==null) {
     		//根据分类id取得所有分类属性
-    		return categoryAttrService.getCategoryAttrListss(categoryBean.getId());
+    		return categoryAttrService.getCategoryAttrListss(categoryBean.getId(),aliUserId,categoryBean.getType());
     	}
     	//根据分类Id查询父类分类id
     	Category category = categoryService.selectById(categoryBean.getId());

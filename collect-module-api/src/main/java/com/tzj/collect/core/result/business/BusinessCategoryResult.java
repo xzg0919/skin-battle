@@ -1,5 +1,8 @@
 package com.tzj.collect.core.result.business;
 
+import lombok.Data;
+
+@Data
 public class BusinessCategoryResult {
 
 	private String attOptionId;//属性选项Id
@@ -17,6 +20,8 @@ public class BusinessCategoryResult {
 	private String isSpecial;//是否是特殊字段
 	
 	private String specialPrice;//是否是特殊价格
+
+	private String isRecovery;
 
 	public String getAttOptionId() {
 		return attOptionId;

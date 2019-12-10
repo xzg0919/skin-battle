@@ -673,7 +673,6 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	public Map<String,Object> getTitleByCompanyId(AreaBean areaBean){
 		Integer applianceCityNum = mapper.getTitleByCompanyId("sb_company_street_appliance", areaBean.getCompanyId(), areaBean.getCityId());
 		Integer houseCityNum = mapper.getTitleByCompanyId("sb_company_street_house",areaBean.getCompanyId(),areaBean.getCityId());
-		Integer fiveCityNum = mapper.getTitleByCompanyId("sb_company_stree",areaBean.getCompanyId(),areaBean.getCityId());
 		Integer bigCityNum = mapper.getTitleByCompanyId("sb_company_street_big",areaBean.getCompanyId(),areaBean.getCityId());
 		CompanyCityRatio companyCityRatio = companyCityRatioService.selectOne(new EntityWrapper<CompanyCityRatio>().eq("company_id", areaBean.getCompanyId()).eq("city_id", areaBean.getCityId()));
 		BigDecimal cityRatio = new BigDecimal("");
@@ -698,7 +697,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 				resultMap.put("big", "4");
 			}
 		}
-		if (houseCityNum!=null&&houseCityNum>0||fiveCityNum!=null&&fiveCityNum>0) {
+		if (houseCityNum!=null&&houseCityNum>0) {
 			Integer count = mapper.getCategoryTitleByCompanyId(areaBean.getCompanyId(),"2");
 			if (count!=null&&count>0) {
 				resultMap.put("house", "2");

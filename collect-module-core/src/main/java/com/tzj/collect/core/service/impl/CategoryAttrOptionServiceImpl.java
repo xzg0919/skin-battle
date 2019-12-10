@@ -87,6 +87,10 @@ public class CategoryAttrOptionServiceImpl extends ServiceImpl<CategoryAttrOptio
 		return categoryAttrOptionMapper.getCategoryAttrOptionLists(categoryAttrId);
 		
 	}
+	@Override
+	public List<CategoryAttrOption> getOptionByCategoryAttrIdByCompanyId(long categoryAttrId,String companyId,Integer cityId){
+		return categoryAttrOptionMapper.getOptionByCategoryAttrIdByCompanyId(categoryAttrId,companyId,cityId);
+	}
 
 	@Override
 	public List<CategoryAttrOption> getDigitName(CategoryBean categoryBean) {

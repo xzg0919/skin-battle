@@ -101,8 +101,9 @@ public class AppOrderResult {
 	private Object paymentPrice;//成交价格
 
 	private String paymentNo;
-	
-	
+
+	private String cancelReason;
+
 	private Object obj;
 
 	private String isTenGreen; //0不是  1是
