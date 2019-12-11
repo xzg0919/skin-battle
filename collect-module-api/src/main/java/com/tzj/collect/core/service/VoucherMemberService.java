@@ -74,5 +74,23 @@ public interface VoucherMemberService extends IService<VoucherMember>
      * @return void
      */
     String reSend(String aliUserId);
+    /**
+     * 
+     * <p>Created on 2019年12月3日</p>
+     * <p>Description:[使用复活卡]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return void
+     */
+    void useRevive(String id);
+    /**
+     * 
+     * <p>Created on 2019年12月3日</p>
+     * <p>Description:[没用过的复活卡的id]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return List<String>
+     */
+    List<VoucherMember> getReviveIdList(Long memberId);
 
 }
