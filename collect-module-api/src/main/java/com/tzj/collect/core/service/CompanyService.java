@@ -11,6 +11,7 @@ import com.tzj.collect.entity.Company;
 import com.tzj.collect.entity.CompanyAccount;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CompanyService  extends IService<Company>{
 
@@ -114,4 +115,6 @@ public interface CompanyService  extends IService<Company>{
 	List<Company> getCompanyNameList();
 	@DS("slave")
 	List<Long> getStreetNumByTableName(String tableName);
+	@DS("slave")
+    List<Map<String, Object>> otherAreaLists(String tableName, String cityId);
 }

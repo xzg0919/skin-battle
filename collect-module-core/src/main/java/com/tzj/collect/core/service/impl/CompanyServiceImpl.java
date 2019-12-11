@@ -322,4 +322,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	public List<Long> getStreetNumByTableName(String tableName){
 		return companyMapper.getStreetNumByTableName(tableName);
 	}
+
+	@Override
+	public List<Map<String, Object>> otherAreaLists(String tableName, String cityId) {
+		return companyMapper.otherAreaLists(tableName, cityId);
+	}
 }
