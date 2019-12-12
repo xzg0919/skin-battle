@@ -295,6 +295,7 @@ public class ProductApi {
             productCode.setAliId(member.getAliUserId());
             productCodeService.updateById(productCode);
             productLog.setProductCode(productCode.getProductCode());
+            msg = productCode.getProductCode();
         }
         if(VoucherType.url.equals(product.getVoucherType()))
         {
