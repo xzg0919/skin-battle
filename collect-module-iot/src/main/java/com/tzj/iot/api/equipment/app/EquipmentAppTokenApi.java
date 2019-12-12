@@ -88,7 +88,7 @@ public class EquipmentAppTokenApi {
                 //更改设备激活状态
                 companyEquipment.setIsActivated("1");
                 companyEquipment.setEnablingTime(new Date());
-                companyEquipmentService.insertOrUpdate(companyEquipment);
+                companyEquipmentService.updateById(companyEquipment);
                 String token = JwtUtils.generateToken(companyEquipment.getId().toString(), EQUIPMENT_APP_API_EXPRIRE, EQUIPMENT_APP_API_TOKEN_SECRET_KEY);
                 String securityToken = JwtUtils.generateEncryptToken(token, EQUIPMENT_APP_API_TOKEN_CYPTO_KEY);
                 System.out.println("返回回收人员的token是 ："+securityToken);

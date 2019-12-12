@@ -9,11 +9,15 @@ import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
 import com.tzj.collect.api.commom.mqtt.util.Tools;
 import com.tzj.collect.commom.redis.RedisUtil;
+import com.tzj.collect.common.amap.AmapConst;
+import com.tzj.collect.common.amap.AmapRegeoJson;
 import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
+import io.itit.itf.okhttp.FastHttpClient;
+import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.weaver.ast.Or;
@@ -62,12 +66,15 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     private PaymentService paymentService;
     @Resource
     private CompanyEquipmentService companyEquipmentService;
+    @Resource
+    private EquipmentLocationListService equipmentLocationListService;
     @Autowired
     private RedisUtil redisUtil;
     @Resource
     private  JedisPool jedisPool;
 
     @Override
+    @Transactional(readOnly = false)
     public void dealWithMessage(String topic,String message, MqttClient mqttClient) {
         Map<String, Object>  messageMap = JSONObject.parseObject(message);
         CompanyEquipment companyEquipment = companyEquipmentService.selectOne(new EntityWrapper<CompanyEquipment>().eq("del_flag", 0).eq("hardware_code", topic));
@@ -123,7 +130,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
 
                 //该公司下随机取一个回收人员（硬件编号找信息）
                 Map<String, Object> map = companyRecyclerService.selectRecByHardwareCode(topic);
-                if (Double.parseDouble(messageMap.get("currentValue")+"")>= Double.parseDouble(map.get("setValue")+"")){
+                if (Double.parseDouble(messageMap.get("currentValue")+"")>= Double.parseDouble(map.get("set_value")+"")){
                     //如果满溢状态达到设定值，生成清运订单
                     Order order = new Order();
                     order.setTitle(Order.TitleType.IOTCLEANORDER);
@@ -134,6 +141,9 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                         //当前设备存在未清运订单，不再重新生成订单
                         List<Order> orderList = orderService.selectList(new EntityWrapper<Order>().eq("iot_equipment_code", map.get("equipmentCode")).notLike("status_", Order.OrderType.COMPLETE.getValue()+""));
                         if (orderList.size() >= 1){
+                            //订单清运完成，初始值设为0
+                            companyEquipment.setCurrentValue(Double.parseDouble(messageMap.get("currentValue")+""));
+                            companyEquipmentService.updateById(companyEquipment);
                             return;
                         }
                         order.setRecyclerId(Integer.parseInt(map.get("recId")+""));
@@ -143,17 +153,38 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                         order.setAreaId(Integer.parseInt(map.get("areaId")+""));
                     }
                     orderService.insert(order);
-                    //订单清运完成，初始值设为0
-                    companyEquipment.setCurrentValue(Double.valueOf(0));
-                    companyEquipmentService.updateById(companyEquipment);
                 }else {
                     //修改设备满溢当前值
-                    companyEquipment.setCurrentValue(Double.parseDouble(messageMap.get("code")+""));
+                    companyEquipment.setCurrentValue(Double.parseDouble(messageMap.get("currentValue")+""));
                     companyEquipmentService.updateById(companyEquipment);
                 }
             }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.UPLOAD_ORDER.getKey().equals(messageMap.get("code"))){
                 //上传订单数据(用户投递)
                 this.creatIotOrderByMqtt(topic, message, mqttClient);
+            }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.UPLOAD_LOCATION.getKey().equals(messageMap.get("code"))){
+                try {
+                    //上传定位（保存最新10条记录）
+                    EquipmentLocationList equipmentLocationList = new EquipmentLocationList();
+                    equipmentLocationList.setEquipmentCode(topic);
+                    equipmentLocationList.setLatitude(messageMap.get("latitude")+"");
+                    equipmentLocationList.setLongitude(messageMap.get("longitude")+"");
+                    equipmentLocationList.setLocation(locationByLBS(equipmentLocationList.getLongitude(), equipmentLocationList.getLatitude()));
+                    equipmentLocationListService.insert(equipmentLocationList);
+                    //只保留最新10条
+                    Integer equipmentLocationCount = equipmentLocationListService.selectCount(new EntityWrapper<EquipmentLocationList>().eq("del_flag", 0).eq("equipment_code", topic));
+                    if(equipmentLocationCount - 10 > 0){
+                        List<EquipmentLocationList> equipmentLocationLists = equipmentLocationListService.selectList(new EntityWrapper<EquipmentLocationList>().eq("del_flag", 0).eq("equipment_code", topic).orderBy("id", true).last(" limit " + (equipmentLocationCount - 10)));
+                        equipmentLocationLists.stream().forEach(locationList -> {
+                            equipmentLocationListService.deleteById(locationList);
+                        });
+                    }
+                }catch (Exception e){
+                    messageMap = new HashMap<>();
+                    messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getKey());
+                    messageMap.put("message", "---消息格式错误---");
+                    this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
+                    return;
+                }
             }
         }catch (Exception e){
             //消息体错误
@@ -249,5 +280,28 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     @Override
     public Boolean redisSetCheck(String key, String value){
         return redisUtil.redisSetCheck(key, value, jedisPool);
+    }
+
+    private String locationByLBS(String longitude, String latitude) throws Exception{
+        Map<String, Object> resultMap = new HashMap<>();
+        String url = "https://restapi.amap.com/v3/geocode/regeo";
+        Response response = null;
+        response = FastHttpClient.get().url(url)
+                .addParams("key", AmapConst.AMAP_KEY)
+                .addParams("location", longitude + "," + latitude)
+                .build().execute();
+        String resultJson = response.body().string();
+        if (StringUtils.isNotEmpty(resultJson)){
+            resultJson = resultJson.replaceAll("\n", "");
+            try {
+                AmapRegeoJson amapRegeoJson = JSON.parseObject(resultJson, AmapRegeoJson.class);
+                return amapRegeoJson.getRegeocode().getFormatted_address();
+            }catch (Exception e){
+                System.out.println("=============异常抛出来咯："+resultJson+"============");
+            }
+        }else {
+            resultMap.put("city", "");
+        }
+        return "";
     }
 }

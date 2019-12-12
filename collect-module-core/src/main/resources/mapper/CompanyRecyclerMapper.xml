@@ -374,7 +374,8 @@
 			sce.equipment_code AS equipmentCode,
 			sce.address,
 			sce.company_id as comId,
-			sce.area_id as areaId
+			sce.area_id as areaId,
+			sce.set_value
 		FROM
 			sb_company_recycler scr
 		INNER JOIN sb_company_equipment sce

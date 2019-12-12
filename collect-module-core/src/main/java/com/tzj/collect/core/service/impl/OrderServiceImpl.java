@@ -427,6 +427,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return flag;
     }
 
+    @Override
     public Object editByAdminOrder(OrderBean orderBean) {
         Map<String, Object> resultMap = new HashMap<>();
         Order order = this.selectById(orderBean.getId());
@@ -2039,7 +2040,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @param OrderNo:订单编号
 	 * @author 王灿
 	 */
-	public void updateMemberPoint(String aliUserId, String OrderNo, double amount,String descrb) {
+	@Override
+    public void updateMemberPoint(String aliUserId, String OrderNo, double amount, String descrb) {
 		DecimalFormat df   = new DecimalFormat("######0.00");
 		amount = Double.parseDouble(df.format(amount));
 
@@ -3248,7 +3250,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("orderList",orderList);
 		return resultMap;
 	}
-	public List<Map<String, Object>> getOutComplaintOrderList(OrderBean orderBean){
+	@Override
+    public List<Map<String, Object>> getOutComplaintOrderList(OrderBean orderBean){
 		return orderMapper.getOutComplaintOrderList(orderBean.getComplaintType(),orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
 	}
 
@@ -3573,7 +3576,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return orderMapper.selectHouseAmount();
 	}
 
-	public boolean isTenGreen(Order order){
+	@Override
+    public boolean isTenGreen(Order order){
 		if ("1".equals(order.getIsCash())){
 			return true;
 		}
@@ -3597,7 +3601,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName){
 		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName);
 	}
-	public Object getReyclersServiceAbility(OrderBean orderBean,Integer companyId){
+	@Override
+    public Object getReyclersServiceAbility(OrderBean orderBean, Integer companyId){
 		PageBean pagebean = orderBean.getPagebean();
 		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
 		Integer pageSize = null!=pagebean ?pagebean.getPageSize():9999;
@@ -3610,7 +3615,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("pageNumber",pageNumber);
 		return resultMap;
 	}
-	public  Object overTimeOrderListByReyclersId(OrderBean orderBean,Integer companyId){
+	@Override
+    public  Object overTimeOrderListByReyclersId(OrderBean orderBean, Integer companyId){
 		PageBean pagebean = orderBean.getPagebean();
 		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
 		Integer pageSize = null!=pagebean ?pagebean.getPageSize():9999;
@@ -3623,7 +3629,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("pageNumber",pageNumber);
 		return resultMap;
 	}
-	public  List<Map<String,Object>>  getRecyclerOrderList(OrderBean orderBean){
+	@Override
+    public  List<Map<String,Object>>  getRecyclerOrderList(OrderBean orderBean){
 		return  orderMapper.getRecyclerOrderList(orderBean.getCompanyId(), orderBean.getRecyclerName(), orderBean.getMobile(),orderBean.getStartTime(),orderBean.getEndTime(), orderBean.getIsBig(), orderBean.getIsOverTime());
 	}
 	@Transactional
@@ -3660,7 +3667,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("pageNumber",pageNumber);
 		return resultMap;
 	}
-	@Transactional
+	@Override
+    @Transactional
 	public String agreeExamineOdrerStatus(OrderBean orderbean){
 		Order order = this.selectById(orderbean.getId());
 		if((OrderType.COMPLETE+"").equals(order.getStatus()+"")||(OrderType.CANCEL+"").equals(order.getStatus()+"")){
@@ -3675,7 +3683,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderCancleExamineService.updateById(orderCancleExamine);
 		return "操作成功";
 	}
-	@Transactional
+	@Override
+    @Transactional
 	public void  updateOrderCompany(String streetId,String companyId,String title){
 		orderMapper.updateOrderCompany(streetId,companyId,title);
 	}
@@ -3822,7 +3831,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return price;
 	}
 
-	@Transactional
+	@Override
+    @Transactional
 	public Object saveOrderReceptionByOrderNo(OrderBean orderbean){
 		Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", orderbean.getOrderNo()));
 		int count = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()));
@@ -3862,7 +3872,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return "操作成功";
 	}
 
-	public Object getOrderComplaintDetail(String orderNo){
+	@Override
+    public Object getOrderComplaintDetail(String orderNo){
 		Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo));
 		if (null==order){
 			throw new ApiException("传入的订单Id有误");
@@ -4027,6 +4038,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         wrapper.ge("create_date", startTime+" 00:00:01");
         wrapper.le("create_date", endTime+" 23:59:59");
         return this.selectCount(wrapper);
+    }
+
+    /**
+     * iot 回收人员清运订单列表
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/11 0011
+     * @Param: 
+     * @return: 
+     */
+    @Override
+    public List<Map<String, Object>> selectIotRecList(Long recId, String status) {
+        return orderMapper.selectIotRecList(recId+"", status);
     }
 
 }

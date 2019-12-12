@@ -3213,6 +3213,29 @@
 			a.count > 1
 	</select>
 
+	<select id="selectIotRecList" resultType="Map" parameterType="String">
+		SELECT
+			'塑料瓶/金属瓶' AS type,
+			sce.current_value,
+			sce.is_close,
+			soeqcode.*, sell.location
+		FROM
+			sb_company_equipment sce
+		INNER JOIN (
+			SELECT
+				soo.order_no,
+				soo.iot_equipment_code,
+				soo.create_date
+			FROM
+				sb_order soo
+			WHERE
+				soo.del_flag = 0
+			AND soo.recycler_id = #{recId}
+			AND soo.title = 6
+			AND soo.status_ =  #{status}
+		) soeqcode ON soeqcode.iot_equipment_code = sce.hardware_code
+		INNER JOIN sb_equipment_location_list sell ON sell.equipment_code = sce.hardware_code
+	</select>
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
         <id property="id" column="id" />

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.ZolozAuthenticationCustomerFtokenQueryResponse;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.app.OrderPayParam;
 import com.tzj.collect.core.param.iot.SmilePayBean;
 import com.tzj.collect.core.param.token.TokenBean;
@@ -45,11 +46,6 @@ public class IotAppApi {
     private PaymentService paymentService;
     @Resource
     private RecyclersService recyclersService;
-    @Api(name = "app.order.list", version = "1.0")
-    @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
-    public List<Map<String, Object>> orderList(){
-        return null;
-    }
 
     @Api(name = "app.order.tradePay", version = "1.0")
     @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
