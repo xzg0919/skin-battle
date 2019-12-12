@@ -60,8 +60,8 @@ public class CompanyEquipment extends  DataEntity<Long> {
     private double setValue;//满溢设定值
 
     private double currentValue;//满溢当前值
-    
-    
+
+    private Integer isClose;//柜门是否打开（0关闭 1打开）
     /**
      * 设备动作指令
      * @author: sgmark@aliyun.com
@@ -85,6 +85,7 @@ public class CompanyEquipment extends  DataEntity<Long> {
             FLIP_BAFFLE("70001", "翻转挡板"),
             TRADE_SUCCESS("80001", "交易完成"),
             CHANGE_QRCODE("90001", "更换二维码"),
+            UPLOAD_LOCATION("100000", "上传定位"),
             ERROR("00000", "错误");
             private String key;
 

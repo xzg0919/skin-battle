@@ -245,5 +245,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	List<Long> outOrderListGroupCompany(@Param("startTime")String startTime,@Param("endTime")String endTime);
 
 	Integer getManyOrderListByDate(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("title")String title,@Param("status")String status);
+
+    List<Map<String, Object>> selectIotRecList(@Param("recId")String recId, @Param("status")String status);
 }
 

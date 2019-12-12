@@ -434,5 +434,6 @@ public interface OrderService extends IService<Order> {
 	Integer getManyOrderListByDate(String startTime,String endTime,String title,String status);
 	@DS("slave")
 	Integer getOrderListByDate(String startTime,String endTime,String title,String status);
-
+	@DS("slave")
+    List<Map<String, Object>> selectIotRecList(Long recId, String status);
 }
