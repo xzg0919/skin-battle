@@ -296,7 +296,12 @@
 			AND saa.parent_id = #{areaId}
 			AND saa.id NOT IN (
 				SELECT
+				<if test="tableName == 'sb_company_stree' ">
+					scsa.stree_id
+				</if>
+				<if test="tableName != 'sb_company_stree' ">
 					scsa.street_id
+				</if>
 				FROM
 					${tableName} scsa
 				WHERE
