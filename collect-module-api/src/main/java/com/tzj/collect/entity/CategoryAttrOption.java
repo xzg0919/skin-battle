@@ -2,10 +2,12 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
 @TableName("sb_category_attr_option")
+@Data
 public class CategoryAttrOption extends DataEntity<Long> {
 
 
@@ -22,8 +24,10 @@ public class CategoryAttrOption extends DataEntity<Long> {
 	private String isSpecial;
 	@TableField(exist=false)
     private CategoryAttr categoryAttr;
-	@TableField(exist=false)
+
     private BigDecimal specialPrice;
+	@TableField(exist=false)
+	private String isRecovery;
 	@Override
 	public Long getId() {	
 		return id;

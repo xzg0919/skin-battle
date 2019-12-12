@@ -81,6 +81,8 @@ public class CategoryBean {
 
 	private String adminCommissions;//平台佣金
 
+	private String freeCommissions;//平台订单免费时的佣金
+
 	private String companyCommissions;//服务商返佣
 	
 	//分类属性

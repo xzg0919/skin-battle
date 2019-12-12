@@ -3,10 +3,8 @@ package com.tzj.collect.core.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.CategoryAttrMapper;
-import com.tzj.collect.core.service.CategoryAttrOptionService;
-import com.tzj.collect.core.service.CategoryAttrService;
-import com.tzj.collect.entity.CategoryAttr;
-import com.tzj.collect.entity.CategoryAttrOption;
+import com.tzj.collect.core.service.*;
+import com.tzj.collect.entity.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +21,12 @@ public class CategoryAttrServiceImpl extends ServiceImpl<CategoryAttrMapper, Cat
 	private CategoryAttrService categoryAttrService;
 	@Autowired
 	private CategoryAttrOptionService categoryAttrOptionService;
+	@Autowired
+	private MemberAddressService memberAddressService;
+	@Autowired
+	private CompanyStreetApplianceService companyStreetApplianceService;
+	@Autowired
+	private CompanyStreetBigService companyStreetBigService;
 	/**
      * 根据分类id取得所有分类属性
      * @author 王灿
@@ -48,17 +52,35 @@ public class CategoryAttrServiceImpl extends ServiceImpl<CategoryAttrMapper, Cat
      * @return List<CategoryAttr>
      */
 	@Override
-	public List<CategoryAttr> getCategoryAttrListss(int categoryId) {
+	public List<CategoryAttr> getCategoryAttrListss(int categoryId,String aliUserId,String type) {
+		//根据分类Id和和地址信息查询所属企业
+		MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
+		String companyId = "";
+		if (null != memberAddress) {
+			if ("bigFurniture".equals(type)) {
+				companyId = companyStreetBigService.selectStreetBigCompanyId(memberAddress.getStreetId())+"";
+			}else if ("appliance".equals(type)) {
+				companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(memberAddress.getStreetId(), memberAddress.getCommunityId());
+			}
+		}
 		EntityWrapper<CategoryAttr> wraper = new EntityWrapper<CategoryAttr>();
 		wraper.eq("category_id", categoryId);
 		wraper.eq("del_flag", "0");
 		List<CategoryAttr> list = this.selectList(wraper);
 		//根据分类属性Id取 分类属性选项
-				for(int i=0;i<list.size();i++){
-					List<CategoryAttrOption> optionList = categoryAttrOptionService.getOptionByCategoryAttrIds((long)list.get(i).getId());
-					list.get(i).setCategoryAttrOptionList(optionList);
-					list.get(i).setCategoryId(categoryId);
-				}
+		if (StringUtils.isNotBlank(companyId)){
+			for(int i=0;i<list.size();i++){
+				List<CategoryAttrOption> optionList = categoryAttrOptionService.getOptionByCategoryAttrIdByCompanyId((long)list.get(i).getId(),companyId,memberAddress.getCityId());
+				list.get(i).setCategoryAttrOptionList(optionList);
+				list.get(i).setCategoryId(categoryId);
+			}
+		}else {
+			for(int i=0;i<list.size();i++){
+				List<CategoryAttrOption> optionList = categoryAttrOptionService.getOptionByCategoryAttrIds((long)list.get(i).getId());
+				list.get(i).setCategoryAttrOptionList(optionList);
+				list.get(i).setCategoryId(categoryId);
+			}
+		}
 		return list;
 	}
 	

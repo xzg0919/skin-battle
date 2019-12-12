@@ -130,6 +130,9 @@ public class CompanyCategoryCityServiceImpl extends ServiceImpl<CompanyCategoryC
             if (StringUtils.isNotBlank(categoryBean.getCompanyCommissions())){
                 companyCategory.setCompanyCommissions(new BigDecimal(categoryBean.getCompanyCommissions()));
             }
+            if (StringUtils.isNotBlank(categoryBean.getFreeCommissions())){
+                companyCategory.setFreeCommissions(new BigDecimal(categoryBean.getFreeCommissions()));
+            }
             companyCategoryService.updateById(companyCategory);
         }
         if (StringUtils.isNotBlank(categoryBean.getPrice())){

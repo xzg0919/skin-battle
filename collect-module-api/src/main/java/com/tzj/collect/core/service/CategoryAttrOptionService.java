@@ -48,4 +48,6 @@ public interface CategoryAttrOptionService  extends IService<CategoryAttrOption>
 	List<CategoryAttrOption> getDigitName(CategoryBean categoryBean);
 	@DS("slave")
 	List<CategoryAttrOption> getAppliceOrBigOption(String title);
+	@DS("slave")
+	List<CategoryAttrOption> getOptionByCategoryAttrIdByCompanyId(long categoryAttrId,String companyId,Integer cityId);
 }

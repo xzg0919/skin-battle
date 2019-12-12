@@ -43,4 +43,6 @@ public interface CategoryAttrOptionMapper  extends BaseMapper<CategoryAttrOption
 
 	List<CategoryAttrOption> getAppliceOrBigOption(@Param("title") String title);
 
+	List<CategoryAttrOption> getOptionByCategoryAttrIdByCompanyId(@Param("categoryAttrId")long categoryAttrId,@Param("companyId")String companyId,@Param("cityId")Integer cityId);
+
 }
