@@ -1000,7 +1000,12 @@ public class OutExcelController {
                 tableName = "sb_company_street_appliance";
             }else if (Order.TitleType.FIVEKG.getValue().toString().equals(title)){
                 type = "五公斤";
-                tableName = "sb_company_street";
+                /**
+                 * 匹配数据库
+                 * @author: sgmark@aliyun.com
+                 * @Date: 2019/12/12 0012
+                 */
+                tableName = "sb_company_stree";
             }else {
                 throw new ApiException("参数错误");
             }

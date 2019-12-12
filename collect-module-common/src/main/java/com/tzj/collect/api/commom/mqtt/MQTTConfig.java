@@ -59,33 +59,33 @@ public class MQTTConfig  {
         }
         return connectionOptionWrapper;
     }
-    @Bean("connectionOptionWrapperToken")
-    public ConnectionOptionWrapper ConnectionOptionWrapperTokenBean(){
-         ConnectionOptionWrapper connectionOptionWrapper = null;
-        List<String> resource = new ArrayList<String>();
-        final String mq4IotTopic = parentTopic + "/" + "admin";
-        resource.add(mq4IotTopic);
-      /*  *
-         * 此处示意，申请一个小时有效期的 token,实际使用时禁止在 MQTT 客户端程序申请 Token，以免引起 AccessKey，SecretKey 泄露，失去 token 的意义。
-        */
-        try {
-            String token = Tools.applyToken(tokenServerUrl, accessKey, secretKey, resource, "R,W", 2592000000L, instanceId);
-            Map<String, String> tokenData = new HashMap<String, String>();
-            tokenData.put("RW", token);
-            connectionOptionWrapper = new ConnectionOptionWrapper(instanceId, accessKey, clientId, tokenData);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
-        return connectionOptionWrapper;
-    }
+//    @Bean("connectionOptionWrapperToken")
+//    public ConnectionOptionWrapper ConnectionOptionWrapperTokenBean(){
+//         ConnectionOptionWrapper connectionOptionWrapper = null;
+//        List<String> resource = new ArrayList<String>();
+//        final String mq4IotTopic = parentTopic + "/" + "admin";
+//        resource.add(mq4IotTopic);
+//      /*  *
+//         * 此处示意，申请一个小时有效期的 token,实际使用时禁止在 MQTT 客户端程序申请 Token，以免引起 AccessKey，SecretKey 泄露，失去 token 的意义。
+//        */
+//        try {
+//            String token = Tools.applyToken(tokenServerUrl, accessKey, secretKey, resource, "R,W", 2592000000L, instanceId);
+//            Map<String, String> tokenData = new HashMap<String, String>();
+//            tokenData.put("RW", token);
+//            connectionOptionWrapper = new ConnectionOptionWrapper(instanceId, accessKey, clientId, tokenData);
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        } catch (InvalidKeyException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (UnrecoverableKeyException e) {
+//            e.printStackTrace();
+//        } catch (KeyStoreException e) {
+//            e.printStackTrace();
+//        } catch (KeyManagementException e) {
+//            e.printStackTrace();
+//        }
+//        return connectionOptionWrapper;
+//    }
 }
