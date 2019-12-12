@@ -24,7 +24,7 @@ public class CategoryAttrOption extends DataEntity<Long> {
 	private String isSpecial;
 	@TableField(exist=false)
     private CategoryAttr categoryAttr;
-	@TableField(exist=false)
+
     private BigDecimal specialPrice;
 	@TableField(exist=false)
 	private String isRecovery;

@@ -914,7 +914,7 @@
 		b.tel AS userMobile,
 		b.address AS address,
 		b.price,
-		b.cancel_reason,
+		b.cancel_reason AS cancelReason,
 		b.ach_price AS achPrice,
 		b.is_cash AS isCash,
 		b.order_no AS orderNo,

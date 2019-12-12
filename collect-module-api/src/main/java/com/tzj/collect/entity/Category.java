@@ -50,6 +50,8 @@ public class Category extends DataEntity<Long> {
 	 * 设置的绿色能量
 	 */
 	private Integer greenCount;
+
+	private Integer freeGreenCount;
 	/**
 	 * 以旧换新 0不支持 1只支持以旧换新 2两种都支持
 	 */
@@ -68,6 +70,12 @@ public class Category extends DataEntity<Long> {
 	private String iconImg;
 
 	private String myslGreen;
+
+	private BigDecimal adminCommissions;//平台佣金
+
+	private BigDecimal freeCommissions;//平台订单免费时的佣金
+
+	private BigDecimal companyCommissions;//服务商返佣
 
 	@TableField(exist=false)
 	private List<Map<String,Object>> categoryMap;

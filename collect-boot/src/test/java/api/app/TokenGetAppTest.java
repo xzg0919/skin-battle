@@ -28,7 +28,7 @@ import static com.tzj.collect.common.constant.TokenConst.*;
 public class TokenGetAppTest {
 	 public static void main(String[] args) throws Exception {
 
-		 String token = JwtUtils.generateToken("1260", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
+		 String token = JwtUtils.generateToken("2205", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
 		 String securityToken = JwtUtils.generateEncryptToken(token, APP_API_TOKEN_CYPTO_KEY);
 		 System.out.println("token : "+securityToken);
 
@@ -38,14 +38,15 @@ public class TokenGetAppTest {
 		 Claims claims = JwtUtils.getClaimByToken(decodeToken, APP_API_TOKEN_SECRET_KEY);
 		 String subjectStr = claims.getSubject();
 		 System.out.println("反向編譯 token是："+subjectStr);
-		 // String api="http://localhost:9000/app/api";
-		  String api="http://172.19.182.90:9090/app/api";
+		 String api="http://localhost:9090/app/api";
+		 //String api="http://172.19.182.90:9090/app/api";
 
-		 TransStationBean transStationBean = new TransStationBean();
-		 transStationBean.setId("8308");
+		 OrderBean orderBean = new OrderBean();
+		 orderBean.setStatus("1");
+		 orderBean.setPagebean(new PageBean());
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "collect.getInflowOrderDetailByCollect");
+	        param.put("name", "app.bigOrder.getBigOrderList");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -53,7 +54,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", transStationBean);
+	        param.put("data", orderBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");
