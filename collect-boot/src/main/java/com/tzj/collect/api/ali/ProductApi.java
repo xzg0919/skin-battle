@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+
+import com.tzj.collect.common.constant.VoucherConst;
 import com.tzj.collect.common.http.PostTool;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.common.utils.ToolUtils;
@@ -13,10 +15,14 @@ import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import org.apache.catalina.startup.Catalina;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,7 +47,13 @@ public class ProductApi {
     private MemberAddressService memberAddressService;
     @Autowired
     private GoodsProductOrderService goodsProductOrderService;
-
+    @Autowired
+    private ProductCodeService productCodeService;
+    @Autowired
+    private ProductLogService productLogService;
+    @Autowired
+    private VoucherMemberService voucherMemberService;
+    
     /**
      * 返回消耗0能量积分商城列表
      *
@@ -143,6 +155,50 @@ public class ProductApi {
         return productService.selectById(productBean.getId());
     }
 
+    
+    
+    
+    
+    @Api(name = "product.productLogList", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    @DS("slave")
+    public Object productLogList(ProductBean productBean) 
+    {
+        EntityWrapper<ProductLog> wrapper = new EntityWrapper<ProductLog>();
+        Member member = MemberUtils.getMember();
+        wrapper.eq("member_id", member.getId());
+        wrapper.orderBy("create_date", false);
+        return productLogService.selectList(wrapper);
+    }
+    
+    
+    @Api(name = "product.useRevive", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    @DS("slave")
+    public Object useRevive(ProductBean productBean) 
+    {
+        voucherMemberService.useRevive(productBean.getId());
+        return "ok";
+    }
+    
+    
+    @Api(name = "product.getReviveCount", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    @DS("slave")
+    public Object getReviveCount() 
+    {
+        Member member = MemberUtils.getMember();
+        List<VoucherMember> voucherMemberList = voucherMemberService.getReviveIdList(member.getId());
+        if(null == voucherMemberList || voucherMemberList.isEmpty())
+        {
+            return 0;
+        }
+        return voucherMemberList.size();
+    }
+    
     /**
      * 给用户发券
      *
@@ -150,14 +206,23 @@ public class ProductApi {
      * @param
      */
     @Api(name = "product.sendVoucher", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object sendVoucher(ProductBean productBean) {
+        Calendar now = Calendar.getInstance();
+        String msg = "兑换成功";
         //获取当前登录的会员
         Member member = MemberUtils.getMember();
         //查询用户积分
         Point point = pointService.getPoint(member.getAliUserId());
         //查询此券需要消耗多少能量兑换
         Product product = productService.selectById(productBean.getId());
+        // 剩余数量
+        if(product.getStock() == product.getBindingQuantity())
+        {
+            return "数量不足";
+        }
         //判断是否需要积分兑换
         if (product.getBindingPoint() != 0) {
             //判断用户积分是否足够
@@ -167,9 +232,78 @@ public class ProductApi {
             if (point.getRemainPoint() < product.getBindingPoint()) {
                 return "您的绿色能量不足";
             }
-
         }
-        if (productBean.getId().length() > 2) {
+        // 2. 领取记录
+        ProductLog productLog = new ProductLog();
+        productLog.setCreateBy(member.getId().toString());
+        productLog.setCreateDate(now.getTime());
+        productLog.setBindingPoint(product.getBindingPoint());
+        productLog.setBrand(product.getBrand());
+        productLog.setImg(product.getImg());
+        productLog.setName(product.getName());
+        productLog.setVoucherType(product.getVoucherType());        
+        productLog.setAliId(member.getAliUserId());
+        productLog.setMemberId(member.getId());
+        productLog.setAppId(product.getAppId());
+        productLog.setPage(product.getPage());
+        productLog.setPickStartDate(now.getTime());
+        productLog.setPickEndDate(now.getTime());
+        productLog.setValidStartDate(now.getTime());
+        productLog.setValidEndDate(now.getTime());
+        productLog.setpId(product.getId());
+        if(VoucherType.revive.equals(product.getVoucherType()))
+        {
+            // 1. 我的券
+            VoucherMember voucherMember = new VoucherMember();
+            voucherMember.setCreateBy(member.getId().toString());
+            voucherMember.setCreateDate(now.getTime());
+            voucherMember.setAliUserId(member.getAliUserId());
+            voucherMember.setDelFlag("0");
+            voucherMember.setMemberId(member.getId());
+            voucherMember.setValidStart(now.getTime());
+            now.add(Calendar.DATE, 30);
+            voucherMember.setValidEnd(now.getTime());
+            voucherMember.setVoucherName("答答答复活卡");
+            voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_CREATE);
+            voucherMember.setVoucherType(VoucherConst.VOUCHER_TYPE_REVIVE);
+            voucherMemberService.insert(voucherMember);
+            msg = "兑换成功，请前往我的优惠券查看";
+        }
+        if(VoucherType.code.equals(product.getVoucherType()))
+        {
+            int coudeCount = 0;
+            int limit = 0;
+            ProductCode productCode = null;
+            EntityWrapper<ProductCode> wrapper = new EntityWrapper<ProductCode>();
+            wrapper.eq("p_id", product.getId());
+            wrapper.eq("status", "0");
+            coudeCount = productCodeService.selectCount(wrapper);
+            if(coudeCount == 0)
+            {
+                return "券已兑完";
+            }
+            Random random = new Random();
+            limit = random.nextInt(coudeCount);
+            wrapper.last(" LIMIT " + limit + ",1 ");
+            productCode = productCodeService.selectOne(wrapper);
+            if("1".equals(productCode.getStatus()))
+            {
+                return "券已兑完";
+            }
+            productCode.setStatus("1");
+            productCode.setMemberId(member.getId());
+            productCode.setAliId(member.getAliUserId());
+            productCodeService.updateById(productCode);
+            productLog.setProductCode(productCode.getProductCode());
+        }
+        if(VoucherType.url.equals(product.getVoucherType()))
+        {
+            productLog.setOutURL(product.getOutURL());
+            msg = "兑换成功，请在打开页面领取优惠券";
+        }
+        
+        productLogService.insert(productLog);
+        /*if (productBean.getId().length() > 2) {
             String param = "productId=" + productBean.getId() + "&userAliId=" + member.getAliUserId();
             System.out.println("给用户发券的参数:" + param);
             //调用给用户发券接口
@@ -181,7 +315,8 @@ public class ProductApi {
                 //发券失败
                 return resultMap.get("msg");
             }
-        }
+        }*/
+        
         //发券成功时......更新已兑换数量+1
         product.setBindingQuantity(product.getBindingQuantity() + 1);
         productService.updateById(product);
@@ -211,9 +346,21 @@ public class ProductApi {
             pointList.setDescrb(product.getBrand());
             pointListService.insert(pointList);
         }
-        return "领券成功,请到支付宝卡包查看!";
+        return msg;
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * 给用户发放实物
      *

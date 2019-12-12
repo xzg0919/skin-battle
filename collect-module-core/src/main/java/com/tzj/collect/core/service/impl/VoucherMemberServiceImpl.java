@@ -1,11 +1,11 @@
 package com.tzj.collect.core.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import com.tzj.collect.common.constant.VoucherConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +15,10 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayMarketingVoucherStockUseRequest;
 import com.alipay.api.response.AlipayMarketingVoucherStockUseResponse;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.common.constant.AlipayConst;
+import com.tzj.collect.common.constant.VoucherConst;
 import com.tzj.collect.core.mapper.VoucherMemberMapper;
 import com.tzj.collect.core.param.admin.VoucherBean;
 import com.tzj.collect.core.service.MemberService;
@@ -404,6 +406,35 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
             bool = this.updateById(voucherMember);
         }
         return  bool;
+    }
+    /**
+     * <p>Created on 2019年12月3日</p>
+     * <p>Description:[使用复活卡]</p>
+     * @author:[杨欢] [yanghuan1937@aliyun.com]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return  
+     */
+    @Override
+    @Transactional
+    public void useRevive(String id)
+    {
+        VoucherMember voucherMember = this.selectById(Long.valueOf(id));
+        voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_USED);
+        this.updateById(voucherMember);
+    }
+    /**
+     * <p>Created on 2019年12月3日</p>
+     * <p>Description:[没用过的复活卡的id]</p>
+     * @author:[杨欢] [yanghuan1937@aliyun.com]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return  
+     */
+    @Override
+    public List<VoucherMember> getReviveIdList(Long memberId)
+    {
+        List<VoucherMember> voucherMemberList =  this.selectList(new EntityWrapper<VoucherMember>().eq("member_id", memberId).eq("voucher_status", 
+                VoucherConst.VOUCHER_STATUS_CREATE).eq("voucher_type",VoucherConst.VOUCHER_TYPE_REVIVE));
+        return voucherMemberList;
     }
 
 }

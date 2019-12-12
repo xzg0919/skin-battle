@@ -13,6 +13,7 @@ package com.tzj.collect.common.constant;
  */
 public class VoucherConst
 {
+    public static String VOUCHER_TYPE_REVIVE = "REVIVE";
     /**
      * 券状态-已领取
      */
