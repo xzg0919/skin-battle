@@ -13,6 +13,8 @@ public interface CompanyCategoryAttrOptionCityMapper extends BaseMapper<CompanyC
 
     List<BusinessCategoryResult> selectComCityCateAttOptPrice(@Param("cityid") String cityid, @Param("companyId") String companyId, @Param("categoryAttrId") String categoryAttrId);
 
-
     AliCategoryAttrOptionBean getCategoryAttrOptionByCityId(@Param("optionId") String optionId, @Param("companyId") String companyId, @Param("cityId") String cityId);
+
+    CompanyCategoryAttrOptionCity getCategoryAttrOptionByCityCompanyId(@Param("optionId")String optionId, @Param("cityId")String cityId,  @Param("companyId") String companyId);
+
 }

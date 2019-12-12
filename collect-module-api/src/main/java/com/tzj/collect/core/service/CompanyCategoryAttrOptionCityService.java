@@ -14,5 +14,7 @@ public interface CompanyCategoryAttrOptionCityService extends IService<CompanyCa
     List<BusinessCategoryResult> selectComCityCateAttOptPrice(String cityid, String companyId, String categoryAttrId);
     @DS("slave")
     AliCategoryAttrOptionBean getCategoryAttrOptionByCityId(String optionId, String companyId, String cityId);
+    @DS("slave")
+    CompanyCategoryAttrOptionCity getCategoryAttrOptionByCityCompanyId(String optionId, String cityId, String companyId);
 
 }

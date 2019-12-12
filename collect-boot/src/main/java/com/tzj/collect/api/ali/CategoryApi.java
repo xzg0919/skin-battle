@@ -343,4 +343,18 @@ public class CategoryApi {
 		String aliUserId = member.getAliUserId();
 		return categoryService.getCategoryNewHouseListByToken(aliUserId);
 	}
+
+	/**
+	 * 小程序计算价格
+	 * @param
+	 * @return
+	 */
+	@Api(name = "category.getPricesAll", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object getPricesAll(CategoryAttrBean categoryAttrBean){
+		Member member = MemberUtils.getMember();
+		return categoryService.getPricesAll(member.getAliUserId(),categoryAttrBean.getCategoryId(),categoryAttrBean.getType(),categoryAttrBean.getCategoryAttrOptionids());
+	}
+
 }

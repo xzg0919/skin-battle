@@ -25,7 +25,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("2088612556927296", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088322039337350", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -69,16 +69,13 @@ public class OrderTest {
 //            CategoryBean categoryBean = new CategoryBean();
 //            categoryBean.setParentId("25");
 //            categoryBean.setCityId("17685");
-                VoucherBean voucherBean = new VoucherBean();
-                voucherBean.setVoucherType("0");
-                voucherBean.setOrderType("bigFurniture");
-                OrderPayParam orderPayParam = new OrderPayParam();
-                orderPayParam.setPrice(new BigDecimal(2));
-                orderPayParam.setOrderId(150440);
-                orderPayParam.setVoucherId("280");
+                CategoryAttrBean categoryAttrBean = new CategoryAttrBean();
+                categoryAttrBean.setCategoryId((long)80);
+                categoryAttrBean.setType("BIGTHING");
+                categoryAttrBean.setCategoryAttrOptionids("2994,2999,3002,3004,3012,3015,3018");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","category.categoryNewHouseListByToken");
+                param.put("name","category.getPricesAll");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
@@ -86,7 +83,7 @@ public class OrderTest {
                 param.put("token",securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",null);
+                param.put("data",categoryAttrBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

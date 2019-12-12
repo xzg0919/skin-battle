@@ -6,6 +6,7 @@ import com.tzj.collect.entity.Category;
 import org.apache.ibatis.annotations.Param;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -55,5 +56,7 @@ public interface CategoryMapper extends BaseMapper<Category>  {
 	List<Category> topListApps(@Param("level") Integer level, @Param("title") Integer title);
 
 	List<Map<String,Object>> getIsOpenCategory(String companyId);
+
+	BigDecimal selectCategoryPriceByCityCompanyId(@Param("categoryId") Long categoryId, @Param("cityId")Integer cityId, @Param("companyId")String companyId);
 	
 }
