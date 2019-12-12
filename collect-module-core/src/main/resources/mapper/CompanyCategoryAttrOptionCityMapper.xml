@@ -3,22 +3,20 @@
 <mapper namespace="com.tzj.collect.core.mapper.CompanyCategoryAttrOptionCityMapper">
 
     <select id="selectComCityCateAttOptPrice" parameterType="String" resultType="com.tzj.collect.core.result.business.BusinessCategoryResult">
-      SELECT
+        SELECT
 			acao.id AS attOptionId,
 			acao.name_ AS attOptionName,
-			sccao.id AS comOptPriceId,
-			sccao.attr_option_price AS comOptPrice,
-			acao.is_special AS isSpecial,
-			sccao.special_price AS specialPrice
+			IF(sccao.id is null,'0',sccao.id) AS comOptPriceId,
+			IF(sccao.attr_option_price is NULL ,acao.price,sccao.attr_option_price) AS comOptPrice,
+			IF(sccao.is_recovery is NULL ,IF(b.is_recovery is NULL,'0',b.is_recovery),sccao.is_recovery) AS isRecovery,
+			IF(sccao.is_special is NULL ,IF(b.is_special is NULL,'0',b.is_special),sccao.is_special) AS isSpecial,
+			IF(sccao.special_price is NULL ,IF(b.special_price is NULL,'0.00',b.special_price),sccao.special_price) AS specialPrice
 		FROM
 			sb_category_attr_option acao
-		LEFT JOIN sb_company_category_attr_option_city sccao ON sccao.category_attr_option_id = acao.id
+		LEFT JOIN (SELECT * FROM sb_category_attr_option_city b WHERE b.city_id = #{cityid}) b ON b.category_attr_option_id = acao.id
+		LEFT JOIN (SELECT * FROM sb_company_category_attr_option_city a WHERE a.company_id = #{companyId} AND a.city_id = #{cityid}) sccao ON sccao.category_attr_option_id = acao.id
 		WHERE
-			acao.del_flag = 0
-        AND acao.category_attr_id =  #{categoryAttrId}
-        AND sccao.del_flag = 0
-        AND sccao.company_id = #{companyId}
-        AND sccao.city_id = #{cityid};
+				acao.category_attr_id =  #{categoryAttrId}
     </select>
 
 	<select id="getCategoryAttrOptionByCityId" parameterType="String" resultType="com.tzj.collect.core.param.ali.AliCategoryAttrOptionBean">

@@ -23,7 +23,7 @@ public interface CategoryAttrService extends IService<CategoryAttr> {
      * @return List<CategoryAttr>
      */
 	@DS("slave")
-	List<CategoryAttr> getCategoryAttrListss(int CategoryId);
+	List<CategoryAttr> getCategoryAttrListss(int CategoryId,String aliUserId,String type);
 
 	 /**
      * 新增/更新 分类属性和分类选项数据

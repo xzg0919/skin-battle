@@ -683,13 +683,6 @@
 					SELECT
 						a.area_id
 					FROM
-						sb_company_stree a
-					WHERE
-						a.company_id = #{companyId}
-				UNION
-					SELECT
-						a.area_id
-					FROM
 						sb_company_street_big a
 					WHERE
 						a.company_id = #{companyId}

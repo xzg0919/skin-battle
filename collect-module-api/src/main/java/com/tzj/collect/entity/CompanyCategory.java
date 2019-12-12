@@ -43,6 +43,8 @@ public class CompanyCategory extends  DataEntity<Long> {
 
 	private BigDecimal adminCommissions;//平台佣金
 
+	private BigDecimal freeCommissions;//平台订单免费时的佣金
+
 	private BigDecimal companyCommissions;//服务商返佣
     
     

@@ -8,13 +8,12 @@
 		SELECT
 			sc.name_,
 			sc.id,
-			IF(scc.price is NULL,sc.price,scc.price) AS price,
+			IF(scc.price is NULL,IF(a.price is NULL,sc.price,a.price),scc.price) AS price,
 			sc.unit
 		FROM
 			sb_company_category_city_name vv
-		LEFT JOIN sb_company_category_city scc ON scc.company_id = vv.company_id
-		AND scc.city_id = vv.city_id
-		AND scc.category_id = vv.category_id
+		LEFT JOIN sb_company_category_city scc ON scc.company_id = vv.company_id AND scc.city_id = vv.city_id AND scc.category_id = vv.category_id
+		LEFT JOIN (SELECT * FROM sb_category_city a WHERE a.city_id = #{cityId} AND a.parent_id = #{parentId} ) a ON a.category_id = vv.category_id
 		LEFT JOIN sb_category sc ON vv.category_id = sc.id
 		WHERE
 				vv.`parent_id` = #{parentId}
@@ -133,8 +132,10 @@
 			a.name_ AS name,
 			a.icon,
 			IF(b.price is NULL,a.price,b.price) AS price,
-			IF(c.admin_commissions is NULL,'0',c.admin_commissions) AS adminCommissions,
-			IF(c.company_commissions is NULL,'0',c.company_commissions) AS companyCommissions
+			IF(b.price is NULL,a.price,b.price) AS price,
+			IF(c.admin_commissions is NULL,a.admin_commissions,c.admin_commissions) AS adminCommissions,
+			IF(c.free_commissions is NULL,a.free_commissions,c.free_commissions) AS freeCommissions,
+			IF(c.company_commissions is NULL,a.company_commissions,c.company_commissions) AS companyCommissions
 		FROM
 			sb_category a
 		LEFT JOIN (SELECT * FROM sb_company_category_city a WHERE a.city_id = #{cityId} AND a.company_id = #{companyId} AND a.parent_id = #{categoryId}) b ON a.id = b.category_id
@@ -149,7 +150,7 @@
 			IF(b.attr_option_price is null,a.price,b.attr_option_price) AS price,
 			if(b.is_special is NULL,'0',b.is_special) AS isSpecial,
 			if(b.is_recovery is NULL,'0',b.is_recovery) AS isRecovery,
-			if(b.special_price is NULL,'0',b.special_price) AS specialPrice
+			if(b.special_price is NULL,a.special_price,b.special_price) AS specialPrice
 		FROM
 			sb_category_attr_option a
 		LEFT JOIN ( SELECT * FROM sb_company_category_attr_option_city a WHERE a.city_id = #{cityId} AND a.company_id = #{companyId}) b ON a.id = b.category_attr_option_id

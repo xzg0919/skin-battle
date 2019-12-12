@@ -36,19 +36,35 @@
 	AND b.del_flag = 0
     </select>
     <select id="getCategoryAttrOptionLists" parameterType="Long" resultType="com.tzj.collect.entity.CategoryAttrOption">
-      SELECT 
-	a.id AS id, 
-	a.name_ AS `name`, 
-	a.sort_ AS sort, 
-	a.price AS price,
-	a.category_attr_id AS categoryAttrId, 
-	a.is_special AS isSpecial 
-	FROM 
-		sb_category_attr_option a 
-	WHERE 
-	 a.category_attr_id = #{id} 
+  	SELECT
+		a.id AS id,
+		a.name_ AS `name`,
+		a.sort_ AS sort,
+		a.price AS price,
+		a.category_attr_id AS categoryAttrId,
+		a.is_special AS isSpecial
+	FROM
+		sb_category_attr_option a
+	WHERE
+	 a.category_attr_id = #{id}
 	AND a.del_flag = 0
     </select>
+	<select id="getOptionByCategoryAttrIdByCompanyId" parameterType="Object" resultType="com.tzj.collect.entity.CategoryAttrOption">
+		SELECT
+			a.id AS id,
+			a.name_ AS `name`,
+			a.sort_ AS sort,
+			a.price AS price,
+			a.category_attr_id AS categoryAttrId,
+			IF(b.is_recovery is NULL,IF(c.is_recovery IS NULL,'0',c.is_recovery),b.is_recovery) as isRecovery
+		FROM
+			sb_category_attr_option a
+		LEFT JOIN (SELECT * FROM sb_company_category_attr_option_city a WHERE a.company_id = #{companyId} AND a.city_id = #{cityId}) b ON a.id = b.category_attr_option_id
+		LEFT JOIN (SELECT * FROM sb_category_attr_option_city a WHERE  a.city_id = #{cityId}) c ON a.id = c.category_attr_option_id
+		WHERE
+		 a.category_attr_id = #{categoryAttrId}
+		AND a.del_flag = 0
+	</select>
     
     <select id="getDigitName" parameterType="int" resultType="com.tzj.collect.entity.CategoryAttrOption">
 	   <!--  SELECT sca.id,sca.name_  FROM sb_category_attr sca 
