@@ -18,6 +18,10 @@ import java.util.Map;
 */
 public enum VoucherType implements BaseEnum<VoucherType, String>
 {
+    
+    revive("revive", "复活卡"),
+    code("code", "券码券"),
+    url("url", "外部链接券"),
     /**
      * 
      */

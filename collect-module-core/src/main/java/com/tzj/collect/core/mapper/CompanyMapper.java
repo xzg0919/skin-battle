@@ -72,4 +72,6 @@ public interface CompanyMapper extends BaseMapper<Company>{
 	Integer getAdminCompanyCount(@Param("companyName") String companyName, @Param("title") String title);
 
 	List<Long> getStreetNumByTableName(@Param("tableName")String tableName);
+
+	List<Map<String, Object>> otherAreaLists(@Param("tableName")String tableName, @Param("areaId")String areaId);
 }

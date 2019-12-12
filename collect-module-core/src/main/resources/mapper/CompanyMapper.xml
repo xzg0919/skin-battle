@@ -277,6 +277,35 @@
 		ORDER BY
 			a.name_;
 	</select>
+	<select id="otherAreaLists" resultType="Map" parameterType="String">
+		SELECT
+			saaPri.area_name AS cityName,
+			saa.area_name AS areaName,
+			scsaInfo.streetName
+		FROM
+			sb_area saa
+		INNER JOIN (
+			SELECT
+				saa.area_name AS streetName,
+				saa.id AS streetId,
+				saa.parent_id AS cityId
+			FROM
+				sb_area saa
+			WHERE
+				saa.del_flag = 0
+			AND saa.parent_id = #{areaId}
+			AND saa.id NOT IN (
+				SELECT
+					scsa.street_id
+				FROM
+					${tableName} scsa
+				WHERE
+					scsa.del_flag = 0
+				AND scsa.area_id = #{areaId}
+			)
+		) scsaInfo ON saa.id = scsaInfo.cityId
+		INNER JOIN sb_area saaPri ON saaPri.id = saa.parent_id
+	</select>
 	 
 	 <resultMap type="com.tzj.collect.entity.Company" id="companyResultMap">
         <id property="id" column="id" />  

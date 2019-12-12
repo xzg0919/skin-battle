@@ -983,32 +983,49 @@ public class OutExcelController {
     @RequestMapping("/admin/other/areas")
     public void adminOtherAreas(HttpServletResponse response, OrderBean orderBean){
         String title = orderBean.getTitle();
-        String city = orderBean.getCityId();
-        Integer street = orderBean.getStreetId();
-        if (StringUtils.isEmpty(title) || StringUtils.isEmpty(city) || street <= 0){
+        String areaId = orderBean.getAreaId()+"";
+        String tableName = null;
+        String type = null;
+        if (StringUtils.isEmpty(title) || StringUtils.isEmpty(areaId)){
             throw new ApiException("参数错误");
+        }else {
+            if (Order.TitleType.HOUSEHOLD.getValue().toString().equals(title)){
+                type = "生活垃圾";
+                tableName = "sb_company_street_house";
+            }else if (Order.TitleType.BIGTHING.getValue().toString().equals(title)){
+                type = "大件垃圾";
+                tableName = "sb_company_street_big";
+            }else if (Order.TitleType.DIGITAL.getValue().toString().equals(title)){
+                type = "废弃家电";
+                tableName = "sb_company_street_appliance";
+            }else if (Order.TitleType.FIVEKG.getValue().toString().equals(title)){
+                type = "五公斤";
+                tableName = "sb_company_street";
+            }else {
+                throw new ApiException("参数错误");
+            }
         }
         ExcelData data = new ExcelData();
-        data.setName("某个时间段多次下单统计");
+        data.setName("未覆盖区域");
         //添加表头
         List<String> titles = new ArrayList<>();
         titles.add("回收类型");
-        titles.add("省");
-        titles.add("市");
-        titles.add("区");
+        titles.add("城市");
+        titles.add("行政区");
         titles.add("街道");
+        data.setTitles(titles);
+        List<Map<String, Object>> otherAreaLists = companyService.otherAreaLists(tableName, areaId);
         //添加列
         List<List<Object>> rows = new ArrayList();
-        List<Object> row =  new ArrayList();
-//        for(int i=0,j = companyNameList.size(); i<j;i++){
-//            row= new ArrayList();
-//            row.add(companyNameList.get(i).getName());
-//            row.add(recyclersList.get(i));
-//            row.add(streetCountList.get(i));
-//            row.add(orderList.get(i));
-//            row.add(orderCompleteList.get(i));
-//            rows.add(row);
-//        }
+        List<Object> row =  null;
+        for(int i=0,j = otherAreaLists.size(); i<j;i++){
+            row= new ArrayList();
+            row.add(type);
+            row.add(otherAreaLists.get(i).get("cityName"));
+            row.add(otherAreaLists.get(i).get("areaName"));
+            row.add(otherAreaLists.get(i).get("streetName"));
+            rows.add(row);
+        }
         data.setRows(rows);
         SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         String fileName=fdate.format(new Date())+".xlsx";

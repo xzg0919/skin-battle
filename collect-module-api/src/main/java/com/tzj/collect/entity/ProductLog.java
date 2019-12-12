@@ -11,21 +11,28 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.validator.constraints.Length;
 
 /**
- * Created on 2018-08-08
- * <p>Description: [商品表Entity]</p>
+ * 
+ * <p>Created on 2019年12月2日</p>
+ * <p>Title:       [收呗]_[]_[]</p>
+ * <p>Description: [商品领取记录表]</p>
  * <p>Copyright:   Copyright (c) 2017</p>
  * <p>Company:     上海挺之军信息科技有限公司 </p>
  * <p>Department:  研发部</p>
- * @author         [wangcan]
+ * @author         [杨欢][yanghuan1937@aliyun.com]
  * @version        1.0
  */
-@TableName("sb_product")
-public class Product extends DataEntity<String>
+@TableName("sb_product_log")
+public class ProductLog extends DataEntity<Long>
 {
-	/**
-     *  商品类型
+    /**
+     * <p>Description:[]</p>
      */
-    private String id;
+    private static final long serialVersionUID = -3562291121244854084L;
+
+    /**
+     *  商品id
+     */
+    private Long id;
 
     /**
      *  商品类型
@@ -170,7 +177,7 @@ public class Product extends DataEntity<String>
     /**
      * 用于查询时间段
      */
-    @TableField(exist=false)
+    @TableField(exist = false)
     private Date now;
 
     /**
@@ -192,67 +199,87 @@ public class Product extends DataEntity<String>
      * 行业分类
      */
     private String shopCategory;
-    
+
     /**
      * 用于查询的券类型
      */
-    @TableField(exist=false)
+    @TableField(exist = false)
     private VoucherType[] vTypeStr;
 
     /**
      * 用于查询的券类别
      */
-    @TableField(exist=false)
+    @TableField(exist = false)
     private ProductType[] pTypeStr;
 
     /**
      * 用于查询的是否上架
      */
-    @TableField(exist=false)
+    @TableField(exist = false)
     private String[] marketableStr;
-    
+
     /**
      * 门店地址
      */
     private String address;
+
     /**
      * 预售商品1:是
      */
     private String preSell;
+
     /**
      * 实际开始领取日期
      */
     private Date realPickupDate;
+
     /**
      * 外部券URL
      */
     @TableField(value = "outURL")
-    private String  outURL;
-    
+    private String outURL;
+
     /**
      * 绿账商家主键
      */
-    private String  greenMerchantId;
+    private String greenMerchantId;
+
     /**
      * 归属(家乐福等等)
      */
     private String belong;
-    
-    
+
     /**
     * @Fields field:field:【组合券张数】
     */
     private Integer combinationCount;
-    
+
     /**
-     * 商品类型
+     * 商品类型0 优惠券,1 物品
      */
-    private String goodsType;//0 优惠券,1 物品
+    private String goodsType;
 
     /**
      * 大图片
      */
-    private String bigImg;//0大图片
+    private String bigImg;
+    /**
+     * 券码
+     */
+    private String productCode;
+    /**
+     * 会员id
+     */
+    private Long memberId;
+    /**
+     * 会员的阿里id
+     */
+    private String aliId;
+
+    /**
+     * 商品id
+     */
+    private String pId;
     /**
      * 第三方appid
      */
@@ -298,24 +325,100 @@ public class Product extends DataEntity<String>
     {
         this.page = page;
     }
+    /**
+     * <p>Description:[获取商品id]</p>
+     * @return Integer pId.
+     */
+    public String getpId()
+    {
+        return pId;
+    }
 
-    public String getBigImg() {
+    /**
+     * <p>Description:[设置商品id]</p>
+     * @param Integer pId 
+     */
+    public void setpId(String pId)
+    {
+        this.pId = pId;
+    }
+
+    /**
+     * <p>Description:[获取券码]</p>
+     * @return String productCode.
+     */
+    public String getProductCode()
+    {
+        return productCode;
+    }
+
+    /**
+     * <p>Description:[设置券码]</p>
+     * @param String productCode 
+     */
+    public void setProductCode(String productCode)
+    {
+        this.productCode = productCode;
+    }
+
+    /**
+     * <p>Description:[获取会员id]</p>
+     * @return Integer memberId.
+     */
+    public Long getMemberId()
+    {
+        return memberId;
+    }
+
+    /**
+     * <p>Description:[设置会员id]</p>
+     * @param Integer memberId 
+     */
+    public void setMemberId(Long memberId)
+    {
+        this.memberId = memberId;
+    }
+
+    /**
+     * <p>Description:[获取会员的阿里id]</p>
+     * @return String aliId.
+     */
+    public String getAliId()
+    {
+        return aliId;
+    }
+
+    /**
+     * <p>Description:[设置会员的阿里id]</p>
+     * @param String aliId 
+     */
+    public void setAliId(String aliId)
+    {
+        this.aliId = aliId;
+    }
+
+    
+    public String getBigImg()
+    {
         return bigImg;
     }
 
-    public void setBigImg(String bigImg) {
+    public void setBigImg(String bigImg)
+    {
         this.bigImg = bigImg;
     }
 
-    public String getGoodsType() {
-		return goodsType;
-	}
+    public String getGoodsType()
+    {
+        return goodsType;
+    }
 
-	public void setGoodsType(String goodsType) {
-		this.goodsType = goodsType;
-	}
+    public void setGoodsType(String goodsType)
+    {
+        this.goodsType = goodsType;
+    }
 
-	/**
+    /**
      * <p>Description:[获取归属]</p>
      * @return String belong.
      */
@@ -391,7 +494,7 @@ public class Product extends DataEntity<String>
      * <p>Discription:[构造器方法描述]</p>
      * @coustructor 方法.
      */
-    public Product()
+    public ProductLog()
     {
         super();
     }
@@ -806,8 +909,8 @@ public class Product extends DataEntity<String>
      */
     public Object getPickStartDate()
     {
-    	
-        return new SimpleDateFormat("yyyy-MM-dd").format(pickStartDate)+" 00:00:01";
+
+        return new SimpleDateFormat("yyyy-MM-dd").format(pickStartDate) + " 00:00:01";
     }
 
     /**
@@ -826,7 +929,7 @@ public class Product extends DataEntity<String>
      */
     public Object getPickEndDate()
     {
-        return new SimpleDateFormat("yyyy-MM-dd").format(pickEndDate)+" 23:59:59";
+        return new SimpleDateFormat("yyyy-MM-dd").format(pickEndDate) + " 23:59:59";
     }
 
     /**
@@ -1065,110 +1168,134 @@ public class Product extends DataEntity<String>
         this.now = now;
     }
 
-    public String getOutURL() {
-		return outURL;
-	}
+    public String getOutURL()
+    {
+        return outURL;
+    }
 
-	public void setOutURL(String outURL) {
-		this.outURL = outURL;
-	}
+    public void setOutURL(String outURL)
+    {
+        this.outURL = outURL;
+    }
 
-	public String getGreenMerchantId() {
-		return greenMerchantId;
-	}
+    public String getGreenMerchantId()
+    {
+        return greenMerchantId;
+    }
 
-	public void setGreenMerchantId(String greenMerchantId) {
-		this.greenMerchantId = greenMerchantId;
-	}
+    public void setGreenMerchantId(String greenMerchantId)
+    {
+        this.greenMerchantId = greenMerchantId;
+    }
+
+    //	/**
+    //     *  Created on 2017年3月26日 
+    //     * <p>Discription:[用于页面展示的券结束日期]</p>
+    //     * @author:[杨欢][yanghuan1937@aliyun.com] 
+    //     * @update:[日期YYYY-MM-DD] [更改人姓名]
+    //     * @return String
+    //     */
+    //    @Transient
+    //    @JsonProperty
+    //    public String getPageEndDate()
+    //    {
+    //        String pageEndDate = null;
+    //        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
+    //        if (ValidType.absolute.equals(this.validType))
+    //        {
+    //            pageEndDate = formatter.format(this.validEndDate);
+    //        }
+    //        else
+    //        {
+    //            Calendar now = Calendar.getInstance();
+    //            now.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH) + Integer.valueOf(this.validToDay));
+    //            pageEndDate = formatter.format(now.getTime());
+    //        }
+    //        return pageEndDate;
+    //    }
+    //
+    //    /**
+    //     *  Created on 2017年3月26日 
+    //     * <p>Discription:[用于页面展示的券开始日期]</p>
+    //     * @author:[杨欢][yanghuan1937@aliyun.com] 
+    //     * @update:[日期YYYY-MM-DD] [更改人姓名]
+    //     * @return String
+    //     */
+    //    @Transient
+    //    @JsonProperty
+    //    public String getPageStartDate()
+    //    {
+    //        String pageEndDate = null;
+    //        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
+    //        if (ValidType.absolute.equals(this.validType))
+    //        {
+    //            pageEndDate = formatter.format(this.validStartDate);
+    //        }
+    //        return pageEndDate;
+    //    }
+    //
+    //    /**
+    //     *  Created on 2017年3月26日 
+    //     * <p>Discription:[页面的温馨提示]</p>
+    //     * @author:[杨欢][yanghuan1937@aliyun.com] 
+    //     * @update:[日期YYYY-MM-DD] [更改人姓名]
+    //     * @return String
+    //     */
+    //    @Transient
+    //    @JsonProperty
+    //    public String getPageContent()
+    //    {
+    //        StringBuffer pageContent = new StringBuffer();
+    //        String[] tmpContentp = null;
+    //        if (!StringUtils.isBlank(this.content))
+    //        {
+    //            tmpContentp = this.content.split("\r\n");
+    //            for (int i = 0, j = tmpContentp.length; i < j; i++)
+    //            {
+    //                pageContent.append("<li>");
+    //                pageContent.append(tmpContentp[i]);
+    //                pageContent.append("</li>");
+    //            }
+    //        }
+    //        return pageContent.toString();
+    //    }
+
+    public Integer getCombinationCount()
+    {
+        return combinationCount;
+    }
+
+    public void setCombinationCount(Integer combinationCount)
+    {
+        this.combinationCount = combinationCount;
+    }
+
+    /**
+     * <p>Created on 2019年12月11日</p>
+     * <p>Description:[]</p>
+     * @author:[杨欢] [yanghuan1937@aliyun.com]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return  
+     */
+    @Override
+    public Long getId()
+    {
+        return this.id;
+    }
+
+    /**
+     * <p>Created on 2019年12月11日</p>
+     * <p>Description:[]</p>
+     * @author:[杨欢] [yanghuan1937@aliyun.com]
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return  
+     */
+    @Override
+    public void setId(Long id)
+    {
+        this.id = id;
+        
+    }
 
 
-//	/**
-//     *  Created on 2017年3月26日 
-//     * <p>Discription:[用于页面展示的券结束日期]</p>
-//     * @author:[杨欢][yanghuan1937@aliyun.com] 
-//     * @update:[日期YYYY-MM-DD] [更改人姓名]
-//     * @return String
-//     */
-//    @Transient
-//    @JsonProperty
-//    public String getPageEndDate()
-//    {
-//        String pageEndDate = null;
-//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
-//        if (ValidType.absolute.equals(this.validType))
-//        {
-//            pageEndDate = formatter.format(this.validEndDate);
-//        }
-//        else
-//        {
-//            Calendar now = Calendar.getInstance();
-//            now.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH) + Integer.valueOf(this.validToDay));
-//            pageEndDate = formatter.format(now.getTime());
-//        }
-//        return pageEndDate;
-//    }
-//
-//    /**
-//     *  Created on 2017年3月26日 
-//     * <p>Discription:[用于页面展示的券开始日期]</p>
-//     * @author:[杨欢][yanghuan1937@aliyun.com] 
-//     * @update:[日期YYYY-MM-DD] [更改人姓名]
-//     * @return String
-//     */
-//    @Transient
-//    @JsonProperty
-//    public String getPageStartDate()
-//    {
-//        String pageEndDate = null;
-//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
-//        if (ValidType.absolute.equals(this.validType))
-//        {
-//            pageEndDate = formatter.format(this.validStartDate);
-//        }
-//        return pageEndDate;
-//    }
-//
-//    /**
-//     *  Created on 2017年3月26日 
-//     * <p>Discription:[页面的温馨提示]</p>
-//     * @author:[杨欢][yanghuan1937@aliyun.com] 
-//     * @update:[日期YYYY-MM-DD] [更改人姓名]
-//     * @return String
-//     */
-//    @Transient
-//    @JsonProperty
-//    public String getPageContent()
-//    {
-//        StringBuffer pageContent = new StringBuffer();
-//        String[] tmpContentp = null;
-//        if (!StringUtils.isBlank(this.content))
-//        {
-//            tmpContentp = this.content.split("\r\n");
-//            for (int i = 0, j = tmpContentp.length; i < j; i++)
-//            {
-//                pageContent.append("<li>");
-//                pageContent.append(tmpContentp[i]);
-//                pageContent.append("</li>");
-//            }
-//        }
-//        return pageContent.toString();
-//    }
-
-	public Integer getCombinationCount() {
-		return combinationCount;
-	}
-
-	public void setCombinationCount(Integer combinationCount) {
-		this.combinationCount = combinationCount;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-    
-    
 }

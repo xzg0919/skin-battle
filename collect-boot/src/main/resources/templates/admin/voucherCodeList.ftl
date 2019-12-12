@@ -60,7 +60,7 @@
 </head>
 <body>
     <div class="content">
-        <button class="addButton">新增</button>
+        <button class="addButton" >新增</button>
         <table class="default-table">  
             <tr>  
                 <th>序号</th>  
