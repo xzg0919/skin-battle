@@ -39,6 +39,19 @@
 		AND b.del_flag = 0
 		AND b.city_id = #{cityId}
 	</select>
+	<select id="getCategoryAttrOptionByCityCompanyId" parameterType="String" resultType="com.tzj.collect.entity.CompanyCategoryAttrOptionCity">
+		SELECT
+			a.id,
+			IF(c.is_special is NULL,IF(b.is_special is NULL,a.is_special,b.is_special),c.is_special) AS isSpecial,
+			IF(c.special_price is NULL,IF(b.special_price is NULL,a.special_price,b.special_price),c.special_price) AS specialPrice,
+			IF(c.attr_option_price is NULL,IF(b.attr_option_price is NULL,a.price,b.attr_option_price),c.attr_option_price) AS attrOptionPrice
+		FROM
+			sb_category_attr_option a
+		LEFT JOIN (SELECT * FROM sb_category_attr_option_city WHERE city_id = #{cityId} AND category_attr_option_id = #{optionId}) b ON a.id = b.category_attr_option_id
+		LEFT JOIN (SELECT * FROM sb_company_category_attr_option_city WHERE company_id = #{companyId} AND city_id = #{cityId} AND category_attr_option_id = #{optionId}) c ON a.id = c.category_attr_option_id
+		WHERE
+			a.id = #{optionId}
+	</select>
 
 
 </mapper>

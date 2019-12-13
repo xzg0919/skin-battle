@@ -135,10 +135,7 @@
 			b.*
 		FROM
 			sb_company_category_city_name a
-		INNER JOIN sb_company_category c ON a.company_id = c.company_id AND a.category_id = c.category_id
 		INNER JOIN sb_category b ON a.parent_id = b.id
-		LEFT JOIN sb_company_category_city cc ON a.company_id = cc.company_id AND a.city_id = cc.city_id AND a.category_id = cc.category_id
-		LEFT JOIN sb_company_category d ON a.company_id = d.company_id AND a.category_id = d.category_id
 		WHERE
 			a.company_id = #{companyId}
 		AND a.city_id = #{cityId}
@@ -155,7 +152,7 @@
 			b.code_,
 			b.level_,
 			b.icon,
-			if(c.id is NOT null,c.price,d.price) AS price,
+			if(c.price is NOT null,c.price,if(d.price is null,b.price,d.price)) AS price,
 			b.market_price,
 			b.unit,
 			b.rec_notes,
@@ -166,10 +163,9 @@
 			b.icon_pic
 		FROM
 			sb_company_category_city_name a
-		INNER JOIN sb_category b ON a.category_id = b.id
-		INNER JOIN sb_company_category cc ON a.company_id = cc.company_id AND a.category_id = cc.category_id
+		LEFT JOIN sb_category b ON a.category_id = b.id
 		LEFT JOIN sb_company_category_city c ON a.company_id = c.company_id AND a.city_id = c.city_id AND a.category_id = c.category_id
-		LEFT JOIN sb_company_category d ON a.company_id = d.company_id AND a.category_id = d.category_id
+		LEFT JOIN sb_category_city d ON d.city_id = a.city_id AND a.category_id = d.category_id
 		WHERE
 			a.company_id = #{companyId}
 		AND a.city_id = #{cityId}

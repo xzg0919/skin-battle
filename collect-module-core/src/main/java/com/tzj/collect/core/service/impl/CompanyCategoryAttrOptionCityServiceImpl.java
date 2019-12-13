@@ -29,4 +29,8 @@ public class CompanyCategoryAttrOptionCityServiceImpl extends ServiceImpl<Compan
     public AliCategoryAttrOptionBean getCategoryAttrOptionByCityId(String optionId, String companyId, String cityId) {
         return companyCategoryAttrOptionCityMapper.getCategoryAttrOptionByCityId(optionId,companyId,cityId);
     }
+    @Override
+    public CompanyCategoryAttrOptionCity getCategoryAttrOptionByCityCompanyId(String optionId, String cityId, String companyId){
+        return companyCategoryAttrOptionCityMapper.getCategoryAttrOptionByCityCompanyId(optionId,cityId,companyId);
+    }
 }

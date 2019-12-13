@@ -73,6 +73,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     private CompanyCategoryCityNameService companyCategoryCityNameService;
     @Autowired
     private OrderItemAchService orderItemAchService;
+    @Autowired
+    private  CompanyCityRatioService companyCityRatioService;
 
     /**
      * 获取一级类的商品
@@ -487,6 +489,59 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             }
         }
         return price;
+    }
+    @Override
+    @Transactional
+    public BigDecimal getPricesAll(String aliUserId, long categoryId, String type, String categoryAttrOptionIds){
+        //所有的分类Id
+        System.out.println("预估价格的Ids ：" + categoryAttrOptionIds);
+        //获取当前用户的默认地址
+        MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
+        System.out.println("memberAddressId 是：" + memberAddress.getId() + "分类Id：" + categoryId + "预估价格的Ids ：" + categoryAttrOptionIds);
+        if (memberAddress == null) {
+            throw new com.tzj.module.easyopen.exception.ApiException("暂未添加回收地址");
+        }
+        //根据分类Id查询父类分类id
+        Category category = this.selectById(categoryId);
+        String companyId = "";
+        final BigDecimal[] price = {new BigDecimal(1)};
+        if ("DIGITAL".equals(type)) {
+            //根据小区Id，分类id和街道id 查询相关企业
+            companyId = companyStreetApplianceService.selectStreetApplianceCompanyIdByCategoryId(category.getParentId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
+            if (StringUtils.isBlank(companyId)) {
+                throw new com.tzj.module.easyopen.exception.ApiException("该区域暂无服务: memberAddressId:" + memberAddress.getId() + "---分类Id：" + category.getParentId() + "--------街道Id：" + memberAddress.getStreetId() + "-----小区Id： " + memberAddress.getCommunityId());
+            }
+            price[0] = categoryMapper.selectCategoryPriceByCityCompanyId(categoryId, memberAddress.getCityId(), companyId);
+        } else if ("BIGTHING".equals(type)) {
+            Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyIdByCategoryId(category.getParentId(), memberAddress.getStreetId());
+            if (null == streetBigCompanyId) {
+                throw new com.tzj.module.easyopen.exception.ApiException("该区域暂无服务");
+            }
+            companyId = streetBigCompanyId + "";
+        }
+        //获取所有分类属性选项Id的集合
+        String[] OptionIds = categoryAttrOptionIds.split(",");
+        List<BigDecimal> specialPriceList = new ArrayList<>();
+        String finalCompanyId = companyId;
+        Arrays.stream(OptionIds).forEach(optionId -> {
+            CompanyCategoryAttrOptionCity companyCategoryAttrOptionCity = companyCategoryAttrOptionCityService.getCategoryAttrOptionByCityCompanyId(optionId, memberAddress.getCityId().toString(), finalCompanyId);
+            if ("DIGITAL".equals(type)) {
+                if ("1".equals(companyCategoryAttrOptionCity.getIsSpecial())){
+                    specialPriceList.add(companyCategoryAttrOptionCity.getSpecialPrice());
+                }
+                price[0] = price[0].add(companyCategoryAttrOptionCity.getAttrOptionPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+            } else if ("BIGTHING".equals(type)) {
+                price[0] = price[0].multiply(companyCategoryAttrOptionCity.getAttrOptionPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+            }
+        });
+        //将取到的特殊价格从小到大排序
+        Collections.sort(specialPriceList);
+        if (!specialPriceList.isEmpty()) {
+            //取得最小的特殊价格
+            return specialPriceList.get(0).setScale(2, BigDecimal.ROUND_HALF_UP);
+        }
+        BigDecimal cityRatio = companyCityRatioService.getCityRatioByCompanyCityId(memberAddress.getCityId(), finalCompanyId);
+        return price[0].multiply(cityRatio).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     @Override

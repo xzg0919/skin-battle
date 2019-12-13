@@ -192,7 +192,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Map<String, Object> saveOrder(OrderBean orderbean) {
         //查询价格
-        BigDecimal price = categoryService.getPrice(orderbean.getAliUserId(), orderbean.getCategoryId(), "DIGITAL", orderbean.getOrderItemBean().getCategoryAttrOppIds());
+        BigDecimal price = categoryService.getPricesAll(orderbean.getAliUserId(), orderbean.getCategoryId(), "DIGITAL", orderbean.getOrderItemBean().getCategoryAttrOppIds());
         Map<String, Object> resultMap = new HashMap<>();
         boolean flag = false;
         //获取分类的所有父类编号
@@ -2776,7 +2776,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public Map<String,Object> saveBigThingOrder(OrderBean orderbean) throws com.taobao.api.ApiException{
 		//查询价格
-		BigDecimal price = categoryService.getPrice(orderbean.getAliUserId(),orderbean.getCategoryId(),"BIGTHING",orderbean.getOrderItemBean().getCategoryAttrOppIds());
+		BigDecimal price = categoryService.getPricesAll(orderbean.getAliUserId(),orderbean.getCategoryId(),"BIGTHING",orderbean.getOrderItemBean().getCategoryAttrOppIds());
 		Map<String,Object> resultMap = new HashMap<>();
 		//获取分类的所有父类编号
 		Category category =  categoryService.selectById(orderbean.getCategoryId());

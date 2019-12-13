@@ -97,6 +97,15 @@
 			a.title
 
 	</select>
+	<select id="selectCategoryPriceByCityCompanyId" parameterType="Object" resultType="BigDecimal">
+		SELECT
+			IF(c.price is NULL,IF(b.price is NULL,a.market_price,b.price),c.price) AS price
+		FROM
+			sb_category a
+		LEFT JOIN ( SELECT * FROM sb_category_city WHERE city_id = #{cityId} AND category_id = #{categoryId} ) b ON a.id = b.category_id
+		LEFT JOIN ( SELECT * FROM sb_company_category_city WHERE company_id = #{companyId} AND city_id = #{cityId} AND category_id = #{categoryId} ) c ON a.id = c.category_id
+			WHERE a.id = #{categoryId}
+	</select>
 	 
     
     <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->  

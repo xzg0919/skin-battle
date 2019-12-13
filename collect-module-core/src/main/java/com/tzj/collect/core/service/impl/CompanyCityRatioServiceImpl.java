@@ -6,6 +6,7 @@ import com.tzj.collect.core.mapper.CompanyCityRatioMapper;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.service.CompanyCityRatioService;
 import com.tzj.collect.entity.CompanyCityRatio;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,8 @@ import java.util.Map;
 @Service
 public class CompanyCityRatioServiceImpl extends ServiceImpl<CompanyCityRatioMapper, CompanyCityRatio> implements CompanyCityRatioService {
 
+    @Autowired
+    private CompanyCityRatioMapper companyCityRatioMapper;
 
     @Override
     @Transactional
@@ -31,7 +34,10 @@ public class CompanyCityRatioServiceImpl extends ServiceImpl<CompanyCityRatioMap
         return "操作成功";
     }
 
-
+    @Override
+    public BigDecimal getCityRatioByCompanyCityId( Integer cityId,String companyId){
+        return companyCityRatioMapper.getCityRatioByCompanyCityId(cityId,companyId);
+    }
 
 
 
