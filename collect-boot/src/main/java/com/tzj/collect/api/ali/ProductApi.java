@@ -233,6 +233,17 @@ public class ProductApi {
                 return "您的绿色能量不足";
             }
         }
+        if(!"0".equals(product.getPickLimitTotal()))
+        {
+            // 验证兑换次数
+            EntityWrapper<ProductLog> wrapper = new EntityWrapper<ProductLog>();
+            wrapper.eq("p_id", product.getId());
+            wrapper.eq("member_id", member.getId());
+            if(productLogService.selectCount(wrapper) >= Integer.parseInt(product.getPickLimitTotal()))
+            {
+                return "每个账号限领【" + product.getPickLimitTotal() + "】张";
+            }
+        }
         // 2. 领取记录
         ProductLog productLog = new ProductLog();
         productLog.setCreateBy(member.getId().toString());
@@ -295,7 +306,7 @@ public class ProductApi {
             productCode.setAliId(member.getAliUserId());
             productCodeService.updateById(productCode);
             productLog.setProductCode(productCode.getProductCode());
-            msg = productCode.getProductCode();
+            msg = msg + productCode.getProductCode();
         }
         if(VoucherType.url.equals(product.getVoucherType()))
         {

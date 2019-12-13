@@ -16,5 +16,5 @@ import com.tzj.collect.entity.ProductLog;
  */
 public interface ProductLogService extends IService<ProductLog>
 {
-
+    
 }
