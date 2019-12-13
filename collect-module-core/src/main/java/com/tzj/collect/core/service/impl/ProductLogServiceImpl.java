@@ -23,5 +23,5 @@ import com.tzj.collect.entity.ProductLog;
 @Transactional(readOnly = true)
 public class ProductLogServiceImpl extends ServiceImpl<ProductLogMapper, ProductLog> implements ProductLogService
 {
-
+	
 }
