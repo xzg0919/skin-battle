@@ -1122,6 +1122,9 @@
 		<if test="orderBean.tel != null and orderBean.tel != '' ">
 			AND so.tel like #{orderBean.tel}
 		</if>
+		<if test="orderBean.orderNo != null and orderBean.orderNo != '' ">
+			AND so.order_no like CONCAT('%',#{orderBean.orderNo},'%')
+		</if>
 		UNION
 			SELECT
 				so.id AS orderId,
@@ -1163,7 +1166,9 @@
 			<if test="orderBean.tel != null and orderBean.tel != '' ">
 				AND so.tel like #{orderBean.tel}
 			</if>
-
+			<if test="orderBean.orderNo != null and orderBean.orderNo != '' ">
+				AND so.order_no like CONCAT('%',#{orderBean.orderNo},'%')
+			</if>
 			) countALL
 		WHERE
 			1 = 1;
@@ -1214,6 +1219,9 @@
 				<if test="orderBean.tel != null and orderBean.tel != '' ">
 					AND so.tel like #{orderBean.tel}
 				</if>
+				<if test="orderBean.orderNo != null and orderBean.orderNo != '' ">
+					AND so.order_no like CONCAT('%',#{orderBean.orderNo},'%')
+				</if>
 			UNION
 				SELECT
 					so.id AS orderId,
@@ -1256,6 +1264,9 @@
 				AND so.recycler_id = #{orderBean.recyclerId}
 				<if test="orderBean.tel != null and orderBean.tel != '' ">
 					AND so.tel like #{orderBean.tel}
+				</if>
+				<if test="orderBean.orderNo != null and orderBean.orderNo != '' ">
+					AND so.order_no like CONCAT('%',#{orderBean.orderNo},'%')
 				</if>
 			) countALL
 		WHERE

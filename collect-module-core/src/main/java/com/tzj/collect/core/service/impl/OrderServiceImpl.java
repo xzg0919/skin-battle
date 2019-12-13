@@ -3253,6 +3253,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 	@Override
     public List<Map<String, Object>> getOutComplaintOrderList(OrderBean orderBean){
+	    if(StringUtils.isBlank(orderBean.getStartTime())&&StringUtils.isBlank(orderBean.getEndTime())){
+            if (StringUtils.isBlank(orderBean.getComplaintType())&&null==orderBean.getCompanyId()&&StringUtils.isBlank(orderBean.getTitle())&&StringUtils.isBlank(orderBean.getStatus())&&StringUtils.isBlank(orderBean.getTel())&&StringUtils.isBlank(orderBean.getOrderNo())&&StringUtils.isBlank(orderBean.getLinkName())){
+                throw new ApiException("请输入查询条件");
+            }
+        }
 		return orderMapper.getOutComplaintOrderList(orderBean.getComplaintType(),orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
 	}
 
