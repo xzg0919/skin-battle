@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class AdminIotErrorBean {
 
+    private String companyId;
+
     private String linkName;
 
     private String mobile;

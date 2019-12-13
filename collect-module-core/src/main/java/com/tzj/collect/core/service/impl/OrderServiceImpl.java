@@ -30,6 +30,7 @@ import com.tzj.collect.core.param.app.ScoreAppBean;
 import com.tzj.collect.core.param.app.TimeBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.business.CompanyBean;
+import com.tzj.collect.core.param.iot.AdminIotErrorBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.result.ali.CommToken;
@@ -4051,5 +4052,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public List<Map<String, Object>> selectIotRecList(Long recId, String status) {
         return orderMapper.selectIotRecList(recId+"", status);
     }
+
+
 
 }

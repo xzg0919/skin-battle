@@ -68,7 +68,14 @@ public class EquipmentErrorListServiceImpl extends ServiceImpl<EquipmentErrorLis
         }
         return returnMap;
     }
-
+    
+    /**
+     * iot申诉报错查询
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/13 0013
+     * @Param: 
+     * @return: 
+     */
     @Override
     public Page<Map<String, Object>> adminIotErrorPage(AdminIotErrorBean adminIotErrorBean) {
         EntityWrapper<EquipmentErrorList> entityWrapper = new EntityWrapper<>();
