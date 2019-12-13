@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.CompanyEquipmentMapper;
 import com.tzj.collect.core.param.iot.AdminIotErrorBean;
 import com.tzj.collect.core.service.CompanyEquipmentService;
+import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.collect.entity.EquipmentErrorList;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +29,8 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
 
     @Resource
     private CompanyEquipmentMapper companyEquipmentMapper;
+    @Resource
+    private MemberService memberService;
 
     /**
      * 查询iot设备订单数人数统计
@@ -58,9 +62,32 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
      * @return:
      */
     @Override
-//    @Cacheable(value = "iotConRate" , key = "iotConRate",  sync = true)
     public String iotConRate() {
         return companyEquipmentMapper.iotConRate("15");
+    }
+
+    /**
+     * iot导出订单信息（gary后台）
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/13 0013
+     * @Param:
+     * @return:
+     */
+    @Override
+    public List<Map<String, Object>> adminIotOrderList(AdminIotErrorBean adminIotBean) {
+        /**
+         * 包含用户ali_user_id
+         */
+        List<Map<String, Object>> orderLists = companyEquipmentMapper.adminIotOrderList(adminIotBean.getEquipmentCode(), adminIotBean.getCompanyId(), adminIotBean.getStartTime(), adminIotBean.getEndTime()+ " 23:59:59");
+        orderLists.stream().forEach(orderList ->{
+            /**
+             * 根据用户uId查手机号
+             */
+            if (!StringUtils.isEmpty(orderList.get("ali_user_id"))){
+                orderList.put("tel", memberService.selectMemberByAliUserId(orderList.get("ali_user_id")+"").getMobile());
+            }
+        });
+        return orderLists;
     }
 
 }

@@ -40,8 +40,4 @@
     <!-- 小程序首页缓存 -->
     <cache name="getCollectDetail" maxElementsInMemory="10000" maxElementsOnDisk="10000000"
            timeToIdleSeconds="300" timeToLiveSeconds="19800" eternal="false" overflowToDisk="true" memoryStoreEvictionPolicy="FIFO" />
-    iotConRate
-<!--    &lt;!&ndash; iot转化率缓存5分钟iotConRate 23小时 &ndash;&gt;-->
-<!--    <cache name="iotConRate" maxElementsInMemory="10000"  maxElementsOnDisk="10000000" eternal="false" overflowToDisk="true"-->
-<!--           timeToLiveSeconds="300" timeToIdleSeconds="300"/>-->
 </ehcache>

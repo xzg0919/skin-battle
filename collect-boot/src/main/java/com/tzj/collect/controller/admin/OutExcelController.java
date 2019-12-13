@@ -11,6 +11,7 @@ import com.tzj.collect.core.param.ali.PiccOrderBean;
 import com.tzj.collect.core.param.ali.RecruitExpressBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
+import com.tzj.collect.core.param.iot.AdminIotErrorBean;
 import com.tzj.collect.core.result.admin.RecruitExpressResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -51,6 +52,8 @@ public class OutExcelController {
     private JedisPool jedisPool;
     @Autowired
     private RecyclersService recyclersService;
+    @Autowired
+    private CompanyEquipmentService companyEquipmentService;
     /**
      * 根据企业导出以旧换新的券的excel列表
      * @param response
@@ -1040,6 +1043,49 @@ public class OutExcelController {
             e.printStackTrace();
         }
     }
-
+    /**
+     * iot导出订单信息（gary后台）
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/13 0013
+     * @Param: 
+     * @return: 
+     */
+    @RequestMapping("/admin/iot/order")
+    public void adminIotOrder(HttpServletResponse response, AdminIotErrorBean adminIotBean){
+        ExcelData data = new ExcelData();
+        data.setName("iot订单信息");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        titles.add("设备编号");
+        titles.add("下单时间");
+        titles.add("订单编号");
+        titles.add("用户id");
+        titles.add("用户手机号");
+        data.setTitles(titles);
+        if (StringUtils.isEmpty(adminIotBean.getStartTime())||StringUtils.isEmpty(adminIotBean.getEndTime())){
+            throw new ApiException("请选择时间范围");
+        }
+        List<Map<String, Object>> adminIotOrderList = companyEquipmentService.adminIotOrderList(adminIotBean);
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row =  null;
+        for(int i=0,j = adminIotOrderList.size(); i<j;i++){
+            row= new ArrayList();
+            row.add(adminIotOrderList.get(i).get("iot_equipment_code"));
+            row.add(adminIotOrderList.get(i).get("create_date"));
+            row.add(adminIotOrderList.get(i).get("order_no"));
+            row.add(adminIotOrderList.get(i).get("ali_user_id"));
+            row.add(adminIotOrderList.get(i).get("tel"));
+            rows.add(row);
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        try {
+            ExcelUtils.exportExcel(response, fileName, data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

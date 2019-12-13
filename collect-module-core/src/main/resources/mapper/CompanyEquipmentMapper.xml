@@ -95,4 +95,24 @@
                 ali_user_id
         ) personIotCount ON personOtherCount.ali_user_id = personIotCount.ali_user_id
     </select>
+    <select id="adminIotOrderList" parameterType="String" resultType="Map">
+        SELECT
+            ali_user_id,
+            iot_equipment_code,
+            create_date,
+            order_no
+        FROM
+            sb_order
+        WHERE
+            del_flag = 0
+        AND title = 5
+        AND create_date BETWEEN #{startTime}
+        AND #{endTime}
+        <if test="companyId != null and companyId !='' ">
+            AND company_id = #{companyId}
+        </if>
+        <if test="equipmentCode != null and equipmentCode !='' ">
+            AND iot_equipment_code = #{equipmentCode}
+        </if>
+    </select>
 </mapper>
