@@ -235,6 +235,17 @@ public class ProductApi {
         }
         if(!"0".equals(product.getPickLimitTotal()))
         {
+            // 验证兑换次数
+            EntityWrapper<ProductLog> wrapper = new EntityWrapper<ProductLog>();
+            wrapper.eq("p_id", product.getId());
+            wrapper.eq("member_id", member.getId());
+            if(productLogService.selectCount(wrapper) >= Integer.parseInt(product.getPickLimitTotal()))
+            {
+                return "每个账号限领【" + product.getPickLimitTotal() + "】张";
+            }
+        }
+        if(!"0".equals(product.getPickLimitTotal()))
+        {
         	// 验证兑换次数
         	EntityWrapper<ProductLog> wrapper = new EntityWrapper<ProductLog>();
             wrapper.eq("p_id", product.getId());
