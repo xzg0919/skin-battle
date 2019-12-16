@@ -60,4 +60,13 @@ public interface DailyLexiconService extends IService<DailyLexicon> {
 
      Set<Map<String, Object>> isAnswerDaily(String aliUserId);
 
+     /**
+      * 使用复活卡
+      * @author: sgmark@aliyun.com
+      * @Date: 2019/12/16 0016
+      * @Param: 
+      * @return: 
+      */
+     Map<String, Object> reloadCard(DailyDaParam dailyDaParam);
+
 }

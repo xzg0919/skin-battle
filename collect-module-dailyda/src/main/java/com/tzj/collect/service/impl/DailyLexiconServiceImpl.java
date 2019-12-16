@@ -1,9 +1,12 @@
 package com.tzj.collect.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.daily.DailyDaParam;
 import com.tzj.collect.core.param.daily.MemberBean;
 import com.tzj.collect.common.util.JedisUtil;
+import com.tzj.collect.core.service.VoucherMemberService;
 import com.tzj.collect.mapper.DailyLexiconMapper;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.entity.Member;
@@ -12,6 +15,7 @@ import com.tzj.collect.core.service.DailyLexiconService;
 import com.tzj.collect.core.service.DailyMemberService;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +39,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, DailyLexicon> implements DailyLexiconService {
 
-//    @Resource(name = "collectJedisPool")
     @Resource
     private JedisPool jedisPool;
 
@@ -47,6 +50,10 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 
     @Resource
     private DailyLexiconService dailyLexiconService;
+
+//    @Resource
+//    private VoucherMemberService voucherMemberService;
+
 
     /** 查询当前用户当天在本周记录表中是否有数据若没有，创建答题，若已有直接返回当前用户题目信息
       * @author sgmark@aliyun.com
@@ -322,6 +329,8 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         }else {
             returnMap.put("todayIsAnswer", "Y");
         }
+        //增加是否存在复活卡（存在复活卡的话，可使用复活卡---今日获得积分清零）
+
         returnMap.put("weekRanking", weekRankingByTime(jedis, member, redisKeyName()));
         System.out.println(System.currentTimeMillis()-localTime);
         jedis.close();
@@ -634,6 +643,46 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         return returnMap;
     }
 
+    /**
+     * 使用复活卡
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/16 0016
+     * @Param:
+     * @return:
+     */
+    @Override
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public Map<String, Object> reloadCard(DailyDaParam dailyDaParam) {
+        Map<String, Object> returnMap = new HashMap<>();
+        //1、判断今日是否已答题
+        if (dailyLexiconService.isAnswerDaily(dailyDaParam.getAliUserId()).size() == 0) {
+            throw new ApiException("今日未答题，不能使用复活券");
+        }
+//        else if(){ todo
+//            //券码数量不足
+//            throw new ApiException("券码数量不足");
+//        }
+        //2、清除今日改用户所有答题记录
+        dailyLexiconMapper.deleteDailyRecords(dailyDaParam.getAliUserId(), tableName(System.currentTimeMillis()), LocalDate.now()+" %");
+        //3、查找redis里面今日获得积分
+        Jedis jedis = jedisPool.getResource();
+        //本日是否已答过题
+        Double zscore = jedis.zscore(redisKeyName() + ":" + LocalDate.now().getDayOfWeek(), dailyDaParam.getAliUserId());
+        if(null != zscore){
+            //4、总积分减去redis里今日获得积分
+            jedis.zadd(redisKeyName(), -zscore, dailyDaParam.getAliUserId());
+            //5、清除今日积分
+            jedis.zrem(redisKeyName() + ":" + LocalDate.now().getDayOfWeek(), dailyDaParam.getAliUserId());
+        }else {
+            throw new ApiException("用户数据异常");
+        }
+        //6、最早的一张复活券过期 todo
+
+        jedis.close();
+        returnMap.put("msg", "复活成功");
+        return returnMap;
+    }
+
     /** 保存用户每日答题题目信息
       * @author sgmark@aliyun.com
       * @date 2019/8/12 0012
@@ -652,12 +701,14 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
       * @return 
       */
     public static String tableName(Long currentTimeMillis){
-        Integer week = Instant.ofEpochMilli(currentTimeMillis).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
+        Instant.ofEpochMilli(currentTimeMillis).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+        Integer week = LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         return "daily_day_records_"+ LocalDate.now().getYear() + "" + week;
     }
 
     public static String tableNameLastWeek(Long currentTimeMillis){
-        Integer week = Instant.ofEpochMilli(currentTimeMillis).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().minusWeeks(1l).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
+        Instant.ofEpochMilli(currentTimeMillis).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+        Integer week = LocalDateTime.now().minusWeeks(1L).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         return "daily_day_records_"+ LocalDate.now().getYear() + "" + week;
     }
 
@@ -668,19 +719,22 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
       * @return
       */
     public static String redisKeyName(){
-        Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
+        Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+        Integer week = LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
         return LocalDate.now().getYear() + ":" + week;
     }
 
     public static String redisKeyNameLastWeek(){
-        Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear())-1;
+        Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+        Integer week = LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear())-1;
         return LocalDate.now().getYear() + ":" + week;
     }
 
     public static void main(String[] args) {
         //计算周数
 //        LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
-        System.out.println(Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().minusWeeks(3).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()));
+        Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+        System.out.println(LocalDateTime.now().minusWeeks(3).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()));
         System.out.println(LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY));
 
     }

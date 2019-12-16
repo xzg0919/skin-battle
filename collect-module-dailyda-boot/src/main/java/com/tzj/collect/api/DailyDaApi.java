@@ -94,6 +94,20 @@ public class DailyDaApi {
         return dailyWeekRankingService.eachWeekDresserList(pageBean.getPageNumber(), pageBean.getPageSize());
     }
 
+    /**
+     *  使用复活卡
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/16 0016
+     * @Param: 
+     * @return: 
+     */
+    @Api(name = "daily.reload.use.card", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Map<String, Object> reloadCard(DailyDaParam dailyDaParam){
+        dailyDaParam.setAliUserId(MemberUtils.getMember().getAliUserId());
+        return dailyLexiconService.reloadCard(dailyDaParam);
+    }
+
 
     /** 各取值2题
      * @author sgmark@aliyun.com

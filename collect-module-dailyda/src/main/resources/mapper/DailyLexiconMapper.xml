@@ -291,4 +291,7 @@
 		) countPrice ON sumCount.ali_user_id = countPrice.ali_user_id
 		LEFT JOIN ${tableName} mm ON mm.ali_user_id = sumCount.ali_user_id
 	</select>
+	<delete id="deleteDailyRecords" parameterType="String">
+		DELETE FROM ${tableName} WHERE ali_user_id = #{aliUserId} AND create_date LIKE #{todayTime}
+	</delete>
 </mapper>
