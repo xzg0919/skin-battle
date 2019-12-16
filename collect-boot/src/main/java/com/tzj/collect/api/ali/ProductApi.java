@@ -179,7 +179,8 @@ public class ProductApi {
     @DS("slave")
     public Object useRevive(ProductBean productBean) 
     {
-        voucherMemberService.useRevive(productBean.getId());
+    	Member member = MemberUtils.getMember();
+        voucherMemberService.useRevive(member.getAliUserId());
         return "ok";
     }
     
@@ -191,12 +192,7 @@ public class ProductApi {
     public Object getReviveCount() 
     {
         Member member = MemberUtils.getMember();
-        List<VoucherMember> voucherMemberList = voucherMemberService.getReviveIdList(member.getId());
-        if(null == voucherMemberList || voucherMemberList.isEmpty())
-        {
-            return 0;
-        }
-        return voucherMemberList.size();
+        return voucherMemberService.getReviveCount(member.getAliUserId());
     }
     
     /**
@@ -238,7 +234,7 @@ public class ProductApi {
             // 验证兑换次数
             EntityWrapper<ProductLog> wrapper = new EntityWrapper<ProductLog>();
             wrapper.eq("p_id", product.getId());
-            wrapper.eq("member_id", member.getId());
+            wrapper.eq("ali_id", member.getAliUserId());
             if(productLogService.selectCount(wrapper) >= Integer.parseInt(product.getPickLimitTotal()))
             {
                 return "每个账号限领【" + product.getPickLimitTotal() + "】张";
@@ -246,7 +242,7 @@ public class ProductApi {
         }
         // 2. 领取记录
         ProductLog productLog = new ProductLog();
-        productLog.setCreateBy(member.getId().toString());
+        productLog.setCreateBy(member.getAliUserId());
         productLog.setCreateDate(now.getTime());
         productLog.setBindingPoint(product.getBindingPoint());
         productLog.setBrand(product.getBrand());
@@ -266,7 +262,7 @@ public class ProductApi {
         {
             // 1. 我的券
             VoucherMember voucherMember = new VoucherMember();
-            voucherMember.setCreateBy(member.getId().toString());
+            voucherMember.setCreateBy(member.getAliUserId());
             voucherMember.setCreateDate(now.getTime());
             voucherMember.setAliUserId(member.getAliUserId());
             voucherMember.setDelFlag("0");
