@@ -1,7 +1,6 @@
 package com.tzj.collect.core.service.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
@@ -416,11 +415,21 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
      */
     @Override
     @Transactional
-    public void useRevive(String id)
+    public void useRevive(String aliId)
     {
-        VoucherMember voucherMember = this.selectById(Long.valueOf(id));
-        voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_USED);
-        this.updateById(voucherMember);
+        VoucherMember voucherMember = null;
+        EntityWrapper<VoucherMember> wrapper = new EntityWrapper<VoucherMember>();
+        wrapper.eq("ali_user_id", aliId);
+        wrapper.eq("voucher_status",VoucherConst.VOUCHER_STATUS_CREATE);
+        wrapper.orderBy("id", true);
+        wrapper.last(" LIMIT 0,1 ");
+        List<VoucherMember> voucherMemberList =  this.selectList(wrapper);
+        if(null != voucherMemberList && !voucherMemberList.isEmpty())
+        {
+        	voucherMember = voucherMemberList.get(0);
+        	voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_USED);
+        	this.updateById(voucherMember);
+        }
     }
     /**
      * <p>Created on 2019年12月3日</p>
@@ -430,11 +439,29 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
      * @return  
      */
     @Override
-    public List<VoucherMember> getReviveIdList(Long memberId)
+    public List<VoucherMember> getReviveIdList(String aliId)
     {
-        List<VoucherMember> voucherMemberList =  this.selectList(new EntityWrapper<VoucherMember>().eq("member_id", memberId).eq("voucher_status", 
+        List<VoucherMember> voucherMemberList =  this.selectList(new EntityWrapper<VoucherMember>().eq("ali_user_id", aliId).eq("voucher_status", 
                 VoucherConst.VOUCHER_STATUS_CREATE).eq("voucher_type",VoucherConst.VOUCHER_TYPE_REVIVE));
         return voucherMemberList;
     }
+    /**
+     * 
+     * <p>Created on 2019年12月3日</p>
+     * <p>Description:[没用过的复活卡的数量]</p>
+     * @author:[杨欢][yanghuan1937@aliyun.com] 
+     * @update:[日期YYYY-MM-DD] [更改人姓名]
+     * @return List<String>
+     */
+	@Override
+	public Integer getReviveCount(String aliId) 
+	{
+		List<VoucherMember> voucherMemberList = getReviveIdList(aliId);
+        if(null == voucherMemberList || voucherMemberList.isEmpty())
+        {
+            return 0;
+        }
+        return voucherMemberList.size();
+	}
 
 }
