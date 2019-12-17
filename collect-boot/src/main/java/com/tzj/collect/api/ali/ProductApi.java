@@ -215,7 +215,7 @@ public class ProductApi {
         //查询此券需要消耗多少能量兑换
         Product product = productService.selectById(productBean.getId());
         // 剩余数量
-        if(product.getStock() == product.getBindingQuantity())
+        if(product.getStock().equals( product.getBindingQuantity()))
         {
             return "数量不足";
         }
