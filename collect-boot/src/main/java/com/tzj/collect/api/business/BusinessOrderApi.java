@@ -116,6 +116,9 @@ public class BusinessOrderApi {
 		 int orderId = bOrderBean.getId();
 		//查询订单详情
 		 Map<String,Object> resultMap = orderService.selectOrderByBusiness(orderId);
+		 CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		 Company company = companyService.selectById(companyAccount.getCompanyId());
+		 resultMap.put("blueTooth","1".equals(company.getBlueTooth()+"") ? "Y":"N");
 		return resultMap;
 	}
 	/**
