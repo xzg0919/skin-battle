@@ -414,7 +414,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
      * @return  
      */
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public void useRevive(String aliId)
     {
         VoucherMember voucherMember = null;
@@ -441,7 +441,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
     @Override
     public List<VoucherMember> getReviveIdList(String aliId)
     {
-        List<VoucherMember> voucherMemberList =  this.selectList(new EntityWrapper<VoucherMember>().eq("ali_user_id", aliId).eq("voucher_status", 
+        List<VoucherMember> voucherMemberList =  this.selectList(new EntityWrapper<VoucherMember>().eq("ali_user_id", aliId).eq("voucher_status",
                 VoucherConst.VOUCHER_STATUS_CREATE).eq("voucher_type",VoucherConst.VOUCHER_TYPE_REVIVE));
         return voucherMemberList;
     }

@@ -51,8 +51,8 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     @Resource
     private DailyLexiconService dailyLexiconService;
 
-//    @Resource
-//    private VoucherMemberService voucherMemberService;
+    @Resource
+    private VoucherMemberService voucherMemberService;
 
 
     /** 查询当前用户当天在本周记录表中是否有数据若没有，创建答题，若已有直接返回当前用户题目信息
@@ -330,7 +330,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             returnMap.put("todayIsAnswer", "Y");
         }
         //增加是否存在复活卡（存在复活卡的话，可使用复活卡---今日获得积分清零）
-
+        returnMap.put("reviveCount", voucherMemberService.getReviveCount(member.getAliUserId()));
         returnMap.put("weekRanking", weekRankingByTime(jedis, member, redisKeyName()));
         System.out.println(System.currentTimeMillis()-localTime);
         jedis.close();
@@ -657,11 +657,10 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         //1、判断今日是否已答题
         if (dailyLexiconService.isAnswerDaily(dailyDaParam.getAliUserId()).size() == 0) {
             throw new ApiException("今日未答题，不能使用复活券");
+        }else if(voucherMemberService.getReviveCount(dailyDaParam.getAliUserId()) == 0){
+            //券码数量不足
+            throw new ApiException("券码数量不足");
         }
-//        else if(){ todo
-//            //券码数量不足
-//            throw new ApiException("券码数量不足");
-//        }
         //2、清除今日改用户所有答题记录
         dailyLexiconMapper.deleteDailyRecords(dailyDaParam.getAliUserId(), tableName(System.currentTimeMillis()), LocalDate.now()+" %");
         //3、查找redis里面今日获得积分
@@ -676,8 +675,8 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         }else {
             throw new ApiException("用户数据异常");
         }
-        //6、最早的一张复活券过期 todo
-
+        //6、最早的一张复活券过期
+        voucherMemberService.useRevive(dailyDaParam.getAliUserId());
         jedis.close();
         returnMap.put("msg", "复活成功");
         return returnMap;
