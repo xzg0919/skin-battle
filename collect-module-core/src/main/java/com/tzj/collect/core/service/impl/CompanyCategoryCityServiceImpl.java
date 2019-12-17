@@ -9,6 +9,7 @@ import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.result.business.CategoryResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,6 +99,10 @@ public class CompanyCategoryCityServiceImpl extends ServiceImpl<CompanyCategoryC
     }
     @Override
     public Map<String,Object> getCompanyCategoryListByCityTitle(CategoryBean categoryBean){
+        Integer count = companyCategoryCityMapper.selectCategoryCount(categoryBean.getTitle(), categoryBean.getCompanyId());
+        if (count<1){
+            throw new ApiException("所在公司暂不回收该分类");
+        }
         List<Category> categories = categoryService.selectList(new EntityWrapper<Category>().eq("title", categoryBean.getTitle()).eq("level_", "0").orderBy("code_",true));
         categories.stream().forEach(category -> {
             List<Map<String, Object>> areaCityRatioLists = companyCategoryCityMapper.getCompanyCategoryListByCityTitle(categoryBean.getCompanyId(), Integer.parseInt(categoryBean.getCityId()), category.getId().intValue());
@@ -126,12 +131,15 @@ public class CompanyCategoryCityServiceImpl extends ServiceImpl<CompanyCategoryC
             CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", categoryBean.getCompanyId()).eq("category_id", categoryBean.getCategoryId()));
             if (StringUtils.isNotBlank(categoryBean.getAdminCommissions())){
                 companyCategory.setAdminCommissions(new BigDecimal(categoryBean.getAdminCommissions()));
+                companyCategory.setIsCommissions("1");
             }
             if (StringUtils.isNotBlank(categoryBean.getCompanyCommissions())){
                 companyCategory.setCompanyCommissions(new BigDecimal(categoryBean.getCompanyCommissions()));
+                companyCategory.setIsCommissions("1");
             }
             if (StringUtils.isNotBlank(categoryBean.getFreeCommissions())){
                 companyCategory.setFreeCommissions(new BigDecimal(categoryBean.getFreeCommissions()));
+                companyCategory.setIsCommissions("1");
             }
             companyCategoryService.updateById(companyCategory);
         }

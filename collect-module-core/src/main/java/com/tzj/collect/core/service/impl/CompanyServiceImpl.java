@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	private CompanyStreetHouseService companyStreetHouseService;
 	@Autowired
 	private RecyclersRangeHouseService recyclersRangeHouseService;
+	@Autowired
+	private CompanyCategoryService companyCategoryService;
 
 	
 	/**

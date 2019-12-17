@@ -106,4 +106,6 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	 */
 	@DS("slave")
 	Company selectCompanyByTitle(String title, Integer communityId);
+	@DS("slave")
+	CompanyCategory selectCompanyCategory(String companyId,String categoryId);
 }

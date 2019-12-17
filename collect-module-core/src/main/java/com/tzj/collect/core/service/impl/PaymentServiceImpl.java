@@ -140,11 +140,9 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         }
         OrderBean orderBean = new OrderBean();
         if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-            orderBean.setAchPrice(payment.getPrice().toString());
-            orderBean.setDiscountPrice(payment.getTotalAmount());
+            orderBean.setDiscountPrice(payment.getDiscountPrice().toString());
         }else {
-            orderBean.setAchPrice(payment.getTotalAmount());
-            orderBean.setDiscountPrice(payment.getPrice().toString());
+            orderBean.setDiscountPrice(payment.getDiscountPrice().toString());
         }
         String aliUserId = "";
         if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
@@ -155,7 +153,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         }
         AlipayFundTransToaccountTransferResponse response = null;
         try {
-            response =this.aliPayTransfer(payment.getId().toString(),aliUserId,payment.getPrice());
+            response =this.aliPayTransfer(payment.getId().toString(),aliUserId,payment.getTransferPrice());
             if (response.isSuccess()||"10000".equals(response.getCode())) {
                 payment.setStatus(Payment.STATUS_TRANSFER);
                 //修改订单状态

@@ -1,5 +1,6 @@
 package com.tzj.collect.core.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.result.business.BusinessCategoryResult;
 import com.tzj.collect.core.mapper.CompanyCategoryMapper;
@@ -347,6 +348,10 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 
     public Company selectCompanyByTitle(String title, Integer communityId) {
         return companyCategoryMapper.selectCompanyByTitle(title, communityId);
+    }
+
+    public CompanyCategory selectCompanyCategory(String companyId,String categoryId){
+        return selectOne(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId));
     }
 
 }

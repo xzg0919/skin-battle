@@ -154,6 +154,14 @@ public class Order extends DataEntity<Long> {
 
 	private String fullAddress;// 详细住址
 
+	private BigDecimal commissionsPrice;//佣金价格
+
+	private BigDecimal adminCommissions;//平台佣金系数
+
+	private BigDecimal companyCommissions;//服务商返佣系数
+
+	private BigDecimal backCommissionsPrice;//返佣
+
 	@TableField(exist = false)
 	private String cateAttName4Page;// 父类名称/父类名称
 	@TableField(exist = false)

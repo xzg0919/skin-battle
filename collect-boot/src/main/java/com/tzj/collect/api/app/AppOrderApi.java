@@ -124,6 +124,16 @@ public class AppOrderApi {
 		return orderService.saveByRecy(orderBean);
 	}
 	/**
+	 * 返回回收人员支付的价格
+	 * @param orderBean
+	 * @return
+	 */
+	@Api(name = "app.order.getPriceByOrderId", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getPriceByOrderId(OrderBean orderBean) {
+		return orderService.getPriceByOrderId(orderBean);
+	}
+	/**
 	 * 回收员订单重量提交信息
 	 * @param orderBean
 	 * @return

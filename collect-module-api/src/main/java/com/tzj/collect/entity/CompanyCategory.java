@@ -46,6 +46,8 @@ public class CompanyCategory extends  DataEntity<Long> {
 	private BigDecimal freeCommissions;//平台订单免费时的佣金
 
 	private BigDecimal companyCommissions;//服务商返佣
+
+	private String isCommissions; //0没有设置 1设置了
     
     
 	public Long getId() {

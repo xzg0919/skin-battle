@@ -127,7 +127,6 @@ public class AppOrderPayApi {
         if(order==null){
             throw new ApiException("未找到Order信息！id:"+orderPayParam.getOrderId());
         }
-
         Payment payment=paymentService.selectPayByOrderSn(order.getOrderNo());
         if (null != payment){
             return "该订单已被支付，请勿重复支付";
@@ -142,9 +141,6 @@ public class AppOrderPayApi {
         payment.setAliUserId(order.getAliUserId());
         payment.setStatus(Payment.STATUS_UNPAY);
         paymentService.insert(payment);
-        order.setAchPrice(orderPayParam.getPrice());
-        order.setDiscountPrice(orderPayParam.getPrice());
-        orderService.updateById(order);
         if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
             if (StringUtils.isNotBlank(orderPayParam.getVoucherId())){
                 return voucherMemberService.updateOrderNo(orderPayParam.getPrice(),orderPayParam.getOrderId(),orderPayParam.getVoucherId(),payment);

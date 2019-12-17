@@ -504,14 +504,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         //根据分类Id查询父类分类id
         Category category = this.selectById(categoryId);
         String companyId = "";
-        final BigDecimal[] price = {new BigDecimal(1)};
+        final BigDecimal[] price = {categoryMapper.selectCategoryPriceByCityCompanyId(categoryId, memberAddress.getCityId(), companyId)};
         if ("DIGITAL".equals(type)) {
             //根据小区Id，分类id和街道id 查询相关企业
             companyId = companyStreetApplianceService.selectStreetApplianceCompanyIdByCategoryId(category.getParentId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
             if (StringUtils.isBlank(companyId)) {
                 throw new com.tzj.module.easyopen.exception.ApiException("该区域暂无服务: memberAddressId:" + memberAddress.getId() + "---分类Id：" + category.getParentId() + "--------街道Id：" + memberAddress.getStreetId() + "-----小区Id： " + memberAddress.getCommunityId());
             }
-            price[0] = categoryMapper.selectCategoryPriceByCityCompanyId(categoryId, memberAddress.getCityId(), companyId);
         } else if ("BIGTHING".equals(type)) {
             Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyIdByCategoryId(category.getParentId(), memberAddress.getStreetId());
             if (null == streetBigCompanyId) {
@@ -541,7 +540,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             return specialPriceList.get(0).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
         BigDecimal cityRatio = companyCityRatioService.getCityRatioByCompanyCityId(memberAddress.getCityId(), finalCompanyId);
-        return price[0].multiply(cityRatio).setScale(2, BigDecimal.ROUND_HALF_UP);
+        price[0] = price[0].multiply(cityRatio).setScale(2, BigDecimal.ROUND_HALF_UP);
+        if ("BIGTHING".equals(type)&&price[0].compareTo(new BigDecimal(68)) == -1){
+            return new BigDecimal(68);
+        }
+        return price[0];
     }
 
     @Override

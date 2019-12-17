@@ -49,6 +49,10 @@ public class Payment extends DataEntity<Long>{
     private String totalAmount;
     @TableField(exist = false)
     private VoucherMember voucherMember;
+    @TableField(exist = false)
+    private BigDecimal transferPrice;
+    @TableField(exist = false)
+    private BigDecimal discountPrice;
 
 
     @Override

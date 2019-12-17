@@ -1117,6 +1117,7 @@
 		LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 		WHERE
 			so.del_flag = '0'
+		AND so.title in ('1','2')
 		AND srcl.recycler_id = #{orderBean.recyclerId}
 		AND so.recycler_id = #{orderBean.recyclerId}
 		<if test="orderBean.tel != null and orderBean.tel != '' ">
@@ -1162,6 +1163,7 @@
 			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 			WHERE
 				so.del_flag = '0'
+			AND so.title in ('1','2')
 			AND so.recycler_id = #{orderBean.recyclerId}
 			<if test="orderBean.tel != null and orderBean.tel != '' ">
 				AND so.tel like #{orderBean.tel}
@@ -1215,6 +1217,7 @@
 				LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 				WHERE
 				so.del_flag = '0'
+				AND so.title in ('1','2')
 				AND so.recycler_id = #{orderBean.recyclerId}
 				<if test="orderBean.tel != null and orderBean.tel != '' ">
 					AND so.tel like #{orderBean.tel}
@@ -1260,6 +1263,7 @@
 				LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 				WHERE
 					so.del_flag = '0'
+				AND so.title in ('1','2')
 				AND srcl.recycler_id = #{orderBean.recyclerId}
 				AND so.recycler_id = #{orderBean.recyclerId}
 				<if test="orderBean.tel != null and orderBean.tel != '' ">
@@ -3309,6 +3313,10 @@
 		<result property="isComplaint" column="isComplaint"/>
 		<result property="complaintType" column="complaint_type"/>
 		<result property="isItemAch" column="is_item_ach"/>
+		<result property="commissionsPrice" column="commissions_price"/>
+		<result property="adminCommissions" column="admin_commissions"/>
+		<result property="companyCommissions" column="company_commissions"/>
+		<result property="backCommissionsPrice" column="back_commissions_price"/>
         <association property="category" javaType="com.tzj.collect.entity.Category">
             <result property="categoryId" column="categoryId" />
             <result property="name" column="name_" />
@@ -3375,6 +3383,10 @@
 		a.iot_equipment_code,
 		a.complaint_type,
 		a.is_item_ach,
+		a.commissions_price,
+		a.admin_commissions,
+		a.company_commissions,
+		a.back_commissions_price,
 		c.name_,
 		c.icon
 	</sql>

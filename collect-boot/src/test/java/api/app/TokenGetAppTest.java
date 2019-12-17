@@ -42,11 +42,11 @@ public class TokenGetAppTest {
 		 //String api="http://172.19.182.90:9090/app/api";
 
 		 OrderBean orderBean = new OrderBean();
-		 orderBean.setStatus("1");
-		 orderBean.setPagebean(new PageBean());
+		 orderBean.setAchPrice("0");
+		 orderBean.setId(70083);
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.bigOrder.getBigOrderList");
+	        param.put("name", "app.order.list.phone");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -54,7 +54,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", orderBean);
+	        param.put("data", "{\"orderNo\":\"2019\",\"pageBean\":{\"pageNumber\":1,\"pageSize\":10},\"pageNumber\":0,\"pageSize\":0,\"recyclerId\":0}");
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

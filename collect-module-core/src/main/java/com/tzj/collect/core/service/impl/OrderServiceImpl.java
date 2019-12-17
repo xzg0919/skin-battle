@@ -380,14 +380,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderbean.setIsCash(order.getIsCash());
         Area city = areaService.selectById(order.getAreaId());
         orderbean.setCityId(city.getParentId().toString());
-        double amount = 0;
         //保存orderItem
         if ("0".equals(order.getIsItemAch())) {
-            amount = this.saveOrderItemAch(orderbean, null);
-            order.setGreenCount(amount);
+            this.saveOrderItemAch(orderbean, null);
         }
         flag = this.updateById(order);
-        orderbean.setAmount(amount);
         //储存图片链接
         OrderPic orderPic = orderbean.getOrderPic();
         if (orderPic != null) {
@@ -408,10 +405,55 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 flag = orderPicAchService.insert(orderPicc);
             }
         }
-        //该订单是只要能量的订单
-        if ("1".equals(order.getIsCash()) || 0 == Double.parseDouble(orderbean.getAchPrice())) {
+        return flag;
+    }
+    @Transactional
+    @Override
+    public Object getPriceByOrderId(OrderBean orderbean){
+        Order order = this.selectById(orderbean.getId());
+        if ("1".equals(order.getTitle().getValue().toString())){
+            CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
+            Category category = categoryService.selectById(order.getCategoryId());
+            order.setGreenCount(category.getGreenCount().doubleValue());
+            order.setAdminCommissions(companyCategory.getAdminCommissions());
+            order.setCompanyCommissions(companyCategory.getCompanyCommissions());
+            order.setCommissionsPrice(companyCategory.getAdminCommissions().setScale(2, BigDecimal.ROUND_HALF_UP));
+            order.setBackCommissionsPrice(companyCategory.getCompanyCommissions().setScale(2, BigDecimal.ROUND_HALF_UP));
+        }if ("2".equals(order.getTitle().getValue().toString())){
+            List<OrderItemAch> orderItemAches = orderItemAchService.selectByOrderId(order.getId().intValue());
+            final BigDecimal[] commissionsPrice = {BigDecimal.ZERO};
+            final BigDecimal[] backCommissionsPrice = {BigDecimal.ZERO};
+            final Double[] greenCount = {0.00};
+            orderItemAches.stream().forEach(orderItemAch -> {
+                CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), orderItemAch.getCategoryId().toString());
+                Category category = categoryService.selectById(order.getCategoryId());
+                if ("0".equals(order.getIsCash())){
+                    greenCount[0] += category.getGreenCount()*orderItemAch.getAmount();
+                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                }else {
+                    greenCount[0] += category.getFreeGreenCount()*orderItemAch.getAmount();
+                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getFreeCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                }
+                orderItemAch.setAdminCommissions(companyCategory.getAdminCommissions());
+                orderItemAch.setFreeCommissions(companyCategory.getFreeCommissions());
+                orderItemAch.setAdminCommissions(companyCategory.getCompanyCommissions());
+                orderItemAchService.updateById(orderItemAch);
+            });
+            DecimalFormat df=new DecimalFormat(".##");
+            order.setGreenCount(Double.parseDouble(df.format(greenCount[0])));
+            order.setBackCommissionsPrice(backCommissionsPrice[0]);
+            order.setCommissionsPrice(commissionsPrice[0].setScale(2, BigDecimal.ROUND_HALF_UP));
+        }
+        order.setAchPrice(new BigDecimal(orderbean.getAchPrice()));
+        this.updateById(order);
+
+        if (order.getAchPrice().add(order.getCommissionsPrice()).compareTo(BigDecimal.ZERO)==0){
             //修改订单状态
-            orderbean.setAchPrice("0");
+            orderbean.setAmount(order.getGreenCount());
+            orderbean.setAchPrice(order.getAchPrice().toString());
+            orderbean.setStatus("3");
             this.modifyOrderSta(orderbean);
             if ("1".equals(order.getIsMysl())) {
                 //给用户增加蚂蚁能量
@@ -425,7 +467,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 e.printStackTrace();
             }
         }
-        return flag;
+        return order.getAchPrice().add(order.getCommissionsPrice()).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
@@ -539,8 +581,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		String isCash = orderbean.getIsCash();
 		//得到用户的垃圾总量
 		double amount = 0;
-		EntityWrapper<CompanyCategory> wrapper = null;
-		List<CompanyCategory> comPriceList = null;
 		OrderItemAch orderItem = null;
 		List<OrderItemBean> idAmount = null;
 		if (CategoryType.HOUSEHOLD.name().equals(orderbean.getTitle())) {
@@ -556,11 +596,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						orderItem.setCategoryName(item.getCategoryName());
 						orderItem.setAmount(item.getAmount());
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
-						if("1".equals(isCash)){
-							amount += item.getAmount()*10;
-						}else{
-							amount += item.getAmount();
-						}
 						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
 						if (companyCategoryCity!=null) {
@@ -578,19 +613,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						orderItemAchService.insert(orderItem);
 					}
 				}
-		} else if (CategoryType.DIGITAL.name().equals(orderbean.getTitle())) {
-			//根据订单Id获取电器订单所属分类的绿色能量值
-			OrderItem item = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id", orderbean.getId()).groupBy("order_id"));
-			if (item != null) {
-				Category categorys = categoryService.selectById(item.getCategoryId());
-				if("1".equals(isCash)){
-					amount = categorys.getGreenCount()*10;
-				}else {
-					amount = categorys.getGreenCount();
-				}
-			}
 		}
-		System.out.println("回收生活垃圾总重量为 ：" + ApiUtils.privatedoublegetTwoDecimal(amount));
 		return ApiUtils.privatedoublegetTwoDecimal(amount);
 	}
 
@@ -1822,9 +1845,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		order.setStatus(OrderType.COMPLETE);
 		order.setCompleteDate(new Date());
-		if(StringUtils.isNotBlank(orderBean.getAchPrice())){
-			order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
-		}
 		if(StringUtils.isNotBlank(orderBean.getDiscountPrice())){
 			order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
 		}
@@ -2947,13 +2967,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public String saveBigOrderPrice(OrderBean orderBean){
 		Order order = orderService.selectById(orderBean.getId());
+        CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
 		Category categorys = categoryService.selectById(order.getCategoryId());
 		Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 		if (StringUtils.isBlank(recyclers.getAliUserId())){
 			throw new ApiException("您未授权，请先在app内进行支付宝授权才能完成订单");
 		}
+        order.setCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory.getAdminCommissions()).divide(new BigDecimal(100)));
+        order.setAdminCommissions(companyCategory.getAdminCommissions());
+        order.setCompanyCommissions(companyCategory.getCompanyCommissions());
 		order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
 		order.setGreenCount(categorys.getGreenCount().doubleValue());
+        order.setBackCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory.getCompanyCommissions()).divide(new BigDecimal(100)));
 		if(Double.parseDouble(orderBean.getAchPrice())==0){
 			orderBean.setStatus("3");
 			orderBean.setAmount(categorys.getGreenCount());

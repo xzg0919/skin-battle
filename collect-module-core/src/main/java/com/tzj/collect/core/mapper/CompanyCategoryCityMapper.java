@@ -27,4 +27,6 @@ public interface CompanyCategoryCityMapper extends BaseMapper<CompanyCategoryCit
     List<Map<String,Object>> getCompanyCategoryListByCityTitle(@Param("companyId")Integer companyId,@Param("cityId") Integer cityId,@Param("categoryId")Integer categoryId);
 
     List<Map<String,Object>> getCompanyCategoryAttrOptionCityLists(@Param("companyId")Integer companyId,@Param("cityId") Integer cityId, @Param("categoryAttrId") Integer categoryAttrId);
+
+    Integer selectCategoryCount(@Param("title")String title,@Param("companyId")Integer companyId);
 }

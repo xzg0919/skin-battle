@@ -157,4 +157,14 @@
 		WHERE
 			a.category_attr_id = #{categoryAttrId}
 	</select>
+	<select id="selectCategoryCount" parameterType="Object" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			sb_company_category a
+		INNER JOIN sb_category b ON a.category_id = b.id
+		WHERE
+			b.title = #{title}
+		AND a.company_id = #{companyId}
+	</select>
 </mapper>

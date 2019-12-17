@@ -180,17 +180,20 @@
 		 1
 	</select>
 	<select id="getAdminCompanyList" parameterType="Object" resultType="Map">
+	SELECT	* FROM (
 		SELECT DISTINCT
-		a.id,
-		a.name_ AS name,
-		a.contacts,
-		a.tel,
-		DATE_FORMAT(
-		a.create_date,
-		'%Y-%m-%d %H:%i:%s'
-		) AS createDate
+			a.id,
+			a.name_ AS name,
+			a.contacts,
+			a.tel,
+			DATE_FORMAT(
+			a.create_date,
+			'%Y-%m-%d %H:%i:%s'
+			) AS createDate,
+			IF(aa.is_commissions is NULL,'1','0') AS isCommissions
 		FROM
-		sb_company a
+			sb_company a
+		LEFT JOIN (SELECT * FROM sb_company_category a WHERE a.is_commissions = 0 GROUP BY a.company_id) aa ON a.id = aa.company_id
 		<if test="title != null and title !='' ">
 			INNER JOIN sb_company_category b ON a.id = b.company_id
 			INNER JOIN sb_category c ON b.parent_id = c.id
@@ -204,7 +207,8 @@
 		<if test="companyName != null and companyName !='' ">
 			AND a.name_ LIKE CONCAT(CONCAT('%',#{companyName}), '%')
 		</if>
-		order by a.create_date
+			order by isCommissions ASC , a.create_date
+	) a
 		LIMIT #{pageStart},#{pageSize}
 	</select>
 
