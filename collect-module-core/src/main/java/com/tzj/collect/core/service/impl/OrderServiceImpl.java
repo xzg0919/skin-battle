@@ -3120,8 +3120,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		List<Map<String, Object>> bigOrderList = null;
 		Integer count = 0;
-		bigOrderList = orderMapper.getBigOrderListByPhone(orderbean.getRecyclerId(), orderbean.getTel(), (orderbean.getPagebean().getPageNumber() - 1) * orderbean.getPagebean().getPageSize(), orderbean.getPagebean().getPageSize());
-		count = orderMapper.getBigOrderCountByPhone(orderbean.getRecyclerId(), orderbean.getTel());
+		bigOrderList = orderMapper.getBigOrderListByPhone(orderbean.getOrderNo(),orderbean.getRecyclerId(), orderbean.getTel(), (orderbean.getPagebean().getPageNumber() - 1) * orderbean.getPagebean().getPageSize(), orderbean.getPagebean().getPageSize());
+		count = orderMapper.getBigOrderCountByPhone(orderbean.getOrderNo(),orderbean.getRecyclerId(), orderbean.getTel());
 		result.put("bigOrderList", bigOrderList);
 		result.put("count", count);
 		return result;
