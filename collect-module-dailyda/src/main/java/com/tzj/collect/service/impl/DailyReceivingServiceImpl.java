@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.daily.DailyDaParam;
-import com.tzj.collect.mapper.DailyReceivingMapper;
-import com.tzj.collect.entity.DailyReceiving;
-import com.tzj.collect.entity.Payment;
 import com.tzj.collect.core.service.DailyPaymentService;
 import com.tzj.collect.core.service.DailyReceivingService;
+import com.tzj.collect.entity.DailyReceiving;
+import com.tzj.collect.entity.Payment;
+import com.tzj.collect.mapper.DailyReceivingMapper;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,13 +260,10 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
 
     public String randomPrice(Integer setNum){
         Integer randomInt = new Random().nextInt(10000);
-        if (randomInt == 0 && flag == false && (setNum == 2 || setNum == 4)){
+        if (randomInt == 0 && flag == false && setNum == 4){
             System.out.println("中奖啦---------------------------1---------------------------");
             flag = true;
             return "99.00";
-        }else if (setNum == 2){
-            System.out.println("二等奖---------------------------2---------------------------");
-            return (Math.random() * .02+ .11 + "").substring(0,4);
         }else if (setNum == 4){
             System.out.println("三等奖---------------------------3---------------------------");
             return (Math.random() * .02+ .12 + "").substring(0,4);

@@ -76,7 +76,6 @@ public class JedisUtil {
                 byte[] byteArray = baos.toByteArray();
                 return byteArray;
             } catch (IOException e) {
-                e.printStackTrace();
             }
             return null;
         }
@@ -97,7 +96,6 @@ public class JedisUtil {
                 ObjectInputStream ois = new ObjectInputStream(bais);
                 return ois.readObject();
             } catch (Exception e) {
-                e.printStackTrace();
             }
             return null;
         }
