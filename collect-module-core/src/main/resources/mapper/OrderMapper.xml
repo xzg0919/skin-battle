@@ -1300,6 +1300,9 @@
 				<if test="tel != null and tel != '' ">
 					AND b.tel like #{tel}
 				</if>
+				<if test="orderNo != null and orderNo !='' ">
+					AND b.order_no LIKE concat(concat('%',#{orderNo}),'%')
+				</if>
 				UNION
 					SELECT
 						b.*
@@ -1315,6 +1318,9 @@
 					AND b.is_scan = 0
 					<if test="tel != null and tel != '' ">
 						AND b.tel like #{tel}
+					</if>
+					<if test="orderNo != null and orderNo !='' ">
+						AND b.order_no LIKE concat(concat('%',#{orderNo}),'%')
 					</if>
 			) countAll
 
@@ -1401,6 +1407,9 @@
 				<if test="tel != null and tel != '' ">
 					AND b.tel like #{tel}
 				</if>
+				<if test="orderNo != null and orderNo !='' ">
+					AND b.order_no LIKE concat(concat('%',#{orderNo}),'%')
+				</if>
 				UNION
 					SELECT
 						a.id AS recyclerId,
@@ -1477,6 +1486,9 @@
 					AND b.is_scan = 0
 					<if test="tel != null and tel != '' ">
 						AND b.tel like #{tel}
+					</if>
+					<if test="orderNo != null and orderNo !='' ">
+						AND b.order_no LIKE concat(concat('%',#{orderNo}),'%')
 					</if>
 			) countAll WHERE 1 = 1 ORDER BY
 		countAll.createDate DESC  LIMIT #{startPage},#{endPage}
