@@ -11,5 +11,7 @@ public interface RecyclersTitleService extends IService<RecyclersTitle> {
 
     @DS("slave")
     List<Map<String, Object>> getRecyclerTitleList(String recycleId);
+    @DS("slave")
+    Object getRecyclerTitleById(Long recyclerId);
 
 }

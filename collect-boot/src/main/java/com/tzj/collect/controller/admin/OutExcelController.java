@@ -54,6 +54,8 @@ public class OutExcelController {
     private RecyclersService recyclersService;
     @Autowired
     private CompanyEquipmentService companyEquipmentService;
+    @Autowired
+    private OrderComplaintService orderComplaintService;
     /**
      * 根据企业导出以旧换新的券的excel列表
      * @param response
@@ -545,11 +547,17 @@ public class OutExcelController {
         titles.add("回收员姓名");
         titles.add("完成时间");
         titles.add("订单状态");
+        titles.add("催派");
+        titles.add("催接");
+        titles.add("催收");
+        titles.add("系统自定义客诉超时2天");
+        titles.add("投诉（点选的客诉）");
         titles.add("客诉数量");
-        titles.add("客诉是否解决");
-        titles.add("催促状态");
-        titles.add("操作时间");
         titles.add("回收类型");
+        titles.add("平台佣金（定价回收）");
+        titles.add("平台佣金（环保回收）");
+        titles.add("服务商返佣");
+        titles.add("投诉理由");
         data.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
@@ -566,11 +574,21 @@ public class OutExcelController {
             row.add(outComplaintOrderMap.get("recycleerName"));
             row.add(outComplaintOrderMap.get("completeDate"));
             row.add(this.getOrderStatus(outComplaintOrderMap.get("status").toString()));
+            row.add(outComplaintOrderMap.get("initCount"));
+            row.add(outComplaintOrderMap.get("sendCount"));
+            row.add(outComplaintOrderMap.get("completeCount"));
+            row.add(outComplaintOrderMap.get("isComplaint"));
+            row.add(outComplaintOrderMap.get("complaintCount"));
             row.add(outComplaintOrderMap.get("count"));
-            row.add("");
-            row.add(outComplaintOrderMap.get("reason"));
-            row.add(outComplaintOrderMap.get("updateDate"));
             row.add(outComplaintOrderMap.get("categoryName"));
+            row.add(outComplaintOrderMap.get("commissionsPrice"));
+            row.add(outComplaintOrderMap.get("freeCommissionsPrice"));
+            row.add(outComplaintOrderMap.get("backCommissionsPrice"));
+            List<OrderComplaint> orderComplaints = orderComplaintService.selectList(new EntityWrapper<OrderComplaint>().eq("order_no", outComplaintOrderMap.get("orderNo")).eq("type_", "4"));
+            List<Object> finalRow = row;
+            orderComplaints.stream().forEach(orderComplaint -> {
+                finalRow.add(orderComplaint.getReason());
+            });
             rows.add(row);
 
         }

@@ -675,7 +675,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		Integer houseCityNum = mapper.getTitleByCompanyId("sb_company_street_house",areaBean.getCompanyId(),areaBean.getCityId());
 		Integer bigCityNum = mapper.getTitleByCompanyId("sb_company_street_big",areaBean.getCompanyId(),areaBean.getCityId());
 		CompanyCityRatio companyCityRatio = companyCityRatioService.selectOne(new EntityWrapper<CompanyCityRatio>().eq("company_id", areaBean.getCompanyId()).eq("city_id", areaBean.getCityId()));
-		BigDecimal cityRatio = new BigDecimal("");
+		BigDecimal cityRatio = null;
 		if (null == companyCityRatio){
 			Area area = this.selectById(areaBean.getCityId());
 			if (null!=area){

@@ -34,4 +34,8 @@ public interface RecyclersRangeApplianceMapper extends BaseMapper<RecyclersRange
 
     Map<String,Object> companyAreaRecyclerRanges(String companyId);
 
+    List<Map<String,Object>> getRecyclerAreaByTitleId(@Param("recyclerId")String recyclerId,@Param("companyId")String companyId);
+
+    List<Map<String,Object>> getRecyclerStreetByTitleId(@Param("recyclerId")String recyclerId,@Param("companyId")String companyId,@Param("areaId")String areaId);
+
 }

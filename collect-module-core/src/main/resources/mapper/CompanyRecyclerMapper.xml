@@ -387,4 +387,129 @@
 			RAND()
 		LIMIT 1
 	</select>
+	<select id="getRecyclerList" parameterType="Object" resultType="Map">
+		SELECT
+			a.recycler_id AS recyclerId,
+			b.name_ AS recyclerName,
+			b.tel,
+			d.area_name AS provinceName,
+			f.area_name AS cityName,
+			c.id AS companyId,
+			c.name_ AS companyName,
+			a.type_ AS type,
+			a.is_manager AS isManager,
+			a.is_enable_area AS isEnableArea,
+			b.is_enable_card AS isEnableCard
+		FROM
+			sb_company_recycler a
+		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		LEFT JOIN sb_company c ON a.company_id = c.id
+		LEFT JOIN sb_area d ON a.province = d.id
+		LEFT JOIN sb_area f ON a.city = f.id
+		WHERE
+			a.status_ = 1
+		AND a.is_manager = 1
+		<if test="recyclerTel != null and recyclerTel!='' ">
+			AND b.tel LIKE CONCAT('%',#{recyclerTel},'%')
+		</if>
+		<if test="recyclerName != null and recyclerName!='' ">
+			AND b.name_ LIKE CONCAT('%',#{recyclerName},'%')
+		</if>
+		<if test="cityId != null and cityId!='' ">
+			AND f.id = #{cityId}
+		</if>
+		ORDER BY
+			a.recycler_id
+		LIMIT #{pageStart},#{pageSize}
+	</select>
+	<select id="getRecyclerCount" parameterType="String" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+			sb_company_recycler a
+		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		LEFT JOIN sb_company c ON a.company_id = c.id
+		LEFT JOIN sb_area d ON a.province = d.id
+		LEFT JOIN sb_area f ON a.city = f.id
+		WHERE
+			a.status_ = 1
+		AND a.is_manager = 1
+		<if test="recyclerTel != null and recyclerTel!='' ">
+			AND b.tel LIKE CONCAT('%',#{recyclerTel},'%')
+		</if>
+		<if test="recyclerName != null and recyclerName!='' ">
+			AND b.name_ LIKE CONCAT('%',#{recyclerName},'%')
+		</if>
+		<if test="cityId != null and cityId!='' ">
+			AND f.id = #{cityId}
+		</if>
+	</select>
+
+	<select id="getRecyclerSonList" parameterType="String" resultType="Map">
+		SELECT
+			a.recycler_id AS recyclerId,
+			b.name_ AS recyclerName,
+			b.tel,
+			c.id AS companyId,
+			c.name_ AS companyName,
+			a.type_ AS type,
+			a.is_manager AS isManager,
+			a.is_enable_area AS isEnableArea,
+			b.is_enable_card AS isEnableCard
+		FROM
+			sb_company_recycler a
+		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		LEFT JOIN sb_company c ON a.company_id = c.id
+		WHERE
+			a.parents_id = #{recyclerId}
+		AND a.type_ = #{type}
+	</select>
+	<delete id="closeCompanyApplianceByRecyclerId" parameterType="Object">
+		DELETE
+		FROM
+			sb_company_street_appliance
+		WHERE
+			company_id = #{companyId}
+		AND street_id IN (
+			SELECT
+				a.street_id
+			FROM
+				sb_recyclers_range_appliance a
+			WHERE
+				a.recyclers_id = #{recyclerId}
+			AND a.company_id = #{companyId}
+		)
+	</delete>
+	<delete id="closeCompanyHouseByRecyclerId" parameterType="Object">
+		DELETE
+		FROM
+			sb_company_street_house
+		WHERE
+			company_id = #{companyId}
+		AND street_id IN (
+			SELECT
+				a.street_id
+			FROM
+				sb_recyclers_range_house a
+			WHERE
+				a.recyclers_id = #{recyclerId}
+			AND a.company_id = #{companyId}
+		)
+	</delete>
+	<delete id="closeCompanyBigByRecyclerId" parameterType="Object">
+		DELETE
+		FROM
+			sb_company_street_big
+		WHERE
+			company_id = #{companyId}
+		AND street_id IN (
+			SELECT
+				a.street_id
+			FROM
+				sb_recyclers_range_big a
+			WHERE
+				a.recyclers_id = #{recyclerId}
+			AND a.company_id = #{companyId}
+		)
+	</delete>
 </mapper>

@@ -10,6 +10,7 @@ package api.admin;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.admin.CompanyBean;
+import com.tzj.collect.core.param.admin.RecyclersBean;
 import com.tzj.collect.core.param.admin.TransStationBean;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.CategoryBean;
@@ -49,12 +50,14 @@ public class AdminCompanyApiTest {
 
 	        String api="http://localhost:9090/admin/api";
 
-		 CompanyBean companyBean = new CompanyBean();
-		 companyBean.setPageBean(new PageBean());
+			 RecyclersBean recyclersBean = new RecyclersBean();
+			 recyclersBean.setRecyclerId((long)2205);
+
+
 
 
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.company.getAdminCompanyList");
+	        param.put("name","admin.recycler.closeRecyclerCard");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -62,7 +65,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",companyBean);
+	        param.put("data",recyclersBean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");

@@ -105,4 +105,16 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 	List<Map<String, Object>> selectRecycleInfoByCompanyId(@Param("recId")Long companyId, @Param("title")String title);
 
     Map<String, Object> selectRecByHardwareCode(@Param("topic")String topic);
+
+	List<Map<String, Object>> getRecyclerList(@Param("recyclerName")String recyclerName,@Param("recyclerTel")String recyclerTel,@Param("cityId")String cityId,@Param("pageStart")Integer pageStart,@Param("pageSize")Integer pageSize);
+
+	Integer getRecyclerCount(@Param("recyclerName")String recyclerName,@Param("recyclerTel")String recyclerTel,@Param("cityId")String cityId);
+
+	List<Map<String, Object>> getRecyclerSonList(@Param("recyclerId")String recyclerId,@Param("type")String type);
+
+	void closeCompanyApplianceByRecyclerId(@Param("companyId")String companyId,@Param("recyclerId")Long recyclerId);
+
+	void closeCompanyHouseByRecyclerId(@Param("companyId")String companyId,@Param("recyclerId")Long recyclerId);
+
+	void closeCompanyBigByRecyclerId(@Param("companyId")String companyId,@Param("recyclerId")Long recyclerId);
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.common.push.PushUtils;
 import com.tzj.collect.core.mapper.CompanyRecyclerMapper;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.app.RecyclersBean;
 import com.tzj.collect.core.param.business.BusinessRecyclerBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
@@ -511,6 +512,45 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	@Override
 	public Map<String, Object> selectRecByHardwareCode(String topic) {
 		return mapper.selectRecByHardwareCode(topic);
+	}
+
+	public Map<String, Object> getRecyclerList(String recyclerName, String recyclerTel, String cityId, PageBean pageBean){
+		if (null == pageBean){
+			pageBean = new PageBean();
+		}
+		Integer pageStart = (pageBean.getPageNumber() - 1)*pageBean.getPageSize();
+		List<Map<String, Object>> recyclerList = mapper.getRecyclerList(recyclerName, recyclerTel, cityId, pageStart, pageBean.getPageSize());
+		Integer count = mapper.getRecyclerCount(recyclerName, recyclerTel, cityId);
+		recyclerList.stream().forEach(map ->{
+			List<Map<String, Object>> recyclerSonList = mapper.getRecyclerSonList(map.get("recyclerId").toString(), map.get("type").toString());
+			map.put("recyclerSonList",recyclerSonList);
+		});
+		Map<String,Object> resultMap = new HashMap<>();
+		resultMap.put("recyclerList",recyclerList);
+		resultMap.put("count",count);
+		resultMap.put("pageNum",pageBean.getPageNumber());
+		return resultMap;
+	}
+	@Override
+	public String closeRecyclerArea(Long recyclerId,String companyId,String type) {
+		CompanyRecycler companyRecycler = this.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclerId).eq("company_id", companyId).eq("type_", type).eq("status_","1"));
+		if (null == companyRecycler){
+			throw new ApiException("暂未找到该信息，请检查参数");
+		}
+		if ("1".equals(companyRecycler.getIsManager())){
+			if ("1".equals(type)){
+				mapper.closeCompanyApplianceByRecyclerId(companyId,recyclerId);
+				mapper.closeCompanyHouseByRecyclerId(companyId,recyclerId);
+				recyclersRangeApplianceService.delete(new EntityWrapper<RecyclersRangeAppliance>().eq("recyclers_id",recyclerId).eq("company_id",companyId));
+				recyclersRangeHouseService.delete(new EntityWrapper<RecyclersRangeHouse>().eq("recyclers_id",recyclerId).eq("company_id",companyId));
+			}else {
+				mapper.closeCompanyBigByRecyclerId(companyId,recyclerId);
+				recyclersRangeBigService.delete(new EntityWrapper<RecyclersRangeBig>().eq("recyclers_id",recyclerId).eq("company_id",companyId));
+			}
+		}
+		companyRecycler.setIsEnableArea("1");
+		this.updateById(companyRecycler);
+		return "操作成功";
 	}
 
 }

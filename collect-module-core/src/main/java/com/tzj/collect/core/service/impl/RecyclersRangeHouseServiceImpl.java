@@ -51,4 +51,12 @@ public class RecyclersRangeHouseServiceImpl extends ServiceImpl<RecyclersRangeHo
     public List<Map<String,Object>> getCommunityRecyclersRange(String streetId, String recycleId, String companyId){
         return recyclersRangeHouseMapper.getCommunityRecyclersRange(streetId,recycleId,companyId);
     }
+
+    public List<Map<String,Object>> getRecyclerAreaByTitleId(String recyclerId,String companyId){
+        return recyclersRangeHouseMapper.getRecyclerAreaByTitleId(recyclerId,companyId);
+    }
+
+    public List<Map<String,Object>> getRecyclerStreetByTitleId(String recyclerId,String companyId,String areaId){
+        return recyclersRangeHouseMapper.getRecyclerStreetByTitleId(recyclerId,companyId,areaId);
+    }
 }

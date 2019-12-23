@@ -32,5 +32,9 @@ public interface RecyclersRangeHouseService extends IService<RecyclersRangeHouse
      */
     @DS("slave")
     List<Map<String,Object>> getCommunityRecyclersRange(String streetId, String recycleId, String companyId);
+    @DS("slave")
+    List<Map<String,Object>> getRecyclerAreaByTitleId(String recyclerId,String companyId);
+    @DS("slave")
+    List<Map<String,Object>> getRecyclerStreetByTitleId(String recyclerId,String companyId,String areaId);
 
 }

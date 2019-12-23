@@ -3394,10 +3394,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Payment payment = paymentService.selectByOrderSn(order.getOrderNo());
 		if (null != payment){
 			//查询此单交易是否成功
-			AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getId().toString());
-			if("Success".equals(aliPayment.getMsg())){
-				paymentNo = aliPayment.getOrderId();
-			}
+//			AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getId().toString());
+//			if("Success".equals(aliPayment.getMsg())){
+//				paymentNo = aliPayment.getOrderId();
+//			}
+            paymentNo = payment.getTradeNo();
 		}
 		Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 		List<OrderPic> orderPicList = orderPicService.selectList(new EntityWrapper<OrderPic>().eq("order_id", order.getId()));

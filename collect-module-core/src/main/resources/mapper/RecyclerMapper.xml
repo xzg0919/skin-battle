@@ -215,6 +215,7 @@
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
 		WHERE
 			a.parents_id = #{recyclerId}
+			AND a.is_enable_area = '0'
 		<choose>
 			<when test=" isBigRecycle == 'Y'.toString() ">
 				AND a.type_ = '4'

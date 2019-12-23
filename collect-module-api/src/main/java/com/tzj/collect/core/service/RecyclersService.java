@@ -228,4 +228,8 @@ public interface RecyclersService extends IService<Recyclers>{
 	List<Long> getRecyclerListGroupCompany();
 	@DS("slave")
 	List<Long> getStreetListGroupCompany();
+	@DS("slave")
+	Object getRecyclerAreaByTitleId(Long recyclerId,String title,String companyId);
+
+	Object closeRecyclerCard(Long recyclerId);
 }

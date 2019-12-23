@@ -38,4 +38,8 @@ public interface RecyclersRangeApplianceService extends IService<RecyclersRangeA
 
     @DS("slave")
     Map<String,Object> companyAreaRecyclerRanges(String companyId);
+    @DS("slave")
+    List<Map<String,Object>> getRecyclerAreaByTitleId(String recyclerId,String companyId);
+    @DS("slave")
+    List<Map<String,Object>> getRecyclerStreetByTitleId(String recyclerId,String companyId,String areaId);
 }

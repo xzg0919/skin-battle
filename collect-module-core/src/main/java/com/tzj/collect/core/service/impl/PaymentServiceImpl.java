@@ -43,7 +43,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
     @Override
     public Payment selectByOrderSn(String orderNo) {
-        return selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo));
+        return selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).in("status_","1,2"));
     }
     @Override
     public Payment selectByOutTradeNo(String outTradeNo){
