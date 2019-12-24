@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.YhTestMapper">
+
+
+    <select id="getAllTables"   resultType="com.tzj.collect.entity.YhTest">
+        SELECT table_name,table_comment FROM information_schema.tables 
+        WHERE table_schema='collect' ORDER BY table_name ASC
+    </select>
+
+
+	<select id="getAllColumns"   resultType="com.tzj.collect.entity.YhTest">
+        SELECT * FROM information_schema.columns
+		WHERE table_schema = 'collect' 
+		AND table_name = #{tableName} 
+    </select>
+</mapper>
