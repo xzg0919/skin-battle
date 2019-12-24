@@ -70,7 +70,7 @@ public class EquipmentAppApi {
         IotCompanyResult iotCompanyResult = companyService.selectIotUrlByEquipmentCode(equipment.getEquipmentCode());
         String aliUrl = "alipays://platformapi/startapp?appId=2018060660292753&page=pages/view/index/index&query=";
         String encodeString = URLEncoder.encode("tranTime="+ System.currentTimeMillis()+ "&ecUuid="+UUID.randomUUID().toString().substring(0,15)+ "&cabinetNo="+equipment.getEquipmentCode());
-        returnMap.put("qrCode", aliUrl+URLEncoder.encode("qrCode=Y&type=appliance&sourceId="+equipment.getEquipmentCode()+"&iotNum="+iotCompanyResult.getIotUrl()+"?"+encodeString));
+        returnMap.put("qrCode", aliUrl+URLEncoder.encode("qrCode=Y&type=appliance&sourceId="+equipment.getEquipmentCode()+"&qrUrl="+iotCompanyResult.getIotUrl()+"?"+encodeString));
         return returnMap;
     }
 

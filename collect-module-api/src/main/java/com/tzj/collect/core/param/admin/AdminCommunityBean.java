@@ -1,5 +1,8 @@
 package com.tzj.collect.core.param.admin;
 
+import lombok.Data;
+
+@Data
 public class AdminCommunityBean {
 	
 	private String countyId; //行政区/县
@@ -9,63 +12,17 @@ public class AdminCommunityBean {
 	private String communityId;//小区id
 	private String communityName;//小区名称
 	private String selected;// 1公司已添加服务范围的小区
-	
-		
-	public String getSelected() {
-		return selected;
-	}
 
-	
-	public void setSelected(String selected) {
-		this.selected = selected;
-	}
+	private Long areaId;//区
 
-	public String getCommunityId() {
-		return communityId;
-	}
+	private Long  cityId;//市
 
-	public void setCommunityId(String communityId) {
-		this.communityId = communityId;
-	}
+	private Long  provinceId;//省
 
-	public String getCountyId() {
-		return countyId;
-	}
+	private String areaName;
 
-	public void setCountyId(String countyId) {
-		this.countyId = countyId;
-	}
+	private String cityName;
 
-	public String getStreetId() {
-		return streetId;
-	}
+	private String provinceName;
 
-	public void setStreetId(String streetId) {
-		this.streetId = streetId;
-	}
-
-	public String getCountyName() {
-		return countyName;
-	}
-
-	public void setCountyName(String countyName) {
-		this.countyName = countyName;
-	}
-
-	public String getStreetName() {
-		return streetName;
-	}
-
-	public void setStreetName(String streetName) {
-		this.streetName = streetName;
-	}
-
-	public String getCommunityName() {
-		return communityName;
-	}
-
-	public void setCommunityName(String communityName) {
-		this.communityName = communityName;
-	}
-	
 }

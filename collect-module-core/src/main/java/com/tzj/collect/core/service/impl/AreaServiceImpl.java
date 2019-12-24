@@ -18,6 +18,7 @@ import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -705,5 +706,48 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		}
 		resultMap.put("cityRatio",cityRatio);
 		return resultMap;
+	}
+
+	@Override
+	@Cacheable(value = "allAreaStreetIdNameInfo" , key = "'allAreaStreetIdNameInfo'",   sync = true)
+	public Map<String, Object> allAreaStreetIdNameInfo() {
+		Map<String, Object> returnMap = new HashMap<>();
+		List<Map<String, Object>> priMapList = new ArrayList<>();
+		/**
+		 * 省
+		 */
+		List<Area> priList = mapper.selectList(new EntityWrapper<Area>().eq("del_flag", 0).eq("type", 0).setSqlSelect("id, area_name"));
+		priList.stream().forEach(priLists -> {
+			Map<String, Object> priMap = new HashMap<>();
+			priMap.put("value", priLists.getId());
+			priMap.put("label", priLists.getAreaName());
+			/**
+			 * 市
+			 */
+			List<Map<String, Object>> cityMapList = new ArrayList<>();
+			List<Area> cityList = mapper.selectList(new EntityWrapper<Area>().eq("del_flag", 0).eq("type", 1).eq("parent_id", priLists.getId()).setSqlSelect("id, area_name"));
+			cityList.stream().forEach(cityLists ->{
+				Map<String, Object> cityMap = new HashMap<>();
+				cityMap.put("value", cityLists.getId());
+				cityMap.put("label", cityLists.getAreaName());
+				List<Map<String, Object>> areaMapList = new ArrayList<>();
+				/**
+				 * 区
+				 */
+				List<Area> areaList = mapper.selectList(new EntityWrapper<Area>().eq("del_flag", 0).eq("type", 2).eq("parent_id", cityLists.getId()).setSqlSelect("id, area_name"));
+				areaList.stream().forEach(areaLists ->{
+					Map<String, Object> areaMap = new HashMap<>();
+					areaMap.put("value", areaLists.getId());
+					areaMap.put("label", areaLists.getAreaName());
+					areaMapList.add(areaMap);
+				});
+				cityMap.put("children", areaMapList);
+				cityMapList.add(cityMap);
+			});
+			priMapList.add(priMap);
+			priMap.put("children", cityMapList);
+		});
+		returnMap.put("returnInfo", priMapList);
+		return returnMap;
 	}
 }

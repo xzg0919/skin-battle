@@ -162,7 +162,7 @@ public class IotApi {
                 //动态二维码检测
                 if(equipmentMessageService.redisSetCheck("IoT:Equipment:Uid", iotPostParamBean.getEcUuid())){
                     throw new ApiException("二维码已被使用");
-                }if (Long.parseLong("5000") < codeTime || codeTime <= 0) {
+                }if (Long.parseLong("300000") < codeTime || codeTime <= 0) {
                     throw new ApiException("二维码已过期");
                 }
                 else {

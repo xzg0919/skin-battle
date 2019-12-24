@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
@@ -41,7 +42,20 @@ public class AdminAreaApi {
 	private AreaService areaService;
 	@Autowired
 	private CommunityService commService;
-	
+
+
+	/**
+	 * 联动下拉选择框地址数据
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2019/12/23 0023
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "admin.all.area.info", version = "1.0")
+	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+	public Map<String, Object> allAreaStreetIdNameInfo() {
+		return areaService.allAreaStreetIdNameInfo();
+	}
 	// 根据区县 街道 小区 搜索 都不是必传条件 分别特
 	@Api(name = "admin.area.getarealist", version = "1.0")
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)

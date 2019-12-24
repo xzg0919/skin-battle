@@ -5,21 +5,29 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.excel.ExcelData;
 import com.tzj.collect.common.excel.ExcelUtils;
+import com.tzj.collect.common.qrcode.QRBarCodeUtil;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.business.CityBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.module.easyopen.exception.ApiException;
 import net.sf.json.JSONArray;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,6 +41,8 @@ public class AdminController {
 	private OrderService orderService;
 	@Autowired
 	private AsyncService asyncService;
+	@Resource
+	private LineQrCodeService lineQrCodeService;
 
 
 	@RequestMapping("/addExcel")
@@ -263,7 +273,33 @@ public class AdminController {
 		return "操作成功";
 	}
 
-
+	/**
+	 * 下载生成二维码
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2019/12/23 0023
+	 * @Param: 
+	 * @return: 
+	 */
+	@RequestMapping("qrCode")
+	public void getQRCode(String codeContent, HttpServletResponse response) throws UnsupportedEncodingException {
+		if (StringUtils.isEmpty(codeContent)){
+			throw new ApiException("下载内容不能为空");
+		}
+		LineQrCode lineQrCode = lineQrCodeService.selectOne(new EntityWrapper<LineQrCode>().eq("del_flag", 0).eq("qr_url", codeContent));
+		if (null == lineQrCode){
+			throw new ApiException("下载内容未找到");
+		}
+		response.setContentType("application/octet-stream;charset=UTF-8");
+		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(lineQrCode.getName() + ".png", "UTF-8"));
+		try {
+			/**
+			 * 调用工具类生成二维码并输出到输出流中
+			 */
+			QRBarCodeUtil.createCodeToOutputStream(codeContent, response.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 
 

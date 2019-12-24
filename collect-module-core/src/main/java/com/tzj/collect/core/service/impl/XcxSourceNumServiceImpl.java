@@ -3,14 +3,17 @@ package com.tzj.collect.core.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.XcxSourceNumMapper;
+import com.tzj.collect.core.service.LineQrCodeService;
 import com.tzj.collect.core.service.XcxSourceNumService;
 import com.tzj.collect.core.service.XcxSourceTitleService;
+import com.tzj.collect.entity.LineQrCode;
 import com.tzj.collect.entity.XcxSourceNum;
 import com.tzj.collect.entity.XcxSourceTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -21,11 +24,12 @@ public class XcxSourceNumServiceImpl extends ServiceImpl<XcxSourceNumMapper, Xcx
 
     @Autowired
     private XcxSourceTitleService xcxSourceTitleService;
+    @Resource
+    private LineQrCodeService lineQrCodeService;
 
     @Override
     @Transactional
     public Object saveXcxSourceNum(String xcxCode) {
-
         XcxSourceTitle xcxSourceTitle = xcxSourceTitleService.selectOne(new EntityWrapper<XcxSourceTitle>().eq("code", xcxCode).eq("del_flag", 0));
         XcxSourceNum xcxSourceNum = this.selectOne(new EntityWrapper<XcxSourceNum>().eq("code", xcxCode).eq("del_flag", 0).eq("times", new SimpleDateFormat("yyyy-MM-dd").format(new Date())));
         if (null != xcxSourceNum){
@@ -40,6 +44,15 @@ public class XcxSourceNumServiceImpl extends ServiceImpl<XcxSourceNumMapper, Xcx
             }
         }
         this.insertOrUpdate(xcxSourceNum);
+        LineQrCode lineQrCode = lineQrCodeService.selectOne(new EntityWrapper<LineQrCode>().eq("del_flag", 0).eq("share_code", xcxCode));
+        try {
+            if (null != lineQrCode){
+                lineQrCode.setShareNum(lineQrCode.getShareNum()+1);
+                lineQrCode.setUpdateDate(new Date());
+                lineQrCodeService.updateById(lineQrCode);
+            }
+        }catch (Exception e){
+        }
         return "操作成功";
     }
 }

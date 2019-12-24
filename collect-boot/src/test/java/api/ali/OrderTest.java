@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.ali.*;
 import com.tzj.collect.core.param.app.OrderPayParam;
 import com.tzj.collect.core.param.business.CategoryBean;
+import com.tzj.collect.core.param.iot.IotPostParamBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -73,17 +74,21 @@ public class OrderTest {
                 categoryAttrBean.setCategoryId((long)80);
                 categoryAttrBean.setType("BIGTHING");
                 categoryAttrBean.setCategoryAttrOptionids("2994,2999,3002,3004,3012,3015,3018");
-
+                IotPostParamBean iotPostParamBean = new IotPostParamBean();
+                iotPostParamBean.setQrUrl("https://mayishoubei.com/equipment/iot");
+                iotPostParamBean.setTranTime(System.currentTimeMillis());
+                iotPostParamBean.setCabinetNo("869012040193968");
+                iotPostParamBean.setEcUuid(UUID.randomUUID().toString());
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","category.getPricesAll");
+                param.put("name","iot.scan");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
                 param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
-                param.put("token",securityToken);
+                param.put("token", "3F3TEMH74565Q5QORHNPE76UZM6VT4JPWVV4OPUNTGAXLLRLC6B5GYU3LW34YHVNOEFL2LXPVT24VVHUSAVURD6DYOPXOA4E3QOVNZIQI4THTY2RGNCYJ23R2CDMCSEC47RMLNACX2J4ULZAAOY46ORQJCMU2FP5UTXCOMU27JYPJDLHKTXTA63VC3OH3YSVK4RZPM7ZVLDQFJOMJMHJZ2SVEWOR44OU6AKMFJBR2YDJ2HFTBJ7WB2YTQ7X7ABHHZHPVG22XNDPF4NQ5QZ3VW7B7C5UHS2GLEZ6BM2J2SUXEQRAXUMPGURWI4CK75XLIZQPB3SEIQRK3S");
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",categoryAttrBean);
+                param.put("data",iotPostParamBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

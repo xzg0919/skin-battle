@@ -24,8 +24,7 @@ public class UtilsController {
     }
     public static String getXcxUri(String urlParam, String id, String type,String channelId){
         System.out.println("---------"+urlParam+"-------"+id+"-------"+type);
-        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
-        AlipayOpenAppQrcodeCreateRequest request = new AlipayOpenAppQrcodeCreateRequest();
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);AlipayOpenAppQrcodeCreateRequest request = new AlipayOpenAppQrcodeCreateRequest();
         AlipayOpenAppQrcodeCreateModel model = new AlipayOpenAppQrcodeCreateModel();
         model.setUrlParam(urlParam);
         String queryParam = "";

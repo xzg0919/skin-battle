@@ -9,6 +9,8 @@
 package api.admin;
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.core.param.admin.AdminAddressBean;
+import com.tzj.collect.core.param.admin.AdminShareCodeBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.admin.TransStationBean;
 import com.tzj.collect.core.param.ali.AreaBean;
@@ -16,6 +18,7 @@ import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.BOrderBean;
+import com.tzj.collect.entity.LineQrCode;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -48,13 +51,30 @@ public class AdminCompanyApiTest {
 
 
 	        String api="http://localhost:9090/admin/api";
-
-		 CompanyBean companyBean = new CompanyBean();
-		 companyBean.setPageBean(new PageBean());
-
-
+		 AdminShareCodeBean adminShareCodeBean = new AdminShareCodeBean();
+//		 adminShareCodeBean.setQrType(LineQrCode.QrType.OFFLINE);
+//		 adminShareCodeBean.setQrName("测试");
+		 adminShareCodeBean.setQrCode("45dad314-af73-4686-8d39-5a91ad5fa6d9");
+//		 adminShareCodeBean.setQrName("测试");
+//		 adminShareCodeBean.setQrCodeInfo("测试说明");
+//		 AdminAddressBean adminAddressBean = new AdminAddressBean();
+//		 adminAddressBean.setAreaId(37492L);
+//		 adminAddressBean.setCityId(37117L);
+//		 adminAddressBean.setStreetId(3L);
+		 adminShareCodeBean.setProvinceId(1L);
+//		 adminAddressBean.setProvinceName("四川省");
+//		 adminAddressBean.setCityName("凉山彝族自治州");
+//		 adminAddressBean.setAreaName("冕宁县");
+//		 adminAddressBean.setStreetName("测试街道");
+		 PageBean pageBean = new PageBean();
+		 pageBean.setPageNumber(1);
+		 pageBean.setPageSize(10);
+//		 List<AdminAddressBean> newArrayList = new ArrayList<>();
+//		 newArrayList.add(adminAddressBean);
+//		 adminShareCodeBean.setAdminCityList(newArrayList);
+//		 adminShareCodeBean.setPageBean(pageBean);
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.company.getAdminCompanyList");
+	        param.put("name","admin.share.code.detail");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -62,7 +82,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",companyBean);
+	        param.put("data",adminShareCodeBean);
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");

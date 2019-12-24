@@ -40,4 +40,9 @@
     <!-- 小程序首页缓存 -->
     <cache name="getCollectDetail" maxElementsInMemory="10000" maxElementsOnDisk="10000000"
            timeToIdleSeconds="300" timeToLiveSeconds="19800" eternal="false" overflowToDisk="true" memoryStoreEvictionPolicy="FIFO" />
+
+    <!-- 地址信息 -->
+    <cache name="allAreaStreetIdNameInfo" maxElementsInMemory="10000" maxElementsOnDisk="10000000"
+           timeToIdleSeconds="300" timeToLiveSeconds="300" eternal="false" overflowToDisk="true" memoryStoreEvictionPolicy="FIFO" />
+
 </ehcache>

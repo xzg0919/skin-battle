@@ -13,18 +13,18 @@ import java.util.UUID;
  **/
 public class MqttTest {
     public static void main(String[] args) throws Exception {
-        String api="http://localhost:9006/equipment/iot/app/api";
+        String api="http://test.equip.mayishoubei.com/equipment/iot/app/api";
         HashMap<String,Object> param=new HashMap<>();
         param.put("name","equipment.qrcode");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_8");
         param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-        param.put("token", "F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFAYNMS3JNARBJS662CEVHWOWPJBQIMQBG322BQQXY7ZXC7GV2WTU66264ZVHDB2AGXSFNVG6TYTUHYAOIXHU3DKHTW7WPEZXLH2AVFJUWJ233YOFZUUI2SS36NERA3RMTDKAHT5EQR2GYOJ6PI3AW5F2DN424PJQMYHYMTXEJ4FUU5SAJHLPT3AJPECB6OH3E2HPZ4AKXYW6WRFZ5D25ID5B3HS72SRRWJHG773JQ");
+        param.put("token", "F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFAYNMS3JNARBJS662CEVHWOWPJBWHHYHCZOF474ON5C7LJIOCK4OV6264ZVHDB2AGW7BSIFCZ6RUAD5FMFT3KQ2VZV5SK2LJ2UDFEN4RMVJIEJMRS6HWEFIGFVLHJEXJ2FXJK5XALQQ4VLLMOBCNAEDWVVGSQELXC6QD6QB6ZMNPKYM446O3W36DV37OPZFW5ZK6WYTPOB7UFKKZBO4TAAIFFK5OFKQ3ZXOLYZXDA");
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID().toString());
 
-        param.put("data","{\"fToken\":\"fp0a0a5b3a368bc50a6dcabd677784d20a0\"}");
+//        param.put("data","{\"fToken\":\"fp0a0a5b3a368bc50a6dcabd677784d20a0\"}");
 
         String jsonStr= JSON.toJSONString(param);
         String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_55667788");

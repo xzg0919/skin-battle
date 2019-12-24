@@ -100,7 +100,11 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.3.1</version>
+        </dependency>
 
         <!-- mqtt + mq -->
         <dependency>
@@ -113,6 +117,7 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.2</version>
         </dependency>
+
     </dependencies>
 
 </project>

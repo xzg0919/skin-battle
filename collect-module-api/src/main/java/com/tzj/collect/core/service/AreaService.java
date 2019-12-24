@@ -93,4 +93,6 @@ public interface AreaService  extends IService<Area>{
 	List<Map<String,Object>> getAllCityListByCompanyId(AreaBean areaBean);
 	@DS("slave")
 	Map<String,Object> getTitleByCompanyId(AreaBean areaBean);
+
+	Map<String, Object> allAreaStreetIdNameInfo();
 }
