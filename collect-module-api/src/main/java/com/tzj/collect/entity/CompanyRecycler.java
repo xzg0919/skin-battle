@@ -35,4 +35,6 @@ public class CompanyRecycler extends DataEntity<Long> {
 
 	private Integer parentsId;//属于哪位业务经理 业务经理为空
 
+	private String isEnableArea;//是否关闭相关区域 0不关闭  1关闭
+
 }

@@ -661,8 +661,7 @@
 	</select>
 	<select id="getAllCityListByCompanyId" parameterType="String" resultType="Map">
 		SELECT DISTINCT
-			d.area_name AS provinceName,
-			c.area_name AS cityName,
+			CONCAT(d.area_name,'-',c.area_name) AS cityName,
 			c.id
 		FROM
 			(

@@ -530,4 +530,37 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     public List<Long> getStreetListGroupCompany(){
         return recyclersMapper.getStreetListGroupCompany();
     }
+    @Override
+    public Object getRecyclerAreaByTitleId(Long recyclerId,String title,String companyId){
+        List<Map<String,Object>> resultList = null;
+        if ("1".equals(title)){
+            resultList = recyclersRangeApplianceService.getRecyclerAreaByTitleId(recyclerId.toString(),companyId);
+            resultList.stream().forEach(map -> {
+                List<Map<String, Object>> streetList = recyclersRangeApplianceService.getRecyclerStreetByTitleId(recyclerId.toString(), companyId, map.get("areaId").toString());
+                map.put("streetList",streetList);
+            });
+        }if ("2".equals(title)){
+            resultList = recyclersRangeHouseService.getRecyclerAreaByTitleId(recyclerId.toString(),companyId);
+            resultList.stream().forEach(map -> {
+                List<Map<String, Object>> streetList = recyclersRangeHouseService.getRecyclerStreetByTitleId(recyclerId.toString(), companyId, map.get("areaId").toString());
+                map.put("streetList",streetList);
+            });
+        }if ("4".equals(title)){
+            resultList = recyclersRangeBigService.getRecyclerAreaByTitleId(recyclerId.toString(),companyId);
+            resultList.stream().forEach(map -> {
+                List<Map<String, Object>> streetList = recyclersRangeBigService.getRecyclerStreetByTitleId(recyclerId.toString(), companyId, map.get("areaId").toString());
+                map.put("streetList",streetList);
+            });
+        }
+        return resultList;
+    }
+
+    @Transactional
+    @Override
+    public Object closeRecyclerCard(Long recyclerId){
+        Recyclers recyclers = this.selectById(recyclerId);
+        recyclers.setIsEnableCard("1");
+        this.updateById(recyclers);
+        return "操作成功";
+    }
 }

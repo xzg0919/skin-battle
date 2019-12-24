@@ -1,6 +1,7 @@
 package com.tzj.collect.core.service.impl;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.RecyclersTitleMapper;
 import com.tzj.collect.core.service.RecyclersTitleService;
@@ -24,5 +25,10 @@ public class RecyclersTitleServiceServiceImpl extends ServiceImpl<RecyclersTitle
     public List<Map<String, Object>> getRecyclerTitleList(String recycleId) {
 
         return recyclersTitleMapper.getRecyclerTitleList(recycleId);
+    }
+
+    @Override
+    public Object getRecyclerTitleById(Long recyclerId) {
+        return this.selectList(new EntityWrapper<RecyclersTitle>().eq("recycle_id",recyclerId));
     }
 }

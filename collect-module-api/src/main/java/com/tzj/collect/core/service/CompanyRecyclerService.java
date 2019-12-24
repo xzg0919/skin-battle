@@ -2,6 +2,7 @@ package com.tzj.collect.core.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.app.RecyclersBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.result.app.AppCompany;
@@ -152,4 +153,8 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
     String companyBlueTooth(String recId);
 	@DS("slave")
     Map<String, Object> selectRecByHardwareCode(String topic);
+	@DS("slave")
+	Map<String, Object> getRecyclerList(String recyclerName, String recyclerTel, String cityId, PageBean pageBean);
+
+	String closeRecyclerArea(Long recyclerId,String companyId,String type);
 }

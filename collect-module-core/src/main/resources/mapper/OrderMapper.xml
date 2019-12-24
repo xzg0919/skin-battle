@@ -1767,10 +1767,15 @@
 		a.status_ AS status,
 		b.name_ AS recycleerName,
 		d.name_ AS companyName,
+		if(a.is_cash = '0',a.commissions_price,0) as commissionsPrice,
+		if(a.is_cash = '0',0,a.commissions_price) as freeCommissionsPrice,
+		a.back_commissions_price as backCommissionsPrice,
 		DATE_FORMAT(a.complete_date, '%Y-%c-%d %H:%i:%s' ) as completeDate,
 		a.complaint_type AS complaintType,
-		e.reason,
-		DATE_FORMAT(e.update_date, '%Y-%c-%d %H:%i:%s' ) as updateDate,
+		(SELECT COUNT(1) FROM sb_order_complaint aa WHERE aa.type_ = 0 AND aa.order_no = a.order_no) AS initCount,
+		(SELECT COUNT(1) FROM sb_order_complaint aa WHERE aa.type_ = 1 AND aa.order_no = a.order_no) AS sendCount,
+		(SELECT COUNT(1) FROM sb_order_complaint aa WHERE aa.type_ = 2 AND aa.order_no = a.order_no) AS completeCount,
+		(SELECT COUNT(1) FROM sb_order_complaint aa WHERE aa.type_ = 4 AND aa.order_no = a.order_no) AS complaintCount,
 		(SELECT COUNT(1) FROM sb_order_complaint aa WHERE aa.order_no = a.order_no) AS count,
 		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
@@ -1778,7 +1783,6 @@
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
 		LEFT JOIN sb_category c ON a.category_id = c.id
 		LEFT JOIN sb_company d ON a.company_id = d.id
-		LEFT JOIN sb_order_complaint e ON a.order_no = e.order_no
 		WHERE
 		a.del_flag = 0
 		<if test="companyId != null and companyId !='' ">

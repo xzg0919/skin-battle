@@ -63,6 +63,9 @@ public class AppTokenApi {
             if (recyclers == null) {
                 throw new ApiException("用户名或密码错误");
             } else {
+                if ("1".equals(recyclers.getIsEnableCard())){
+                    throw new ApiException("该账号已被禁用");
+                }
                 recyclers.setTencentToken(recyclersLoginBean.getXgtoken());
                 recyclersService.insertOrUpdate(recyclers);
                 String token = JwtUtils.generateToken(recyclers.getId().toString(), APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
@@ -82,6 +85,9 @@ public class AppTokenApi {
                     recyclers = new Recyclers();
                     recyclers.setName(recyclersLoginBean.getMobile());
                     recyclers.setTel(recyclersLoginBean.getMobile());
+                }
+                if ("1".equals(recyclers.getIsEnableCard())){
+                    throw new ApiException("该账号已被禁用");
                 }
                 recyclers.setTencentToken(recyclersLoginBean.getXgtoken());
                 recyclersService.insertOrUpdate(recyclers);
@@ -111,7 +117,9 @@ public class AppTokenApi {
 
         //接口里面获取  Recyclers 的例子
         Recyclers recyclers = (Recyclers) subject.getUser();
-
+        if ("1".equals(recyclers.getIsEnableCard())){
+            throw new ApiException("该账号已被禁用");
+        }
         String token = JwtUtils.generateToken(subject.getId(), APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
         String securityToken = JwtUtils.generateEncryptToken(token, APP_API_TOKEN_CYPTO_KEY);
 

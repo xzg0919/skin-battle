@@ -157,6 +157,7 @@ public class AppRecyclersApi {
 	public Object save1(RecyclersBean recyclersBean) {
 		System.out.println("回收人员的姓名是+："+recyclersBean.getName()+"性别是："+recyclersBean.getSex()+"省份正号是"+recyclersBean.getIdCard()+"地址是："+recyclersBean.getAddress());
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
+		Recyclers idCard = recyclersService.selectOne(new EntityWrapper<Recyclers>().eq("id_card", recyclersBean.getIdCard()).eq("is_enable_card","1"));
 		if (!StringUtils.isBlank(recyclersBean.getName())&&
 			!StringUtils.isBlank(recyclersBean.getSex())&& 
 			!StringUtils.isBlank(recyclersBean.getIdCard())&&
@@ -165,6 +166,9 @@ public class AppRecyclersApi {
 			recycler.setSex(recyclersBean.getSex());
 			recycler.setIdCard(recyclersBean.getIdCard());
 			recycler.setAddress(recyclersBean.getAddress());
+			if (null != idCard){
+				recycler.setIsEnableCard("1");
+			}
 			recyclersService.updateById(recycler);
 		} else {
 			return "个人信息不完整";

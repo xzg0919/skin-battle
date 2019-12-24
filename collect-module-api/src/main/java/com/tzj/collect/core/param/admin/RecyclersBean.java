@@ -2,7 +2,9 @@ package com.tzj.collect.core.param.admin;
 
 
 import com.tzj.collect.core.param.ali.PageBean;
+import lombok.Data;
 
+@Data
 public class RecyclersBean {
 
 	private String recycleCompany;   //所属服务公司
@@ -10,6 +12,8 @@ public class RecyclersBean {
 	private String recyclerName;     //回收人员姓名
 	
 	private Long recyclerId;         //回收人员ID
+
+	private String cityId;
 	
 	private String recyclerIdCard; // 回收人员身份证号
 	
@@ -34,6 +38,12 @@ public class RecyclersBean {
 	private Integer  endPage;       //结束页码
 	
 	private PageBean page;
+
+	private String title;
+
+	private String type;
+
+	private String companyId;
 	
 	public Integer getStartPage() {
 		return startPage;

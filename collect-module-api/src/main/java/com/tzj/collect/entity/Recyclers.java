@@ -57,6 +57,8 @@ public class Recyclers extends DataEntity<Long> {
 
  	private String password;
 
+ 	private String isEnableCard;//是否禁用身份信息 0不禁用  1禁用
+
 
 	//芝麻认证码
 	private String bizNo;
