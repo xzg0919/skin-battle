@@ -122,11 +122,16 @@ public class NotifyController {
                     payment.setTotalAmount(totalAmount);
                     payment.setVoucherMember(voucherMember);
                     //給用戶轉賬
-                    if(!(Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")&&null != voucherMember){
-                        //如果不是大件并且有优惠券，则计算使用该券后的价格给用户进行转账
-                        BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(order.getAchPrice(), voucherMember.getId().toString());
-                        payment.setDiscountPrice(discountPrice);
-                        payment.setTransferPrice(discountPrice);
+                    if(!(Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                        if(null != voucherMember){
+                            //如果不是大件并且有优惠券，则计算使用该券后的价格给用户进行转账
+                            BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(order.getAchPrice(), voucherMember.getId().toString());
+                            payment.setDiscountPrice(discountPrice);
+                            payment.setTransferPrice(discountPrice);
+                        }else {
+                            payment.setDiscountPrice(order.getAchPrice());
+                            payment.setTransferPrice(order.getAchPrice());
+                        }
                     }else {
                         payment.setDiscountPrice(new BigDecimal(totalAmount));
                         payment.setTransferPrice(order.getAchPrice().subtract(order.getCommissionsPrice()));
