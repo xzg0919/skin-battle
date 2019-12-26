@@ -39,7 +39,7 @@ public class GoodsProductOrderServiceImpl extends ServiceImpl<GoodsProductOrderM
 		GoodsProductOrder goodsProductOrder = new GoodsProductOrder();
 		goodsProductOrder.setUserName(memberAddress.getName());
 		goodsProductOrder.setMobile(memberAddress.getTel());
-		goodsProductOrder.setAddress(memberAddress.getAddress());
+		goodsProductOrder.setAddress(memberAddress.getCityName()+memberAddress.getAreaName()+memberAddress.getStreetName()+memberAddress.getAddress()+memberAddress.getHouseNumber());
 		goodsProductOrder.setProductId(product.getId());
 		goodsProductOrder.setAliUserId(member.getAliUserId());
 		goodsProductOrder.setProductName(product.getBrand());

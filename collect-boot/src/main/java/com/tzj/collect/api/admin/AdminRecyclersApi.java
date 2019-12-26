@@ -9,6 +9,7 @@ import com.tzj.collect.entity.Recyclers;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class AdminRecyclersApi {
 	 * @throw
 	 */
 	@Api(name = "recycler.getPage", version = "1.0")
+	@SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public JSONObject getRecyclersPage(RecyclersBean bean){
  		JSONObject obj=new JSONObject();
@@ -72,6 +74,7 @@ public class AdminRecyclersApi {
 	 * 
 	 */
 	@Api(name = "recycler.companies", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public List<Company> getRecyclerCompany(RecyclersBean recyclersBean) {
 		List<Company> list = companyRecycleService.selectCompanyByRecyclerId(recyclersBean.getRecyclerId().toString());

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <script src="/jquery-3.1.1/jquery-3.1.1.min.js"></script>
+  <script>
+$
+(
+     function()
+	 {
+	    	$.ajax
+	 		(
+		    		{
+		    			url:'http://localhost:9090/auto/getTables',
+		    			dataType:'text',
+		    			type:'GET',
+		    			success:function(data)
+		    			{
+		    				$("#sl").html(data);
+		    				$("#ok").removeAttr("disabled");
+		    			}
+		    		}
+	 		);
+    		
+    		$("#ok").click
+    		(
+    			function()
+    			{
+    				var tableInfo = $("#sl option:selected").text();
+    				var auth = $("#auth").val();
+    				if(auth == "" || auth == null)
+    				{
+    					alert("你叫啥了？");
+    					return false;
+    				}	
+    				$.ajax
+    		 		(
+    			    		{
+    			    			url:'http://localhost:9090/auto/makeCode',
+    			    			dataType:'text',
+    			    			data:{tableInfo:tableInfo,auth:auth},
+    			    			type:'GET',
+    			    			success:function(data)
+    			    			{
+    			    				alert(data);
+    			    			}
+    			    		}	
+					);
+    			}
+    		);
+	 }	
+);
+
+</script>
+ </head>
+ <body>
+  <form>
+  <input type = "text" id = "auth" placeholder="你叫啥了？"/><br><br>
+  <select id="sl"></select><br><br><br>
+  <input type="button" id="ok" value="代码还有五分钟到达战场" disabled="disabled"></input>
+  </form>
+  
+ </body>
+</html>

@@ -32,6 +32,7 @@
         <module>collect-module-api</module>
         <module>collect-module-common</module>
         <module>collect-module-core</module>
+        <module>collect-green</module>
     </modules>
 
     <repositories>
