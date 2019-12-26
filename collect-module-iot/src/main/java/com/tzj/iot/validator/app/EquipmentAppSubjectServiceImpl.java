@@ -22,7 +22,7 @@ import static com.tzj.collect.common.constant.TokenConst.EQUIPMENT_APP_API_COMMO
 @Service("equipmentAppApiSubjectServiceImpl")
 public class EquipmentAppSubjectServiceImpl implements SubjectService {
 
-    private final String cacheName="appCache";
+    private final String cacheName="equipmentAppCache";
 
     @Autowired
     private CacheManager cacheManager;

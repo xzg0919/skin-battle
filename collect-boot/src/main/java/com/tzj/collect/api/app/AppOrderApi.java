@@ -56,8 +56,8 @@ public class AppOrderApi {
 	 */
 	@Api(name = "app.order.list", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
-	public List<Map<String, Object>> orderList(OrderBean orderBean){
-		return orderService.selectIotRecList(RecyclersUtils.getRecycler().getId(), orderBean.getStatus());
+	public Map<String, Object> orderList(OrderBean orderBean){
+		return orderService.selectIotRecList(RecyclersUtils.getRecycler().getId(), orderBean.getStatus(), orderBean.getPagebean());
 	}
 	/**
 	 * 根据订单传来的状态获取订单列表

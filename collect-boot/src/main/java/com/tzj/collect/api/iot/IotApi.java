@@ -16,6 +16,7 @@ import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
+import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
@@ -34,8 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * iot设备接口
@@ -162,7 +162,7 @@ public class IotApi {
                 //动态二维码检测
                 if(equipmentMessageService.redisSetCheck("IoT:Equipment:Uid", iotPostParamBean.getEcUuid())){
                     throw new ApiException("二维码已被使用");
-                }if (Long.parseLong("300000") < codeTime || codeTime <= 0) {
+                }if (Long.parseLong("300000") < codeTime) {
                     throw new ApiException("二维码已过期");
                 }
                 else {
@@ -172,6 +172,9 @@ public class IotApi {
                 Map<String, String> messageMap = new HashMap<>();
                 messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getKey());
                 messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getValue());
+                String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
+                String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
+                messageMap.put("token", securityToken);
                 equipmentMessageService.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap),iotCompanyResult.getHardwareCode(), mqttClient);
                 map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
                 map.put("status", MessageCode.SUCCESS_OPEN.getKey());

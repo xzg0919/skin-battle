@@ -5,12 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.constant.MQTTConst;
-import com.tzj.collect.api.commom.mqtt.MQTTConfig;
-import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
-import com.tzj.collect.api.commom.mqtt.util.Tools;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.amap.AmapConst;
 import com.tzj.collect.common.amap.AmapRegeoJson;
+import com.tzj.collect.core.param.iot.EquipmentParamBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -20,9 +18,9 @@ import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.weaver.ast.Or;
-import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,22 +28,14 @@ import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
-import static org.eclipse.paho.client.mqttv3.MqttConnectOptions.MQTT_VERSION_3_1_1;
 
 /**
  * @author sgmark
@@ -56,8 +46,6 @@ import static org.eclipse.paho.client.mqttv3.MqttConnectOptions.MQTT_VERSION_3_1
 public class EquipmentMessageServiceImpl implements EquipmentMessageService {
 
     final int qosLevel = 1;
-    @Resource(name = "connectionOptionWrapperSignature")
-    private ConnectionOptionWrapper connectionOptionWrapper;
     @Resource
     private CompanyRecyclerService companyRecyclerService;
     @Resource
@@ -72,7 +60,12 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     private RedisUtil redisUtil;
     @Resource
     private  JedisPool jedisPool;
-
+    @Resource
+    private MessageService messageService;
+    @Resource
+    private RecyclersService recyclersService;
+    @Resource
+    private MemberService memberService;
     @Override
     @Transactional(readOnly = false)
     public void dealWithMessage(String topic,String message, MqttClient mqttClient) {
@@ -91,11 +84,11 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 //拿到物品识别图片地址,返回识别结果(挡板翻转)
                 messageMap.get("imgUrl");
                 //调用阿里的物品识别接口 todo
-                Integer nextInt =  new Random().nextInt(1);
+                Integer nextInt =  new Random().nextInt(3);
                 //返回預定圖片
                 messageMap = new HashMap<>();
                 messageMap.put("imgUrl", "http://images.sqmall.top/collect/20180427_category_pic/11.png");
-                messageMap.put("action", nextInt);
+                messageMap.put("action", nextInt > 0 ? "2":"1");
                 messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getKey());
                 messageMap.put("msg",  CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getValue());
                 //發送消息
@@ -115,6 +108,9 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                         messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getValue());
                         this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
                         //更改订单状态
+                        Order order = orderService.selectOne(new EntityWrapper<Order>().eq("del_flag", 0).eq("order_sn", payment.getOrderSn()));
+                        order.setStatus(Order.OrderType.COMPLETE);
+                        orderService.updateById(order);
                     }else {
                         payment.setIsSuccess("1");
                         payment.setRemarks(alipayFundTransToaccountTransferResponse.getSubMsg());
@@ -168,7 +164,11 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                     equipmentLocationList.setEquipmentCode(topic);
                     equipmentLocationList.setLatitude(messageMap.get("latitude")+"");
                     equipmentLocationList.setLongitude(messageMap.get("longitude")+"");
-                    equipmentLocationList.setLocation(locationByLBS(equipmentLocationList.getLongitude(), equipmentLocationList.getLatitude()));
+                    if (!StringUtils.isEmpty(messageMap.get("location")+"")){
+                        equipmentLocationList.setLocation(messageMap.get("location")+"");
+                    }else {
+                        equipmentLocationList.setLocation(locationByLBS(equipmentLocationList.getLongitude(), equipmentLocationList.getLatitude()));
+                    }
                     equipmentLocationListService.insert(equipmentLocationList);
                     //只保留最新10条
                     Integer equipmentLocationCount = equipmentLocationListService.selectCount(new EntityWrapper<EquipmentLocationList>().eq("del_flag", 0).eq("equipment_code", topic));
@@ -223,7 +223,8 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 iotParamBean = new IotParamBean();
                 iotParamBean.setSumPrice(new BigDecimal(object.get("sumPrice").toString()));
                 iotParamBean.setEquipmentCode(object.get("equipmentCode").toString());
-                iotParamBean.setMemberId(subjectStr);
+                Member member = memberService.selectMemberByAliUserId(subjectStr);
+                iotParamBean.setMemberId(member.getCardNo());
                 iotParamBean.setParentLists(object.getJSONArray("parentLists").toJavaList(IotParamBean.ParentList.class));
                 //消息保存成功之后再处理
                 orderService.iotCreatOrder(iotParamBean);
@@ -252,6 +253,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     public void sendMessageToMQ4IoTUseSignatureMode(String message, String topic, MqttClient mqttClient) throws MqttException {
         MqttMessage mqttMessage = new MqttMessage(message.getBytes());
         mqttMessage.setQos(qosLevel);
+        System.out.println("message:"+message);
         mqttClient.publish(MQTTConst.PARENT_TOPIC + "/" + topic, mqttMessage);
     }
 
@@ -280,6 +282,37 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     @Override
     public Boolean redisSetCheck(String key, String value){
         return redisUtil.redisSetCheck(key, value, jedisPool);
+    }
+
+    @Override
+    public Map<String, Object> equipmentCodeOpen(EquipmentParamBean equipmentParamBean, MqttClient mqttClient) {
+        Map<String, Object> returnMap = new HashMap<>();
+        Order order = orderService.selectOne(new EntityWrapper<Order>().eq("del_flag", 0).eq("iot_equipment_code", equipmentParamBean.getHardwareCode()).eq("status_", Order.OrderType.TOSEND));
+        if (null != order){
+            Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+            if (messageService.validMessage(recyclers.getTel(), equipmentParamBean.getCaptcha())){
+                //验证码有效，发送开箱请求
+                Map<String, Object> messageMap = new HashMap<>();
+                messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_OPEN.getKey());
+                messageMap.put("message", CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_OPEN.getKey());
+                try {
+                    this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), equipmentParamBean.getHardwareCode(), mqttClient);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+                //使验证码失效
+                EntityWrapper<Message> wrapper = new EntityWrapper<>();
+                wrapper.eq("del_flag", 0);
+                wrapper.eq("tel", recyclers.getTel());
+                wrapper.eq("message_code", equipmentParamBean.getCaptcha());
+                Message message= messageService.selectOne(wrapper);
+                message.setDelFlag("1");
+                messageService.updateById(message);
+            }
+        }
+        returnMap.put("msg", "操作成功");
+        returnMap.put("code", "0");
+        return returnMap;
     }
 
     private String locationByLBS(String longitude, String latitude) throws Exception{

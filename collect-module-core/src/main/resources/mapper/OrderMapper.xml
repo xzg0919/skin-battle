@@ -3254,6 +3254,7 @@
 			sb_company_equipment sce
 		INNER JOIN (
 			SELECT
+				soo.id,
 				soo.order_no,
 				soo.iot_equipment_code,
 				soo.create_date
@@ -3263,9 +3264,23 @@
 				soo.del_flag = 0
 			AND soo.recycler_id = #{recId}
 			AND soo.title = 6
-			AND soo.status_ =  #{status}
+			AND soo.status_ = #{status}
+			ORDER BY id DESC
+			LIMIT #{pageStart},#{pageSize}
 		) soeqcode ON soeqcode.iot_equipment_code = sce.hardware_code
 		INNER JOIN sb_equipment_location_list sell ON sell.equipment_code = sce.hardware_code
+		INNER JOIN (
+			SELECT
+				MAX(create_date) AS maxDate,
+				equipment_code
+			FROM
+				sb_equipment_location_list
+			WHERE
+				del_flag = 0
+		) maxList ON maxList.equipment_code = sell.equipment_code
+		AND sell.create_date = maxList.maxDate
+		GROUP BY
+			sell.equipment_code
 	</select>
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">

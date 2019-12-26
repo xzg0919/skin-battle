@@ -4080,8 +4080,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      * @return: 
      */
     @Override
-    public List<Map<String, Object>> selectIotRecList(Long recId, String status) {
-        return orderMapper.selectIotRecList(recId+"", status);
+    public Map<String, Object> selectIotRecList(Long recId, String status, PageBean pageBean) {
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("count", orderMapper.selectCount(new EntityWrapper<Order>().eq("del_flag",0).eq("recycler_id", recId).eq("status_", status)));
+         returnMap.put("returnList", orderMapper.selectIotRecList(recId+"", status, (pageBean.getPageNumber()-1)*pageBean.getPageSize(), pageBean.getPageSize()));
+         return returnMap;
     }
 
 

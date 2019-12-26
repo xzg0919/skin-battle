@@ -438,5 +438,5 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Integer getOrderListByDate(String startTime,String endTime,String title,String status);
 	@DS("slave")
-    List<Map<String, Object>> selectIotRecList(Long recId, String status);
+	Map<String, Object>  selectIotRecList(Long recId, String status, PageBean pageBean);
 }

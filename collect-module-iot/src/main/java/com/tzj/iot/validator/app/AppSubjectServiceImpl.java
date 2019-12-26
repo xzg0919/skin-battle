@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service("appApiSubjectServiceImpl")
 public class AppSubjectServiceImpl implements SubjectService {
 
-    private final String cacheName = "appCache";
+    private final String cacheName = "iotAppCache";
 
     @Autowired
     private CacheManager cacheManager;

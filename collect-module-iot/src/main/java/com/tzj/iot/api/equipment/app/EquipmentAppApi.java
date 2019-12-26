@@ -2,6 +2,7 @@ package com.tzj.iot.api.equipment.app;
 
 import com.tzj.collect.common.util.CompanyEquipmentUtils;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.iot.EquipmentParamBean;
 import com.tzj.collect.core.param.iot.IotCompanyResult;
 import com.tzj.collect.core.param.iot.IotErrorParamBean;
 import com.tzj.collect.core.service.*;
@@ -9,8 +10,11 @@ import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.doc.annotation.ApiDoc;
+import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 
 import javax.annotation.Resource;
 import java.net.URLDecoder;
@@ -43,6 +47,11 @@ public class EquipmentAppApi {
     private FileUploadServiceImpl fileUploadServiceImpl;
     @Resource
     private CompanyService companyService;
+    @Resource
+    private EquipmentMessageService equipmentMessageService;
+    @Resource
+    private MqttClient mqttClient;
+
     /**
      * 广告位
      * @author: sgmark@aliyun.com
@@ -55,6 +64,24 @@ public class EquipmentAppApi {
     public List<Map<String, Object>> advertList() {
         return advertService.iotEquipmentAdvertList();
     }
+
+    /**
+     * 验证码验证开门
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/24 0024
+     * @Param: 
+     * @return: 
+     */
+    @Api(name = "equipment.code.open", version = "1.0")
+    @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    public Map<String, Object> equipmentCodeOpen(EquipmentParamBean equipmentParamBean) {
+        if (StringUtils.isEmpty(equipmentParamBean.getHardwareCode())|| StringUtils.isEmpty(equipmentParamBean.getCaptcha())){
+            throw new ApiException("参数错误");
+        }
+        return equipmentMessageService.equipmentCodeOpen(equipmentParamBean, mqttClient);
+    }
+
+
     /**
      *  获取动态二维码
      * @author: sgmark@aliyun.com
