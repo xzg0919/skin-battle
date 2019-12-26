@@ -58,6 +58,7 @@ public class AdminAreaApi {
 	}
 	// 根据区县 街道 小区 搜索 都不是必传条件 分别特
 	@Api(name = "admin.area.getarealist", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public List<Area> getAreaList(AdminCommunityBean adminCommunityBean) {
 		return areaService.selectAreaByCouOrStrOrCom(adminCommunityBean.getCountyId(),
@@ -70,6 +71,7 @@ public class AdminAreaApi {
 	 * @return
 	 */
 	@Api(name = "admin.area.getrecbycommid", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public List<Recyclers> getRecByCommId(AdminCommunityBean adminCommunityBean) {
 		List<Recyclers> recycler = commService.getRecByCommId(adminCommunityBean.getCommunityId());
@@ -78,6 +80,7 @@ public class AdminAreaApi {
 	
 	// 根据小区id 取得回收员人数
 	@Api(name = "admin.area.getrecnum", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public Integer getAreaRecyclerNum(AdminCommunityBean adminCommunityBean) {
 		return recComService.selectRecCountByCom(adminCommunityBean.getCommunityId());
@@ -85,12 +88,14 @@ public class AdminAreaApi {
 
 	// 根据小区id 取得回收企业列表
 	@Api(name = "admin.area.getcomlist", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public List<Company> getAreaCompanyList(AdminCommunityBean adminCommunityBean) {
 		return companyService.selectCompanyListByComm(adminCommunityBean.getCommunityId());
 	}
 	// 根据小区id 取得回收企业数
 	@Api(name = "admin.area.getcomnum", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public Integer getAreaCompanyNum(AdminCommunityBean adminCommunityBean) {
 		return companyService.selectCompanyCountByCom(adminCommunityBean.getCommunityId());
@@ -98,6 +103,7 @@ public class AdminAreaApi {
 
 	// 根据小区id 取得回收企业数 然后统计总的回收类型 去除重复后统计
 	@Api(name = "admin.area.getcatenum", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public Integer getCategoryNum(AdminCommunityBean adminCommunityBean) {
 		return companyService.selectCompanyCountByCom(adminCommunityBean.getCommunityId());

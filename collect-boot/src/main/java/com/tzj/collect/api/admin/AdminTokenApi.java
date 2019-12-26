@@ -67,6 +67,7 @@ public class AdminTokenApi {
      * @throw
      */
     @Api(name = "admin.token.flush", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public TokenBean flushToken() {
         HttpServletRequest request = ApiContext.getRequest();
