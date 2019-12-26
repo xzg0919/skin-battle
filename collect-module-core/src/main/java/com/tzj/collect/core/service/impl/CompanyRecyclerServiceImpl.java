@@ -522,8 +522,8 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		List<Map<String, Object>> recyclerList = mapper.getRecyclerList(recyclerName, recyclerTel, cityId, pageStart, pageBean.getPageSize());
 		Integer count = mapper.getRecyclerCount(recyclerName, recyclerTel, cityId);
 		recyclerList.stream().forEach(map ->{
-			List<Map<String, Object>> recyclerSonList = mapper.getRecyclerSonList(map.get("recyclerId").toString(), map.get("type").toString());
-			map.put("recyclerSonList",recyclerSonList);
+			List<Map<String, Object>> children = mapper.getRecyclerSonList(map.get("recyclerId").toString(), map.get("type").toString());
+			map.put("children",children);
 		});
 		Map<String,Object> resultMap = new HashMap<>();
 		resultMap.put("recyclerList",recyclerList);
