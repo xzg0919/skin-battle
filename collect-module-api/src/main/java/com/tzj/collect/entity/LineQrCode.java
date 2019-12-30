@@ -47,6 +47,8 @@ public class LineQrCode extends DataEntity<Long>
     private String qrCodeInfo;//码详情
 
     private Integer shareNum;//扫码进入次数
+    @TableField(exist = false)
+    private String isEdit;//是否已编辑 0:未编辑；1:已编辑
 
     public enum QrType implements IEnum {
         ONLINE(0),	//  线上码

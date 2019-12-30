@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.core.param.admin.AdminShareCodeBean;
 import com.tzj.collect.entity.LineQrCode;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,4 +22,6 @@ public interface LineQrCodeService extends IService<LineQrCode> {
     Map<String, Object> lineQrCodeDetail(AdminShareCodeBean adminShareCodeBean);
 
     Map<String, Object> lineQrCodeReport(AdminShareCodeBean adminShareCodeBean);
+
+    List<Map<String, Object>> lineQrCodeStreet(AdminShareCodeBean adminShareCodeBean);
 }

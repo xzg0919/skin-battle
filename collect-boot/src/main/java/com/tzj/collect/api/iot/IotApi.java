@@ -321,7 +321,10 @@ public class IotApi {
     @SignIgnore
     @AuthIgnore
     public List<FileBean> uploadImage(List<FileBase64Param> fileBase64ParamLists){
-        return fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
+        List<FileBean> fileBeanList = new ArrayList<>();
+        fileBeanList = fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
+        System.out.println("上传完成-------------");
+        return fileBeanList;
     }
 
     /** 加密方式md5(md5(app_id&app_key&cabinetNo&mobile&memberId&tranTime)&tranTime)

@@ -29,6 +29,8 @@ public class AdminShareCodeBean {
 
 	private Long  provinceId;//省
 
+	private String shareCode;
+
 	private String streetName;
 
 	private String areaName;
