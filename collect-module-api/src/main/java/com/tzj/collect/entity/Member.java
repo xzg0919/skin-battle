@@ -66,7 +66,9 @@ public class Member extends  DataEntity<Long>{
      */
     private String appId;
 
-    private String formId;
+    private String formId;//模板（答答答）
+
+    private String templateId;//模板（收藏）
     /**
      * 性别
      */

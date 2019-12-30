@@ -69,7 +69,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         member.setGreenCode(memberBean.getGreenSn());
         member.setIdCard(memberBean.getCertNo());
         member.setName(memberBean.getUserName());
-        member.setAliCardNo(ToolUtils.getIdCardByAliUserId(memberBean.getAliMemberId()));
+        member.setCardNo(ToolUtils.getIdCardByAliUserId(memberBean.getAliMemberId()));
         this.insertMember(member);
         return member;
     }

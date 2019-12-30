@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.mapper.LineQrCodeMapper;
 import com.tzj.collect.core.param.admin.AdminShareCodeBean;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.service.LineQrCodeRangeService;
 import com.tzj.collect.core.service.LineQrCodeService;
 import com.tzj.collect.entity.LineQrCode;
@@ -38,6 +39,8 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
 
     @Resource
     private LineQrCodeRangeService lineQrCodeRangeService;
+    @Resource
+    private LineQrCodeMapper lineQrCodeMapper;
 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
@@ -107,12 +110,16 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
         if (StringUtils.isEmpty(adminShareCodeBean.getQrType())){
             throw new ApiException("请选择分享码类型");
         }
+        if (null == adminShareCodeBean.getPageBean()){
+            adminShareCodeBean.setPageBean(new PageBean());
+        }
         Page<LineQrCode> pages = new Page<LineQrCode>(adminShareCodeBean.getPageBean().getPageNumber(), adminShareCodeBean.getPageBean().getPageSize());
         EntityWrapper<LineQrCode> wrapper = new EntityWrapper<LineQrCode>();
         wrapper.in("qr_type", adminShareCodeBean.getQrType().getValue());
         if (!StringUtils.isEmpty(adminShareCodeBean.getQrName())){
            wrapper.like("name_", adminShareCodeBean.getQrName()+"%");
         }
+        wrapper.eq("del_flag", 0);
         wrapper.orderBy("id", false);
         return this.selectPage(pages, wrapper);
     }
@@ -173,6 +180,29 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
             List<Map<String, Object>> priList = lineQrCodeRangeService.selectMaps(entityWrapper.setSqlSelect(sqlSelect).last(sqlLast));
             returnMap.put("priList", priList);
         }
+        return returnMap;
+    }
+
+    @Override
+    public Map<String, Object> lineQrCodeReport(AdminShareCodeBean adminShareCodeBean) {
+        Map<String, Object>  returnMap = new HashMap<>();
+        if (null == adminShareCodeBean.getQrType()){
+            throw new ApiException("请选择类型");
+        }
+        if (null == adminShareCodeBean.getPageBean()){
+            adminShareCodeBean.setPageBean(new PageBean());
+        }
+        Wrapper wrapper = new EntityWrapper<LineQrCode>();
+        wrapper.eq("qr_type", adminShareCodeBean.getQrType().getValue());
+        if (!StringUtils.isEmpty(adminShareCodeBean.getQrName())){
+            wrapper.eq("name_", adminShareCodeBean.getQrName());
+        }
+        if (!StringUtils.isEmpty(adminShareCodeBean.getStartTime()) && !StringUtils.isEmpty(adminShareCodeBean.getEndTime())){
+            wrapper.between("create_date", adminShareCodeBean.getStartTime(), adminShareCodeBean.getEndTime() + " 23:59:59");
+        }
+        returnMap.put("count", lineQrCodeMapper.selectCount(wrapper));
+        Integer startPage = (adminShareCodeBean.getPageBean().getPageNumber()-1) * adminShareCodeBean.getPageBean().getPageSize();
+        returnMap.put("lineQrCodeReportList", lineQrCodeMapper.lineQrCodeReport(adminShareCodeBean.getQrType().getValue(), adminShareCodeBean.getQrName(), adminShareCodeBean.getStartTime(), adminShareCodeBean.getEndTime()+ " 23:59:59", startPage, adminShareCodeBean.getPageBean().getPageSize()));
         return returnMap;
     }
 

@@ -153,6 +153,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderComplaintService orderComplaintService;
     @Autowired
     private VoucherMemberService voucherMemberService;
+    @Resource
+    private LineQrCodeOrderService lineQrCodeOrderService;
 
     @Resource
     private JedisPool jedisPool;
@@ -306,6 +308,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 orderPicc.setOrderId(Integer.parseInt(orderId + ""));
                 flag = orderPicService.insert(orderPicc);
             }
+        }
+        //保存分享码
+        if (!StringUtils.isEmpty(orderbean.getShareCode())){
+            lineQrCodeOrderService.insertQrCodeOrder(order.getOrderNo(), orderbean.getShareCode());
         }
         //储存订单的日志
         OrderLog orderLog = new OrderLog();
@@ -979,6 +985,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //entity.eq("card_no", iotParamBean.getMemberId()).eq("del_flag", 0);
         //entity.eq("card_no", iotParamBean.getMemberId()).eq("del_flag", 0);
         String aliUserId = ToolUtils.getAliUserIdByOrderNo(iotParamBean.getMemberId());
+        System.out.println("---------------ali_uid2:" +aliUserId+"--------------------------");
         Member member = memberService.selectMemberByAliUserId(aliUserId);
         //Member member = memberService.selectOne(entity);
         if (member == null) {
@@ -2647,6 +2654,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}else {
 				throw new ApiException("网络异常，请重新提交订单");
 			}
+        //保存分享码
+        if (!StringUtils.isEmpty(orderBean.getShareCode())){
+            lineQrCodeOrderService.insertQrCodeOrder(order.getOrderNo(), orderBean.getShareCode());
+        }
 		//储存订单的日志
 		OrderLog orderLog = new OrderLog();
 		orderLog.setOrderId(Integer.parseInt(order.getId().toString()));
@@ -2763,6 +2774,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}else {
 			throw new ApiException("网络异常，请重新提交订单");
 		}
+        //保存分享码
+        if (!StringUtils.isEmpty(orderBean.getShareCode())){
+            lineQrCodeOrderService.insertQrCodeOrder(order.getOrderNo(), orderBean.getShareCode());
+        }
 		//储存订单的日志
 		OrderLog orderLog = new OrderLog();
 		orderLog.setOrderId(Integer.parseInt(order.getId().toString()));
@@ -2902,6 +2917,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				orderPicService.insert(orderPicc);
 			}
 		}
+		//保存分享码
+        if (!StringUtils.isEmpty(orderbean.getShareCode())){
+            lineQrCodeOrderService.insertQrCodeOrder(order.getOrderNo(), orderbean.getShareCode());
+        }
+
 		//储存订单的日志
 		OrderLog orderLog = new OrderLog();
 		orderLog.setOrderId(Integer.parseInt(orderId + ""));
@@ -4082,10 +4102,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Map<String, Object> selectIotRecList(Long recId, String status, PageBean pageBean) {
         Map<String, Object> returnMap = new HashMap<>();
-        returnMap.put("count", orderMapper.selectCount(new EntityWrapper<Order>().eq("del_flag",0).eq("recycler_id", recId).eq("status_", status)));
+        returnMap.put("count", orderMapper.selectCount(new EntityWrapper<Order>().eq("del_flag",0).eq("recycler_id", recId).eq("status_", status).eq("title", Order.TitleType.IOTCLEANORDER)));
          returnMap.put("returnList", orderMapper.selectIotRecList(recId+"", status, (pageBean.getPageNumber()-1)*pageBean.getPageSize(), pageBean.getPageSize()));
          return returnMap;
     }
+
 
 
 

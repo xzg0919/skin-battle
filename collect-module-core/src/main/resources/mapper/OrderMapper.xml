@@ -3244,7 +3244,7 @@
 			a.count > 1
 	</select>
 
-	<select id="selectIotRecList" resultType="Map" parameterType="String">
+	<select id="selectIotRecList" resultType="Map" parameterType="Object">
 		SELECT
 			'塑料瓶/金属瓶' AS type,
 			sce.current_value,

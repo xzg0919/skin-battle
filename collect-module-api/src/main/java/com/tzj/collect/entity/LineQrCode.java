@@ -7,6 +7,10 @@ import com.baomidou.mybatisplus.enums.IEnum;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * 线上线下分享码
  * @author: sgmark@aliyun.com
@@ -57,6 +61,15 @@ public class LineQrCode extends DataEntity<Long>
         @Override
         public Serializable getValue() {
             return this.value;
+        }
+    }
+
+    public String getCreateDate4Page() {
+        if (null != super.getCreateDate()){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            return sdf.format(super.getCreateDate());
+        }else {
+            return "";
         }
     }
 }

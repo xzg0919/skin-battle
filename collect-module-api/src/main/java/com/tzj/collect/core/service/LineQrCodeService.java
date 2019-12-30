@@ -19,4 +19,6 @@ public interface LineQrCodeService extends IService<LineQrCode> {
     Map<String, Object> lineQrCodeDel(AdminShareCodeBean adminShareCodeBean);
 
     Map<String, Object> lineQrCodeDetail(AdminShareCodeBean adminShareCodeBean);
+
+    Map<String, Object> lineQrCodeReport(AdminShareCodeBean adminShareCodeBean);
 }

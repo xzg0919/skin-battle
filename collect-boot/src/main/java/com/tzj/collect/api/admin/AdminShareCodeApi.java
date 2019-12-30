@@ -29,13 +29,26 @@ public class AdminShareCodeApi {
     public Map<String, Object> createShareCode(AdminShareCodeBean adminShareCodeBean){
        return lineQrCodeService.createShareCode(adminShareCodeBean);
     }
-
+    /**
+     * 分享码分页
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/30 0030
+     * @Param: 
+     * @return: 
+     */
     @Api(name = "admin.page.share.code", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public Page<LineQrCode> lineQrCodePage(AdminShareCodeBean adminShareCodeBean){
         return lineQrCodeService.lineQrCodePage(adminShareCodeBean);
     }
+    /**
+     * 删除分享码
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/30 0030
+     * @Param: 
+     * @return: 
+     */
     @Api(name = "admin.del.share.code", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
@@ -43,10 +56,24 @@ public class AdminShareCodeApi {
         return lineQrCodeService.lineQrCodeDel(adminShareCodeBean);
     }
 
+    /**
+     * 分享码详情
+     * @author: sgmark@aliyun.com
+     * @Date: 2019/12/30 0030
+     * @Param: 
+     * @return: 
+     */
     @Api(name = "admin.share.code.detail", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public Map<String, Object> lineQrCodeDetail(AdminShareCodeBean adminShareCodeBean){
         return lineQrCodeService.lineQrCodeDetail(adminShareCodeBean);
     }
+    @Api(name = "admin.share.code.report", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Map<String, Object> lineQrCodeReport(AdminShareCodeBean adminShareCodeBean){
+        return lineQrCodeService.lineQrCodeReport(adminShareCodeBean);
+    }
+
 }

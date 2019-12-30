@@ -56,7 +56,7 @@ public class DailyJob {
      * @param
      * @return
      */
-    @Scheduled(cron = "00 54 9 ? * MON")
+    @Scheduled(cron = "00 37 10 ? * MON")
     public void downloadExcel(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new UploadExcelThread(dailyWeekRankingService)));
     }
@@ -77,7 +77,7 @@ public class DailyJob {
     /**
      * 定时任务:每周一 一点执行（上周达人榜）
      */
-    @Scheduled(cron = "30 5 0 ? * MON")
+    @Scheduled(cron = "00 34 10 ? * MON")
     public void startWeeklyRanking(){
         System.out.println("-----------------------分割线--------------------");
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new WeekRankingThread(dailyWeekRankingService)));

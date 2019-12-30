@@ -238,6 +238,8 @@ public class OrderBean {
 	
 	private String formId;
 
+	private String templateId;
+
 	private String OrderNo;
 
 	private String linkName;
@@ -261,5 +263,7 @@ public class OrderBean {
     private String reason;
 
     private String complaintType;//客诉类型  0催派 1催接 2催收  3形成客诉
+
+    private String shareCode;//线上线下分享码
 
 }

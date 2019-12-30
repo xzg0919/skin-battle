@@ -160,6 +160,9 @@
 	<if test="member.formId != null and member.formId != ''">
 		a.form_id = #{member.formId},
 	</if>
+	<if test="member.templateId != null and member.templateId != ''">
+		a.template_id = #{member.templateId},
+	</if>
 		a.update_date = NOW()
 	WHERE
 		a.ali_user_id = #{member.aliUserId}

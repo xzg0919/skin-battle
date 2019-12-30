@@ -90,7 +90,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 messageMap.put("imgUrl", "http://images.sqmall.top/collect/20180427_category_pic/11.png");
                 messageMap.put("action", nextInt > 0 ? "2":"1");
                 messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getKey());
-                messageMap.put("msg",  CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getValue());
+                messageMap.put("message",  CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getValue());
                 //發送消息
                 this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
             }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_CLOSE.getKey().equals(messageMap.get("code"))){
@@ -105,7 +105,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                         payment.setIsSuccess("1");
                         paymentService.updateById(payment);
                         messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getKey());
-                        messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getValue());
+                        messageMap.put("message", CompanyEquipment.EquipmentAction.EquipmentActionCode.TRADE_SUCCESS.getValue());
                         this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
                         //更改订单状态
                         Order order = orderService.selectOne(new EntityWrapper<Order>().eq("del_flag", 0).eq("order_sn", payment.getOrderSn()));
@@ -116,7 +116,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                         payment.setRemarks(alipayFundTransToaccountTransferResponse.getSubMsg());
                         paymentService.updateById(payment);
                         messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.ERROR.getKey());
-                        messageMap.put("msg", "交易失败");
+                        messageMap.put("message", "交易失败");
                         this.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), topic, mqttClient);
                     }
                 }
@@ -220,6 +220,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 subjectStr = claims.getSubject();
             }
             if (!StringUtils.isEmpty(subjectStr)){
+                System.out.println("---------------ali_uid:" +subjectStr+"--------------------------");
                 iotParamBean = new IotParamBean();
                 iotParamBean.setSumPrice(new BigDecimal(object.get("sumPrice").toString()));
                 iotParamBean.setEquipmentCode(object.get("equipmentCode").toString());

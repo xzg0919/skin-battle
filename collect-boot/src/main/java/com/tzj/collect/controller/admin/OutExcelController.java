@@ -1,20 +1,20 @@
 package com.tzj.collect.controller.admin;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.excel.ExcelData;
 import com.tzj.collect.common.excel.ExcelUtils;
-import com.tzj.collect.commom.redis.RedisUtil;
-import com.tzj.collect.common.utils.SnUtils;
-import com.tzj.collect.core.param.ali.AreaBean;
-import com.tzj.collect.core.param.ali.OrderBean;
-import com.tzj.collect.core.param.ali.PiccOrderBean;
-import com.tzj.collect.core.param.ali.RecruitExpressBean;
+import com.tzj.collect.core.param.admin.AdminShareCodeBean;
+import com.tzj.collect.core.param.ali.*;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.param.iot.AdminIotErrorBean;
 import com.tzj.collect.core.result.admin.RecruitExpressResult;
 import com.tzj.collect.core.service.*;
-import com.tzj.collect.entity.*;
+import com.tzj.collect.entity.Company;
+import com.tzj.collect.entity.EnterpriseCode;
+import com.tzj.collect.entity.Order;
+import com.tzj.collect.entity.OrderComplaint;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +56,8 @@ public class OutExcelController {
     private CompanyEquipmentService companyEquipmentService;
     @Autowired
     private OrderComplaintService orderComplaintService;
+    @Resource
+    private LineQrCodeService lineQrCodeService;
     /**
      * 根据企业导出以旧换新的券的excel列表
      * @param response
@@ -1094,6 +1096,48 @@ public class OutExcelController {
             row.add(adminIotOrderList.get(i).get("order_no"));
             row.add(adminIotOrderList.get(i).get("ali_user_id"));
             row.add(adminIotOrderList.get(i).get("tel"));
+            rows.add(row);
+        }
+        data.setRows(rows);
+        SimpleDateFormat fdate=new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName=fdate.format(new Date())+".xlsx";
+        try {
+            ExcelUtils.exportExcel(response, fileName, data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @RequestMapping("/admin/share_code/report")
+    public void adminShareCodeReport(HttpServletResponse response, AdminShareCodeBean adminShareCodeBean){
+        ExcelData data = new ExcelData();
+        data.setName("分享码报表");
+        //添加表头
+        List<String> titles = new ArrayList<>();
+        titles.add("码名称");
+        titles.add("配置时间");
+        titles.add("跳转数量");
+        titles.add("用户下单数量");
+        titles.add("转化率");
+        data.setTitles(titles);
+        if (StringUtils.isEmpty(adminShareCodeBean.getStartTime())||StringUtils.isEmpty(adminShareCodeBean.getEndTime())){
+            throw new ApiException("请选择时间范围");
+        }
+        PageBean pageBean = new PageBean();
+        pageBean.setPageSize(500000);
+        pageBean.setPageNumber(1);
+        adminShareCodeBean.setPageBean(pageBean);
+        Map<String, Object> adminIotOrderListMap = lineQrCodeService.lineQrCodeReport(adminShareCodeBean);
+        List<Map<String, Object>>adminIotOrderList = (ArrayList)adminIotOrderListMap.get("lineQrCodeReportList");
+        //添加列
+        List<List<Object>> rows = new ArrayList();
+        List<Object> row =  null;
+        for(int i=0,j = adminIotOrderList.size(); i<j;i++){
+            row= new ArrayList();
+            row.add(adminIotOrderList.get(i).get("name_"));
+            row.add(adminIotOrderList.get(i).get("create_date"));
+            row.add(adminIotOrderList.get(i).get("share_num"));
+            row.add(adminIotOrderList.get(i).get("count_"));
+            row.add(adminIotOrderList.get(i).get("level_"));
             rows.add(row);
         }
         data.setRows(rows);

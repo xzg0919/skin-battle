@@ -36,4 +36,8 @@ public class AdminShareCodeBean {
 	private String cityName;
 
 	private String provinceName;
+
+	private String startTime;
+
+	private String endTime;
 }

@@ -143,7 +143,12 @@ public class MemberApi {
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Map<String, Object> updateUserFormId(OrderBean orderBean){
 		Member member = MemberUtils.getMember();
-		member.setFormId(orderBean.getFormId());
+		if (!StringUtils.isEmpty(orderBean.getFormId())){
+			member.setFormId(orderBean.getFormId());
+		}
+		if (!StringUtils.isEmpty(orderBean.getTemplateId())){
+			member.setTemplateId(orderBean.getTemplateId());
+		}
 		return memberService.updateUserFormId(member);
 	}
 }

@@ -71,6 +71,8 @@ public class IotAliApi {
                 //新增一条记录
                 member = memberService.saveByMemberBean(memberBean);
             }
+
+
             String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
             String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
             TokenBean tokenBean = new TokenBean();
