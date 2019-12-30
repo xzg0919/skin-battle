@@ -275,12 +275,14 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	/**
 	 * 获取企业家电服务范围（例南京市，苏州市等）
 	 */
+	@Override
 	public List<Map<String,Object>> getAppliceCompanyRange(Integer companyId){
 		return mapper.getAppliceCompanyRange(companyId);
 	}
 	/**
 	 * 获取企业生活垃圾服务范围（例南京市，苏州市等）
 	 */
+	@Override
 	public List<Map<String,Object>> getHouseCompanyRange(Integer companyId){
 		return mapper.getHouseCompanyRange(companyId);
 	}
@@ -513,7 +515,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	public Map<String, Object> selectRecByHardwareCode(String topic) {
 		return mapper.selectRecByHardwareCode(topic);
 	}
-
+	@Override
 	public Map<String, Object> getRecyclerList(String recyclerName, String recyclerTel, String cityId, PageBean pageBean){
 		if (null == pageBean){
 			pageBean = new PageBean();
@@ -532,6 +534,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		return resultMap;
 	}
 	@Override
+	@Transactional
 	public String closeRecyclerArea(Long recyclerId,String companyId,String type) {
 		CompanyRecycler companyRecycler = this.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclerId).eq("company_id", companyId).eq("type_", type).eq("status_","1"));
 		if (null == companyRecycler){
@@ -547,6 +550,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 				mapper.closeCompanyBigByRecyclerId(companyId,recyclerId);
 				recyclersRangeBigService.delete(new EntityWrapper<RecyclersRangeBig>().eq("recyclers_id",recyclerId).eq("company_id",companyId));
 			}
+			mapper.updateRecycler(recyclerId,type);
 		}
 		companyRecycler.setIsEnableArea("1");
 		this.updateById(companyRecycler);

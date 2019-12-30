@@ -117,4 +117,6 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 	void closeCompanyHouseByRecyclerId(@Param("companyId")String companyId,@Param("recyclerId")Long recyclerId);
 
 	void closeCompanyBigByRecyclerId(@Param("companyId")String companyId,@Param("recyclerId")Long recyclerId);
+
+	void updateRecycler(@Param("recyclerId")Long recyclerId,@Param("type")String type);
 }
