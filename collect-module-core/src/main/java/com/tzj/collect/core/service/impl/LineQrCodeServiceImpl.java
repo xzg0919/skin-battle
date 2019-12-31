@@ -14,8 +14,10 @@ import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.mapper.LineQrCodeMapper;
 import com.tzj.collect.core.param.admin.AdminShareCodeBean;
 import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.service.AreaService;
 import com.tzj.collect.core.service.LineQrCodeRangeService;
 import com.tzj.collect.core.service.LineQrCodeService;
+import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.LineQrCode;
 import com.tzj.collect.entity.LineQrCodeRange;
 import com.tzj.module.easyopen.exception.ApiException;
@@ -41,34 +43,41 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
     private LineQrCodeRangeService lineQrCodeRangeService;
     @Resource
     private LineQrCodeMapper lineQrCodeMapper;
-
+    @Resource
+    private AreaService areaService;
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public Map<String, Object> createShareCode(AdminShareCodeBean adminShareCodeBean) {
         Map<String, Object> returnMap = new HashMap<>();
         LineQrCode lineQrCode = null;
-        if (StringUtils.isEmpty(adminShareCodeBean.getQrName())){
-            throw new ApiException("分享码名称不能为空");
+        if (!StringUtils.isEmpty(adminShareCodeBean.getShareCode())){
+            lineQrCode =  (LineQrCode) this.selectMap(new EntityWrapper<LineQrCode>().eq("del_flag", 0).eq("share_code", adminShareCodeBean.getShareCode()));
         }else {
             lineQrCode = new LineQrCode();
-            lineQrCode.setName(adminShareCodeBean.getQrName());
         }
-        if (StringUtils.isEmpty(adminShareCodeBean.getQrCodeInfo())){
+        if (StringUtils.isEmpty(lineQrCode.getName()) && StringUtils.isEmpty(adminShareCodeBean.getQrName())){
+            throw new ApiException("分享码名称不能为空");
+        }
+        if (StringUtils.isEmpty(lineQrCode.getQrCodeInfo()) && StringUtils.isEmpty(adminShareCodeBean.getQrCodeInfo())){
             throw new ApiException("分享码描述不能为空");
-        }else {
-            lineQrCode.setQrCodeInfo(adminShareCodeBean.getQrCodeInfo());
         }
-        lineQrCode.setShareCode(UUID.randomUUID().toString());
-        lineQrCode.setShareNum(0);
+        lineQrCode.setQrCodeInfo(adminShareCodeBean.getQrCodeInfo());
+        lineQrCode.setName(adminShareCodeBean.getQrName());
+        lineQrCode.setShareCode(StringUtils.isEmpty(lineQrCode.getShareCode())?UUID.randomUUID().toString():lineQrCode.getShareCode());
+        lineQrCode.setShareNum(StringUtils.isEmpty(lineQrCode.getShareNum()) ? 0: lineQrCode.getShareNum());
         if (null != adminShareCodeBean.getQrType() && LineQrCode.QrType.OFFLINE.name().equals(adminShareCodeBean.getQrType().name())){
             lineQrCode.setQrType(LineQrCode.QrType.OFFLINE);
             lineQrCode.setQrUrl(this.qrUrl(LineQrCode.QrType.OFFLINE, lineQrCode.getShareCode()));
             //线下码
             if (!CollectionUtils.isEmpty(adminShareCodeBean.getAdminCityList())){
                 LineQrCode finalLineQrCode = lineQrCode;
+                LineQrCode finalLineQrCode1 = lineQrCode;
                 adminShareCodeBean.getAdminCityList().stream().forEach(cityList ->{
                     //保存地址
-                    LineQrCodeRange lineQrCodeRange = new LineQrCodeRange();
+                    LineQrCodeRange lineQrCodeRange = lineQrCodeRangeService.selectOne(new EntityWrapper<LineQrCodeRange>().eq("share_code", finalLineQrCode1.getShareCode()).eq("street_id", cityList.getStreetId()));
+                    if (null == lineQrCodeRange){
+                        lineQrCodeRange = new LineQrCodeRange();
+                    }
                     lineQrCodeRange.setAreaId(cityList.getAreaId());
                     lineQrCodeRange.setCityId(cityList.getCityId());
                     lineQrCodeRange.setProvinceId(cityList.getProvinceId());
@@ -78,10 +87,15 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
                     lineQrCodeRange.setProvinceName(cityList.getProvinceName());
                     lineQrCodeRange.setStreetName(cityList.getStreetName());
                     lineQrCodeRange.setShareCode(finalLineQrCode.getShareCode());
-                    lineQrCodeRangeService.insert(lineQrCodeRange);
+                    if ("1".equals(cityList.getSaveOrDelete())){
+                        //删除
+                        lineQrCodeRange.setDelFlag("1");
+                    }else {
+                        //新增
+                        lineQrCodeRange.setDelFlag("0");
+                    }
+                    lineQrCodeRangeService.insertOrUpdate(lineQrCodeRange);
                 });
-            }else {
-                throw new ApiException("线下码地址不能为空");
             }
         }else if (null != adminShareCodeBean.getQrType() && LineQrCode.QrType.ONLINE.name().equals(adminShareCodeBean.getQrType().name())){
             //线上码
@@ -96,6 +110,7 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
         }else {
             returnMap.put("msg", "N");
         }
+        returnMap.put("shareCode", lineQrCode.getShareCode());
         return returnMap;
     }
     /**
@@ -201,9 +216,35 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
             wrapper.between("create_date", adminShareCodeBean.getStartTime(), adminShareCodeBean.getEndTime() + " 23:59:59");
         }
         returnMap.put("count", lineQrCodeMapper.selectCount(wrapper));
+        returnMap.put("current", adminShareCodeBean.getPageBean().getPageNumber());
         Integer startPage = (adminShareCodeBean.getPageBean().getPageNumber()-1) * adminShareCodeBean.getPageBean().getPageSize();
-        returnMap.put("lineQrCodeReportList", lineQrCodeMapper.lineQrCodeReport(adminShareCodeBean.getQrType().getValue(), adminShareCodeBean.getQrName(), adminShareCodeBean.getStartTime(), adminShareCodeBean.getEndTime()+ " 23:59:59", startPage, adminShareCodeBean.getPageBean().getPageSize()));
+        List<Map<String, Object>> recordsList = lineQrCodeMapper.lineQrCodeReport(adminShareCodeBean.getQrType().getValue(), adminShareCodeBean.getQrName(), adminShareCodeBean.getStartTime(), adminShareCodeBean.getEndTime() + " 23:59:59", startPage, adminShareCodeBean.getPageBean().getPageSize());
+        recordsList.stream().forEach(recordList -> {
+            recordList.put("isEdit",lineQrCodeRangeService.selectCount(new EntityWrapper<LineQrCodeRange>().eq("share_code", recordList.get("share_code"))) == 0 ? "0": "1");
+        });
+        returnMap.put("lineQrCodeReportList", recordsList);
         return returnMap;
+    }
+
+    @Override
+    public List<Map<String, Object>> lineQrCodeStreet(AdminShareCodeBean adminShareCodeBean) {
+        if (StringUtils.isEmpty(adminShareCodeBean.getAreaId())){
+            throw new ApiException("请选择区域id");
+        }else if (StringUtils.isEmpty(adminShareCodeBean.getShareCode())){
+            throw new ApiException("参数错误");
+        }
+        List<Map<String, Object>> streetMapLists = areaService.selectMaps(new EntityWrapper<Area>().eq("del_flag", 0).setSqlSelect("area_name, id").eq("parent_id", adminShareCodeBean.getAreaId()));
+        List<LineQrCodeRange> lineQrCodeRangeLists = lineQrCodeRangeService.selectList(new EntityWrapper<LineQrCodeRange>().eq("del_flag", 0).eq("share_code", adminShareCodeBean.getShareCode()));
+        lineQrCodeRangeLists.stream().forEach(lineQrCodeRange -> {
+            streetMapLists.stream().forEach(streetMapList ->{
+                if (streetMapList.get("id").equals(lineQrCodeRange.getStreetId())){
+                    streetMapList.put("is_select", 1);
+                }else {
+                    streetMapList.put("is_select", 0);
+                }
+            });
+        });
+        return streetMapLists;
     }
 
     /**

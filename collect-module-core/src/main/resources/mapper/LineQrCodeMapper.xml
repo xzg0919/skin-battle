@@ -5,6 +5,8 @@
         SELECT
             slqc.name_,
             CONCAT(slqc.create_date,'') as create_date,
+            slqc.share_code,
+            slqc.qr_code_info,
             slqc.share_num,
             IFNULL(slqco.count_, 0) AS count_,
             CONCAT(

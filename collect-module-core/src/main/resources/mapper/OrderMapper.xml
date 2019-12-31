@@ -3277,6 +3277,7 @@
 				sb_equipment_location_list
 			WHERE
 				del_flag = 0
+			GROUP BY equipment_code
 		) maxList ON maxList.equipment_code = sell.equipment_code
 		AND sell.create_date = maxList.maxDate
 		GROUP BY

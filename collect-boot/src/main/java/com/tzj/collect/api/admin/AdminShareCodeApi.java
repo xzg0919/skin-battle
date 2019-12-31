@@ -8,6 +8,7 @@ import com.tzj.collect.entity.LineQrCode;
 import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
@@ -74,6 +75,12 @@ public class AdminShareCodeApi {
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public Map<String, Object> lineQrCodeReport(AdminShareCodeBean adminShareCodeBean){
         return lineQrCodeService.lineQrCodeReport(adminShareCodeBean);
+    }
+    @Api(name = "admin.share.code.street", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public List<Map<String, Object>> lineQrCodeStreet(AdminShareCodeBean adminShareCodeBean){
+        return lineQrCodeService.lineQrCodeStreet(adminShareCodeBean);
     }
 
 }

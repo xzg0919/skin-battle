@@ -20,6 +20,7 @@ spring:
       max-request-size: 100MB
       enabled: true
       max-file-size: 100MB
+      file-size-threshold: 0
   application:
     name: collect
   # 环境 dev|pro || dynamicdb-test 测试多数据源配置 | dynamicdb-pro 正式多数据源配置

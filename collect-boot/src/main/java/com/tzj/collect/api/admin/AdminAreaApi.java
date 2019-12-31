@@ -52,6 +52,7 @@ public class AdminAreaApi {
 	 * @return: 
 	 */
 	@Api(name = "admin.all.area.info", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
 	public Map<String, Object> allAreaStreetIdNameInfo() {
 		return areaService.allAreaStreetIdNameInfo();
