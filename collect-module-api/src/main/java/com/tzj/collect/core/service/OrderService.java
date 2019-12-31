@@ -58,6 +58,8 @@ public interface OrderService extends IService<Order> {
 	boolean saveByRecy(OrderBean orderbean);
 
 	Object getPriceByOrderId(OrderBean orderbean);
+
+	Object getCommissionsPriceByOrderId(OrderBean orderbean);
 	/**
 	 * 回收员无需重量提交订单其他信息
 	 * @param orderbean

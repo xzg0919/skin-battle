@@ -123,6 +123,12 @@ public class AppOrderApi {
 		System.out.println("进完成接口了");
 		return orderService.saveByRecy(orderBean);
 	}
+
+	@Api(name = "app.order.getCommissionsPriceByOrderId", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getCommissionsPriceByOrderId(OrderBean orderBean) {
+		return orderService.getCommissionsPriceByOrderId(orderBean);
+	}
 	/**
 	 * 返回回收人员支付的价格
 	 * @param orderBean

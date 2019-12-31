@@ -415,7 +415,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
     @Transactional
     @Override
-    public Object getPriceByOrderId(OrderBean orderbean){
+    public Object getCommissionsPriceByOrderId(OrderBean orderbean){
         Order order = this.selectById(orderbean.getId());
         if ("1".equals(order.getTitle().getValue().toString())){
             CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
@@ -452,6 +452,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setBackCommissionsPrice(backCommissionsPrice[0]);
             order.setCommissionsPrice(commissionsPrice[0].setScale(2, BigDecimal.ROUND_HALF_UP));
         }
+        this.updateById(order);
+        return order.getCommissionsPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+
+    @Transactional
+    @Override
+    public Object getPriceByOrderId(OrderBean orderbean){
+        Order order = this.selectById(orderbean.getId());
         order.setAchPrice(new BigDecimal(orderbean.getAchPrice()));
         this.updateById(order);
 
