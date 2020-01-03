@@ -494,7 +494,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Transactional
     public BigDecimal getPricesAll(String aliUserId, long categoryId, String type, String categoryAttrOptionIds){
         //所有的分类Id
-        System.out.println("预估价格的Ids ：" + categoryAttrOptionIds);
+        System.out.println("进入新的计算价格接口预估价格的Ids ：" + categoryAttrOptionIds);
         //获取当前用户的默认地址
         MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
         System.out.println("memberAddressId 是：" + memberAddress.getId() + "分类Id：" + categoryId + "预估价格的Ids ：" + categoryAttrOptionIds);
@@ -504,7 +504,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         //根据分类Id查询父类分类id
         Category category = this.selectById(categoryId);
         String companyId = "";
-        final BigDecimal[] price = {categoryMapper.selectCategoryPriceByCityCompanyId(categoryId, memberAddress.getCityId(), companyId)};
         if ("DIGITAL".equals(type)) {
             //根据小区Id，分类id和街道id 查询相关企业
             companyId = companyStreetApplianceService.selectStreetApplianceCompanyIdByCategoryId(category.getParentId(), memberAddress.getStreetId(), memberAddress.getCommunityId());
@@ -518,6 +517,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             }
             companyId = streetBigCompanyId + "";
         }
+        final BigDecimal[] price = {categoryMapper.selectCategoryPriceByCityCompanyId(categoryId, memberAddress.getCityId(), companyId)};
+        System.out.println("新的计算价格接口基准价格："+price[0]);
         //获取所有分类属性选项Id的集合
         String[] OptionIds = categoryAttrOptionIds.split(",");
         List<BigDecimal> specialPriceList = new ArrayList<>();
@@ -544,6 +545,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         if ("BIGTHING".equals(type)&&price[0].compareTo(new BigDecimal(68)) == -1){
             return new BigDecimal(68);
         }
+        System.out.println("计算后的价格是："+price[0]);
         return price[0];
     }
 
