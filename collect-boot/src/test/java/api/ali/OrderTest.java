@@ -26,7 +26,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("2088322039337350", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088432503718960", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
 
@@ -71,24 +71,20 @@ public class OrderTest {
 //            categoryBean.setParentId("25");
 //            categoryBean.setCityId("17685");
                 CategoryAttrBean categoryAttrBean = new CategoryAttrBean();
-                categoryAttrBean.setCategoryId((long)80);
+                categoryAttrBean.setCategoryId((long)95);
                 categoryAttrBean.setType("BIGTHING");
-                categoryAttrBean.setCategoryAttrOptionids("2994,2999,3002,3004,3012,3015,3018");
-                IotPostParamBean iotPostParamBean = new IotPostParamBean();
-                iotPostParamBean.setQrUrl("https://mayishoubei.com/equipment/iot");
-                iotPostParamBean.setTranTime(System.currentTimeMillis());
-                iotPostParamBean.setCabinetNo("869012040193968");
-                iotPostParamBean.setEcUuid(UUID.randomUUID().toString());
+                categoryAttrBean.setCategoryAttrOptionids("3400,3406,3412,3415,3417,3420,3423,3430,3432");
+
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name","iot.scan");
+                param.put("name","category.getPricesAll");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
                 param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
-                param.put("token", "3F3TEMH74565Q5QORHNPE76UZM6VT4JPWVV4OPUNTGAXLLRLC6B5GYU3LW34YHVNOEFL2LXPVT24VVHUSAVURD6DYOPXOA4E3QOVNZIQI4THTY2RGNCYJ23R2CDMCSEC47RMLNACX2J4ULZAAOY46ORQJCMU2FP5UTXCOMU27JYPJDLHKTXTA63VC3OH3YSVK4RZPM7ZVLDQFJOMJMHJZ2SVEWOR44OU6AKMFJBR2YDJ2HFTBJ7WB2YTQ7X7ABHHZHPVG22XNDPF4NQ5QZ3VW7B7C5UHS2GLEZ6BM2J2SUXEQRAXUMPGURWI4CK75XLIZQPB3SEIQRK3S");
+                param.put("token", securityToken);
                 //param.put("sign","111");
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data",iotPostParamBean);
+                param.put("data",categoryAttrBean);
 
                 String jsonStr=JSON.toJSONString(param);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

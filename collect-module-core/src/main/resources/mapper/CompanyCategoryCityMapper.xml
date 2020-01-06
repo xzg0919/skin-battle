@@ -131,8 +131,7 @@
 			a.id,
 			a.name_ AS name,
 			a.icon,
-			IF(b.price is NULL,a.price,b.price) AS price,
-			IF(b.price is NULL,a.price,b.price) AS price,
+			IF(b.price is NULL,c.price,b.price) AS price,
 			IF(c.admin_commissions is NULL,a.admin_commissions,c.admin_commissions) AS adminCommissions,
 			IF(c.free_commissions is NULL,a.free_commissions,c.free_commissions) AS freeCommissions,
 			IF(c.company_commissions is NULL,a.company_commissions,c.company_commissions) AS companyCommissions

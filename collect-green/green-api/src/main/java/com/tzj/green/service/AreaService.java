@@ -5,9 +5,8 @@ import com.tzj.green.entity.Area;
 
 public interface AreaService extends IService<Area> {
 
+    Object getProvinceList();
 
-
-
-
+    Object getAreaList(String parentId);
 
 }
