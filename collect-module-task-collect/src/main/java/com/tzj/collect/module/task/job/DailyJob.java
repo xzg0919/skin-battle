@@ -42,6 +42,10 @@ public class DailyJob {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Scheduled(cron = "30 03 16 ? * 4")
+    public void updateRedisRecordCrossYear(){
+        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new UpdateRedisRecordCrossYear(dailyWeekRankingService)));
+    }
     /**
      * 定时任务,钱未转账到用户支付宝
      */
@@ -109,7 +113,23 @@ public class DailyJob {
             dailyWeekRankingService.insertEachWeekDresser();
         }
     }
-
+    /**
+     * 调整跨年数据
+     * @author: sgmark@aliyun.com
+     * @Date: 2020/1/2 0002
+     * @Param: 
+     * @return: 
+     */
+    private class UpdateRedisRecordCrossYear implements Runnable{
+        private DailyWeekRankingService dailyWeekRankingService;
+        public UpdateRedisRecordCrossYear(DailyWeekRankingService dailyWeekRankingService){
+            this.dailyWeekRankingService = dailyWeekRankingService;
+        }
+        @Override
+        public void run() {
+            dailyWeekRankingService.updateRedisRecordCrossYear();
+        }
+    }
     /**
      * 定时任务,钱未转账到用户支付宝
      */
