@@ -22,12 +22,12 @@ import static com.tzj.green.common.content.TokenConst.*;
 **/
 @Controller
 @RequestMapping(value = "/company/api")
-public class BusinessApiController extends ApiController{
+public class CompanyApiController extends ApiController{
 	
 	 @Resource(name="apiNonceServiceImpl")
 	    private NoceService noceService;
 
-	    @Resource(name="businessApiSubjectServiceImpl")
+	    @Resource(name="companyApiSubjectServiceImpl")
 	    private SubjectService subjectService;
 
 	    @Override

@@ -1,7 +1,9 @@
 package com.tzj.green.terminal;
 
 import com.tzj.green.entity.Area;
+import com.tzj.green.entity.Company;
 import com.tzj.green.service.AreaService;
+import com.tzj.green.service.CompanyService;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.util.EhCache2Utils;
@@ -18,8 +20,8 @@ import static com.tzj.green.common.content.TokenConst.*;
 /**
  * @Author 胡方明（12795880@qq.com）
  **/
-@Service("businessApiSubjectServiceImpl")
-public class BusinessSubjectServiceImpl implements SubjectService{
+@Service("companyApiSubjectServiceImpl")
+public class CompanySubjectServiceImpl implements SubjectService{
 
     private final String cacheName="companyCache";
 
@@ -27,7 +29,7 @@ public class BusinessSubjectServiceImpl implements SubjectService{
     private CacheManager cacheManager;
 
     @Autowired
-    private AreaService areaService;
+    private CompanyService companyService;
 
 
     @Override
@@ -37,12 +39,12 @@ public class BusinessSubjectServiceImpl implements SubjectService{
             return subjectCache;
         }
         
-        Area area = areaService.selectById(Long.parseLong(key));
+        Company company = companyService.selectById(Long.parseLong(key));
 
         Subject subject=new Subject();
-        subject.setId(area.getId().toString());
-        subject.setName(area.getAreaName());
-        subject.setUser(area);
+        subject.setId(company.getId().toString());
+        subject.setName(company.getName());
+        subject.setUser(company);
 
         LinkedList<String> authorities=new LinkedList<>();
         authorities.add(BUSINESS_API_COMMON_AUTHORITY);

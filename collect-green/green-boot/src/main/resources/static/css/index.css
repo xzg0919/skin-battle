@@ -1,0 +1,213 @@
+#warp{
+    padding: 20px 50px;
+}
+.page{
+    position: relative;
+    height: 100px;
+}
+.pagination{
+    position: absolute;
+    right: 50px;
+    bottom: 0;
+}
+.searchBox{
+    padding:50px;
+    display:none;
+
+}
+.activea{
+    border-bottom: 2px solid #337ab7;
+}
+.fl{
+    float: left !important;
+}
+.fr{
+    float: right;
+}
+.clearfix{
+    display: block;
+    clear: both;
+    content: "";
+}
+.nav{
+    border-bottom: 2px solid #ccc; 
+}
+.nav li{
+    margin-bottom: -2px;
+}
+.clearfix::after{
+    zoom: 1
+}
+.content thead tr th{
+    background-color:rgba(0, 0, 0, .5);
+    color: #ffffff;
+}
+.input-group-sm{
+    width: 200px;
+    margin-right: 50px;
+}
+.searchBox .btn{
+    padding: 3px 10px;
+    margin-right: 10px;
+}
+tbody,thead th{
+    text-align: center;
+}
+table {
+    border: 1px solid #ccc;
+}
+table tbody tr td{
+    line-height: 41px !important;
+    padding: 0 8px !important;
+
+}
+.greenC{
+    color: green
+}
+tbody .xq span{
+    cursor: pointer;
+}
+.tBox{
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, .5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    display: none;
+    
+}
+#details{
+    width: 50%;
+    height: 400px;
+    background-color: #ffffff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 200px auto  0 auto;
+    border-radius: 5px;
+    display: none;
+}
+.tBox #details .title{
+    border-bottom: 1px solid darkgray;
+    height: 30px;
+    font-size: 16px;
+    line-height: 30px;
+    text-indent: 50px;
+    margin: 0;
+    margin-bottom: 20px;
+    position: relative;
+}
+.tBox #details .title span{
+    position:absolute;
+    right: 10px;
+    top: 0;
+    line-height: 30px;
+    font-size: 14px;
+    cursor: pointer;
+
+}
+.pppp{
+    line-height: 30px;
+    margin: 0;
+}
+.shopDetails{
+    width: 40%;
+    padding-left: 0;
+    border-right: 1px solid gray;
+    flex: 2;
+    
+}
+.shopDetails li strong{
+    width: 30%;
+    text-align: right;
+}
+.shopDetails li span{
+    width: 70%
+}
+.shopDetails li .shopImg{
+    width: 100px;
+    height: 100px;
+}
+.tBox .tcontent{
+    display: flex;
+    
+}
+.userDetails{
+    border-left: 1px solid gray;
+}
+.userDetails li{
+    margin-bottom: 10px;
+}
+.shopDetails li{
+    margin-bottom: 5px;
+}
+.express{
+    width: 300px;
+    height: 200px;
+    background-color: #ffffff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin:auto;
+    border-radius: 5px;
+    text-align: center;
+    display: none;
+}
+.express .action{
+    padding: 0 10px;
+}
+.express h4{
+    border-bottom: 1px solid darkgray;
+    height: 30px;
+    font-size: 16px;
+    line-height: 30px;
+    text-indent: 20px;
+    margin: 0;
+    margin-bottom: 20px;
+    position: relative;
+    text-align: left;
+}
+.express .close{
+    position:absolute;
+    right: 10px;
+    top: 0;
+    line-height: 30px;
+    font-size: 14px;
+    cursor: pointer;
+
+}
+.btn-default{
+    background:none;  
+	outline:none;  
+	border:0px;
+}
+.express .input-group{
+    border-radius: 4px;
+    margin: 10px 0;
+}
+.express .lllll{
+    width: 100%;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+}
+
+.express .lllll .names{
+    width: 87%;
+}
+.deliverInput{
+    width: 160px;
+    display: inline-block;
+    margin-right: 10px;
+    height: 60% !important;
+}
+#address{
+    width: 300px !important;
+    line-height: normal !important;
+}

@@ -71,9 +71,9 @@ public class OrderTest {
 //            categoryBean.setParentId("25");
 //            categoryBean.setCityId("17685");
                 CategoryAttrBean categoryAttrBean = new CategoryAttrBean();
-                categoryAttrBean.setCategoryId((long)10);
-                categoryAttrBean.setType("DIGITAL");
-                categoryAttrBean.setCategoryAttrOptionids("2658,2670,2674,2678,2680");
+                categoryAttrBean.setCategoryId((long)95);
+                categoryAttrBean.setType("BIGTHING");
+                categoryAttrBean.setCategoryAttrOptionids("3400,3406,3412,3415,3417,3420,3423,3430,3432");
 
                 HashMap<String,Object> param=new HashMap<>();
                 param.put("name","category.getPricesAll");

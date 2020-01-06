@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.green.mapper.CompanyCommunityMapper">
+
+
+
+    <select id="getCompanyCommunityList" parameterType="Object" resultType="Map">
+        SELECT
+            a.id,
+            a.community_id AS communityId,
+            a.province_name AS provinceName,
+            a.city_name AS cityName,
+            a.area_name AS areaName,
+            a.street_name AS streetName,
+            a.community_name AS communityName,
+            a.house_num AS houseNum,
+            a.put_type AS putType,
+            b.house_name AS houseName,
+            b.address_ address,
+            b.fixed_card_num AS fixedCardNum
+        FROM
+            sb_company_community a
+        LEFT JOIN sb_community_house_name b ON a.id = b.community_id
+        WHERE
+            a.company_id = #{companyId}
+        <if test="provinceId != null and provinceId !='' ">
+            AND a.province_id = #{provinceId}
+        </if>
+        <if test="cityId != null and cityId !='' ">
+            AND a.city_id = #{cityId}
+        </if>
+        <if test="areaId != null and areaId !='' ">
+            AND a.area_id = #{areaId}
+        </if>
+        <if test="streetId != null and streetId !='' ">
+            AND a.street_id = #{streetId}
+        </if>
+        <if test="communityName != null and communityName !='' ">
+            AND a.community_name LIKE CONCAT('%',#{communityName},'%')
+        </if>
+        <if test="houseName != null and houseName !='' ">
+            AND b.house_name LIKE CONCAT('%',#{houseName},'%')
+        </if>
+        GROUP BY a.create_date DESC
+        LIMIT #{pageStartNum},#{pageSize}
+    </select>
+    <select id="getCompanyCommunityCount" parameterType="Object" resultType="Integer">
+        SELECT
+            count(1)
+        FROM
+        sb_company_community a
+        LEFT JOIN sb_community_house_name b ON a.id = b.community_id
+        WHERE
+        a.company_id = #{companyId}
+        <if test="provinceId != null and provinceId !='' ">
+            AND a.province_id = #{provinceId}
+        </if>
+        <if test="cityId != null and cityId !='' ">
+            AND a.city_id = #{cityId}
+        </if>
+        <if test="areaId != null and areaId !='' ">
+            AND a.area_id = #{areaId}
+        </if>
+        <if test="streetId != null and streetId !='' ">
+            AND a.street_id = #{streetId}
+        </if>
+        <if test="communityName != null and communityName !='' ">
+            AND a.community_name LIKE CONCAT('%',#{communityName},'%')
+        </if>
+        <if test="houseName != null and houseName !='' ">
+            AND b.house_name LIKE CONCAT('%',#{houseName},'%')
+        </if>
+    </select>
+
+
+</mapper>
