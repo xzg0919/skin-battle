@@ -23,6 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMapper, CompanyRecycler> implements CompanyRecyclerService
 {
     @Resource
-    private CompanyRecyclerMapper CompanyRecyclerMapper;
+    private CompanyRecyclerMapper companyRecyclerMapper;
 
+    @Override
+    public Object getApplyRecyclerList(Long companyId) {
+        return companyRecyclerMapper.getApplyRecyclerList(companyId);
+    }
 }

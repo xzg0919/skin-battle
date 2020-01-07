@@ -77,5 +77,12 @@ public class Recyclers extends DataEntity<Long>
      */
     private String aliUserId;
 
+    private String  provinceName;
+    private String  cityName;
+    private String  areaName;
+    private String  streetName;
+    private String  communityName;
+    private String  houseName;
+
 
 }

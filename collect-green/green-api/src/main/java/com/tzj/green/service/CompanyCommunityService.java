@@ -22,4 +22,8 @@ public interface CompanyCommunityService extends IService<CompanyCommunity>
     Object getCompanyCommunityById(String id);
 
     Object getCompanyCommunityList(CompanyCommunityBean companyCommunityBean,Long companyId);
+
+    Object getCompanyCommunityListByStreetId(CompanyCommunityBean companyCommunityBean,Long companyId);
+
+    Object getRecyclerListByHouseId(CompanyCommunityBean companyCommunityBean,Long companyId);
 }

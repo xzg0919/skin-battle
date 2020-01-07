@@ -5,6 +5,10 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import lombok.Data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+
 /**
  *
  * <p>Created on2019年12月30日</p>
@@ -24,6 +28,8 @@ public class Product extends DataEntity<Long>
      * 主键
      */
     private Long id;
+
+    private String productNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
     /**
      * 所属的企业Id
      */
@@ -54,7 +60,7 @@ public class Product extends DataEntity<Long>
      */
     private Long exchangeNum;
     /**
-     * 兑换总数量
+     * 兑换总积分
      */
     private Long exchangePoints;
     /**
@@ -62,4 +68,24 @@ public class Product extends DataEntity<Long>
      */
     private String isLower;
 
+    @TableField(exist = false)
+    private String pickStartTime;
+    @TableField(exist = false)
+    private String pickEndTime;
+
+    public String getPickStartTime() {
+        return new SimpleDateFormat("yyyy-MM-dd").format(pickStartDate);
+    }
+
+    public void setPickStartTime(String pickStartTime) {
+        this.pickStartTime = pickStartTime;
+    }
+
+    public String getPickEndTime() {
+        return new SimpleDateFormat("yyyy-MM-dd").format(pickEndDate);
+    }
+
+    public void setPickEndTime(String pickEndTime) {
+        this.pickEndTime = pickEndTime;
+    }
 }

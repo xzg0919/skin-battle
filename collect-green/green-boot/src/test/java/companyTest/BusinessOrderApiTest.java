@@ -11,10 +11,7 @@ package companyTest;
 import com.alibaba.fastjson.JSON;
 import com.tzj.green.entity.CommunityHouseName;
 import com.tzj.green.entity.Goods;
-import com.tzj.green.param.CompanyBean;
-import com.tzj.green.param.CompanyCommunityBean;
-import com.tzj.green.param.GoodsBean;
-import com.tzj.green.param.PageBean;
+import com.tzj.green.param.*;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.api.utils.SignUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -46,7 +43,7 @@ public class BusinessOrderApiTest {
 		String subjectStr = claims.getSubject();
 		System.out.println("反向編譯 token是："+subjectStr);
 
-//		String api = "http://test.companypoint.mayishoubei.com/company/api";
+//		String api = "http://test.tcompanypoint.mayishoubei.com/company/api";
 
 		String api="http://localhost:9090/company/api";
 //		CompanyCommunityBean companyCommunityBean= new CompanyCommunityBean();
@@ -81,6 +78,9 @@ public class BusinessOrderApiTest {
 //		houseNameList.add(communityHouseName2);
 //		companyCommunityBean.setHouseNameList(houseNameList);
 
+		CompanyCommunityBean companyCommunityBean = new CompanyCommunityBean();
+		companyCommunityBean.setCommunityHouseId("5");
+
 
 		CompanyBean companyBean = new CompanyBean();
 		companyBean.setTel("111111");
@@ -89,12 +89,35 @@ public class BusinessOrderApiTest {
 		GoodsBean goodsBean = new GoodsBean();
 		goodsBean.setId("1");
 
+		ProductBean productBean = new ProductBean();
+//
+//		productBean.setName("活动名称");
+//		productBean.setId("1");
+//		productBean.setPickStartDate("2020-01-01");
+//		productBean.setPickEndDate("2021-01-01");
+//		productBean.setHouseNameId("5");
+//		productBean.setDetail("我是活动说明");
+//
+//		List<String> recyclerIds = new ArrayList<>();
+//		recyclerIds.add("1");
+//		recyclerIds.add("2");
+//		productBean.setRecyclerIds(recyclerIds);
+//		List<ProductGoodsBean> productGoodsBeanList = new ArrayList<>();
+//		ProductGoodsBean productGoodsBean1 = new ProductGoodsBean();
+//		productGoodsBean1.setGoodsId("2");
+//		productGoodsBean1.setTotalNum("99");
+//		ProductGoodsBean productGoodsBean2 = new ProductGoodsBean();
+//		productGoodsBean2.setGoodsId("3");
+//		productGoodsBean2.setTotalNum("88");
+//		productGoodsBeanList.add(productGoodsBean1);
+//		productGoodsBeanList.add(productGoodsBean2);
+//		productBean.setProductGoodsBeanList(productGoodsBeanList);
 
-
-
+		productBean.setId("1");
+		//productBean.setIsLower("0");
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","company.deleteGoodsById");
+		param.put("name","company.token.getCompany");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -102,7 +125,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",goodsBean);
+		param.put("data",null);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);
