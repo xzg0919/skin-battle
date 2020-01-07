@@ -49,7 +49,7 @@ public class PointsList extends DataEntity<Long>
     /**
      * 积分变动类型
      */
-    private Long pointsType;
+    private String pointsType;//0:加分；1:减分
     /**
      * 积分变动说明
      */

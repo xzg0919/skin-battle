@@ -1,5 +1,6 @@
 package com.tzj.green.serviceImpl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import javax.annotation.Resource;
 import com.tzj.green.entity.Recyclers;
@@ -24,5 +25,16 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
 {
     @Resource
     private RecyclersMapper RecyclersMapper;
+
+    /**
+     * 根据手机号查询回收人员
+     *
+     * @param mobile
+     * @return
+     */
+    @Override
+    public Recyclers selectByMobile(String mobile) {
+        return selectOne(new EntityWrapper<Recyclers>().eq("tel", mobile));
+    }
 
 }

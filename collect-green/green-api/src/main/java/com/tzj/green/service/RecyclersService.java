@@ -1,5 +1,6 @@
 package com.tzj.green.service;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.Recyclers;
 
@@ -16,5 +17,8 @@ import com.tzj.green.entity.Recyclers;
  */
 public interface RecyclersService extends IService<Recyclers>
 {
+
+    @DS("slave")
+    Recyclers selectByMobile(String mobile);
 
 }
