@@ -35,9 +35,9 @@ public class ProductGoods extends DataEntity<Long>
      */
     private Long totalNum;
     /**
-     * 商品剩余数量
+     * 商品兑换数量
      */
-    private Long remnantNum;
+    private Long exchangeNum = (long)0;
 
 
 }

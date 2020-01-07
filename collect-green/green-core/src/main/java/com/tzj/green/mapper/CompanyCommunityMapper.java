@@ -25,4 +25,6 @@ public interface CompanyCommunityMapper extends BaseMapper<CompanyCommunity>
 
     Integer getCompanyCommunityCount(@Param("companyId") Long companyId,@Param("provinceId") String provinceId,@Param("cityId") String  cityId, @Param("areaId") String areaId, @Param("streetId") String streetId,@Param("communityName") String communityName,@Param("houseName") String houseName);
 
+    List<Map<String,Object>> getRecyclerListByHouseId(@Param("communityHouseId")String communityHouseId,@Param("companyId")Long companyId);
+
 }

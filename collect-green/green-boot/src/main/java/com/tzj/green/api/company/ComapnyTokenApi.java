@@ -1,6 +1,8 @@
 package com.tzj.green.api.company;
 
+import com.tzj.green.common.utils.CompanyUtils;
 import com.tzj.green.entity.Area;
+import com.tzj.green.entity.Company;
 import com.tzj.green.param.CompanyBean;
 import com.tzj.green.service.AreaService;
 import com.tzj.green.service.CompanyService;
@@ -27,6 +29,18 @@ public class ComapnyTokenApi {
     //@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
     public Object getToken(CompanyBean companyBean) {
         return companyService.getToken(companyBean);
+    }
+
+    /**
+     * 回收企业获取token
+     * 忽略token验证，需要sign签名验证
+     */
+    @Api(name = "company.token.getCompany", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Object getCompany() {
+        Company company = CompanyUtils.getCompanyAccount();
+        return companyService.selectById(company.getId());
     }
 
 

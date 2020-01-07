@@ -16,5 +16,5 @@ import com.tzj.green.entity.CompanyRecycler;
  */
 public interface CompanyRecyclerService extends IService<CompanyRecycler>
 {
-
+    Object getApplyRecyclerList(Long companyId);
 }

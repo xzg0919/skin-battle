@@ -105,6 +105,8 @@ public class CompanyCommunity extends DataEntity<Long>
      * 可回收时间星期
      */
     private String recoveryWeek;
+    @TableField(exist = false)
+    private List<CommunityHouseName> communityHouseNameList;
 
     @TableField(exist = false)
     private String isDry;
