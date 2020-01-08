@@ -107,7 +107,7 @@ public class CompanyCommunity extends DataEntity<Long>
     private String recoveryWeek;
 
     /**
-     * 维度
+     * 纬度
      */
     private double lat;
 
