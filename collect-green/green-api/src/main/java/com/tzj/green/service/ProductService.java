@@ -26,4 +26,6 @@ public interface ProductService extends IService<Product>
 
     Object updateProductIsLowerById(String productId,String isLower);
 
+    Object nearActivitys(Double lat,Double lng,Long companyId);
+
 }

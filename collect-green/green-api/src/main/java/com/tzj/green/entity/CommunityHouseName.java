@@ -32,6 +32,16 @@ public class CommunityHouseName extends DataEntity<Long>
      */
     private String houseName;
 
+    /**
+     * 纬度
+     */
+    private double lat;
+
+    /**
+     * 经度
+     */
+    private  double lng;
+
     @TableField(value = "address_")
     private String address;
 
