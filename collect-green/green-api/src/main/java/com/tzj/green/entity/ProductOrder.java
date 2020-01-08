@@ -57,7 +57,7 @@ public class ProductOrder extends DataEntity<Long>
     /**
      * 所属活动名称
      */
-    private Long productName;
+    private String productName;
     /**
      * 兑换的商品id
      */
