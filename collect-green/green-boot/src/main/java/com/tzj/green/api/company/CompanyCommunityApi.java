@@ -69,6 +69,16 @@ public class CompanyCommunityApi {
         Company company = CompanyUtils.getCompanyAccount();
         return companyCommunityService.getCompanyCommunityListByStreetId(companyCommunityBean,company.getId());
     }
+    /**
+     * 根据居委Id获取小区信息
+     */
+    @Api(name = "company.getCompanyHouseListByCommunityId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Object getCompanyHouseListByCommunityId(CompanyCommunityBean companyCommunityBean) {
+        Company company = CompanyUtils.getCompanyAccount();
+        return companyCommunityService.getCompanyHouseListByCommunityId(companyCommunityBean,company.getId());
+    }
 
     /**
      * 根据社区Id 相关回收人员信息

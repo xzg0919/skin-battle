@@ -32,7 +32,7 @@ public class CompanyCommunity extends DataEntity<Long>
      */
     private Long id;
 
-    private String communityId = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+    private String communityNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
     /**
      * 公司
      */

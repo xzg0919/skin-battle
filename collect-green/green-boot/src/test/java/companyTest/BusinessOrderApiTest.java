@@ -79,7 +79,7 @@ public class BusinessOrderApiTest {
 //		companyCommunityBean.setHouseNameList(houseNameList);
 
 		CompanyCommunityBean companyCommunityBean = new CompanyCommunityBean();
-		companyCommunityBean.setCommunityHouseId("5");
+		companyCommunityBean.setCommunityId("3");
 
 
 		CompanyBean companyBean = new CompanyBean();
@@ -116,8 +116,12 @@ public class BusinessOrderApiTest {
 		productBean.setId("1");
 		//productBean.setIsLower("0");
 
+		RecyclerBean recyclerBean = new RecyclerBean();
+
+		recyclerBean.setId("2");
+
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","company.token.getCompany");
+		param.put("name","company.deleteCompanyRecyclerById");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -125,7 +129,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",null);
+		param.put("data",recyclerBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);

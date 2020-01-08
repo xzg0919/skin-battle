@@ -7,7 +7,7 @@
     <select id="getCompanyCommunityList" parameterType="Object" resultType="Map">
         SELECT
             a.id,
-            a.community_id AS communityId,
+            a.community_no AS communityNo,
             a.province_name AS provinceName,
             a.city_name AS cityName,
             a.area_name AS areaName,

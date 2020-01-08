@@ -3,9 +3,81 @@
 <mapper namespace="com.tzj.green.mapper.CompanyRecyclerMapper">
 
 
-
-
-
-
-
+    <select id="getApplyRecyclerList" parameterType="Long" resultType="Map">
+        SELECT
+            b.id,
+            b.name_ AS name,
+            b.sex,
+            b.tel,
+            b.province_name AS provinceName,
+            b.city_name AS cityName,
+            b.area_name AS areaName,
+            b.street_name AS streetName,
+            b.community_name AS communityName,
+            b.house_name AS houseName,
+            b.id_card AS idCard,
+            b.id_card_obv AS idCardObv,
+            b.id_card_rev AS idCardRev
+        FROM
+            sb_company_recycler a
+        LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+        WHERE
+            a.company_id = #{companyId}
+        AND a.status_ = '0'
+    </select>
+    <select id="getCompanyRecyclerList" parameterType="Object" resultType="Map">
+        SELECT DISTINCT
+            b.id,
+            b.name_ AS name,
+            b.tel,
+            a.card_type as cardType,
+            f.house_name AS houseName,
+            d.community_name AS communityName,
+            d.street_name AS streetName,
+            d.area_name AS areaName,
+            d.city_name AS cityName,
+            d.province_name AS provinceName
+        FROM
+            sb_company_recycler a
+        LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+        LEFT JOIN sb_recyclers_range c ON a.company_id = c.company_id AND a.recycler_id = c.recyclers_id
+        LEFT JOIN sb_company_community d ON d.id = c.community_id
+        LEFT JOIN sb_community_house_name f ON f.id = c.community_house_id
+        WHERE
+            a.company_id = #{companyId}
+        AND a.status_ = '1'
+        <if test="cardType != null and cardType != '' ">
+            AND a.card_type = #{cardType}
+        </if>
+        <if test="tel != null and tel != '' ">
+            AND b.tel LIKE CONCAT('%',#{tel},'%')
+        </if>
+        <if test="name != null and name != '' ">
+            AND b.name_ LIKE CONCAT('%',#{name},'%')
+        </if>
+        ORDER BY a.create_date DESC
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getCompanyRecyclerCount" resultType="Integer" parameterType="Object">
+        SELECT
+            count(1)
+        FROM
+        sb_company_recycler a
+        LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+        LEFT JOIN sb_recyclers_range c ON a.company_id = c.company_id AND a.recycler_id = c.recyclers_id
+        LEFT JOIN sb_company_community d ON d.id = c.community_id
+        LEFT JOIN sb_community_house_name f ON f.id = c.community_house_id
+        WHERE
+        a.company_id = #{companyId}
+        AND a.status_ = '1'
+        <if test="cardType != null and cardType != '' ">
+            AND a.card_type = #{cardType}
+        </if>
+        <if test="tel != null and tel != '' ">
+            AND b.tel LIKE CONCAT('%',#{tel},'%')
+        </if>
+        <if test="name != null and name != '' ">
+            AND b.name_ LIKE CONCAT('%',#{name},'%')
+        </if>
+    </select>
 </mapper>
