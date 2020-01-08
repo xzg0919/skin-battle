@@ -106,15 +106,7 @@ public class CompanyCommunity extends DataEntity<Long>
      */
     private String recoveryWeek;
 
-    /**
-     * 纬度
-     */
-    private double lat;
 
-    /**
-     * 经度
-     */
-    private  double lng;
 
 
     @TableField(exist = false)
