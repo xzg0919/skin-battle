@@ -114,13 +114,10 @@ public class BusinessOrderApiTest {
 //		productBean.setProductGoodsBeanList(productGoodsBeanList);
 
 		productBean.setId("1");
-		//productBean.setIsLower("0");
 
-		MemberBean memberBean = new MemberBean();
-		memberBean.setRealNo("202019879854");
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","company.updateIsCancelByRealNo");
+		param.put("name","company.getProductOrderDetail");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -128,7 +125,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",memberBean);
+		param.put("data",productBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);

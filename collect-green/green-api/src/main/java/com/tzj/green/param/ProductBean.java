@@ -56,4 +56,12 @@ public class ProductBean {
 
     private String productNo;
 
+    private String startTime;
+
+    private String endTime;
+
+    private String tel;
+
+    private String type;
+
 }
