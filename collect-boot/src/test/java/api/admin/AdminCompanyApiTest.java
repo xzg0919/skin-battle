@@ -50,7 +50,10 @@ public class AdminCompanyApiTest {
 		 System.out.println("反向編譯 token是："+subjectStr);
 
 
-	        String api="http://localhost:9090/admin/api";
+		 //String api="http://open.mayishoubei.com/admin/api";
+		 //String api =  "http://api.station.mayishoubei.com/app/api";
+		 //String api =  "http://172.19.182.84:9001/admin/api";
+		 String api =  "http://localhost:9090/app/api";
 		 AdminShareCodeBean adminShareCodeBean = new AdminShareCodeBean();
 //		 adminShareCodeBean.setQrType(LineQrCode.QrType.OFFLINE);
 //		 adminShareCodeBean.setQrName("测试");
@@ -74,7 +77,7 @@ public class AdminCompanyApiTest {
 //		 adminShareCodeBean.setAdminCityList(newArrayList);
 //		 adminShareCodeBean.setPageBean(pageBean);
 	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name","admin.share.code.detail");
+	        param.put("name","collect.getTransStationList");
 	        param.put("version","1.0");  
 	        param.put("format","json");
 	        param.put("app_key","app_id_4");
@@ -82,7 +85,7 @@ public class AdminCompanyApiTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data",adminShareCodeBean);
+	        param.put("data","");
 
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");

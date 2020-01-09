@@ -2,6 +2,7 @@ package com.tzj.green.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.PointsList;
+import com.tzj.green.param.PointsListBean;
 
 /**
  *
@@ -16,5 +17,7 @@ import com.tzj.green.entity.PointsList;
  */
 public interface PointsListService extends IService<PointsList>
 {
+
+    Object getPointsListByCompanyId(Long companyId, PointsListBean pointsListBean);
 
 }
