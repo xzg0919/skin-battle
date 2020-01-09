@@ -78,9 +78,9 @@
         on schn.id = product.house_name_id
         inner join sb_company_community scc
         on scc.id = schn.community_id
-        where round(6378.138*2*asin(sqrt(pow(sin( (schn.lat*pi()/180-#{lat}*pi()/180)/2),2)
+        where 3000 >= round(6378.138*2*asin(sqrt(pow(sin( (schn.lat*pi()/180-#{lat}*pi()/180)/2),2)
         +cos(schn.lat*pi()/180)*cos(#{lat}*pi()/180)
-        * pow(sin( (schn.lng*pi()/180-#{lng}*pi()/180)/2),2)))*1000) <= 3000
+        * pow(sin( (schn.lng*pi()/180-#{lng}*pi()/180)/2),2)))*1000)
         and product.company_id =#{companyId}
     </select>
 </mapper>
