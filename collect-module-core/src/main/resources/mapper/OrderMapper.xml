@@ -697,6 +697,8 @@
 		comId.cash as cash,
 		comId.ach_price as price,
 		comId.amount as weight,
+		comId.adminCommissions,
+		comId.backCommissionsPrice,
 		comId.name_ as recycleName
 		FROM
 		sb_company scc
@@ -713,6 +715,8 @@
 		SELECT
 		soo.order_no,
 		soo.id,
+		soo.admin_commissions AS adminCommissions,
+		soo.back_commissions_price AS backCommissionsPrice,
 		sr.name_,
 		CASE soo.title
 		WHEN 1 THEN
@@ -772,7 +776,9 @@
 			'能量'
 			) AS isCash,
 			ROUND(a.ach_price, 2) AS amount,
-			d.name_ AS recyclerName
+			d.name_ AS recyclerName,
+			a.admin_commissions AS adminCommissions,
+			a.back_commissions_price as backCommissionsPrice
 			FROM
 			sb_order a
 			LEFT JOIN sb_category b ON a.category_id = b.id
