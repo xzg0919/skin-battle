@@ -3,6 +3,8 @@ package com.tzj.green.serviceImpl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import javax.annotation.Resource;
+
+import com.tzj.green.entity.CompanyRecycler;
 import com.tzj.green.entity.Goods;
 import com.tzj.green.mapper.GoodsMapper;
 import com.tzj.green.param.GoodsBean;
@@ -81,5 +83,15 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         resultMap.put("goodsList",goodsList);
         resultMap.put("pageNum",pageBean.getPageNum());
         return resultMap;
+    }
+
+    @Override
+    public Object getGoodsListByActivityId(String activityCode) {
+        return goodsMapper.getGoodsListByActivityId(activityCode);
+    }
+
+    @Override
+    public Object getGoodsDetail(String goodsNo) {
+        return this.selectOne(new EntityWrapper<Goods>().eq("goods_no", goodsNo));
     }
 }

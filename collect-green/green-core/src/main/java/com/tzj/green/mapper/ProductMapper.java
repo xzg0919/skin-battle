@@ -28,7 +28,7 @@ public interface ProductMapper extends BaseMapper<Product>
 
     List<Map<String,Object>> getRecyclerList(@Param("productId") Long productId);
 
-    List<Map<String,Object>> nearActivitys(@Param("companyId") Long companyId,@Param("lat") double lat,@Param("lng") double lng);
+    List<Map<String,Object>> nearActivitys(@Param("companyId") Long companyId,@Param("lat") double lat,@Param("lng") double lng,@Param("pageStartNum") Integer pageStartNum, @Param("pageSize") Integer pageSize);
 
 
 

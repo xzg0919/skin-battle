@@ -17,6 +17,7 @@ import com.tzj.green.service.GoodsService;
 import com.tzj.green.service.ProductGoodsService;
 import com.tzj.green.service.ProductRecyclerService;
 import com.tzj.green.service.ProductService;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -195,8 +196,19 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      * @return
      */
     @Override
-    public Object nearActivitys(Double lat, Double lng, Long companyId) {
-        return  productMapper.nearActivitys(companyId, lat, lng);
+    public Object nearActivitys(Double lat, Double lng, Long companyId,Integer pageNum,Integer pageSize) {
+        return  productMapper.nearActivitys(companyId, lat, lng,pageNum,pageSize);
+    }
+
+    @Override
+    public Object activtyDetail(Long activityId) {
+        Map<String,Object> resultMap =new HashedMap();
+        //获取活动信息
+        Product product=productMapper.selectById(activityId);
+        resultMap.put("activity",product);
+        //获取活动下的礼品信息
+        resultMap.put("goodsList",goodsService.getGoodsListByActivityId(activityId));
+        return resultMap;
     }
 
 }

@@ -82,5 +82,7 @@
         +cos(schn.lat*pi()/180)*cos(#{lat}*pi()/180)
         * pow(sin( (schn.lng*pi()/180-#{lng}*pi()/180)/2),2)))*1000) <= 3000
         and product.company_id =#{companyId}
+        order by product.id desc
+        LIMIT #{pageStartNum},#{pageSize}
     </select>
 </mapper>
