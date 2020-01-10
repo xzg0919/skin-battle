@@ -9,4 +9,5 @@ public interface AreaService extends IService<Area> {
 
     Object getAreaList(String parentId);
 
+    Object getCityList();
 }

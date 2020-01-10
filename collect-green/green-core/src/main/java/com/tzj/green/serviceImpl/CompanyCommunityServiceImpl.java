@@ -101,6 +101,8 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
             communityHouseName1.setCommunityId(finalCompanyCommunity.getId());
             communityHouseName1.setHouseName(communityHouseName.getHouseName());
             communityHouseName1.setAddress(communityHouseName.getAddress());
+            communityHouseName1.setLat(communityHouseName.getLat());
+            communityHouseName1.setLng(communityHouseName.getLng());
             communityHouseNameService.insertOrUpdate(communityHouseName1);
         });
         return "操作成功";

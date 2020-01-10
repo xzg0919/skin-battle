@@ -199,4 +199,20 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return  productMapper.nearActivitys(companyId, lat, lng);
     }
 
+    @Override
+    public Object getGoodsListByCompanyId(Long companyId, ProductBean productBean) {
+        PageBean pageBean = productBean.getPageBean();
+        if (null==pageBean){
+            pageBean = new PageBean();
+        }
+        Integer pageStart = (pageBean.getPageNum()-1)*pageBean.getPageSize();
+        List<Map<String, Object>> goodsList = productMapper.getGoodsListByCompanyId(companyId, productBean.getName(), pageStart, pageBean.getPageSize());
+        Integer count = productMapper.getGoodsCount(companyId, productBean.getName());
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("goodsList",goodsList);
+        resultMap.put("count",count);
+        resultMap.put("pageNum",pageBean.getPageNum());
+        return  resultMap;
+    }
+
 }

@@ -83,4 +83,34 @@
         * pow(sin( (schn.lng*pi()/180-#{lng}*pi()/180)/2),2)))*1000)
         and product.company_id =#{companyId}
     </select>
+    <select id="getGoodsListByCompanyId" parameterType="Object" resultType="Map">
+
+        SELECT
+            a.id,
+            a.goods_no AS goodsNo,
+            a.goods_name AS goodsName,
+            a.goods_num AS goodsNum,
+            a.goods_num - a.goods_frozen_num AS remnantNum,
+            a.points
+        FROM
+            sb_goods a
+        WHERE
+            a.company_id = #{companyId}
+        <if test="name != null and name != ''">
+            AND a.goods_name LIKE CONCAT('%',#{name},'%')
+        </if>
+        ORDER BY a.create_date DESC
+        limit #{pageStart},#{pageSize}
+    </select>
+    <select id="getGoodsCount" parameterType="Object" resultType="Integer">
+        SELECT
+            count(1)
+        FROM
+        sb_goods a
+        WHERE
+        a.company_id = #{companyId}
+        <if test="name != null and name != ''">
+            AND a.goods_name LIKE CONCAT('%',#{name},'%')
+        </if>
+    </select>
 </mapper>

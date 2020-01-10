@@ -22,7 +22,7 @@ public class PointsListApi {
     private PointsListService pointsListService;
 
     /**
-     * 新商品信息
+     * 积分流水查询
      */
     @Api(name = "company.getPointsListByCompanyId", version = "1.0")
     @SignIgnore

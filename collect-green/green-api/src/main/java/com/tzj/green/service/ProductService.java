@@ -28,4 +28,6 @@ public interface ProductService extends IService<Product>
 
     Object nearActivitys(Double lat,Double lng,Long companyId);
 
+    Object getGoodsListByCompanyId(Long companyId,ProductBean productBean);
+
 }

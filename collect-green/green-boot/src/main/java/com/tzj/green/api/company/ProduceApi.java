@@ -58,6 +58,16 @@ public class ProduceApi {
     public Object updateProductIsLowerById(ProductBean productBean) {
         return  productService.updateProductIsLowerById(productBean.getId(),productBean.getIsLower());
     }
+    /**
+     *获取该公司的商品
+     */
+    @Api(name = "company.getGoodsListByCompanyId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Object getGoodsListByCompanyId(ProductBean productBean) {
+        Company company = CompanyUtils.getCompanyAccount();
+        return  productService.getGoodsListByCompanyId(company.getId(),productBean);
+    }
 
 
 

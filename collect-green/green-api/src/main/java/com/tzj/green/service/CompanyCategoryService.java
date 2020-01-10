@@ -2,6 +2,7 @@ package com.tzj.green.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.CompanyCategory;
+import com.tzj.green.param.CategoryBean;
 
 /**
  *
@@ -17,4 +18,8 @@ import com.tzj.green.entity.CompanyCategory;
 public interface CompanyCategoryService extends IService<CompanyCategory>
 {
 
+
+    Object getCompanyCategoryById(Long companyId);
+
+    Object updateCompanyCategoryPoints(Long companyId, CategoryBean categoryBean);
 }
