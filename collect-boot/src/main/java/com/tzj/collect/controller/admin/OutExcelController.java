@@ -188,6 +188,8 @@ public class OutExcelController {
             titles.add("付款方式");
             titles.add("成交金额/重量");
             titles.add("回收人员");
+            titles.add("平台佣金");
+            titles.add("服务商返佣");
             data.setTitles(titles);
             //添加列
             List<List<Object>> rows = new ArrayList();
@@ -202,6 +204,8 @@ public class OutExcelController {
                 row.add(list.get(i).get("isCash"));
                 row.add(list.get(i).get("amount"));
                 row.add(list.get(i).get("recyclerName"));
+                row.add(list.get(i).get("adminCommissions"));
+                row.add(list.get(i).get("backCommissionsPrice"));
                 rows.add(row);
             }
             data.setRows(rows);
@@ -224,6 +228,8 @@ public class OutExcelController {
             titles.add("金额");
             titles.add("重量");
             titles.add("回收人员");
+            titles.add("平台佣金");
+            titles.add("服务商返佣");
             data.setTitles(titles);
 
             List<List<Object>> rows = new ArrayList();
@@ -239,6 +245,8 @@ public class OutExcelController {
                 row.add(list.get(i).get("price"));
                 row.add(list.get(i).get("weight"));
                 row.add(list.get(i).get("recycleName"));
+                row.add(list.get(i).get("adminCommissions"));
+                row.add(list.get(i).get("backCommissionsPrice"));
                 rows.add(row);
             }
             data.setRows(rows);

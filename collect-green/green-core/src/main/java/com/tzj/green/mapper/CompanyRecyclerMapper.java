@@ -21,4 +21,8 @@ import java.util.Map;
 public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>
 {
     List<Map<String,Object>> getApplyRecyclerList(@Param("companyId") Long companyId);
+
+    List<Map<String,Object>> getCompanyRecyclerList(@Param("companyId")Long companyId,@Param("name") String name,@Param("tel") String tel,@Param("cardType") String cardType,@Param("pageStart") Integer pageStart,@Param("pageSize") Integer pageSize);
+
+    Integer getCompanyRecyclerCount(@Param("companyId")Long companyId,@Param("name") String name,@Param("tel") String tel,@Param("cardType") String cardType);
 }

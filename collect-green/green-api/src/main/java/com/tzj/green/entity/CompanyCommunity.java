@@ -32,7 +32,7 @@ public class CompanyCommunity extends DataEntity<Long>
      */
     private Long id;
 
-    private String communityId = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+    private String communityNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
     /**
      * 公司
      */
@@ -105,6 +105,10 @@ public class CompanyCommunity extends DataEntity<Long>
      * 可回收时间星期
      */
     private String recoveryWeek;
+
+
+
+
     @TableField(exist = false)
     private List<CommunityHouseName> communityHouseNameList;
 

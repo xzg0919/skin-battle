@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.green.mapper.MemberMapper">
+
+
+<select id="getMemberList" parameterType="Object" resultType="Map">
+    SELECT
+        a.real_no AS realNo,
+        a.name_ AS name,
+        a.mobile,
+        DATE_FORMAT(a.create_date,'%Y-%m-%d %H:%i:%s')as createDate,
+        a.province_name AS provinceName,
+        a.city_name cityName,
+        a.area_name AS areaName,
+        a.street_name AS streetName,
+        a.community_name AS communityName,
+        a.community_house_name AS communityHouseName,
+        a.address,
+        a.detail_address AS detailAddress,
+        b.tatal_points AS tatalPoints,
+        b.remnant_points AS remnantPoints,
+        (b.tatal_points - b.remnant_points) usedPoints
+    FROM
+        sb_member a
+    LEFT JOIN sb_member_points b ON a.real_no = b.user_no AND a.company_id = b.company_id
+    WHERE
+        a.company_id = #{companyId}
+    AND a.is_cancel = '0'
+    <if test="startTime != null and startTime != '' ">
+        AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+    </if>
+    <if test="endTime != null and endTime != '' ">
+        AND CONCAT(#{endTime},' 23:59:59') > a.create_date
+    </if>
+    <if test="provinceId != null and provinceId != '' ">
+        AND a.province_id = #{provinceId}
+    </if>
+    <if test="cityId != null and cityId != '' ">
+        AND a.city_id = #{cityId}
+    </if>
+    <if test="areaId != null and areaId != '' ">
+        AND a.area_id = #{areaId}
+    </if>
+    <if test="streetId != null and streetId != '' ">
+        AND a.street_id = #{streetId}
+    </if>
+    <if test="communityId != null and communityId != '' ">
+        AND a.community_id = #{communityId}
+    </if>
+    <if test="communityHouseId != null and communityHouseId != '' ">
+        AND a.community_house_id = #{communityHouseId}
+    </if>
+    <if test="name != null and name != '' ">
+        AND a.name_ LIKE CONCAT('%',#{name},'%')
+    </if>
+    <if test="tel != null and tel != '' ">
+        AND a.mobile LIKE CONCAT('%',#{tel},'%')
+    </if>
+    ORDER BY a.create_date
+    LIMIT #{pageStart},#{pageSize}
+</select>
+<select id="getMemberCount" parameterType="Object" resultType="Integer">
+    SELECT
+        count(1)
+    FROM
+        sb_member a
+    LEFT JOIN sb_member_points b ON a.real_no = b.user_no AND a.company_id = b.company_id
+    WHERE
+        a.company_id = #{companyId}
+    AND a.is_cancel = '0'
+    <if test="startTime != null and startTime != '' ">
+        AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+    </if>
+    <if test="endTime != null and endTime != '' ">
+        AND CONCAT(#{endTime},' 23:59:59') > a.create_date
+    </if>
+    <if test="provinceId != null and provinceId != '' ">
+        AND a.province_id = #{provinceId}
+    </if>
+    <if test="cityId != null and cityId != '' ">
+        AND a.city_id = #{cityId}
+    </if>
+    <if test="areaId != null and areaId != '' ">
+        AND a.area_id = #{areaId}
+    </if>
+    <if test="streetId != null and streetId != '' ">
+        AND a.street_id = #{streetId}
+    </if>
+    <if test="communityId != null and communityId != '' ">
+        AND a.community_id = #{communityId}
+    </if>
+    <if test="communityHouseId != null and communityHouseId != '' ">
+        AND a.community_house_id = #{communityHouseId}
+    </if>
+    <if test="name != null and name != '' ">
+        AND a.name_ LIKE CONCAT('%',#{name},'%')
+    </if>
+    <if test="tel != null and tel != '' ">
+        AND a.mobile LIKE CONCAT('%',#{tel},'%')
+    </if>
+</select>
+
+
+
+</mapper>

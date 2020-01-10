@@ -56,4 +56,22 @@ public class ProductBean {
 
     private String productNo;
 
+    private String startTime;
+
+    private String endTime;
+
+    private String tel;
+
+    private String type;
+
+    /**
+     * 纬度
+     */
+    private Double lat;
+
+    /**
+     * 经度
+     */
+    private Double lng;
+
 }

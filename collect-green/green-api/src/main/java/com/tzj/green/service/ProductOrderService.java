@@ -2,6 +2,7 @@ package com.tzj.green.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.ProductOrder;
+import com.tzj.green.param.ProductBean;
 
 /**
  *
@@ -16,5 +17,9 @@ import com.tzj.green.entity.ProductOrder;
  */
 public interface ProductOrderService extends IService<ProductOrder>
 {
+
+    Object getProductOrderList(ProductBean productBean,Long companyId);
+
+    Object getProductOrderDetail(String productOrderId);
 
 }

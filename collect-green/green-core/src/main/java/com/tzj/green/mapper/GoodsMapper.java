@@ -2,6 +2,7 @@ package com.tzj.green.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.green.entity.Goods;
+import org.apache.ibatis.annotations.Param;
 
 /**
  *
@@ -16,5 +17,5 @@ import com.tzj.green.entity.Goods;
  */
 public interface GoodsMapper extends BaseMapper<Goods>
 {
-
+    Object getGoodsListByActivityId(@Param("activityCode") String activityCode);
 }

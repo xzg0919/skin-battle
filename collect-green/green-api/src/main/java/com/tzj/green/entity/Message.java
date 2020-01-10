@@ -4,9 +4,8 @@ import com.baomidou.mybatisplus.annotations.TableName;
 
 /**
  *
- *评价表
+ *短信验证码表
  *
- * @Author 王灿
  **/
 @TableName("sb_message")
 public class Message extends  DataEntity<Long>{

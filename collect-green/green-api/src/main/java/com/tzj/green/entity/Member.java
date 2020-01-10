@@ -1,5 +1,6 @@
 package com.tzj.green.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import lombok.Data;
@@ -39,9 +40,15 @@ public class Member extends DataEntity<Long>
      * 身份证正面
      */
     private String idCardObv;
+
+    /**
+     * 头像
+     */
+    private String avatarUrl;
     /**
      * 姓名
      */
+    @TableField(value = "name_")
     private String name;
     /**
      * 性别
@@ -124,6 +131,11 @@ public class Member extends DataEntity<Long>
      * 所属小区名称
      */
     private String communityHouseName;
+
+    private Long provinceId;
+
+    private String provinceName;
+
 
 
 

@@ -136,13 +136,11 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
 
     @Override
     public Object getCompanyCommunityListByStreetId(CompanyCommunityBean companyCommunityBean, Long companyId) {
-
-        List<CompanyCommunity> companyCommunities = this.selectList(new EntityWrapper<CompanyCommunity>().eq("company_id", companyId).eq("street_id", companyCommunityBean.getStreetId()));
-        companyCommunities.stream().forEach(companyCommunity -> {
-            List<CommunityHouseName> communityHouseNameList = communityHouseNameService.selectList(new EntityWrapper<CommunityHouseName>().eq("community_id", companyCommunity.getId()));
-            companyCommunity.setCommunityHouseNameList(communityHouseNameList);
-        });
-        return companyCommunities;
+        return this.selectList(new EntityWrapper<CompanyCommunity>().eq("company_id", companyId).eq("street_id", companyCommunityBean.getStreetId()));
+    }
+    @Override
+    public Object getCompanyHouseListByCommunityId(CompanyCommunityBean companyCommunityBean, Long companyId) {
+        return communityHouseNameService.selectList(new EntityWrapper<CommunityHouseName>().eq("community_id", companyCommunityBean.getCommunityId()));
     }
 
     @Override
