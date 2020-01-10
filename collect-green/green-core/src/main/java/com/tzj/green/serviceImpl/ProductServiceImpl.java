@@ -201,14 +201,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
-    public Object activtyDetail(Long activityId) {
+    public Object activtyDetail(String activityCode) {
         Map<String,Object> resultMap =new HashedMap();
         //获取活动信息
-        Product product=productMapper.selectById(activityId);
+        Product product=productMapper.selectById(activityCode);
         resultMap.put("activity",product);
         //获取活动下的礼品信息
-        resultMap.put("goodsList",goodsService.getGoodsListByActivityId(activityId));
+        resultMap.put("goodsList",goodsService.getGoodsListByActivityId(activityCode));
         return resultMap;
     }
+
 
 }
