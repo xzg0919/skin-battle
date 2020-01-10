@@ -31,5 +31,7 @@ public class MemberBean {
 
     private String realNo;
 
+    private String aliUserId;
 
+    private String securityCode;
 }

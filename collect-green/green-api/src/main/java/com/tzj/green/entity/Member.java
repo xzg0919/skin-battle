@@ -40,6 +40,11 @@ public class Member extends DataEntity<Long>
      * 身份证正面
      */
     private String idCardObv;
+
+    /**
+     * 头像
+     */
+    private String avatarUrl;
     /**
      * 姓名
      */
@@ -117,6 +122,7 @@ public class Member extends DataEntity<Long>
     private Long provinceId;
 
     private String provinceName;
+
 
 
 
