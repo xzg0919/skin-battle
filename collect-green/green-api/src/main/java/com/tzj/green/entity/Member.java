@@ -44,6 +44,10 @@ public class Member extends DataEntity<Long>
      */
     private String name;
     /**
+     * 性别
+     */
+    private String gender;
+    /**
      * 地址
      */
     private String address;
@@ -71,6 +75,15 @@ public class Member extends DataEntity<Long>
      * 是否注销
      */
     private String isCancel;
+    /**
+     * 省id
+     */
+    private Long provinceId;
+    /**
+     * 省名称
+     */
+    private String provinceName;
+
     /**
      * 城市Id
      */

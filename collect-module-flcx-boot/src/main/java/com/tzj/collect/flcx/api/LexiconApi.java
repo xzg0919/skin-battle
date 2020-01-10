@@ -10,6 +10,7 @@ import com.tzj.collect.common.amap.AmapRegeoJson;
 import com.tzj.collect.core.param.flcx.FlcxBean;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.amap.AmapConst;
+import com.tzj.collect.core.result.flcx.AlipayResponseResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.FlcxCity;
 import com.tzj.collect.entity.FlcxLexicon;
@@ -18,19 +19,24 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.common.file.upload.FileUpload;
+import com.tzj.module.common.utils.FileUtil;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBean;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 关键字搜索
@@ -56,7 +62,8 @@ public class LexiconApi {
     private FlcxFileUploadService fileUploadService;
     @Reference(version = "${flcx.service.version}")
     private FlcxCityService flcxCityService;
-
+    @Autowired
+    private FileUpload fileUpload;
     @Resource
     private RedisUtil redisUtil;
 
@@ -123,7 +130,7 @@ public class LexiconApi {
                 }
             }
             //语音搜索或者图片搜索
-            AlipayIserviceCognitiveClassificationWasteQueryResponse alipayResponse = aliFlcxService.returnTypeByPicOrVoice(imageUrl, flcxBean.getSpeechText(), flcxBean.getSource());
+            AlipayResponseResult alipayResponse = aliFlcxService.returnTypeByPicOrVoice(imageUrl, flcxBean.getSpeechText(), flcxBean.getSource());
             if (null != alipayResponse && null != alipayResponse.getKeyWords()) {
                 List<KeyWordDTO> returnListMap = alipayResponse.getKeyWords();
                 Boolean finalIsAr = isAr;
@@ -242,7 +249,7 @@ public class LexiconApi {
         Map<String, Object> map = new HashMap<>();
         String name = flcxBean.getName();
         String aliuserId = flcxBean.getAliUserId();
-        AlipayIserviceCognitiveClassificationFeedbackSyncResponse alipayIserviceCognitiveClassificationFeedbackSyncResponse = null;
+        AlipayResponseResult alipayIserviceCognitiveClassificationFeedbackSyncResponse = null;
         if (StringUtils.isBlank(flcxBean.getTraceId())) {
             throw new ApiException("缺少回流id");
         } else {
@@ -259,7 +266,7 @@ public class LexiconApi {
                 map.put("code", "0");
             }
         }
-        if (alipayIserviceCognitiveClassificationFeedbackSyncResponse.isSuccess()) {
+        if (alipayIserviceCognitiveClassificationFeedbackSyncResponse.getIsSuccess()) {
             map.put("message", "success");
         } else {
             map.put("message", "error");
@@ -336,7 +343,59 @@ public class LexiconApi {
     @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
     @AuthIgnore
     public FileBean uploadImage(FlcxBean flcxBean) {
-        return fileUploadService.handleUploadField("", flcxBean.getHeadImg());
+        return handleUploadField("", flcxBean.getHeadImg());
+    }
+    public FileBean handleUploadField(String fileName, MultipartFile mpf) {
+
+        FileBean fileBean = new FileBean();
+        String extensionName = FileUtil.getExtension(fileName);
+
+        if (org.apache.commons.lang.StringUtils.isBlank(extensionName)) {
+            extensionName = "jpg";
+        }
+
+        String tempPath = System.getProperty("user.dir");
+
+        //tempPath="/Volumes/Macintosh HD/temp/";
+        System.out.println("---------------------tempPath:----------"+tempPath);
+        String uuid = UUID.randomUUID().toString();
+
+        //先把文件放入临时的地方
+        File tempFile = new File(
+                tempPath + "/original_" + uuid + "." + extensionName);
+
+        if (!tempFile.getParentFile().exists()) {
+            tempFile.getParentFile().mkdirs();
+        }
+
+        if (!mpf.isEmpty()) {
+            try {
+                byte[] bytes = mpf.getBytes();
+                BufferedOutputStream buffStream
+                        = new BufferedOutputStream(new FileOutputStream(tempFile));
+                buffStream.write(bytes);
+                buffStream.close();
+            } catch (Exception e) {
+                throw new ApiException("api文件上传发生异常：" + e.getMessage());
+            }
+        }
+
+        String savePath = "collect/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String saveOriginalFile = savePath + "/original_" + uuid + "." + extensionName;
+
+        fileUpload.upload(saveOriginalFile, tempFile, mpf.getContentType());
+
+        fileBean.setThumbnail(fileUpload.getImageDomain() + "/" + saveOriginalFile);
+        fileBean.setBigPicture(fileUpload.getImageDomain() + "/" + saveOriginalFile);
+        fileBean.setOriginal(fileUpload.getImageDomain() + "/" + saveOriginalFile);
+
+        //上传到OSS后，删除临时文件
+        try {
+            tempFile.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return fileBean;
     }
 
     /**

@@ -82,10 +82,10 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
                     lineQrCodeRange.setCityId(cityList.getCityId());
                     lineQrCodeRange.setProvinceId(cityList.getProvinceId());
                     lineQrCodeRange.setStreetId(cityList.getStreetId());
-                    lineQrCodeRange.setAreaName(cityList.getAreaName());
-                    lineQrCodeRange.setCityName(cityList.getCityName());
-                    lineQrCodeRange.setProvinceName(cityList.getProvinceName());
-                    lineQrCodeRange.setStreetName(cityList.getStreetName());
+                    lineQrCodeRange.setAreaName(areaService.selectById(cityList.getAreaId()).getAreaName());
+                    lineQrCodeRange.setCityName(areaService.selectById(cityList.getCityId()).getAreaName());
+                    lineQrCodeRange.setProvinceName(areaService.selectById(cityList.getProvinceId()).getAreaName());
+                    lineQrCodeRange.setStreetName(areaService.selectById(cityList.getStreetId()).getAreaName());
                     lineQrCodeRange.setShareCode(finalLineQrCode.getShareCode());
                     if ("1".equals(cityList.getIsSelect())){
                         //删除

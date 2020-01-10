@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @create 2019-06-19 10:31
  **/
 @Data
-public class FlcxBean {
+public class FlcxBean implements Serializable {
 
     private Long cityId = 0L;//城市id(查询参数)(第一版默认上海)
 

@@ -2,6 +2,9 @@ package com.tzj.green.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.green.entity.Recyclers;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 /**
  *
@@ -17,4 +20,5 @@ import com.tzj.green.entity.Recyclers;
 public interface RecyclersMapper extends BaseMapper<Recyclers>
 {
 
+    Map<String, Object> selectRecRange(@Param("recId") Long recId);
 }

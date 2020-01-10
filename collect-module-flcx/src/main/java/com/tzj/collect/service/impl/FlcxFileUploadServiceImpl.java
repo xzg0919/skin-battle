@@ -176,7 +176,7 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
             return new LinkedList<>();
         }
 
-        String tempPath = System.getProperty("java.io.tmpdir");
+        String tempPath = System.getProperty("user.dir");
         List<FileBean> fileBeanList = new LinkedList<>();
 
         for (MultipartFile multipartFile : multipartFiles) {
@@ -248,10 +248,10 @@ public class FlcxFileUploadServiceImpl implements FlcxFileUploadService {
             extensionName = "jpg";
         }
 
-        String tempPath = System.getProperty("java.io.tmpdir");
+        String tempPath = System.getProperty("user.dir");
 
         //tempPath="/Volumes/Macintosh HD/temp/";
-        //System.out.println("tempPath:"+tempPath);
+        System.out.println("---------------------tempPath:----------"+tempPath);
         String uuid = UUID.randomUUID().toString();
 
         //先把文件放入临时的地方

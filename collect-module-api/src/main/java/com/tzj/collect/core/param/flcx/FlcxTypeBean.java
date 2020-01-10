@@ -3,6 +3,8 @@ package com.tzj.collect.core.param.flcx;
 import com.baomidou.mybatisplus.annotations.TableField;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * Created on 2019/7/5
  * Title: TODO
@@ -15,7 +17,7 @@ import lombok.Data;
  * @Version 1.0
  **/
 @Data
-public class FlcxTypeBean {
+public class FlcxTypeBean implements Serializable {
 
     //层级
     private Integer level;

@@ -2,6 +2,8 @@ package com.tzj.collect.core.param.flcx;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * Created on 2019/7/5
  * Title: TODO
@@ -14,7 +16,7 @@ import lombok.Data;
  * @Version 1.0
  **/
 @Data
-public class FlcxEggshellBean {
+public class FlcxEggshellBean implements Serializable {
     private Long id;
 
     /**

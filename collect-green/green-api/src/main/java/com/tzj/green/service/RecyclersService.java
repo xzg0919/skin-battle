@@ -3,6 +3,9 @@ package com.tzj.green.service;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.Recyclers;
+import com.tzj.green.param.RecyclersBean;
+
+import java.util.Map;
 
 /**
  *
@@ -21,4 +24,7 @@ public interface RecyclersService extends IService<Recyclers>
     @DS("slave")
     Recyclers selectByMobile(String mobile);
 
+    Map<String, Object> bindingCardByRec(RecyclersBean recyclersBean);
+
+    Map<String, Object> selectRecRange(Long id);
 }
