@@ -132,11 +132,4 @@ public class Member extends DataEntity<Long>
      */
     private String communityHouseName;
 
-    private Long provinceId;
-
-    private String provinceName;
-
-
-
-
 }

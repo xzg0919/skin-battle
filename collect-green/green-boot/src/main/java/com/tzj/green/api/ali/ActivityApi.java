@@ -1,16 +1,15 @@
 package com.tzj.green.api.ali;
 
-import com.tzj.green.param.AreaBean;
 import com.tzj.green.param.GoodsBean;
 import com.tzj.green.param.ProductBean;
-import com.tzj.green.service.AreaService;
 import com.tzj.green.service.GoodsService;
 import com.tzj.green.service.ProductService;
-import com.tzj.module.api.annotation.*;
+import com.tzj.module.api.annotation.Api;
+import com.tzj.module.api.annotation.ApiService;
+import com.tzj.module.api.annotation.AuthIgnore;
+import com.tzj.module.api.annotation.SignIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static com.tzj.green.common.content.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 /**
  * @Auther: xiangzhongguo
