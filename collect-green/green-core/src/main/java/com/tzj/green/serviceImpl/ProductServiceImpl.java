@@ -197,6 +197,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      */
     @Override
     public Object nearActivitys(Double lat, Double lng, Long companyId,Integer pageNum,Integer pageSize) {
+        if(pageNum ==null || pageNum ==0){
+            pageNum=1;
+        }
+        if(pageSize ==null || pageSize ==0){
+            pageSize=10;
+        }
+        pageNum = (pageNum - 1)*pageSize;
         return  productMapper.nearActivitys(companyId, lat, lng,pageNum,pageSize);
     }
 

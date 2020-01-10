@@ -71,7 +71,7 @@
         product.name_ as productName,
         date_format(product.pick_start_date,'%Y-%m-%d') as startDate,
         date_format(product.pick_end_date,'%Y-%m-%d') as endDate,
-        scc.province_name+scc.city_name+scc.area_name+scc.street_name+scc.community_name+schn.house_name as activityAddress
+        CONCAT(scc.province_name,scc.city_name,scc.area_name,scc.street_name,scc.community_name,schn.house_name)AS activityAddress
         FROM
         sb_product product
         inner join sb_community_house_name schn
