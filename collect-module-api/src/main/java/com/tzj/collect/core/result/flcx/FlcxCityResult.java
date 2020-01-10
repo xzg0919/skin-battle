@@ -2,6 +2,8 @@ package com.tzj.collect.core.result.flcx;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * Created on 2019/8/29
  * Title: TODO
@@ -14,7 +16,7 @@ import lombok.Data;
  * @Version 1.0
  **/
 @Data
-public class FlcxCityResult {
+public class FlcxCityResult implements Serializable {
     private Long id ;
     private String  city;
     private String adCode;

@@ -52,7 +52,7 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
 
     @Override
     @Transactional(readOnly = false)
-    @Cacheable(value = "lexCheckMap" , key = "#flcxBean.cityName + '_'+ #flcxBean.cityId + '_' + #flcxBean.name + '_' + #flcxBean.typeId",   sync = true)
+//    @Cacheable(value = "lexCheckMap" , key = "#flcxBean.cityName + '_'+ #flcxBean.cityId + '_' + #flcxBean.name + '_' + #flcxBean.typeId",   sync = true)
     public Map lexCheck(FlcxBean flcxBean) throws ApiException {
         HashMap<String, Object> map = new HashMap<>();
         //根据名称从redis取出结果集
@@ -86,7 +86,9 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
                 flcxResult.getImgUrlAfter().stream().forEach(imgAfter ->{
                     nameSet.add(imgAfter.get("name_"));
                 });
-                flcxResult.setParentName(nameSet.toString().replace("[", "").replace("]", "").replace(",", "/").replace("null", ""));
+                if (nameSet.size() > 0){
+                    flcxResult.setParentName(nameSet.toString().replace("[", "").replace("]", "").replace(",", "/").replace("null", ""));
+                }
                 map.put("results", flcxResult);
                 map.put("msg", "success");
                 flcxRecords.setLexiconAfter(flcxResult.getLexicon());

@@ -1122,6 +1122,7 @@ public class OutExcelController {
         //添加表头
         List<String> titles = new ArrayList<>();
         titles.add("码名称");
+        titles.add("活动详情");
         titles.add("配置时间");
         titles.add("跳转数量");
         titles.add("用户下单数量");
@@ -1142,6 +1143,7 @@ public class OutExcelController {
         for(int i=0,j = adminIotOrderList.size(); i<j;i++){
             row= new ArrayList();
             row.add(adminIotOrderList.get(i).get("name_"));
+            row.add(adminIotOrderList.get(i).get("qr_code_info"));
             row.add(adminIotOrderList.get(i).get("create_date"));
             row.add(adminIotOrderList.get(i).get("share_num"));
             row.add(adminIotOrderList.get(i).get("count_"));

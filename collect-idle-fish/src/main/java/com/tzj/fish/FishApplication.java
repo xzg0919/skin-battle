@@ -1,0 +1,24 @@
+package com.tzj.fish;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.Banner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+
+@SpringBootApplication
+@ComponentScan("com.tzj")
+public class FishApplication {
+
+    protected final static Logger logger = LoggerFactory.getLogger(FishApplication.class);
+
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(FishApplication.class);
+        app.setBannerMode(Banner.Mode.OFF);
+        app.run(args);
+        logger.info("FishApplication is success!");
+    }
+ 
+}

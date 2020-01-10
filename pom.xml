@@ -33,6 +33,7 @@
         <module>collect-module-common</module>
         <module>collect-module-core</module>
         <module>collect-green</module>
+        <module>collect-idle-fish</module>
     </modules>
 
     <repositories>

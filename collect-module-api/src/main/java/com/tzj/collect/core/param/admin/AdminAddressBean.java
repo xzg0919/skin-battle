@@ -21,6 +21,6 @@ public class AdminAddressBean {
 
 	private String provinceName;
 
-	private String saveOrDelete = "0";
+	private String isSelect = "0";
 
 }

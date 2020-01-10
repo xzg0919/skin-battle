@@ -1,13 +1,21 @@
 package com.tzj.green.serviceImpl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import javax.annotation.Resource;
+import javax.swing.*;
+
 import com.tzj.green.entity.Member;
+import com.tzj.green.entity.MemberPoints;
 import com.tzj.green.mapper.MemberMapper;
+import com.tzj.green.mapper.MemberPointsMapper;
 import com.tzj.green.param.MemberBean;
 import com.tzj.green.param.PageBean;
+import com.tzj.green.service.MemberPointsService;
 import com.tzj.green.service.MemberService;
+import com.tzj.module.easyopen.exception.ApiException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +40,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 {
     @Resource
     private MemberMapper memberMapper;
+    @Resource
+    private MemberPointsService memberPointsService;
 
 
     @Override
@@ -58,4 +68,42 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         this.updateById(member);
         return "操作成功";
     }
+
+    @Override
+    public Object getMemberByAliUserId(String aliUserId) {
+        Member member = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", aliUserId));
+
+        Map<String, Object> result = new HashMap<>(4);
+        if(member == null){
+            throw new ApiException("未登录注册");
+        }
+        result.put("tatalPoints", 0);
+        result.put("userName", member.getName());
+        result.put("avatarUrl", member.getAvatarUrl());
+        result.put("address", member.getAddress() == null ? "" : member.getAddress() + member.getDetailAddress());
+        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("user_no", member.getRealNo()));
+        if(memberPoints != null){
+            Long tatalPoints = memberPoints.getTatalPoints();
+            result.put("tatalPoints", tatalPoints);
+        }
+        return result;
+    }
+
+
+    @Override
+    public Object getRealNoByAliUserId(String aliUserId) {
+        Member me = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", aliUserId));
+        Map<String, Object> result = new HashMap<>(2);
+        //五实体卡 status=0
+        result.put("status", 0);
+        if(null == me || StringUtils.isBlank(me.getRealNo())){
+            return result;
+        }
+        //有实体卡 status=1
+        result.put("status", 1);
+        String realNo = me.getRealNo();
+        result.put("realNo", realNo);
+        return result;
+    }
+
 }
