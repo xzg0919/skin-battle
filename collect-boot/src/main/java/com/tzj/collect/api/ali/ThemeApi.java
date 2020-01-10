@@ -72,7 +72,7 @@ public class ThemeApi {
     @AuthIgnore
     @DS("slave")
     public Object getXcxThemeNews() {
-        List<XcxTheme> xcxThemes = xcxThemeService.selectList(new EntityWrapper<XcxTheme>().eq("type", 2).eq("del_flag", 0));
+        List<XcxTheme> xcxThemes = xcxThemeService.selectList(new EntityWrapper<XcxTheme>().eq("type", 2).eq("del_flag", 0).orderBy("create_date",false));
         xcxThemes.stream().forEach(xcxTheme -> {
             List<XcxThemeContent> xcxThemeContents = xcxThemeContentService.selectList(new EntityWrapper<XcxThemeContent>().eq("theme_id", xcxTheme.getId()).eq("del_flag", 0));
             if (!xcxThemeContents.isEmpty()){
