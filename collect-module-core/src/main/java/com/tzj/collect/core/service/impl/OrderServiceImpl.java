@@ -432,7 +432,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             final Double[] greenCount = {0.00};
             orderItemAches.stream().forEach(orderItemAch -> {
                 CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), orderItemAch.getCategoryId().toString());
-                Category category = categoryService.selectById(order.getCategoryId());
+                Category category = categoryService.selectById(orderItemAch.getCategoryId());
                 if ("0".equals(order.getIsCash())){
                     greenCount[0] += category.getGreenCount()*orderItemAch.getAmount();
                     commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
