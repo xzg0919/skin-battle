@@ -529,24 +529,24 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 if ("1".equals(companyCategoryAttrOptionCity.getIsSpecial())){
                     specialPriceList.add(companyCategoryAttrOptionCity.getSpecialPrice());
                 }
-                price[0] = price[0].add(companyCategoryAttrOptionCity.getAttrOptionPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+                price[0] = price[0].add(companyCategoryAttrOptionCity.getAttrOptionPrice());
             } else if ("BIGTHING".equals(type)) {
-                price[0] = price[0].multiply(companyCategoryAttrOptionCity.getAttrOptionPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+                price[0] = price[0].multiply(companyCategoryAttrOptionCity.getAttrOptionPrice());
             }
         });
         //将取到的特殊价格从小到大排序
         Collections.sort(specialPriceList);
         if (!specialPriceList.isEmpty()) {
             //取得最小的特殊价格
-            return specialPriceList.get(0).setScale(2, BigDecimal.ROUND_HALF_UP);
+            return specialPriceList.get(0).setScale(2, BigDecimal.ROUND_DOWN);
         }
         BigDecimal cityRatio = companyCityRatioService.getCityRatioByCompanyCityId(memberAddress.getCityId(), finalCompanyId);
-        price[0] = price[0].multiply(cityRatio).setScale(2, BigDecimal.ROUND_HALF_UP);
+        price[0] = price[0].multiply(cityRatio);
         if ("BIGTHING".equals(type)&&price[0].compareTo(new BigDecimal(68)) == -1){
             return new BigDecimal(68);
         }
         System.out.println("计算后的价格是："+price[0]);
-        return price[0];
+        return price[0].setScale(2, BigDecimal.ROUND_DOWN);
     }
 
     @Override

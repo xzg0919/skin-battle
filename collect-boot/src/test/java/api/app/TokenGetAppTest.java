@@ -38,8 +38,8 @@ public class TokenGetAppTest {
 		 Claims claims = JwtUtils.getClaimByToken(decodeToken, APP_API_TOKEN_SECRET_KEY);
 		 String subjectStr = claims.getSubject();
 		 System.out.println("反向編譯 token是："+subjectStr);
-		 String api="http://localhost:9090/app/api";
-		 //String api="http://172.19.182.90:9090/app/api";
+//		 String api="http://localhost:9090/app/api";
+		 String api="http://172.19.182.62:9090/app/api";
 
 		 OrderBean orderBean = new OrderBean();
 		 orderBean.setAchPrice("0");
