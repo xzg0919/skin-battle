@@ -86,7 +86,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public Object getGoodsListByActivityId(String activityCode) {
+    public  List<Map<String,Object>> getGoodsListByActivityId(String activityCode) {
         return goodsMapper.getGoodsListByActivityId(activityCode);
     }
 

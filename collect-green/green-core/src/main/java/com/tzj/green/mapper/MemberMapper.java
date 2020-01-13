@@ -25,4 +25,5 @@ public interface MemberMapper extends BaseMapper<Member>
 
     Integer getMemberCount(@Param("companyId")Long companyId, @Param("startTime")String startTime, @Param("endTime")String endTime, @Param("provinceId")String provinceId, @Param("cityId")String cityId, @Param("areaId")String areaId, @Param("streetId")String streetId, @Param("communityId")String communityId, @Param("communityHouseId")String communityHouseId, @Param("name")String name, @Param("tel")String tel);
 
+    Member selectByAliUserId(@Param("aliUserId") String aliUserId);
 }
