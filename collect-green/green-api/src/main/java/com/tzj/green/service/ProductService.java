@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.Product;
 import com.tzj.green.param.ProductBean;
 
-import java.util.Map;
-
 /**
  *
  * <p>Created on2019年12月30日</p>
@@ -29,6 +27,8 @@ public interface ProductService extends IService<Product>
     Object updateProductIsLowerById(String productId,String isLower);
 
     Object nearActivitys(Double lat,Double lng,String aliUserId,Integer pageNum,Integer pageSize);
+
+    Object getGoodsListByCompanyId(Long companyId,ProductBean productBean);
 
     Object activtyDetail(String activityCode);
 }

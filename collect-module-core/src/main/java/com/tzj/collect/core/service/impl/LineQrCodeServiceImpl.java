@@ -51,7 +51,7 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
         Map<String, Object> returnMap = new HashMap<>();
         LineQrCode lineQrCode = null;
         if (!StringUtils.isEmpty(adminShareCodeBean.getShareCode())){
-            lineQrCode =  (LineQrCode) this.selectMap(new EntityWrapper<LineQrCode>().eq("del_flag", 0).eq("share_code", adminShareCodeBean.getShareCode()));
+            lineQrCode =  this.selectOne(new EntityWrapper<LineQrCode>().eq("del_flag", 0).eq("share_code", adminShareCodeBean.getShareCode()));
         }else {
             lineQrCode = new LineQrCode();
         }
@@ -82,12 +82,12 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
                     lineQrCodeRange.setCityId(cityList.getCityId());
                     lineQrCodeRange.setProvinceId(cityList.getProvinceId());
                     lineQrCodeRange.setStreetId(cityList.getStreetId());
-                    lineQrCodeRange.setAreaName(cityList.getAreaName());
-                    lineQrCodeRange.setCityName(cityList.getCityName());
-                    lineQrCodeRange.setProvinceName(cityList.getProvinceName());
-                    lineQrCodeRange.setStreetName(cityList.getStreetName());
+                    lineQrCodeRange.setAreaName(areaService.selectById(cityList.getAreaId()).getAreaName());
+                    lineQrCodeRange.setCityName(areaService.selectById(cityList.getCityId()).getAreaName());
+                    lineQrCodeRange.setProvinceName(areaService.selectById(cityList.getProvinceId()).getAreaName());
+                    lineQrCodeRange.setStreetName(areaService.selectById(cityList.getStreetId()).getAreaName());
                     lineQrCodeRange.setShareCode(finalLineQrCode.getShareCode());
-                    if ("1".equals(cityList.getSaveOrDelete())){
+                    if ("1".equals(cityList.getIsSelect())){
                         //删除
                         lineQrCodeRange.setDelFlag("1");
                     }else {
@@ -105,7 +105,7 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
             throw new ApiException("参数错误");
         }
         System.out.println(lineQrCode.getQrUrl());
-        if(this.insert(lineQrCode)){
+        if(this.insertOrUpdate(lineQrCode)){
             returnMap.put("msg", "Y");
         }else {
             returnMap.put("msg", "N");
@@ -233,14 +233,12 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
         }else if (StringUtils.isEmpty(adminShareCodeBean.getShareCode())){
             throw new ApiException("参数错误");
         }
-        List<Map<String, Object>> streetMapLists = areaService.selectMaps(new EntityWrapper<Area>().eq("del_flag", 0).setSqlSelect("area_name, id").eq("parent_id", adminShareCodeBean.getAreaId()));
+        List<Map<String, Object>> streetMapLists = areaService.selectMaps(new EntityWrapper<Area>().eq("del_flag", 0).setSqlSelect("area_name, id, 1 as is_select").eq("parent_id", adminShareCodeBean.getAreaId()));
         List<LineQrCodeRange> lineQrCodeRangeLists = lineQrCodeRangeService.selectList(new EntityWrapper<LineQrCodeRange>().eq("del_flag", 0).eq("share_code", adminShareCodeBean.getShareCode()));
-        lineQrCodeRangeLists.stream().forEach(lineQrCodeRange -> {
-            streetMapLists.stream().forEach(streetMapList ->{
-                if (streetMapList.get("id").equals(lineQrCodeRange.getStreetId())){
-                    streetMapList.put("is_select", 1);
-                }else {
-                    streetMapList.put("is_select", 0);
+        streetMapLists.stream().forEach(streetMapList ->{
+            lineQrCodeRangeLists.stream().forEach(lineQrCodeRange -> {
+                if (streetMapList.get("id").toString().equals(lineQrCodeRange.getStreetId().toString())){
+                    streetMapList.put("is_select", 0);//选中
                 }
             });
         });

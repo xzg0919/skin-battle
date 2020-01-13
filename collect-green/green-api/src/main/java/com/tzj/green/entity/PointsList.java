@@ -53,7 +53,7 @@ public class PointsList extends DataEntity<Long>
     /**
      * 积分变动说明
      */
-    private Long pointsReason;
+    private String pointsReason;
 
 
 }

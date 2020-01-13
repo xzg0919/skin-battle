@@ -289,6 +289,23 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
         jedis.close();
         return maps;
     }
+    @Override
+    public void  updateRedisRecordCrossYear(){
+        Jedis jedis = jedisPool.getResource();
+        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores("2019:53", 1000, 0, 0,20000000);
+        final List<String>[] aliUserIdScore = new List[]{null};
+        aliUserIdSet.stream().forEach(tuple -> {
+            try {
+                //分数
+                aliUserIdScore[0] = Arrays.asList(tuple.getElement().replace("[", "").replace("]", "").split(","));
+                //阿里uId
+                jedis.zincrby("2020:1", tuple.getScore(), aliUserIdScore[0].get(0));
+            }catch (Exception e){
+                System.out.println("增加失败："+ aliUserIdScore[0].get(0));
+            }
+        });
+        System.out.println("修改完成");
+    }
 
     /** 上周达人榜
       * @author sgmark@aliyun.com
@@ -300,6 +317,7 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
         Integer week = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear())-1;
         return LocalDate.now().getYear() + ":" + week;
     }
+
 
     public void  uploadExcelFile(String url, File file){
         // Endpoint以杭州为例，其它Region请按实际情况填写。

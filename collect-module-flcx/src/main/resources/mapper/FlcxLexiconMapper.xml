@@ -83,6 +83,51 @@
                 )
     </select>
 
+    <select id="selectImgUrlAfter" resultType="Map" parameterType="Map">
+        SELECT
+        distinct
+        ftt.name_,
+        ftt.img_url
+        FROM
+        flcx_type ftt
+        INNER JOIN (
+        SELECT
+        fll.name_,
+        <if test="lexiconName != ''" >
+            IFNULL(flt.type_id,fct.type_id) as type_id,
+            IFNULL(flt.parent_id, fct.parent_id) AS parent_id
+        </if>
+        <if test="lexiconName == ''" >
+            fct.type_id AS type_id,
+            fct.parent_id AS parent_id
+        </if>
+        FROM
+        flcx_lexicon fll
+        INNER  JOIN flcx_city_type fct ON fll.parent_id = fct.parent_id
+        <if test="lexiconName != ''" >
+            LEFT JOIN flcx_lexicon_type flt ON flt.lexicon_id = fll.id
+        </if>
+
+        WHERE
+        fll.del_flag = 0
+        AND fct.del_flag = 0
+        <if test="lexiconName != ''" >
+            AND fll.name_ = #{lexiconName}
+        </if>
+        AND fct.area_id IN (
+        SELECT
+        id AS id
+        FROM
+        flcx_city
+        WHERE
+        city_name = #{cityName}
+        UNION
+        SELECT
+        #{cityId} AS id
+        )
+        ) fllFlt ON ftt.id = fllFlt.type_id  AND fllFlt.parent_id =  #{parentId}
+    </select>
+
     <select id="lexCheckSpecial" resultMap="getCheckMapSpecial">
         SELECT
             fltInfo.*, fct.area_id AS cityId,
@@ -183,40 +228,6 @@
                             #{cityId} AS id
                 )
 
-    </select>
-
-    <select id="selectImgUrlAfter" resultType="Map" parameterType="Map">
-        SELECT
-          distinct
-          ftt.name_,
-          ftt.img_url
-        FROM
-          flcx_type ftt
-        INNER JOIN (
-            SELECT
-              fll.name_,
-              fct.type_id
-            FROM
-              flcx_lexicon fll
-            INNER  JOIN flcx_city_type fct ON fll.parent_id = fct.parent_id
-            WHERE
-              fll.del_flag = 0
-            AND fct.del_flag = 0
-            <if test="lexiconName != ''" >
-                AND fll.name_ = #{lexiconName}
-            </if>
-            AND fct.area_id IN (
-                SELECT
-                    id AS id
-                FROM
-                  flcx_city
-                WHERE
-                 city_name = #{cityName}
-                UNION
-                SELECT
-                  #{cityId} AS id
-                )
-        ) fllFlt ON ftt.id = fllFlt.type_id  AND ftt.parent_id =  #{parentId}
     </select>
 
     <resultMap id="getCheckMap" type="com.tzj.collect.core.result.flcx.FlcxResult">

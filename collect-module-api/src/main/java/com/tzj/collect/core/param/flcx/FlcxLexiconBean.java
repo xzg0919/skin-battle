@@ -2,6 +2,7 @@ package com.tzj.collect.core.param.flcx;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ import java.util.List;
  * @Version 1.0
  **/
 @Data
-public class FlcxLexiconBean {
+public class FlcxLexiconBean implements Serializable {
     private Long id;
     private String  name;
 
