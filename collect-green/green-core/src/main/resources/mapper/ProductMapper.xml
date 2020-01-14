@@ -69,6 +69,7 @@
         SELECT
         product.product_no as productNo,
         product.name_ as productName,
+         product.icon as icon,
         date_format(product.pick_start_date,'%Y-%m-%d') as startDate,
         date_format(product.pick_end_date,'%Y-%m-%d') as endDate,
         CONCAT(scc.province_name,scc.city_name,scc.area_name,scc.street_name,scc.community_name,schn.house_name)AS activityAddress
@@ -91,6 +92,7 @@
         product.product_no as productNo,
         product.name_ as productName,
         product.detail as detail,
+        product.icon as icon,
         date_format(product.pick_start_date,'%Y-%m-%d') as startDate,
         date_format(product.pick_end_date,'%Y-%m-%d') as endDate,
         CONCAT(scc.province_name,scc.city_name,scc.area_name,scc.street_name,scc.community_name,schn.house_name)AS activityAddress
