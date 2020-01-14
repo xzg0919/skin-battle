@@ -1,5 +1,6 @@
 package com.tzj.green.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
@@ -50,6 +51,8 @@ public class PointsList extends DataEntity<Long>
      * 积分变动类型
      */
     private String pointsType;//0加分  1减分
+    @TableField(value = "source_")
+    private Integer source;//分值来源 0:扫码 1:兑换礼品
     /**
      * 积分变动说明
      */
