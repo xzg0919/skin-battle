@@ -14,11 +14,20 @@ import com.tzj.green.param.MemberBean;
 import com.tzj.green.param.PageBean;
 import com.tzj.green.service.MemberPointsService;
 import com.tzj.green.service.MemberService;
+import com.tzj.green.service.MessageService;
+import com.tzj.green.utils.HttpUtil;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +45,19 @@ import java.util.Map;
  */
 @Service
 @Transactional(readOnly = true, rollbackFor = Exception.class)
+@Configuration
 public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> implements MemberService
 {
     @Resource
     private MemberMapper memberMapper;
     @Resource
     private MemberPointsService memberPointsService;
+    @Autowired
+    ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    @Autowired
+    private MessageService messageService;
+    @Value("${yidairen.url}")
+    private String url;
 
 
     @Override
@@ -69,27 +85,13 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         return "操作成功";
     }
 
-    @Override
-    public Object getMemberByAliUserId(String aliUserId) {
-        Member member = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", aliUserId));
-
-        Map<String, Object> result = new HashMap<>(4);
-        if(member == null){
-            throw new ApiException("未登录注册");
-        }
-        result.put("tatalPoints", 0);
-        result.put("userName", member.getName());
-        result.put("avatarUrl", member.getAvatarUrl());
-        result.put("address", member.getAddress() == null ? "" : member.getAddress() + member.getDetailAddress());
-        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("user_no", member.getRealNo()));
-        if(memberPoints != null){
-            Long tatalPoints = memberPoints.getTatalPoints();
-            result.put("tatalPoints", tatalPoints);
-        }
-        return result;
-    }
 
 
+    /**
+     * 查找该用户实体卡
+     * @param aliUserId
+     * @return
+     */
     @Override
     public Object getRealNoByAliUserId(String aliUserId) {
         Member me = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", aliUserId));
@@ -103,6 +105,53 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         result.put("status", 1);
         String realNo = me.getRealNo();
         result.put("realNo", realNo);
+        return result;
+    }
+
+    /**
+     * 扫描绑定实体卡
+     * @param memberBean
+     * @return
+     */
+    @Override
+    @Transactional
+    public Object scanRealCode(MemberBean memberBean) {
+        String realNo = memberBean.getRealNo();
+        if(StringUtils.isBlank(realNo)){
+            throw new  ApiException("扫描实体卡失败");
+        }
+        if(StringUtils.isBlank(memberBean.getAliUserId())){
+            throw new  ApiException("未传入aliUserId");
+        }
+        Member member = this.selectOne(new EntityWrapper<Member>().eq("real_no", realNo).eq("del_flag", "0"));
+        if(member == null || !"0".equals(member.getIsCancel())){
+            throw new  ApiException("卡号不存在或已注销");
+        }
+        if(StringUtils.isNotBlank(member.getAliUserId())){
+            throw new ApiException("实体卡已被绑定");
+        }
+        if(messageService.validMessage(memberBean.getTel(), memberBean.getSecurityCode())){
+            member.setAliUserId(memberBean.getAliUserId());
+            MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("real_no", realNo).eq("del_flag", "0"));
+            memberPoints.setAliUserId(memberBean.getAliUserId());
+            memberPointsService.updateById(memberPoints);
+            this.updateById(member);
+            return "绑定成功";
+        }
+        throw new ApiException("验证码错误");
+    }
+
+    @Override
+    public Object getAllPoints(MemberBean memberBean) {
+        String aliUserId = memberBean.getAliUserId();
+        Map<String, Object> result = new HashMap<>(2);
+        result.put("tatalPoints", 0.0);
+        result.put("validPoints", 0.0);
+        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("aliUserId", aliUserId).eq("del_flag", "0"));
+        if(memberPoints != null) {
+            result.put("tatalPoints", memberPoints.getTatalPoints());
+            result.put("validPoints", memberPoints.getRemnantPoints());
+        }
         return result;
     }
 

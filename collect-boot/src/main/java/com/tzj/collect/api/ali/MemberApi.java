@@ -151,4 +151,15 @@ public class MemberApi {
 		}
 		return memberService.updateUserFormId(member);
 	}
+
+	/**
+	 * 获取会员信息
+	 */
+	@Api(name = "member.getMember2Point", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public Object getMember(MemberBean memberBean) {
+		return memberService.selectMemberByAliUserId(memberBean.getAliUserId());
+
+	}
 }
