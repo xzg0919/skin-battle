@@ -91,13 +91,12 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
             companyCommunity.setRecoveryWeek("");
         }
         this.insertOrUpdate(companyCommunity);
+        Long communityId = companyCommunity.getId();
         List<CommunityHouseName> houseNameList = companyCommunityBean.getHouseNameList();
         CompanyCommunity finalCompanyCommunity = companyCommunity;
         houseNameList.stream().forEach(communityHouseName -> {
-            CommunityHouseName communityHouseName1 = communityHouseNameService.selectById(communityHouseName.getId());
-            if (null==communityHouseName1){
-                communityHouseName1 = new CommunityHouseName();
-            }
+            communityHouseNameService.delete(new EntityWrapper<CommunityHouseName>().eq("community_id",communityId));
+            CommunityHouseName communityHouseName1 = new CommunityHouseName();
             communityHouseName1.setCommunityId(finalCompanyCommunity.getId());
             communityHouseName1.setHouseName(communityHouseName.getHouseName());
             communityHouseName1.setAddress(communityHouseName.getAddress());
