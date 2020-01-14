@@ -423,8 +423,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setGreenCount(category.getGreenCount().doubleValue());
             order.setAdminCommissions(companyCategory.getAdminCommissions());
             order.setCompanyCommissions(companyCategory.getCompanyCommissions());
-            order.setCommissionsPrice(companyCategory.getAdminCommissions().setScale(2, BigDecimal.ROUND_HALF_UP));
-            order.setBackCommissionsPrice(companyCategory.getCompanyCommissions().setScale(2, BigDecimal.ROUND_HALF_UP));
+            order.setCommissionsPrice(companyCategory.getAdminCommissions().setScale(2, BigDecimal.ROUND_DOWN));
+            order.setBackCommissionsPrice(companyCategory.getCompanyCommissions().setScale(2, BigDecimal.ROUND_DOWN));
         }if ("2".equals(order.getTitle().getValue().toString())){
             List<OrderItemAch> orderItemAches = orderItemAchService.selectByOrderId(order.getId().intValue());
             final BigDecimal[] commissionsPrice = {BigDecimal.ZERO};
@@ -432,7 +432,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             final Double[] greenCount = {0.00};
             orderItemAches.stream().forEach(orderItemAch -> {
                 CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), orderItemAch.getCategoryId().toString());
-                Category category = categoryService.selectById(order.getCategoryId());
+                Category category = categoryService.selectById(orderItemAch.getCategoryId());
                 if ("0".equals(order.getIsCash())){
                     greenCount[0] += category.getGreenCount()*orderItemAch.getAmount();
                     commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
@@ -450,10 +450,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             DecimalFormat df=new DecimalFormat(".##");
             order.setGreenCount(Double.parseDouble(df.format(greenCount[0])));
             order.setBackCommissionsPrice(backCommissionsPrice[0]);
-            order.setCommissionsPrice(commissionsPrice[0].setScale(2, BigDecimal.ROUND_HALF_UP));
+            order.setCommissionsPrice(commissionsPrice[0].setScale(2, BigDecimal.ROUND_DOWN));
         }
         this.updateById(order);
-        return order.getCommissionsPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+        return order.getCommissionsPrice().setScale(2, BigDecimal.ROUND_DOWN);
     }
 
     @Transactional
@@ -481,7 +481,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 e.printStackTrace();
             }
         }
-        return order.getAchPrice().add(order.getCommissionsPrice()).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return order.getAchPrice().add(order.getCommissionsPrice()).setScale(2, BigDecimal.ROUND_DOWN);
     }
 
     @Override
@@ -1027,7 +1027,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //			}
 //		});
         //保留两位小数
-        order.setGreenCount(new BigDecimal(score[0]).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+        order.setGreenCount(new BigDecimal(score[0]).setScale(2, BigDecimal.ROUND_DOWN).doubleValue());
         order.setAreaId(companyEquipment.getAreaId());
         order.setStreetId(companyEquipment.getStreetId());
         order.setCommunityId(companyEquipment.getCommunityId());

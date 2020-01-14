@@ -131,9 +131,9 @@ public class CompanyCommunity extends DataEntity<Long>
 
     public String getIsDry() {
         if (StringUtils.isNotBlank(dryTime)){
-            return "0";
+            return "0";// 收
         }else {
-            return "1";
+            return "1";//否
         }
     }
 

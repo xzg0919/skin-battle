@@ -154,7 +154,7 @@
     </dependencies>
 
     <build>
-        <finalName>flcx-pro-${maven.build.timestamp}</finalName>
+        <finalName>flcx-pro-${maven.build.timestamp}-service</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

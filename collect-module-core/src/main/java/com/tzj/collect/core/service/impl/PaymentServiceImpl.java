@@ -75,7 +75,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         ExtendParams extendParams = new ExtendParams();
         extendParams.setSysServiceProviderId("2088421446748174");
         model.setExtendParams(extendParams);
-        model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_HALF_UP).toString());
+        model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_DOWN).toString());
         request.setBizModel(model);
         request.setNotifyUrl(applicaInit.getNotifyUrl());
         try {
@@ -111,7 +111,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         ExtendParams extendParams = new ExtendParams();
         extendParams.setSysServiceProviderId("2017011905224137");
         model.setExtendParams(extendParams);
-        model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_HALF_UP).toString());
+        model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_DOWN).toString());
         model.setProductCode("QUICK_MSECURITY_PAY");
         request.setBizModel(model);
         request.setNotifyUrl(applicaInit.getNotifyUrl());
@@ -188,7 +188,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             model.setOutBizNo(outBizNo);
             model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
             model.setPayeeAccount(aliUserId);
-            model.setAmount(amount.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+            model.setAmount(amount.setScale(2, BigDecimal.ROUND_DOWN).toString());
             model.setPayerShowName("垃圾分类回收(收呗)货款");
             model.setRemark("垃圾分类回收(收呗)货款");
         request.setBizModel(model);

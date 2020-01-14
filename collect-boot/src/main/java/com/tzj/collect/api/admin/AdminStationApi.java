@@ -147,7 +147,7 @@ public class AdminStationApi {
         String securityToken = JwtUtils.generateEncryptToken(token, ADMIN_API_TOKEN_CYPTO_KEY);
 
         String api = applicaInit.getStationUrl();
-
+        System.out.println("中转站连接："+applicaInit.getStationUrl());
         HashMap<String,Object> param=new HashMap<>();
         param.put("name",name);
         param.put("version","1.0");

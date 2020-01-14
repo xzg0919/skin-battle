@@ -706,7 +706,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 
     public static String tableNameLastWeek(Long currentTimeMillis){
         Instant.ofEpochMilli(currentTimeMillis).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
-        Integer week = LocalDateTime.now().minusWeeks(1L).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
+        Integer week = LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) - 1;
         return "daily_day_records_"+ LocalDate.now().getYear() + "" + week;
     }
 

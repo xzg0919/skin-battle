@@ -30,6 +30,11 @@ public interface ProductMapper extends BaseMapper<Product>
 
     List<Map<String,Object>> nearActivitys(@Param("companyId") Long companyId,@Param("lat") double lat,@Param("lng") double lng,@Param("pageStartNum") Integer pageStartNum, @Param("pageSize") Integer pageSize);
 
+    List<Map<String,Object>> getGoodsListByCompanyId(@Param("companyId")Long companyId,@Param("name")String name,@Param("pageStart") Integer pageStart,@Param("pageSize")Integer pageSize);
 
+   Integer getGoodsCount(@Param("companyId")Long companyId,@Param("name")String name);
+
+
+    Map<String,Object> activityDetail(@Param("productNo") String productNo);
 
 }

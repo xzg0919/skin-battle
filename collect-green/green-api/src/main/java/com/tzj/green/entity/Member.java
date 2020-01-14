@@ -51,6 +51,10 @@ public class Member extends DataEntity<Long>
     @TableField(value = "name_")
     private String name;
     /**
+     * 性别
+     */
+    private String gender;
+    /**
      * 地址
      */
     private String address;
@@ -78,6 +82,15 @@ public class Member extends DataEntity<Long>
      * 是否注销
      */
     private String isCancel;
+    /**
+     * 省id
+     */
+    private Long provinceId;
+    /**
+     * 省名称
+     */
+    private String provinceName;
+
     /**
      * 城市Id
      */
@@ -118,12 +131,5 @@ public class Member extends DataEntity<Long>
      * 所属小区名称
      */
     private String communityHouseName;
-
-    private Long provinceId;
-
-    private String provinceName;
-
-
-
 
 }

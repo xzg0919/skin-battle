@@ -113,11 +113,29 @@ public class BusinessOrderApiTest {
 //		productGoodsBeanList.add(productGoodsBean2);
 //		productBean.setProductGoodsBeanList(productGoodsBeanList);
 
-		productBean.setId("1");
+		PointsListBean pointsListBean = new PointsListBean();
+
+		pointsListBean.setStartTime("2020-01-01");
+		pointsListBean.setEndTime("2020-10-01");
+		pointsListBean.setPointsType("0");
+		pointsListBean.setCityId("2");
+		pointsListBean.setAreaId("3");
+		pointsListBean.setStreetId("4");
+		pointsListBean.setCommunityId("2");
+		pointsListBean.setCommunityHouseId("5");
+		pointsListBean.setName("测试");
+		pointsListBean.setTel("2123");
+		pointsListBean.setPageBean(new PageBean());
+
+		CategoryBean categoryBean = new CategoryBean();
+
+		categoryBean.setCategoryId("7");
+		categoryBean.setAddPoints("13");
+		categoryBean.setSubtractPoints("23");
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","company.getProductOrderDetail");
+		param.put("name","company.updateCompanyCategoryPoints");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -125,7 +143,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",productBean);
+		param.put("data",categoryBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);

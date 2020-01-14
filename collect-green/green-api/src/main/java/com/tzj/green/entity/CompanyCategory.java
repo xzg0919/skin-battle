@@ -31,17 +31,9 @@ public class CompanyCategory extends DataEntity<Long>
      */
     private Long categoryId;
     /**
-     * 父级编号
+     * 分类名称
      */
-    private Long parentId;
-    /**
-     * 
-     */
-    private String parentName;
-    /**
-     * 所有父级编号
-     */
-    private String parentIds;
+    private String categoryName;
     /**
      * 增值积分
      */

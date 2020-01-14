@@ -74,4 +74,6 @@ public class ProductBean {
      */
     private Double lng;
 
+    private String aliUserId;
+
 }

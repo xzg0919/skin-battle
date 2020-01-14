@@ -5,10 +5,8 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 
 import javax.annotation.Resource;
 
-import com.tzj.green.entity.Goods;
-import com.tzj.green.entity.Product;
-import com.tzj.green.entity.ProductGoods;
-import com.tzj.green.entity.ProductRecycler;
+import com.tzj.green.entity.*;
+import com.tzj.green.mapper.MemberMapper;
 import com.tzj.green.mapper.ProductMapper;
 import com.tzj.green.param.PageBean;
 import com.tzj.green.param.ProductBean;
@@ -51,6 +49,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private ProductGoodsService productGoodsService;
     @Autowired
     private GoodsService goodsService;
+    @Resource
+    private MemberMapper memberMapper;
 
     @Override
     @Transactional
@@ -192,11 +192,11 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      *
      * @param lat
      * @param lng
-     * @param companyId
+     * @param aliUserId
      * @return
      */
     @Override
-    public Object nearActivitys(Double lat, Double lng, Long companyId,Integer pageNum,Integer pageSize) {
+    public Object nearActivitys(Double lat, Double lng, String aliUserId,Integer pageNum,Integer pageSize) {
         if(pageNum ==null || pageNum ==0){
             pageNum=1;
         }
@@ -204,19 +204,36 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             pageSize=10;
         }
         pageNum = (pageNum - 1)*pageSize;
-        return  productMapper.nearActivitys(companyId, lat, lng,pageNum,pageSize);
+
+        Member member=   memberMapper.selectByAliUserId(aliUserId);
+        return  productMapper.nearActivitys(member.getCompanyId(), lat, lng,pageNum,pageSize);
     }
 
     @Override
     public Object activtyDetail(String activityCode) {
         Map<String,Object> resultMap =new HashedMap();
         //获取活动信息
-        Product product=productMapper.selectById(activityCode);
-        resultMap.put("activity",product);
+        resultMap.put("activity",productMapper.activityDetail(activityCode));
         //获取活动下的礼品信息
         resultMap.put("goodsList",goodsService.getGoodsListByActivityId(activityCode));
         return resultMap;
     }
 
+
+    @Override
+    public Object getGoodsListByCompanyId(Long companyId, ProductBean productBean) {
+        PageBean pageBean = productBean.getPageBean();
+        if (null==pageBean){
+            pageBean = new PageBean();
+        }
+        Integer pageStart = (pageBean.getPageNum()-1)*pageBean.getPageSize();
+        List<Map<String, Object>> goodsList = productMapper.getGoodsListByCompanyId(companyId, productBean.getName(), pageStart, pageBean.getPageSize());
+        Integer count = productMapper.getGoodsCount(companyId, productBean.getName());
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("goodsList",goodsList);
+        resultMap.put("count",count);
+        resultMap.put("pageNum",pageBean.getPageNum());
+        return  resultMap;
+    }
 
 }
