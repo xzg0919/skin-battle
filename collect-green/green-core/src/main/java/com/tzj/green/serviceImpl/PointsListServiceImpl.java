@@ -107,6 +107,10 @@ public class PointsListServiceImpl extends ServiceImpl<PointsListMapper, PointsL
                             //所需分值（负数）
                             rpcParamMap.put("points", memberPoints.getRemnantPoints()- Long.parseLong(paramMap.get("points") +""));
                             Map<String, Object> reducePointMap = rpcCollectApi("point.reduce", paramMap.get("aliUserId")+"", rpcParamMap);
+                            if(CollectionUtils.isEmpty(reducePointMap) || !reducePointMap.containsKey("code") || "200".equals(reducePointMap.get("code"))){
+                                //扣分失败
+                                return false;
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
