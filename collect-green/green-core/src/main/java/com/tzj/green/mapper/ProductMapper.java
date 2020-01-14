@@ -35,5 +35,6 @@ public interface ProductMapper extends BaseMapper<Product>
    Integer getGoodsCount(@Param("companyId")Long companyId,@Param("name")String name);
 
 
+    Map<String,Object> activityDetail(@Param("productNo") String productNo);
 
 }

@@ -1,13 +1,18 @@
 package com.tzj.collect.controller.admin;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.core.service.AreaService;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
+
+import com.tzj.collect.entity.Area;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -64,6 +69,32 @@ public class AreaExcelController {
         mapList = mapList.stream().filter(map -> map.size() > 1).collect(Collectors.toList());
         areaService.addInputAreaCode(mapList);
         System.out.println(mapList.size());
+        return null;
+    }
+
+    @RequestMapping("add/addRatio")
+    @ResponseBody
+    public Map<String, Object> addRatio(final MultipartFile file) throws Exception {
+        List<Map<String, String>> list = null;
+        List<String> keyArray = Arrays.asList("province", "city", "ratio");
+        try {
+            list = ExcelUtils.getDataListByXLSExcel(file.getInputStream(), keyArray, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //返回保存结果条数
+        list.stream().forEach(map ->{
+            Area area = areaService.selectOne(new EntityWrapper<Area>().eq("type", 0).eq("area_name", map.get("province")));
+            if (null!=area){
+                Area city = areaService.selectOne(new EntityWrapper<Area>().eq("parent_id", area.getId()).eq("area_name", map.get("city")));
+                city.setRatio(new BigDecimal( map.get("ratio")));
+                areaService.updateById(city);
+            }else {
+                System.out.println(map.get("province"));
+            }
+        });
+        areaService.addInputAreaCode(list);
+        System.out.println(list.size());
         return null;
     }
 }

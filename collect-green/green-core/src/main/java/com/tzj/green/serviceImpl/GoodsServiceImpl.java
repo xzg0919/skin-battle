@@ -86,12 +86,14 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public Object getGoodsListByActivityId(String activityCode) {
+    public  List<Map<String,Object>> getGoodsListByActivityId(String activityCode) {
         return goodsMapper.getGoodsListByActivityId(activityCode);
     }
 
     @Override
     public Object getGoodsDetail(String goodsNo) {
-        return this.selectOne(new EntityWrapper<Goods>().eq("goods_no", goodsNo));
+        Goods goods=this.selectOne(new EntityWrapper<Goods>().eq("goods_no", goodsNo));
+        goods.setGoodsUsableNum(goods.getGoodsNum()-goods.getGoodsFrozenNum());
+        return goods;
     }
 }

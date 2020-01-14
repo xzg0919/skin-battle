@@ -203,7 +203,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         //根据分类Id查询分类信息
         Category category = this.getCategoryById(categoryId);
         Category parent = this.getCategoryById(category.getParentId());
-        BigDecimal price = category.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal price = category.getPrice().setScale(2, BigDecimal.ROUND_DOWN);
         ClassifyAndMoney classifyAndMoney = new ClassifyAndMoney();
         Integer weight = categoryAttrBean.getWeight();
         if (weight > 0) {
@@ -445,9 +445,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", companyId).eq("category_id", categoryId).eq("city_id", memberAddress.getCityId()).eq("del_flag", 0));
         if (null == companyCategoryCity) {
             CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", companyId).eq("category_id", categoryId));
-            price = new BigDecimal(companyCategory.getPrice()).setScale(2, BigDecimal.ROUND_HALF_UP);
+            price = new BigDecimal(companyCategory.getPrice()).setScale(2, BigDecimal.ROUND_DOWN);
         } else {
-            price = companyCategoryCity.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+            price = companyCategoryCity.getPrice().setScale(2, BigDecimal.ROUND_DOWN);
         }
         //获取所有分类属性选项Id的集合
         String[] OptionIds = categoryAttrOptionIds.split(",");
@@ -469,7 +469,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 specialPriceList.add(specialPrice);
                 continue;
             }
-            BigDecimal prices = new BigDecimal(optionPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal prices = new BigDecimal(optionPrice).setScale(2, BigDecimal.ROUND_DOWN);
             price = price.add(prices);
         }
         //将取到的特殊价格从小到大排序
@@ -529,24 +529,24 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 if ("1".equals(companyCategoryAttrOptionCity.getIsSpecial())){
                     specialPriceList.add(companyCategoryAttrOptionCity.getSpecialPrice());
                 }
-                price[0] = price[0].add(companyCategoryAttrOptionCity.getAttrOptionPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+                price[0] = price[0].add(companyCategoryAttrOptionCity.getAttrOptionPrice());
             } else if ("BIGTHING".equals(type)) {
-                price[0] = price[0].multiply(companyCategoryAttrOptionCity.getAttrOptionPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+                price[0] = price[0].multiply(companyCategoryAttrOptionCity.getAttrOptionPrice());
             }
         });
         //将取到的特殊价格从小到大排序
         Collections.sort(specialPriceList);
         if (!specialPriceList.isEmpty()) {
             //取得最小的特殊价格
-            return specialPriceList.get(0).setScale(2, BigDecimal.ROUND_HALF_UP);
+            return specialPriceList.get(0).setScale(2, BigDecimal.ROUND_DOWN);
         }
         BigDecimal cityRatio = companyCityRatioService.getCityRatioByCompanyCityId(memberAddress.getCityId(), finalCompanyId);
-        price[0] = price[0].multiply(cityRatio).setScale(2, BigDecimal.ROUND_HALF_UP);
-        if ("BIGTHING".equals(type)&&price[0].compareTo(new BigDecimal(68)) == -1){
-            return new BigDecimal(68);
+        price[0] = price[0].multiply(cityRatio);
+        if ("BIGTHING".equals(type)&&price[0].compareTo(new BigDecimal(98)) == -1){
+            return new BigDecimal(98);
         }
         System.out.println("计算后的价格是："+price[0]);
-        return price[0];
+        return price[0].setScale(2, BigDecimal.ROUND_DOWN);
     }
 
     @Override

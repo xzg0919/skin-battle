@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tzj.green.mapper.GoodsMapper">
 
-    <select id="getGoodsListByActivityId" parameterType="Long" resultType="Map">
-      select  sg.goodsName as goodsName,
+    <select id="getGoodsListByActivityId" parameterType="Object" resultType="Map">
+      select  sg.goods_name as goodsName,
        sg.icon as icon,
        sg.points as points,
        sg.goods_no as goodsNo

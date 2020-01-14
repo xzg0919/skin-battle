@@ -81,9 +81,27 @@
         where 3000 >= round(6378.138*2*asin(sqrt(pow(sin( (schn.lat*pi()/180-#{lat}*pi()/180)/2),2)
         +cos(schn.lat*pi()/180)*cos(#{lat}*pi()/180)
         * pow(sin( (schn.lng*pi()/180-#{lng}*pi()/180)/2),2)))*1000)
-        and product.company_id =#{companyId}
+        and product.company_id =#{companyId} and product.is_lower=0 and product.pick_end_date>=now()
         order by product.id desc
         LIMIT #{pageStartNum},#{pageSize}
+    </select>
+
+    <select id="activityDetail" parameterType="Object" resultType="Map">
+        SELECT
+        product.product_no as productNo,
+        product.name_ as productName,
+        product.detail as detail,
+        date_format(product.pick_start_date,'%Y-%m-%d') as startDate,
+        date_format(product.pick_end_date,'%Y-%m-%d') as endDate,
+        CONCAT(scc.province_name,scc.city_name,scc.area_name,scc.street_name,scc.community_name,schn.house_name)AS activityAddress
+        FROM
+        sb_product product
+        inner join sb_community_house_name schn
+        on schn.id = product.house_name_id
+        inner join sb_company_community scc
+        on scc.id = schn.community_id
+        where    product.product_no =#{productNo}
+
     </select>
     <select id="getGoodsListByCompanyId" parameterType="Object" resultType="Map">
 

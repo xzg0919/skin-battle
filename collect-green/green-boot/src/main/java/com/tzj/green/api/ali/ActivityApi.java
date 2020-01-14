@@ -1,6 +1,7 @@
 package com.tzj.green.api.ali;
 
 import com.tzj.green.param.GoodsBean;
+import com.tzj.green.param.PageBean;
 import com.tzj.green.param.ProductBean;
 import com.tzj.green.service.GoodsService;
 import com.tzj.green.service.ProductService;
@@ -38,10 +39,13 @@ public class ActivityApi {
                 || productBean.getLat() == 0 || productBean.getLng() == 0) {
             return "获取经纬度失败";
         }
-        if (StringUtils.isBlank(productBean.getCompanyId())) {
-            return "获取公司ID失败";
+        if (StringUtils.isBlank(productBean.getAliUserId())) {
+            return "获取aliUserId失败";
         }
-        return productService.nearActivitys(productBean.getLat(), productBean.getLng(), Long.parseLong(productBean.getCompanyId()),
+        if(productBean.getPageBean() == null ){
+            productBean.setPageBean(new PageBean());
+        }
+        return productService.nearActivitys(productBean.getLat(), productBean.getLng(),  productBean.getAliUserId(),
                 productBean.getPageBean().getPageNum(), productBean.getPageBean().getPageSize());
     }
 

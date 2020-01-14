@@ -125,7 +125,7 @@ public class CategoryApi {
 		}
 		//根据企业Id查询和分类Id查询对应的一条关联记录
     	CompanyCategory companyCategory  = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId));
-    	BigDecimal price = new BigDecimal(companyCategory.getPrice()).setScale(2, BigDecimal.ROUND_HALF_UP);
+    	BigDecimal price = new BigDecimal(companyCategory.getPrice()).setScale(2, BigDecimal.ROUND_DOWN);
 		//
     	List<String> specialPriceList = new ArrayList<String>();
 		for(int i=0;i<OptionPrice.length;i++) {
@@ -137,7 +137,7 @@ public class CategoryApi {
 				specialPriceList.add(specialPrice);
 				continue;
 			}
-			BigDecimal prices = new BigDecimal(OptionPrice[i]).setScale(2, BigDecimal.ROUND_HALF_UP);
+			BigDecimal prices = new BigDecimal(OptionPrice[i]).setScale(2, BigDecimal.ROUND_DOWN);
 			price = price.add(prices);
 		}
 		//将取到的特殊价格从小到大排序
@@ -268,7 +268,7 @@ public class CategoryApi {
 			String [] OptionPrice = categoryAttrOptionPrice.split(",");
 			//根据分类Id查询
 			Category category  = categoryService.selectOne(new EntityWrapper<Category>().eq("id",categoryId));
-			price = category.getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+			price = category.getMarketPrice().setScale(2, BigDecimal.ROUND_DOWN);
 			//
 			List<String> specialPriceList = new ArrayList<String>();
 			for(int i=0;i<OptionPrice.length;i++) {
@@ -280,7 +280,7 @@ public class CategoryApi {
 					specialPriceList.add(specialPrice);
 					continue;
 				}
-				BigDecimal prices = new BigDecimal(OptionPrice[i]).setScale(2, BigDecimal.ROUND_HALF_UP);
+				BigDecimal prices = new BigDecimal(OptionPrice[i]).setScale(2, BigDecimal.ROUND_DOWN);
 				price = price.add(prices);
 			}
 			//将取到的特殊价格从小到大排序
