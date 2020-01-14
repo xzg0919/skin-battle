@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.Recyclers;
 import com.tzj.green.param.RecyclersBean;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,4 +28,8 @@ public interface RecyclersService extends IService<Recyclers>
     Map<String, Object> bindingCardByRec(RecyclersBean recyclersBean);
 
     Map<String, Object> selectRecRange(Long id);
+
+    List<Map<String, Object>> categoryPointInfo(Long id);
+
+    Map<String, Object> appChangePoint(Map<String, Object> paramMap);
 }

@@ -2109,12 +2109,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		pointList.setDescrb(descrb);
 		pointListService.insert(pointList);
 		//记录用户picc能量
-		PiccWater piccWater = new PiccWater();
-		piccWater.setAliUserId(aliUserId);
-		piccWater.setStatus("0");
-		piccWater.setPointCount((int)amount);
-		piccWater.setDescrb(descrb);
-		piccWaterService.insert(piccWater);
+        if (amount  > 0){
+            PiccWater piccWater = new PiccWater();
+            piccWater.setAliUserId(aliUserId);
+            piccWater.setStatus("0");
+            piccWater.setPointCount((int) amount);
+            piccWater.setDescrb(descrb);
+            piccWaterService.insert(piccWater);
+        }
 	}
 
 

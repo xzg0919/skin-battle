@@ -2,6 +2,7 @@ package com.tzj.collect.api.ali;
 
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.core.service.PointListService;
 import com.tzj.collect.core.service.PointService;
 import com.tzj.collect.entity.Member;
@@ -10,9 +11,14 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 
@@ -27,6 +33,8 @@ public class PointApi {
 	private PointService pointService;
 	@Autowired
 	private PointListService pointListService;
+	@Resource
+	private OrderService orderService;
 	
 	/** 
      * 根据类型获取积分流水列表 分页
@@ -44,8 +52,25 @@ public class PointApi {
         List<Object> pointLists = pointListService.getPointListByType(member.getAliUserId(),pageBean);
     	return pointLists; 
     }
-	
-	
+    /**
+     * 远程调用扣分
+     * @author: sgmark@aliyun.com
+     * @Date: 2020/1/14 0014
+     * @Param: 
+     * @return: 
+     */
+    @Api(name = "point.reduce", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Map<String, Object> RpcReducePoint(Map<String, Object> paramMap){
+        Map<String, Object> returnMap = new HashMap<>();
+        if (CollectionUtils.isEmpty(paramMap) || !paramMap.containsKey("pointsReason") || !paramMap.containsKey("points")){
+            throw new ApiException("参数错误");
+        }
+        orderService.updateMemberPoint(MemberUtils.getMember().getAliUserId(), "", Double.parseDouble(paramMap.get("points")+""), paramMap.get("pointsReason")+"");
+        returnMap.put("code", 200);
+        returnMap.put("msg", "扣分成功");
+        return returnMap;
+    }
 	/**
      * 获取积分值接口
      * @author 王灿
