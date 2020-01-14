@@ -68,6 +68,11 @@ public class Product extends DataEntity<Long>
      */
     private String isLower;
 
+    /**
+     * 线下活动图片
+     */
+    private String icon;
+
     @TableField(exist = false)
     private String pickStartTime;
     @TableField(exist = false)

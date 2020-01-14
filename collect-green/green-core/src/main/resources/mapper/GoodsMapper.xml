@@ -6,7 +6,8 @@
       select  sg.goods_name as goodsName,
        sg.icon as icon,
        sg.points as points,
-       sg.goods_no as goodsNo
+       sg.goods_no as goodsNo,
+       sg.goods_num-sg.goods_frozen_num as goodsUsableNum
        from  sb_goods sg inner join
       sb_product_goods spg
         on spg.goods_id =sg.id
