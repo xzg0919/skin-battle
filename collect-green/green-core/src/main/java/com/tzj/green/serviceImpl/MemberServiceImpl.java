@@ -124,18 +124,31 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             throw new  ApiException("未传入aliUserId");
         }
         Member member = this.selectOne(new EntityWrapper<Member>().eq("real_no", realNo).eq("del_flag", "0"));
-        if(member == null || !"0".equals(member.getIsCancel())){
+        if(member != null && "0".equals(member.getIsCancel())){
+            if(StringUtils.isNotBlank(member.getAliUserId())){
+                throw new ApiException("实体卡已被绑定");
+            }
             throw new  ApiException("卡号不存在或已注销");
         }
-        if(StringUtils.isNotBlank(member.getAliUserId())){
-            throw new ApiException("实体卡已被绑定");
-        }
+
         if(messageService.validMessage(memberBean.getTel(), memberBean.getSecurityCode())){
+            if(member==null){
+                member = new Member();
+            }
             member.setAliUserId(memberBean.getAliUserId());
+            member.setIsCancel("0");
+            member.setCreateDate(new Date());
+            member.setMobile(memberBean.getTel());
             MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("real_no", realNo).eq("del_flag", "0"));
-            memberPoints.setAliUserId(memberBean.getAliUserId());
-            memberPointsService.updateById(memberPoints);
-            this.updateById(member);
+            if(memberPoints == null){
+                memberPoints = new MemberPoints();
+            }
+            memberPoints.setAliUserId(member.getAliUserId());
+            memberPoints.setUserNo(memberBean.getRealNo());
+            memberPoints.setRemnantPoints(0L);
+            memberPoints.setTatalPoints(0L);
+            memberPointsService.insertOrUpdate(memberPoints);
+            this.insertOrUpdate(member);
             return "绑定成功";
         }
         throw new ApiException("验证码错误");
@@ -147,7 +160,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         Map<String, Object> result = new HashMap<>(2);
         result.put("tatalPoints", 0.0);
         result.put("validPoints", 0.0);
-        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("aliUserId", aliUserId).eq("del_flag", "0"));
+        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("ali_user_id", aliUserId).eq("del_flag", "0"));
         if(memberPoints != null) {
             result.put("tatalPoints", memberPoints.getTatalPoints());
             result.put("validPoints", memberPoints.getRemnantPoints());
