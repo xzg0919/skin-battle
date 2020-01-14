@@ -4,19 +4,20 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import javax.annotation.Resource;
 
-import com.tzj.green.entity.Member;
-import com.tzj.green.entity.Recyclers;
+import com.tzj.green.entity.*;
 import com.tzj.green.mapper.RecyclersMapper;
 import com.tzj.green.param.RecyclersBean;
-import com.tzj.green.service.MemberService;
-import com.tzj.green.service.MessageService;
-import com.tzj.green.service.RecyclersService;
+import com.tzj.green.service.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,6 +43,16 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     private MessageService messageService;
     @Resource
     private RecyclersMapper recyclersMapper;
+    @Resource
+    private CompanyCategoryService companyCategoryService;
+    @Resource
+    private CompanyRecyclerService companyRecyclerService;
+    @Resource
+    private PointsListService pointsListService;
+    @Resource
+    private PointsListItemService pointsListItemService;
+    @Resource
+    private MemberPointsService memberPointsService;
     /**
      * 根据手机号查询回收人员
      *
@@ -105,5 +116,125 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     @Override
     public Map<String, Object> selectRecRange(Long recId) {
         return recyclersMapper.selectRecRange(recId);
+    }
+    /**
+     * 投放种类信息
+     * @author: sgmark@aliyun.com
+     * @Date: 2020/1/13 0013
+     * @Param:
+     * @return:
+     */
+    @Override
+    public List<Map<String, Object>> categoryPointInfo(Long recId) {
+        CompanyRecycler companyRecycler = companyRecyclerService.selectById(recId);
+        List<Map<String, Object>> returnListMap = new ArrayList<>();
+        if (null != companyRecycler){
+            returnListMap = (List<Map<String, Object>>)companyCategoryService.getCompanyCategoryById(companyRecycler.getCompanyId());
+        }
+        return returnListMap;
+    }
+
+    /**
+     * 扫码加分扣分： 加分加总分及剩余分 扣分只扣剩余分  分值不够扣收呗积分（加分只加积分商户中用户积分）
+     * @author: sgmark@aliyun.com
+     * @Date: 2020/1/14 0014
+     * @Param: 
+     * @return: 
+     */
+    @Override
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public Map<String, Object> appChangePoint(Map<String, Object> paramMap) {
+        Map<String, Object> returnMap = new HashMap<>();
+        PointsList pointsList = new PointsList();
+        if (!paramMap.containsKey("pointList")){
+            throw new ApiException("pointList 不能为空");
+        }
+        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("del_flag", 0).eq("user_no", pointsList.getUserNo()).last(" limit 1"));
+        if(!paramMap.containsKey("pointType")){
+            throw new ApiException("pointType 不能为空");
+        }else {
+            pointsList.setPointsType(paramMap.get("pointType")+"");
+            pointsList.setSource(0);
+            //检查积分是否足够
+            if (null != memberPoints){
+                //扣分
+                if (pointsList.getPointsType().equals("1")) {
+                    pointsList.setPointsType("1");
+                    if (memberPoints.getRemnantPoints().compareTo(Long.parseLong(paramMap.get("points") + "")) < 0) {
+                        throw new ApiException("积分不足");
+                    }
+                    memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() - Long.parseLong(paramMap.get("points") + ""));
+                }else {
+                    pointsList.setPointsType("0");
+                    memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() + Long.parseLong(paramMap.get("points") + ""));
+                    memberPoints.setTatalPoints(memberPoints.getTatalPoints() + Long.parseLong(paramMap.get("points") + ""));
+                }
+            }else {
+                memberPoints = new MemberPoints();
+                if (pointsList.getPointsType().equals("1")) {
+                    throw new ApiException("积分不足");
+                }
+                memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() + Long.parseLong(paramMap.get("points") + ""));
+                memberPoints.setTatalPoints(memberPoints.getTatalPoints() + Long.parseLong(paramMap.get("points") + ""));
+            }
+        }
+        if (!paramMap.containsKey("realNo")){
+            throw new ApiException("实体卡号不能为空");
+        }else {
+            pointsList.setUserNo(paramMap.get("realNo")+"");
+            pointsList.setUserName(paramMap.get("userName")+"");
+        }
+        Map<String, Object> comRecMap = companyRecyclerService.selectMap(new EntityWrapper<CompanyRecycler>().setSqlSelect("company_id, status_").eq("del_flag", 0).eq("recycler_id", paramMap.get("recId")).eq("status_", "1").last(" limit 1"));
+        if (null == comRecMap){
+            throw new ApiException("当前管理员尚未通过验证");
+        }
+        pointsList.setRecyclerId(Long.parseLong(paramMap.get("recId")+""));
+        pointsList.setCompanyId(Long.parseLong(comRecMap.get("company_id")+""));
+        //验证加减分是否异常
+        if (!checkPoint(paramMap)){
+            throw new ApiException("提交失败");
+        }
+        pointsList.setPoints(Long.parseLong(comRecMap.get("points")+""));
+        pointsList.setAliUserId(paramMap.get("aliUserId")+"");
+        if (pointsListService.insert(pointsList)){
+            returnMap.put("msg", "保存成功");
+            returnMap.put("code", "200");
+        }
+        List<Map<String, Object>> pointLists = (List<Map<String, Object>>) paramMap.get("pointList");
+        pointLists.stream().forEach(pointList ->{
+            PointsListItem pointsListItem = new PointsListItem();
+            pointsListItem.setPointsListId(pointsList.getId());
+            pointsListItem.setPoints(Long.parseLong(pointList.get("point")+""));
+            pointsListItem.setAmount(Long.parseLong(pointList.get("amount")+""));
+            pointsListItem.setCategoryId(Long.parseLong(pointList.get("categoryId")+""));
+            pointsListItem.setCategoryName(pointList.get("categoryName")+"");
+            pointsListItem.setParentId(Long.parseLong(pointList.get("parentId")+""));
+            pointsListItem.setParentName(pointList.get("parentName")+"");
+            pointsListItem.setParentIds(pointList.get("parentIds")+"");
+            pointsListItemService.insert(pointsListItem);
+        });
+        //用户增加/减少积分
+        memberPointsService.insertOrUpdate(memberPoints);
+        return returnMap;
+    }
+    /**
+     * 验证分数是否异常
+     * @author: sgmark@aliyun.com
+     * @Date: 2020/1/13 0013
+     * @Param: 
+     * @return: 
+     */
+    private boolean checkPoint(Map<String, Object> paramMap) {
+        List<Map<String, Object>> pointLists = (List<Map<String, Object>>) paramMap.get("pointList");
+        BigDecimal points = BigDecimal.ZERO;
+        pointLists.stream().forEach(pointList ->{
+            BigDecimal point = (BigDecimal) pointList.get("point");
+            BigDecimal weight = (BigDecimal) pointList.get("amount");
+            points.add(point.multiply(weight));
+        });
+        if (paramMap.get("points").equals(points.setScale(0, BigDecimal.ROUND_DOWN))){
+            return true;
+        }
+        return false;
     }
 }

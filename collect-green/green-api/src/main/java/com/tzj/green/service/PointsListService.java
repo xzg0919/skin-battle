@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.PointsList;
 import com.tzj.green.param.PointsListBean;
 
+import java.util.Map;
+
 /**
  *
  * <p>Created on2019年12月30日</p>
@@ -19,5 +21,7 @@ public interface PointsListService extends IService<PointsList>
 {
 
     Object getPointsListByCompanyId(Long companyId, PointsListBean pointsListBean);
+
+    Boolean changePoint(String userNo, Map<String, Object> paramMap);
 
 }

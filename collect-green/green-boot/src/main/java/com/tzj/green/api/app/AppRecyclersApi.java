@@ -377,5 +377,31 @@ public class AppRecyclersApi {
 		recyclersBean.setRecId(getRecycler().getId());
 		return recyclersService.bindingCardByRec(recyclersBean);
 	}
+	/**
+	 * 投放种类信息
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/13 0013
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "app.point.info", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public List<Map<String, Object>> categoryPointInfo(){
+		return recyclersService.categoryPointInfo(getRecycler().getId());
+	}
+	/**
+	 * 增减积分
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/10 0010
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.change.point", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String, Object> appChangePoint(Map<String, Object> paramMap){
+		paramMap.put("recId", getRecycler().getId());
+		return recyclersService.appChangePoint(paramMap);
+	}
+
 
 }
