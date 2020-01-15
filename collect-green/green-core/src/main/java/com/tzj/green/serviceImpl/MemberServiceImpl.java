@@ -121,32 +121,20 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         if(StringUtils.isBlank(memberBean.getAliUserId())){
             throw new  ApiException("未传入aliUserId");
         }
+        Member aliMember = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", memberBean.getAliUserId()).eq("del_flag", "0"));
+        if(aliMember != null){
+            throw new  ApiException("已绑定实体卡，勿重复绑定");
+        }
         Member member = this.selectOne(new EntityWrapper<Member>().eq("real_no", realNo).eq("del_flag", "0"));
-        if(member != null && "0".equals(member.getIsCancel())){
-            if(StringUtils.isNotBlank(member.getAliUserId())){
-                throw new ApiException("实体卡已被绑定");
-            }
+        if(member == null || !"0".equals(member.getIsCancel())){
             throw new  ApiException("卡号不存在或已注销");
         }
-
+        if(StringUtils.isNotBlank(member.getAliUserId())){
+            throw new ApiException("实体卡已被绑定");
+        }
         if(messageService.validMessage(memberBean.getTel(), memberBean.getSecurityCode())){
-            if(member==null){
-                member = new Member();
-            }
             member.setAliUserId(memberBean.getAliUserId());
-            member.setIsCancel("0");
-            member.setCreateDate(new Date());
-            member.setMobile(memberBean.getTel());
-            MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("real_no", realNo).eq("del_flag", "0"));
-            if(memberPoints == null){
-                memberPoints = new MemberPoints();
-                memberPoints.setRemnantPoints(0L);
-                memberPoints.setTatalPoints(0L);
-            }
-            memberPoints.setAliUserId(member.getAliUserId());
-            memberPoints.setUserNo(memberBean.getRealNo());
-            memberPointsService.insertOrUpdate(memberPoints);
-            this.insertOrUpdate(member);
+            this.updateById(member);
             return "绑定成功";
         }
         throw new ApiException("验证码错误");
