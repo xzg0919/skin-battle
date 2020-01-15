@@ -1,10 +1,12 @@
 package com.tzj.collect.core.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.AlipayMarketingCardQueryResponse;
 import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.alipay.api.response.AlipayUserInfoShareResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.api.commom.mqtt.util.Tools;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.shard.ShardTableHelper;
@@ -19,6 +21,8 @@ import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
+
+import java.math.BigDecimal;
 import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -505,6 +509,56 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             returnMap.put("isSuccess", "N");
         }
         return returnMap;
+    }
+
+    /**
+     * 获取用户积分（包括积分商户）
+     * @param aliUserId
+     * @return
+     */
+    @Override
+    public Object getAllPoints(String aliUserId) {
+        //查询用户的绿色能量
+        Point point = pointService.selectOne(new EntityWrapper<Point>().eq("ali_user_id", aliUserId).eq("del_flag", 0));
+        Member member = this.selectMemberByAliUserId(aliUserId);
+        Map<String, Object> resultMap = new HashMap<>(2);
+        Map<String, String> params = new HashMap<>(2);
+        //{"name":"listForSupport","version":"1.0","nonce":1578972462692.6304,"timestamp":1578972462692}
+        params.put("name", "member.getAllPoints");
+        params.put("version", "1.0");
+        params.put("nonce", String.valueOf(new Date().getTime()));
+        params.put("timestamp", String.valueOf(new Date().getTime()));
+        JSONObject al = new JSONObject();
+        al.put("aliUserId", aliUserId);
+        params.put("data", al.toJSONString());
+        Double tatalPoints = 0.0;
+        Double validPoints = 0.0;
+        try {
+            JSONObject result = Tools.httpsPost("https://open.mayishoubei.com/company/api", params);
+            if(result != null && "0".equals(result.get("code"))){
+                JSONObject data = (JSONObject) result.get("data");
+                tatalPoints = (double) data.get("tatalPoints");
+                validPoints = (double) data.get("validPoints");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Double greenCount = 0.0;
+        Double remainPoint = 0.0;
+        if (null != point) {
+            greenCount = point.getPoint();
+            remainPoint = point.getRemainPoint();
+            BigDecimal x = new BigDecimal(greenCount);
+            BigDecimal y = new BigDecimal(remainPoint);
+
+            resultMap.put("greenCount", x.add(new BigDecimal(tatalPoints)).doubleValue());
+            resultMap.put("remainPoint", y.add(new BigDecimal(validPoints)).doubleValue());
+        } else {
+            resultMap.put("greenCount", tatalPoints);
+            resultMap.put("remainPoint", validPoints);
+        }
+        return resultMap;
     }
 
     @Override

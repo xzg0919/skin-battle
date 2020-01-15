@@ -23,8 +23,9 @@ public interface MemberService extends IService<Member>
 
     Object updateIsCancelByRealNo(String realNo);
 
-    Object getMemberByAliUserId(String aliUserId);
-
     Object getRealNoByAliUserId(String aliUserId);
 
+    Object scanRealCode(MemberBean memberBean);
+
+    Object getAllPoints(MemberBean memberBean);
 }

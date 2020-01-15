@@ -151,13 +151,19 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         try {
             response =this.aliPayTransfer(payment.getId().toString(),aliUserId,payment.getTransferPrice());
             if ((response.isSuccess()&&"10000".equals(response.getCode()))||payment.getTransferPrice().compareTo(BigDecimal.ZERO)==0) {
+                System.out.println("转账成功，更改信息");
                 payment.setStatus(Payment.STATUS_TRANSFER);
+                if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
+                    //给用户增加蚂蚁能量
+                    orderService.myslOrderData(order.getId().toString());
+                }
                 //修改订单状态
                 orderBean.setId(order.getId().intValue());
                 orderBean.setStatus("3");
                 orderBean.setAmount(order.getGreenCount());
                 orderService.modifyOrderByPayment(orderBean,payment.getVoucherMember());
             }else {
+                System.out.println("转账失败，保存错误信息");
                 paymentError.setReason(response.getBody());
                 paymentError.setTitle(response.getSubMsg());
                 paymentError.setNotifyType(response.getCode());
@@ -171,7 +177,6 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             e.printStackTrace();
         }finally {
             if (!(response.isSuccess()||"10000".equals(response.getCode()))) {
-                order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
                 order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
                 orderService.updateById(order);
             }
@@ -258,11 +263,6 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	if(response.isSuccess()){
-    	System.out.println("调用成功");
-    	} else {
-    	System.out.println("调用失败");
-    	}
        return response;
     }
 

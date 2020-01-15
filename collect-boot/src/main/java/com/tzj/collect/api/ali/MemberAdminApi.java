@@ -42,6 +42,16 @@ public class MemberAdminApi {
         Member member = MemberUtils.getMember();
         return memberService.memberAdmin(member.getAliUserId());
     }
+    /**
+     * 获取会员个人所有积分（包括积分商户的）
+     * @param
+     */
+    @Api(name = "admin.getAllPoints", version = "1.0")
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Object getAllPoints() {
+        Member member = MemberUtils.getMember();
+        return memberService.getAllPoints(member.getAliUserId());
+    }
 
     /**保险Id查询保险详情和用户保单的信息
      * @author 王灿

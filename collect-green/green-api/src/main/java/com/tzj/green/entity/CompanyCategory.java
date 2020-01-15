@@ -46,5 +46,9 @@ public class CompanyCategory extends DataEntity<Long>
      * 计量单位
      */
     private String unit;
+    /**
+     * 是否打开此标签0关闭  1打开
+     */
+    private String isOpen;
 
 }
