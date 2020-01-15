@@ -1876,13 +1876,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		orderLog.setOpStatusAfter("COMPLETE");
 		orderLog.setOp("已完成");
 		this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
-		if (!"1".equals(companyRecycler.getIsManager())) {
-			//阿里云推送
-			Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
-			PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
-		}
 		try {
-			if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+            if (!"1".equals(companyRecycler.getIsManager())) {
+                //阿里云推送
+                Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
+                PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
+            }
+            if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
 				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","大件回收");
 			}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
 				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","家电回收");
