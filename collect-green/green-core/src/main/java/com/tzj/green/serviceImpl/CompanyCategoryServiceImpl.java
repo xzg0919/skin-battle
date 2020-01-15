@@ -44,15 +44,14 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
         List<Map<String, Object>> companyCategorys = companyCategoryMapper.getCompanyCategoryById(companyId, null,"0");
         companyCategorys.stream().forEach(map -> {
                 List<Map<String, Object>> companyCategoryTs = companyCategoryMapper.getCompanyCategoryById(companyId, map.get("id").toString(), "1");
-                map.put("companyCategoryTs",companyCategoryTs);
+                map.put("children",companyCategoryTs);
                 companyCategoryTs.stream().forEach(maps -> {
                         List<Map<String, Object>> companyCategoryThree = companyCategoryMapper.getCompanyCategoryById(companyId, maps.get("id").toString(), "2");
-                        maps.put("companyCategoryThree",companyCategoryThree);
+                        maps.put("children",companyCategoryThree);
                 });
         });
         return companyCategorys;
     }
-
     @Override
     @Transactional
     public Object updateCompanyCategoryPoints(Long companyId, CategoryBean categoryBean) {
@@ -70,6 +69,9 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
         }
         if (StringUtils.isNotBlank(categoryBean.getSubtractPoints())){
             companyCategory.setSubtractPoints(Long.parseLong(categoryBean.getSubtractPoints()));
+        }
+        if (StringUtils.isNotBlank(categoryBean.getIsOpen())){
+            companyCategory.setSubtractPoints(Long.parseLong(categoryBean.getIsOpen()));
         }
         this.insertOrUpdate(companyCategory);
         return "操作成功";
