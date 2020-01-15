@@ -206,6 +206,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         pageNum = (pageNum - 1)*pageSize;
 
         Member member=   memberMapper.selectByAliUserId(aliUserId);
+        if(member ==null){
+            return "不存在该用户";
+        }
         return  productMapper.nearActivitys(member.getCompanyId(), lat, lng,pageNum,pageSize);
     }
 
