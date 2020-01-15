@@ -142,11 +142,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("real_no", realNo).eq("del_flag", "0"));
             if(memberPoints == null){
                 memberPoints = new MemberPoints();
+                memberPoints.setRemnantPoints(0L);
+                memberPoints.setTatalPoints(0L);
             }
             memberPoints.setAliUserId(member.getAliUserId());
             memberPoints.setUserNo(memberBean.getRealNo());
-            memberPoints.setRemnantPoints(0L);
-            memberPoints.setTatalPoints(0L);
             memberPointsService.insertOrUpdate(memberPoints);
             this.insertOrUpdate(member);
             return "绑定成功";
