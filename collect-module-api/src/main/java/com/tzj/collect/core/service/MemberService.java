@@ -106,4 +106,6 @@ public interface MemberService extends IService<Member>{
     Map<String, Object> selectMemberInfoByAliUserId(String aliUserId);
 
     Map<String, Object> updateUserFormId(Member member);
+
+    Object getAllPoints(String aliUserId);
 }
