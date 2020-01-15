@@ -94,8 +94,10 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
         Long communityId = companyCommunity.getId();
         List<CommunityHouseName> houseNameList = companyCommunityBean.getHouseNameList();
         CompanyCommunity finalCompanyCommunity = companyCommunity;
-        houseNameList.stream().forEach(communityHouseName -> {
+        if (null != houseNameList&&!houseNameList.isEmpty()){
             communityHouseNameService.delete(new EntityWrapper<CommunityHouseName>().eq("community_id",communityId));
+        }
+        houseNameList.stream().forEach(communityHouseName -> {
             CommunityHouseName communityHouseName1 = new CommunityHouseName();
             communityHouseName1.setCommunityId(finalCompanyCommunity.getId());
             communityHouseName1.setHouseName(communityHouseName.getHouseName());
