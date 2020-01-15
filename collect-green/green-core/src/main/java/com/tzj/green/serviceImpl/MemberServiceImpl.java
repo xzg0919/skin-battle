@@ -56,8 +56,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Autowired
     private MessageService messageService;
-    @Value("${yidairen.url}")
-    private String url;
 
 
     @Override
