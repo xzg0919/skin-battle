@@ -2,6 +2,10 @@ package com.tzj.green.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.green.entity.CompanyRecycler;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -16,5 +20,9 @@ import com.tzj.green.entity.CompanyRecycler;
  */
 public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>
 {
+    List<Map<String,Object>> getApplyRecyclerList(@Param("companyId") Long companyId);
 
+    List<Map<String,Object>> getCompanyRecyclerList(@Param("companyId")Long companyId,@Param("name") String name,@Param("tel") String tel,@Param("cardType") String cardType,@Param("pageStart") Integer pageStart,@Param("pageSize") Integer pageSize);
+
+    Integer getCompanyRecyclerCount(@Param("companyId")Long companyId,@Param("name") String name,@Param("tel") String tel,@Param("cardType") String cardType);
 }

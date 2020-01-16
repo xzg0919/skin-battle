@@ -22,4 +22,7 @@ public interface GoodsService extends IService<Goods>
 
     Object getGoodsList(GoodsBean goodsBean,Long companyId);
 
+    Object getGoodsListByActivityId(String activityCode);
+
+    Object getGoodsDetail(String goodsNo);
 }

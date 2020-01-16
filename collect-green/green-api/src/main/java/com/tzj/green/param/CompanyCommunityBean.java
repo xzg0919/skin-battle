@@ -50,6 +50,8 @@ public class CompanyCommunityBean {
      * 居委
      */
     private String communityName;
+
+    private String communityId;
     /**
      * 小区数量
      */

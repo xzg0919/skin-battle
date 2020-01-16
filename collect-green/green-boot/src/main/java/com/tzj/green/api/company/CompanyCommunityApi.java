@@ -59,6 +59,38 @@ public class CompanyCommunityApi {
         return companyCommunityService.getCompanyCommunityList(companyCommunityBean,company.getId());
     }
 
+    /**
+     * 根据街道id 获取居委信息
+     */
+    @Api(name = "company.getCompanyCommunityListByStreetId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Object getCompanyCommunityListByStreetId(CompanyCommunityBean companyCommunityBean) {
+        Company company = CompanyUtils.getCompanyAccount();
+        return companyCommunityService.getCompanyCommunityListByStreetId(companyCommunityBean,company.getId());
+    }
+    /**
+     * 根据居委Id获取小区信息
+     */
+    @Api(name = "company.getCompanyHouseListByCommunityId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Object getCompanyHouseListByCommunityId(CompanyCommunityBean companyCommunityBean) {
+        Company company = CompanyUtils.getCompanyAccount();
+        return companyCommunityService.getCompanyHouseListByCommunityId(companyCommunityBean,company.getId());
+    }
+
+    /**
+     * 根据社区Id 相关回收人员信息
+     */
+    @Api(name = "company.getRecyclerListByHouseId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Object getRecyclerListByHouseId(CompanyCommunityBean companyCommunityBean) {
+        Company company = CompanyUtils.getCompanyAccount();
+        return companyCommunityService.getRecyclerListByHouseId(companyCommunityBean,company.getId());
+    }
+
 
 
 }

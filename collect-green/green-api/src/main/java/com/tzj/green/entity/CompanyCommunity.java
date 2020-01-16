@@ -32,7 +32,7 @@ public class CompanyCommunity extends DataEntity<Long>
      */
     private Long id;
 
-    private String communityId = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+    private String communityNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
     /**
      * 公司
      */
@@ -106,6 +106,12 @@ public class CompanyCommunity extends DataEntity<Long>
      */
     private String recoveryWeek;
 
+
+
+
+    @TableField(exist = false)
+    private List<CommunityHouseName> communityHouseNameList;
+
     @TableField(exist = false)
     private String isDry;
     @TableField(exist = false)
@@ -125,9 +131,9 @@ public class CompanyCommunity extends DataEntity<Long>
 
     public String getIsDry() {
         if (StringUtils.isNotBlank(dryTime)){
-            return "0";
+            return "0";// 收
         }else {
-            return "1";
+            return "1";//否
         }
     }
 

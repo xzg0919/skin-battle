@@ -1,7 +1,9 @@
 package com.tzj.green.service;
 
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.Member;
+import com.tzj.green.param.MemberBean;
 
 /**
  *
@@ -17,4 +19,13 @@ import com.tzj.green.entity.Member;
 public interface MemberService extends IService<Member>
 {
 
+    Object getMemberList(MemberBean memberBean, Long companyId);
+
+    Object updateIsCancelByRealNo(String realNo);
+
+    Object getRealNoByAliUserId(String aliUserId);
+
+    Object scanRealCode(MemberBean memberBean);
+
+    Object getAllPoints(MemberBean memberBean);
 }

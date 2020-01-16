@@ -2,6 +2,10 @@ package com.tzj.green.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.green.entity.ProductOrder;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -16,5 +20,12 @@ import com.tzj.green.entity.ProductOrder;
  */
 public interface ProductOrderMapper extends BaseMapper<ProductOrder>
 {
+
+    List<Map<String,Object>> getProductOrderList(@Param("companyId")Long companyId,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("name")String name,@Param("tel")String tel,@Param("type")String type,@Param("pageStart")Integer pageStart,@Param("pageSize")Integer pageSize);
+
+    Integer getProductOrderCount(@Param("companyId")Long companyId,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("name")String name,@Param("tel")String tel,@Param("type")String type);
+
+
+    Map<String,Object> getProductOrderDetail(@Param("productOrderId") String productOrderId);
 
 }

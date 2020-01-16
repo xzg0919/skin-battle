@@ -2,6 +2,10 @@ package com.tzj.green.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.green.entity.CompanyCategory;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -16,5 +20,7 @@ import com.tzj.green.entity.CompanyCategory;
  */
 public interface CompanyCategoryMapper extends BaseMapper<CompanyCategory>
 {
+
+    List<Map<String,Object>> getCompanyCategoryById(@Param("companyId") Long companyId,@Param("parentId") String parentId,@Param("level") String level);
 
 }

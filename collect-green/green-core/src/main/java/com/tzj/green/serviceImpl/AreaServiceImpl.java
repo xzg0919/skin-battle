@@ -7,9 +7,13 @@ import com.tzj.green.mapper.AreaMapper;
 import com.tzj.green.service.AreaService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 
 @Service
 public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements AreaService {
+    @Resource
+    private AreaMapper areaMapper;
 
 
     @Override
@@ -19,5 +23,10 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
     @Override
     public Object getAreaList(String parentId){
         return this.selectList(new EntityWrapper<Area>().eq("parent_id",parentId));
+    }
+
+    @Override
+    public Object getCityList() {
+       return areaMapper.getCityList();
     }
 }

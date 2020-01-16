@@ -37,4 +37,14 @@ public class AreaApi {
         return  areaService.getAreaList(areaBean.getParentId());
     }
 
+    /**
+     *获取省份列表
+     */
+    @Api(name = "company.getCityList", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Object getCityList() {
+        return  areaService.getCityList();
+    }
+
 }

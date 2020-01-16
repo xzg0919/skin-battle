@@ -35,4 +35,6 @@ public interface DailyWeekRankingService extends IService<DailyWeekRanking> {
      List<Map<String, Object>> dailyPersonRanking(Member member);
 
      List<Map<String, Object>> dailyAllTop50RankingTime(String year, String week);
+
+    void  updateRedisRecordCrossYear();
 }

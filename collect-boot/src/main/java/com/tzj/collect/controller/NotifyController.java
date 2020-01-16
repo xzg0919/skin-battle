@@ -137,10 +137,6 @@ public class NotifyController {
                         payment.setTransferPrice(order.getAchPrice().subtract(order.getCommissionsPrice()));
                     }
                     paymentService.transfer(payment);
-                    if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
-                        //给用户增加蚂蚁能量
-                        OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
-					}
                     Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
                     if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
                         PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");

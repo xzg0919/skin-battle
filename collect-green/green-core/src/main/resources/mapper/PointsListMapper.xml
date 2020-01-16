@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.green.mapper.PointsListMapper">
+
+
+
+    <select id="getPointsListByCompanyId" parameterType="Object" resultType="Map">
+        SELECT
+            DATE_FORMAT(b.create_date,'%Y-%m-%d %H:%i:%s')as createDate,
+            b.name_ AS userName,
+            b.mobile,
+            b.real_no AS realNo,
+            b.province_name AS provinceName,
+            b.city_name AS cityName,
+            b.area_name AS areaName,
+            b.street_name AS streetName,
+            b.community_name AS communityName,
+            b.community_house_name AS communityHouseName,
+            c.name_ AS recyclerName,
+            CONCAT(IF(a.points_type = '0','+','-'),a.points) AS points
+        FROM
+            sb_points_list a
+        LEFT JOIN sb_member b ON a.user_no = b.real_no
+        LEFT JOIN sb_recyclers c ON a.recycler_id = c.id
+        WHERE
+            a.company_id = #{companyId}
+        AND a.points_type = #{pointsType}
+        <if test="startTime != null and startTime != '' ">
+            AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+        </if>
+        <if test="endTime != null and endTime != '' ">
+            AND CONCAT(#{endTime},' 23:59:59') > a.create_date
+        </if>
+        <if test="name != null and name != '' ">
+            AND b.name_ LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="tel != null and tel != '' ">
+            AND b.mobile LIKE CONCAT('%',#{tel},'%')
+        </if>
+        <if test="cityId != null and cityId != '' ">
+            AND b.city_id = #{cityId}
+        </if>
+        <if test="areaId != null and areaId != '' ">
+            AND b.area_id = #{areaId}
+        </if>
+        <if test="streetId != null and streetId != '' ">
+            AND b.street_id = #{streetId}
+        </if>
+        <if test="communityId != null and communityId != '' ">
+            AND b.community_id = #{communityId}
+        </if>
+        <if test="communityHouseId != null and communityHouseId != '' ">
+            AND b.community_house_id = #{communityHouseId}
+        </if>
+        ORDER BY a.create_date DESC
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+<select id="getPointsListCount" parameterType="Object" resultType="Integer">
+    SELECT
+        count(1)
+    FROM
+    sb_points_list a
+    LEFT JOIN sb_member b ON a.user_no = b.real_no
+    LEFT JOIN sb_recyclers c ON a.recycler_id = c.id
+    WHERE
+    a.company_id = #{companyId}
+    AND a.points_type = #{pointsType}
+    <if test="startTime != null and startTime != '' ">
+        AND a.create_date > CONCAT(#{startTime},' 00:00:01')
+    </if>
+    <if test="endTime != null and endTime != '' ">
+        AND CONCAT(#{endTime},' 23:59:59') > a.create_date
+    </if>
+    <if test="name != null and name != '' ">
+        AND b.name_ LIKE CONCAT('%',#{name},'%')
+    </if>
+    <if test="tel != null and tel != '' ">
+        AND b.mobile LIKE CONCAT('%',#{tel},'%')
+    </if>
+    <if test="cityId != null and cityId != '' ">
+        AND b.city_id = #{cityId}
+    </if>
+    <if test="areaId != null and areaId != '' ">
+        AND b.area_id = #{areaId}
+    </if>
+    <if test="streetId != null and streetId != '' ">
+        AND b.street_id = #{streetId}
+    </if>
+    <if test="communityId != null and communityId != '' ">
+        AND b.community_id = #{communityId}
+    </if>
+    <if test="communityHouseId != null and communityHouseId != '' ">
+        AND b.community_house_id = #{communityHouseId}
+    </if>
+</select>
+
+
+
+
+
+
+
+
+</mapper>

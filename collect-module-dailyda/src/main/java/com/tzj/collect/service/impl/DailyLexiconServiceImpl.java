@@ -668,7 +668,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         Double zscore = jedis.zscore(redisKeyName() + ":" + LocalDate.now().getDayOfWeek(), dailyDaParam.getAliUserId());
         if(null != zscore){
             //4、总积分减去redis里今日获得积分
-            jedis.zadd(redisKeyName(), -zscore, dailyDaParam.getAliUserId());
+            jedis.zincrby(redisKeyName(), -zscore, dailyDaParam.getAliUserId());
             //5、清除今日积分
             jedis.zrem(redisKeyName() + ":" + LocalDate.now().getDayOfWeek(), dailyDaParam.getAliUserId());
         }else {
@@ -706,7 +706,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 
     public static String tableNameLastWeek(Long currentTimeMillis){
         Instant.ofEpochMilli(currentTimeMillis).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
-        Integer week = LocalDateTime.now().minusWeeks(1L).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
+        Integer week = LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) - 1;
         return "daily_day_records_"+ LocalDate.now().getYear() + "" + week;
     }
 

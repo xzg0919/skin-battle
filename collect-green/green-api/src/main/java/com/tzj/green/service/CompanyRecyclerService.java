@@ -2,6 +2,7 @@ package com.tzj.green.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.CompanyRecycler;
+import com.tzj.green.param.RecyclerBean;
 
 /**
  *
@@ -16,5 +17,13 @@ import com.tzj.green.entity.CompanyRecycler;
  */
 public interface CompanyRecyclerService extends IService<CompanyRecycler>
 {
+    Object getApplyRecyclerList(Long companyId);
 
+    Object updateApplyRecyclerStatus(RecyclerBean recyclerBean,Long companyId);
+
+    Object getCompanyRecyclerList(RecyclerBean recyclerBean,Long companyId);
+
+    Object getRecyclerDetailById(String recyclerId);
+
+    Object deleteCompanyRecyclerById(String recyclerId,Long companyId);
 }

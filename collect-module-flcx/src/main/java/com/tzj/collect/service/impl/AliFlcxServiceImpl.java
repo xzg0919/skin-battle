@@ -13,6 +13,7 @@ import com.alipay.api.response.AlipayIserviceCognitiveClassificationCategorySync
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationFeedbackSyncResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
 import com.tzj.collect.common.constant.AlipayConst;
+import com.tzj.collect.core.result.flcx.AlipayResponseResult;
 import com.tzj.collect.core.service.AliFlcxService;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +29,8 @@ import org.springframework.stereotype.Component;
 public class AliFlcxServiceImpl implements AliFlcxService {
 
     @Override
-    public AlipayIserviceCognitiveClassificationWasteQueryResponse returnTypeByPicOrVoice(String picUrl, String voiceString, String source) {
+    public AlipayResponseResult returnTypeByPicOrVoice(String picUrl, String voiceString, String source) {
+        AlipayResponseResult responseResult = new AlipayResponseResult();
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
         AlipayIserviceCognitiveClassificationWasteQueryRequest request = new AlipayIserviceCognitiveClassificationWasteQueryRequest();
         AlipayIserviceCognitiveClassificationWasteQueryResponse execute = null;
@@ -48,7 +50,9 @@ public class AliFlcxServiceImpl implements AliFlcxService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return execute;
+        responseResult.setKeyWords(execute.getKeyWords());
+        responseResult.setTraceId(execute.getTraceId());
+        return responseResult;
     }
 
     @Override
@@ -68,7 +72,8 @@ public class AliFlcxServiceImpl implements AliFlcxService {
     }
 
     @Override
-    public AlipayIserviceCognitiveClassificationFeedbackSyncResponse lexCheckFeedBack(String traceId, String imageUrl, String feedbackRubbish, String actionType) {
+    public AlipayResponseResult lexCheckFeedBack(String traceId, String imageUrl, String feedbackRubbish, String actionType) {
+        AlipayResponseResult responseResult = new AlipayResponseResult();
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
         AlipayIserviceCognitiveClassificationFeedbackSyncRequest request = new AlipayIserviceCognitiveClassificationFeedbackSyncRequest();
         AlipayIserviceCognitiveClassificationFeedbackSyncResponse execute = null;
@@ -86,7 +91,8 @@ public class AliFlcxServiceImpl implements AliFlcxService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return execute;
+        responseResult.setIsSuccess(execute.isSuccess());
+        return responseResult;
     }
 
     @Data

@@ -9,17 +9,24 @@ import com.alipay.api.domain.ItemOrder;
 import com.alipay.api.domain.OrderExtInfo;
 import com.alipay.api.request.AntMerchantExpandTradeorderSyncRequest;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
+import com.baomidou.mybatisplus.annotations.TableName;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.ApplicaInit;
 import com.tzj.collect.common.mq.RocketMqConst;
 import com.tzj.collect.core.service.AnsycMyslService;
 import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.common.notify.DingTalkNotify;
+import com.tzj.module.api.annotation.AuthIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -111,5 +118,28 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
                     RocketMqConst.DINGDING_ERROR,response.getBody());
         }
         return response;
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        Class<?> clazz = Class.forName("com.tzj.collect.entity.Area");
+        TableName annotation = clazz.getAnnotation(TableName.class);
+        System.out.println(annotation);
+
+
+        Class<Area> areaClass = Area.class;
+        Object o = areaClass.newInstance();
+        Method[] declaredMethods = areaClass.getDeclaredMethods();
+        Arrays.asList(declaredMethods).stream().forEach(s->{
+            AuthIgnore annotation1 = s.getAnnotation(AuthIgnore.class);
+            if (null!= annotation1){
+                System.out.println(s.getName());
+            }
+        });
+        System.out.println();
+        Area o1 = (Area) o;
+        o1.setId(11111L);
+
+        System.out.println(o1.getId());
     }
 }

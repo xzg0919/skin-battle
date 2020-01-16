@@ -57,6 +57,8 @@ public class Goods extends DataEntity<Long>
      * 商品冻结数量
      */
     private Long goodsFrozenNum;
+    @TableField(exist = false)
+    private Long goodsUsableNum;
     /**
      * 兑换所需积分
      */
@@ -74,5 +76,11 @@ public class Goods extends DataEntity<Long>
      */
     private String bigIcon;
 
+    public Long getGoodsUsableNum() {
+        return goodsNum-goodsFrozenNum;
+    }
 
+    public void setGoodsUsableNum(Long goodsUsableNum) {
+        this.goodsUsableNum = goodsUsableNum;
+    }
 }

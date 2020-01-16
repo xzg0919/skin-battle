@@ -22,6 +22,11 @@
     <input type="submit"  value="保存"/>
 </form>
 
+<form action="http://localhost:9090/area/add/addRatio" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" /></br>
+    <input type="submit"  value="保存"/>
+</form>
+
 </body>
 <script type="text/javascript">
 

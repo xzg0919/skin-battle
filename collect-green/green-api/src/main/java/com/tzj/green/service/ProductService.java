@@ -2,6 +2,7 @@ package com.tzj.green.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.Product;
+import com.tzj.green.param.ProductBean;
 
 /**
  *
@@ -17,4 +18,17 @@ import com.tzj.green.entity.Product;
 public interface ProductService extends IService<Product>
 {
 
+    Object saveOrUpdateProduct(ProductBean productBean, Long companyId);
+
+    Object getProductList(ProductBean productBean,Long companyId);
+
+    Object getProductDetailById(ProductBean productBean);
+
+    Object updateProductIsLowerById(String productId,String isLower);
+
+    Object nearActivitys(Double lat,Double lng,String aliUserId,Integer pageNum,Integer pageSize);
+
+    Object getGoodsListByCompanyId(Long companyId,ProductBean productBean);
+
+    Object activtyDetail(String activityCode);
 }

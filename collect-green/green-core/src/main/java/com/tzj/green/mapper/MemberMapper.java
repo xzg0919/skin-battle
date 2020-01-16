@@ -2,6 +2,10 @@ package com.tzj.green.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.green.entity.Member;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -17,4 +21,9 @@ import com.tzj.green.entity.Member;
 public interface MemberMapper extends BaseMapper<Member>
 {
 
+    List<Map<String,Object>> getMemberList(@Param("companyId")Long companyId, @Param("startTime")String startTime, @Param("endTime")String endTime, @Param("provinceId")String provinceId, @Param("cityId")String cityId, @Param("areaId")String areaId, @Param("streetId")String streetId, @Param("communityId")String communityId, @Param("communityHouseId")String communityHouseId, @Param("name")String name, @Param("tel")String tel, @Param("pageStart")Integer pageStart, @Param("pageSize")Integer pageSize);
+
+    Integer getMemberCount(@Param("companyId")Long companyId, @Param("startTime")String startTime, @Param("endTime")String endTime, @Param("provinceId")String provinceId, @Param("cityId")String cityId, @Param("areaId")String areaId, @Param("streetId")String streetId, @Param("communityId")String communityId, @Param("communityHouseId")String communityHouseId, @Param("name")String name, @Param("tel")String tel);
+
+    Member selectByAliUserId(@Param("aliUserId") String aliUserId);
 }

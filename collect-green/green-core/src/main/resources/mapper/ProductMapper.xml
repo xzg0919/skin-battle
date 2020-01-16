@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.green.mapper.ProductMapper">
+
+
+    <select id="getProductDetailById" parameterType="Long" resultType="Map">
+    SELECT
+        a.id,
+        a.name_ AS name,
+        DATE_FORMAT(a.pick_start_date,'%y-%m-%d') AS pickStartDate,
+        DATE_FORMAT(a.pick_end_date,'%y-%m-%d') AS pickEndDate,
+        a.detail,
+        c.city_id AS cityId,
+        c.city_name AS cityName,
+        c.province_id AS provinceId,
+        c.province_name AS provinceName,
+        c.area_id AS areaId,
+        c.area_name AS areaName,
+        c.street_id AS streetId,
+        c.street_name AS streetName,
+        c.community_name AS communityName,
+        b.house_name AS houseName,
+        b.address_ AS address
+    FROM
+        sb_product a
+    LEFT JOIN sb_community_house_name b ON a.house_name_id = b.id
+    LEFT JOIN sb_company_community c ON c.id = b.community_id
+    WHERE
+        a.id = #{productId}
+    </select>
+    <select id="getProductGoodsList" parameterType="Object" resultType="Map">
+        SELECT
+            b.id,
+            a.product_id AS productId,
+            b.goods_name AS goodsName,
+            b.goods_no AS goodsNo,
+            b.points,
+            a.total_num AS totalNum,
+            a.exchange_num AS exchangeNum,
+            (a.exchange_num*b.points) AS exchangePoints,
+            (a.exchange_num*b.market_price) AS exchangePrice
+        FROM
+            sb_product_goods a
+        LEFT JOIN sb_goods b ON a.goods_id = b.id
+        WHERE
+            a.product_id = #{productId}
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getProductGoodsCount" parameterType="Long" resultType="Integer">
+        SELECT
+            count(1)
+        FROM
+            sb_product_goods a
+        LEFT JOIN sb_goods b ON a.goods_id = b.id
+        WHERE
+            a.product_id = #{productId}
+    </select>
+    <select id="getRecyclerList" parameterType="Long" resultType="Map">
+        SELECT
+            b.id,
+            b.name_ AS name
+        FROM
+            sb_product_recycler a
+        LEFT JOIN sb_recyclers b ON a.recyclers_id = b.id
+        WHERE
+            a.product_id = #{productId}
+    </select>
+    <select id="nearActivitys" parameterType="Object" resultType="Map">
+        SELECT
+        product.product_no as productNo,
+        product.name_ as productName,
+         product.icon as icon,
+        date_format(product.pick_start_date,'%Y-%m-%d') as startDate,
+        date_format(product.pick_end_date,'%Y-%m-%d') as endDate,
+        CONCAT(scc.province_name,scc.city_name,scc.area_name,scc.street_name,scc.community_name,schn.house_name)AS activityAddress
+        FROM
+        sb_product product
+        inner join sb_community_house_name schn
+        on schn.id = product.house_name_id
+        inner join sb_company_community scc
+        on scc.id = schn.community_id
+        where 3000 >= round(6378.138*2*asin(sqrt(pow(sin( (schn.lat*pi()/180-#{lat}*pi()/180)/2),2)
+        +cos(schn.lat*pi()/180)*cos(#{lat}*pi()/180)
+        * pow(sin( (schn.lng*pi()/180-#{lng}*pi()/180)/2),2)))*1000)
+        and product.company_id =#{companyId} and product.is_lower=0 and product.pick_end_date>=now()
+        order by product.id desc
+        LIMIT #{pageStartNum},#{pageSize}
+    </select>
+
+    <select id="activityDetail" parameterType="Object" resultType="Map">
+        SELECT
+        product.product_no as productNo,
+        product.name_ as productName,
+        product.detail as detail,
+        product.icon as icon,
+        date_format(product.pick_start_date,'%Y-%m-%d') as startDate,
+        date_format(product.pick_end_date,'%Y-%m-%d') as endDate,
+        CONCAT(scc.province_name,scc.city_name,scc.area_name,scc.street_name,scc.community_name,schn.house_name)AS activityAddress
+        FROM
+        sb_product product
+        inner join sb_community_house_name schn
+        on schn.id = product.house_name_id
+        inner join sb_company_community scc
+        on scc.id = schn.community_id
+        where    product.product_no =#{productNo}
+
+    </select>
+    <select id="getGoodsListByCompanyId" parameterType="Object" resultType="Map">
+
+        SELECT
+            a.id,
+            a.goods_no AS goodsNo,
+            a.goods_name AS goodsName,
+            a.goods_num AS goodsNum,
+            a.goods_num - a.goods_frozen_num AS remnantNum,
+            a.points
+        FROM
+            sb_goods a
+        WHERE
+            a.company_id = #{companyId}
+        <if test="name != null and name != ''">
+            AND a.goods_name LIKE CONCAT('%',#{name},'%')
+        </if>
+        ORDER BY a.create_date DESC
+        limit #{pageStart},#{pageSize}
+    </select>
+    <select id="getGoodsCount" parameterType="Object" resultType="Integer">
+        SELECT
+            count(1)
+        FROM
+        sb_goods a
+        WHERE
+        a.company_id = #{companyId}
+        <if test="name != null and name != ''">
+            AND a.goods_name LIKE CONCAT('%',#{name},'%')
+        </if>
+    </select>
+</mapper>

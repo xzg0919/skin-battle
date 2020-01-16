@@ -91,16 +91,19 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
             companyCommunity.setRecoveryWeek("");
         }
         this.insertOrUpdate(companyCommunity);
+        Long communityId = companyCommunity.getId();
         List<CommunityHouseName> houseNameList = companyCommunityBean.getHouseNameList();
         CompanyCommunity finalCompanyCommunity = companyCommunity;
+        if (null != houseNameList&&!houseNameList.isEmpty()){
+            communityHouseNameService.delete(new EntityWrapper<CommunityHouseName>().eq("community_id",communityId));
+        }
         houseNameList.stream().forEach(communityHouseName -> {
-            CommunityHouseName communityHouseName1 = communityHouseNameService.selectById(communityHouseName.getId());
-            if (null==communityHouseName1){
-                communityHouseName1 = new CommunityHouseName();
-            }
+            CommunityHouseName communityHouseName1 = new CommunityHouseName();
             communityHouseName1.setCommunityId(finalCompanyCommunity.getId());
             communityHouseName1.setHouseName(communityHouseName.getHouseName());
             communityHouseName1.setAddress(communityHouseName.getAddress());
+            communityHouseName1.setLat(communityHouseName.getLat());
+            communityHouseName1.setLng(communityHouseName.getLng());
             communityHouseNameService.insertOrUpdate(communityHouseName1);
         });
         return "操作成功";
@@ -132,5 +135,19 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
         resultMap.put("count",count);
         resultMap.put("pageNum",pageBean.getPageNum());
         return resultMap;
+    }
+
+    @Override
+    public Object getCompanyCommunityListByStreetId(CompanyCommunityBean companyCommunityBean, Long companyId) {
+        return this.selectList(new EntityWrapper<CompanyCommunity>().eq("company_id", companyId).eq("street_id", companyCommunityBean.getStreetId()));
+    }
+    @Override
+    public Object getCompanyHouseListByCommunityId(CompanyCommunityBean companyCommunityBean, Long companyId) {
+        return communityHouseNameService.selectList(new EntityWrapper<CommunityHouseName>().eq("community_id", companyCommunityBean.getCommunityId()));
+    }
+
+    @Override
+    public Object getRecyclerListByHouseId(CompanyCommunityBean companyCommunityBean, Long companyId) {
+        return companyCommunityMapper.getRecyclerListByHouseId(companyCommunityBean.getCommunityHouseId(), companyId);
     }
 }

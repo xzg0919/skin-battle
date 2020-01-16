@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.green.mapper.RecyclersMapper">
+    <select id="" resultType="Map">
+        SELECT
+            srr.company_id,
+            schn.house_name,
+            schn.id AS house_id,
+            scc.province_id,
+            scc.province_name,
+            scc.city_id,
+            scc.city_name,
+            scc.area_id,
+            scc.area_name,
+            scc.street_id,
+            scc.street_name,
+            scc.id AS community_id,
+            scc.community_name
+        FROM
+            sb_recyclers_range srr
+        INNER JOIN sb_company_community scc ON srr.community_id = scc.id
+        INNER JOIN sb_community_house_name schn ON srr.community_house_id = schn.id
+        WHERE
+            srr.del_flag = 0
+        AND scc.del_flag = 0
+        AND schn.del_flag = 0
+        AND srr.recyclers_id = #{recId}
+        LIMIT 1
+    </select>
+
+
+</mapper>
