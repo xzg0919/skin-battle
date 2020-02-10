@@ -13,9 +13,9 @@ import java.util.UUID;
  **/
 public class MqttTest {
     public static void main(String[] args) throws Exception {
-        String api="http://test.equip.mayishoubei.com/equipment/iot/app/api";
+        String api="http://localhost:9006/equipment/iot/app/api";
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","equipment.qrcode");
+        param.put("name","equipment.open.door");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_8");
@@ -24,7 +24,7 @@ public class MqttTest {
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID().toString());
 
-//        param.put("data","{\"fToken\":\"fp0a0a5b3a368bc50a6dcabd677784d20a0\"}");
+        param.put("data","{\"cabinetNo\":\"869012040190428\"}");
 
         String jsonStr= JSON.toJSONString(param);
         String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_55667788");

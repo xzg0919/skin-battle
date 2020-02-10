@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.green.mapper.ProductGoodsMapper">
+
+    <select id="appProductList" resultType="Map">
+        SELECT
+            hId.id,
+            hId.name_,
+            hId.pick_start_date,
+            hId.pick_end_date,
+            CONCAT(
+                scc.province_name,
+                scc.city_name,
+                scc.area_name,
+                scc.street_name,
+                scc.community_name,
+                hId.house_name
+            ) AS address
+        FROM
+            (
+                SELECT
+                    sppr.*, schn.house_name,
+                    schn.community_id
+                FROM
+                    (
+                        SELECT
+                            sp.id,
+                            sp.name_,
+                            sp.pick_start_date,
+                            sp.pick_end_date,
+                            sp.house_name_id
+                        FROM
+                            sb_product sp
+                        INNER JOIN sb_product_recycler spr ON sp.id = spr.product_id
+                        WHERE
+                            sp.del_flag = 0
+                        AND spr.del_flag = 0
+                        AND spr.recyclers_id = #{recId}
+                    ) sppr
+                LEFT JOIN sb_community_house_name schn ON sppr.house_name_id = schn.id
+            ) hId
+        LEFT JOIN sb_company_community scc ON hId.community_id = scc.id
+    </select>
+    <select id="appGoodsList" resultType="Map">
+        SELECT
+            sggp.*, IFNULL(COUNT(1), 0) AS count_
+        FROM
+            (
+                SELECT
+                    sg.id,
+                    sg.goods_name,
+                    sg.points,
+                    sg.big_icon,
+                    sg.icon,
+                    sg.detail,
+                    spg.total_num
+                FROM
+                    sb_goods sg
+                INNER JOIN sb_product_goods spg ON sg.id = spg.goods_id
+                WHERE
+                    sg.del_flag = 0
+                AND spg.del_flag = 0
+                AND spg.product_id = #{proId}
+            ) sggp
+        LEFT JOIN sb_product_order spo ON sggp.id = spo.goods_id
+        GROUP BY
+            sggp.id
+    </select>
+    <select id="goodsAmount" resultType="Map">
+
+    </select>
+</mapper>

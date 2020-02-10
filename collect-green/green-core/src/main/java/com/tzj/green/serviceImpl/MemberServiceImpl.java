@@ -106,4 +106,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         return result;
     }
 
+    @Override
+    public Map<String, Object> memberInfo(MemberBean memberBean) {
+        Map<String, Object> returnMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(memberBean.getRealNo()) || StringUtils.isNotEmpty(memberBean.getTel())){
+            return memberMapper.memberInfo(memberBean.getRealNo(), memberBean.getTel());
+        }else {
+            throw new ApiException("参数异常");
+        }
+    }
+
 }

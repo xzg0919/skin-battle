@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.Member;
 import com.tzj.green.param.MemberBean;
 
+import java.util.Map;
+
 /**
  *
  * <p>Created on2019年12月30日</p>
@@ -27,4 +29,5 @@ public interface MemberService extends IService<Member>
 
     Object getRealNoByAliUserId(String aliUserId);
 
+    Map<String, Object> memberInfo(MemberBean memberBean);
 }

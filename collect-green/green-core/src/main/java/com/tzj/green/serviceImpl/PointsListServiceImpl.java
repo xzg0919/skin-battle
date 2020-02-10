@@ -23,6 +23,7 @@ import io.itit.itf.okhttp.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -77,7 +78,7 @@ public class PointsListServiceImpl extends ServiceImpl<PointsListMapper, PointsL
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public Boolean changePoint(String userNo, Map<String, Object> paramMap) {
         if (CollectionUtils.isEmpty(paramMap) || !paramMap.containsKey("pointType")
-            || !paramMap.containsKey("points") || !paramMap.containsKey("source") || !paramMap.containsKey("aliUserId")){
+            || !paramMap.containsKey("points") || !paramMap.containsKey("source")){
             return false;
         }
         MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("del_flag", 0).eq("user_no", userNo).last(" limit 1"));
@@ -88,6 +89,10 @@ public class PointsListServiceImpl extends ServiceImpl<PointsListMapper, PointsL
             if (paramMap.get("pointType").equals("1")) {
                 if (memberPoints.getRemnantPoints().compareTo(Long.parseLong(paramMap.get("points") + "")) < 0) {
                     //查询收呗积分是否足够：是)扣完当前积分，收呗积分补足； 否) 返回false
+                    if (StringUtils.isEmpty(paramMap.get("aliUserId"))){
+                        //未绑定支付宝用户，积分不够，直接返回false
+                        return false;
+                    }
                     try {
                         Map<String, Object> pointMap = rpcCollectApi("point.getPoint", paramMap.get("aliUserId")+"", new HashMap<>());
                         if (null == paramMap || !pointMap.containsKey("remainPoint")){
@@ -135,7 +140,7 @@ public class PointsListServiceImpl extends ServiceImpl<PointsListMapper, PointsL
         pointsList.setSource(Integer.parseInt(paramMap.get("source")+""));
         pointsList.setRecyclerId(Long.parseLong(paramMap.get("recId")+""));
         pointsList.setCompanyId(Long.parseLong(paramMap.get("companyId")+""));
-        pointsList.setAliUserId(paramMap.get("aliUserId")+"");
+        pointsList.setAliUserId(paramMap.containsKey("aliUserId") ? paramMap.get("aliUserId")+"" : "");
         if (!this.insert(pointsList)){
             return false;
         }
