@@ -2362,6 +2362,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 	public Integer getCityId(String location) {
 		Integer cityId = null;
+		//优化代码
+		if(StringUtils.isBlank(location)){
+		    return null;
+        }
 		try {
 			AmapResult amap = AmapUtil.getAmap(location);
 			if(null!= amap) {
