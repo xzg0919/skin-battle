@@ -2412,7 +2412,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
 		}
 		Order order = new Order();
-		order.setMemberId(orderBean.getMemberId());
+		if(orderBean.getMemberId()!=null){
+            order.setMemberId(orderBean.getMemberId());
+        }else{
+            order.setMemberId(member.getId().intValue());
+        }
 		order.setCompanyId(companyRecycler.getCompanyId());
 		order.setRecyclerId(companyRecycler.getRecyclerId());
 		order.setStatus(OrderType.COMPLETE);
