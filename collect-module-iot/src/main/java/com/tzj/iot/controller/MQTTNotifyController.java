@@ -11,6 +11,7 @@ import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.thread.sendGreenOrderThread;
 import com.tzj.collect.entity.*;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;

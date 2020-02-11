@@ -107,7 +107,26 @@
         sb_member
         where ali_user_id=#{aliUserId}
     </select>
-
+    <select id="memberInfo" resultType="Map">
+        SELECT
+            smm.ali_user_id,
+            smm.name_,
+            smm.mobile,
+            smm.real_no,
+            smp.remnant_points
+        FROM
+            sb_member smm
+        INNER JOIN sb_member_points smp ON smm.real_no = smp.user_no
+        WHERE
+            smm.del_flag = 0
+        AND smp.del_flag = 0
+        <if test="tel != null and tel != '' ">
+            AND smm.mobile = #{tel}
+        </if>
+        <if test="realNo != null and realNo != '' ">
+            AND smm.real_no = #{realNo}
+        </if>
+    </select>
 
 
 </mapper>

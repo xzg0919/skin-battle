@@ -2,12 +2,16 @@ package com.tzj.green.api.app;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
+import com.alipay.api.domain.Product;
 import com.alipay.api.response.*;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.green.entity.CompanyRecycler;
 import com.tzj.green.entity.Member;
 import com.tzj.green.entity.Recyclers;
+import com.tzj.green.param.MemberBean;
+import com.tzj.green.param.MemberGoodsBean;
+import com.tzj.green.param.ProductBean;
 import com.tzj.green.param.RecyclersBean;
 import com.tzj.green.service.*;
 import com.tzj.green.serviceImpl.FileUploadServiceImpl;
@@ -24,10 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.tzj.green.common.content.TokenConst.APP_API_COMMON_AUTHORITY;
 
@@ -52,6 +53,8 @@ public class AppRecyclersApi {
 	private AliPayService aliPayService;
 	@Resource
 	private MemberService memberService;
+	@Resource
+	private ProductGoodsService productGoodsService;
 
 	public Recyclers getRecycler() {
 		Subject subject=ApiContext.getSubject();
@@ -123,9 +126,9 @@ public class AppRecyclersApi {
 	@Api(name = "app.recycler.save3", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object save3(RecyclersBean recyclersBean) {
-		Recyclers recyclers = recyclersService.selectOne(new EntityWrapper<Recyclers>().eq("del_flag", 0).eq("recycler_id", getRecycler().getId()));
+		Recyclers recyclers = recyclersService.selectOne(new EntityWrapper<Recyclers>().eq("del_flag", 0).eq("id", getRecycler().getId()));
 		if (null == recyclers) {
-			recyclers = new Recyclers();
+			throw new ApiException("绑定失败");
 		}
 		recyclers.setProvinceName(recyclersBean.getProvinceName());
 		recyclers.setCityName(recyclersBean.getCityName());
@@ -139,6 +142,8 @@ public class AppRecyclersApi {
 			companyRecycler = new CompanyRecycler();
 			companyRecycler.setRecyclerId(getRecycler().getId());
 			companyRecycler.setCompanyId(recyclersBean.getCompanyId());
+			companyRecycler.setStatus("0");
+
 		}else {
 			companyRecycler.setDelFlag("0");
 		}
@@ -402,6 +407,62 @@ public class AppRecyclersApi {
 		paramMap.put("recId", getRecycler().getId());
 		return recyclersService.appChangePoint(paramMap);
 	}
+	/**
+	 * 根据手机号或实体卡号查找用户信息
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/15 0015
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "app.member.info", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String, Object> memberInfo(MemberBean memberBean){
+		return memberService.memberInfo(memberBean);
+	}
+	/**
+	 * 当前小区下所有商品列表
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/15 0015
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "app.goods.list", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Set<Map<String, Object>> goodsList(){
+		return productGoodsService.appGoodsList(getRecycler().getId());
+	}
+	/**
+	 * 当前活动下所有商品列表
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/15 0015
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "app.goods.list.id", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public List<Map<String, Object>> appGoodsListByProId(ProductBean productBean){
+		if (StringUtils.isEmpty(productBean.getId())){
+			throw new ApiException("参数错误");
+		}
+		return productGoodsService.appGoodsListByProId(productBean.getId());
+	}
+	/**
+	 * 当前小区下所有活动
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/15 0015
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.product.list", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public List<Map<String, Object>> productList(){
+		return productGoodsService.appProductList(getRecycler().getId());
+	}
 
-
+	@Api(name = "app.goods.change", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String, Object> appGoodsChange(MemberGoodsBean memberGoodsBean){
+		memberGoodsBean.setRecId(getRecycler().getId());
+		return productGoodsService.appGoodsChange(memberGoodsBean);
+	}
 }

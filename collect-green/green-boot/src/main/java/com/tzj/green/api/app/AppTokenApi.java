@@ -73,6 +73,8 @@ public class AppTokenApi {
                     recyclers = new Recyclers();
                     recyclers.setName(recyclersLoginBean.getMobile());
                     recyclers.setTel(recyclersLoginBean.getMobile());
+                    recyclers.setPassword("123456");
+                    recyclersService.insert(recyclers);
                 }
                 String token = JwtUtils.generateToken(recyclers.getId().toString(), APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
                 String securityToken = JwtUtils.generateEncryptToken(token, APP_API_TOKEN_CYPTO_KEY);

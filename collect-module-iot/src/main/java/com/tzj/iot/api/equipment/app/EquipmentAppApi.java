@@ -1,5 +1,6 @@
 package com.tzj.iot.api.equipment.app;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.common.util.CompanyEquipmentUtils;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.iot.EquipmentParamBean;
@@ -14,6 +15,8 @@ import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.net.URLDecoder;
@@ -132,6 +135,19 @@ public class EquipmentAppApi {
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
     public List<FileBean> uploadImage(List<FileBase64Param> fileBase64ParamLists){
         return fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
+    }
+    @Api(name = "equipment.open.door", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public void openDoor(){
+        Map<String, String> messageMap = new HashMap<>();
+        messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_OPEN.getKey());
+        messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_OPEN.getValue());
+        try {
+            equipmentMessageService.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), "869012040190428", mqttClient);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
 }
