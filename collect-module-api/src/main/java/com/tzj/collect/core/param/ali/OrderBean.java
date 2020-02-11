@@ -206,6 +206,8 @@ public class OrderBean {
 
 	private String picUrl;
 
+	private String special;
+
 	/**
 	 * 快递总重量
 	 */
