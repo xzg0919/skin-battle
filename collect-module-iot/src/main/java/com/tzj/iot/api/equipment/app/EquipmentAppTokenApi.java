@@ -10,10 +10,7 @@ import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.ApiContext;
-import com.tzj.module.easyopen.doc.DataType;
-import com.tzj.module.easyopen.doc.annotation.ApiDoc;
-import com.tzj.module.easyopen.doc.annotation.ApiDocField;
-import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
+
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,7 +27,7 @@ import static com.tzj.collect.common.constant.TokenConst.*;
  * @return: 
  */
 @ApiService
-@ApiDoc(value = "APP端token模块",appModule = "equipment")
+
 public class EquipmentAppTokenApi {
 
     @Resource
@@ -61,9 +58,6 @@ public class EquipmentAppTokenApi {
     @Api(name = "equipment.token.get", version = "1.0")
     @SignIgnore
     @AuthIgnore //这个api忽略token验证
-    @ApiDocMethod(description="app登录后获取token",results={
-            @ApiDocField(name="tokenBean",description="token对象",dataType= DataType.OBJECT, beanClass=TokenBean.class)
-    })
     public TokenBean getToken(EquipmentParamBean equipmentParamBean) {
         CompanyEquipment companyEquipment = null;
         if(StringUtils.isBlank(equipmentParamBean.getCaptcha())){

@@ -1,6 +1,6 @@
 package com.tzj.collect.core.param.ali;
 
-import com.tzj.module.easyopen.doc.annotation.ApiDocField;
+
 import lombok.Data;
 
 /**
@@ -11,11 +11,11 @@ import lombok.Data;
 public class MemberBean {
 	private String id;
 
-    @ApiDocField(description = "支付宝ID", required = true, example = "2088")
+
     private String aliMemberId;
     private String greenSn;
 
-    @ApiDocField(description = "用户名")
+
     private String userName;
     private String nickName;
     
@@ -72,7 +72,6 @@ public class MemberBean {
 	}
 
 	//手机号
-    @ApiDocField(description = "手机号")
     private String mobile;
     //阿里Id
     private String aliUserId;

@@ -8,7 +8,6 @@ import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.SignIgnore;
-import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,6 @@ public class AppOrderPayApi {
     private VoucherMemberService voucherMemberService;
 
     @Api(name = "app.order.pay", version = "1.0")
-    @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
     public String orderPay(OrderPayParam orderPayParam) {
 
         System.out.println("传入的订单Id："+orderPayParam.getOrderId()+"++传入的价格是："+orderPayParam.getPrice()+"优惠券Id："+orderPayParam.getVoucherId());
@@ -117,7 +115,6 @@ public class AppOrderPayApi {
      * @return
      */
     @Api(name = "app.order.tradePay", version = "1.0")
-    @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
     public String orderTradePay(OrderPayParam orderPayParam) {
         if(orderPayParam.getPrice().compareTo(BigDecimal.ZERO)==0){
             throw new ApiException("不能支付0元");
@@ -158,7 +155,6 @@ public class AppOrderPayApi {
      * @return
      */
     @Api(name = "app.order.tradeClose", version = "1.0")
-    @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
     public String paymentCloseByTradeNo(OrderPayParam orderPayParam) {
         paymentService.paymentCloseByTradeNo(orderPayParam.getOutTradeNo());
         return "操作成功";

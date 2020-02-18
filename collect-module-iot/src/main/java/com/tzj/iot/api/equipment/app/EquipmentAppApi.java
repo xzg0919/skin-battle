@@ -10,7 +10,6 @@ import com.tzj.collect.core.service.*;
 import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.module.api.annotation.*;
-import com.tzj.module.easyopen.doc.annotation.ApiDoc;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
@@ -37,7 +36,6 @@ import static com.tzj.collect.common.constant.TokenConst.*;
  * @return: 
  */
 @ApiService
-@ApiDoc(value = "APP iot 设备端api模块",appModule = "equipment")
 public class EquipmentAppApi {
 
     @Resource

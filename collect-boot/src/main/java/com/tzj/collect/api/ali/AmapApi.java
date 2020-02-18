@@ -12,9 +12,7 @@ import com.tzj.collect.entity.Community;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.easyopen.doc.annotation.ApiDoc;
-import com.tzj.module.easyopen.doc.annotation.ApiDocField;
-import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
+
 import com.tzj.module.easyopen.exception.ApiException;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
@@ -30,7 +28,6 @@ import org.slf4j.LoggerFactory;
  * 高德地图相关API
  */
 @ApiService
-@ApiDoc(value = "高德模块", appModule = "ali")
 public class AmapApi {
 
     private static Logger logger = LoggerFactory.getLogger(AmapApi.class);
@@ -60,7 +57,6 @@ public class AmapApi {
      */
     @Api(name = "amap.regeo", version = "1.0", ignoreSign = true)
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    @ApiDocMethod(description = "当前位置详细信息")
     public AmapResult regeo(String location) throws Exception {
 
         Assert.hasLength(location, "请输入当前经纬度");
@@ -71,8 +67,6 @@ public class AmapApi {
 
     @Api(name = "amap.around", version = "1.0", ignoreSign = true)
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    @ApiDocMethod(description = "周边搜索", remark = "关键字可以为空", results = {
-        @ApiDocField(description = "周边地址信息", name = "amapResults", elementClass = AmapResult.class)})
     public List<AmapResult> around(AmapAroundParam aroundParam) throws Exception {
 
         Assert.notNull(aroundParam);

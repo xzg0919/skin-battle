@@ -1,18 +1,18 @@
 package com.tzj.collect.core.param.token;
 
-import com.tzj.module.easyopen.doc.annotation.ApiDocField;
+
 
 /**
  * @Author 胡方明（12795880@qq.com）
  **/
 public class TokenBean {
-    @ApiDocField(description = "token")
+
     private String token;
-    @ApiDocField(description = "token的有效期")
+
     private long expire;
-    @ApiDocField(description = "api签名key")
+
     private String signKey;
-    @ApiDocField(description = "蓝牙")
+
     private String blueTooth;
 
     public String getToken() {

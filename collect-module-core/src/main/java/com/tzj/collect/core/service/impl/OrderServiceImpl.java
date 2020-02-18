@@ -2362,6 +2362,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 	public Integer getCityId(String location) {
 		Integer cityId = null;
+		//优化代码
+		if(StringUtils.isBlank(location)){
+		    return null;
+        }
 		try {
 			AmapResult amap = AmapUtil.getAmap(location);
 			if(null!= amap) {
@@ -2398,11 +2402,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//获取用户的详细信息
 		Member member = memberService.selectMemberByAliUserId(orderBean.getAliUserId());
 		if (member == null) {
-			System.out.println(orderBean.getMemberId() + "    查不到此用户");
-			return "暂无此用户";
+		    if(StringUtils.isNotBlank(orderBean.getSpecial()) && "special".equals(orderBean.getSpecial())){
+                member=new Member();
+                member.setAliUserId(orderBean.getAliUserId());
+                memberService.insertMember(member);
+            }else {
+                System.out.println(orderBean.getMemberId() + "    查不到此用户");
+                return "暂无此用户";
+            }
 		}
 		Order order = new Order();
-		order.setMemberId(orderBean.getMemberId());
+		if(orderBean.getMemberId()!=null){
+            order.setMemberId(orderBean.getMemberId());
+        }else{
+            order.setMemberId(member.getId().intValue());
+        }
 		order.setCompanyId(companyRecycler.getCompanyId());
 		order.setRecyclerId(companyRecycler.getRecyclerId());
 		order.setStatus(OrderType.COMPLETE);

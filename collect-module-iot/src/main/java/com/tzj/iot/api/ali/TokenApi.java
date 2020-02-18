@@ -12,10 +12,6 @@ import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.ApiContext;
-import com.tzj.module.easyopen.doc.DataType;
-import com.tzj.module.easyopen.doc.annotation.ApiDoc;
-import com.tzj.module.easyopen.doc.annotation.ApiDocField;
-import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +30,6 @@ import static com.tzj.collect.common.constant.TokenConst.*;
  * @Author 胡方明（12795880@qq.com）
  **/
 @ApiService
-@ApiDoc(value = "token模块", appModule = "ali")
 public class TokenApi {
 
     @Autowired
@@ -48,9 +43,6 @@ public class TokenApi {
      */
     @Api(name = "token.get", version = "1.0")
     @AuthIgnore //这个api忽略token验证
-    @ApiDocMethod(description = "获取token", results = {
-            @ApiDocField(name = "tokenBean", description = "token对象", dataType = DataType.OBJECT, beanClass = TokenBean.class)
-    })
     public TokenBean getToken(MemberBean memberBean) {
 
         //先根据 ali id 去查询，没有的话新增，有的话直接返回token
@@ -77,9 +69,6 @@ public class TokenApi {
      */
     @Api(name = "token.flush", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    @ApiDocMethod(description = "刷新token", results = {
-            @ApiDocField(name = "tokenBean", description = "token对象", dataType = DataType.OBJECT, beanClass = TokenBean.class)
-    })
     public TokenBean flushToken() {
 
         HttpServletRequest request = ApiContext.getRequest();
@@ -106,9 +95,6 @@ public class TokenApi {
      */
     @Api(name = "green.token.get", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    @ApiDocMethod(description = "刷新token", results = {
-            @ApiDocField(name = "tokenBean", description = "token对象", dataType = DataType.OBJECT, beanClass = TokenBean.class)
-    })
     public TokenBean greenToken() {
         Subject subject= ApiContext.getSubject();
         //接口里面获取  Member 的例子
