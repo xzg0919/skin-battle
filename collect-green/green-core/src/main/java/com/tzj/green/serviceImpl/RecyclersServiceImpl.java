@@ -180,8 +180,11 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
                 if (pointsList.getPointsType().equals("1")) {
                     throw new ApiException("积分不足");
                 }
-                memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() + Long.parseLong(paramMap.get("points") + ""));
-                memberPoints.setTatalPoints(memberPoints.getTatalPoints() + Long.parseLong(paramMap.get("points") + ""));
+                memberPoints.setRemnantPoints(Long.parseLong(paramMap.get("points") + ""));
+                memberPoints.setTatalPoints( Long.parseLong(paramMap.get("points") + ""));
+                memberPoints.setUserNo(paramMap.get("realNo")+"");
+                memberPoints.setUserName(paramMap.get("userName")+"");
+                memberPoints.setAliUserId(paramMap.get("aliUserId")+"");
             }
         }
         if (!paramMap.containsKey("realNo")){
@@ -197,10 +200,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         pointsList.setRecyclerId(Long.parseLong(paramMap.get("recId")+""));
         pointsList.setCompanyId(Long.parseLong(comRecMap.get("company_id")+""));
         //验证加减分是否异常
-        if (!checkPoint(paramMap)){
-            throw new ApiException("提交失败");
-        }
-        pointsList.setPoints(Long.parseLong(comRecMap.get("points")+""));
+//        if (!checkPoint(paramMap)){
+//            throw new ApiException("提交失败");
+//        }
+        pointsList.setPoints(Long.parseLong(paramMap.get("points")+""));
         pointsList.setAliUserId(paramMap.get("aliUserId")+"");
         if (pointsListService.insert(pointsList)){
             returnMap.put("msg", "保存成功");
@@ -224,7 +227,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         return returnMap;
     }
     /**
-     * 验证分数是否异常
+     * 验证分数是否异常(自欺欺人)
      * @author: sgmark@aliyun.com
      * @Date: 2020/1/13 0013
      * @Param: 
@@ -234,8 +237,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         List<Map<String, Object>> pointLists = (List<Map<String, Object>>) paramMap.get("pointList");
         BigDecimal points = BigDecimal.ZERO;
         pointLists.stream().forEach(pointList ->{
-            BigDecimal point = (BigDecimal) pointList.get("point");
-            BigDecimal weight = (BigDecimal) pointList.get("amount");
+            BigDecimal point = BigDecimal.valueOf(Double.parseDouble(pointList.get("point")+""));
+            BigDecimal weight = BigDecimal.valueOf(Double.parseDouble(pointList.get("amount")+""));
             points.add(point.multiply(weight));
         });
         if (paramMap.get("points").equals(points.setScale(0, BigDecimal.ROUND_DOWN))){

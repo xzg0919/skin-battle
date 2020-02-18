@@ -43,112 +43,40 @@ public class BusinessOrderApiTest {
 		String subjectStr = claims.getSubject();
 		System.out.println("反向編譯 token是："+subjectStr);
 
-//		String api = "http://test.tcompanypoint.mayishoubei.com/company/api";
 
-		String api="http://localhost:9090/company/api";
-//		CompanyCommunityBean companyCommunityBean= new CompanyCommunityBean();
-//		companyCommunityBean.setProvinceId("1");
-//		companyCommunityBean.setCityId("2");
-//		companyCommunityBean.setAreaId("3");
-//		companyCommunityBean.setStreetId("4");
-//		companyCommunityBean.setId("3");
-//		companyCommunityBean.setCommunityName("运河湾居委");
-//		companyCommunityBean.setHouseNum("311");
-//		companyCommunityBean.setPointsNum("2");
-//		companyCommunityBean.setPutType("1");
-//		companyCommunityBean.setIsDry("0");
-//		companyCommunityBean.setDryTime("00:00:01-12:00:00,12:00:01-23:59:59");
-//		companyCommunityBean.setIsWet("0");
-//		companyCommunityBean.setWetTime("00:00:01-12:00:00,12:00:01-23:59:59");
-//		companyCommunityBean.setIsHarmful("0");
-//		companyCommunityBean.setHarmfulTime("00:00:01-12:00:00,12:00:01-23:59:59");
-//		companyCommunityBean.setIsRecovery("0");
-//		companyCommunityBean.setRecoveryTime("00:00:01-12:00:00,12:00:01-23:59:59");
-//		companyCommunityBean.setRecoveryWeek("1,2,7");
-//		List<CommunityHouseName> houseNameList = new ArrayList<>();
-//		CommunityHouseName communityHouseName = new CommunityHouseName();
-//		communityHouseName.setHouseName("测试小区3");
-//		communityHouseName.setAddress("我是测试地址1");
-//		communityHouseName.setId((long)3);
-//		CommunityHouseName communityHouseName2 = new CommunityHouseName();
-//		communityHouseName2.setHouseName("测试小区4");
-//		communityHouseName2.setAddress("我是测试地址1");
-//		communityHouseName2.setId((long)4);
-//		houseNameList.add(communityHouseName);
-//		houseNameList.add(communityHouseName2);
-//		companyCommunityBean.setHouseNameList(houseNameList);
-
-		CompanyCommunityBean companyCommunityBean = new CompanyCommunityBean();
-		companyCommunityBean.setCommunityId("3");
-
-
-		CompanyBean companyBean = new CompanyBean();
-		companyBean.setTel("111111");
-		companyBean.setPassword("111111");
-
-		GoodsBean goodsBean = new GoodsBean();
-		goodsBean.setId("1");
-
-		ProductBean productBean = new ProductBean();
-//
-//		productBean.setName("活动名称");
-//		productBean.setId("1");
-//		productBean.setPickStartDate("2020-01-01");
-//		productBean.setPickEndDate("2021-01-01");
-//		productBean.setHouseNameId("5");
-//		productBean.setDetail("我是活动说明");
-//
-//		List<String> recyclerIds = new ArrayList<>();
-//		recyclerIds.add("1");
-//		recyclerIds.add("2");
-//		productBean.setRecyclerIds(recyclerIds);
-//		List<ProductGoodsBean> productGoodsBeanList = new ArrayList<>();
-//		ProductGoodsBean productGoodsBean1 = new ProductGoodsBean();
-//		productGoodsBean1.setGoodsId("2");
-//		productGoodsBean1.setTotalNum("99");
-//		ProductGoodsBean productGoodsBean2 = new ProductGoodsBean();
-//		productGoodsBean2.setGoodsId("3");
-//		productGoodsBean2.setTotalNum("88");
-//		productGoodsBeanList.add(productGoodsBean1);
-//		productGoodsBeanList.add(productGoodsBean2);
-//		productBean.setProductGoodsBeanList(productGoodsBeanList);
-
-		PointsListBean pointsListBean = new PointsListBean();
-
-		pointsListBean.setStartTime("2020-01-01");
-		pointsListBean.setEndTime("2020-10-01");
-		pointsListBean.setPointsType("0");
-		pointsListBean.setCityId("2");
-		pointsListBean.setAreaId("3");
-		pointsListBean.setStreetId("4");
-		pointsListBean.setCommunityId("2");
-		pointsListBean.setCommunityHouseId("5");
-		pointsListBean.setName("测试");
-		pointsListBean.setTel("2123");
-		pointsListBean.setPageBean(new PageBean());
-
-		CategoryBean categoryBean = new CategoryBean();
-
-		categoryBean.setCategoryId("7");
-		categoryBean.setAddPoints("13");
-		categoryBean.setSubtractPoints("23");
-
-
+		String api="http://localhost:9090/app/api";
+		Map<String, Object> paramMap = new HashMap<>();
+//		paramMap.put("pointType", 0);
+//		List<Map<String, Object>> mapList = new ArrayList<>();
+//		Map<String, Object> map = new HashMap<>();
+//		map.put("amount", 2);
+//		map.put("point", 1);
+//		map.put("categoryId", 5);
+//		map.put("categoryName", "废纸");
+//		map.put("parentId", 4);
+//		map.put("parentName", "可回收垃圾");
+//		mapList.add(map);
+		paramMap.put("id", "2");
+//		paramMap.put("userName", "郑东东");
+//		paramMap.put("aliUserId", "21312313");
+//		paramMap.put("points", 2);
+//		paramMap.put("pointList", mapList);
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","company.updateCompanyCategoryPoints");
+		param.put("name","app.goods.list.id");
 		param.put("version","1.0");
 		param.put("format","json");
-		param.put("app_key","app_id_3");
+		param.put("app_key","app_id_2");
 		param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-		param.put("token",securityToken);
+		param.put("token", "F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CER4EQ6GQIWG5SXSKTY4TV6P26Y544X3OXL5UQXLGKKUYB6T5QIB34FOTP77UXKPHU4NIKRIOJOIT2R4SVG2CWJ5HJEMFFJ6KEX66QBY3EBG5EHUIGUSSE6DABOHKDTMFZQOO3KFBC2F6UTKMM5EPKY3YAM6TTQHBCJSVNR2SPG7OENK2KT62DWRYYEH7F5SUG74O4D7FXXUPQ3FAX7BHZQBR6LLA");
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",categoryBean);
+		param.put("data",paramMap);
 
-		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
+		String signKey = SignUtils.produceSignKey(token, "sign_key_55667788");
 		System.out.println(signKey);
 		String jsonStr = JSON.toJSONString(param);
-		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), signKey);
+		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");
+		System.out.println(sign);
 		param.put("sign", sign);
 
 		System.out.println("请求的参数是 ："+JSON.toJSONString(param));

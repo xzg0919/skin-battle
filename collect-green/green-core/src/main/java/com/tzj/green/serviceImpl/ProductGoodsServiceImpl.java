@@ -53,7 +53,7 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
         List<Map<String, Object>> mapLists = productGoodsMapper.appProductList(recId);
         Set<Map<String, Object>> goodsLists = new HashSet<>();
         mapLists.stream().forEach(mapList -> {
-            Long proId = (Long) mapList.get("id");//根据活动id查找活动
+            Long proId = Long.parseLong(mapList.get("id").toString());//根据活动id查找活动
             goodsLists.addAll(productGoodsMapper.appGoodsList(proId));
         });
         return goodsLists;
