@@ -30,8 +30,6 @@ import static com.tzj.collect.api.commom.constant.MQTTConst.*;
 @Configuration
 public class MQTTMessageListener {
 
-//    @Resource
-//    private EquipmentMessageService messageService;
 
     protected final static Logger logger = LoggerFactory.getLogger(MQTTMessageListener.class);
 

@@ -65,24 +65,30 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     }
 
     @Override
+    @Transactional(readOnly = false)
     public Map<String, Object> bindingCardByRec(RecyclersBean recyclersBean) {
         //验证手机验证码是否正确有效
         if(!messageService.validMessage(recyclersBean.getMobile(), recyclersBean.getCaptcha())){
             throw new ApiException("手机验证码错误");
         }
         Map<String, Object> returnMap = new HashMap<>();
-        Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("id_card", recyclersBean.getIdCard()));
+        Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("real_no", recyclersBean.getRealNo()));
         if (null == member){
             member = new Member();
-            member.setName(recyclersBean.getName());
-            member.setMobile(recyclersBean.getMobile());
-            member.setAddress(recyclersBean.getAddress());
-            member.setGender(recyclersBean.getSex());
         }
+        member.setName(recyclersBean.getName());
+        member.setMobile(recyclersBean.getMobile());
+        member.setAddress(recyclersBean.getAddress());
+        member.setGender(recyclersBean.getSex());
         member.setRealNo(recyclersBean.getRealNo());
+        member.setIdCardRev(recyclersBean.getIdCardRev());
+        member.setIdCardObv(recyclersBean.getIdCardObv());
+        member.setIdCard(recyclersBean.getIdCard());
+        member.setDetailAddress(recyclersBean.getDetailAddress());
+        member.setAddress(recyclersBean.getAddress());
         member.setDetailAddress(recyclersBean.getDetailAddress());
         //保存用户当前回收人员所在回收服务范围所在的小区地址
-        Map<String, Object> recMap =  recyclersMapper.selectRecRange(recyclersBean.getId());
+        Map<String, Object> recMap =  recyclersMapper.selectRecRange(recyclersBean.getRecId());
         if (null == recMap){
             throw new ApiException("录入失败, 检查是否通过审核");
         }else {

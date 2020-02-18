@@ -18,6 +18,7 @@ import com.tzj.green.serviceImpl.FileUploadServiceImpl;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
@@ -182,6 +183,7 @@ public class AppRecyclersApi {
 			//身份信息解析成功并且是正面
 			Object getBody = resultMap.get("getBody");
 			Map<String,Object> map =  (Map<String,Object>) JSONObject.parse(getBody.toString());
+			resultMap.put("getBody", map);
 			String name = map.get("name")+"";
 			String num = map.get("num")+"";
 			if(StringUtils.isNotBlank(name)&&StringUtils.isNotBlank(num)){
@@ -360,6 +362,9 @@ public class AppRecyclersApi {
 	@Api(name = "app.is.binding", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> isBindingByCard(RecyclersBean recyclersBean){
+		if(StringUtils.isEmpty(recyclersBean.getRealNo())){
+			throw new ApiException("参数错误");
+		}
 		Map<String, Object> returnMap = new HashMap<>();
 		Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("real_no", recyclersBean.getRealNo()));
 		if (member == null){

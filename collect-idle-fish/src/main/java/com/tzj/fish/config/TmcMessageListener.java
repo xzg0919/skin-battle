@@ -1,10 +1,14 @@
 package com.tzj.fish.config;
 
+import com.taobao.api.DefaultTaobaoClient;
+import com.taobao.api.TaobaoClient;
 import com.taobao.api.internal.tmc.Message;
 import com.taobao.api.internal.tmc.MessageHandler;
 import com.taobao.api.internal.tmc.MessageStatus;
 import com.taobao.api.internal.tmc.TmcClient;
 import com.taobao.api.internal.toplink.LinkException;
+import com.taobao.api.request.TmcUserPermitRequest;
+import com.taobao.api.response.TmcUserPermitResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,8 +22,8 @@ import org.springframework.context.annotation.Configuration;
 public class TmcMessageListener {
 
     @Bean
-    public TmcClient mqttMessageListener(){
-        TmcClient client = new TmcClient("app_key", "app_secret", "default"); // 关于default参考消息分组说明
+    public TmcClient tmcClientListener(){
+        TmcClient client = new TmcClient("28326416", "6b8fb4524e18b154851fa46c67768ef3", "default"); // 关于default参考消息分组说明
         client.setMessageHandler(new MessageHandler() {
             @Override
             public void onMessage(Message message, MessageStatus status) {
