@@ -43,12 +43,10 @@
             <id>aliyun</id>
             <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
         </repository>
-        <!--
         <repository>
             <id>rdc-releases</id>
             <url>https://repo.rdc.aliyun.com/repository/49525-release-0vOOLP/</url>
         </repository>
-        -->
         <repository>
             <id>rdc-snapshots</id>
             <url>https://repo.rdc.aliyun.com/repository/49525-snapshot-xtdJFd/</url>
