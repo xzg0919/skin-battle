@@ -1,9 +1,11 @@
 package com.tzj.green.serviceImpl;
 
+import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import javax.annotation.Resource;
 
+import com.tzj.green.common.content.AlipayConst;
 import com.tzj.green.entity.*;
 import com.tzj.green.mapper.RecyclersMapper;
 import com.tzj.green.param.RecyclersBean;
@@ -36,8 +38,6 @@ import java.util.Map;
 public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers> implements RecyclersService
 {
     @Resource
-    private RecyclersService recyclersService;
-    @Resource
     private MemberService memberService;
     @Resource
     private MessageService messageService;
@@ -53,6 +53,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     private PointsListItemService pointsListItemService;
     @Resource
     private MemberPointsService memberPointsService;
+    @Resource
+    private AliPayService aliPayService;
     /**
      * 根据手机号查询回收人员
      *
@@ -226,6 +228,24 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         memberPointsService.insertOrUpdate(memberPoints);
         return returnMap;
     }
+
+    @Transactional
+    @Override
+    public String getAuthCode(String authCode, Long recyclersId) throws Exception {
+
+        Recyclers recyclers = this.selectById(recyclersId);
+        //根据用户授权的具体authCode查询是用户的userid和token
+        AlipaySystemOauthTokenResponse response = aliPayService.selectUserToken(authCode, AlipayConst.appId);
+        if (!response.isSuccess()) {
+            throw new ApiException("授权失败，请重新授权");
+        }
+        String accessToken = response.getAccessToken();
+        String userId = response.getUserId();
+        recyclers.setAliUserId(userId);
+        this.updateById(recyclers);
+        return "操作成功";
+    }
+
     /**
      * 验证分数是否异常(自欺欺人)
      * @author: sgmark@aliyun.com

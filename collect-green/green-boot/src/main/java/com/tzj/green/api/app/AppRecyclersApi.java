@@ -29,6 +29,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.tzj.green.common.content.TokenConst.APP_API_COMMON_AUTHORITY;
@@ -179,11 +181,11 @@ public class AppRecyclersApi {
 			return resultMap;
 		}
 		resultMap.put("fileBeans",fileBeans);
+		Object getBody = resultMap.get("getBody");
+		Map<String,Object> map =  (Map<String,Object>) JSONObject.parse(getBody.toString());
+		resultMap.put("getBody", map);
 		if ("face".equals(fileBase64Param.getFileName())){
 			//身份信息解析成功并且是正面
-			Object getBody = resultMap.get("getBody");
-			Map<String,Object> map =  (Map<String,Object>) JSONObject.parse(getBody.toString());
-			resultMap.put("getBody", map);
 			String name = map.get("name")+"";
 			String num = map.get("num")+"";
 			if(StringUtils.isNotBlank(name)&&StringUtils.isNotBlank(num)){
@@ -463,11 +465,41 @@ public class AppRecyclersApi {
 	public List<Map<String, Object>> productList(){
 		return productGoodsService.appProductList(getRecycler().getId());
 	}
-
+	/**
+	 * 礼品兑换
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/2/19 0019
+	 * @Param: 
+	 * @return: 
+	 */
 	@Api(name = "app.goods.change", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> appGoodsChange(MemberGoodsBean memberGoodsBean){
 		memberGoodsBean.setRecId(getRecycler().getId());
 		return productGoodsService.appGoodsChange(memberGoodsBean);
 	}
+	/**
+	 * 获取回收人员的授权信息
+	 *
+	 * @return
+	 */
+	@Api(name = "app.token.getAuthUrl", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public String getAuthUrl() throws Exception {
+		String targetId = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+		String authUrl = "apiname=com.alipay.account.auth&app_id=2017022805948218&app_name=mc&auth_type=AUTHACCOUNT&biz_type=openservice&method=alipay.open.auth.sdk.code.get&pid=2088421446748174&product_id=APP_FAST_LOGIN&scope=kuaijie&sign_type=RSA2&target_id=" + targetId;
+		String encodeAuthUrl = URLEncoder.encode(authUrl, "utf-8");
+		return authUrl + "&sign=" + encodeAuthUrl;
+	}
+	/**
+	 * 获取回收人员的授权信息
+	 * @return
+	 */
+	@Api(name = "app.token.getAuthCode", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public String getAuthCode(RecyclersBean recyclersBean) throws Exception {
+		Recyclers recycler = getRecycler();
+		return recyclersService.getAuthCode(recyclersBean.getAuthCode(), recycler.getId());
+	}
+
 }

@@ -32,4 +32,6 @@ public interface RecyclersService extends IService<Recyclers>
     List<Map<String, Object>> categoryPointInfo(Long id);
 
     Map<String, Object> appChangePoint(Map<String, Object> paramMap);
+
+    String getAuthCode(String authCode, Long recyclersId) throws Exception;
 }
