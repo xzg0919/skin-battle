@@ -16,5 +16,21 @@
       where  sp.product_no=#{activityCode}
     </select>
 
-
+    <select id="selectAddressByProId" resultType="Map">
+        SELECT
+            CONCAT(
+                scc.province_name,
+                scc.city_name,
+                scc.area_name,
+                scc.street_name,
+                scc.community_name,
+                schn.house_name
+            ) AS address_
+        FROM
+            sb_product spp
+        LEFT JOIN sb_community_house_name schn ON spp.house_name_id = schn.id
+        LEFT JOIN sb_company_community scc ON schn.community_id = scc.id
+        WHERE
+            spp.id = #{proId}
+    </select>
 </mapper>

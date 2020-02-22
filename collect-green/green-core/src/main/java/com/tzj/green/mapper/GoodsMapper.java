@@ -21,4 +21,6 @@ import java.util.Map;
 public interface GoodsMapper extends BaseMapper<Goods>
 {
     List<Map<String,Object>> getGoodsListByActivityId(@Param("activityCode") String activityCode);
+
+    Map<String , Object> selectAddressByProId (@Param("proId") Long proId);
 }

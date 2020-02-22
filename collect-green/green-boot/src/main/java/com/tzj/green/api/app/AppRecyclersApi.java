@@ -476,6 +476,7 @@ public class AppRecyclersApi {
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> appGoodsChange(MemberGoodsBean memberGoodsBean){
 		memberGoodsBean.setRecId(getRecycler().getId());
+		memberGoodsBean.setRecName(getRecycler().getName());
 		return productGoodsService.appGoodsChange(memberGoodsBean);
 	}
 	/**
@@ -501,5 +502,18 @@ public class AppRecyclersApi {
 		Recyclers recycler = getRecycler();
 		return recyclersService.getAuthCode(recyclersBean.getAuthCode(), recycler.getId());
 	}
-
+	/**
+	 *
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/2/21 0021
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.points.list", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String, Object> pointsList(RecyclersBean recyclersBean){
+		Recyclers recycler = getRecycler();
+		recyclersBean.setId(recycler.getId());
+		return recyclersService.pointsList(recyclersBean);
+	}
 }

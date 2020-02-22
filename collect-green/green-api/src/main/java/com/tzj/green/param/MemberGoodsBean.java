@@ -19,4 +19,6 @@ public class MemberGoodsBean {
 
     private Long recId;
 
+    private String recName;
+
 }

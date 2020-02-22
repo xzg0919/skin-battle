@@ -67,6 +67,17 @@
             sggp.id
     </select>
     <select id="goodsAmount" resultType="Map">
-
+        SELECT
+            sum(spo.goods_num) AS amount_,
+            spo.company_id,
+            spo.product_name
+        FROM
+            sb_product_order spo
+        WHERE
+            spo.del_flag = 0
+        AND spo.goods_id =  #{godId}
+        AND spo.product_id =  #{proId}
+            GROUP BY
+        spo.company_id
     </select>
 </mapper>

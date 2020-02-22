@@ -246,6 +246,17 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         return "操作成功";
     }
 
+    @Override
+    public Map<String, Object> pointsList(RecyclersBean recyclersBean) {
+        Map<String, Object> returnMap = new HashMap<>();
+        Integer pointsCount = recyclersMapper.pointListCount(recyclersBean.getId());
+        List<Map<String, Object>> pointsList = recyclersMapper.pointsLists(recyclersBean.getId(), (recyclersBean.getPageBean().getPageNum()-1)*recyclersBean.getPageBean().getPageSize(), recyclersBean.getPageBean().getPageSize());
+        returnMap.put("count", pointsCount);
+        returnMap.put("list", pointsList);
+        return returnMap;
+    }
+
+
     /**
      * 验证分数是否异常(自欺欺人)
      * @author: sgmark@aliyun.com

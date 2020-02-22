@@ -27,6 +27,30 @@
         AND srr.recyclers_id = #{recId}
         LIMIT 1
     </select>
-
-
+    <select id="pointListCount" resultType="Int">
+        SELECT
+            count(1)
+        FROM
+            sb_points_list spl
+        LEFT JOIN sb_member smm ON spl.user_no = smm.real_no
+        WHERE
+            spl.del_flag = 0
+        AND spl.recycler_id = #{recId}
+    </select>
+    <select id="pointsLists" resultType="Map">
+        SELECT
+            smm.name_,
+            smm.mobile,
+            spl.create_date,
+            spl.points_type,
+            spl.points
+        FROM
+            sb_points_list spl
+        LEFT JOIN sb_member smm ON spl.user_no = smm.real_no
+        WHERE
+            spl.del_flag = 0
+        AND spl.recycler_id = #{recId}
+        ORDER BY spl.id DESC
+        LIMIT #{start}, #{end}
+    </select>
 </mapper>

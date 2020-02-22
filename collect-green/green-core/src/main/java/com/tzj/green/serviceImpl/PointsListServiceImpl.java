@@ -136,11 +136,14 @@ public class PointsListServiceImpl extends ServiceImpl<PointsListMapper, PointsL
             memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() + Long.parseLong(paramMap.get("points") + ""));
             memberPoints.setTatalPoints(memberPoints.getTatalPoints() + Long.parseLong(paramMap.get("points") + ""));
         }
+        pointsList.setPoints(Long.parseLong(paramMap.get("points")+""));
         pointsList.setPointsType(paramMap.get("pointType")+"");
         pointsList.setSource(Integer.parseInt(paramMap.get("source")+""));
         pointsList.setRecyclerId(Long.parseLong(paramMap.get("recId")+""));
         pointsList.setCompanyId(Long.parseLong(paramMap.get("companyId")+""));
         pointsList.setAliUserId(paramMap.containsKey("aliUserId") ? paramMap.get("aliUserId")+"" : "");
+        pointsList.setUserName(paramMap.containsKey("userName") ? paramMap.get("userName")+"" : "");
+        pointsList.setUserNo(paramMap.containsKey("userNo") ? paramMap.get("userNo")+"" : "");
         if (!this.insert(pointsList)){
             return false;
         }

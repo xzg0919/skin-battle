@@ -96,4 +96,9 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         goods.setGoodsUsableNum(goods.getGoodsNum()-goods.getGoodsFrozenNum());
         return goods;
     }
+
+    @Override
+    public Map<String, Object> selectAddressByProId(Long proId) {
+        return goodsMapper.selectAddressByProId(proId);
+    }
 }

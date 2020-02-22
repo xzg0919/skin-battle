@@ -12,6 +12,7 @@ import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -93,8 +94,8 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
     public Map<String, Object> appGoodsChange(MemberGoodsBean memberGoodsBean) {
         Map<String, Object> returnMap = new HashMap<>();
         //检查数量是否足够兑换
-        Map<String, Object> goodsAmount = productGoodsMapper.goodsAmount(memberGoodsBean.getGoodsId(), memberGoodsBean.getProductId());
-        if (Integer.parseInt(goodsAmount.get("amount_")+"") < memberGoodsBean.getAmount()){
+        Map<String, Object> goodsAmount = productGoodsMapper.goodsAmount(memberGoodsBean.getProductId(), memberGoodsBean.getGoodsId());
+        if (CollectionUtils.isEmpty(goodsAmount) || Integer.parseInt(goodsAmount.get("amount_")+"") < memberGoodsBean.getAmount()){
             throw new ApiException("所兑换礼品剩余数量不足");
         }
         Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("real_no", memberGoodsBean.getRealNo()).last(" limit 1"));
@@ -109,22 +110,31 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
         //数据库查询所需积分
         paramMap.put("points", Math.abs(goods.getPoints() * memberGoodsBean.getAmount()));
         paramMap.put("recId", memberGoodsBean.getRecId());
+        paramMap.put("companyId", goodsAmount.get("company_id"));
+        paramMap.put("userNo", member.getRealNo());
+        paramMap.put("userName", member.getName());
         if (StringUtils.isNotEmpty(member.getAliUserId())){
             paramMap.put("aliUserId", member.getAliUserId());
         }
         if (pointsListService.changePoint(memberGoodsBean.getRealNo(), paramMap)){
             //积分扣除成功
-            try {
                 //保存礼品兑换信息
                 ProductOrder productOrder = new ProductOrder();
                 productOrder.setGoodsId(memberGoodsBean.getGoodsId());
                 productOrder.setProductId(memberGoodsBean.getProductId());
-                productOrder.setProductName(goodsAmount.get("proName")+"");
-                productOrder.setGoodsName(goodsAmount.get("godName")+"");
+                productOrder.setProductName(goodsAmount.get("product_name")+"");
+                productOrder.setGoodsName(goods.getGoodsName());
                 productOrder.setGoodsNum(memberGoodsBean.getAmount());
-                productOrder.setAddress(goodsAmount.get("address")+"");
-                productOrder.setRecyclerId(Long.parseLong(goodsAmount.get("recId")+""));
-                productOrder.setCompanyId(Long.parseLong(goodsAmount.get("comId")+""));
+                Map<String, Object> map = goodsService.selectAddressByProId(memberGoodsBean.getProductId());
+                if (!CollectionUtils.isEmpty(map)){
+                    productOrder.setAddress(map.get("address_")+"");
+                }
+                productOrder.setUserName(member.getName());
+                productOrder.setUserNo(member.getRealNo());
+                productOrder.setTel(member.getMobile());
+                productOrder.setPoints(Math.abs(goods.getPoints() * memberGoodsBean.getAmount()));
+                productOrder.setRecyclerId(memberGoodsBean.getRecId());
+                productOrder.setCompanyId(Long.parseLong(goodsAmount.get("company_id")+""));
                 productOrderService.insert(productOrder);
                 //更新剩余数量
                 ProductGoods productGoods = this.selectOne(new EntityWrapper<ProductGoods>().eq("del_flag", 0).eq("goods_id",memberGoodsBean.getGoodsId()).eq("product_id", memberGoodsBean.getProductId()));
@@ -132,9 +142,6 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
                 this.updateById(productGoods);
                 returnMap.put("msg", "兑换成功");
                 returnMap.put("code", 200);
-            }catch (Exception e){
-                //异常回滚
-            }
         }else {
             returnMap.put("msg", "兑换失败");
             returnMap.put("code", -9);
