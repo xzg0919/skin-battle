@@ -119,7 +119,6 @@
         INNER JOIN sb_member_points smp ON smm.real_no = smp.user_no
         WHERE
             smm.del_flag = 0
-        AND smp.del_flag = 0
         <if test="tel != null and tel != '' ">
             AND smm.mobile = #{tel}
         </if>
