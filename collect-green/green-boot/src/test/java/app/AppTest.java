@@ -52,21 +52,21 @@ public class AppTest {
 		recyclersLoginBean.setMobile("18375336389");
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","app.token.get");
+		param.put("name","app.getCompanyList");
 		param.put("version","1.0");
 		param.put("format","json");
-		param.put("app_key","app_id_3");
+		param.put("app_key","app_id_2");
 		param.put("timestamp", Calendar.getInstance().getTimeInMillis());
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",recyclersLoginBean);
+		param.put("data",null);
 
 		String signKey = SignUtils.produceSignKey(token, APP_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);
 		String jsonStr = JSON.toJSONString(param);
-		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), signKey);
-		param.put("sign", "sign_key_55667788");
+		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");
+		param.put("sign", sign);
 
 		System.out.println("请求的参数是 ："+JSON.toJSONString(param));
 		Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();

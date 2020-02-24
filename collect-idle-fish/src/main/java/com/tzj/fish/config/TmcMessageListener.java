@@ -1,5 +1,7 @@
 package com.tzj.fish.config;
 
+import com.aliyun.openservices.ons.api.Producer;
+import com.aliyun.openservices.ons.api.SendResult;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.internal.tmc.Message;
@@ -9,6 +11,8 @@ import com.taobao.api.internal.tmc.TmcClient;
 import com.taobao.api.internal.toplink.LinkException;
 import com.taobao.api.request.TmcUserPermitRequest;
 import com.taobao.api.response.TmcUserPermitResponse;
+import com.tzj.fish.common.rocket.RocketUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +24,8 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Configuration
 public class TmcMessageListener {
+    @Autowired
+    private Producer producer;
 
     @Bean
     public TmcClient tmcClientListener(){
@@ -31,6 +37,11 @@ public class TmcMessageListener {
                     System.out.println(message.getContent());
                     System.out.println(message.getTopic());
                     //client.Send("helloworld-topic", "{helloworld-content}", "session_key");
+
+                    com.aliyun.openservices.ons.api.Message aliMessage = new com.aliyun.openservices.ons.api.Message(RocketUtil.ALI_TOPIC,"TagA","Hello MQ".getBytes());
+                    aliMessage.setKey(message.getContent()+"----"+message.getTopic());
+                    // 发送消息，只要不抛异常就是成功
+                    SendResult sendResult = producer.send(aliMessage);
                 } catch (Exception e) {
                     e.printStackTrace();
                     status.fail(); // 消息处理失败回滚，服务端需要重发

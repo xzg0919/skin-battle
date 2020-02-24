@@ -58,6 +58,8 @@ public class AppRecyclersApi {
 	private MemberService memberService;
 	@Resource
 	private ProductGoodsService productGoodsService;
+	@Resource
+	private CompanyService companyService;
 
 	public Recyclers getRecycler() {
 		Subject subject=ApiContext.getSubject();
@@ -515,5 +517,17 @@ public class AppRecyclersApi {
 		Recyclers recycler = getRecycler();
 		recyclersBean.setId(recycler.getId());
 		return recyclersService.pointsList(recyclersBean);
+	}
+	/**
+	 *
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/2/21 0021
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.getCompanyList", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getCompanyList(){
+		return companyService.getCompanyList();
 	}
 }
