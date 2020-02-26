@@ -36,4 +36,6 @@ public interface RecyclersService extends IService<Recyclers>
     String getAuthCode(String authCode, Long recyclersId) throws Exception;
 
     Map<String, Object> pointsList(RecyclersBean recyclersBean);
+
+    Object updatePassword(Long recyclersId,RecyclersBean recyclersBean);
 }

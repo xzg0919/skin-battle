@@ -68,7 +68,15 @@ public class ProduceApi {
         Company company = CompanyUtils.getCompanyAccount();
         return  productService.getGoodsListByCompanyId(company.getId(),productBean);
     }
-
+    /**
+     *根据活动ID和商品Id查询相关的兑换记录
+     */
+    @Api(name = "company.getGoodsOrderDetailList", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Object getGoodsOrderDetailList(ProductBean productBean) {
+        return  productService.getGoodsOrderDetailList(productBean);
+    }
 
 
 

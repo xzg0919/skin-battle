@@ -77,8 +77,8 @@
             c.name_ as name
         FROM
             sb_company_recycler a
-        LEFT JOIN sb_recyclers_range b ON a.recycler_id = b.recyclers_id
-        LEFT JOIN sb_recyclers c ON a.recycler_id = b.recyclers_id
+        INNER JOIN sb_recyclers_range b ON a.recycler_id = b.recyclers_id
+        INNER JOIN sb_recyclers c ON c.id = a.recycler_id
         WHERE
             a.company_id = #{companyId}
         AND a.card_type in (0,2)

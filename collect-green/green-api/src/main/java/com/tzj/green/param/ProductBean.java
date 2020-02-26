@@ -76,4 +76,8 @@ public class ProductBean {
 
     private String aliUserId;
 
+    private String productId;
+
+    private String goodId;
+
 }

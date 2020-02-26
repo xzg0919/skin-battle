@@ -1,7 +1,9 @@
 package com.tzj.green.api.app;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.green.common.utils.RecyclerUtils;
 import com.tzj.green.entity.Recyclers;
+import com.tzj.green.param.RecyclersBean;
 import com.tzj.green.param.RecyclersLoginBean;
 import com.tzj.green.param.TokenBean;
 import com.tzj.green.service.MessageService;
@@ -107,6 +109,20 @@ public class AppTokenApi {
         tokenBean.setExpire(APP_API_EXPRIRE);
         tokenBean.setToken(securityToken);
         return tokenBean;
+    }
+
+    /**
+     *
+     * @author: sgmark@aliyun.com
+     * @Date: 2020/2/21 0021
+     * @Param:
+     * @return:
+     */
+    @Api(name = "app.updatePassword", version = "1.0")
+    @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+    public Object updatePassword(RecyclersBean recyclersBean){
+        Recyclers recyclers = RecyclerUtils.getRecyclers();
+        return recyclersService.updatePassword(recyclers.getId(),recyclersBean);
     }
 
 }

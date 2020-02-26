@@ -157,7 +157,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         if (!paramMap.containsKey("pointList")){
             throw new ApiException("pointList 不能为空");
         }
-        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("del_flag", 0).eq("user_no", pointsList.getUserNo()).last(" limit 1"));
+        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("del_flag", 0).eq("user_no", paramMap.get("realNo")).last(" limit 1"));
         if(!paramMap.containsKey("pointType")){
             throw new ApiException("pointType 不能为空");
         }else {
@@ -189,6 +189,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
                 memberPoints.setAliUserId(paramMap.get("aliUserId")+"");
             }
         }
+        //用户增加/减少积分
+        memberPointsService.insertOrUpdate(memberPoints);
         if (!paramMap.containsKey("realNo")){
             throw new ApiException("实体卡号不能为空");
         }else {
@@ -217,15 +219,23 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             pointsListItem.setPointsListId(pointsList.getId());
             pointsListItem.setPoints(Long.parseLong(pointList.get("point")+""));
             pointsListItem.setAmount(Long.parseLong(pointList.get("amount")+""));
-            pointsListItem.setCategoryId(Long.parseLong(pointList.get("categoryId")+""));
-            pointsListItem.setCategoryName(pointList.get("categoryName")+"");
-            pointsListItem.setParentId(Long.parseLong(pointList.get("parentId")+""));
-            pointsListItem.setParentName(pointList.get("parentName")+"");
-            pointsListItem.setParentIds(pointList.get("parentIds")+"");
+            if (null!=pointList.get("categoryId")){
+                pointsListItem.setCategoryId(Long.parseLong(pointList.get("categoryId")+""));
+            }
+            if (null!=pointList.get("categoryName")){
+                pointsListItem.setCategoryName(pointList.get("categoryName")+"");
+            }
+            if (null!=pointList.get("parentId")){
+                pointsListItem.setParentId(Long.parseLong(pointList.get("parentId")+""));
+            }
+            if (null!=pointList.get("parentName")){
+                pointsListItem.setParentName(pointList.get("parentName")+"");
+            }
+            if (null!=pointList.get("parentIds")){
+                pointsListItem.setParentIds(pointList.get("parentIds")+"");
+            }
             pointsListItemService.insert(pointsListItem);
         });
-        //用户增加/减少积分
-        memberPointsService.insertOrUpdate(memberPoints);
         return returnMap;
     }
 
@@ -254,6 +264,15 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         returnMap.put("count", pointsCount);
         returnMap.put("list", pointsList);
         return returnMap;
+    }
+
+    @Override
+    @Transactional
+    public Object updatePassword(Long recyclersId, RecyclersBean recyclersBean) {
+        Recyclers recyclers = this.selectById(recyclersId);
+        recyclers.setPassword(recyclersBean.getPassword());
+        this.updateById(recyclers);
+        return "操作成功";
     }
 
 

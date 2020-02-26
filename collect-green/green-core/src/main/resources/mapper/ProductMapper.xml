@@ -10,6 +10,8 @@
         DATE_FORMAT(a.pick_start_date,'%y-%m-%d') AS pickStartDate,
         DATE_FORMAT(a.pick_end_date,'%y-%m-%d') AS pickEndDate,
         a.detail,
+        a.company_id AS companyId,
+        a.house_name_id AS houseId,
         c.city_id AS cityId,
         c.city_name AS cityName,
         c.province_id AS provinceId,
@@ -18,7 +20,9 @@
         c.area_name AS areaName,
         c.street_id AS streetId,
         c.street_name AS streetName,
+        c.id AS communityId,
         c.community_name AS communityName,
+        b.id  AS houseId,
         b.house_name AS houseName,
         b.address_ AS address
     FROM
@@ -61,7 +65,7 @@
             b.name_ AS name
         FROM
             sb_product_recycler a
-        LEFT JOIN sb_recyclers b ON a.recyclers_id = b.id
+        INNER JOIN sb_recyclers b ON a.recyclers_id = b.id
         WHERE
             a.product_id = #{productId}
     </select>
@@ -134,5 +138,29 @@
         <if test="name != null and name != ''">
             AND a.goods_name LIKE CONCAT('%',#{name},'%')
         </if>
+    </select>
+    <select id="getGoodsOrderDetailList" parameterType="Object" resultType="Map">
+        SELECT
+            DATE_FORMAT(a.create_date, '%Y-%m-%d %H:%i:%s') AS createDate,
+            a.user_name AS userName,
+            a.user_no AS userNo,
+            a.tel,
+            a.goods_num AS goodsNum,
+            a.points
+        FROM
+            sb_product_order a
+        WHERE
+            a.product_id = #{productId}
+        AND a.goods_id = #{goodId}
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getGoodsOrderCount" parameterType="String" resultType="Integer">
+        SELECT
+            count(1)
+        FROM
+            sb_product_order a
+        WHERE
+            a.product_id = #{productId}
+        AND a.goods_id = #{goodId}
     </select>
 </mapper>

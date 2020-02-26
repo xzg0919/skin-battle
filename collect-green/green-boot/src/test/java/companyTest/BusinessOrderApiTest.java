@@ -44,38 +44,27 @@ public class BusinessOrderApiTest {
 		System.out.println("反向編譯 token是："+subjectStr);
 
 
-		String api="http://localhost:9090/app/api";
-		Map<String, Object> paramMap = new HashMap<>();
-//		paramMap.put("pointType", 0);
-//		List<Map<String, Object>> mapList = new ArrayList<>();
-//		Map<String, Object> map = new HashMap<>();
-//		map.put("amount", 2);
-//		map.put("point", 1);
-//		map.put("categoryId", 5);
-//		map.put("categoryName", "废纸");
-//		map.put("parentId", 4);
-//		map.put("parentName", "可回收垃圾");
-//		mapList.add(map);
-		paramMap.put("id", "2");
-//		paramMap.put("userName", "郑东东");
-//		paramMap.put("aliUserId", "21312313");
-//		paramMap.put("points", 2);
-//		paramMap.put("pointList", mapList);
+		String api="http://localhost:9090/company/api";
+		ProductBean productBean = new ProductBean();
+		productBean.setPageBean(new PageBean());
+		productBean.setProductId("1");
+		productBean.setGoodId("2");
+
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","app.goods.list.id");
+		param.put("name","company.getGoodsOrderDetailList");
 		param.put("version","1.0");
 		param.put("format","json");
-		param.put("app_key","app_id_2");
+		param.put("app_key","app_id_3");
 		param.put("timestamp", Calendar.getInstance().getTimeInMillis());
 		param.put("token", "F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CER4EQ6GQIWG5SXSKTY4TV6P26Y544X3OXL5UQXLGKKUYB6T5QIB34FOTP77UXKPHU4NIKRIOJOIT2R4SVG2CWJ5HJEMFFJ6KEX66QBY3EBG5EHUIGUSSE6DABOHKDTMFZQOO3KFBC2F6UTKMM5EPKY3YAM6TTQHBCJSVNR2SPG7OENK2KT62DWRYYEH7F5SUG74O4D7FXXUPQ3FAX7BHZQBR6LLA");
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",paramMap);
+		param.put("data",productBean);
 
 		String signKey = SignUtils.produceSignKey(token, "sign_key_55667788");
 		System.out.println(signKey);
 		String jsonStr = JSON.toJSONString(param);
-		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");
+		String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_99aabbcc");
 		System.out.println(sign);
 		param.put("sign", sign);
 

@@ -6,15 +6,13 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import javax.annotation.Resource;
 
 import com.tzj.green.entity.*;
+import com.tzj.green.mapper.CompanyCommunityMapper;
 import com.tzj.green.mapper.MemberMapper;
 import com.tzj.green.mapper.ProductMapper;
 import com.tzj.green.param.PageBean;
 import com.tzj.green.param.ProductBean;
 import com.tzj.green.param.ProductGoodsBean;
-import com.tzj.green.service.GoodsService;
-import com.tzj.green.service.ProductGoodsService;
-import com.tzj.green.service.ProductRecyclerService;
-import com.tzj.green.service.ProductService;
+import com.tzj.green.service.*;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>Created on2019年12月30日</p>
@@ -51,13 +46,17 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private GoodsService goodsService;
     @Resource
     private MemberMapper memberMapper;
+    @Autowired
+    private CompanyCommunityMapper companyCommunityMapper;
 
     @Override
     @Transactional
     public Object saveOrUpdateProduct(ProductBean productBean, Long companyId) {
         Product product = this.selectById(productBean.getId());
+        boolean isUpdate = false;
         if (null == product) {
             product = new Product();
+            isUpdate = true;
         }
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
         product.setCompanyId(companyId);
@@ -86,19 +85,21 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productRecyclerService.insertOrUpdate(productRecycler);
         });
         List<ProductGoodsBean> productGoodsBeanList = productBean.getProductGoodsBeanList();
-        productGoodsBeanList.stream().forEach(productGoodsBean -> {
-            ProductGoods productGoods = productGoodsService.selectOne(new EntityWrapper<ProductGoods>().eq("goods_id", productGoodsBean.getGoodsId()).eq("product_id", productId));
-            if (null == productGoods) {
-                productGoods = new ProductGoods();
-            }
-            productGoods.setProductId(productId);
-            productGoods.setGoodsId(Long.parseLong(productGoodsBean.getGoodsId()));
-            productGoods.setTotalNum(Long.parseLong(productGoodsBean.getTotalNum()));
-            productGoodsService.insertOrUpdate(productGoods);
-            Goods goods = goodsService.selectById(productGoodsBean.getGoodsId());
-            goods.setGoodsFrozenNum(goods.getGoodsFrozenNum() + Long.parseLong(productGoodsBean.getTotalNum()));
-            goodsService.updateById(goods);
-        });
+        if (isUpdate&&productGoodsBeanList!=null){
+            productGoodsBeanList.stream().forEach(productGoodsBean -> {
+                ProductGoods productGoods = productGoodsService.selectOne(new EntityWrapper<ProductGoods>().eq("goods_id", productGoodsBean.getGoodsId()).eq("product_id", productId));
+                if (null == productGoods) {
+                    productGoods = new ProductGoods();
+                }
+                productGoods.setProductId(productId);
+                productGoods.setGoodsId(Long.parseLong(productGoodsBean.getGoodsId()));
+                productGoods.setTotalNum(Long.parseLong(productGoodsBean.getTotalNum()));
+                productGoodsService.insertOrUpdate(productGoods);
+                Goods goods = goodsService.selectById(productGoodsBean.getGoodsId());
+                goods.setGoodsFrozenNum(goods.getGoodsFrozenNum() + Long.parseLong(productGoodsBean.getTotalNum()));
+                goodsService.updateById(goods);
+            });
+        }
         return "操作成功";
     }
 
@@ -157,10 +158,16 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         List<Map<String, Object>> ProductGoods = productMapper.getProductGoodsList(productId, pageStart, pageBean.getPageSize());
         Integer count = productMapper.getProductGoodsCount(productId);
         List<Map<String, Object>> recyclerList = productMapper.getRecyclerList(productId);
+        List<Map<String, Object>> recyclerListByHouseId = companyCommunityMapper.getRecyclerListByHouseId(product.get("houseId")+"", Long.parseLong(product.get("companyId")+""));
+        List<Object> recyclerIds = new ArrayList<>();
+        recyclerList.stream().forEach(map ->{
+            recyclerIds.add(map.get("id"));
+        });
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("product", product);
         resultMap.put("ProductGoods", ProductGoods);
-        resultMap.put("recyclerList", recyclerList);
+        resultMap.put("recyclerList", recyclerIds);
+        resultMap.put("recyclerListByHouseId", recyclerListByHouseId);
         resultMap.put("count", count);
         resultMap.put("pageNum", pageBean.getPageNum());
         return resultMap;
@@ -216,6 +223,22 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         resultMap.put("activity",productMapper.activityDetail(activityCode));
         //获取活动下的礼品信息
         resultMap.put("goodsList",goodsService.getGoodsListByActivityId(activityCode));
+        return resultMap;
+    }
+
+    @Override
+    public Object getGoodsOrderDetailList(ProductBean productBean) {
+        PageBean pageBean = productBean.getPageBean();
+        if (null == pageBean){
+            pageBean = new PageBean();
+        }
+        Integer pageStart = (pageBean.getPageNum()-1)*pageBean.getPageSize();
+        List<Map<String,Object>> GoodsOrderDetailList  = productMapper.getGoodsOrderDetailList(productBean.getProductId(),productBean.getGoodId(),pageStart,pageBean.getPageSize());
+        Integer count = productMapper.getGoodsOrderCount(productBean.getProductId(), productBean.getGoodId());
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("GoodsOrderDetailList",GoodsOrderDetailList);
+        resultMap.put("count",count);
+        resultMap.put("pageNum",pageBean.getPageNum());
         return resultMap;
     }
 

@@ -113,10 +113,10 @@
             smm.name_,
             smm.mobile,
             smm.real_no,
-            smp.remnant_points
+        IF(smp.remnant_points is null,'0',smp.remnant_points) AS remnant_points
         FROM
             sb_member smm
-        INNER JOIN sb_member_points smp ON smm.real_no = smp.user_no
+        LEFT JOIN sb_member_points smp ON smm.real_no = smp.user_no
         WHERE
             smm.del_flag = 0
         <if test="tel != null and tel != '' ">

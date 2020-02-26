@@ -47,12 +47,11 @@ public class AppTest {
 
 		String api="http://localhost:9090/app/api";
 
-		RecyclersLoginBean recyclersLoginBean =new RecyclersLoginBean();
-
-		recyclersLoginBean.setMobile("18375336389");
+		RecyclersBean recyclersBean = new RecyclersBean();
+		recyclersBean.setPassword("aaaaaa");
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","app.getCompanyList");
+		param.put("name","app.updatePassword");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_2");
@@ -60,7 +59,7 @@ public class AppTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",null);
+		param.put("data",recyclersBean);
 
 		String signKey = SignUtils.produceSignKey(token, APP_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);
