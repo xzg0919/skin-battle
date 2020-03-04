@@ -63,6 +63,8 @@ public class Category extends DataEntity<Long> {
 
 	private String aliItemType;
 
+	private String xyItemType;//咸鱼对接时类型的匹配
+
 	private String antForestPic;
 
 	private String iconPic;

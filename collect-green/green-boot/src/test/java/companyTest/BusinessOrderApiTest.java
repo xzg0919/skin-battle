@@ -45,21 +45,19 @@ public class BusinessOrderApiTest {
 
 
 		String api="http://localhost:9090/company/api";
-		ProductBean productBean = new ProductBean();
-		productBean.setPageBean(new PageBean());
-		productBean.setProductId("1");
-		productBean.setGoodId("2");
+		CompanyCommunityBean companyCommunityBean = new CompanyCommunityBean();
+		companyCommunityBean.setId("2");
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","company.getGoodsOrderDetailList");
+		param.put("name","company.getCompanyCommunityById");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
 		param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-		param.put("token", "F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CER4EQ6GQIWG5SXSKTY4TV6P26Y544X3OXL5UQXLGKKUYB6T5QIB34FOTP77UXKPHU4NIKRIOJOIT2R4SVG2CWJ5HJEMFFJ6KEX66QBY3EBG5EHUIGUSSE6DABOHKDTMFZQOO3KFBC2F6UTKMM5EPKY3YAM6TTQHBCJSVNR2SPG7OENK2KT62DWRYYEH7F5SUG74O4D7FXXUPQ3FAX7BHZQBR6LLA");
+		param.put("token", securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",productBean);
+		param.put("data",companyCommunityBean);
 
 		String signKey = SignUtils.produceSignKey(token, "sign_key_55667788");
 		System.out.println(signKey);

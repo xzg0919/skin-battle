@@ -94,7 +94,7 @@ public class CompanyCommunity extends DataEntity<Long>
      */
     private String wetTime;
     /**
-     * 湿垃圾投放时间
+     * 有害圾投放时间
      */
     private String harmfulTime;
     /**

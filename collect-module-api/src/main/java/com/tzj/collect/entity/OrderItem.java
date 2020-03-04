@@ -3,6 +3,7 @@ package com.tzj.collect.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
  * @Author 王灿
  **/
 @TableName("sb_order_item")
+@Data
 public class OrderItem extends  DataEntity<Long>{
     private Long id;
     /**
@@ -21,6 +23,11 @@ public class OrderItem extends  DataEntity<Long>{
     private  Integer orderId;
     @TableField(exist=false)
     private Order order;
+	/**
+	 * 订单分类关联表Id
+	 */
+	private Integer orderCategoryId;
+
     /**
      * 分类id
      */

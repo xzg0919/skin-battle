@@ -14,6 +14,7 @@ import com.tzj.collect.core.param.ali.AliCategoryAttrOptionBean;
 import com.tzj.collect.core.param.ali.CategoryAttrBean;
 import com.tzj.collect.core.param.business.CategoryBean;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
+import com.tzj.collect.core.param.xianyu.XyCategory;
 import com.tzj.collect.core.result.ali.ClassifyAndMoney;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.result.business.BusinessCategoryResult;
@@ -653,7 +654,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         }
         return cityId;
     }
-
+    @Override
     public Object getCategoryNewHouseList() {
         Map<String, Object> resultMap = new HashMap<>();
         List<Category> categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
@@ -665,7 +666,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         resultMap.put("categoryList", categoryList);
         return resultMap;
     }
-
+    @Override
     public Object getCategoryNewHouseListByToken(String aliUserId) {
         Map<String, Object> resultMap = new HashMap<>();
         List<Category> categoryList = null;
@@ -695,5 +696,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getCode)).collect(Collectors.toList());
         resultMap.put("categoryList", categoryList);
         return resultMap;
+    }
+    @Override
+    public Category selectByXyItemType(String xyItemType){
+        return this.selectOne(new EntityWrapper<Category>().eq("xy_item_type",xyItemType));
+    }
+    @Override
+    public List<Map<String,Object>> selectXyList(){
+        return categoryMapper.selectXyList();
     }
 }

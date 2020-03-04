@@ -39,7 +39,7 @@ public class TmcMessageListener {
                     //client.Send("helloworld-topic", "{helloworld-content}", "session_key");
 
                     com.aliyun.openservices.ons.api.Message aliMessage = new com.aliyun.openservices.ons.api.Message(RocketUtil.ALI_TOPIC,"TagA","Hello MQ".getBytes());
-                    aliMessage.setKey(message.getContent()+"----"+message.getTopic());
+                    aliMessage.setKey(message.getContent());
                     // 发送消息，只要不抛异常就是成功
                     SendResult sendResult = producer.send(aliMessage);
                 } catch (Exception e) {

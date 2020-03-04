@@ -106,6 +106,18 @@
 		LEFT JOIN ( SELECT * FROM sb_company_category_city WHERE company_id = #{companyId} AND city_id = #{cityId} AND category_id = #{categoryId} ) c ON a.id = c.category_id
 			WHERE a.id = #{categoryId}
 	</select>
+	<select id="selectXyList" resultType="Map" >
+		SELECT
+			FALSE AS banned,
+			a.id ,
+			a.name_ AS name,
+			'TEXT' AS type
+		FROM
+			sb_category a
+		WHERE
+			a.level_ = 0
+		AND a.title = 2
+	</select>
 	 
     
     <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->  

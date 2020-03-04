@@ -75,9 +75,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         }
         Map<String, Object> returnMap = new HashMap<>();
         Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("real_no", recyclersBean.getRealNo()));
-        if (null == member){
-            member = new Member();
+        if (null != member){
+            throw new ApiException("该卡号已绑定");
         }
+        member = new Member();
         member.setName(recyclersBean.getName());
         member.setMobile(recyclersBean.getMobile());
         member.setAddress(recyclersBean.getAddress());

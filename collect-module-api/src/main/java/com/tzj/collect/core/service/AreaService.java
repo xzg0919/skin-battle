@@ -57,9 +57,9 @@ public interface AreaService  extends IService<Area>{
 	Object saveOrUpdateCommunity(Integer companyId, String location) throws Exception;
 
 	Object deleteCommunityByIds(List<String> communityIds);
-
+	@DS("slave")
 	List<StreetNameBean> selectStreetList();
-
+	@DS("slave")
 	List<StreetNameBean> selectStreetListByName(String name, String code);
 
 	Integer updateStreet(String id, String name, String code);
@@ -95,4 +95,6 @@ public interface AreaService  extends IService<Area>{
 	Map<String,Object> getTitleByCompanyId(AreaBean areaBean);
 
 	Map<String, Object> allAreaStreetIdNameInfo();
+	@DS("slave")
+	Area selectByCode(Long townId);
 }

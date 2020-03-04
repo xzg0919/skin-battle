@@ -41,7 +41,7 @@
         <if test="houseName != null and houseName !='' ">
             AND b.house_name LIKE CONCAT('%',#{houseName},'%')
         </if>
-        GROUP BY a.create_date DESC
+        ORDER BY a.create_date DESC
         LIMIT #{pageStartNum},#{pageSize}
     </select>
     <select id="getCompanyCommunityCount" parameterType="Object" resultType="Integer">

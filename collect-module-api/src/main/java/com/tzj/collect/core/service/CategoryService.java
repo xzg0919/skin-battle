@@ -4,11 +4,13 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 
 import com.tzj.collect.core.param.ali.CategoryAttrBean;
+import com.tzj.collect.core.param.xianyu.XyCategory;
 import com.tzj.collect.core.result.ali.ClassifyAndMoney;
 import com.tzj.collect.core.param.business.CategoryBean;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
 import com.tzj.collect.core.result.business.CategoryResult;
 import com.tzj.collect.entity.Category;
+import sun.rmi.runtime.Log;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -173,4 +175,8 @@ public interface CategoryService extends IService<Category> {
 	Object getCategoryNewHouseList();
 	@DS("slave")
 	Object getCategoryNewHouseListByToken(String aliUserId);
+	@DS("slave")
+	Category selectByXyItemType(String xyItemType);
+	@DS("slave")
+	List<Map<String,Object>> selectXyList();
 }

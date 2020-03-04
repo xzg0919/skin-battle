@@ -1,15 +1,16 @@
-package com.tzj.fish.common.rocket;
+package com.tzj.collect.config;
 
 import com.aliyun.openservices.ons.api.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.tzj.collect.api.common.*;
 
 import java.util.Properties;
 
 @Configuration
 public class RocketConfig {
 
-    @Bean
+    //@Bean
     public Producer producer(){
         Properties properties = new Properties();
         properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.XANYU_GROUP_ID);
@@ -29,7 +30,7 @@ public class RocketConfig {
     }
 
 
-    //@Bean
+    @Bean
     public Consumer consumer(){
         Properties properties = new Properties();
         properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.XANYU_GROUP_ID);
