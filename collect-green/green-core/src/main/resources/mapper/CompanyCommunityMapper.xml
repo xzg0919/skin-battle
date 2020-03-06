@@ -23,6 +23,9 @@
         LEFT JOIN sb_community_house_name b ON a.id = b.community_id
         WHERE
             a.company_id = #{companyId}
+        <if test="communityNo != null and communityNo !='' ">
+            AND a.community_no = #{communityNo}
+        </if>
         <if test="provinceId != null and provinceId !='' ">
             AND a.province_id = #{provinceId}
         </if>
@@ -52,6 +55,9 @@
         LEFT JOIN sb_community_house_name b ON a.id = b.community_id
         WHERE
         a.company_id = #{companyId}
+        <if test="communityNo != null and communityNo !='' ">
+            AND a.community_no = #{communityNo}
+        </if>
         <if test="provinceId != null and provinceId !='' ">
             AND a.province_id = #{provinceId}
         </if>

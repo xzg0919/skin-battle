@@ -21,9 +21,9 @@ import java.util.Map;
 public interface CompanyCommunityMapper extends BaseMapper<CompanyCommunity>
 {
 
-   List<Map<String,Object>> getCompanyCommunityList(@Param("companyId") Long companyId,@Param("provinceId") String provinceId,@Param("cityId") String  cityId, @Param("areaId") String areaId, @Param("streetId") String streetId,@Param("communityName") String communityName,@Param("houseName") String houseName,@Param("pageStartNum") Integer pageStartNum, @Param("pageSize") Integer pageSize);
+   List<Map<String,Object>> getCompanyCommunityList(@Param("communityNo") String communityNo,@Param("companyId") Long companyId,@Param("provinceId") String provinceId,@Param("cityId") String  cityId, @Param("areaId") String areaId, @Param("streetId") String streetId,@Param("communityName") String communityName,@Param("houseName") String houseName,@Param("pageStartNum") Integer pageStartNum, @Param("pageSize") Integer pageSize);
 
-    Integer getCompanyCommunityCount(@Param("companyId") Long companyId,@Param("provinceId") String provinceId,@Param("cityId") String  cityId, @Param("areaId") String areaId, @Param("streetId") String streetId,@Param("communityName") String communityName,@Param("houseName") String houseName);
+    Integer getCompanyCommunityCount(@Param("communityNo") String communityNo,@Param("companyId") Long companyId,@Param("provinceId") String provinceId,@Param("cityId") String  cityId, @Param("areaId") String areaId, @Param("streetId") String streetId,@Param("communityName") String communityName,@Param("houseName") String houseName);
 
     List<Map<String,Object>> getRecyclerListByHouseId(@Param("communityHouseId")String communityHouseId,@Param("companyId")Long companyId);
 

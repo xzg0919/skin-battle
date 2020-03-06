@@ -13,14 +13,21 @@ import com.tzj.collect.core.param.xianyu.*;
 import com.tzj.collect.core.service.AreaService;
 import com.tzj.collect.core.service.CategoryService;
 import com.tzj.collect.core.service.CompanyStreetHouseService;
+import com.tzj.collect.core.service.XyCategoryOrderService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Category;
+import com.tzj.collect.entity.XyCategoryOrder;
+import com.tzj.module.easyopen.exception.ApiException;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 import static com.tzj.collect.common.utils.ToolUtils.appkey;
@@ -35,6 +42,8 @@ public class XanYuController {
     private CompanyStreetHouseService companyStreetHouseService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private XyCategoryOrderService xyCategoryOrderService;
 
 
     /**
@@ -42,7 +51,7 @@ public class XanYuController {
      * @return
      */
     @RequestMapping("/quote/template")
-    public Object getQuoteTemplate(HttpServletRequest request,XyTemplate xyTemplate){
+    public Object getQuoteTemplate(HttpServletRequest request){
         Map<String,Object> resultMap = new  HashMap<>();
         Map<String,Object> categoryMap = new  HashMap<>();
         List<Map<String, Object>> answers = categoryService.selectXyList();
@@ -63,7 +72,7 @@ public class XanYuController {
                 xyCategoryList.add(xyCategoryNum);
             categoryMap.put("prodName","生活垃圾回收");
             categoryMap.put("quoteType","realtime");
-            categoryMap.put("spuId",xyTemplate.getSpuid());
+            categoryMap.put("spuId",1);
             categoryMap.put("questions",xyCategoryList);
             resultMap.put("template", JSON.toJSONString(categoryMap));
             resultMap.put("errCode","0");
@@ -78,25 +87,16 @@ public class XanYuController {
      * @return
      */
     @RequestMapping("/quote/get")
-    public Object getQuoteGet(HttpServletRequest request,XyQuote xyQuote){
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("price",1);
-        resultMap.put("quoteId",xyQuote.getQuoteId());
-        resultMap.put("spuId",xyQuote.getSpuid());
-        resultMap.put("success",true);
-        resultMap.put("errCode","0");
-        resultMap.put("errMessage","OK");
-        resultMap.put("sub_code","sign-check-failure");
-        resultMap.put("sub_message","Illegal request");
-        System.out.println(JSON.toJSONString(resultMap));
-        return resultMap;
+    public Object getQuoteGet(HttpServletRequest request) throws Exception {
+        String stream = getInputStream(request);
+        return xyCategoryOrderService.insertGetQuoteGet(stream);
     }
     /**
      * 给咸鱼提供回收订单预付款查询
      * @return
      */
     @RequestMapping("/order/prepay/check")
-    public Object getOrderPrepayCheck(HttpServletRequest request,XyPrepay xyPrepay){
+    public Object getOrderPrepayCheck(HttpServletRequest request){
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("creditPay",true);
         resultMap.put("creditPayAmount",0);
@@ -111,9 +111,10 @@ public class XanYuController {
      * @return
      */
     @RequestMapping("/address/check")
-    public Object getAddressCheck(HttpServletRequest request,XyAddress xyAddress){
+    public Object getAddressCheck(HttpServletRequest request) throws Exception {
+        String stream = getInputStream(request);
         Map<String,Object> resultMap = new HashMap<>();
-        Long townId = xyAddress.getTownId();
+        Long townId = 10020L;
         Area area = areaService.selectByCode(townId);
         if (null != area){
             Integer companyId = companyStreetHouseService.selectStreetHouseCompanyId(area.getId().intValue());
@@ -172,5 +173,24 @@ public class XanYuController {
             answersList.add(answers2);
             answersList.add(answers3);
         return answersList;
+    }
+    public static String getInputStream(HttpServletRequest request) throws Exception {
+        ServletInputStream stream = null;
+        BufferedReader reader = null;
+        StringBuffer sb = new StringBuffer();
+        try {
+            stream = request.getInputStream();
+            // 获取响应
+            reader = new BufferedReader(new InputStreamReader(stream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (IOException e) {
+            throw new ApiException("读取返回支付接口数据流出现异常！");
+        } finally {
+            reader.close();
+        }
+        return sb.toString();
     }
 }

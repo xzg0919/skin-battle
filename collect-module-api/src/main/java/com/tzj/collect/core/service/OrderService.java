@@ -441,4 +441,6 @@ public interface OrderService extends IService<Order> {
 	Integer getOrderListByDate(String startTime,String endTime,String title,String status);
 	@DS("slave")
 	Map<String, Object>  selectIotRecList(Long recId, String status, PageBean pageBean);
+
+	Object saveXyOrder(String message);
 }

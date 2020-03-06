@@ -155,9 +155,9 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
         }
         Integer pageStartNum = (pageBean.getPageNum()-1)*pageBean.getPageSize();
 
-        List<Map<String, Object>> companyCommunityList = companyCommunityMapper.getCompanyCommunityList(companyId, companyCommunityBean.getProvinceId(), companyCommunityBean.getCityId(), companyCommunityBean.getAreaId(), companyCommunityBean.getStreetId(), companyCommunityBean.getCommunityName(),  companyCommunityBean.getCommunityHouseName(), pageStartNum, pageBean.getPageSize());
+        List<Map<String, Object>> companyCommunityList = companyCommunityMapper.getCompanyCommunityList(companyCommunityBean.getCommunityNo(),companyId, companyCommunityBean.getProvinceId(), companyCommunityBean.getCityId(), companyCommunityBean.getAreaId(), companyCommunityBean.getStreetId(), companyCommunityBean.getCommunityName(),  companyCommunityBean.getCommunityHouseName(), pageStartNum, pageBean.getPageSize());
 
-        Integer count = companyCommunityMapper.getCompanyCommunityCount(companyId, companyCommunityBean.getProvinceId(), companyCommunityBean.getCityId(), companyCommunityBean.getAreaId(), companyCommunityBean.getStreetId(), companyCommunityBean.getCommunityName(), companyCommunityBean.getCommunityHouseName());
+        Integer count = companyCommunityMapper.getCompanyCommunityCount(companyCommunityBean.getCommunityNo(),companyId, companyCommunityBean.getProvinceId(), companyCommunityBean.getCityId(), companyCommunityBean.getAreaId(), companyCommunityBean.getStreetId(), companyCommunityBean.getCommunityName(), companyCommunityBean.getCommunityHouseName());
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("companyCommunityList",companyCommunityList);
         resultMap.put("count",count);

@@ -67,7 +67,7 @@ public class BusinessOrderApiTest {
 		param.put("sign", sign);
 
 		System.out.println("请求的参数是 ："+JSON.toJSONString(param));
-		Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
+		Response response= FastHttpClient.post().url(api).body("{\"name\":\"company.getCompanyRecyclerList\",\"version\":\"1.0\",\"nonce\":\"bd1ded62-7fca-4585-b39f-42e4759c8b2915834728773819.9077\",\"timestamp\":\"1583472877389\",\"data\":{\"pageBean\":{\"pageNum\":1,\"pageSize\":10},\"cardType\":1},\"token\":\"F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFA2KG3P2LEE7CER4EQ6GQIWG5SXTQFUTW5OYIUS7M4X3OXL5UQXLGAT44PPVDRVGMH44QLXTXAY2UJCK5JH22ZPDCRD2CKPL54HNVUHLLNXQ23MTCDUODE24MVVKFMLPN7RJAGSOG2LZNBWFJZ7CZL6JVZZO7QF3ONYVFM2DH4FB7JLOJTEXMY37EOJGVH3ZUZYAWJRZQ2BQ7IDKWFYUAHOTD7GNAX7BHZQBR6LLA\"}").build().execute();
 		String resultJson=response.body().string();
 		System.out.println("返回的参数是 ："+resultJson);
 	}

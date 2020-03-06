@@ -3,26 +3,32 @@ package com.tzj.collect.config;
 
 import com.alibaba.fastjson.JSON;
 import com.taobao.api.internal.spi.SpiUtils;
+import com.taobao.api.internal.util.StringUtils;
 import com.taobao.api.internal.util.TaobaoUtils;
 import com.taobao.api.internal.util.WebUtils;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.io.InputStreamReader;
+import java.net.URLDecoder;
+import java.util.*;
+
+import static com.taobao.api.internal.spi.SpiUtils.*;
+import static com.tzj.module.api.annotation.CheckSign.json;
 
 @Component
 public class XyInterceptor  implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        System.out.println("division:"+request.getParameter("division"));
+
         Map requestParams = request.getParameterMap();
         for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
             String name = (String) iter.next();

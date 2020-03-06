@@ -1,14 +1,25 @@
 package com.tzj.collect.config;
 
 import com.aliyun.openservices.ons.api.*;
+import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.core.service.RocketmqMessageService;
+import com.tzj.collect.core.service.XyCategoryOrderService;
+import com.tzj.collect.entity.RocketmqMessage;
+import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.tzj.collect.api.common.*;
 
+import java.util.Map;
 import java.util.Properties;
 
 @Configuration
 public class RocketConfig {
+    @Autowired
+    private RocketmqMessageService rocketmqMessageService;
+    @Autowired
+    private OrderService orderService;
 
     //@Bean
     public Producer producer(){
@@ -51,6 +62,15 @@ public class RocketConfig {
         consumer.subscribe(RocketUtil.ALI_TOPIC, "TagA||TagB", new MessageListener() { //订阅多个 Tag
             @Override
             public Action consume(Message message, ConsumeContext context) {
+                try {
+                    RocketmqMessage rocketmqMessage = new RocketmqMessage();
+                    rocketmqMessage.setMessageId(message.getMsgID());
+                    rocketmqMessage.setMessage(message.getKey());
+                    rocketmqMessageService.insert(rocketmqMessage);
+                }catch (Exception e){
+                    return Action.ReconsumeLater;
+                }
+                orderService.saveXyOrder(message.getKey());
                 System.out.println( message.getMsgID()+" : "+message.getKey());
                 return Action.CommitMessage;
             }

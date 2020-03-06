@@ -58,6 +58,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
+
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -155,6 +157,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private VoucherMemberService voucherMemberService;
     @Resource
     private LineQrCodeOrderService lineQrCodeOrderService;
+    @Autowired
+    private XyCategoryOrderService xyCategoryOrderService;
 
     @Resource
     private JedisPool jedisPool;
@@ -4131,7 +4135,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return returnMap;
     }
 
+    @Override
+    public Object saveXyOrder(String message) {
 
+        Map<String, Object> objectMap = (Map<String, Object>) JSONObject.fromObject(message);
+        String nickName = objectMap.get("seller_nick")+"";
+        String address = objectMap.get("seller_address")+"";
+        String aliUserId = objectMap.get("seller_alipay_user_id")+"";
+        String tel = objectMap.get("seller_phone")+"";
+        String quoteId = objectMap.get("apprize_id")+"";
+        List<XyCategoryOrder> xyCategoryOrderList = xyCategoryOrderService.selectList(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId));
+        return null;
+    }
 
 
 }
