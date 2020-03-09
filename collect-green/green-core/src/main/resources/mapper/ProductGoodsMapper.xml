@@ -42,29 +42,21 @@
         LEFT JOIN sb_company_community scc ON hId.community_id = scc.id
     </select>
     <select id="appGoodsList" resultType="Map">
-        SELECT
-            sggp.*, IFNULL(COUNT(1), 0) AS count_
+       SELECT
+            b.id,
+            b.goods_name,
+            b.points,
+            b.big_icon,
+            b.icon,
+            b.detail,
+            a.total_num,
+            a.exchange_num,
+            (a.total_num - a.exchange_num) AS count_
         FROM
-            (
-                SELECT
-                    sg.id,
-                    sg.goods_name,
-                    sg.points,
-                    sg.big_icon,
-                    sg.icon,
-                    sg.detail,
-                    spg.total_num
-                FROM
-                    sb_goods sg
-                INNER JOIN sb_product_goods spg ON sg.id = spg.goods_id
-                WHERE
-                    sg.del_flag = 0
-                AND spg.del_flag = 0
-                AND spg.product_id = #{proId}
-            ) sggp
-        LEFT JOIN sb_product_order spo ON sggp.id = spo.goods_id
-        GROUP BY
-            sggp.id
+            sb_product_goods a
+        INNER JOIN sb_goods b ON a.goods_id = b.id
+        WHERE
+            a.product_id = #{proId}
     </select>
     <select id="goodsAmount" resultType="Map">
         SELECT

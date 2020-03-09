@@ -78,7 +78,12 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         if (null != member){
             throw new ApiException("该卡号已绑定");
         }
+        CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersBean.getRecId()).eq("status_","1"));
+        if (null == companyRecycler){
+            throw new ApiException("该回收人员暂无申请公司");
+        }
         member = new Member();
+        member.setCompanyId(companyRecycler.getCompanyId());
         member.setName(recyclersBean.getName());
         member.setMobile(recyclersBean.getMobile());
         member.setAddress(recyclersBean.getAddress());
