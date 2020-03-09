@@ -17,15 +17,15 @@
         a.community_house_name AS communityHouseName,
         a.address,
         a.detail_address AS detailAddress,
-        b.tatal_points AS tatalPoints,
-        b.remnant_points AS remnantPoints,
-        (b.tatal_points - b.remnant_points) usedPoints
+        IF(b.tatal_points is NULL,0,b.tatal_points) AS tatalPoints,
+        IF(b.remnant_points is NULL,0,b.remnant_points) AS remnantPoints,
+        IF(b.id is null,0,b.tatal_points - b.remnant_points) usedPoints
     FROM
         sb_member a
     LEFT JOIN sb_member_points b ON a.real_no = b.user_no AND a.company_id = b.company_id
     WHERE
         a.company_id = #{companyId}
-    AND a.is_cancel = '0'
+    AND (a.is_cancel = '0' OR a.is_cancel is NULL)
     <if test="startTime != null and startTime != '' ">
         AND a.create_date > CONCAT(#{startTime},' 00:00:01')
     </if>

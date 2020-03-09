@@ -1,17 +1,17 @@
 package com.tzj.collect.config;
 
 import com.aliyun.openservices.ons.api.*;
+import com.tzj.collect.common.constant.ApplicaInit;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.core.service.RocketmqMessageService;
-import com.tzj.collect.core.service.XyCategoryOrderService;
 import com.tzj.collect.entity.RocketmqMessage;
-import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.tzj.collect.api.common.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.Properties;
 
 @Configuration
@@ -20,11 +20,15 @@ public class RocketConfig {
     private RocketmqMessageService rocketmqMessageService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private ApplicaInit applicaInit;
+
+    protected final static Logger logger = LoggerFactory.getLogger(RocketConfig.class);
 
     //@Bean
     public Producer producer(){
         Properties properties = new Properties();
-        properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.XANYU_GROUP_ID);
+        properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.GROUP_ID);
         // AccessKey 阿里云身份验证，在阿里云服务器管理控制台创建
         properties.put(PropertyKeyConst.AccessKey,RocketUtil.Ali_AccessKey);
         // SecretKey 阿里云身份验证，在阿里云服务器管理控制台创建
@@ -44,7 +48,11 @@ public class RocketConfig {
     @Bean
     public Consumer consumer(){
         Properties properties = new Properties();
-        properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.XANYU_GROUP_ID);
+        if (!applicaInit.getIsOpenXyConsumer()){
+            return null;
+        }
+        logger.info("您已开启咸鱼订单消费------注意生产环境");
+        properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.GROUP_ID);
         // AccessKey 阿里云身份验证，在阿里云服务器管理控制台创建
         properties.put(PropertyKeyConst.AccessKey,RocketUtil.Ali_AccessKey);
         // SecretKey 阿里云身份验证，在阿里云服务器管理控制台创建
@@ -62,16 +70,22 @@ public class RocketConfig {
         consumer.subscribe(RocketUtil.ALI_TOPIC, "TagA||TagB", new MessageListener() { //订阅多个 Tag
             @Override
             public Action consume(Message message, ConsumeContext context) {
+                System.out.println( "接收到消息---------"+message.getMsgID()+" : "+message.getKey());
                 try {
                     RocketmqMessage rocketmqMessage = new RocketmqMessage();
                     rocketmqMessage.setMessageId(message.getMsgID());
                     rocketmqMessage.setMessage(message.getKey());
+                    rocketmqMessage.setGroupId(RocketUtil.GROUP_ID);
+                    rocketmqMessage.setTopicId(RocketUtil.ALI_TOPIC);
                     rocketmqMessageService.insert(rocketmqMessage);
                 }catch (Exception e){
                     return Action.ReconsumeLater;
                 }
-                orderService.saveXyOrder(message.getKey());
-                System.out.println( message.getMsgID()+" : "+message.getKey());
+                try {
+                    orderService.saveXyOrder(message.getKey());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 return Action.CommitMessage;
             }
         });

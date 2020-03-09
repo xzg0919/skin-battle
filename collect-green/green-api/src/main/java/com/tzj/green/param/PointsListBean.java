@@ -14,6 +14,8 @@ public class PointsListBean {
 
     private String tel;
 
+    private String provinceId;
+
     private String cityId;
 
     private String areaId;

@@ -10,6 +10,7 @@ import com.tzj.green.param.MemberGoodsBean;
 import com.tzj.green.service.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -41,6 +42,10 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
     private GoodsService goodsService;
     @Resource
     private ProductOrderService productOrderService;
+    @Autowired
+    private CompanyRecyclerService companyRecyclerService;
+    @Autowired
+    private ProductService productService;
 
     /**
      * 根据回收员小区地址查找当前小区活动商品列表
@@ -94,14 +99,16 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
     public Map<String, Object> appGoodsChange(MemberGoodsBean memberGoodsBean) {
         Map<String, Object> returnMap = new HashMap<>();
         //检查数量是否足够兑换
-        Map<String, Object> goodsAmount = productGoodsMapper.goodsAmount(memberGoodsBean.getProductId(), memberGoodsBean.getGoodsId());
-        if (CollectionUtils.isEmpty(goodsAmount) || Integer.parseInt(goodsAmount.get("amount_")+"") < memberGoodsBean.getAmount()){
+        ProductGoods productGoods1 = this.selectOne(new EntityWrapper<ProductGoods>().eq("goods_id", memberGoodsBean.getGoodsId()).eq("product_id", memberGoodsBean.getProductId()));
+        CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", memberGoodsBean.getRecId()).eq("status_", "1"));
+        if (productGoods1.getTotalNum()-productGoods1.getExchangeNum() < memberGoodsBean.getAmount()){
             throw new ApiException("所兑换礼品剩余数量不足");
         }
         Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("real_no", memberGoodsBean.getRealNo()).last(" limit 1"));
+        Product product = productService.selectById(memberGoodsBean.getProductId());
         Goods goods = goodsService.selectById(memberGoodsBean.getGoodsId());
         if (null == member || null == goods){
-            throw new ApiException("兑换不存在");
+            throw new ApiException("兑换用户不存在");
         }
         //扣除积分
         Map<String, Object> paramMap = new HashMap<>();
@@ -110,7 +117,7 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
         //数据库查询所需积分
         paramMap.put("points", Math.abs(goods.getPoints() * memberGoodsBean.getAmount()));
         paramMap.put("recId", memberGoodsBean.getRecId());
-        paramMap.put("companyId", goodsAmount.get("company_id"));
+        paramMap.put("companyId", companyRecycler.getCompanyId());
         paramMap.put("userNo", member.getRealNo());
         paramMap.put("userName", member.getName());
         if (StringUtils.isNotEmpty(member.getAliUserId())){
@@ -122,7 +129,7 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
                 ProductOrder productOrder = new ProductOrder();
                 productOrder.setGoodsId(memberGoodsBean.getGoodsId());
                 productOrder.setProductId(memberGoodsBean.getProductId());
-                productOrder.setProductName(goodsAmount.get("product_name")+"");
+                productOrder.setProductName(product.getName());
                 productOrder.setGoodsName(goods.getGoodsName());
                 productOrder.setGoodsNum(memberGoodsBean.getAmount());
                 Map<String, Object> map = goodsService.selectAddressByProId(memberGoodsBean.getProductId());
@@ -134,7 +141,7 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
                 productOrder.setTel(member.getMobile());
                 productOrder.setPoints(Math.abs(goods.getPoints() * memberGoodsBean.getAmount()));
                 productOrder.setRecyclerId(memberGoodsBean.getRecId());
-                productOrder.setCompanyId(Long.parseLong(goodsAmount.get("company_id")+""));
+                productOrder.setCompanyId(companyRecycler.getCompanyId());
                 productOrderService.insert(productOrder);
                 //更新剩余数量
                 ProductGoods productGoods = this.selectOne(new EntityWrapper<ProductGoods>().eq("del_flag", 0).eq("goods_id",memberGoodsBean.getGoodsId()).eq("product_id", memberGoodsBean.getProductId()));

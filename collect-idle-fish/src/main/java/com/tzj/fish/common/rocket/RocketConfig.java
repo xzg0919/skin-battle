@@ -12,7 +12,7 @@ public class RocketConfig {
     @Bean
     public Producer producer(){
         Properties properties = new Properties();
-        properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.XANYU_GROUP_ID);
+        properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.GROUP_ID);
         // AccessKey 阿里云身份验证，在阿里云服务器管理控制台创建
         properties.put(PropertyKeyConst.AccessKey,RocketUtil.Ali_AccessKey);
         // SecretKey 阿里云身份验证，在阿里云服务器管理控制台创建
@@ -32,7 +32,7 @@ public class RocketConfig {
     //@Bean
     public Consumer consumer(){
         Properties properties = new Properties();
-        properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.XANYU_GROUP_ID);
+        properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.GROUP_ID);
         // AccessKey 阿里云身份验证，在阿里云服务器管理控制台创建
         properties.put(PropertyKeyConst.AccessKey,RocketUtil.Ali_AccessKey);
         // SecretKey 阿里云身份验证，在阿里云服务器管理控制台创建

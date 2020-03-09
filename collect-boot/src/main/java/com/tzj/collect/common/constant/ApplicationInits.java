@@ -27,12 +27,16 @@ public class ApplicationInits {
     @Value("${stationUrl}")
     private String stationUrl;
 
+    @Value("${isOpenXyConsumer}")
+    private Boolean isOpenXyConsumer;
+
     @Bean
     public ApplicaInit applicaInitConfig() {
         ApplicaInit applicaInit  = new ApplicaInit();
         applicaInit.setIsMysl(isMysl);
         applicaInit.setNotifyUrl(notifyUrl);
         applicaInit.setStationUrl(stationUrl);
+        applicaInit.setIsOpenXyConsumer(isOpenXyConsumer);
         applicaInit.setIsOpenTransferThread(isOpenTransferThread);
         return applicaInit;
 

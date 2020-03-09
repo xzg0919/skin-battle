@@ -37,6 +37,9 @@
         <if test="tel != null and tel != '' ">
             AND b.mobile LIKE CONCAT('%',#{tel},'%')
         </if>
+        <if test="provinceId != null and provinceId != '' ">
+            AND b.province_id = #{provinceId}
+        </if>
         <if test="cityId != null and cityId != '' ">
             AND b.city_id = #{cityId}
         </if>
@@ -76,6 +79,9 @@
     </if>
     <if test="tel != null and tel != '' ">
         AND b.mobile LIKE CONCAT('%',#{tel},'%')
+    </if>
+    <if test="provinceId != null and provinceId != '' ">
+        AND b.province_id = #{provinceId}
     </if>
     <if test="cityId != null and cityId != '' ">
         AND b.city_id = #{cityId}

@@ -58,8 +58,8 @@ public class PointsListServiceImpl extends ServiceImpl<PointsListMapper, PointsL
             pageBean = new PageBean();
         }
         Integer pageStart = (pageBean.getPageNum()-1)*pageBean.getPageSize();
-        List<Map<String, Object>> pointsList = pointsListMapper.getPointsListByCompanyId(companyId, pointsListBean.getPointsType(), pointsListBean.getStartTime(), pointsListBean.getEndTime(), pointsListBean.getName(), pointsListBean.getTel(), pointsListBean.getCityId(), pointsListBean.getAreaId(), pointsListBean.getStreetId(), pointsListBean.getCommunityId(), pointsListBean.getCommunityHouseId(), pageStart, pageBean.getPageSize());
-        Integer count = pointsListMapper.getPointsListCount(companyId, pointsListBean.getPointsType(), pointsListBean.getStartTime(), pointsListBean.getEndTime(), pointsListBean.getName(), pointsListBean.getTel(), pointsListBean.getCityId(), pointsListBean.getAreaId(), pointsListBean.getStreetId(), pointsListBean.getCommunityId(), pointsListBean.getCommunityHouseId());
+        List<Map<String, Object>> pointsList = pointsListMapper.getPointsListByCompanyId(pointsListBean.getProvinceId(),companyId, pointsListBean.getPointsType(), pointsListBean.getStartTime(), pointsListBean.getEndTime(), pointsListBean.getName(), pointsListBean.getTel(), pointsListBean.getCityId(), pointsListBean.getAreaId(), pointsListBean.getStreetId(), pointsListBean.getCommunityId(), pointsListBean.getCommunityHouseId(), pageStart, pageBean.getPageSize());
+        Integer count = pointsListMapper.getPointsListCount(pointsListBean.getProvinceId(),companyId, pointsListBean.getPointsType(), pointsListBean.getStartTime(), pointsListBean.getEndTime(), pointsListBean.getName(), pointsListBean.getTel(), pointsListBean.getCityId(), pointsListBean.getAreaId(), pointsListBean.getStreetId(), pointsListBean.getCommunityId(), pointsListBean.getCommunityHouseId());
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("pointsList",pointsList);
         resultMap.put("count",count);
