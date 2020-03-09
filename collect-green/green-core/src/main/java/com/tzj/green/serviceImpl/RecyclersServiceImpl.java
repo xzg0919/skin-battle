@@ -100,10 +100,12 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
                 member.setProvinceName(recMap.get("province_name")+"");
                 member.setCityId(Long.parseLong(recMap.get("city_id")+""));
                 member.setCityName(recMap.get("city_name")+"");
-                member.setCommunityId(Long.parseLong(recMap.get("area_id")+""));
-                member.setCommunityName(recMap.get("area_name")+"");
+                member.setAreaId(Long.parseLong(recMap.get("area_id")+""));
+                member.setAreaName(recMap.get("area_name")+"");
                 member.setStreetId(Long.parseLong(recMap.get("street_id")+""));
                 member.setStreetName(recMap.get("street_name")+"");
+                member.setCommunityHouseId(Long.parseLong(recMap.get("community_id")+""));
+                member.setCommunityHouseName(recMap.get("community_name")+"");
                 member.setCommunityHouseId(Long.parseLong(recMap.get("house_id")+""));
                 member.setCommunityHouseName(recMap.get("house_name")+"");
                 member.setCompanyId(Long.parseLong(recMap.get("company_id")+""));

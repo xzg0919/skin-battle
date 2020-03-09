@@ -9,7 +9,7 @@
             a.name_ AS name,
             IF(b.add_points is null,a.add_points,b.add_points) AS addPoints,
             IF(b.subtract_points is null,a.subtract_points,b.subtract_points) AS subtractPoints,
-            IF(b.is_open is NULL,'0','1') AS isOpen
+            IF(b.is_open is NULL,'0',b.is_open) AS isOpen
         FROM
             sb_category a
         LEFT JOIN (SELECT * FROM sb_company_category b WHERE b.company_id = #{companyId}) b ON a.id = b.category_id
