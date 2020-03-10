@@ -78,6 +78,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         if (null != member){
             throw new ApiException("该卡号已绑定");
         }
+        Member member1 = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("mobile", recyclersBean.getMobile()));
+        if (null != member1){
+            throw new ApiException("该手机号已绑定");
+        }
         CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersBean.getRecId()).eq("status_","1"));
         if (null == companyRecycler){
             throw new ApiException("该回收人员暂无申请公司");
@@ -109,8 +113,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
                 member.setAreaName(recMap.get("area_name")+"");
                 member.setStreetId(Long.parseLong(recMap.get("street_id")+""));
                 member.setStreetName(recMap.get("street_name")+"");
-                member.setCommunityHouseId(Long.parseLong(recMap.get("community_id")+""));
-                member.setCommunityHouseName(recMap.get("community_name")+"");
+                member.setCommunityId(Long.parseLong(recMap.get("community_id")+""));
+                member.setCommunityName(recMap.get("community_name")+"");
                 member.setCommunityHouseId(Long.parseLong(recMap.get("house_id")+""));
                 member.setCommunityHouseName(recMap.get("house_name")+"");
                 member.setCompanyId(Long.parseLong(recMap.get("company_id")+""));

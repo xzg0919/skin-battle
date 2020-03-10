@@ -125,16 +125,17 @@ public class PointsListServiceImpl extends ServiceImpl<PointsListMapper, PointsL
                     memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() - Long.parseLong(paramMap.get("points") + ""));
                 }
             }else {
-                memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() + Long.parseLong(paramMap.get("points") + ""));
-                memberPoints.setTatalPoints(memberPoints.getTatalPoints() + Long.parseLong(paramMap.get("points") + ""));
+                memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() - Long.parseLong(paramMap.get("points") + ""));
+                //memberPoints.setTatalPoints(memberPoints.getTatalPoints() - Long.parseLong(paramMap.get("points") + ""));
             }
         }else {
-            memberPoints = new MemberPoints();
-            if (paramMap.get("pointType").equals("1")) {
-                return false;
-            }
-            memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() + Long.parseLong(paramMap.get("points") + ""));
-            memberPoints.setTatalPoints(memberPoints.getTatalPoints() + Long.parseLong(paramMap.get("points") + ""));
+            return false;
+//            memberPoints = new MemberPoints();
+//            if (paramMap.get("pointType").equals("1")) {
+//                return false;
+//            }
+//            memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() + Long.parseLong(paramMap.get("points") + ""));
+//            memberPoints.setTatalPoints(memberPoints.getTatalPoints() + Long.parseLong(paramMap.get("points") + ""));
         }
         pointsList.setPoints(Long.parseLong(paramMap.get("points")+""));
         pointsList.setPointsType(paramMap.get("pointType")+"");

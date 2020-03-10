@@ -147,6 +147,9 @@ public class ProductGoodsServiceImpl extends ServiceImpl<ProductGoodsMapper, Pro
                 ProductGoods productGoods = this.selectOne(new EntityWrapper<ProductGoods>().eq("del_flag", 0).eq("goods_id",memberGoodsBean.getGoodsId()).eq("product_id", memberGoodsBean.getProductId()));
                 productGoods.setExchangeNum(productGoods.getExchangeNum() + Math.abs(memberGoodsBean.getAmount()));
                 this.updateById(productGoods);
+                product.setExchangeNum(product.getExchangeNum()+memberGoodsBean.getAmount());
+                product.setExchangePoints(product.getExchangePoints()+(goods.getPoints()*memberGoodsBean.getAmount()));
+                productService.updateById(product);
                 returnMap.put("msg", "兑换成功");
                 returnMap.put("code", 200);
         }else {
