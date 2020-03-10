@@ -6,6 +6,7 @@ import com.alipay.api.domain.Product;
 import com.alipay.api.response.*;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.green.common.utils.RecyclerUtils;
 import com.tzj.green.entity.CompanyRecycler;
 import com.tzj.green.entity.Member;
 import com.tzj.green.entity.Recyclers;
@@ -413,8 +414,9 @@ public class AppRecyclersApi {
 	@Api(name = "app.change.point", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> appChangePoint(Map<String, Object> paramMap){
+		Recyclers recyclers = RecyclerUtils.getRecyclers();
 		paramMap.put("recId", getRecycler().getId());
-		return recyclersService.appChangePoint(paramMap);
+		return recyclersService.appChangePoint(paramMap,recyclers.getId());
 	}
 	/**
 	 * 根据手机号或实体卡号查找用户信息

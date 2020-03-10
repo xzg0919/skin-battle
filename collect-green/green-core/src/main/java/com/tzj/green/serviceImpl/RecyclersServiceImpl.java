@@ -163,7 +163,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
      */
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public Map<String, Object> appChangePoint(Map<String, Object> paramMap) {
+    public Map<String, Object> appChangePoint(Map<String, Object> paramMap,Long recyclerId) {
         Map<String, Object> returnMap = new HashMap<>();
         PointsList pointsList = new PointsList();
         if (!paramMap.containsKey("pointList")){
@@ -194,6 +194,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
                 if (pointsList.getPointsType().equals("1")) {
                     throw new ApiException("积分不足");
                 }
+                CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclerId).eq("status_", "1"));
+                memberPoints.setCompanyId(companyRecycler.getCompanyId());
                 memberPoints.setRemnantPoints(Long.parseLong(paramMap.get("points") + ""));
                 memberPoints.setTatalPoints( Long.parseLong(paramMap.get("points") + ""));
                 memberPoints.setUserNo(paramMap.get("realNo")+"");
