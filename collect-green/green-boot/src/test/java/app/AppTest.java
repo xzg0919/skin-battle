@@ -45,7 +45,7 @@ public class AppTest {
 
 //		String api = "http://test.tcompanypoint.mayishoubei.com/company/api";
 
-		String api="http://localhost:9090/app/api";
+		String api="http://companypointapi.mayishoubei.com:9090/app/api";
 
 		RecyclersBean recyclersBean = new RecyclersBean();
 		recyclersBean.setPassword("aaaaaa");

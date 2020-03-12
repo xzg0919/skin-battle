@@ -24,7 +24,7 @@ spring:
 #          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/shoubei?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
 #          username: sb_admin
 #          password: shoubei_123
-          url: jdbc:mysql://rm-uf6h8hr3816b6g24g.mysql.rds.aliyuncs.com/point_merchant?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/sb_pointcompany?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
           username: wangcan
           password: Wangcan123
           driver-class-name: com.mysql.cj.jdbc.Driver

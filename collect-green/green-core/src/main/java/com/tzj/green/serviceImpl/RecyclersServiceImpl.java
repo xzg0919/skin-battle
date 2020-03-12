@@ -146,7 +146,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
      */
     @Override
     public List<Map<String, Object>> categoryPointInfo(Long recId) {
-        CompanyRecycler companyRecycler = companyRecyclerService.selectById(recId);
+        CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recId).eq("status_","1"));
+        if (null == companyRecycler){
+            throw new ApiException("暂未找到回收公司");
+        }
         List<Map<String, Object>> returnListMap = new ArrayList<>();
         if (null != companyRecycler){
             returnListMap = (List<Map<String, Object>>)companyCategoryService.getCompanyCategoryById(companyRecycler.getCompanyId());

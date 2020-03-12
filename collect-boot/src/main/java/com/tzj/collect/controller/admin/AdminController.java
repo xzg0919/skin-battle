@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,6 +49,28 @@ public class AdminController {
 	@RequestMapping("/addExcel")
 	public String addExcel() {
 		return "admin/addExcel";
+	}
+
+	@RequestMapping("/get/sing")
+	public @ResponseBody String getCode(String signature,String timestamp,String nonce,String echostr) {
+		return echostr;
+	}
+	@RequestMapping("/get/code")
+	public String getCode(HttpServletRequest request) {
+		Map requestParams = request.getParameterMap();
+		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
+			String name = (String) iter.next();
+			String[] values = (String[]) requestParams.get(name);
+			String valueStr = "";
+			for (int i = 0; i < values.length; i++) {
+				valueStr = (i == values.length - 1) ? valueStr + values[i]
+						: valueStr + values[i] + ",";
+			}
+			//乱码解决，这段代码在出现乱码时使用。
+			//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+			System.out.println(name + " : " +valueStr );
+		}
+		return "admin/code";
 	}
 
 	@RequestMapping("/love")
