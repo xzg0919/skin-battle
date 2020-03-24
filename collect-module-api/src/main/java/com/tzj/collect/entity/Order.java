@@ -162,6 +162,8 @@ public class Order extends DataEntity<Long> {
 
 	private BigDecimal backCommissionsPrice;//返佣
 
+	private String taobaoNo; //咸鱼外部订单号
+
 	@TableField(exist = false)
 	private String cateAttName4Page;// 父类名称/父类名称
 	@TableField(exist = false)

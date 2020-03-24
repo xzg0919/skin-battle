@@ -96,5 +96,5 @@ public interface AreaService  extends IService<Area>{
 
 	Map<String, Object> allAreaStreetIdNameInfo();
 	@DS("slave")
-	Area selectByCode(Long townId);
+	Area selectByCode(String townId);
 }

@@ -1,35 +1,31 @@
 package com.tzj.fish.controller;
 
-import com.aliyun.openservices.ons.api.Producer;
-import com.aliyun.openservices.ons.api.SendResult;
-import com.taobao.api.ApiException;
-import com.taobao.api.DefaultTaobaoClient;
-import com.taobao.api.TaobaoClient;
-import com.taobao.api.request.AlibabaIdleRecycleOrderQueryRequest;
-import com.taobao.api.request.AlibabaIdleRecycleSpuTemplateModifyRequest;
-import com.taobao.api.response.AlibabaIdleRecycleOrderQueryResponse;
-import com.taobao.api.response.AlibabaIdleRecycleSpuTemplateModifyResponse;
-import com.tzj.fish.common.rocket.RocketUtil;
+import com.tzj.fish.common.mqtt.ConnectionOptionWrapper;
+import com.tzj.fish.common.mqtt.MQTTUtil;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.tzj.collect.common.utils.ToolUtils.appkey;
 
 @RestController
 @RequestMapping("test")
 public class Test {
 
     @Autowired
-    private Producer producer;
+    private MqttClient mqttClient;
 
     @RequestMapping("/send")
-    public String send(){
-        com.aliyun.openservices.ons.api.Message aliMessage = new com.aliyun.openservices.ons.api.Message(RocketUtil.ALI_TOPIC,"TagA","Hello MQ".getBytes());
-        aliMessage.setKey("测试消息发送11111111111111");
-        // 发送消息，只要不抛异常就是成功
-        SendResult sendResult = producer.send(aliMessage);
-        return "发送成功";
+    public String send() throws Exception{
+        final String p2pSendTopic = MQTTUtil.PARENT_TOPIC + "/p2p/" + MQTTUtil.XIANYU_CLIENTID;
+        MqttMessage message = new MqttMessage();
+        message.setQos(MQTTUtil.QOS_LEVEL);
+        message.setPayload("龙剑是傻子".getBytes());
+        /**
+         *  发送普通消息时，topic 必须和接收方订阅的 topic 一致，或者符合通配符匹配规则
+         */
+        mqttClient.publish(p2pSendTopic, message);
+       return "发送成功";
     }
 
 }

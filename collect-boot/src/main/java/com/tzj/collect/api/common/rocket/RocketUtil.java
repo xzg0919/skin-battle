@@ -1,4 +1,4 @@
-package com.tzj.collect.api.common;
+package com.tzj.collect.api.common.rocket;
 
 public class RocketUtil {
 

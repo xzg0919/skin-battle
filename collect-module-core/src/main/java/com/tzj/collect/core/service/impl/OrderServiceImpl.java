@@ -32,6 +32,7 @@ import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.business.CompanyBean;
 import com.tzj.collect.core.param.iot.AdminIotErrorBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
+import com.tzj.collect.core.param.xianyu.QiMemOrder;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.result.ali.CommToken;
 import com.tzj.collect.core.result.app.AppOrderResult;
@@ -57,6 +58,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Resource;
 
 import net.sf.json.JSONObject;
@@ -102,9 +104,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private XingeMessageService xingeService;
+    private MapService mapService;
     @Autowired
-    private MemberAddressService memberAddressService;
+    private CompanyStreetHouseService companyStreetHouseService;
     @Autowired
     private RecyclerCancelLogService recyclerCancelLogService;
     @Autowired
@@ -159,6 +161,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private LineQrCodeOrderService lineQrCodeOrderService;
     @Autowired
     private XyCategoryOrderService xyCategoryOrderService;
+    @Autowired
+    private QiMemService qiMemService;
 
     @Resource
     private JedisPool jedisPool;
@@ -473,6 +477,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             orderbean.setAchPrice(order.getAchPrice().toString());
             orderbean.setStatus("3");
             this.modifyOrderSta(orderbean);
+            //如果是咸鱼的单子，就通知咸鱼订单完成
+            if (StringUtils.isNotBlank(order.getTaobaoNo())){
+                QiMemOrder qiMemOrder = new QiMemOrder();
+                qiMemOrder.setConfirmFee("0");
+                qiMemOrder.setBizOrderId(order.getOrderNo());
+                qiMemOrder.setOrderStatus(QiMemOrder.QI_MEM_ORDER_SUCCESS);
+                Double amount = orderMapper.getAmountByOrderId(order.getId());
+                qiMemOrder.setQuantity(amount.toString());
+                boolean bool = qiMemService.updateQiMemOrder(qiMemOrder);
+            }
             if ("1".equals(order.getIsMysl())) {
                 //给用户增加蚂蚁能量
                 orderService.myslOrderData(order.getId().toString());
@@ -2558,6 +2572,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 * @author 王灿
 	 */
+	@Override
 	public Object distributeOrderList(Integer recyclerId) {
 		return orderMapper.distributeOrderList(recyclerId);
 	}
@@ -3757,6 +3772,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
 		if ("1".equals(orderbean.getStatus())){
 			this.updateOrderByBusiness(orderbean.getId(),"REJECTED",orderbean.getCancelReason(),null);
+            //如果是咸鱼的单子，就通知咸鱼订单取消
+            if (StringUtils.isNotBlank(order.getTaobaoNo())){
+                QiMemOrder qiMemOrder = new QiMemOrder();
+                qiMemOrder.setBizOrderId(order.getOrderNo());
+                qiMemOrder.setOrderStatus(QiMemOrder.QI_MEM_ORDER_CANCEL);
+                qiMemOrder.setReason(orderbean.getCancelReason());
+                boolean bool = qiMemService.updateQiMemOrder(qiMemOrder);
+            }
 		}
 		orderCancleExamine.setUpdateDate(new Date());
 		orderCancleExamine.setStatus(orderbean.getStatus());
@@ -4140,12 +4163,104 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         Map<String, Object> objectMap = (Map<String, Object>) JSONObject.fromObject(message);
         String nickName = objectMap.get("seller_nick")+"";
+        String sellerRealName = objectMap.get("seller_real_name")+"";
         String address = objectMap.get("seller_address")+"";
         String aliUserId = objectMap.get("seller_alipay_user_id")+"";
         String tel = objectMap.get("seller_phone")+"";
+        String city = objectMap.get("city")+"";
         String quoteId = objectMap.get("apprize_id")+"";
-        List<XyCategoryOrder> xyCategoryOrderList = xyCategoryOrderService.selectList(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId));
-        return null;
+        String shipTime = objectMap.get("ship_time")+"";
+        String closeReason = objectMap.get("close_reason")+"";
+        String taobaoNo = objectMap.get("biz_order_id")+"";
+        Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", taobaoNo));
+        if (null != order){
+            if(StringUtils.isNotBlank(closeReason)&&!"null".equals(closeReason)){
+                order.setCancelTime(new Date());
+                order.setCancelReason(closeReason);
+                order.setStatus(OrderType.CANCEL);
+                orderService.updateById(order);
+                return "操作成功";
+            }else {
+                throw new ApiException("该订单已存在");
+            }
+        }
+        Member member = memberService.selectMemberByAliUserId(aliUserId);
+        if (null == member){
+            member = new Member();
+            member.setName(sellerRealName);
+            member.setMobile(tel);
+            member.setCity(city);
+            member.setLinkName(nickName);
+            member.setAddress(address);
+            member.setAliUserId(aliUserId);
+            memberService.insert(member);
+        }
+        order = new Order();
+        Integer companyId = 0;
+        Integer areaId = 0;
+        Integer streetId = 0;
+        try {
+            String location = mapService.getLocation(address);
+            AmapResult amap = mapService.getAmap(location);
+            String towncode = amap.getTowncode();
+            Area area = areaService.selectOne(new EntityWrapper<Area>().eq("code_", towncode));
+            companyId = companyStreetHouseService.selectStreetHouseCompanyId(area.getId().intValue());
+            streetId = area.getId().intValue();
+            areaId = area.getParentId();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
+            order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(shipTime.split(" ")[0]));
+            order.setArrivalPeriod(shipTime.split(" ")[1]);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        order.setCompanyId(companyId);
+        order.setMemberId(member.getId().intValue());
+        order.setStatus(OrderType.INIT);
+        order.setOrderNo(taobaoNo);
+        order.setTaobaoNo(quoteId);
+        order.setAreaId(areaId);
+        order.setStreetId(streetId);
+        order.setAddress(address);
+        order.setPrice(BigDecimal.ZERO);
+        order.setTel(tel);
+        order.setLinkMan(sellerRealName);
+        order.setCategoryId(26);
+        order.setCategoryParentIds("25");
+        order.setIsEvaluated("0");
+        order.setLevel("0");
+        order.setAliUserId(aliUserId);
+        order.setIsCash("1");
+        order.setIsMysl("1");
+        order.setTitle(Order.TitleType.HOUSEHOLD);
+        orderService.insert(order);
+        List<XyCategoryOrder> xyCategoryOrderList = xyCategoryOrderService.selectList(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","1"));
+        XyCategoryOrder amountCategoryOrder = xyCategoryOrderService.selectOne(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","2"));
+        Integer orderId = order.getId().intValue();
+        xyCategoryOrderList.stream().forEach(xyCategoryOrder -> {
+                Category category = categoryService.selectById(xyCategoryOrder.getCategoryId());
+                OrderItem orderItem = new OrderItem();
+                orderItem.setOrderId(orderId);
+                orderItem.setCategoryId(category.getId().intValue());
+                orderItem.setCategoryName(category.getName());
+                orderItem.setParentId(category.getId().intValue());
+                orderItem.setParentIds(category.getId()+"_");
+                orderItem.setParentName(category.getName());
+                orderItem.setAmount(amountCategoryOrder.getCategoryId());
+                orderItem.setUnit(category.getUnit());
+                orderItem.setPrice(0);
+                orderItemService.insert(orderItem);
+        });
+        return "操作成功";
+    }
+
+    public static void main(String[] args) {
+        String s = "2020-03-21 10:00:00";
+        System.out.println(s.split(" ")[0]);
+        System.out.println(s.split(" ")[1]);
+
     }
 
 

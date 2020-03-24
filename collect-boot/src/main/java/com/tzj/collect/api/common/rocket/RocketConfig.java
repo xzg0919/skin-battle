@@ -1,4 +1,4 @@
-package com.tzj.collect.config;
+package com.tzj.collect.api.common.rocket;
 
 import com.aliyun.openservices.ons.api.*;
 import com.tzj.collect.common.constant.ApplicaInit;
@@ -8,7 +8,6 @@ import com.tzj.collect.entity.RocketmqMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.tzj.collect.api.common.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +44,7 @@ public class RocketConfig {
     }
 
 
-    @Bean
+    //@Bean
     public Consumer consumer(){
         Properties properties = new Properties();
         if (!applicaInit.getIsOpenXyConsumer()){

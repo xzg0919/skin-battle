@@ -11,7 +11,10 @@ import com.taobao.api.internal.tmc.TmcClient;
 import com.taobao.api.internal.toplink.LinkException;
 import com.taobao.api.request.TmcUserPermitRequest;
 import com.taobao.api.response.TmcUserPermitResponse;
+import com.tzj.fish.common.mqtt.MQTTUtil;
 import com.tzj.fish.common.rocket.RocketUtil;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +27,9 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Configuration
 public class TmcMessageListener {
+
     @Autowired
-    private Producer producer;
+    private MqttClient mqttClient;
 
     @Bean
     public TmcClient tmcClientListener(){
@@ -36,12 +40,14 @@ public class TmcMessageListener {
                 try {
                     System.out.println(message.getContent());
                     System.out.println(message.getTopic());
-                    //client.Send("helloworld-topic", "{helloworld-content}", "session_key");
-
-                    com.aliyun.openservices.ons.api.Message aliMessage = new com.aliyun.openservices.ons.api.Message(RocketUtil.ALI_TOPIC,"TagA","Hello MQ".getBytes());
-                    aliMessage.setKey(message.getContent());
-                    // 发送消息，只要不抛异常就是成功
-                    SendResult sendResult = producer.send(aliMessage);
+                    final String p2pSendTopic = MQTTUtil.PARENT_TOPIC + "/p2p/" + MQTTUtil.XIANYU_CLIENTID;
+                    MqttMessage mqttMessage = new MqttMessage();
+                    mqttMessage.setQos(MQTTUtil.QOS_LEVEL);
+                    mqttMessage.setPayload(message.getContent().getBytes());
+                    /**
+                     *  发送普通消息时，topic 必须和接收方订阅的 topic 一致，或者符合通配符匹配规则
+                     */
+                    mqttClient.publish(p2pSendTopic, mqttMessage);
                 } catch (Exception e) {
                     e.printStackTrace();
                     status.fail(); // 消息处理失败回滚，服务端需要重发

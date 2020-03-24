@@ -89,6 +89,7 @@ public class AsyncServiceImpl implements AsyncService {
     }
 
     @Async
+    @Override
     public void notifyDingDingOrderCreate(String message, boolean atAll, String dingDingUrl) {
         DingTalkNotify.sendTextMessageWithAtAndAtAll(message, null, atAll, dingDingUrl);
     }
@@ -201,28 +202,30 @@ public class AsyncServiceImpl implements AsyncService {
     @Override
     @Async
     public void sendOpenAppMini(String aliUserId, String formId, String templateId, String page, String value1, String value2, String value3) {
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
-        AlipayOpenAppMiniTemplatemessageSendRequest request = new AlipayOpenAppMiniTemplatemessageSendRequest();
-        AlipayOpenAppMiniTemplatemessageSendModel model = new AlipayOpenAppMiniTemplatemessageSendModel();
-        model.setToUserId(aliUserId);
-        model.setFormId(formId);
-        model.setUserTemplateId(templateId);
-        model.setPage(page);
-        model.setData("{\"keyword1\" :{\"value\":\"" + value1 + "\"},\"keyword2\" :{\"value\":\"" + value2 + "\"},\"keyword3\" :{\"value\":\"" + value3 + "\"}}");
-        System.out.println(JSON.toJSONString(model));
-        request.setBizModel(model);
-        AlipayOpenAppMiniTemplatemessageSendResponse response = null;
-        try {
-            response = alipayClient.execute(request);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (StringUtils.isNotBlank(formId)){
+            AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+            AlipayOpenAppMiniTemplatemessageSendRequest request = new AlipayOpenAppMiniTemplatemessageSendRequest();
+            AlipayOpenAppMiniTemplatemessageSendModel model = new AlipayOpenAppMiniTemplatemessageSendModel();
+            model.setToUserId(aliUserId);
+            model.setFormId(formId);
+            model.setUserTemplateId(templateId);
+            model.setPage(page);
+            model.setData("{\"keyword1\" :{\"value\":\"" + value1 + "\"},\"keyword2\" :{\"value\":\"" + value2 + "\"},\"keyword3\" :{\"value\":\"" + value3 + "\"}}");
+            System.out.println(JSON.toJSONString(model));
+            request.setBizModel(model);
+            AlipayOpenAppMiniTemplatemessageSendResponse response = null;
+            try {
+                response = alipayClient.execute(request);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (response.isSuccess()) {
+                System.out.println("调用成功");
+            } else {
+                System.out.println("调用失败");
+            }
+            System.out.println(response.getBody());
         }
-        if (response.isSuccess()) {
-            System.out.println("调用成功");
-        } else {
-            System.out.println("调用失败");
-        }
-        System.out.println(response.getBody());
     }
 
 }

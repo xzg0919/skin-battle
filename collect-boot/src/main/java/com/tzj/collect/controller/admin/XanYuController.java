@@ -113,9 +113,11 @@ public class XanYuController {
     @RequestMapping("/address/check")
     public Object getAddressCheck(HttpServletRequest request) throws Exception {
         String stream = getInputStream(request);
+        System.out.println("获取咸鱼的地址校验 ： "+stream);
+        Map<String, Object> objectMap = (Map<String, Object>) JSONObject.fromObject(stream);
+        Object townId = objectMap.get("townId");
         Map<String,Object> resultMap = new HashMap<>();
-        Long townId = 10020L;
-        Area area = areaService.selectByCode(townId);
+        Area area = areaService.selectByCode(townId+"000");
         if (null != area){
             Integer companyId = companyStreetHouseService.selectStreetHouseCompanyId(area.getId().intValue());
             if (null != companyId){

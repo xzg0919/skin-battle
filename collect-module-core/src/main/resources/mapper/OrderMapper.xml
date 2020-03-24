@@ -3289,6 +3289,15 @@
 		GROUP BY
 			sell.equipment_code
 	</select>
+	<select id="getAmountByOrderId" parameterType="Long" resultType="Double">
+		SELECT
+			SUM(a.amount)
+		FROM
+			sb_order_item_ach a
+		WHERE
+			a.order_id = #{orderId}
+	</select>
+
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
         <id property="id" column="id" />

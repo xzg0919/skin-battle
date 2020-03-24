@@ -29,8 +29,8 @@ public class RocketConfig {
     }
 
 
-    //@Bean
-    public Consumer consumer(){
+    @Bean
+    public Consumer consumerRocket(){
         Properties properties = new Properties();
         properties.setProperty(PropertyKeyConst.GROUP_ID, RocketUtil.GROUP_ID);
         // AccessKey 阿里云身份验证，在阿里云服务器管理控制台创建

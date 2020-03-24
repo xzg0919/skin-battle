@@ -756,7 +756,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		return returnMap;
 	}
 	@Override
-	public Area selectByCode(Long townId){
+	public Area selectByCode(String townId){
 		return this.selectOne(new EntityWrapper<Area>().eq("code_",townId));
 	}
 }
