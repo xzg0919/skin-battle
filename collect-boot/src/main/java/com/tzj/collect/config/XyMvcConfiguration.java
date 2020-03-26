@@ -16,7 +16,7 @@ public class XyMvcConfiguration extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
 
         //指定拦截器，指定拦截路径
-        registry.addInterceptor(xyInterceptor).addPathPatterns("/xanYu/**");
+        //registry.addInterceptor(xyInterceptor).addPathPatterns("/xanYu/**");
 
     }
 
