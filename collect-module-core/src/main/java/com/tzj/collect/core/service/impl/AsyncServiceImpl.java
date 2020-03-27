@@ -361,6 +361,7 @@ public class AsyncServiceImpl implements AsyncService {
 
                 break;
             case "CANCEL":
+            case "REJECTED":
                 //1.取消时间
                 //2.取消原因
                 orderB.setCancelReason(order.getCancelReason());
