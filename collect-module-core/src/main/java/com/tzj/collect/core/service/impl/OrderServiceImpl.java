@@ -1391,6 +1391,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //				xingeService.sendPostMessage("您有一笔订单已被取消", "已取消订单来自" + commToken.getCommName() + "，点击查看", commToken.getTencentToken(), XingeMessageServiceImp.XingeMessageCode.cancelOrder);
 //			}
 //		}
+        //如果是咸鱼的单子，就通知咸鱼订单取消
+        if (StringUtils.isNotBlank(order.getTaobaoNo())){
+            QiMemOrder qiMemOrder = new QiMemOrder();
+            qiMemOrder.setBizOrderId(order.getOrderNo());
+            qiMemOrder.setOrderStatus(QiMemOrder.QI_MEM_ORDER_CANCEL);
+            qiMemOrder.setReason(order.getCancelReason());
+            bool = qiMemService.updateQiMemOrder(qiMemOrder);
+        }
 		if("3".equals(order.getTitle().getValue()+"")&&!"0".equals(status)){
 			try{
 				Company company = companyService.selectById(order.getCompanyId());

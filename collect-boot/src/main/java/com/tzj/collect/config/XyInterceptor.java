@@ -6,7 +6,9 @@ import com.taobao.api.internal.spi.SpiUtils;
 import com.taobao.api.internal.util.StringUtils;
 import com.taobao.api.internal.util.TaobaoUtils;
 import com.taobao.api.internal.util.WebUtils;
+import com.tzj.collect.controller.admin.XanYuController;
 import com.tzj.module.easyopen.exception.ApiException;
+import net.sf.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,6 +31,7 @@ public class XyInterceptor  implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
+
         Map requestParams = request.getParameterMap();
         for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
             String name = (String) iter.next();
@@ -42,25 +45,21 @@ public class XyInterceptor  implements HandlerInterceptor {
             //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
             System.out.println(name + " : " +valueStr );
         }
+        request.setAttribute("value","123456789");
         System.out.println("进入方法之前");
         this.checkSign(request);
         return true;
-
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
                            ModelAndView modelAndView) throws Exception {
-
-
         System.out.println("返回参数之前");
-
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
-
         System.out.println("返回参数之后");
 
     }
@@ -77,34 +76,24 @@ public class XyInterceptor  implements HandlerInterceptor {
         return map;
     }
 
-    public boolean checkSign(HttpServletRequest request){
+    public boolean checkSign(HttpServletRequest request) throws Exception {
         boolean a = false;
         boolean b = false;
         boolean c = false;
         String secret = "6b8fb4524e18b154851fa46c67768ef3";
-        Map<String, String> params = new HashMap<>();
-        Map requestParams = request.getParameterMap();
-        for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
-            String name = (String) iter.next();
-            String[] values = (String[]) requestParams.get(name);
-            String valueStr = "";
-            for (int i = 0; i < values.length; i++) {
-                valueStr = (i == values.length - 1) ? valueStr + values[i]
-                        : valueStr + values[i] + ",";
-            }
-            //乱码解决，这段代码在出现乱码时使用。
-            //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
-            params.put(name, valueStr);
-        }
         try {
-            System.out.println("淘宝传入的签名："+params.get("sign"));
-            String charset = WebUtils.getResponseCharset(request.getContentType());
-            String sign = sign(null,null,secret,charset);
-            System.out.println("本地转化的签名："+sign);
-            System.out.println("secret : "+params.get("secret"));
-
-            c = SpiUtils.checkSign4TextRequest(request,params.get("body"),secret);
-            b = SpiUtils.checkSign4FileRequest(request,params,secret);
+            String inputStream = XanYuController.getInputStream(request);
+            Map<String, Object> objectMap = (Map<String, Object>) JSONObject.fromObject(inputStream);
+            Map requestParams = new HashMap();
+            for (Iterator iter = objectMap.keySet().iterator(); iter.hasNext(); ) {
+                String name = (String) iter.next();
+                String values = objectMap.get(name)+"";
+                //乱码解决，这段代码在出现乱码时使用。
+                //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+                requestParams.put(name,values);
+            }
+            c = SpiUtils.checkSign4TextRequest(request, requestParams.get("body")+"",secret);
+            b = SpiUtils.checkSign4FileRequest(request,requestParams,secret);
             a = SpiUtils.checkSign4FormRequest(request, secret);//这里执行验签逻辑
 
             System.out.println("验签淘宝奇门的签名 a："+a+"  b: "+b+"  c: "+c);

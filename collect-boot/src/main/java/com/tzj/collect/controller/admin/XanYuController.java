@@ -9,6 +9,8 @@ import com.taobao.api.TaobaoClient;
 import com.taobao.api.internal.spi.SpiUtils;
 import com.taobao.api.internal.util.TaobaoUtils;
 import com.taobao.api.internal.util.WebUtils;
+import com.tzj.collect.annotation.XianyuSign;
+import com.tzj.collect.core.param.business.CompanyAccountBean;
 import com.tzj.collect.core.param.xianyu.*;
 import com.tzj.collect.core.service.AreaService;
 import com.tzj.collect.core.service.CategoryService;
@@ -16,11 +18,15 @@ import com.tzj.collect.core.service.CompanyStreetHouseService;
 import com.tzj.collect.core.service.XyCategoryOrderService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Category;
+import com.tzj.collect.entity.CompanyAccount;
 import com.tzj.collect.entity.XyCategoryOrder;
 import com.tzj.module.easyopen.exception.ApiException;
 import net.sf.json.JSONObject;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletInputStream;
@@ -51,7 +57,8 @@ public class XanYuController {
      * @return
      */
     @RequestMapping("/quote/template")
-    public Object getQuoteTemplate(HttpServletRequest request){
+    public Object getQuoteTemplate(HttpServletRequest request,@RequestParam(required = false) String params){
+
         Map<String,Object> resultMap = new  HashMap<>();
         Map<String,Object> categoryMap = new  HashMap<>();
         List<Map<String, Object>> answers = categoryService.selectXyList();
