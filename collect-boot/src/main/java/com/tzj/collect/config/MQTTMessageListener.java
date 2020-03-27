@@ -55,7 +55,7 @@ public class MQTTMessageListener {
      //     * @return:
      //     */
     @Bean
-    public MqttClient mqttMessageListener() throws MqttException, NoSuchAlgorithmException, InvalidKeyException {
+    public MqttClient mqttClient() throws MqttException, NoSuchAlgorithmException, InvalidKeyException {
         final String mq4IotTopic = parentTopic + "/" + "admin_collect";
         /**
          * QoS参数代表传输质量，可选0，1，2，根据实际需求合理设置，具体参考 https://help.aliyun.com/document_detail/42420.html?spm=a2c4g.11186623.6.544.1ea529cfAO5zV3
@@ -80,7 +80,7 @@ public class MQTTMessageListener {
                 /**
                  * 客户端连接成功后就需要尽快订阅需要的 topic
                  */
-                logger.info("mqtt connect success");
+                logger.info("the mqtt connect success");
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
@@ -139,5 +139,77 @@ public class MQTTMessageListener {
         mqttClient.connect(connectionOptionWrapper.getMqttConnectOptions());
         return mqttClient;
     }
+    @Bean
+    public MqttClient mqtt4PushOrder() throws MqttException, NoSuchAlgorithmException, InvalidKeyException {
+        final String mq4OrderTopic = "shoubeiorder_topic";
+        /**
+         * QoS参数代表传输质量，可选0，1，2，根据实际需求合理设置，具体参考 https://help.aliyun.com/document_detail/42420.html?spm=a2c4g.11186623.6.544.1ea529cfAO5zV3
+         */
+        final int qosLevel = 1;
+        ConnectionOptionWrapper connectionOptionWrapper = new ConnectionOptionWrapper(instanceId, accessKey, secretKey, "GID_ShouBeiOrder@@@test3");
+        final MemoryPersistence memoryPersistence = new MemoryPersistence();
+        /**
+         * 客户端使用的协议和端口必须匹配，具体参考文档 https://help.aliyun.com/document_detail/44866.html?spm=a2c4g.11186623.6.552.25302386RcuYFB
+         * 如果是 SSL 加密则设置ssl://endpoint:8883
+         */
+        final MqttClient mqttClient = new MqttClient("tcp://" + endPoint + ":1883", "GID_ShouBeiOrder@@@test3", memoryPersistence);
+        /**
+         * 客户端设置好发送超时时间，防止无限阻塞
+         */
+        mqttClient.setTimeToWait(5000);
+        final ExecutorService executorService = new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>());
+        mqttClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean reconnect, String serverURI) {
+                /**
+                 * 客户端连接成功后就需要尽快订阅需要的 topic
+                 */
+                logger.info("the mqtt connect success");
+                executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            final String topicFilter[] = {mq4OrderTopic};
+                            final int[] qos = {qosLevel};
+                            mqttClient.subscribe(topicFilter, qos);
+                        } catch (MqttException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
 
+            @Override
+            public void connectionLost(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                /**
+                 * 消费消息的回调接口，需要确保该接口不抛异常，该接口运行返回即代表消息消费成功。
+                 * 消费消息需要保证在规定时间内完成，如果消费耗时超过服务端约定的超时时间，对于可靠传输的模式，服务端可能会重试推送，业务需要做好幂等去重处理。超时时间约定参考限制
+                 * https://help.aliyun.com/document_detail/63620.html?spm=a2c4g.11186623.6.546.229f1f6ago55Fj
+                 */
+                Map<String, Object> mqttMessageMap = JSONObject.parseObject(new String(mqttMessage.getPayload()));
+                if (CollectionUtils.isEmpty(mqttMessageMap)){
+                    return;
+                }
+                String clientTopic = mqttMessageMap.get("clientTopic")+"";
+                if (StringUtils.isEmpty(clientTopic)){
+                    return;
+                }
+                logger.info("不要向我这边发消息了，我也是生产者，不处理消息");
+
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+                System.out.println("send msg succeed topic is : " + iMqttDeliveryToken.getTopics()[0]);
+            }
+        });
+        mqttClient.connect(connectionOptionWrapper.getMqttConnectOptions());
+        return mqttClient;
+    }
 }

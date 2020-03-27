@@ -12,16 +12,31 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
+import com.tzj.collect.api.commom.constant.MQTTConst;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
-import com.tzj.collect.core.service.AsyncService;
+import com.tzj.collect.core.param.ali.OrderPushBean;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.common.notify.DingTalkNotify;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import com.tzj.collect.entity.*;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +50,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class AsyncServiceImpl implements AsyncService {
 
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private RecyclersService recyclersService;
+    @Autowired
+    private OrderItemService orderItemService;
+    @Autowired
+    private OrderPicAchService orderPicAchService;
+    @Autowired
+    private OrderEvaluationService orderEvaluationService;
+    @Autowired
+    private OrderItemAchService orderItemAchService;
+    @Resource(name= "mqtt4PushOrder")
+    private MqttClient mqtt4PushOrder;
+    protected final static Logger log = LoggerFactory.getLogger(AsyncServiceImpl.class);
     @Override
     @Async
     public void notifyDingDingOrderCreate(OrderBean orderBean) {
@@ -227,5 +257,123 @@ public class AsyncServiceImpl implements AsyncService {
             System.out.println(response.getBody());
         }
     }
+    /**
+     * 订单推送【仅针对线上业务订单数据（定时定点订单，IOT订单除外）】
+     * @param order
+     */
+    @Async
+    public void pushOrder(Order order) {
+        OrderPushBean orderB = new OrderPushBean();
+        //用户信息：姓名，电话，地址，支付宝UID
+        //服务商（统一回传“上海铸乾信息技术有限公司”）
+        //订单类型：废弃家电（一二级类目）/生活垃圾（一二级类目）/大件垃圾（一二级类目）
+        orderB.setAliUserId(order.getAliUserId());
+        orderB.setCompanyName("上海铸乾信息技术有限公司");
+        /**
+         * 订单状态
+         *  INIT(0), // 待接单
+         * 	TOSEND(1), // 已派送
+         * 	ALREADY(2), // 已接单
+         * 	COMPLETE(3), // 已完成
+         * 	CANCEL(4), // 已取消
+         *
+         *订单类型
+         * 	DEFUALT(0),   	 //初始值
+         * 	DIGITAL(1),		//家电数码
+         * 	HOUSEHOLD(2),	//生活垃圾
+         * 	FIVEKG(3),		//5公斤废纺衣物回收
+         * 	BIGTHING(4),	//大件垃圾
+         */
+        orderB.setLinkName(order.getLinkMan());
+        orderB.setMobile(order.getTel());
+        orderB.setOrderNo(order.getOrderNo());
+        orderB.setAddress(order.getAddress());
+        orderB.setTitle(order.getTitle().name());
+        List<Map<String, String>> upList = new ArrayList<>();
+        if(!"HOUSEHOLD".equals(orderB.getTitle())){
+            Category category2 = categoryService.selectById(order.getCategoryId());
+            Category category1 = categoryService.selectById(category2.getParentId());
+            Map<String, String> map = new HashMap<>();
+            map.put("category1", category1.getName());
+            map.put("category2", category2.getName());
+            upList.add(map);
+        }else{
+            List<OrderItem> orderItemList = orderItemService.selectByOrderId(order.getId().intValue());
+            for (OrderItem orderItemBean : orderItemList) {
+                Category category2 = categoryService.selectById(orderItemBean.getCategoryId());
+                Category category1 = categoryService.selectById(orderItemBean.getParentId());
+                Map<String, String> map = new HashMap<>();
+                map.put("category1", category1 == null ? "": category1.getName());
+                map.put("category2", category2 == null ? "":category2.getName());
+                upList.add(map);
+            }
+        }
+        orderB.setCategoryList(upList);
+        orderB.setStatus(order.getStatus().name());
+        switch (order.getStatus().name()){
+            case "INIT":
+                //1.订单创建时间
+                //2.用户预约上门时间
+                orderB.setArrivalTime(order.getArrivalTimePage());
+                orderB.setStartTime(order.getCreateDatePage());
+                break;
+            case "ALREADY":
+                //1.回收人员确认接单时间
+                //2.回收人员信息：姓名，手机号
+                orderB.setReceiveTime(String.valueOf(order.getReceiveTime()));
+                Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+                orderB.setRecyclerName(recyclers.getName());
+                orderB.setRecyclerTel(recyclers.getTel());
+                break;
+            case "COMPLETE":
+                //1.订单完成时间
+                //2.成交金额
+                //3订单评价信息：星级+评价内容（若用户已评价）
+                orderB.setCompleteTime(String.valueOf(order.getCompleteDate()));
+                orderB.setAchPrice(String.valueOf(order.getAchPrice()));
+                orderB.setIsCash(order.getIsCash());
+                orderB.setIsMysl("1".equals(order.getIsMysl())? "1":"0");
+                if("1".equals(order.getIsEvaluated())) {
+                    OrderEvaluation orderEvaluation = orderEvaluationService.selectById(order.getId());
+                    orderB.setScore(orderEvaluation.getScore());
+                    orderB.setContent(StringUtils.isNotBlank(orderEvaluation.getContent())? orderEvaluation.getContent() : "");
+                }
+                if("HOUSEHOLD".equals(orderB.getTitle())){
+                    //生活垃圾：实际回收品类（一二级），重量，单价
+                    List<OrderItemAch> orderItemAches = orderItemAchService.selectByOrderId(order.getId().intValue());
+                    orderB.setAchCategoryList(new ArrayList<>());
+                    for (OrderItemAch orderItemAch : orderItemAches) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("category1", orderItemAch.getParentName());
+                        map.put("category2", orderItemAch.getCategoryName());
+                        map.put("amount", orderItemAch.getAmount());
+                        map.put("price", orderItemAch.getPrice());
+                        map.put("unit", orderItemAch.getUnit());
+                        orderB.getAchCategoryList().add(map);
+                    }
+                }else{
+                    //实际回收物照片，描述(废弃家电、大件垃圾)
+                    orderB.setAchRemarks(order.getAchRemarks());
+                    List<OrderPicAch> orderPicAches = orderPicAchService.selectbyOrderId(order.getId().intValue());
+                    orderB.setAchPicList(new ArrayList<>());
+                    orderB.getAchPicList().addAll(orderPicAches.stream().map(orderPicAch -> orderPicAch.getPicUrl()).collect(Collectors.toList()));
+                }
 
+                break;
+            case "CANCEL":
+                //1.取消时间
+                //2.取消原因
+                orderB.setCancelReason(order.getCancelReason());
+                orderB.setCancelTime(String.valueOf(order.getCancelTime()));
+                break;
+        }
+        MqttMessage mqttMessage = new MqttMessage(JSON.toJSONBytes(orderB));
+        mqttMessage.setQos(1);
+        try {
+            mqtt4PushOrder.publish(MQTTConst.ORDER_TOPIC+"/adc", mqttMessage);
+        } catch (MqttException e) {
+            log.error("传不上去了..{}", e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

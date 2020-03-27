@@ -62,7 +62,7 @@ public class IotApi {
     private FileUploadServiceImpl fileUploadServiceImpl;
     @Resource
     private EquipmentMessageService equipmentMessageService;
-    @Resource
+    @Resource(name = "mqttClient")
     private MqttClient mqttClient;
 
 

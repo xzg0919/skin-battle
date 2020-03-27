@@ -7,9 +7,7 @@ import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.core.service.PiccInsurancePolicyService;
 import com.tzj.collect.entity.Member;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
@@ -48,6 +46,8 @@ public class MemberAdminApi {
      */
     @Api(name = "admin.getAllPoints", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    @AuthIgnore
+    @SignIgnore
     public Object getAllPoints() {
         Member member = MemberUtils.getMember();
         return memberService.getAllPoints(member.getAliUserId());

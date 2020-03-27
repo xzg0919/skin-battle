@@ -20,6 +20,8 @@ import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.entity.VoucherMember;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.Map;
@@ -443,4 +445,5 @@ public interface OrderService extends IService<Order> {
 	Map<String, Object>  selectIotRecList(Long recId, String status, PageBean pageBean);
 
 	Object saveXyOrder(String message);
+
 }
