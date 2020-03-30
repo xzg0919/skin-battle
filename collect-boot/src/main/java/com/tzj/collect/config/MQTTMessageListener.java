@@ -1,9 +1,15 @@
 package com.tzj.collect.config;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
 import com.tzj.collect.core.service.EquipmentMessageService;
+import com.tzj.collect.core.service.OrderLogService;
+import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.entity.Order;
+import com.tzj.collect.entity.OrderLog;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
@@ -35,6 +41,10 @@ public class MQTTMessageListener {
 
     @Resource
     private EquipmentMessageService messageService;
+    @Resource
+    private OrderService orderService;
+    @Resource
+    private OrderLogService orderLogService;
 
     protected final static Logger logger = LoggerFactory.getLogger(MQTTConfig.class);
 
@@ -141,7 +151,7 @@ public class MQTTMessageListener {
     }
     @Bean
     public MqttClient mqtt4PushOrder() throws MqttException, NoSuchAlgorithmException, InvalidKeyException {
-        final String mq4OrderTopic = "shoubeiorder_topic";
+        final String mq4OrderTopic = "shoubeiorder_topic/adc";
         /**
          * QoS参数代表传输质量，可选0，1，2，根据实际需求合理设置，具体参考 https://help.aliyun.com/document_detail/42420.html?spm=a2c4g.11186623.6.544.1ea529cfAO5zV3
          */
@@ -195,12 +205,23 @@ public class MQTTMessageListener {
                 Map<String, Object> mqttMessageMap = JSONObject.parseObject(new String(mqttMessage.getPayload()));
                 if (CollectionUtils.isEmpty(mqttMessageMap)){
                     return;
+                }else{
+                    Thread.sleep(100);
+                    //收呗 收到推送信息并更改日志中版本为2.0 确保消息已发送
+                    String orderNo = (String) mqttMessageMap.get("orderNo");
+                    Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo));
+                    Wrapper<OrderLog> orderLogWrapper = new EntityWrapper<OrderLog>().eq("order_id", order.getId());
+                    OrderLog orderLog = null;
+                    if(Order.OrderType.CANCEL.name().equals(order.getStatus().name())) {
+                        orderLogWrapper = orderLogWrapper.like("op_status_after", order.getStatus().name());
+                    }else{
+                        //取消订单，分用户和管理员端 有日志中记录取消时日志记录为 CANCELTASK 订单记录为CANCEL 情况
+                        orderLogWrapper = orderLogWrapper.eq("op_status_after", order.getStatus().name());
+                    }
+                    orderLog = orderLogService.selectOne(orderLogWrapper);
+                    orderLogService.updateById(orderLog);
                 }
-                String clientTopic = mqttMessageMap.get("clientTopic")+"";
-                if (StringUtils.isEmpty(clientTopic)){
-                    return;
-                }
-                logger.info("不要向我这边发消息了，我也是生产者，不处理消息");
+
 
             }
 

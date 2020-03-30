@@ -297,7 +297,10 @@ public class AsyncServiceImpl implements AsyncService {
             map.put("category1", category1.getName());
             map.put("category2", category2.getName());
             upList.add(map);
-        }else{
+            //DIGITAL(1),		//家电数码
+            //		HOUSEHOLD(2),	//生活垃圾
+            //		BIGTHING(4),	//大件垃圾
+        }else if("DIGITAL".equals(orderB.getTitle()) || "BIGTHING".equals(orderB.getTitle())){
             List<OrderItem> orderItemList = orderItemService.selectByOrderId(order.getId().intValue());
             for (OrderItem orderItemBean : orderItemList) {
                 Category category2 = categoryService.selectById(orderItemBean.getCategoryId());
@@ -307,6 +310,8 @@ public class AsyncServiceImpl implements AsyncService {
                 map.put("category2", category2 == null ? "":category2.getName());
                 upList.add(map);
             }
+        }else{
+            return;
         }
         orderB.setCategoryList(upList);
         orderB.setStatus(order.getStatus().name());
@@ -367,6 +372,7 @@ public class AsyncServiceImpl implements AsyncService {
                 orderB.setCancelReason(order.getCancelReason());
                 orderB.setCancelTime(String.valueOf(order.getCancelTime()));
                 break;
+            default: return;
         }
         MqttMessage mqttMessage = new MqttMessage(JSON.toJSONBytes(orderB));
         mqttMessage.setQos(1);
