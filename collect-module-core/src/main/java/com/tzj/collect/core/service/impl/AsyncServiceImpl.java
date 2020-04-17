@@ -62,8 +62,6 @@ public class AsyncServiceImpl implements AsyncService {
     private OrderEvaluationService orderEvaluationService;
     @Autowired
     private OrderItemAchService orderItemAchService;
-    @Resource(name= "mqtt4PushOrder")
-    private MqttClient mqtt4PushOrder;
     protected final static Logger log = LoggerFactory.getLogger(AsyncServiceImpl.class);
     @Override
     @Async
@@ -261,8 +259,9 @@ public class AsyncServiceImpl implements AsyncService {
      * 订单推送【仅针对线上业务订单数据（定时定点订单，IOT订单除外）】
      * @param order
      */
+    @Override
     @Async
-    public void pushOrder(Order order) {
+    public void pushOrder(Order order,MqttClient mqtt4PushOrder) {
         OrderPushBean orderB = new OrderPushBean();
         //用户信息：姓名，电话，地址，支付宝UID
         //服务商（统一回传“上海铸乾信息技术有限公司”）

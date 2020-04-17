@@ -49,10 +49,8 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(31536000));
-		System.out.println(31536000/1000/60/24);
 		CompanyBean companyBean = new CompanyBean();
-		companyBean.setCode("ed23e9fa126044c4821c4a0978f19B07");
+		companyBean.setCode("fa58212d9b054f63a3353d29e9510A66");
 
 
 		HashMap<String,Object> param=new HashMap<>();

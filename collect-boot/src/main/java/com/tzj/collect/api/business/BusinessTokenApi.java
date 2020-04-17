@@ -14,6 +14,7 @@ import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.api.utils.SignUtils;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
@@ -50,6 +51,11 @@ public class BusinessTokenApi {
              * 增加是否启用蓝牙
              */
             Company company = companyService.selectById(companyAccount.getId().toString());
+            if (StringUtils.isNotBlank(company.getAuthToken())&&"0".equals(company.getIsCancelAuth())){
+                tokenBean.setIsAuth("0");
+            }else {
+                tokenBean.setIsAuth("1");
+            }
             tokenBean.setBlueTooth("1".equals(company.getBlueTooth()+"") ? "Y": "N");
             return tokenBean;
         }else{

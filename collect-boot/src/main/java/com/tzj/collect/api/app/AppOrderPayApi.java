@@ -10,8 +10,10 @@ import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 
 /**
@@ -25,8 +27,8 @@ public class AppOrderPayApi {
 
     @Autowired
     private PaymentService paymentService;
-    @Autowired
-    private MemberService memberService;
+    @Resource(name = "mqtt4PushOrder")
+    private MqttClient mqtt4PushOrder;
     @Autowired
     private RecyclersService recyclersService;
     @Autowired
@@ -67,7 +69,7 @@ public class AppOrderPayApi {
                 orderBean.setId(order.getId().intValue());
                 orderBean.setStatus("3");
                 orderBean.setAmount(order.getGreenCount());
-                orderService.modifyOrderSta(orderBean);
+                orderService.modifyOrderSta(orderBean,mqtt4PushOrder);
                 return "订单已支付";
             }
             //判断回收人员是否支付成功
@@ -79,7 +81,7 @@ public class AppOrderPayApi {
                     orderBean.setId(order.getId().intValue());
                     orderBean.setStatus("3");
                     orderBean.setAmount(order.getGreenCount());
-                    orderService.modifyOrderSta(orderBean);
+                    orderService.modifyOrderSta(orderBean,mqtt4PushOrder);
                     return "订单已支付";
                 }
             }

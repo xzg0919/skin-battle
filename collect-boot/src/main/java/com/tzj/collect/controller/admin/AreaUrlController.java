@@ -45,12 +45,6 @@ public class AreaUrlController {
     private OrderService orderService;
 
 
-    @RequestMapping("/testOrderPush/{id}")
-    public Order toXcxIndex(@PathVariable Integer id){
-        Order order = orderService.selectById(id);
-        asyncService.pushOrder(order);
-        return order;
-    }
     @RequestMapping("/toXcxIndex")
     public  String toXcxIndex(String outUrl,String areaId, String companyId, String communityId, ModelMap model, String urlParam, String id, String type,String channelId){
         RegionCity regionCity = null;

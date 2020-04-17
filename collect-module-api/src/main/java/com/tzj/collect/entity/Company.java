@@ -47,7 +47,7 @@ public class Company extends DataEntity<Long> {
 	private String refreshToken;//刷新令牌的token
 	private String aliUserId;
 	private String appId;//
-	private String isCancelAuth;//是否取消授权
+	private String isCancelAuth = "0";//是否取消授权0不是
 
 	/**
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示
