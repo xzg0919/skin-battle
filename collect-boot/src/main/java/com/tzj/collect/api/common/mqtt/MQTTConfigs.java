@@ -36,13 +36,13 @@ public class MQTTConfigs {
 //        return mqttClient;
 //    }
     @Bean
-    public String mqttConsumer(MqttClient mqttMessageListener){
+    public String mqttConsumer(MqttClient mqttClient){
         if (!applicaInit.getIsOpenXyConsumer()){
             return null;
         }
         final ExecutorService executorService = new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>());
-        mqttMessageListener.setCallback(new MqttCallbackExtended() {
+        mqttClient.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
                 /**
@@ -55,7 +55,7 @@ public class MQTTConfigs {
                         try {
                             final String topicFilter[] = {MQTTUtil.PARENT_TOPIC};
                             final int[] qos = {MQTTUtil.QOS_LEVEL};
-                            mqttMessageListener.subscribe(topicFilter, qos);
+                            mqttClient.subscribe(topicFilter, qos);
                         } catch (MqttException e) {
                             e.printStackTrace();
                         }

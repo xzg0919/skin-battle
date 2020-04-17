@@ -1,6 +1,7 @@
 package com.tzj.collect.core.service;
 
 import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.entity.Order;
 import org.springframework.scheduling.annotation.Async;
 
 /**
@@ -77,4 +78,7 @@ public interface AsyncService {
 
 	@Async
     void sendOpenAppMini(String aliUserId, String formId, String templateId,String page,String value1,String value2,String value3);
+
+	@Async
+    void pushOrder(Order order);
 }

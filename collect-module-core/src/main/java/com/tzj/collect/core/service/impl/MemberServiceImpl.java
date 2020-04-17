@@ -534,7 +534,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         Double tatalPoints = 0.0;
         Double validPoints = 0.0;
         try {
-            JSONObject result = Tools.httpsPost("https://open.mayishoubei.com/company/api", params);
+            //JSONObject result = Tools.httpsPost("https://open.mayishoubei.com/company/api", params);
+            JSONObject result = Tools.httpsPost("http://localhost:9080/company/api", params);
             if(result != null && "0".equals(result.get("code"))){
                 JSONObject data = (JSONObject) result.get("data");
                 tatalPoints = (double) data.get("tatalPoints");

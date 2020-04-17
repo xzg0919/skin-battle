@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.api.commom.constant.MQTTConst;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.common.amap.AmapUtil;
@@ -22,10 +23,7 @@ import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.admin.VoucherBean;
-import com.tzj.collect.core.param.ali.IdAmountListBean;
-import com.tzj.collect.core.param.ali.OrderBean;
-import com.tzj.collect.core.param.ali.OrderItemBean;
-import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.ali.*;
 import com.tzj.collect.core.param.app.ScoreAppBean;
 import com.tzj.collect.core.param.app.TimeBean;
 import com.tzj.collect.core.param.business.BOrderBean;
@@ -47,6 +45,7 @@ import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.thread.sendGreenOrderThread;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
+import com.tzj.collect.entity.CategoryAttrOption;
 import com.tzj.collect.entity.Order.OrderType;
 import static com.tzj.collect.entity.Payment.STATUS_PAYED;
 import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
@@ -63,7 +62,13 @@ import javax.annotation.Resource;
 
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -166,7 +171,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Resource
     private JedisPool jedisPool;
-
     /**
      * 获取会员的订单列表 分页
      *
@@ -340,6 +344,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         if (flag) {
+            //推送订单消息
+            asyncService.pushOrder(order);
             resultMap.put("msg", "操作成功");
             resultMap.put("code", 0);
             resultMap.put("id", orderId);
@@ -349,6 +355,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         resultMap.put("msg", "操作失败");
         return resultMap;
     }
+
+
 
     /**
      * 回收员确认上传订单
@@ -1424,6 +1432,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if(null != voucherMember){
 			voucherMemberService.updateVoucherCreate(voucherMember.getId());
 		}
+		//推送取消订单
+        asyncService.pushOrder(order);
 		//新增订单日志表的记录
 		OrderLog orderLog = new OrderLog();
 		orderLog.setOpStatusBefore(orderInitStatus);
@@ -1624,6 +1634,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				orderLog.setOpStatusAfter("REJECTED");
 				orderLog.setOp("已驳回");
 				this.updateById(order);
+				//取消订单消息推送
+				asyncService.pushOrder(order);
 				//判断是否有以旧换新券码
 				if(!StringUtils.isBlank(order.getEnterpriseCode())){
 					EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
@@ -1663,9 +1675,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				order.setStatus(OrderType.ALREADY);
 				order.setReceiveTime(new Date());
 				orderLog.setOpStatusAfter("ALREADY");
-				orderLog.setOp("已接单");
-				this.updateById(order);
-				break;
+                orderLog.setOp("已接单");
+                this.updateById(order);
+                //接单消息推送
+                asyncService.pushOrder(order);
+                break;
 			case "TOSEND":
 				if (order.getStatus().name().equals("INIT")) {
 					order.setStatus(OrderType.TOSEND);
@@ -1988,6 +2002,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					flag = orderService.updateById(order);
 					orderLog.setOpStatusAfter("CANCELTASK");
 					orderLog.setOp("已取消任务");
+					//取消订单消息推送
+					asyncService.pushOrder(order);
 					break;
 				case "3"://已完成
 					if ("2".equals(order.getStatus().getValue().toString())) {
@@ -2000,6 +2016,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
 					}
 					flag = orderService.updateById(order);
+					//完成订单消息推送
+                    asyncService.pushOrder(order);
 					orderLog.setOpStatusAfter("COMPLETE");
 					orderLog.setOp("已完成");
 					this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
@@ -2041,6 +2059,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						//異步刪除redis裡面派單id
 //						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
 					}
+					//接单订单消息推送
+					asyncService.pushOrder(order);
 					if (!"1".equals(companyRecycler.getIsManager())) {
 						//阿里云推送
 						Recyclers recyclerss = recyclersService.selectById(companyRecycler.getParentsId());
@@ -2731,6 +2751,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("code",0);
 		resultMap.put("id",order.getId());
 		resultMap.put("status",order.getTitle());
+		//生活垃圾下单消息推送
+		asyncService.pushOrder(order);
 		return resultMap;
 	}
 	/**
@@ -2995,7 +3017,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("id",orderId);
 		resultMap.put("code",0);
 		resultMap.put("status",order.getTitle());
-		return resultMap;
+        //大件下单消息推送
+        asyncService.pushOrder(order);
+        return resultMap;
 
 	}
 	/**

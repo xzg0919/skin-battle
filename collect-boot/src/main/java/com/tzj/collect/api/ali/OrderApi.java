@@ -173,7 +173,7 @@ public class OrderApi {
     }
 
     /**
-     * 下单接口
+     * 家电下单接口
      *
      * @author 王灿
      * @param
