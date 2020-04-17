@@ -1,4 +1,4 @@
-package com.tzj.collect.common.util;
+package com.tzj.iot.common.utils;
 
 import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.collect.entity.Member;
@@ -10,7 +10,7 @@ import com.tzj.module.easyopen.exception.ApiException;
  * @Author 胡方明（12795880@qq.com）
  **/
 public class CompanyEquipmentUtils {
-    public static CompanyEquipment getCompanyEquipment(){
+    public static CompanyEquipment getMember(){
 
         Subject subject=ApiContext.getSubject();
 
@@ -19,8 +19,8 @@ public class CompanyEquipmentUtils {
         }
 
         //接口里面获取  Member 的例子
-        CompanyEquipment equipment= (CompanyEquipment) subject.getUser();
+        CompanyEquipment companyEquipment= (CompanyEquipment) subject.getUser();
 
-        return equipment;
+        return companyEquipment;
     }
 }

@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.AreaBean;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.param.business.StreetNameBean;
@@ -97,4 +98,6 @@ public interface AreaService  extends IService<Area>{
 	Map<String, Object> allAreaStreetIdNameInfo();
 	@DS("slave")
 	Area selectByCode(String townId);
+	@DS("slave")
+	List<Area> getAreaListByParentId(OrderBean orderBean);
 }

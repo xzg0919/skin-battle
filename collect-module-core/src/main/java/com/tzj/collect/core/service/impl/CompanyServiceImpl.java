@@ -1,5 +1,15 @@
 package com.tzj.collect.core.service.impl;
 
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.domain.ExtendParams;
+import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradePayRequest;
+import com.alipay.api.response.AlipayOpenAuthTokenAppResponse;
+import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.alipay.api.response.AlipayTradePayResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -13,16 +23,20 @@ import com.tzj.collect.core.param.iot.IotCompanyResult;
 import com.tzj.collect.core.result.business.BusinessRecType;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.tzj.collect.common.constant.Const.*;
 
 @Service
 @Transactional(readOnly=true)
@@ -52,7 +66,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	@Autowired
 	private RecyclersRangeHouseService recyclersRangeHouseService;
 	@Autowired
-	private CompanyCategoryService companyCategoryService;
+	private AliPayService aliPayService;
 
 	
 	/**
@@ -329,5 +343,27 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	@Override
 	public List<Map<String, Object>> otherAreaLists(String tableName, String cityId) {
 		return companyMapper.otherAreaLists(tableName, cityId);
+	}
+
+	@Override
+	public Object saveAliTokenByCode(String code, Integer companyId) {
+		AlipayOpenAuthTokenAppResponse response = null;
+		try{
+			//用code换取token
+			 response = aliPayService.aliPayOpenAuthToken("authorization_code", code, null);
+			System.out.println(response.getBody());
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		Company company = this.selectById(companyId);
+		if (response.isSuccess()){
+			company.setAuthToken(response.getAppAuthToken());
+			company.setRefreshToken(response.getAppRefreshToken());
+			company.setAppId(response.getAuthAppId());
+			company.setAliUserId(response.getUserId());
+		}else {
+			throw new ApiException("授权异常，请重新授权");
+		}
+		return "success";
 	}
 }

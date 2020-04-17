@@ -13,6 +13,7 @@ import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.param.ali.IdAmountListBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.OrderItemBean;
+import com.tzj.collect.core.param.business.CompanyBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.api.utils.SignUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -22,6 +23,7 @@ import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 import org.springframework.data.annotation.Id;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
@@ -47,44 +49,14 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		OrderBean orderBean = new OrderBean();
-			orderBean.setId(70232);
-			orderBean.setAchPrice("20");
-		List<IdAmountListBean> list = new ArrayList<>();
-		IdAmountListBean idAmountListBean = new IdAmountListBean();
-		idAmountListBean.setCategoryParentId(25);
-		idAmountListBean.setCategoryParentName("废纸");
-		List<OrderItemBean> idAndAmount = new ArrayList<>();
-		OrderItemBean orderItemBean = new OrderItemBean();
-		orderItemBean.setCategoryId(26);
-		orderItemBean.setCategoryName("书本杂志");
-		orderItemBean.setAmount(3.0);
-		idAndAmount.add(orderItemBean);
-		idAmountListBean.setIdAndAmount(idAndAmount);
-		IdAmountListBean idAmountListBean1 = new IdAmountListBean();
-		idAmountListBean1.setCategoryParentId(45);
-		idAmountListBean1.setCategoryParentName("废旧衣物");
-		List<OrderItemBean> idAndAmount1 = new ArrayList<>();
-		OrderItemBean orderItemBean1 = new OrderItemBean();
-		orderItemBean1.setCategoryId(46);
-		orderItemBean1.setCategoryName("衣服");
-		orderItemBean1.setAmount(4.0);
-		idAndAmount1.add(orderItemBean1);
-		OrderItemBean orderItemBean2 = new OrderItemBean();
-		orderItemBean2.setCategoryId(47);
-		orderItemBean2.setCategoryName("裤子");
-		orderItemBean2.setAmount(5.0);
-		idAndAmount1.add(orderItemBean2);
-		idAmountListBean1.setIdAndAmount(idAndAmount1);
-		list.add(idAmountListBean1);
-		list.add(idAmountListBean);
-		orderBean.setIdAndListList(list);
-//		OrderBean orderBean = new OrderBean();
-//		orderBean.setId(70120);
+		System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(31536000));
+		System.out.println(31536000/1000/60/24);
+		CompanyBean companyBean = new CompanyBean();
+		companyBean.setCode("ed23e9fa126044c4821c4a0978f19B07");
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","order.getOrderAchItemDatail");
+		param.put("name","business.token.saveAliTokenByCode");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -92,7 +64,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",orderBean);
+		param.put("data",companyBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);

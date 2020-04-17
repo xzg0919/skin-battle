@@ -3,13 +3,17 @@ package com.tzj.iot.api.equipment.app;
 import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.common.util.CompanyEquipmentUtils;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.common.utils.ToolUtils;
+import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.param.iot.EquipmentParamBean;
 import com.tzj.collect.core.param.iot.IotCompanyResult;
 import com.tzj.collect.core.param.iot.IotErrorParamBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.collect.entity.CompanyEquipment;
+import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
+import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
@@ -52,6 +56,8 @@ public class EquipmentAppApi {
     private EquipmentMessageService equipmentMessageService;
     @Resource
     private MqttClient mqttClient;
+    @Resource
+    private MemberService memberService;
 
     /**
      * 广告位
@@ -94,12 +100,18 @@ public class EquipmentAppApi {
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
     public Map<String, Object> qrCode() {
         Map<String, Object> returnMap = new HashMap<>();
-        CompanyEquipment equipment = CompanyEquipmentUtils.getMember();
+        CompanyEquipment equipment = CompanyEquipmentUtils.getCompanyEquipment();
         IotCompanyResult iotCompanyResult = companyService.selectIotUrlByEquipmentCode(equipment.getEquipmentCode());
         String aliUrl = "alipays://platformapi/startapp?appId=2018060660292753&page=pages/view/index/index&query=";
         String encodeString = URLEncoder.encode("tranTime="+ System.currentTimeMillis()+ "&ecUuid="+UUID.randomUUID().toString().substring(0,15)+ "&cabinetNo="+equipment.getEquipmentCode());
         returnMap.put("qrCode", aliUrl+URLEncoder.encode("qrCode=Y&type=appliance&sourceId="+equipment.getEquipmentCode()+"&qrUrl="+iotCompanyResult.getIotUrl()+"?"+encodeString));
         return returnMap;
+    }
+
+    public static void main(String[] args) {
+        String aliUrl = "alipays://platformapi/startapp?appId=2018060660292753&page=pages/view/index/index&query=";
+        String encodeString = URLEncoder.encode("tranTime="+ System.currentTimeMillis()+ "&ecUuid="+UUID.randomUUID().toString().substring(0,15)+ "&cabinetNo="+"SH0024");
+        System.out.println(aliUrl+URLEncoder.encode("qrCode=Y&type=appliance&sourceId="+"SH0024"+"&qrUrl="+"http://apibox.weee-ec.cn/service/Api/Alipay.src"+"?"+encodeString));
     }
 
 
@@ -148,6 +160,31 @@ public class EquipmentAppApi {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+    }
+    @Api(name = "equipment.getMemberByCardNo", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    public Object getMemberByCardNo(MemberBean memberBean) throws MqttException {
+        CompanyEquipment companyEquipment = CompanyEquipmentUtils.getCompanyEquipment();
+        Map<String,Object> resultMap = new HashMap<String,Object>();
+        String aliUserId = ToolUtils.getAliUserIdByOrderNo(memberBean.getCardNo());
+        Member member = memberService.selectMemberByAliUserId(aliUserId);
+        if(member==null) {
+            resultMap.put("code", "500");
+            resultMap.put("msg", "该卡号不存在");
+            return resultMap;
+        }
+        //发送开启箱门指令使用过后更新动态二维码
+        Map<String, String> messageMap = new HashMap<>();
+        messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getKey());
+        messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.EQUIPMENT_OPEN.getValue());
+        String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
+        String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
+        messageMap.put("token", securityToken);
+        equipmentMessageService.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap),companyEquipment.getHardwareCode(), mqttClient);
+        resultMap.put("code", "200");
+        resultMap.put("msg", "操作成功");
+        return resultMap;
     }
 
 }

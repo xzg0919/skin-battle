@@ -2558,7 +2558,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 * @author 王灿
 	 */
-	public Object distributeOrder(Integer orderId, Integer recyclerId) {
+	@Override
+    public Object distributeOrder(Integer orderId, Integer recyclerId) {
 		Order order = this.selectById(orderId);
 		if (null == order) {
 			return "未找到该订单 id：" + orderId;
@@ -3347,6 +3348,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("orderList",orderList);
 		return resultMap;
 	}
+    @Override
+    public Object getXyOrderListByAdminReception(OrderBean orderBean) {
+        PageBean pageBean = orderBean.getPagebean();
+        if (null==pageBean){
+            pageBean = new PageBean();
+        }
+        Integer startPage = (pageBean.getPageNumber()-1)*pageBean.getPageSize();
+        Integer pageSize = pageBean.getPageSize();
+        List<Map<String, Object>> orderList = orderMapper.getXyOrderListByAdminReception(orderBean.getIsNormal(),orderBean.getCompanyId() == null ? null : orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime(), startPage, pageSize);
+        Integer orderCount = orderMapper.getXyOrderCountByAdminReception(orderBean.getIsNormal(),orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
+        Map<String,Object> resultMap = new HashMap<>();
+        Map<String,Object> pagination = new HashMap<>();
+        pagination.put("current",pageBean.getPageNumber());
+        pagination.put("pageSize",pageBean.getPageSize());
+        pagination.put("total",orderCount);
+        resultMap.put("pagination",pagination);
+        resultMap.put("orderList",orderList);
+        return resultMap;
+    }
 	@Override
     public List<Map<String, Object>> getOutComplaintOrderList(OrderBean orderBean){
 	    if(StringUtils.isBlank(orderBean.getStartTime())&&StringUtils.isBlank(orderBean.getEndTime())){
@@ -3395,7 +3415,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @param areaId
 	 * @return
 	 */
-	public List<ThirdOrderResult> orderStatistics4Third(String areaId,String startTime,String endTime,Integer pageNumber,Integer pageSize){
+	@Override
+    public List<ThirdOrderResult> orderStatistics4Third(String areaId, String startTime, String endTime, Integer pageNumber, Integer pageSize){
 		Integer _pageNumber = pageNumber == null?0:pageNumber;
 		Integer _pageSize  = pageSize==null?10:pageSize;
 
@@ -4204,7 +4225,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             memberService.insert(member);
         }
         order = new Order();
-        Integer companyId = 0;
+        Integer companyId = null;
         Integer areaId = 0;
         Integer streetId = 0;
         try {
@@ -4243,9 +4264,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setIsCash("1");
         order.setIsMysl("1");
         order.setTitle(Order.TitleType.HOUSEHOLD);
-        orderService.insert(order);
         List<XyCategoryOrder> xyCategoryOrderList = xyCategoryOrderService.selectList(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","1"));
         XyCategoryOrder amountCategoryOrder = xyCategoryOrderService.selectOne(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","2"));
+        order.setQty(amountCategoryOrder.getCategoryId());
+        orderService.insert(order);
         Integer orderId = order.getId().intValue();
         xyCategoryOrderList.stream().forEach(xyCategoryOrder -> {
                 Category category = categoryService.selectById(xyCategoryOrder.getCategoryId());
@@ -4263,13 +4285,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         });
         return "操作成功";
     }
-
-    public static void main(String[] args) {
-        String s = "2020-03-21 10:00:00";
-        System.out.println(s.split(" ")[0]);
-        System.out.println(s.split(" ")[1]);
-
+    @Override
+    public Object sendXyOrderByCompanyId(OrderBean orderBean){
+        if (null==orderBean.getOrderId()||null==orderBean.getCompanyId()){
+            throw new ApiException("订单id或公司id不能为空");
+        }
+        Order order = this.selectById(orderBean.getOrderId());
+        if (null==order){
+            throw new ApiException("订单不存在");
+        }
+        if (null!=order.getCompanyId()){
+            throw new ApiException("订单已存在公司");
+        }
+        order.setCompanyId(orderBean.getCompanyId());
+        this.updateById(order);
+        return "操作成功";
     }
-
-
 }

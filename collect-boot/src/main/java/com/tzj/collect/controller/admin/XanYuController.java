@@ -12,14 +12,8 @@ import com.taobao.api.internal.util.WebUtils;
 import com.tzj.collect.annotation.XianyuSign;
 import com.tzj.collect.core.param.business.CompanyAccountBean;
 import com.tzj.collect.core.param.xianyu.*;
-import com.tzj.collect.core.service.AreaService;
-import com.tzj.collect.core.service.CategoryService;
-import com.tzj.collect.core.service.CompanyStreetHouseService;
-import com.tzj.collect.core.service.XyCategoryOrderService;
-import com.tzj.collect.entity.Area;
-import com.tzj.collect.entity.Category;
-import com.tzj.collect.entity.CompanyAccount;
-import com.tzj.collect.entity.XyCategoryOrder;
+import com.tzj.collect.core.service.*;
+import com.tzj.collect.entity.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import net.sf.json.JSONObject;
 import org.aspectj.apache.bcel.classfile.Module;
@@ -50,6 +44,8 @@ public class XanYuController {
     private CategoryService categoryService;
     @Autowired
     private XyCategoryOrderService xyCategoryOrderService;
+    @Autowired
+    private XyCheckAddressService xyCheckAddressService;
 
 
     /**
@@ -121,6 +117,9 @@ public class XanYuController {
     public Object getAddressCheck(HttpServletRequest request) throws Exception {
         String stream = getInputStream(request);
         System.out.println("获取咸鱼的地址校验 ： "+stream);
+        XyCheckAddress xyCheckAddress = new XyCheckAddress();
+        xyCheckAddress.setMessage(stream);
+        xyCheckAddressService.insert(xyCheckAddress);
         Map<String, Object> objectMap = (Map<String, Object>) JSONObject.fromObject(stream);
         Object townId = objectMap.get("townId");
         Map<String,Object> resultMap = new HashMap<>();

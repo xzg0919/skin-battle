@@ -19,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static com.tzj.collect.common.constant.Const.*;
+
 @Service
 public class AliPayServiceImpl implements AliPayService {
 
@@ -620,6 +622,25 @@ public class AliPayServiceImpl implements AliPayService {
         } else {
             System.out.println("调用失败");
         }
+        return response;
+    }
+
+    @Override
+    public AlipayOpenAuthTokenAppResponse aliPayOpenAuthToken(String grantType,String code,String refreshToken) throws Exception {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayOpenAuthTokenAppRequest request = new AlipayOpenAuthTokenAppRequest();
+        AlipayOpenAuthTokenAppModel model = new AlipayOpenAuthTokenAppModel();
+        if (StringUtils.isNotBlank(grantType)){
+            model.setGrantType(grantType);
+        }
+        if (StringUtils.isNotBlank(code)) {
+            model.setCode(code);
+        }
+        if (StringUtils.isNotBlank(refreshToken)){
+            model.setRefreshToken(refreshToken);
+        }
+        request.setBizModel(model);
+        AlipayOpenAuthTokenAppResponse response =alipayClient.execute(request);
         return response;
     }
 }

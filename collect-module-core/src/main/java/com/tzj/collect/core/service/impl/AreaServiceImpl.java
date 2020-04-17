@@ -10,6 +10,7 @@ import com.tzj.collect.core.mapper.AreaMapper;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.MemberAddressBean;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.param.business.StreetNameBean;
@@ -758,5 +759,13 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 	@Override
 	public Area selectByCode(String townId){
 		return this.selectOne(new EntityWrapper<Area>().eq("code_",townId));
+	}
+	@Override
+	public List<Area> getAreaListByParentId(OrderBean orderBean){
+		if (StringUtils.isBlank(orderBean.getParentId())){
+			return this.selectList(new EntityWrapper<Area>().eq("type","0"));
+		}else {
+			return this.selectList(new EntityWrapper<Area>().eq("parent_id",orderBean.getParentId()));
+		}
 	}
 }

@@ -2,6 +2,7 @@ package com.tzj.collect.api.business;
 
 import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.core.param.business.CompanyAccountBean;
+import com.tzj.collect.core.param.business.CompanyBean;
 import com.tzj.collect.core.service.CompanyAccountService;
 import com.tzj.collect.core.service.CompanyService;
 import com.tzj.collect.entity.Company;
@@ -78,5 +79,13 @@ public class BusinessTokenApi {
         tokenBean.setToken(securityToken);
         return tokenBean;
 
+    }
+
+    @Api(name = "business.token.saveAliTokenByCode", version = "1.0")
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public Object getAliToken(CompanyBean companyBean) {
+        //接口里面获取  CompanyAccount 的例子
+        CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+       return companyService.saveAliTokenByCode(companyBean.getCode(),companyAccount.getCompanyId());
     }
 }
