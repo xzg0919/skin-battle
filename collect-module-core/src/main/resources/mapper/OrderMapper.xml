@@ -1762,6 +1762,7 @@
 		FROM (
 		SELECT
 		a.id,
+		CONCAT(a.qty,'-',a.qty+5) as qty,
 		a.order_no AS orderNo,
 		DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
 		if(a.title = '1','废弃家电',if(a.title = '2','生活垃圾',if(a.title = '4','大件垃圾','')))AS categoryName,
@@ -1817,6 +1818,7 @@
 		</if>
 		ORDER BY a.create_date DESC
 		) a
+		LIMIT #{startPage},#{pageSize}
 	</select>
 	<select id="getXyOrderCountByAdminReception" resultType="Integer" parameterType="Object">
 		SELECT
