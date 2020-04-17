@@ -168,14 +168,16 @@
 	</select>
 	<select id="getOwnnerPriceApp" parameterType="com.tzj.collect.core.param.ali.CategoryBean" resultType="com.tzj.collect.core.result.ali.ComCatePrice">
 		SELECT
-			FORMAT(sccp.price,2) AS price,
+			if(FORMAT(sccp.price,2) = FORMAT(soi.price,2), FORMAT(sccp.price,2), FORMAT(soi.price,2)) AS price,
 			sccp.unit,
 			sc.name_,
 			sc.id,
 			sc.icon
 		FROM 
 			sb_company_category sccp 
-		INNER JOIN sb_category sc ON sc.id = sccp.category_id 
+		INNER JOIN sb_category sc ON sc.id = sccp.category_id
+		INNER JOIN sb_order_category soc  ON soc.category_id = sccp.category_id
+		INNER JOIN sb_order_item soi ON soi.order_id = soc.order_id
 		WHERE
 			sccp.parent_id = #{categoryBean.id} 
 		AND sccp.company_id = #{companyId} 
@@ -299,13 +301,15 @@
 	</select>
 	<select id="getAvgPriceApp" parameterType="com.tzj.collect.core.param.ali.CategoryBean" resultType="com.tzj.collect.core.result.ali.ComCatePrice">
 		SELECT
-			FORMAT(sc.market_price, 2) AS price,
+			if(FORMAT(sc.market_price,2) = FORMAT(soi.price,2), FORMAT(sc.market_price,2), FORMAT(soi.price,2)) AS price,
 			sc.name_,
 			sc.id,
 			sc.icon,
 			sc.unit
 		FROM
 		sb_category sc
+		INNER JOIN sb_order_category soc  ON soc.category_id = sc.category_id
+		INNER JOIN sb_order_item soi ON soi.order_id = soc.order_id
 		WHERE
 			sc.parent_id = #{categoryBean.id} 
 		AND (FORMAT(sc.market_price, 2) > 0 OR sc.unuseful = '1')
