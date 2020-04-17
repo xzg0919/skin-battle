@@ -110,7 +110,7 @@
 
 	<select id="getOwnnerPriceAppByCity" parameterType="String" resultType="com.tzj.collect.core.result.ali.ComCatePrice">
 		SELECT
-			FORMAT(sccp.price,2) AS price,
+			if(FORMAT(sccp.price,2) = FORMAT(soi.price,2), FORMAT(sccp.price,2), FORMAT(soi.price,2)) AS price,
 			sccp.unit,
 			sc.name_,
 			sc.id,
@@ -118,6 +118,8 @@
 		FROM
 			sb_company_category_city sccp
 		INNER JOIN sb_category sc ON sc.id = sccp.category_id
+		INNER JOIN sb_order_category soc  ON soc.category_id = sccp.category_id
+		INNER JOIN sb_order_item soi ON soi.order_id = soc.order_id
 		WHERE
 			sccp.parent_id = #{categoryId}
 		AND sccp.company_id = #{companyId}
