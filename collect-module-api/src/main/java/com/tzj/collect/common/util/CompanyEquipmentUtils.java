@@ -10,7 +10,7 @@ import com.tzj.module.easyopen.exception.ApiException;
  * @Author 胡方明（12795880@qq.com）
  **/
 public class CompanyEquipmentUtils {
-    public static CompanyEquipment getMember(){
+    public static CompanyEquipment getCompanyEquipment(){
 
         Subject subject=ApiContext.getSubject();
 

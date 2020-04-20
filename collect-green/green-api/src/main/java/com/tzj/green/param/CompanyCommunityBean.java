@@ -109,5 +109,7 @@ public class CompanyCommunityBean {
 
     private String communityHouseId;
 
+    private String communityNo;
+
 
 }

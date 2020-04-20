@@ -7,16 +7,17 @@ import com.google.zxing.MultiFormatReader;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
-import com.tzj.collect.core.service.AreaService;
-import com.tzj.collect.core.service.CommunityService;
-import com.tzj.collect.core.service.RegionCityService;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.Community;
+import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.RegionCity;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.imageio.ImageIO;
@@ -38,6 +39,10 @@ public class AreaUrlController {
     private AreaService areaService;
     @Autowired
     private CommunityService communityService;
+    @Autowired
+    private AsyncService asyncService;
+    @Autowired
+    private OrderService orderService;
 
 
     @RequestMapping("/toXcxIndex")

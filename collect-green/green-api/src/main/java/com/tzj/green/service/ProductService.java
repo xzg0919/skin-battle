@@ -31,4 +31,6 @@ public interface ProductService extends IService<Product>
     Object getGoodsListByCompanyId(Long companyId,ProductBean productBean);
 
     Object activtyDetail(String activityCode);
+
+    Object getGoodsOrderDetailList(ProductBean productBean);
 }

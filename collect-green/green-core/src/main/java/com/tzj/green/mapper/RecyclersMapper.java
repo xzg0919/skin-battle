@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.green.entity.Recyclers;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,4 +22,8 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>
 {
 
     Map<String, Object> selectRecRange(@Param("recId") Long recId);
+
+    Integer pointListCount(@Param("recId")Long id);
+
+    List<Map<String, Object>> pointsLists(@Param("recId")Long id, @Param("start")Integer start, @Param("end")Integer end);
 }

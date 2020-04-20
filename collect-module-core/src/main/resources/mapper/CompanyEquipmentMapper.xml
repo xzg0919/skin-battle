@@ -116,4 +116,20 @@
             AND iot_equipment_code = #{equipmentCode}
         </if>
     </select>
+    <insert id="insertIotImg">
+        INSERT INTO `sb_equipment_pic` (
+            `equipment_code`,
+            `pic_url`,
+            `del_flag`,
+            `version_`
+        )
+        VALUES
+            (
+                #{equipmentCode},
+                #{imgUrl},
+                '0',
+                '1'
+            );
+
+    </insert>
 </mapper>

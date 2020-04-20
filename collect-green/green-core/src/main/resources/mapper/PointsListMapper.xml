@@ -6,7 +6,7 @@
 
     <select id="getPointsListByCompanyId" parameterType="Object" resultType="Map">
         SELECT
-            DATE_FORMAT(b.create_date,'%Y-%m-%d %H:%i:%s')as createDate,
+            DATE_FORMAT(a.create_date,'%Y-%m-%d %H:%i:%s')as createDate,
             b.name_ AS userName,
             b.mobile,
             b.real_no AS realNo,
@@ -36,6 +36,9 @@
         </if>
         <if test="tel != null and tel != '' ">
             AND b.mobile LIKE CONCAT('%',#{tel},'%')
+        </if>
+        <if test="provinceId != null and provinceId != '' ">
+            AND b.province_id = #{provinceId}
         </if>
         <if test="cityId != null and cityId != '' ">
             AND b.city_id = #{cityId}
@@ -76,6 +79,9 @@
     </if>
     <if test="tel != null and tel != '' ">
         AND b.mobile LIKE CONCAT('%',#{tel},'%')
+    </if>
+    <if test="provinceId != null and provinceId != '' ">
+        AND b.province_id = #{provinceId}
     </if>
     <if test="cityId != null and cityId != '' ">
         AND b.city_id = #{cityId}

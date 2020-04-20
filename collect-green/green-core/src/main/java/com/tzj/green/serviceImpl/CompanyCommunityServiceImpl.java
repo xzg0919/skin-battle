@@ -13,10 +13,12 @@ import com.tzj.green.param.PageBean;
 import com.tzj.green.service.AreaService;
 import com.tzj.green.service.CommunityHouseNameService;
 import com.tzj.green.service.CompanyCommunityService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +118,32 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("companyCommunity",companyCommunity);
         resultMap.put("communityHouseNameList",communityHouseNameList);
+        List<Map<String,Object>> communityTimeList = new ArrayList<>();
+        if (StringUtils.isNotBlank(companyCommunity.getDryTime())){
+            Map<String,Object> dryMap = new HashMap<>();
+            dryMap.put("time",companyCommunity.getDryTime());
+            dryMap.put("name","干垃圾");
+            communityTimeList.add(dryMap);
+        }
+        if (StringUtils.isNotBlank(companyCommunity.getWetTime())){
+            Map<String,Object> wetMap = new HashMap<>();
+            wetMap.put("time",companyCommunity.getWetTime());
+            wetMap.put("name","湿垃圾");
+            communityTimeList.add(wetMap);
+        }
+        if (StringUtils.isNotBlank(companyCommunity.getHarmfulTime())){
+            Map<String,Object> harmfulMap = new HashMap<>();
+            harmfulMap.put("time",companyCommunity.getHarmfulTime());
+            harmfulMap.put("name","有害垃圾");
+            communityTimeList.add(harmfulMap);
+        }
+        if (StringUtils.isNotBlank(companyCommunity.getRecoveryTime())){
+            Map<String,Object> recoveryMap = new HashMap<>();
+            recoveryMap.put("time",companyCommunity.getRecoveryTime());
+            recoveryMap.put("name","可回收垃圾");
+            communityTimeList.add(recoveryMap);
+        }
+        resultMap.put("communityTimeList",communityTimeList);
         return resultMap;
     }
 
@@ -127,9 +155,9 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
         }
         Integer pageStartNum = (pageBean.getPageNum()-1)*pageBean.getPageSize();
 
-        List<Map<String, Object>> companyCommunityList = companyCommunityMapper.getCompanyCommunityList(companyId, companyCommunityBean.getProvinceId(), companyCommunityBean.getCityId(), companyCommunityBean.getAreaId(), companyCommunityBean.getStreetId(), companyCommunityBean.getCommunityName(),  companyCommunityBean.getCommunityHouseName(), pageStartNum, pageBean.getPageSize());
+        List<Map<String, Object>> companyCommunityList = companyCommunityMapper.getCompanyCommunityList(companyCommunityBean.getCommunityNo(),companyId, companyCommunityBean.getProvinceId(), companyCommunityBean.getCityId(), companyCommunityBean.getAreaId(), companyCommunityBean.getStreetId(), companyCommunityBean.getCommunityName(),  companyCommunityBean.getCommunityHouseName(), pageStartNum, pageBean.getPageSize());
 
-        Integer count = companyCommunityMapper.getCompanyCommunityCount(companyId, companyCommunityBean.getProvinceId(), companyCommunityBean.getCityId(), companyCommunityBean.getAreaId(), companyCommunityBean.getStreetId(), companyCommunityBean.getCommunityName(), companyCommunityBean.getCommunityHouseName());
+        Integer count = companyCommunityMapper.getCompanyCommunityCount(companyCommunityBean.getCommunityNo(),companyId, companyCommunityBean.getProvinceId(), companyCommunityBean.getCityId(), companyCommunityBean.getAreaId(), companyCommunityBean.getStreetId(), companyCommunityBean.getCommunityName(), companyCommunityBean.getCommunityHouseName());
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("companyCommunityList",companyCommunityList);
         resultMap.put("count",count);

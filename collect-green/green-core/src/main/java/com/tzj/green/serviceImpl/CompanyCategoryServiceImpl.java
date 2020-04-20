@@ -71,7 +71,7 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
             companyCategory.setSubtractPoints(Long.parseLong(categoryBean.getSubtractPoints()));
         }
         if (StringUtils.isNotBlank(categoryBean.getIsOpen())){
-            companyCategory.setSubtractPoints(Long.parseLong(categoryBean.getIsOpen()));
+            companyCategory.setIsOpen(categoryBean.getIsOpen());
         }
         this.insertOrUpdate(companyCategory);
         return "操作成功";

@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.api.commom.constant.MQTTConst;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.common.amap.AmapUtil;
@@ -22,16 +23,14 @@ import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.admin.VoucherBean;
-import com.tzj.collect.core.param.ali.IdAmountListBean;
-import com.tzj.collect.core.param.ali.OrderBean;
-import com.tzj.collect.core.param.ali.OrderItemBean;
-import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.ali.*;
 import com.tzj.collect.core.param.app.ScoreAppBean;
 import com.tzj.collect.core.param.app.TimeBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.business.CompanyBean;
 import com.tzj.collect.core.param.iot.AdminIotErrorBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
+import com.tzj.collect.core.param.xianyu.QiMemOrder;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.result.ali.CommToken;
 import com.tzj.collect.core.result.app.AppOrderResult;
@@ -46,6 +45,7 @@ import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.thread.sendGreenOrderThread;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Category.CategoryType;
+import com.tzj.collect.entity.CategoryAttrOption;
 import com.tzj.collect.entity.Order.OrderType;
 import static com.tzj.collect.entity.Payment.STATUS_PAYED;
 import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
@@ -57,9 +57,18 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Resource;
+
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -100,9 +109,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private XingeMessageService xingeService;
+    private MapService mapService;
     @Autowired
-    private MemberAddressService memberAddressService;
+    private CompanyStreetHouseService companyStreetHouseService;
     @Autowired
     private RecyclerCancelLogService recyclerCancelLogService;
     @Autowired
@@ -155,10 +164,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private VoucherMemberService voucherMemberService;
     @Resource
     private LineQrCodeOrderService lineQrCodeOrderService;
+    @Autowired
+    private XyCategoryOrderService xyCategoryOrderService;
+    @Autowired
+    private QiMemService qiMemService;
 
     @Resource
     private JedisPool jedisPool;
-
     /**
      * 获取会员的订单列表 分页
      *
@@ -192,7 +204,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      */
     @Transactional
     @Override
-    public Map<String, Object> saveOrder(OrderBean orderbean) {
+    public Map<String, Object> saveOrder(OrderBean orderbean,MqttClient mqtt4PushOrder) {
         //查询价格
         BigDecimal price = categoryService.getPricesAll(orderbean.getAliUserId(), orderbean.getCategoryId(), "DIGITAL", orderbean.getOrderItemBean().getCategoryAttrOppIds());
         Map<String, Object> resultMap = new HashMap<>();
@@ -327,6 +339,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             } else {
                 asyncService.sendOpenAppMini(order.getAliUserId(), order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page, order.getOrderNo(), "平台已受理", "生活垃圾");
             }
+            //推送订单消息
+            asyncService.pushOrder(order,mqtt4PushOrder);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -341,6 +355,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         resultMap.put("msg", "操作失败");
         return resultMap;
     }
+
+
 
     /**
      * 回收员确认上传订单
@@ -383,6 +399,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         order.setAchRemarks(orderbean.getAchRemarks());
         order.setSignUrl(orderbean.getSignUrl());
+        //新需求：回收人员app生活垃圾板块 增加选项-用户是否平铺整理 1-否 2-是
+        if ("2".equals(order.getTitle().getValue().toString())){
+            order.setCleanUp(orderbean.getCleanUp());
+        }
+
         orderbean.setIsCash(order.getIsCash());
         Area city = areaService.selectById(order.getAreaId());
         orderbean.setCityId(city.getParentId().toString());
@@ -434,11 +455,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), orderItemAch.getCategoryId().toString());
                 Category category = categoryService.selectById(orderItemAch.getCategoryId());
                 if ("0".equals(order.getIsCash())){
-                    greenCount[0] += category.getGreenCount()*orderItemAch.getAmount();
+                    greenCount[0] += category.getGreenCount()*orderItemAch.getAmount()*orderItemAch.getCleanUp();
                     commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                     backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                 }else {
-                    greenCount[0] += category.getFreeGreenCount()*orderItemAch.getAmount();
+                    greenCount[0] += category.getFreeGreenCount()*orderItemAch.getAmount()*orderItemAch.getCleanUp();
                     commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getFreeCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                     backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                 }
@@ -458,7 +479,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Transactional
     @Override
-    public Object getPriceByOrderId(OrderBean orderbean){
+    public Object getPriceByOrderId(OrderBean orderbean,MqttClient mqtt4PushOrder){
         Order order = this.selectById(orderbean.getId());
         order.setAchPrice(new BigDecimal(orderbean.getAchPrice()));
         this.updateById(order);
@@ -468,7 +489,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             orderbean.setAmount(order.getGreenCount());
             orderbean.setAchPrice(order.getAchPrice().toString());
             orderbean.setStatus("3");
-            this.modifyOrderSta(orderbean);
+            this.modifyOrderSta(orderbean,mqtt4PushOrder);
+            //如果是咸鱼的单子，就通知咸鱼订单完成
+            if (StringUtils.isNotBlank(order.getTaobaoNo())){
+                QiMemOrder qiMemOrder = new QiMemOrder();
+                qiMemOrder.setConfirmFee("0");
+                qiMemOrder.setBizOrderId(order.getOrderNo());
+                qiMemOrder.setOrderStatus(QiMemOrder.QI_MEM_ORDER_SUCCESS);
+                Double amount = orderMapper.getAmountByOrderId(order.getId());
+                qiMemOrder.setQuantity(amount.toString());
+                boolean bool = qiMemService.updateQiMemOrder(qiMemOrder);
+            }
             if ("1".equals(order.getIsMysl())) {
                 //给用户增加蚂蚁能量
                 orderService.myslOrderData(order.getId().toString());
@@ -609,6 +640,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						orderItem.setCategoryId(Integer.parseInt(item.getCategoryId() + ""));
 						orderItem.setCategoryName(item.getCategoryName());
 						orderItem.setAmount(item.getAmount());
+                        //新需求：增加评价 用户是否平铺整理 1-否 2-是
+                        orderItem.setCleanUp(orderbean.getCleanUp());
+
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
 						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
@@ -1356,7 +1390,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 */
 	@Transactional
 	@Override
-	public String orderCancel(Order order, String orderInitStatus) {
+	public String orderCancel(Order order, String orderInitStatus,MqttClient mqtt4PushOrder) {
 		String status = OrderType.valueOf(orderInitStatus).getValue()+"";
 		boolean bool = this.updateById(order);
 //		if (bool) {
@@ -1365,6 +1399,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //				xingeService.sendPostMessage("您有一笔订单已被取消", "已取消订单来自" + commToken.getCommName() + "，点击查看", commToken.getTencentToken(), XingeMessageServiceImp.XingeMessageCode.cancelOrder);
 //			}
 //		}
+        //如果是咸鱼的单子，就通知咸鱼订单取消
+        if (StringUtils.isNotBlank(order.getTaobaoNo())){
+            QiMemOrder qiMemOrder = new QiMemOrder();
+            qiMemOrder.setBizOrderId(order.getOrderNo());
+            qiMemOrder.setOrderStatus(QiMemOrder.QI_MEM_ORDER_CANCEL);
+            qiMemOrder.setReason(order.getCancelReason());
+            bool = qiMemService.updateQiMemOrder(qiMemOrder);
+        }
 		if("3".equals(order.getTitle().getValue()+"")&&!"0".equals(status)){
 			try{
 				Company company = companyService.selectById(order.getCompanyId());
@@ -1398,6 +1440,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if(null != voucherMember){
 			voucherMemberService.updateVoucherCreate(voucherMember.getId());
 		}
+		//推送取消订单
+        asyncService.pushOrder(order,mqtt4PushOrder);
 		//新增订单日志表的记录
 		OrderLog orderLog = new OrderLog();
 		orderLog.setOpStatusBefore(orderInitStatus);
@@ -1580,7 +1624,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 */
 	@Transactional
 	@Override
-	public String updateOrderByBusiness(Integer orderId, String status, String cancelReason, Integer recyclerId) {
+	public String updateOrderByBusiness(Integer orderId, String status, String cancelReason, Integer recyclerId,MqttClient mqtt4PushOrder) {
 		Order order = orderMapper.selectById(orderId);
 		//修改订单日志表的
 		OrderLog orderLog = new OrderLog();
@@ -1598,6 +1642,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				orderLog.setOpStatusAfter("REJECTED");
 				orderLog.setOp("已驳回");
 				this.updateById(order);
+				//取消订单消息推送
+				asyncService.pushOrder(order,mqtt4PushOrder);
 				//判断是否有以旧换新券码
 				if(!StringUtils.isBlank(order.getEnterpriseCode())){
 					EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
@@ -1637,9 +1683,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				order.setStatus(OrderType.ALREADY);
 				order.setReceiveTime(new Date());
 				orderLog.setOpStatusAfter("ALREADY");
-				orderLog.setOp("已接单");
-				this.updateById(order);
-				break;
+                orderLog.setOp("已接单");
+                this.updateById(order);
+                //接单消息推送
+                asyncService.pushOrder(order,mqtt4PushOrder);
+                break;
 			case "TOSEND":
 				if (order.getStatus().name().equals("INIT")) {
 					order.setStatus(OrderType.TOSEND);
@@ -1897,7 +1945,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return flag;
 	}
 	@Override
-	public boolean modifyOrderSta(OrderBean orderBean) {
+	public boolean modifyOrderSta(OrderBean orderBean,MqttClient mqtt4PushOrder) {
 		OrderLog orderLog = new OrderLog();
 		orderLog.setOrderId(orderBean.getId());
 		String descrb = "";
@@ -1962,6 +2010,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					flag = orderService.updateById(order);
 					orderLog.setOpStatusAfter("CANCELTASK");
 					orderLog.setOp("已取消任务");
+					//取消订单消息推送
+					asyncService.pushOrder(order,mqtt4PushOrder);
 					break;
 				case "3"://已完成
 					if ("2".equals(order.getStatus().getValue().toString())) {
@@ -1974,6 +2024,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
 					}
 					flag = orderService.updateById(order);
+					//完成订单消息推送
+                    asyncService.pushOrder(order,mqtt4PushOrder);
 					orderLog.setOpStatusAfter("COMPLETE");
 					orderLog.setOp("已完成");
 					this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
@@ -2015,6 +2067,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						//異步刪除redis裡面派單id
 //						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
 					}
+					//接单订单消息推送
+					asyncService.pushOrder(order,mqtt4PushOrder);
 					if (!"1".equals(companyRecycler.getIsManager())) {
 						//阿里云推送
 						Recyclers recyclerss = recyclersService.selectById(companyRecycler.getParentsId());
@@ -2362,6 +2416,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 	public Integer getCityId(String location) {
 		Integer cityId = null;
+		//优化代码
+		if(StringUtils.isBlank(location)){
+		    return null;
+        }
 		try {
 			AmapResult amap = AmapUtil.getAmap(location);
 			if(null!= amap) {
@@ -2398,11 +2456,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//获取用户的详细信息
 		Member member = memberService.selectMemberByAliUserId(orderBean.getAliUserId());
 		if (member == null) {
-			System.out.println(orderBean.getMemberId() + "    查不到此用户");
-			return "暂无此用户";
+		    if(StringUtils.isNotBlank(orderBean.getSpecial()) && "special".equals(orderBean.getSpecial())){
+                member=new Member();
+                member.setAliUserId(orderBean.getAliUserId());
+                memberService.insertMember(member);
+            }else {
+                System.out.println(orderBean.getMemberId() + "    查不到此用户");
+                return "暂无此用户";
+            }
 		}
 		Order order = new Order();
-		order.setMemberId(orderBean.getMemberId());
+		if(orderBean.getMemberId()!=null){
+            order.setMemberId(orderBean.getMemberId());
+        }else{
+            order.setMemberId(member.getId().intValue());
+        }
 		order.setCompanyId(companyRecycler.getCompanyId());
 		order.setRecyclerId(companyRecycler.getRecyclerId());
 		order.setStatus(OrderType.COMPLETE);
@@ -2518,7 +2586,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 * @author 王灿
 	 */
-	public Object distributeOrder(Integer orderId, Integer recyclerId) {
+	@Override
+    public Object distributeOrder(Integer orderId, Integer recyclerId) {
 		Order order = this.selectById(orderId);
 		if (null == order) {
 			return "未找到该订单 id：" + orderId;
@@ -2540,6 +2609,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 * @author 王灿
 	 */
+	@Override
 	public Object distributeOrderList(Integer recyclerId) {
 		return orderMapper.distributeOrderList(recyclerId);
 	}
@@ -2551,7 +2621,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 * @author 王灿
 	 */
-	public Object XcxSaveOrder(OrderBean orderBean, Member member) {
+	@Override
+    public Object XcxSaveOrder(OrderBean orderBean, Member member, MqttClient mqtt4PushOrder) {
 		Map<String,Object> resultMap = new HashMap<>();
 		Order order = new Order();
 		try {
@@ -2689,6 +2760,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("code",0);
 		resultMap.put("id",order.getId());
 		resultMap.put("status",order.getTitle());
+		//生活垃圾下单消息推送
+		asyncService.pushOrder(order,mqtt4PushOrder);
 		return resultMap;
 	}
 	/**
@@ -2819,7 +2892,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @throws com.taobao.api.ApiException
 	 */
 	@Override
-	public Map<String,Object> saveBigThingOrder(OrderBean orderbean) throws com.taobao.api.ApiException{
+	public Map<String,Object> saveBigThingOrder(OrderBean orderbean,MqttClient mqtt4PushOrder) throws com.taobao.api.ApiException{
 		//查询价格
 		BigDecimal price = categoryService.getPricesAll(orderbean.getAliUserId(),orderbean.getCategoryId(),"BIGTHING",orderbean.getOrderItemBean().getCategoryAttrOppIds());
 		Map<String,Object> resultMap = new HashMap<>();
@@ -2953,7 +3026,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("id",orderId);
 		resultMap.put("code",0);
 		resultMap.put("status",order.getTitle());
-		return resultMap;
+        //大件下单消息推送
+        asyncService.pushOrder(order,mqtt4PushOrder);
+        return resultMap;
 
 	}
 	/**
@@ -2995,7 +3070,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return "操作成功";
 	}
 	@Override
-	public String saveBigOrderPrice(OrderBean orderBean){
+	public String saveBigOrderPrice(OrderBean orderBean,MqttClient mqtt4PushOrder){
 		Order order = orderService.selectById(orderBean.getId());
         CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
 		Category categorys = categoryService.selectById(order.getCategoryId());
@@ -3013,7 +3088,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderBean.setStatus("3");
 			orderBean.setAmount(categorys.getGreenCount());
 			//修改订单状态
-			this.modifyOrderSta(orderBean);
+			this.modifyOrderSta(orderBean,mqtt4PushOrder);
 			order.setStatus(OrderType.COMPLETE);
 		}
 		orderService.updateById(order);
@@ -3196,7 +3271,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @param orderId
 	 * @return
 	 */
-	public Object tosendfiveKgOrder(Integer orderId){
+	@Override
+    public Object tosendfiveKgOrder(Integer orderId){
 		SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
 		Order order = orderService.selectById(orderId);
 		Company company = companyService.selectById(order.getCompanyId());
@@ -3306,6 +3382,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("orderList",orderList);
 		return resultMap;
 	}
+    @Override
+    public Object getXyOrderListByAdminReception(OrderBean orderBean) {
+        PageBean pageBean = orderBean.getPagebean();
+        if (null==pageBean){
+            pageBean = new PageBean();
+        }
+        Integer startPage = (pageBean.getPageNumber()-1)*pageBean.getPageSize();
+        Integer pageSize = pageBean.getPageSize();
+        List<Map<String, Object>> orderList = orderMapper.getXyOrderListByAdminReception(orderBean.getIsNormal(),orderBean.getCompanyId() == null ? null : orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime(), startPage, pageSize);
+        Integer orderCount = orderMapper.getXyOrderCountByAdminReception(orderBean.getIsNormal(),orderBean.getCompanyId()==null?null:orderBean.getCompanyId().toString(), orderBean.getTitle(), orderBean.getStatus(), orderBean.getTel(), orderBean.getOrderNo(), orderBean.getLinkName(), orderBean.getStartTime(), orderBean.getEndTime());
+        Map<String,Object> resultMap = new HashMap<>();
+        Map<String,Object> pagination = new HashMap<>();
+        pagination.put("current",pageBean.getPageNumber());
+        pagination.put("pageSize",pageBean.getPageSize());
+        pagination.put("total",orderCount);
+        resultMap.put("pagination",pagination);
+        resultMap.put("orderList",orderList);
+        return resultMap;
+    }
 	@Override
     public List<Map<String, Object>> getOutComplaintOrderList(OrderBean orderBean){
 	    if(StringUtils.isBlank(orderBean.getStartTime())&&StringUtils.isBlank(orderBean.getEndTime())){
@@ -3354,7 +3449,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @param areaId
 	 * @return
 	 */
-	public List<ThirdOrderResult> orderStatistics4Third(String areaId,String startTime,String endTime,Integer pageNumber,Integer pageSize){
+	@Override
+    public List<ThirdOrderResult> orderStatistics4Third(String areaId, String startTime, String endTime, Integer pageNumber, Integer pageSize){
 		Integer _pageNumber = pageNumber == null?0:pageNumber;
 		Integer _pageSize  = pageSize==null?10:pageSize;
 
@@ -3731,14 +3827,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 	@Override
     @Transactional
-	public String agreeExamineOdrerStatus(OrderBean orderbean){
+	public String agreeExamineOdrerStatus(OrderBean orderbean,MqttClient mqtt4PushOrder){
 		Order order = this.selectById(orderbean.getId());
 		if((OrderType.COMPLETE+"").equals(order.getStatus()+"")||(OrderType.CANCEL+"").equals(order.getStatus()+"")){
 			throw new ApiException("该订单的状态，目前不可被申请取消");
 		}
 		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
 		if ("1".equals(orderbean.getStatus())){
-			this.updateOrderByBusiness(orderbean.getId(),"REJECTED",orderbean.getCancelReason(),null);
+			this.updateOrderByBusiness(orderbean.getId(),"REJECTED",orderbean.getCancelReason(),null,mqtt4PushOrder);
+            //如果是咸鱼的单子，就通知咸鱼订单取消
+            if (StringUtils.isNotBlank(order.getTaobaoNo())){
+                QiMemOrder qiMemOrder = new QiMemOrder();
+                qiMemOrder.setBizOrderId(order.getOrderNo());
+                qiMemOrder.setOrderStatus(QiMemOrder.QI_MEM_ORDER_CANCEL);
+                qiMemOrder.setReason(orderbean.getCancelReason());
+                boolean bool = qiMemService.updateQiMemOrder(qiMemOrder);
+            }
 		}
 		orderCancleExamine.setUpdateDate(new Date());
 		orderCancleExamine.setStatus(orderbean.getStatus());
@@ -4117,7 +4221,118 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return returnMap;
     }
 
+    @Override
+    public Object saveXyOrder(String message) {
 
-
-
+        Map<String, Object> objectMap = (Map<String, Object>) JSONObject.fromObject(message);
+        String nickName = objectMap.get("seller_nick")+"";
+        String sellerRealName = objectMap.get("seller_real_name")+"";
+        String address = objectMap.get("seller_address")+"";
+        String aliUserId = objectMap.get("seller_alipay_user_id")+"";
+        String tel = objectMap.get("seller_phone")+"";
+        String city = objectMap.get("city")+"";
+        String quoteId = objectMap.get("apprize_id")+"";
+        String shipTime = objectMap.get("ship_time")+"";
+        String closeReason = objectMap.get("close_reason")+"";
+        String taobaoNo = objectMap.get("biz_order_id")+"";
+        Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", taobaoNo));
+        if (null != order){
+            if(StringUtils.isNotBlank(closeReason)&&!"null".equals(closeReason)){
+                order.setCancelTime(new Date());
+                order.setCancelReason(closeReason);
+                order.setStatus(OrderType.CANCEL);
+                orderService.updateById(order);
+                return "操作成功";
+            }else {
+                throw new ApiException("该订单已存在");
+            }
+        }
+        Member member = memberService.selectMemberByAliUserId(aliUserId);
+        if (null == member){
+            member = new Member();
+            member.setName(sellerRealName);
+            member.setMobile(tel);
+            member.setCity(city);
+            member.setLinkName(nickName);
+            member.setAddress(address);
+            member.setAliUserId(aliUserId);
+            memberService.insert(member);
+        }
+        order = new Order();
+        Integer companyId = null;
+        Integer areaId = 0;
+        Integer streetId = 0;
+        try {
+            String location = mapService.getLocation(address);
+            AmapResult amap = mapService.getAmap(location);
+            String towncode = amap.getTowncode();
+            Area area = areaService.selectOne(new EntityWrapper<Area>().eq("code_", towncode));
+            companyId = companyStreetHouseService.selectStreetHouseCompanyId(area.getId().intValue());
+            streetId = area.getId().intValue();
+            areaId = area.getParentId();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
+            order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(shipTime.split(" ")[0]));
+            order.setArrivalPeriod(shipTime.split(" ")[1]);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        order.setCompanyId(companyId);
+        order.setMemberId(member.getId().intValue());
+        order.setStatus(OrderType.INIT);
+        order.setOrderNo(taobaoNo);
+        order.setTaobaoNo(quoteId);
+        order.setAreaId(areaId);
+        order.setStreetId(streetId);
+        order.setAddress(address);
+        order.setPrice(BigDecimal.ZERO);
+        order.setTel(tel);
+        order.setLinkMan(sellerRealName);
+        order.setCategoryId(26);
+        order.setCategoryParentIds("25");
+        order.setIsEvaluated("0");
+        order.setLevel("0");
+        order.setAliUserId(aliUserId);
+        order.setIsCash("1");
+        order.setIsMysl("1");
+        order.setTitle(Order.TitleType.HOUSEHOLD);
+        List<XyCategoryOrder> xyCategoryOrderList = xyCategoryOrderService.selectList(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","1"));
+        XyCategoryOrder amountCategoryOrder = xyCategoryOrderService.selectOne(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","2"));
+        order.setQty(amountCategoryOrder.getCategoryId());
+        orderService.insert(order);
+        Integer orderId = order.getId().intValue();
+        xyCategoryOrderList.stream().forEach(xyCategoryOrder -> {
+                Category category = categoryService.selectById(xyCategoryOrder.getCategoryId());
+                OrderItem orderItem = new OrderItem();
+                orderItem.setOrderId(orderId);
+                orderItem.setCategoryId(category.getId().intValue());
+                orderItem.setCategoryName(category.getName());
+                orderItem.setParentId(category.getId().intValue());
+                orderItem.setParentIds(category.getId()+"_");
+                orderItem.setParentName(category.getName());
+                orderItem.setAmount(amountCategoryOrder.getCategoryId());
+                orderItem.setUnit(category.getUnit());
+                orderItem.setPrice(0);
+                orderItemService.insert(orderItem);
+        });
+        return "操作成功";
+    }
+    @Override
+    public Object sendXyOrderByCompanyId(OrderBean orderBean){
+        if (null==orderBean.getOrderId()||null==orderBean.getCompanyId()){
+            throw new ApiException("订单id或公司id不能为空");
+        }
+        Order order = this.selectById(orderBean.getOrderId());
+        if (null==order){
+            throw new ApiException("订单不存在");
+        }
+        if (null!=order.getCompanyId()){
+            throw new ApiException("订单已存在公司");
+        }
+        order.setCompanyId(orderBean.getCompanyId());
+        this.updateById(order);
+        return "操作成功";
+    }
 }

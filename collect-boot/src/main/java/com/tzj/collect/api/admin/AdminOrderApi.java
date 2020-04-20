@@ -15,8 +15,10 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +32,8 @@ public class AdminOrderApi {
     private OrderCancleExamineService orderCancleExamineService;
     @Autowired
     private ArrivalTimeLogService arrivalTimeLogService;
+    @Resource(name = "mqtt4PushOrder")
+    private MqttClient mqtt4PushOrder;
 
     /**
      * 根据条件获取订单内容
@@ -106,7 +110,7 @@ public class AdminOrderApi {
         Integer orderId = orderbean.getId();
         //驳回原因
         String cancelReason = orderbean.getCancelReason();
-        String sta = orderService.updateOrderByBusiness(orderId,"REJECTED",cancelReason,null);
+        String sta = orderService.updateOrderByBusiness(orderId,"REJECTED",cancelReason,null,mqtt4PushOrder);
         return sta;
     }
     /**
@@ -160,7 +164,7 @@ public class AdminOrderApi {
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public String agreeExamineOdrerStatus(OrderBean orderbean) {
-       return orderService.agreeExamineOdrerStatus(orderbean);
+       return orderService.agreeExamineOdrerStatus(orderbean,mqtt4PushOrder);
     }
 
     /**

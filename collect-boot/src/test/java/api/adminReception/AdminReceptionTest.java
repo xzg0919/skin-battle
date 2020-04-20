@@ -35,28 +35,22 @@ public class AdminReceptionTest {
 
         String api="http://localhost:9090/admin/reception/api";
         OrderBean orderBean = new OrderBean();
-        orderBean.setId(70212);
+//        orderBean.setIsNormal("0");
 //        orderBean.setCompanyId(41);
-//        orderBean.setStatus("3");
-//        orderBean.setTel("15691728708");
-//        orderBean.setOrderNo("20190924162542366492");
-//        orderBean.setLinkName("马欣竹");
-//        orderBean.setComplaintType("3");
-//        orderBean.setPagebean(new PageBean());
-//        orderBean.setCompanyName("再生资源");
-//        orderBean.setOrderNo("20190924141907716896");
-//        orderBean.setType("1");
-//        orderBean.setReason("老板催我来接单2");
+//        orderBean.setStatus("0");
+//        orderBean.setTel("18375336389");
+//        orderBean.setOrderNo("912462913569884234");
+//        orderBean.setLinkName("王灿");
+//        orderBean.setStartTime("2020-03-01");
+//        orderBean.setEndTime("2020-03-31");
+//        orderBean.setParentId("2");
+        orderBean.setOrderId(70368);
+        orderBean.setCompanyId(41);
 
-//        ArrivalTimeLogBean arrivalTimeLogBean = new ArrivalTimeLogBean();
-//        arrivalTimeLogBean.setOrderId(70092);
-//        arrivalTimeLogBean.setAfterDate("2019-09-25");
-//        arrivalTimeLogBean.setAfterPeriod("12:00-13:00");
-//        arrivalTimeLogBean.setCancleDesc("我是修改原因");
 
 
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","reception.getOrderDetailByOrderId");
+        param.put("name","admin.sendXyOrderByCompanyId");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_4");

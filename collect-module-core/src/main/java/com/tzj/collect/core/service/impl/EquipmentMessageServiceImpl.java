@@ -2,14 +2,21 @@ package com.tzj.collect.core.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayIserviceCognitiveClassificationWasteQueryRequest;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
+import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.constant.MQTTConst;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.amap.AmapConst;
 import com.tzj.collect.common.amap.AmapRegeoJson;
+import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.param.iot.EquipmentParamBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
+import com.tzj.collect.core.result.flcx.AlipayResponseResult;
+import com.tzj.collect.core.result.iot.BizContent;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.module.api.utils.JwtUtils;
@@ -82,13 +89,20 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
             //关闭（识别图片）
             if(CompanyEquipment.EquipmentAction.EquipmentActionCode.IDENTIFYING_PICTURES.getKey().equals(messageMap.get("code"))){
                 //拿到物品识别图片地址,返回识别结果(挡板翻转)
-                messageMap.get("imgUrl");
+                System.out.println(messageMap.get("imgUrl"));
+                try {
+                    companyEquipmentService.insertIotImg(topic, messageMap.get("imgUrl"));
+                }catch (Exception e){
+
+                }
                 //调用阿里的物品识别接口 todo
+//                returnTypeByPic(messageMap.get("imgUrl")+"");
+
                 Integer nextInt =  new Random().nextInt(3);
                 //返回預定圖片
                 messageMap = new HashMap<>();
-                messageMap.put("imgUrl", "http://images.sqmall.top/collect/20180427_category_pic/11.png");
-                messageMap.put("action", nextInt > 0 ? "2":"1");
+                messageMap.put("imgUrl", messageMap.get("imgUrl"));
+                messageMap.put("action", nextInt > 1 ? "1":"1");
                 messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getKey());
                 messageMap.put("message",  CompanyEquipment.EquipmentAction.EquipmentActionCode.DISCERN_FINISH.getValue());
                 //發送消息
@@ -338,4 +352,40 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
         }
         return "";
     }
+
+    /**
+     * Ali识别
+     * @author: sgmark@aliyun.com
+     * @Date: 2020/1/17 0017
+     * @Param: 
+     * @return: 
+     */
+    public static AlipayResponseResult returnTypeByPic(String picUrl) {
+        AlipayResponseResult responseResult = new AlipayResponseResult();
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
+        AlipayIserviceCognitiveClassificationWasteQueryRequest request = new AlipayIserviceCognitiveClassificationWasteQueryRequest();
+        AlipayIserviceCognitiveClassificationWasteQueryResponse execute = null;
+        try {
+            BizContent bizContent = new BizContent();
+            if (!StringUtils.isBlank(picUrl)) {
+                bizContent.setBiz_code("biz8");
+                bizContent.setSource("isv");
+                bizContent.setCognition_content(picUrl);
+                bizContent.setCognition_type("ImageUrl");
+            }
+            request.setBizContent(JSON.toJSONString(bizContent));
+
+            execute = alipayClient.execute(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        responseResult.setKeyWords(execute.getKeyWords());
+        responseResult.setTraceId(execute.getTraceId());
+        return responseResult;
+    }
+
+    public static void main(String[] args) {
+        returnTypeByPic("http://images.sqmall.top/new_bridge/20191227/iot_07162e6c-4879-40b5-81ba-04908343ad5c.jpg");
+    }
+
 }

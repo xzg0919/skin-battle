@@ -1,9 +1,11 @@
 package com.tzj.green.serviceImpl;
 
+import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import javax.annotation.Resource;
 
+import com.tzj.green.common.content.AlipayConst;
 import com.tzj.green.entity.*;
 import com.tzj.green.mapper.RecyclersMapper;
 import com.tzj.green.param.RecyclersBean;
@@ -36,8 +38,6 @@ import java.util.Map;
 public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers> implements RecyclersService
 {
     @Resource
-    private RecyclersService recyclersService;
-    @Resource
     private MemberService memberService;
     @Resource
     private MessageService messageService;
@@ -53,6 +53,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     private PointsListItemService pointsListItemService;
     @Resource
     private MemberPointsService memberPointsService;
+    @Resource
+    private AliPayService aliPayService;
     /**
      * 根据手机号查询回收人员
      *
@@ -65,24 +67,40 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     }
 
     @Override
+    @Transactional(readOnly = false)
     public Map<String, Object> bindingCardByRec(RecyclersBean recyclersBean) {
         //验证手机验证码是否正确有效
         if(!messageService.validMessage(recyclersBean.getMobile(), recyclersBean.getCaptcha())){
             throw new ApiException("手机验证码错误");
         }
         Map<String, Object> returnMap = new HashMap<>();
-        Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("id_card", recyclersBean.getIdCard()));
-        if (null == member){
-            member = new Member();
-            member.setName(recyclersBean.getName());
-            member.setMobile(recyclersBean.getMobile());
-            member.setAddress(recyclersBean.getAddress());
-            member.setGender(recyclersBean.getSex());
+        Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("real_no", recyclersBean.getRealNo()));
+        if (null != member){
+            throw new ApiException("该卡号已绑定");
         }
+        Member member1 = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("mobile", recyclersBean.getMobile()));
+        if (null != member1){
+            throw new ApiException("该手机号已绑定");
+        }
+        CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersBean.getRecId()).eq("status_","1"));
+        if (null == companyRecycler){
+            throw new ApiException("该回收人员暂无申请公司");
+        }
+        member = new Member();
+        member.setCompanyId(companyRecycler.getCompanyId());
+        member.setName(recyclersBean.getName());
+        member.setMobile(recyclersBean.getMobile());
+        member.setAddress(recyclersBean.getAddress());
+        member.setGender(recyclersBean.getSex());
         member.setRealNo(recyclersBean.getRealNo());
+        member.setIdCardRev(recyclersBean.getIdCardRev());
+        member.setIdCardObv(recyclersBean.getIdCardObv());
+        member.setIdCard(recyclersBean.getIdCard());
+        member.setDetailAddress(recyclersBean.getDetailAddress());
+        member.setAddress(recyclersBean.getAddress());
         member.setDetailAddress(recyclersBean.getDetailAddress());
         //保存用户当前回收人员所在回收服务范围所在的小区地址
-        Map<String, Object> recMap =  recyclersMapper.selectRecRange(recyclersBean.getId());
+        Map<String, Object> recMap =  recyclersMapper.selectRecRange(recyclersBean.getRecId());
         if (null == recMap){
             throw new ApiException("录入失败, 检查是否通过审核");
         }else {
@@ -91,10 +109,12 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
                 member.setProvinceName(recMap.get("province_name")+"");
                 member.setCityId(Long.parseLong(recMap.get("city_id")+""));
                 member.setCityName(recMap.get("city_name")+"");
-                member.setCommunityId(Long.parseLong(recMap.get("area_id")+""));
-                member.setCommunityName(recMap.get("area_name")+"");
+                member.setAreaId(Long.parseLong(recMap.get("area_id")+""));
+                member.setAreaName(recMap.get("area_name")+"");
                 member.setStreetId(Long.parseLong(recMap.get("street_id")+""));
                 member.setStreetName(recMap.get("street_name")+"");
+                member.setCommunityId(Long.parseLong(recMap.get("community_id")+""));
+                member.setCommunityName(recMap.get("community_name")+"");
                 member.setCommunityHouseId(Long.parseLong(recMap.get("house_id")+""));
                 member.setCommunityHouseName(recMap.get("house_name")+"");
                 member.setCompanyId(Long.parseLong(recMap.get("company_id")+""));
@@ -126,7 +146,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
      */
     @Override
     public List<Map<String, Object>> categoryPointInfo(Long recId) {
-        CompanyRecycler companyRecycler = companyRecyclerService.selectById(recId);
+        CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recId).eq("status_","1"));
+        if (null == companyRecycler){
+            throw new ApiException("暂未找到回收公司");
+        }
         List<Map<String, Object>> returnListMap = new ArrayList<>();
         if (null != companyRecycler){
             returnListMap = (List<Map<String, Object>>)companyCategoryService.getCompanyCategoryById(companyRecycler.getCompanyId());
@@ -143,13 +166,13 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
      */
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public Map<String, Object> appChangePoint(Map<String, Object> paramMap) {
+    public Map<String, Object> appChangePoint(Map<String, Object> paramMap,Long recyclerId) {
         Map<String, Object> returnMap = new HashMap<>();
         PointsList pointsList = new PointsList();
         if (!paramMap.containsKey("pointList")){
             throw new ApiException("pointList 不能为空");
         }
-        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("del_flag", 0).eq("user_no", pointsList.getUserNo()).last(" limit 1"));
+        MemberPoints memberPoints = memberPointsService.selectOne(new EntityWrapper<MemberPoints>().eq("del_flag", 0).eq("user_no", paramMap.get("realNo")).last(" limit 1"));
         if(!paramMap.containsKey("pointType")){
             throw new ApiException("pointType 不能为空");
         }else {
@@ -174,10 +197,17 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
                 if (pointsList.getPointsType().equals("1")) {
                     throw new ApiException("积分不足");
                 }
-                memberPoints.setRemnantPoints(memberPoints.getRemnantPoints() + Long.parseLong(paramMap.get("points") + ""));
-                memberPoints.setTatalPoints(memberPoints.getTatalPoints() + Long.parseLong(paramMap.get("points") + ""));
+                CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclerId).eq("status_", "1"));
+                memberPoints.setCompanyId(companyRecycler.getCompanyId());
+                memberPoints.setRemnantPoints(Long.parseLong(paramMap.get("points") + ""));
+                memberPoints.setTatalPoints( Long.parseLong(paramMap.get("points") + ""));
+                memberPoints.setUserNo(paramMap.get("realNo")+"");
+                memberPoints.setUserName(paramMap.get("userName")+"");
+                memberPoints.setAliUserId(paramMap.get("aliUserId")+"");
             }
         }
+        //用户增加/减少积分
+        memberPointsService.insertOrUpdate(memberPoints);
         if (!paramMap.containsKey("realNo")){
             throw new ApiException("实体卡号不能为空");
         }else {
@@ -191,10 +221,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         pointsList.setRecyclerId(Long.parseLong(paramMap.get("recId")+""));
         pointsList.setCompanyId(Long.parseLong(comRecMap.get("company_id")+""));
         //验证加减分是否异常
-        if (!checkPoint(paramMap)){
-            throw new ApiException("提交失败");
-        }
-        pointsList.setPoints(Long.parseLong(comRecMap.get("points")+""));
+//        if (!checkPoint(paramMap)){
+//            throw new ApiException("提交失败");
+//        }
+        pointsList.setPoints(Long.parseLong(paramMap.get("points")+""));
         pointsList.setAliUserId(paramMap.get("aliUserId")+"");
         if (pointsListService.insert(pointsList)){
             returnMap.put("msg", "保存成功");
@@ -206,19 +236,65 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             pointsListItem.setPointsListId(pointsList.getId());
             pointsListItem.setPoints(Long.parseLong(pointList.get("point")+""));
             pointsListItem.setAmount(Long.parseLong(pointList.get("amount")+""));
-            pointsListItem.setCategoryId(Long.parseLong(pointList.get("categoryId")+""));
-            pointsListItem.setCategoryName(pointList.get("categoryName")+"");
-            pointsListItem.setParentId(Long.parseLong(pointList.get("parentId")+""));
-            pointsListItem.setParentName(pointList.get("parentName")+"");
-            pointsListItem.setParentIds(pointList.get("parentIds")+"");
+            if (null!=pointList.get("categoryId")){
+                pointsListItem.setCategoryId(Long.parseLong(pointList.get("categoryId")+""));
+            }
+            if (null!=pointList.get("categoryName")){
+                pointsListItem.setCategoryName(pointList.get("categoryName")+"");
+            }
+            if (null!=pointList.get("parentId")){
+                pointsListItem.setParentId(Long.parseLong(pointList.get("parentId")+""));
+            }
+            if (null!=pointList.get("parentName")){
+                pointsListItem.setParentName(pointList.get("parentName")+"");
+            }
+            if (null!=pointList.get("parentIds")){
+                pointsListItem.setParentIds(pointList.get("parentIds")+"");
+            }
             pointsListItemService.insert(pointsListItem);
         });
-        //用户增加/减少积分
-        memberPointsService.insertOrUpdate(memberPoints);
         return returnMap;
     }
+
+    @Transactional
+    @Override
+    public String getAuthCode(String authCode, Long recyclersId) throws Exception {
+
+        Recyclers recyclers = this.selectById(recyclersId);
+        //根据用户授权的具体authCode查询是用户的userid和token
+        AlipaySystemOauthTokenResponse response = aliPayService.selectUserToken(authCode, AlipayConst.appId);
+        if (!response.isSuccess()) {
+            throw new ApiException("授权失败，请重新授权");
+        }
+        String accessToken = response.getAccessToken();
+        String userId = response.getUserId();
+        recyclers.setAliUserId(userId);
+        this.updateById(recyclers);
+        return "操作成功";
+    }
+
+    @Override
+    public Map<String, Object> pointsList(RecyclersBean recyclersBean) {
+        Map<String, Object> returnMap = new HashMap<>();
+        Integer pointsCount = recyclersMapper.pointListCount(recyclersBean.getId());
+        List<Map<String, Object>> pointsList = recyclersMapper.pointsLists(recyclersBean.getId(), (recyclersBean.getPageBean().getPageNum()-1)*recyclersBean.getPageBean().getPageSize(), recyclersBean.getPageBean().getPageSize());
+        returnMap.put("count", pointsCount);
+        returnMap.put("list", pointsList);
+        return returnMap;
+    }
+
+    @Override
+    @Transactional
+    public Object updatePassword(Long recyclersId, RecyclersBean recyclersBean) {
+        Recyclers recyclers = this.selectById(recyclersId);
+        recyclers.setPassword(recyclersBean.getPassword());
+        this.updateById(recyclers);
+        return "操作成功";
+    }
+
+
     /**
-     * 验证分数是否异常
+     * 验证分数是否异常(自欺欺人)
      * @author: sgmark@aliyun.com
      * @Date: 2020/1/13 0013
      * @Param: 
@@ -228,8 +304,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         List<Map<String, Object>> pointLists = (List<Map<String, Object>>) paramMap.get("pointList");
         BigDecimal points = BigDecimal.ZERO;
         pointLists.stream().forEach(pointList ->{
-            BigDecimal point = (BigDecimal) pointList.get("point");
-            BigDecimal weight = (BigDecimal) pointList.get("amount");
+            BigDecimal point = BigDecimal.valueOf(Double.parseDouble(pointList.get("point")+""));
+            BigDecimal weight = BigDecimal.valueOf(Double.parseDouble(pointList.get("amount")+""));
             points.add(point.multiply(weight));
         });
         if (paramMap.get("points").equals(points.setScale(0, BigDecimal.ROUND_DOWN))){

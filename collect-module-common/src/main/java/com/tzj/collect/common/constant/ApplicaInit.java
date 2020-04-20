@@ -11,6 +11,8 @@ public class ApplicaInit {
 
     private String stationUrl;
 
+    private Boolean isOpenXyConsumer;//是否开启咸鱼订单消费
+
     private Boolean isOpenTransferThread;//是否开启转账线程
 
 }

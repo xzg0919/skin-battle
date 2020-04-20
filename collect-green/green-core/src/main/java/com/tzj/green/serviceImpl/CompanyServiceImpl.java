@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.tzj.green.common.content.TokenConst.*;
@@ -47,5 +48,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
         resultMap.put("company",company);
         resultMap.put("token",securityToken);
         return resultMap;
+    }
+
+    @Override
+    public List<Company> getCompanyList() {
+        return this.selectList(new EntityWrapper<Company>());
     }
 }

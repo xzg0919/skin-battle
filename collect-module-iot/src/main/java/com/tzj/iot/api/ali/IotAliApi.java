@@ -12,7 +12,7 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.utils.JwtUtils;
-import com.tzj.module.easyopen.doc.annotation.ApiDoc;
+
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,7 +25,6 @@ import static com.tzj.collect.common.constant.TokenConst.*;
  * @create 2019-11-26 11:17
  **/
 @ApiService
-@ApiDoc(value = "APP iot 设备端ali模块",appModule = "ali")
 public class IotAliApi {
 
     @Resource

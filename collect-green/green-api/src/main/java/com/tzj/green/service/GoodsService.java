@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.Goods;
 import com.tzj.green.param.GoodsBean;
 
+import java.util.Map;
+
 /**
  *
  * <p>Created on2019年12月30日</p>
@@ -25,4 +27,6 @@ public interface GoodsService extends IService<Goods>
     Object getGoodsListByActivityId(String activityCode);
 
     Object getGoodsDetail(String goodsNo);
+
+    Map<String, Object> selectAddressByProId(Long proId);
 }

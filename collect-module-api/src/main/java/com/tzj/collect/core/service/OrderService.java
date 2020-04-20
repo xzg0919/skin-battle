@@ -20,6 +20,9 @@ import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.entity.VoucherMember;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +51,7 @@ public interface OrderService extends IService<Order> {
      * @param  orderbean : 订单参数实体
      * @return long
      */
-	 Map<String,Object> saveOrder(OrderBean orderbean);
+	 Map<String,Object> saveOrder(OrderBean orderbean,MqttClient mqtt4PushOrder);
 
 	/**
 	 * app保存订单信息
@@ -57,7 +60,7 @@ public interface OrderService extends IService<Order> {
 	 */
 	boolean saveByRecy(OrderBean orderbean);
 
-	Object getPriceByOrderId(OrderBean orderbean);
+	Object getPriceByOrderId(OrderBean orderbean,MqttClient mqttClient);
 
 	Object getCommissionsPriceByOrderId(OrderBean orderbean);
 	/**
@@ -182,7 +185,7 @@ public interface OrderService extends IService<Order> {
 	 * @param order:订单
 	 * @return
 	*/
-	String  orderCancel(Order order, String orderInitStatus);
+	String  orderCancel(Order order, String orderInitStatus,MqttClient mqttClient);
 	/**
 	 * 订单详情(用户)
 	 * @author 王灿
@@ -210,9 +213,9 @@ public interface OrderService extends IService<Order> {
 	 * @param
 	 * @return
 	 */
-	String updateOrderByBusiness(Integer orderId, String status, String cancelReason, Integer recyclerId);
+	String updateOrderByBusiness(Integer orderId, String status, String cancelReason, Integer recyclerId,MqttClient mqttClient);
 
-	boolean modifyOrderSta(OrderBean orderBean);
+	boolean modifyOrderSta(OrderBean orderBean,MqttClient mqttClient);
 
 	boolean modifyOrderByPayment(OrderBean orderBean, VoucherMember voucherMember);
 	/** 回调修改状态
@@ -258,7 +261,7 @@ public interface OrderService extends IService<Order> {
 	 * @param
 	 * @return
 	 */
-	public Object XcxSaveOrder(OrderBean orderbean, Member member);
+	public Object XcxSaveOrder(OrderBean orderbean, Member member,MqttClient mqtt4PushOrder);
 
 	/**
 	 * 导出企业的完成订单的Excel
@@ -274,9 +277,8 @@ public interface OrderService extends IService<Order> {
 	 * 小程序大家具下单接口
 	 * @param orderbean
 	 * @return
-	 * @throws ApiException
 	 */
-	Map<String,Object> saveBigThingOrder(OrderBean orderbean) throws Exception;
+	Map<String,Object> saveBigThingOrder(OrderBean orderbean, MqttClient mqtt4PushOrder) throws Exception;
 
 	 void updateMemberPoint(String aliUserId, String OrderNo, double amount, String descrb);
 
@@ -295,7 +297,7 @@ public interface OrderService extends IService<Order> {
 
 	String setAchOrder(OrderBean orderBean);
 
-	String saveBigOrderPrice(OrderBean orderBean);
+	String saveBigOrderPrice(OrderBean orderBean,MqttClient mqttClient);
 
 	Map<String, Object> iotCreatOrder(IotParamBean iotParamBean);
 
@@ -341,6 +343,8 @@ public interface OrderService extends IService<Order> {
 	Object getOrderListByAdmin(OrderBean orderBean);
 	@DS("slave")
 	Object getOrderListByAdminReception(OrderBean orderBean);
+	@DS("slave")
+	Object getXyOrderListByAdminReception(OrderBean orderBean);
 	@DS("slave")
 	List<Map<String, Object>> getOutComplaintOrderList(OrderBean orderBean);
 	@DS("slave")
@@ -405,7 +409,7 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Map<String,Object> getOrderCancleExamineList(OrderBean orderBean);
 
-	String agreeExamineOdrerStatus(OrderBean orderbean);
+	String agreeExamineOdrerStatus(OrderBean orderbean,MqttClient mqttClient);
 
 	@DS("slave")
     Map<String, Object> getAllOrderMapOverview(BOrderBean orderBean);
@@ -441,4 +445,9 @@ public interface OrderService extends IService<Order> {
 	Integer getOrderListByDate(String startTime,String endTime,String title,String status);
 	@DS("slave")
 	Map<String, Object>  selectIotRecList(Long recId, String status, PageBean pageBean);
+
+	Object saveXyOrder(String message);
+	@DS("slave")
+	Object sendXyOrderByCompanyId(OrderBean orderBean);
+
 }

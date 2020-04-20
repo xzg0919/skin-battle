@@ -1,16 +1,16 @@
 package com.tzj.collect.core.param.app;
 
-import com.tzj.module.easyopen.doc.annotation.ApiDocField;
+
 
 /**
  * 回收人员手机登录验证
  **/
 public class RecyclersLoginBean {
-    @ApiDocField(description = "手机号", required = true, example = "13801550124")
+
     private String mobile;
-    @ApiDocField(description = "短信验证码", required = true, example = "1234")
+
     private String captcha;
-    @ApiDocField(description = "手机硬件token", required = true, example = "111111111111")
+
     private String xgtoken;
 
     private String password;

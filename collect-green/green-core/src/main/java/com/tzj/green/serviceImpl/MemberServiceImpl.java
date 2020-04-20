@@ -15,13 +15,9 @@ import com.tzj.green.param.PageBean;
 import com.tzj.green.service.MemberPointsService;
 import com.tzj.green.service.MemberService;
 import com.tzj.green.service.MessageService;
-import com.tzj.green.utils.HttpUtil;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -152,6 +148,16 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             result.put("validPoints", memberPoints.getRemnantPoints());
         }
         return result;
+    }
+
+    @Override
+    public Map<String, Object> memberInfo(MemberBean memberBean) {
+        Map<String, Object> returnMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(memberBean.getRealNo()) || StringUtils.isNotEmpty(memberBean.getTel())){
+            return memberMapper.memberInfo(memberBean.getRealNo(), memberBean.getTel());
+        }else {
+            throw new ApiException("参数异常");
+        }
     }
 
 }

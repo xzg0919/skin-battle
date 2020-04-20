@@ -10,6 +10,7 @@ import com.tzj.collect.core.mapper.AreaMapper;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.ali.MemberAddressBean;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.param.business.StreetNameBean;
@@ -347,16 +348,17 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		}
 		return "操作成功";
 	}
-
+	@Override
 	public List<StreetNameBean> selectStreetList(){
 		return mapper.selectStreetList();
 	}
-
+	@Override
 	public List<StreetNameBean> selectStreetListByName(String name,String code){
 		return mapper.selectStreetListByName(name,code);
 	}
 
 	@Transactional
+	@Override
 	public Integer updateStreet(String id,String name,String code){
 		return mapper.updateStreet(id,name,code);
 	}
@@ -548,11 +550,11 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		resultMap.put("pageNum",pageBean.getPageNumber());
 		return resultMap;
 	}
-
+	@Override
 	public List<Area> getCityListByLj(){
 		return mapper.getCityListByLj();
 	}
-
+	@Override
 	public Map<String,Object> getCompanyServiceList(AreaBean areaBean){
 		PageBean pagebean = areaBean.getPageBean();
 		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
@@ -566,10 +568,12 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		resultMap.put("pageNumber",pageNumber);
 		return resultMap;
 	}
+	@Override
 	public List<Map<String, Object>> getCompanyStreetAllList(AreaBean areaBean){
 		return mapper.getCompanyStreetAllList(areaBean.getCompanyId(),  areaBean.getAreaId());
 	}
 	@Transactional
+	@Override
 	public Object updateCompanyServiceByStreetId(AreaBean areaBean){
 		List<String> streetList = areaBean.getStreetList();
 		streetList.stream().forEach(streetId -> {
@@ -614,6 +618,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		});
 		return "操作成功";
 	}
+	@Override
 	public List<Map<String, Object>> getCompanyServiceOutList(AreaBean areaBean){
 		return  mapper.getCompanyServiceOutList(areaBean.getCompanyId(), areaBean.getCityId(), areaBean.getAreaId());
 	}
@@ -654,6 +659,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		return resultMap;
 	}
 	@Transactional
+	@Override
 	public String updateCityRatio(AreaBean areaBean) throws Exception{
 		Area area = this.selectById(areaBean.getCityId());
 		if (StringUtils.isBlank(areaBean.getRatio())){
@@ -749,5 +755,17 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		});
 		returnMap.put("returnInfo", priMapList);
 		return returnMap;
+	}
+	@Override
+	public Area selectByCode(String townId){
+		return this.selectOne(new EntityWrapper<Area>().eq("code_",townId));
+	}
+	@Override
+	public List<Area> getAreaListByParentId(OrderBean orderBean){
+		if (StringUtils.isBlank(orderBean.getParentId())){
+			return this.selectList(new EntityWrapper<Area>().eq("type","0"));
+		}else {
+			return this.selectList(new EntityWrapper<Area>().eq("parent_id",orderBean.getParentId()));
+		}
 	}
 }

@@ -38,15 +38,20 @@ public class TokenGetAppTest {
 		 Claims claims = JwtUtils.getClaimByToken(decodeToken, APP_API_TOKEN_SECRET_KEY);
 		 String subjectStr = claims.getSubject();
 		 System.out.println("反向編譯 token是："+subjectStr);
-//		 String api="http://localhost:9090/app/api";
-		 String api="http://172.19.182.62:9090/app/api";
+		 String api="http://localhost:9090/app/api";
+//		 String api="http://172.19.182.62:9090/app/api";
 
 		 OrderBean orderBean = new OrderBean();
 		 orderBean.setAchPrice("0");
 		 orderBean.setId(70083);
 
-	        HashMap<String,Object> param=new HashMap<>();
-	        param.put("name", "app.order.list.phone");
+		 CategoryBean categoryBean = new CategoryBean();
+		 categoryBean.setId(38);
+		 categoryBean.setOrderId("338");
+
+		 HashMap<String,Object> param=new HashMap<>();
+//	        param.put("name", "app.order.list.phone");
+	        param.put("name", "app.category.getTowCategoryList");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -54,7 +59,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", "{\"orderNo\":\"2019\",\"pageBean\":{\"pageNumber\":1,\"pageSize\":10},\"pageNumber\":0,\"pageSize\":0,\"recyclerId\":0}");
+	        param.put("data", categoryBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

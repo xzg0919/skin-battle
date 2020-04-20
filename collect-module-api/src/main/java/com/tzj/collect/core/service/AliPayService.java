@@ -91,4 +91,16 @@ public interface AliPayService {
      * @return:
      */
     ZolozAuthenticationCustomerFtokenQueryResponse  customerFtokenQuery(String fToken);
+
+    /**
+     * 获取商户授权的token
+     * @param grantType authorization_code：使用 auth_code 换取令牌；refresh_token：使用刷新刷新令牌
+     * @param code grant_type= authorization_code 时，必须录入
+     * @param refreshToken grant_type=refresh_toke 时必录
+     * @return
+     * @throws Exception
+     */
+    AlipayOpenAuthTokenAppResponse aliPayOpenAuthToken(String grantType,String code,String refreshToken)  throws Exception;
+
+
 }

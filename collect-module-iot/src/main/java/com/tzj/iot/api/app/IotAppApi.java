@@ -18,8 +18,7 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.utils.JwtUtils;
-import com.tzj.module.easyopen.doc.annotation.ApiDoc;
-import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
+
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.weaver.ast.Or;
@@ -40,7 +39,6 @@ import static com.tzj.collect.common.constant.TokenConst.*;
  * @create 2019-11-26 11:17
  **/
 @ApiService
-@ApiDoc(value = "APP iot 设备端app模块",appModule = "ali")
 public class IotAppApi {
 
     @Resource
@@ -53,7 +51,6 @@ public class IotAppApi {
     private MessageService messageService;
 
     @Api(name = "app.order.tradePay", version = "1.0")
-    @ApiDocMethod(description="订单支付宝支付",remark = "订单支付宝支付")
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public String orderTradePay(OrderPayParam orderPayParam) {
         if(orderPayParam.getPrice().compareTo(BigDecimal.ZERO)==0){
@@ -82,7 +79,6 @@ public class IotAppApi {
         return paymentService.iotPay(order.getIotEquipmentCode(), order.getOrderNo(), order.getPrice()+"", payment.getOutTradeNo());
     }
     @Api(name = "app.order.open.code", version = "1.0")
-    @ApiDocMethod(description="获取开箱码",remark = "获取开箱码")
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public Map<String, Object> appOrderOpenCode(OrderBean orderBean) {
         Map<String, Object> returnMap = new HashMap<>();

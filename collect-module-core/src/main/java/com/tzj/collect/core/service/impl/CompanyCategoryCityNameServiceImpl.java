@@ -103,8 +103,8 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
         return companyCategoryCityNameMapper.getOneCategoryList(companyId,cityId,isCash);
     }
     @Override
-    public List<Category> getTwoCategoryList(Integer categoryId,Integer companyId,Integer cityId, String isCash){
-        return companyCategoryCityNameMapper.getTwoCategoryList(categoryId,companyId,cityId,isCash);
+    public List<Category> getTwoCategoryList(String orderId, Integer categoryId,Integer companyId,Integer cityId, String isCash){
+        return companyCategoryCityNameMapper.getTwoCategoryList(orderId, categoryId,companyId,cityId,isCash);
     }
     @Override
     public List<Category> getTwoCategoryListLocal(Integer categoryId,Integer companyId,Integer cityId, String isCash){

@@ -23,4 +23,6 @@ public interface CompanyStreetHouseService extends IService<CompanyStreetHouse> 
     Object getAreaStreetList(long companyId,String cityName,String areaName,Integer starts,Integer ends);
     @DS("slave")
     Object getAreaStreetCount(long companyId,String cityName,String areaName);
+    @DS("slave")
+    Integer selectStreetHouseCompanyId(Integer streetId);
 }

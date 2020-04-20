@@ -14,10 +14,7 @@ import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.ApiContext;
-import com.tzj.module.easyopen.doc.DataType;
-import com.tzj.module.easyopen.doc.annotation.ApiDoc;
-import com.tzj.module.easyopen.doc.annotation.ApiDocField;
-import com.tzj.module.easyopen.doc.annotation.ApiDocMethod;
+
 import com.tzj.module.easyopen.exception.ApiException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -33,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 @ApiService
-@ApiDoc(value = "APP端token模块", appModule = "app")
 public class AppTokenApi {
 
     @Autowired
@@ -52,9 +48,6 @@ public class AppTokenApi {
     @Api(name = "app.token.get", version = "1.0")
     @SignIgnore
     @AuthIgnore //这个api忽略token验证
-    @ApiDocMethod(description = "app登录后获取token", results = {
-        @ApiDocField(name = "tokenBean", description = "token对象", dataType = DataType.OBJECT, beanClass = TokenBean.class)
-    })
     public TokenBean getToken(RecyclersLoginBean recyclersLoginBean) {
         Recyclers recyclers = null;
         if (StringUtils.isBlank(recyclersLoginBean.getCaptcha())) {

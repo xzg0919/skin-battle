@@ -2,6 +2,10 @@ package com.tzj.green.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.green.entity.ProductGoods;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -17,4 +21,9 @@ import com.tzj.green.entity.ProductGoods;
 public interface ProductGoodsMapper extends BaseMapper<ProductGoods>
 {
 
+    List<Map<String, Object>> appProductList(@Param("recId") Long recId);
+
+    List<Map<String, Object>> appGoodsList(@Param("proId")Long proId);
+
+    Map<String, Object> goodsAmount(@Param("proId")Long productId, @Param("godId")Long goodsId);
 }

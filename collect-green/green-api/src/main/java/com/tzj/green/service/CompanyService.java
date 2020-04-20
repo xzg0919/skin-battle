@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.Company;
 import com.tzj.green.param.CompanyBean;
 
+import java.util.List;
+
 /**
  *
  * <p>Created on2019年12月30日</p>
@@ -19,4 +21,6 @@ public interface CompanyService extends IService<Company>
 {
 
     Object getToken(CompanyBean companyBean);
+
+    List<Company> getCompanyList();
 }

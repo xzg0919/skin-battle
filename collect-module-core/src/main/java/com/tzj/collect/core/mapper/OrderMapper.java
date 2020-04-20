@@ -171,6 +171,10 @@ public interface OrderMapper extends BaseMapper<Order> {
 
 	Integer getOrderCountByAdminReception(@Param("complaintType") String complaintType,@Param("companyId") String companyId,@Param("title") String title,@Param("status") String status,@Param("tel")String tel,@Param("orderNo")String orderNo,@Param("linkName")String linkName,@Param("startTime")String startTime,@Param("endTime")String endTime);
 
+	List<Map<String,Object>> getXyOrderListByAdminReception(@Param("isNormal")String isNormal,@Param("companyId") String companyId, @Param("title") String title, @Param("status") String status, @Param("tel") String tel, @Param("orderNo")String orderNo, @Param("linkName")String linkName, @Param("startTime")String startTime, @Param("endTime")String endTime, @Param("startPage")Integer startPage, @Param("pageSize")Integer pageSize);
+
+	Integer getXyOrderCountByAdminReception(@Param("isNormal")String isNormal,@Param("companyId") String companyId,@Param("title") String title,@Param("status") String status,@Param("tel")String tel,@Param("orderNo")String orderNo,@Param("linkName")String linkName,@Param("startTime")String startTime,@Param("endTime")String endTime);
+
 	List<Map<String,Object>> getOutComplaintOrderList(@Param("complaintType") String complaintType,@Param("companyId") String companyId,@Param("title") String title,@Param("status") String status,@Param("tel")String tel,@Param("orderNo")String orderNo,@Param("linkName")String linkName,@Param("startTime")String startTime,@Param("endTime")String endTime);
 
 	Integer getOrderCountByLj(@Param("cityId")String cityId,@Param("areaId")String areaId,@Param("streetId")String streetId,@Param("companyId")String companyId,@Param("startDate")String startDate,@Param("endtDate")String endtDate);
@@ -247,5 +251,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	Integer getManyOrderListByDate(@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("title")String title,@Param("status")String status);
 
     List<Map<String, Object>> selectIotRecList(@Param("recId")String recId, @Param("status")String status, @Param("pageStart") Integer pageStart,@Param("pageSize") Integer pageSize);
+
+    Double getAmountByOrderId(@Param("orderId")Long orderId);
 }
 

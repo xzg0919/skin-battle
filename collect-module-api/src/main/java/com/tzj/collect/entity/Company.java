@@ -43,6 +43,12 @@ public class Company extends DataEntity<Long> {
 
 	private Integer blueTooth;
 
+	private String authToken;//商户的token
+	private String refreshToken;//刷新令牌的token
+	private String aliUserId;
+	private String appId;//
+	private String isCancelAuth = "0";//是否取消授权0不是
+
 	/**
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示
 	 */

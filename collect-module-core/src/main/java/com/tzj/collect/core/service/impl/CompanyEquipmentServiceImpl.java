@@ -90,4 +90,10 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
         return orderLists;
     }
 
+    @Override
+    @Transactional(readOnly = false)
+    public void insertIotImg(String topic, Object imgUrl) {
+        companyEquipmentMapper.insertIotImg(topic, imgUrl);
+    }
+
 }

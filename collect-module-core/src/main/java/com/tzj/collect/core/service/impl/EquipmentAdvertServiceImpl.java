@@ -33,6 +33,6 @@ public class EquipmentAdvertServiceImpl extends ServiceImpl<EquipmentAdvertMappe
      */
     @Override
     public List<Map<String, Object>> iotEquipmentAdvertList() {
-        return equipmentAdvertMapper.selectMaps(new EntityWrapper<EquipmentAdvert>().setSqlSelect("pic_url as picUrl").eq("del_flag", 0).ge("end_time", LocalDate.now()).le("start_time", LocalDate.now()+" 23:59:59"));
+        return equipmentAdvertMapper.selectMaps(new EntityWrapper<EquipmentAdvert>().setSqlSelect("pic_url as picUrl").eq("del_flag", 0).ge("start_time", LocalDate.now()).le("end_time", LocalDate.now()+" 23:59:59"));
     }
 }

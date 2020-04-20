@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import redis.clients.jedis.JedisPool;
@@ -61,8 +62,8 @@ public class OrderApi {
     private CompanyStreetApplianceService companyStreetApplianceService;
     @Autowired
     private CompanyCategoryService companyCategoryService;
-    @Autowired
-    private AreaService areaService;
+    @Resource(name= "mqtt4PushOrder")
+    private MqttClient mqtt4PushOrder;
     @Autowired
     private CompanyStreetHouseService companyStreetHouseService;
     @Autowired
@@ -149,7 +150,7 @@ public class OrderApi {
         order.setCancelReason(orderbean.getCancelReason());
         //取消时间
         order.setCancelTime(new Date());
-        String status = orderService.orderCancel(order, orderInitStatus);
+        String status = orderService.orderCancel(order, orderInitStatus,mqtt4PushOrder);
         return status;
     }
 
@@ -173,7 +174,7 @@ public class OrderApi {
     }
 
     /**
-     * 下单接口
+     * 家电下单接口
      *
      * @author 王灿
      * @param
@@ -232,7 +233,7 @@ public class OrderApi {
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
         orderbean.setOrderNo(orderNo);
         //保存订单
-        resultMap = orderService.saveOrder(orderbean);
+        resultMap = orderService.saveOrder(orderbean,mqtt4PushOrder);
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(companyId);
         if (null != company) {
@@ -375,7 +376,7 @@ public class OrderApi {
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
         orderbean.setOrderNo(orderNo);
-        Map<String, Object> resultMap = (Map<String, Object>) orderService.XcxSaveOrder(orderbean, member);
+        Map<String, Object> resultMap = (Map<String, Object>) orderService.XcxSaveOrder(orderbean, member,mqtt4PushOrder);
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(companyId);
         if (null != company) {
@@ -615,7 +616,7 @@ public class OrderApi {
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
         orderbean.setOrderNo(orderNo);
         //保存订单
-        Map<String, Object> resultMap = orderService.saveBigThingOrder(orderbean);
+        Map<String, Object> resultMap = orderService.saveBigThingOrder(orderbean,mqtt4PushOrder);
         //钉钉消息赋值回收公司名称
         if (StringUtils.isNoneBlank(streetBigCompanyId + "")) {
             Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", streetBigCompanyId));

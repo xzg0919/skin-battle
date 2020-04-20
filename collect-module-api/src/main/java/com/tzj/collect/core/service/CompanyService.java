@@ -117,4 +117,6 @@ public interface CompanyService  extends IService<Company>{
 	List<Long> getStreetNumByTableName(String tableName);
 	@DS("slave")
     List<Map<String, Object>> otherAreaLists(String tableName, String cityId);
+
+	Object saveAliTokenByCode(String code,Integer companyId);
 }

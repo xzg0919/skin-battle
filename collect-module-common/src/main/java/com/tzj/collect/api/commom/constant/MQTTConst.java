@@ -18,5 +18,7 @@ public class MQTTConst {
     public static String SECRET_KEY= "V8RPkZqqaBg6QK0mk9GsPcub8ePRyN";
     public static String CLIENT_ID= "GID-IOT-MQTT@@@admin";
     public static String PARENT_TOPIC = "iot_topic";
+    //订单推送topic
+    public static String ORDER_TOPIC = "shoubeiorder_topic";
 
 }

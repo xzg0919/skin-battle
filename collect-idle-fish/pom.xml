@@ -12,6 +12,16 @@
     <artifactId>collect-idle-fish</artifactId>
     <dependencies>
         <dependency>
+            <groupId>tzj.taobao</groupId>
+            <artifactId>taobao.sdk.java</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>tzj.taobao</groupId>
+            <artifactId>taobao.sdk.source</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
@@ -58,6 +68,16 @@
             <artifactId>ali-dayu</artifactId>
             <version>20160607</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun.openservices</groupId>
+            <artifactId>ons-client</artifactId>
+            <version>1.7.9.Final</version>
         </dependency>
     </dependencies>
 

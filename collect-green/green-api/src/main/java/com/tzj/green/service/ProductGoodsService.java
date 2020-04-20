@@ -2,6 +2,11 @@ package com.tzj.green.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.green.entity.ProductGoods;
+import com.tzj.green.param.MemberGoodsBean;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -17,4 +22,11 @@ import com.tzj.green.entity.ProductGoods;
 public interface ProductGoodsService extends IService<ProductGoods>
 {
 
+    Set<Map<String, Object>> appGoodsList(Long id);
+
+    List<Map<String, Object>> appGoodsListByProId(String proId);
+
+    List<Map<String, Object>> appProductList(Long recId);
+
+    Map<String, Object> appGoodsChange(MemberGoodsBean memberGoodsBean);
 }

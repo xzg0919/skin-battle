@@ -16,4 +16,6 @@ public interface CompanyEquipmentService extends IService<CompanyEquipment> {
     String iotConRate();
     @DS("slave")
     List<Map<String, Object>> adminIotOrderList(AdminIotErrorBean adminIotBean);
+
+    void insertIotImg(String topic, Object imgUrl);
 }

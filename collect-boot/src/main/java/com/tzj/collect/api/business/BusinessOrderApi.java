@@ -12,8 +12,10 @@ import com.tzj.collect.core.result.business.OrderServiceabilityResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.*;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
@@ -46,6 +48,8 @@ public class BusinessOrderApi {
 	private SendRocketmqMessageService sendRocketmqMessageService;
 	@Autowired
 	private OrderCancleExamineService orderCancleExamineService;
+	@Resource(name = "mqtt4PushOrder")
+	private MqttClient mqtt4PushOrder;
 	/**
 	 * 根据各种查询条件获取订单 列表
 	 * @author 王灿
@@ -209,7 +213,7 @@ public class BusinessOrderApi {
 		 String cancelReason = orderbean.getCancelReason();
 		 //派单回收员的Id
 		 Integer recyclerId = orderbean.getRecyclerId();
-		 String sta = orderService.updateOrderByBusiness(orderId,status,cancelReason,recyclerId);
+		 String sta = orderService.updateOrderByBusiness(orderId,status,cancelReason,recyclerId,mqtt4PushOrder);
 	     return sta;
 	}
 	/**

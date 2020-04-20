@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.AreaBean;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.param.business.StreetNameBean;
@@ -57,9 +58,9 @@ public interface AreaService  extends IService<Area>{
 	Object saveOrUpdateCommunity(Integer companyId, String location) throws Exception;
 
 	Object deleteCommunityByIds(List<String> communityIds);
-
+	@DS("slave")
 	List<StreetNameBean> selectStreetList();
-
+	@DS("slave")
 	List<StreetNameBean> selectStreetListByName(String name, String code);
 
 	Integer updateStreet(String id, String name, String code);
@@ -95,4 +96,8 @@ public interface AreaService  extends IService<Area>{
 	Map<String,Object> getTitleByCompanyId(AreaBean areaBean);
 
 	Map<String, Object> allAreaStreetIdNameInfo();
+	@DS("slave")
+	Area selectByCode(String townId);
+	@DS("slave")
+	List<Area> getAreaListByParentId(OrderBean orderBean);
 }

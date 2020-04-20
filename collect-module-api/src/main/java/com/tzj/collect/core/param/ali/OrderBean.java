@@ -24,6 +24,8 @@ public class OrderBean {
 
     private String voucherId;
 
+    private Integer orderId;
+
 	//用来储存订单描述
 	private String remarks;
 	
@@ -47,7 +49,9 @@ public class OrderBean {
      * 行政区Id
      */
     private String cityId;
-    
+
+    private String parentId;
+
 	private List<Integer> status2;
 
 	/**
@@ -206,6 +210,8 @@ public class OrderBean {
 
 	private String picUrl;
 
+	private String special;
+
 	/**
 	 * 快递总重量
 	 */
@@ -265,5 +271,9 @@ public class OrderBean {
     private String complaintType;//客诉类型  0催派 1催接 2催收  3形成客诉
 
     private String shareCode;//线上线下分享码
+
+    private String isNormal = "0";//是否是闲鱼正常订单0是，1不是
+
+    private  Integer cleanUp; // 是否平铺整理  1-否 2-是
 
 }

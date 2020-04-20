@@ -20,13 +20,13 @@ import java.util.Map;
  */
 public interface PointsListMapper extends BaseMapper<PointsList> {
 
-    List<Map<String, Object>> getPointsListByCompanyId(@Param("companyId") Long companyId, @Param("pointsType") String pointsType,
+    List<Map<String, Object>> getPointsListByCompanyId(@Param("provinceId") String provinceId,@Param("companyId") Long companyId, @Param("pointsType") String pointsType,
                                                        @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("name") String name,
                                                        @Param("tel") String tel, @Param("cityId") String cityId, @Param("areaId") String areaId,
                                                        @Param("streetId") String streetId, @Param("communityId") String communityId, @Param("communityHouseId") String communityHouseId,
                                                        @Param("pageStart") Integer pageStart, @Param("pageSize") Integer pageSize);
 
-    Integer getPointsListCount(@Param("companyId") Long companyId, @Param("pointsType") String pointsType,
+    Integer getPointsListCount(@Param("provinceId") String provinceId,@Param("companyId") Long companyId, @Param("pointsType") String pointsType,
                                                        @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("name") String name,
                                                        @Param("tel") String tel, @Param("cityId") String cityId, @Param("areaId") String areaId,
                                                        @Param("streetId") String streetId, @Param("communityId") String communityId, @Param("communityHouseId") String communityHouseId);

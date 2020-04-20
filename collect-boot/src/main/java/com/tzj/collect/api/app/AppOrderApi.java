@@ -9,10 +9,13 @@ import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.easyopen.ApiContext;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,6 +43,8 @@ public class AppOrderApi {
 	private CategoryService categoryService;
 	@Autowired
 	private RedisUtil redisUtil;
+	@Resource(name = "mqtt4PushOrder")
+	private MqttClient mqtt4PushOrder;
 	
 	// 接口里面获取 Recyclers
 	public Recyclers getRecycler() {
@@ -110,7 +115,7 @@ public class AppOrderApi {
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public boolean modifyOrderSta(OrderBean orderBean){
 		orderBean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
-		return orderService.modifyOrderSta(orderBean);
+		return orderService.modifyOrderSta(orderBean,mqtt4PushOrder);
 	}
 	/**
 	 * 回收员确认上传订单
@@ -125,6 +130,7 @@ public class AppOrderApi {
 	}
 
 	@Api(name = "app.order.getCommissionsPriceByOrderId", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getCommissionsPriceByOrderId(OrderBean orderBean) {
 		return orderService.getCommissionsPriceByOrderId(orderBean);
@@ -137,7 +143,7 @@ public class AppOrderApi {
 	@Api(name = "app.order.getPriceByOrderId", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getPriceByOrderId(OrderBean orderBean) {
-		return orderService.getPriceByOrderId(orderBean);
+		return orderService.getPriceByOrderId(orderBean,mqtt4PushOrder);
 	}
 	/**
 	 * 回收员订单重量提交信息
@@ -156,7 +162,7 @@ public class AppOrderApi {
 	 * @param orderBean
 	 * @return
 	 */
-	@Api(name = "app.order.saveOrderByCardNo", version = "1.0")
+	@Api(name = "app.order.172.19.182.97", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object saveOrderByCardNo(OrderBean orderBean) {
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());

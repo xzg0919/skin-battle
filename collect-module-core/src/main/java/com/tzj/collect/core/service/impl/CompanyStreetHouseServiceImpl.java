@@ -80,4 +80,9 @@ public class CompanyStreetHouseServiceImpl extends ServiceImpl<CompanyStreetHous
     public Object getAreaStreetCount(long companyId, String cityName, String areaName) {
         return companyStreetHouseMapper.getAreaStreetCount(companyId,cityName,areaName);
     }
+
+    @Override
+    public Integer selectStreetHouseCompanyId(Integer streetId) {
+        return companyStreetHouseMapper.selectStreetHouseCompanyId(streetId);
+    }
 }

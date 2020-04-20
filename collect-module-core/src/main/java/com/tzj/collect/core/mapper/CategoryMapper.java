@@ -1,6 +1,7 @@
 package com.tzj.collect.core.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.tzj.collect.core.param.xianyu.XyCategory;
 import com.tzj.collect.core.result.business.CategoryResult;
 import com.tzj.collect.entity.Category;
 import org.apache.ibatis.annotations.Param;
@@ -58,5 +59,7 @@ public interface CategoryMapper extends BaseMapper<Category>  {
 	List<Map<String,Object>> getIsOpenCategory(String companyId);
 
 	BigDecimal selectCategoryPriceByCityCompanyId(@Param("categoryId") Long categoryId, @Param("cityId")Integer cityId, @Param("companyId")String companyId);
-	
+
+	List<Map<String,Object>> selectXyList();
+
 }

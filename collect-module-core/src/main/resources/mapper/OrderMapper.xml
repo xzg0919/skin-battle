@@ -1755,6 +1755,115 @@
 		</choose>
 	</if>
 </select>
+	<select id="getXyOrderListByAdminReception" parameterType="Object" resultType="Map">
+		SELECT
+		a.*,
+		IF(a.overTime > 2880,'1',if(a.complaintType = '3','1','0')) AS isComplaint
+		FROM (
+		SELECT
+		a.id,
+		a.order_no AS orderNo,
+		DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
+		if(a.title = '1','废弃家电',if(a.title = '2','生活垃圾',if(a.title = '4','大件垃圾','')))AS categoryName,
+		a.link_man AS userName,
+		a.tel,
+		a.address,
+		a.status_ AS status,
+		b.name_ AS recycleerName,
+		a.complaint_type AS complaintType,
+		DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
+		a.arrival_period AS arrivalPeriod,
+		(SELECT COUNT(1) FROM sb_arrival_time_log arr WHERE arr.order_id = a.id) AS num,
+		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		FROM
+		sb_order a
+		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		WHERE
+		a.del_flag = 0
+		and a.taobao_no is not null
+		<if test="companyId != null and companyId !='' ">
+			AND	a.company_id = #{companyId}
+		</if>
+		<if test="title != null and title !='' ">
+			AND a.title = #{title}
+		</if>
+		<if test="status != null and status !='' ">
+			AND a.status_ = #{status}
+		</if>
+		<if test="tel != null and tel !='' ">
+			AND a.tel = #{tel}
+		</if>
+		<if test="orderNo != null and orderNo !='' ">
+			AND a.order_no = #{orderNo}
+		</if>
+		<if test="linkName != null and linkName !='' ">
+			AND a.link_man = #{linkName}
+		</if>
+		<if test="startTime != null and startTime !='' ">
+			AND a.create_date > concat(#{startTime},' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime !='' ">
+			AND concat(#{endTime},' 23:59:59') > a.create_date
+		</if>
+		<if test="isNormal != null and isNormal !='' ">
+			<choose>
+				<when test="isNormal == '0'.toString()">
+					AND (a.company_id is not null and a.company_id != '')
+				</when>
+				<otherwise>
+					AND (a.company_id is null or a.company_id = '')
+				</otherwise>
+			</choose>
+		</if>
+		ORDER BY a.create_date DESC
+		) a
+	</select>
+	<select id="getXyOrderCountByAdminReception" resultType="Integer" parameterType="Object">
+		SELECT
+			count(1)
+		FROM
+		sb_order a
+		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		WHERE
+		a.del_flag = 0
+		and a.taobao_no is not null
+		<if test="companyId != null and companyId !='' ">
+			AND	a.company_id = #{companyId}
+		</if>
+		<if test="title != null and title !='' ">
+			AND a.title = #{title}
+		</if>
+		<if test="status != null and status !='' ">
+			AND a.status_ = #{status}
+		</if>
+		<if test="tel != null and tel !='' ">
+			AND a.tel = #{tel}
+		</if>
+		<if test="orderNo != null and orderNo !='' ">
+			AND a.order_no = #{orderNo}
+		</if>
+		<if test="linkName != null and linkName !='' ">
+			AND a.link_man = #{linkName}
+		</if>
+		<if test="startTime != null and startTime !='' ">
+			AND a.create_date > concat(#{startTime},' 00:00:01')
+		</if>
+		<if test="endTime != null and endTime !='' ">
+			AND concat(#{endTime},' 23:59:59') > a.create_date
+		</if>
+		<if test="isNormal != null and isNormal !='' ">
+			<choose>
+				<when test="isNormal == '0'.toString()">
+					AND (a.company_id is not null and a.company_id != '')
+				</when>
+				<otherwise>
+					AND (a.company_id is null or a.company_id = '')
+				</otherwise>
+			</choose>
+		</if>
+		ORDER BY a.create_date DESC
+	</select>
+
 	<select id="getOutComplaintOrderList" parameterType="Object" resultType="Map">
 		SELECT
 		a.*,
@@ -3289,6 +3398,15 @@
 		GROUP BY
 			sell.equipment_code
 	</select>
+	<select id="getAmountByOrderId" parameterType="Long" resultType="Double">
+		SELECT
+			SUM(a.amount)
+		FROM
+			sb_order_item_ach a
+		WHERE
+			a.order_id = #{orderId}
+	</select>
+
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
         <id property="id" column="id" />
@@ -3355,6 +3473,7 @@
 		<result property="adminCommissions" column="admin_commissions"/>
 		<result property="companyCommissions" column="company_commissions"/>
 		<result property="backCommissionsPrice" column="back_commissions_price"/>
+		<result property="cleanUp" column="clean_up"/>
         <association property="category" javaType="com.tzj.collect.entity.Category">
             <result property="categoryId" column="categoryId" />
             <result property="name" column="name_" />
@@ -3425,6 +3544,7 @@
 		a.admin_commissions,
 		a.company_commissions,
 		a.back_commissions_price,
+		a.clean_up,
 		c.name_,
 		c.icon
 	</sql>

@@ -152,7 +152,7 @@
 			b.code_,
 			b.level_,
 			b.icon,
-			if(c.price is NOT null,c.price,if(d.price is null,b.price,d.price)) AS price,
+			if(soi.price is null,if(c.price is NOT null,c.price,if(d.price is null,b.price,d.price)),FORMAT(soi.price,2)) AS price,
 			b.market_price,
 			b.unit,
 			b.rec_notes,
@@ -166,6 +166,7 @@
 		LEFT JOIN sb_category b ON a.category_id = b.id
 		LEFT JOIN sb_company_category_city c ON a.company_id = c.company_id AND a.city_id = c.city_id AND a.category_id = c.category_id
 		LEFT JOIN sb_category_city d ON d.city_id = a.city_id AND a.category_id = d.category_id
+		LEFT JOIN (SELECT * FROM sb_order_item a WHERE a.order_id = #{orderId}) soi ON soi.category_id = a.category_id
 		WHERE
 			a.company_id = #{companyId}
 		AND a.city_id = #{cityId}

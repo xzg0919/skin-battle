@@ -2,18 +2,24 @@ package com.tzj.green.api.app;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
+import com.alipay.api.domain.Product;
 import com.alipay.api.response.*;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.green.common.utils.RecyclerUtils;
 import com.tzj.green.entity.CompanyRecycler;
 import com.tzj.green.entity.Member;
 import com.tzj.green.entity.Recyclers;
+import com.tzj.green.param.MemberBean;
+import com.tzj.green.param.MemberGoodsBean;
+import com.tzj.green.param.ProductBean;
 import com.tzj.green.param.RecyclersBean;
 import com.tzj.green.service.*;
 import com.tzj.green.serviceImpl.FileUploadServiceImpl;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
@@ -24,10 +30,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static com.tzj.green.common.content.TokenConst.APP_API_COMMON_AUTHORITY;
 
@@ -52,6 +57,10 @@ public class AppRecyclersApi {
 	private AliPayService aliPayService;
 	@Resource
 	private MemberService memberService;
+	@Resource
+	private ProductGoodsService productGoodsService;
+	@Resource
+	private CompanyService companyService;
 
 	public Recyclers getRecycler() {
 		Subject subject=ApiContext.getSubject();
@@ -123,9 +132,9 @@ public class AppRecyclersApi {
 	@Api(name = "app.recycler.save3", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object save3(RecyclersBean recyclersBean) {
-		Recyclers recyclers = recyclersService.selectOne(new EntityWrapper<Recyclers>().eq("del_flag", 0).eq("recycler_id", getRecycler().getId()));
+		Recyclers recyclers = recyclersService.selectOne(new EntityWrapper<Recyclers>().eq("del_flag", 0).eq("id", getRecycler().getId()));
 		if (null == recyclers) {
-			recyclers = new Recyclers();
+			throw new ApiException("绑定失败");
 		}
 		recyclers.setProvinceName(recyclersBean.getProvinceName());
 		recyclers.setCityName(recyclersBean.getCityName());
@@ -139,6 +148,8 @@ public class AppRecyclersApi {
 			companyRecycler = new CompanyRecycler();
 			companyRecycler.setRecyclerId(getRecycler().getId());
 			companyRecycler.setCompanyId(recyclersBean.getCompanyId());
+			companyRecycler.setStatus("0");
+
 		}else {
 			companyRecycler.setDelFlag("0");
 		}
@@ -173,10 +184,11 @@ public class AppRecyclersApi {
 			return resultMap;
 		}
 		resultMap.put("fileBeans",fileBeans);
+		Object getBody = resultMap.get("getBody");
+		Map<String,Object> map =  (Map<String,Object>) JSONObject.parse(getBody.toString());
+		resultMap.put("getBody", map);
 		if ("face".equals(fileBase64Param.getFileName())){
 			//身份信息解析成功并且是正面
-			Object getBody = resultMap.get("getBody");
-			Map<String,Object> map =  (Map<String,Object>) JSONObject.parse(getBody.toString());
 			String name = map.get("name")+"";
 			String num = map.get("num")+"";
 			if(StringUtils.isNotBlank(name)&&StringUtils.isNotBlank(num)){
@@ -355,6 +367,9 @@ public class AppRecyclersApi {
 	@Api(name = "app.is.binding", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> isBindingByCard(RecyclersBean recyclersBean){
+		if(StringUtils.isEmpty(recyclersBean.getRealNo())){
+			throw new ApiException("参数错误");
+		}
 		Map<String, Object> returnMap = new HashMap<>();
 		Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("real_no", recyclersBean.getRealNo()));
 		if (member == null){
@@ -399,9 +414,122 @@ public class AppRecyclersApi {
 	@Api(name = "app.change.point", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String, Object> appChangePoint(Map<String, Object> paramMap){
+		Recyclers recyclers = RecyclerUtils.getRecyclers();
 		paramMap.put("recId", getRecycler().getId());
-		return recyclersService.appChangePoint(paramMap);
+		return recyclersService.appChangePoint(paramMap,recyclers.getId());
 	}
-
-
+	/**
+	 * 根据手机号或实体卡号查找用户信息
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/15 0015
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "app.member.info", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String, Object> memberInfo(MemberBean memberBean){
+		return memberService.memberInfo(memberBean);
+	}
+	/**
+	 * 当前小区下所有商品列表
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/15 0015
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "app.goods.list", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Set<Map<String, Object>> goodsList(){
+		return productGoodsService.appGoodsList(getRecycler().getId());
+	}
+	/**
+	 * 当前活动下所有商品列表
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/15 0015
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "app.goods.list.id", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public List<Map<String, Object>> appGoodsListByProId(ProductBean productBean){
+		if (StringUtils.isEmpty(productBean.getId())){
+			throw new ApiException("参数错误");
+		}
+		return productGoodsService.appGoodsListByProId(productBean.getId());
+	}
+	/**
+	 * 当前小区下所有活动
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/1/15 0015
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.product.list", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public List<Map<String, Object>> productList(){
+		return productGoodsService.appProductList(getRecycler().getId());
+	}
+	/**
+	 * 礼品兑换
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/2/19 0019
+	 * @Param: 
+	 * @return: 
+	 */
+	@Api(name = "app.goods.change", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String, Object> appGoodsChange(MemberGoodsBean memberGoodsBean){
+		memberGoodsBean.setRecId(getRecycler().getId());
+		memberGoodsBean.setRecName(getRecycler().getName());
+		return productGoodsService.appGoodsChange(memberGoodsBean);
+	}
+	/**
+	 * 获取回收人员的授权信息
+	 *
+	 * @return
+	 */
+	@Api(name = "app.token.getAuthUrl", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public String getAuthUrl() throws Exception {
+		String targetId = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+		String authUrl = "apiname=com.alipay.account.auth&app_id=2017022805948218&app_name=mc&auth_type=AUTHACCOUNT&biz_type=openservice&method=alipay.open.auth.sdk.code.get&pid=2088421446748174&product_id=APP_FAST_LOGIN&scope=kuaijie&sign_type=RSA2&target_id=" + targetId;
+		String encodeAuthUrl = URLEncoder.encode(authUrl, "utf-8");
+		return authUrl + "&sign=" + encodeAuthUrl;
+	}
+	/**
+	 * 获取回收人员的授权信息
+	 * @return
+	 */
+	@Api(name = "app.token.getAuthCode", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public String getAuthCode(RecyclersBean recyclersBean) throws Exception {
+		Recyclers recycler = getRecycler();
+		return recyclersService.getAuthCode(recyclersBean.getAuthCode(), recycler.getId());
+	}
+	/**
+	 *
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/2/21 0021
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.points.list", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Map<String, Object> pointsList(RecyclersBean recyclersBean){
+		Recyclers recycler = getRecycler();
+		recyclersBean.setId(recycler.getId());
+		return recyclersService.pointsList(recyclersBean);
+	}
+	/**
+	 *
+	 * @author: sgmark@aliyun.com
+	 * @Date: 2020/2/21 0021
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.getCompanyList", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getCompanyList(){
+		return companyService.getCompanyList();
+	}
 }
