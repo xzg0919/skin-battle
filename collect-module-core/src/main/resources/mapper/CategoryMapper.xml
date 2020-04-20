@@ -118,7 +118,7 @@
 			a.level_ = 0
 		AND a.title = 2
 	</select>
-	<select id="selectApplianceByCompany" parameterType="Object" resultType="Integer">
+	<select id="selectCategoryByCompany" parameterType="Object" resultType="Integer">
 		SELECT
 			COUNT(1)
 		FROM
