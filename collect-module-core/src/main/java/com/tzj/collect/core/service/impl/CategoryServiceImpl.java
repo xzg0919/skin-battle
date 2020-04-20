@@ -562,7 +562,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public Object getNoCashTwoCategoryList(Integer categoryId, String orderId) {
         Order order = orderService.selectById(orderId);
         Area area = areaService.selectById(order.getAreaId());
-        List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(categoryId, order.getCompanyId(), area.getParentId(), "1");
+        List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(null,categoryId, order.getCompanyId(), area.getParentId(), "1");
         categoryList.stream().forEach(category -> {
             category.setPrice(new BigDecimal("0"));
         });
@@ -580,9 +580,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     @Override
     public Object getTwoCategoryListByOrder(Integer categoryId, String orderId) {
-        Order order = orderService.selectById(orderId);
+        Order order = orderService.selectById(Long.parseLong(orderId));
         Area area = areaService.selectById(order.getAreaId());
-        List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(categoryId, order.getCompanyId(), area.getParentId(), "0");
+        List<Category> categoryList = companyCategoryCityNameService.getTwoCategoryList(orderId, categoryId, order.getCompanyId(), area.getParentId(), "0");
 		if ("1".equals(order.getIsCash())){
 			categoryList.stream().forEach(category -> {
 				category.setPrice(new BigDecimal("0"));

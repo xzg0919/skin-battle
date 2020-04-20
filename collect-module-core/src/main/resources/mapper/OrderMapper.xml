@@ -3475,6 +3475,7 @@
 		<result property="adminCommissions" column="admin_commissions"/>
 		<result property="companyCommissions" column="company_commissions"/>
 		<result property="backCommissionsPrice" column="back_commissions_price"/>
+		<result property="cleanUp" column="clean_up"/>
         <association property="category" javaType="com.tzj.collect.entity.Category">
             <result property="categoryId" column="categoryId" />
             <result property="name" column="name_" />
@@ -3545,6 +3546,7 @@
 		a.admin_commissions,
 		a.company_commissions,
 		a.back_commissions_price,
+		a.clean_up,
 		c.name_,
 		c.icon
 	</sql>
