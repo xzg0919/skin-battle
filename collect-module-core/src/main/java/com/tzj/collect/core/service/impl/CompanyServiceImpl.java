@@ -346,6 +346,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	}
 
 	@Override
+	@Transactional
 	public Object saveAliTokenByCode(String code, Integer companyId) {
 		AlipayOpenAuthTokenAppResponse response = null;
 		try{
@@ -361,6 +362,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 			company.setRefreshToken(response.getAppRefreshToken());
 			company.setAppId(response.getAuthAppId());
 			company.setAliUserId(response.getUserId());
+			this.updateById(company);
 		}else {
 			throw new ApiException("授权异常，请重新授权");
 		}

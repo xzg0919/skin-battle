@@ -54,7 +54,7 @@ public class EquipmentAppApi {
     private CompanyService companyService;
     @Resource
     private EquipmentMessageService equipmentMessageService;
-    @Resource
+    @Resource(name = "mqttMessageListener")
     private MqttClient mqttClient;
     @Resource
     private MemberService memberService;

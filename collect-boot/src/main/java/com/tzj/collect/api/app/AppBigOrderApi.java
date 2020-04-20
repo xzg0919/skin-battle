@@ -11,8 +11,10 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
@@ -25,8 +27,9 @@ public class AppBigOrderApi {
 
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private OrderPicAchService orderPicAchService;
+    @Resource(name = "mqtt4PushOrder")
+    private MqttClient mqtt4PushOrder;
+
 
     /** 根据手机号搜索
       * @author sgmark@aliyun.com
@@ -80,7 +83,7 @@ public class AppBigOrderApi {
     @Api(name = "app.bigOrder.saveBigOrderPrice", version = "1.0")
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public String saveBigOrderPrice(OrderBean orderBean){
-        return orderService.saveBigOrderPrice(orderBean);
+        return orderService.saveBigOrderPrice(orderBean,mqtt4PushOrder);
     }
 
     /**
