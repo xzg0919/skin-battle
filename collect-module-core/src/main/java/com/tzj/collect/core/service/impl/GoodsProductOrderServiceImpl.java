@@ -24,6 +24,8 @@ public class GoodsProductOrderServiceImpl extends ServiceImpl<GoodsProductOrderM
 	private AliPayService aliPayService;
 	@Autowired
 	private PointListService pointListService;
+	@Autowired
+	private AsyncService asyncService;
 	
 	/**
      * 给用户发放实物
@@ -75,6 +77,8 @@ public class GoodsProductOrderServiceImpl extends ServiceImpl<GoodsProductOrderM
 			pointList.setDescrb(product.getBrand());
 			pointListService.insert(pointList);
 		}
+		//发送接单短信
+		asyncService.sendOrderProductMsg("垃圾分类回收", goodsProductOrder.getMobile(), "SMS_188550094");
 		return "兑换成功";
 	}
 

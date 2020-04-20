@@ -192,6 +192,24 @@ public class AsyncServiceImpl implements AsyncService {
             e.printStackTrace();
         }
     }
+    @Override
+    @Async
+    public void sendOrderProductMsg(final String freeSignName, final String moblie, final String temlateCode) {
+        TaobaoClient client = new DefaultTaobaoClient(ToolUtils.url, ToolUtils.appkey, ToolUtils.secret);
+        AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
+        req.setExtend("123456");
+        req.setSmsType("normal");
+        req.setSmsFreeSignName(freeSignName);
+        req.setRecNum(moblie);
+        req.setSmsTemplateCode(temlateCode);
+        AlibabaAliqinFcSmsNumSendResponse rsp;
+        try {
+            rsp = client.execute(req);
+            System.out.println(rsp.getBody());
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      *

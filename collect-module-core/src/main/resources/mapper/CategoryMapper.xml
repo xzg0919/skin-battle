@@ -118,6 +118,15 @@
 			a.level_ = 0
 		AND a.title = 2
 	</select>
+	<select id="selectApplianceByCompany" parameterType="Object" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			sb_company_category a
+		INNER JOIN sb_category b ON a.category_id = b.id
+		WHERE a.company_id = #{companyId}
+		AND b.title = #{title}
+	</select>
 	 
     
     <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->  

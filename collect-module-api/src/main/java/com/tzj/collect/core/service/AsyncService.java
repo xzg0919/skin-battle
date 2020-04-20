@@ -48,6 +48,8 @@ public interface AsyncService {
     @Async
     public void sendOrderProduct(final String freeSignName, final String moblie, final String temlateCode,
                                  final String goodsName, final String orderCompany, final String orderNum);
+    @Async
+    public void sendOrderProductMsg(final String freeSignName, final String moblie, final String temlateCode);
 
     /**
      *

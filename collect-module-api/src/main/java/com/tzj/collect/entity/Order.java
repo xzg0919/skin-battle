@@ -237,7 +237,7 @@ public class Order extends DataEntity<Long> {
 	
 	private BigDecimal priceT;
 
-	private Integer cleanUp; //生活垃圾-是否平铺整理 1-否 2-是
+	private Integer cleanUp = 1; //生活垃圾-是否平铺整理 1-否 2-是
 
 	@TableField(exist = false)//页面需要
 	private String doublePoint;//双倍积分奖励  “greenCount/2 * 2”

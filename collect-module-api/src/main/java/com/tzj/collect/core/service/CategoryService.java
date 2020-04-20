@@ -179,4 +179,10 @@ public interface CategoryService extends IService<Category> {
 	Category selectByXyItemType(String xyItemType);
 	@DS("slave")
 	List<Map<String,Object>> selectXyList();
+	@DS("slave")
+	Integer selectApplianceByCompany(Integer companyId);
+	@DS("slave")
+	Integer selectHouseByCompany(Integer companyId);
+	@DS("slave")
+	Integer selectBigByCompany(Integer companyId);
 }

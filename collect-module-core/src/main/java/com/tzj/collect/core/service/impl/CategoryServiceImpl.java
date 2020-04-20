@@ -705,4 +705,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public List<Map<String,Object>> selectXyList(){
         return categoryMapper.selectXyList();
     }
+
+    @Override
+    public Integer selectApplianceByCompany(Integer companyId) {
+        return baseMapper.selectCategoryByCompany(companyId,"1");
+    }
+
+    @Override
+    public Integer selectHouseByCompany(Integer companyId) {
+        return baseMapper.selectCategoryByCompany(companyId,"2");
+    }
+
+    @Override
+    public Integer selectBigByCompany(Integer companyId) {
+        return baseMapper.selectCategoryByCompany(companyId,"4");
+    }
 }

@@ -5,10 +5,7 @@ import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.MapAddressBean;
 import com.tzj.collect.core.param.ali.MemberAddressBean;
 import com.tzj.collect.core.service.*;
-import com.tzj.collect.entity.Area;
-import com.tzj.collect.entity.Community;
-import com.tzj.collect.entity.Member;
-import com.tzj.collect.entity.MemberAddress;
+import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -36,7 +33,7 @@ public class MemberAddressApi {
 	@Autowired
 	private CommunityService communityService;
 	@Autowired
-	private CompanyCategoryService companyCategoryService;
+	private CategoryService categoryService;
 	@Autowired
 	private CompanyStreeService companyStreeService;
 	@Autowired
@@ -190,7 +187,12 @@ public class MemberAddressApi {
 		String companyId = companyStreetHouseService.selectStreetHouseceCompanyId(memberAddress.getStreetId(), memberAddress.getCommunityId());
 		//Company companys = companyCategoryService.selectCompany(25,communityId);
 		if(!StringUtils.isBlank(companyId)){
-			memberAddress.setIsHousehold("Y");
+			Integer count = categoryService.selectHouseByCompany(Integer.parseInt(companyId));
+			if (count>0){
+				memberAddress.setIsHousehold("Y");
+			}else {
+				memberAddress.setIsHousehold("N");
+			}
 		}else{
 			memberAddress.setIsHousehold("N");
 		}
@@ -203,15 +205,25 @@ public class MemberAddressApi {
 		}
 		//判断地址是否有公司回收电器
 		String companyIds = companyStreetApplianceService.selectStreetApplianceCompanyId(memberAddress.getStreetId(), memberAddress.getCommunityId());
-		if(StringUtils.isBlank(companyIds)){
-			memberAddress.setIsDigital("N");
+		if(StringUtils.isNotBlank(companyIds)){
+			Integer count = categoryService.selectApplianceByCompany(Integer.parseInt(companyIds));
+			if (count>0){
+				memberAddress.setIsDigital("Y");
+			}else {
+				memberAddress.setIsDigital("N");
+			}
 		}else {
-			memberAddress.setIsDigital("Y");
+			memberAddress.setIsDigital("N");
 		}
 		//判断地址是否有公司回收大件
 		Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(memberAddress.getStreetId());
 		if(null != streetBigCompanyId){
-			memberAddress.setIsDigThing("Y");
+			Integer count = categoryService.selectBigByCompany(streetBigCompanyId);
+			if (count>0){
+				memberAddress.setIsDigThing("Y");
+			}else {
+				memberAddress.setIsDigThing("N");
+			}
 		}else {
 			memberAddress.setIsDigThing("N");
 		}
