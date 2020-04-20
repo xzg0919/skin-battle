@@ -9,6 +9,7 @@ import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.easyopen.ApiContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +126,7 @@ public class AppOrderApi {
 	}
 
 	@Api(name = "app.order.getCommissionsPriceByOrderId", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getCommissionsPriceByOrderId(OrderBean orderBean) {
 		return orderService.getCommissionsPriceByOrderId(orderBean);

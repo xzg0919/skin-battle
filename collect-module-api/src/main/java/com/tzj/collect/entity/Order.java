@@ -237,6 +237,22 @@ public class Order extends DataEntity<Long> {
 	
 	private BigDecimal priceT;
 
+	private Integer cleanUp; //生活垃圾-是否平铺整理 1-否 2-是
+
+	@TableField(exist = false)//页面需要
+	private String doublePoint;//双倍积分奖励  “greenCount/2 * 2”
+
+	public String getDoublePoint() {
+		if (2==cleanUp&&null!=greenCount){
+			return greenCount/2+"*2";
+		}
+		return doublePoint;
+	}
+
+	public void setDoublePoint(String doublePoint) {
+		this.doublePoint = doublePoint;
+	}
+
 	/**
 	 * 是否待支付
 	 * @return

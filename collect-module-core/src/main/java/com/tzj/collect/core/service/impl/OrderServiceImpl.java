@@ -399,6 +399,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         order.setAchRemarks(orderbean.getAchRemarks());
         order.setSignUrl(orderbean.getSignUrl());
+        //新需求：回收人员app生活垃圾板块 增加选项-用户是否平铺整理 1-否 2-是
+        if ("2".equals(order.getTitle().getValue().toString())){
+            order.setCleanUp(orderbean.getCleanUp());
+        }
+
         orderbean.setIsCash(order.getIsCash());
         Area city = areaService.selectById(order.getAreaId());
         orderbean.setCityId(city.getParentId().toString());
@@ -450,11 +455,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), orderItemAch.getCategoryId().toString());
                 Category category = categoryService.selectById(orderItemAch.getCategoryId());
                 if ("0".equals(order.getIsCash())){
-                    greenCount[0] += category.getGreenCount()*orderItemAch.getAmount();
+                    greenCount[0] += category.getGreenCount()*orderItemAch.getAmount()*orderItemAch.getCleanUp();
                     commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                     backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                 }else {
-                    greenCount[0] += category.getFreeGreenCount()*orderItemAch.getAmount();
+                    greenCount[0] += category.getFreeGreenCount()*orderItemAch.getAmount()*orderItemAch.getCleanUp();
                     commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getFreeCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                     backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                 }
@@ -635,6 +640,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						orderItem.setCategoryId(Integer.parseInt(item.getCategoryId() + ""));
 						orderItem.setCategoryName(item.getCategoryName());
 						orderItem.setAmount(item.getAmount());
+                        //新需求：增加评价 用户是否平铺整理 1-否 2-是
+                        orderItem.setCleanUp(orderbean.getCleanUp());
+
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
 						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
