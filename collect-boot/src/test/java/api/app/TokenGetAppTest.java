@@ -2,10 +2,9 @@ package api.app;
 
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.admin.TransStationBean;
-import com.tzj.collect.core.param.ali.CategoryBean;
-import com.tzj.collect.core.param.ali.OrderBean;
-import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.ali.*;
 import com.tzj.collect.core.result.app.AppCompany;
+import com.tzj.collect.entity.OrderPic;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -13,9 +12,7 @@ import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -38,20 +35,38 @@ public class TokenGetAppTest {
 		 Claims claims = JwtUtils.getClaimByToken(decodeToken, APP_API_TOKEN_SECRET_KEY);
 		 String subjectStr = claims.getSubject();
 		 System.out.println("反向編譯 token是："+subjectStr);
+//		 String api="http://localhost:9090/app/api";
 		 String api="http://localhost:9090/app/api";
-//		 String api="http://172.19.182.62:9090/app/api";
 
 		 OrderBean orderBean = new OrderBean();
-		 orderBean.setAchPrice("0");
-		 orderBean.setId(70083);
 
-		 CategoryBean categoryBean = new CategoryBean();
-		 categoryBean.setId(38);
-		 categoryBean.setOrderId("338");
+		 orderBean.setId(70380);
+		 orderBean.setAchRemarks("完成描述");
+		 orderBean.setSignUrl("dhuasidhiashda");
+		 orderBean.setCleanUp(2);
+		 orderBean.setCompanyId(41);
+		 orderBean.setTitle("HOUSEHOLD");
+		 List<IdAmountListBean> orderItemList = new ArrayList<>();
+		 IdAmountListBean  idAmountListBean = new IdAmountListBean();
+		 idAmountListBean.setCategoryParentId(25);
+		 idAmountListBean.setCategoryParentName("废纸");
+		 List<OrderItemBean> idAmount = new ArrayList<>();
+		 OrderItemBean orderItemBean = new OrderItemBean();
+		 orderItemBean.setCategoryId(26);
+		 orderItemBean.setCategoryName("shubenzhazhi");
+		 orderItemBean.setAmount(2.1);
+		 idAmount.add(orderItemBean);
+		 idAmountListBean.setIdAndAmount(idAmount);
+		 orderItemList.add(idAmountListBean);
+		 orderBean.setIdAndListList(orderItemList);
+		 OrderPic orderPic = new OrderPic();
+		 orderPic.setOrigPic("www.baidu.com,www.baidu.com");
+		 orderPic.setPicUrl("www.baidu.com,www.baidu.com");
+		 orderPic.setSmallPic("www.baidu.com,www.baidu.com");
+		 orderBean.setOrderPic(orderPic);
 
-		 HashMap<String,Object> param=new HashMap<>();
-//	        param.put("name", "app.order.list.phone");
-	        param.put("name", "app.category.getTowCategoryList");
+	        HashMap<String,Object> param=new HashMap<>();
+	        param.put("name", "app.order.savebyrecy");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -59,7 +74,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", categoryBean);
+	        param.put("data", orderBean);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

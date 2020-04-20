@@ -77,9 +77,12 @@ public class OrderItemAch extends  DataEntity<Long>{
 	private BigDecimal freeCommissions;
 
 	private BigDecimal companyCommissions;
-    
 
-    @Override
+	private  Integer cleanUp; // 是否平铺整理  1-否 2-是
+
+
+
+	@Override
     public Long getId() {
         return id;
     }
@@ -225,6 +228,12 @@ public class OrderItemAch extends  DataEntity<Long>{
 
 	public void setParentName(String parentName) {
 		this.parentName = parentName;
+	}
+	public Integer getCleanUp() {
+		return cleanUp;
+	}
+	public void setCleanUp(Integer cleanUp) {
+		this.cleanUp = cleanUp;
 	}
 	public String getUnit4Page(){
 		StringBuilder builder = null;

@@ -274,4 +274,6 @@ public class OrderBean {
 
     private String isNormal = "0";//是否是闲鱼正常订单0是，1不是
 
+    private  Integer cleanUp; // 是否平铺整理  1-否 2-是
+
 }
