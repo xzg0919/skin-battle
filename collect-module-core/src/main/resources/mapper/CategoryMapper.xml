@@ -117,6 +117,7 @@
 		WHERE
 			a.level_ = 0
 		AND a.title = 2
+		AND a.name_ != '废玻璃'
 	</select>
 	<select id="selectCategoryByCompany" parameterType="Object" resultType="Integer">
 		SELECT

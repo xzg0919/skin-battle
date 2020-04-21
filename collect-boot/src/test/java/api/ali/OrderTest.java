@@ -28,11 +28,11 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("2088432503718960", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088322039337350", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
 //                String token= JwtUtils.generateToken(userId, ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
-                String api="https://open.mayishoubei.com/ali/api";
+                String api="http://localhost:9090/ali/api";
                 IotPostParamBean iotPostParamBean = new IotPostParamBean();
                 iotPostParamBean.setEcUuid(UUID.randomUUID().toString());
                 iotPostParamBean.setTranTime(System.currentTimeMillis());

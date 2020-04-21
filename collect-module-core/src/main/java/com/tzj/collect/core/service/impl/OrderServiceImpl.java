@@ -54,6 +54,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -4275,7 +4276,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         try{
             order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(shipTime.split(" ")[0]));
-            order.setArrivalPeriod(shipTime.split(" ")[1]);
+            int i = Integer.parseInt(new SimpleDateFormat("HH").format(LocalDate.now()));
+            if (i < 12) {
+                order.setArrivalPeriod("am");
+            } else {
+                order.setArrivalPeriod("pm");
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
