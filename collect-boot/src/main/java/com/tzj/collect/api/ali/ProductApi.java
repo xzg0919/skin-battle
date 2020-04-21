@@ -384,6 +384,9 @@ public class ProductApi {
         Point point = pointService.getPoint(member.getAliUserId());
         //查询此券需要消耗多少能量兑换
         Product product = productService.selectById(productBean.getId());
+        if (product.getStock()<=product.getBindingQuantity()){
+            return "商品库存不足";
+        }
         //判断是否需要积分兑换
         if (product.getBindingPoint() != 0) {
             //判断用户积分是否足够

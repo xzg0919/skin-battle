@@ -3536,6 +3536,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<Map<String,Object>> houseOrderItemiNoPrice = new ArrayList<>();
 		List<OrderItem> orderItemList = new ArrayList<>();
 		Category category = null;
+		Category parentCategory = null;
 		if ((Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")||(Order.TitleType.FIVEKG+"").equals(order.getTitle()+"")||(Order.TitleType.IOTORDER+"").equals(order.getTitle()+"")){
 			if ((OrderType.COMPLETE+"").equals(order.getStatus()+"")){
 				houseOrderItemiPrice  = orderItemAchService.getOrderItemDetail(order.getId(),"0");
@@ -3546,6 +3547,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 		}else {
 			category = categoryService.selectById(order.getCategoryId());
+			if (null != category){
+                parentCategory = categoryService.selectById(category.getParentId());
+            }
 			orderItemList = orderItemService.selectList(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));
 		}
 		//马上回收跳转过来的可领取红包的订单（当前的订单编号-随机数）保存到redis中，随机数作为发红包的order_sn
@@ -3583,6 +3587,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("orderItemList",orderItemList);
 		resultMap.put("company",company);
 		resultMap.put("category",category);
+		resultMap.put("parentCategory",parentCategory);
 		resultMap.put("houseOrderItemiPrice",houseOrderItemiPrice);
 		resultMap.put("houseOrderItemiNoPrice",houseOrderItemiNoPrice);
 		return  resultMap;
@@ -4276,7 +4281,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         try{
             order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(shipTime.split(" ")[0]));
-            int i = Integer.parseInt(new SimpleDateFormat("HH").format(LocalDate.now()));
+            int i = Integer.parseInt(new SimpleDateFormat("HH").format(new Date()));
             if (i < 12) {
                 order.setArrivalPeriod("am");
             } else {
@@ -4303,6 +4308,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setAliUserId(aliUserId);
         order.setIsCash("1");
         order.setIsMysl("1");
+        order.setUnit("kg");
         order.setTitle(Order.TitleType.HOUSEHOLD);
         List<XyCategoryOrder> xyCategoryOrderList = xyCategoryOrderService.selectList(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","1"));
         XyCategoryOrder amountCategoryOrder = xyCategoryOrderService.selectOne(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","2"));
