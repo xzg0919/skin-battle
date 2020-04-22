@@ -3,6 +3,8 @@ package com.tzj.green.entity;
 import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  *
  * <p>Created on2019年12月30日</p>
@@ -49,11 +51,11 @@ public class PointsListItem extends DataEntity<Long>
     /**
      * 积分数量
      */
-    private Long points;
+    private BigDecimal points;
     /**
      * 数量
      */
-    private Long amount;
+    private BigDecimal amount;
 
 
 

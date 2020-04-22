@@ -234,8 +234,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         pointLists.stream().forEach(pointList ->{
             PointsListItem pointsListItem = new PointsListItem();
             pointsListItem.setPointsListId(pointsList.getId());
-            pointsListItem.setPoints(Long.parseLong(pointList.get("point")+""));
-            pointsListItem.setAmount(Long.parseLong(pointList.get("amount")+""));
+            pointsListItem.setPoints(new BigDecimal(pointList.get("point")+""));
+            pointsListItem.setAmount(new BigDecimal(pointList.get("amount")+""));
             if (null!=pointList.get("categoryId")){
                 pointsListItem.setCategoryId(Long.parseLong(pointList.get("categoryId")+""));
             }

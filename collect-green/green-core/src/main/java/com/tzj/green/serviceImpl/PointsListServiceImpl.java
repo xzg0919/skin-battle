@@ -26,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 import static com.tzj.green.common.content.TokenConst.*;
@@ -153,8 +154,8 @@ public class PointsListServiceImpl extends ServiceImpl<PointsListMapper, PointsL
             pointLists.stream().forEach(pointList ->{
                 PointsListItem pointsListItem = new PointsListItem();
                 pointsListItem.setPointsListId(pointsList.getId());
-                pointsListItem.setPoints(Long.parseLong(pointList.get("point")+""));
-                pointsListItem.setAmount(Long.parseLong(pointList.get("amount")+""));
+                pointsListItem.setPoints(new BigDecimal(pointList.get("point")+""));
+                pointsListItem.setAmount(new BigDecimal(Long.parseLong(pointList.get("amount")+"")));
                 pointsListItem.setCategoryId(Long.parseLong(pointList.get("categoryId")+""));
                 pointsListItem.setCategoryName(pointList.get("categoryName")+"");
                 pointsListItem.setParentId(Long.parseLong(pointList.get("parentId")+""));
