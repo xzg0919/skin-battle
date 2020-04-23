@@ -55,6 +55,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     private MemberPointsService memberPointsService;
     @Resource
     private AliPayService aliPayService;
+    @Resource
+    private CommunityHouseNameService communityHouseNameService;
+    @Resource
+    private CompanyCommunityService companyCommunityService;
     /**
      * 根据手机号查询回收人员
      *
@@ -100,29 +104,33 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         member.setAddress(recyclersBean.getAddress());
         member.setDetailAddress(recyclersBean.getDetailAddress());
         //保存用户当前回收人员所在回收服务范围所在的小区地址
-        Map<String, Object> recMap =  recyclersMapper.selectRecRange(recyclersBean.getRecId());
-        if (null == recMap){
-            throw new ApiException("录入失败, 检查是否通过审核");
-        }else {
-            try {
-                member.setProvinceId(Long.parseLong(recMap.get("province_id")+""));
-                member.setProvinceName(recMap.get("province_name")+"");
-                member.setCityId(Long.parseLong(recMap.get("city_id")+""));
-                member.setCityName(recMap.get("city_name")+"");
-                member.setAreaId(Long.parseLong(recMap.get("area_id")+""));
-                member.setAreaName(recMap.get("area_name")+"");
-                member.setStreetId(Long.parseLong(recMap.get("street_id")+""));
-                member.setStreetName(recMap.get("street_name")+"");
-                member.setCommunityId(Long.parseLong(recMap.get("community_id")+""));
-                member.setCommunityName(recMap.get("community_name")+"");
-                member.setCommunityHouseId(Long.parseLong(recMap.get("house_id")+""));
-                member.setCommunityHouseName(recMap.get("house_name")+"");
-                member.setCompanyId(Long.parseLong(recMap.get("company_id")+""));
-                memberService.insertOrUpdate(member);
-                returnMap.put("msg", "Y");
-            }catch (Exception e){
-                throw new ApiException("录入失败:"+e.getMessage());
-            }
+        //Map<String, Object> recMap =  recyclersMapper.selectRecRange(recyclersBean.getRecId());
+        CommunityHouseName communityHouseName = communityHouseNameService.selectOneByLocalCompanyId(companyRecycler.getCompanyId(), recyclersBean.getLng(), recyclersBean.getLat());
+        if (null == communityHouseName){
+            throw new ApiException("录入失败, 该公司没有添加社区");
+        }
+        CompanyCommunity companyCommunity = companyCommunityService.selectById(communityHouseName.getCommunityId());
+        if (null == companyCommunity){
+            throw new ApiException("录入失败, 该公司没有添加社区");
+        }
+        try {
+            member.setProvinceId(companyCommunity.getProvinceId());
+            member.setProvinceName(companyCommunity.getProvinceName());
+            member.setCityId(companyCommunity.getCityId());
+            member.setCityName(companyCommunity.getCityName());
+            member.setAreaId(companyCommunity.getAreaId());
+            member.setAreaName(companyCommunity.getAreaName());
+            member.setStreetId(companyCommunity.getStreetId());
+            member.setStreetName(companyCommunity.getStreetName());
+            member.setCommunityId(companyCommunity.getId());
+            member.setCommunityName(companyCommunity.getCommunityName());
+            member.setCommunityHouseId(communityHouseName.getId());
+            member.setCommunityHouseName(communityHouseName.getHouseName());
+            member.setCompanyId(companyRecycler.getCompanyId());
+            memberService.insertOrUpdate(member);
+            returnMap.put("msg", "Y");
+        }catch (Exception e){
+            throw new ApiException("录入失败:"+e.getMessage());
         }
         return returnMap;
     }

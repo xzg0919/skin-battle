@@ -2,6 +2,7 @@ package com.tzj.green.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.green.entity.CommunityHouseName;
+import org.apache.ibatis.annotations.Param;
 
 /**
  *
@@ -16,5 +17,5 @@ import com.tzj.green.entity.CommunityHouseName;
  */
 public interface CommunityHouseNameMapper extends BaseMapper<CommunityHouseName>
 {
-
+    CommunityHouseName selectOneByLocalCompanyId(@Param("companyId") Long companyId, @Param("lng")String lng, @Param("lat")String lat);
 }

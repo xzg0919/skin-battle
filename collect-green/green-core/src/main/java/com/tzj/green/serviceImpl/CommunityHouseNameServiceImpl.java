@@ -25,4 +25,8 @@ public class CommunityHouseNameServiceImpl extends ServiceImpl<CommunityHouseNam
     @Resource
     private CommunityHouseNameMapper CommunityHouseNameMapper;
 
+    @Override
+    public CommunityHouseName selectOneByLocalCompanyId(Long companyId, String lng, String lat) {
+        return baseMapper.selectOneByLocalCompanyId(companyId,lng,lat);
+    }
 }

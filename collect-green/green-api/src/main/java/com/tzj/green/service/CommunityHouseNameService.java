@@ -16,5 +16,5 @@ import com.tzj.green.entity.CommunityHouseName;
  */
 public interface CommunityHouseNameService extends IService<CommunityHouseName>
 {
-
+    CommunityHouseName selectOneByLocalCompanyId(Long companyId,String lng,String lat);
 }

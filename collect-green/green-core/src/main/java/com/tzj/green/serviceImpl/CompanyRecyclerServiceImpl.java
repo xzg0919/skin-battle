@@ -57,15 +57,15 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
             companyRecycler.setStatus("1");
             companyRecycler.setCardType(recyclerBean.getCardType());
             this.updateById(companyRecycler);
-            RecyclersRange recyclersRange = recyclersRangeService.selectOne(new EntityWrapper<RecyclersRange>().eq("recyclers_id", recyclerBean.getId()));
-            if (null == recyclersRange){
-                recyclersRange = new RecyclersRange();
-            }
-            recyclersRange.setRecyclersId(Long.parseLong(recyclerBean.getId()));
-            recyclersRange.setCompanyId(companyId);
-            recyclersRange.setCommunityId(Long.parseLong(recyclerBean.getCommunityId()));
-            recyclersRange.setCommunityHouseId(Long.parseLong(recyclerBean.getHouseId()));
-            recyclersRangeService.insertOrUpdate(recyclersRange);
+//            RecyclersRange recyclersRange = recyclersRangeService.selectOne(new EntityWrapper<RecyclersRange>().eq("recyclers_id", recyclerBean.getId()));
+//            if (null == recyclersRange){
+//                recyclersRange = new RecyclersRange();
+//            }
+//            recyclersRange.setRecyclersId(Long.parseLong(recyclerBean.getId()));
+//            recyclersRange.setCompanyId(companyId);
+//            recyclersRange.setCommunityId(Long.parseLong(recyclerBean.getCommunityId()));
+//            recyclersRange.setCommunityHouseId(Long.parseLong(recyclerBean.getHouseId()));
+//            recyclersRangeService.insertOrUpdate(recyclersRange);
         }
 
         return "操作成功";

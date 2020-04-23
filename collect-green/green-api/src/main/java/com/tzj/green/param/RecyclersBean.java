@@ -66,5 +66,9 @@ public class RecyclersBean {
 
 	private String  captcha;//验证码
 
+	private String  lat;//31.29058
+
+	private String  lng;//121.554966
+
 	private Long recId;
 }
