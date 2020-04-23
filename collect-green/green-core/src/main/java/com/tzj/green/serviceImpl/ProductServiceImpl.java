@@ -129,9 +129,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             String now = df.format(date);
             if ("0".equals(productBean.getIsLower())) {
-                wrapper.addFilter(" pick_end_date >= '" + now + "' AND pick_start_date <= '" + now + "' AND is_lower = '0'");
+                wrapper.addFilter(" pick_end_date >= '" + now + "'  AND is_lower = '0'");
             } else if ("1".equals(productBean.getIsLower())) {
-                wrapper.addFilter(" (pick_end_date < '" + now + "' OR pick_start_date > '" + now + "' OR is_lower = '1') ");
+                wrapper.addFilter(" (pick_end_date < '" + now + "'  OR is_lower = '1') ");
             }
         }
         int count = this.selectCount(wrapper);
