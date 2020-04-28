@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 /**
@@ -20,6 +21,7 @@ import org.hibernate.validator.constraints.Length;
  * @version        1.0
  */
 @TableName("sb_product")
+@Data
 public class Product extends DataEntity<String>
 {
 	/**
@@ -31,6 +33,8 @@ public class Product extends DataEntity<String>
      *  商品类型
      */
     private ProductType productType;
+
+    private String orderType;
 
     /**
      *  优惠券类型
@@ -804,7 +808,7 @@ public class Product extends DataEntity<String>
      * <p>Discription:[获取领取开始日期]</p>
      * @return Date pickStartDate
      */
-    public Object getPickStartDate()
+    public String getPickStartDate()
     {
     	
         return new SimpleDateFormat("yyyy-MM-dd").format(pickStartDate)+" 00:00:01";
@@ -824,7 +828,7 @@ public class Product extends DataEntity<String>
      * <p>Discription:[获取领取结束日期]</p>
      * @return Date pickEndDate
      */
-    public Object getPickEndDate()
+    public String getPickEndDate()
     {
         return new SimpleDateFormat("yyyy-MM-dd").format(pickEndDate)+" 23:59:59";
     }

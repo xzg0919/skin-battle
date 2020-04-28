@@ -2,6 +2,7 @@ package com.tzj.collect.controller.admin;
 
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.qimencloud.api.sceneqimen.request.AlibabaIdleRecycleQuoteGetRequest;
 import com.qimencloud.api.sceneqimen.response.AlibabaIdleRecycleQuoteGetResponse;
 import com.taobao.api.DefaultTaobaoClient;
@@ -14,6 +15,7 @@ import com.tzj.collect.core.param.business.CompanyAccountBean;
 import com.tzj.collect.core.param.xianyu.*;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
 import net.sf.json.JSONObject;
 import org.aspectj.apache.bcel.classfile.Module;
@@ -46,6 +48,8 @@ public class XanYuController {
     private XyCategoryOrderService xyCategoryOrderService;
     @Autowired
     private XyCheckAddressService xyCheckAddressService;
+    @Autowired
+    private XyCheckStreetService xyCheckStreetService;
 
 
     /**
@@ -120,18 +124,19 @@ public class XanYuController {
         XyCheckAddress xyCheckAddress = new XyCheckAddress();
         xyCheckAddress.setMessage(stream);
         xyCheckAddressService.insert(xyCheckAddress);
-        Map<String, Object> objectMap = (Map<String, Object>) JSONObject.fromObject(stream);
-        Object townId = objectMap.get("townId");
         Map<String,Object> resultMap = new HashMap<>();
-        Area area = areaService.selectByCode(townId+"000");
-        if (null != area){
-            Integer companyId = companyStreetHouseService.selectStreetHouseCompanyId(area.getId().intValue());
-            if (null != companyId){
-                resultMap.put("success",true);
-                resultMap.put("errCode","support");
-                resultMap.put("errMessage","支持");
+        try {
+            Map<String, Object> objectMap = (Map<String, Object>) JSONObject.fromObject(stream);
+            Object townId = objectMap.get("townId");
+            XyCheckStreet xyCheckStreet = xyCheckStreetService.selectOne(new EntityWrapper<XyCheckStreet>().eq("street_code", townId + "000"));
+            if (null != xyCheckStreet) {
+                resultMap.put("success", true);
+                resultMap.put("errCode", "support");
+                resultMap.put("errMessage", "支持");
                 return resultMap;
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         resultMap.put("success",false);
         resultMap.put("errCode","not support");
