@@ -103,10 +103,10 @@ public class AppOrderPayApi {
             if (StringUtils.isNotBlank(orderPayParam.getVoucherId())){
                 return voucherMemberService.updateOrderNo(orderPayParam.getPrice(),orderPayParam.getOrderId(),orderPayParam.getVoucherId(),payment);
             }else {
-                return paymentService.genalPayXcx(payment);
+                return paymentService.genalPayXcx(payment,order);
             }
         }else{
-            return paymentService.genalPay(payment);
+            return paymentService.genalPay(payment,order);
         }
     }
 
@@ -144,10 +144,10 @@ public class AppOrderPayApi {
             if (StringUtils.isNotBlank(orderPayParam.getVoucherId())){
                 return voucherMemberService.updateOrderNo(orderPayParam.getPrice(),orderPayParam.getOrderId(),orderPayParam.getVoucherId(),payment);
             }else {
-                return paymentService.genalPayXcx(payment);
+                return paymentService.genalPayXcx(payment,order);
             }
         }else{
-            return paymentService.genalPay(payment);
+            return paymentService.genalPay(payment,order);
         }
     }
     /**

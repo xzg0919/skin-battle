@@ -365,7 +365,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
             voucherMember.setOrderNo(order.getOrderNo());
             this.updateById(voucherMember);
         }
-        return  paymentService.genalPayXcx(payment);
+        return  paymentService.genalPayXcx(payment,order);
     }
     /**
      * 更新券为使用中的状态（即绑定状态）

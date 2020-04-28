@@ -1,11 +1,14 @@
 package com.tzj.collect.core.service;
 
 import com.alipay.api.AlipayApiException;
+import com.alipay.api.domain.OpenApiRoyaltyDetailInfoPojo;
 import com.alipay.api.request.AlipayUserCertifyOpenQueryRequest;
 import com.alipay.api.response.*;
 import com.tzj.collect.entity.Member;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -101,6 +104,14 @@ public interface AliPayService {
      * @throws Exception
      */
     AlipayOpenAuthTokenAppResponse aliPayOpenAuthToken(String grantType,String code,String refreshToken)  throws Exception;
+
+    //绑定分账关系
+    AlipayTradeRoyaltyRelationBindResponse aliRelationBind(String authToken,String aliUserId,String name) throws AlipayApiException;
+    //解除分账关系
+    AlipayTradeRoyaltyRelationUnbindResponse aliRelationUnbind(String authToken,String aliUserId,String name) throws AlipayApiException;
+    //分账交易创建接口
+    AlipayTradeOrderSettleResponse  aliTradeOrderSett(String authToken, String outTradeNo, String transAliUserId,String amount) throws AlipayApiException;
+
 
 
 }

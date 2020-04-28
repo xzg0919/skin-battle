@@ -50,7 +50,7 @@ public class BusinessOrderApiTest {
 		String api="http://localhost:9090/business/api";
 
 		CompanyBean companyBean = new CompanyBean();
-		companyBean.setCode("fa58212d9b054f63a3353d29e9510A66");
+		companyBean.setCode("faa2acff6aba45bfb6c10eddf0dc3F05");
 
 
 		HashMap<String,Object> param=new HashMap<>();

@@ -4,16 +4,19 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.domain.AlipayTradeRoyaltyRelationBindModel;
 import com.alipay.api.domain.ExtendParams;
+import com.alipay.api.domain.RoyaltyEntity;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.request.AlipayTradePayRequest;
-import com.alipay.api.response.AlipayOpenAuthTokenAppResponse;
-import com.alipay.api.response.AlipayTradeAppPayResponse;
-import com.alipay.api.response.AlipayTradePayResponse;
+import com.alipay.api.request.AlipayTradeRoyaltyRelationBindRequest;
+import com.alipay.api.request.AlipayTradeRoyaltyRelationUnbindRequest;
+import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.push.PushUtils;
 import com.tzj.collect.core.mapper.CompanyMapper;
 import com.tzj.collect.core.mapper.CompanyRecyclerMapper;
@@ -31,10 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.security.cert.Extension;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static com.tzj.collect.common.constant.Const.*;
 
@@ -357,6 +359,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 			e.printStackTrace();
 		}
 		Company company = this.selectById(companyId);
+		System.out.println(response.getBody());
 		if (response.isSuccess()){
 			company.setAuthToken(response.getAppAuthToken());
 			company.setRefreshToken(response.getAppRefreshToken());

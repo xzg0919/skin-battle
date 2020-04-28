@@ -15,4 +15,6 @@ public class ApplicaInit {
 
     private Boolean isOpenTransferThread;//是否开启转账线程
 
+    private String authToken;
+
 }

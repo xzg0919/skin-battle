@@ -30,6 +30,9 @@ public class ApplicationInits {
     @Value("${isOpenXyConsumer}")
     private Boolean isOpenXyConsumer;
 
+    @Value("${authToken}")
+    private String authToken;
+
     @Bean
     public ApplicaInit applicaInitConfig() {
         ApplicaInit applicaInit  = new ApplicaInit();
@@ -38,6 +41,7 @@ public class ApplicationInits {
         applicaInit.setStationUrl(stationUrl);
         applicaInit.setIsOpenXyConsumer(isOpenXyConsumer);
         applicaInit.setIsOpenTransferThread(isOpenTransferThread);
+        applicaInit.setAuthToken(authToken);
         return applicaInit;
 
     }

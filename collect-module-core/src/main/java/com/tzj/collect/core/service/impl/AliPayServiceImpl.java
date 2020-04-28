@@ -627,7 +627,7 @@ public class AliPayServiceImpl implements AliPayService {
 
     @Override
     public AlipayOpenAuthTokenAppResponse aliPayOpenAuthToken(String grantType,String code,String refreshToken) throws Exception {
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.appId, AlipayConst.private_key, "json", "UTF-8", AlipayConst.ali_public_key, "RSA2");
         AlipayOpenAuthTokenAppRequest request = new AlipayOpenAuthTokenAppRequest();
         AlipayOpenAuthTokenAppModel model = new AlipayOpenAuthTokenAppModel();
         if (StringUtils.isNotBlank(grantType)){
@@ -642,5 +642,66 @@ public class AliPayServiceImpl implements AliPayService {
         request.setBizModel(model);
         AlipayOpenAuthTokenAppResponse response =alipayClient.execute(request);
         return response;
+    }
+
+    @Override
+    public AlipayTradeRoyaltyRelationBindResponse aliRelationBind(String authToken, String aliUserId, String name) throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.appId, AlipayConst.private_key, "json", "UTF-8", AlipayConst.ali_public_key, "RSA2");
+        AlipayTradeRoyaltyRelationBindRequest request = new AlipayTradeRoyaltyRelationBindRequest();
+            request.putOtherTextParam("app_auth_token", authToken);
+        AlipayTradeRoyaltyRelationBindModel model = new AlipayTradeRoyaltyRelationBindModel();
+        model.setOutRequestNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000));
+        List<RoyaltyEntity> lists = new ArrayList();
+        RoyaltyEntity royaltyEntity = new RoyaltyEntity();
+        royaltyEntity.setType("userId");
+        royaltyEntity.setAccount(aliUserId);
+        royaltyEntity.setName(name);
+        royaltyEntity.setMemo(name);
+        lists.add(royaltyEntity);
+        model.setReceiverList(lists);
+        request.setBizModel(model);
+        return alipayClient.execute(request);
+    }
+
+    @Override
+    public AlipayTradeRoyaltyRelationUnbindResponse aliRelationUnbind(String authToken, String aliUserId, String name) throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.appId, AlipayConst.private_key, "json", "UTF-8", AlipayConst.ali_public_key, "RSA2");
+        AlipayTradeRoyaltyRelationUnbindRequest request = new AlipayTradeRoyaltyRelationUnbindRequest();
+            request.putOtherTextParam("app_auth_token", authToken);
+        AlipayTradeRoyaltyRelationUnbindModel unbindModel = new AlipayTradeRoyaltyRelationUnbindModel();
+        unbindModel.setOutRequestNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000));
+        List<RoyaltyEntity> list = new ArrayList();
+        RoyaltyEntity royaltyEntity = new RoyaltyEntity();
+        royaltyEntity.setType("userId");
+        royaltyEntity.setAccount(aliUserId);
+        royaltyEntity.setName(name);
+        royaltyEntity.setMemo(name);
+        list.add(royaltyEntity);
+        unbindModel.setReceiverList(list);
+        request.setBizModel(unbindModel);
+        return  alipayClient.execute(request);
+    }
+
+    @Override
+    public AlipayTradeOrderSettleResponse aliTradeOrderSett(String authToken, String outTradeNo, String transAliUserId,String amount) throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.appId, AlipayConst.private_key, "json", "UTF-8", AlipayConst.ali_public_key, "RSA2");
+        AlipayTradeOrderSettleRequest request = new AlipayTradeOrderSettleRequest();
+        request.putOtherTextParam("app_auth_token", authToken);
+        AlipayTradeOrderSettleModel model = new AlipayTradeOrderSettleModel();
+        model.setOutRequestNo(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000));
+        model.setTradeNo(outTradeNo);
+        List<OpenApiRoyaltyDetailInfoPojo> list = new ArrayList<>();
+        OpenApiRoyaltyDetailInfoPojo pojo = new OpenApiRoyaltyDetailInfoPojo();
+        pojo.setRoyaltyType("transfer");
+        pojo.setTransOutType("userId");
+        pojo.setTransOut("2088231676636053");
+        pojo.setTransInType("userId");
+        pojo.setTransIn(transAliUserId);
+        pojo.setAmount(amount);
+        pojo.setDesc("分账给这个用户："+transAliUserId);
+        list.add(pojo);
+        model.setRoyaltyParameters(list);
+        request.setBizModel(model);
+        return alipayClient.execute(request);
     }
 }
