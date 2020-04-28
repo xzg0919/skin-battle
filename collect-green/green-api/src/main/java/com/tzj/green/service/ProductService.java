@@ -33,4 +33,6 @@ public interface ProductService extends IService<Product>
     Object activtyDetail(String activityCode);
 
     Object getGoodsOrderDetailList(ProductBean productBean);
+
+    void updateGoodsFrozen();
 }

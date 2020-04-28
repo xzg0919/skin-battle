@@ -241,7 +241,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return resultMap;
     }
 
-
     @Override
     public Object getGoodsListByCompanyId(Long companyId, ProductBean productBean) {
         PageBean pageBean = productBean.getPageBean();
@@ -257,5 +256,30 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         resultMap.put("pageNum",pageBean.getPageNum());
         return  resultMap;
     }
+
+    @Override
+    @Transactional
+    public void updateGoodsFrozen(){
+        Date date = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String now = df.format(date);
+        EntityWrapper<Product> wrapper = new EntityWrapper<>();
+        wrapper.le("pick_end_date",now);
+        wrapper.eq("is_lower","0");
+        List<Product> products = this.selectList(wrapper);
+        products.stream().forEach(product -> {
+            List<ProductGoods> productGoods = productGoodsService.selectList(new EntityWrapper<ProductGoods>().eq("product_id", product.getId()));
+            productGoods.stream().forEach(productGoods1 -> {
+                Goods goods = goodsService.selectById(productGoods1.getGoodsId());
+                if (null!=goods){
+                    goods.setGoodsFrozenNum(goods.getGoodsFrozenNum() - productGoods1.getTotalNum() + productGoods1.getExchangeNum());
+                    goodsService.updateById(goods);
+                }
+            });
+            product.setIsLower("1");
+            this.updateById(product);
+        });
+    }
+
 
 }
