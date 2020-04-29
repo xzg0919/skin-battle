@@ -453,9 +453,4 @@ public class ProductApi {
         //给用户发放实物
         return goodsProductOrderService.sendGoodsProduct(product, member, point, memberAddress);
     }
-
-    public static void main(String[] args) {
-        System.out.println(VoucherType.revive);
-        System.out.println(ProductType.B);
-    }
 }

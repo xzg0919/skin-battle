@@ -27,11 +27,13 @@ public enum ProductType implements BaseEnum<ProductType, String>
      */
     goods("goods", "实物商品"),
 
-    B("B", "大件"),
+    D("D", "折扣"),
 
-    H("H", "家电"),
+    P("P", "比例"),
 
-    L("", "生活垃圾");
+    R("R", "满减"),
+
+    E("E", "提价");
     
     /**
      * 所有商品类型集合
