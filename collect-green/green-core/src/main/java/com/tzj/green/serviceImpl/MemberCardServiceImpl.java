@@ -19,7 +19,6 @@ public class MemberCardServiceImpl extends ServiceImpl<MemberCardMapper, MemberC
 
     @Override
     public void addCard(List<List<String>> csvList) {
-        System.out.println(JSONObject.toJSONString(csvList));
         List<String> lists = new ArrayList<>();
         csvList.stream().forEach(list ->{
             if (!list.isEmpty()&& StringUtils.isNotBlank(list.get(0))){
