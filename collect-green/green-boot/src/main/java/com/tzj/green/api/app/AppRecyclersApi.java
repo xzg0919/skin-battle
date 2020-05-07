@@ -379,6 +379,39 @@ public class AppRecyclersApi {
 		}
 		return returnMap;
 	}
+
+	/**
+	 * 开卡时根据经纬度获取最近的地址信息
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.getCompanyAddressByLocal", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getCompanyAddressByLocal(RecyclersBean recyclersBean){
+		return recyclersService.getCompanyAddressByLocal(this.getRecycler().getId(),recyclersBean.getLng(),recyclersBean.getLat());
+	}
+
+	/**
+	 * 开卡时获取地址库地址
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.getAreaDetail", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getAreaDetail(RecyclersBean recyclersBean){
+		return recyclersService.getAreaDetail(recyclersBean.getParentId());
+	}
+	/**
+	 * 开卡时根据街道id获取社区信息
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.getCommunityByStreetId", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object getCommunityByStreetId(RecyclersBean recyclersBean){
+		return recyclersService.getCommunityByStreetId(recyclersBean.getStreetId());
+	}
+
 	/**
 	 * 线下回收员绑定新用户
 	 * @author: sgmark@aliyun.com
