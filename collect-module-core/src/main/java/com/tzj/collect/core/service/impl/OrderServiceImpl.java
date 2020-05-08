@@ -1888,44 +1888,46 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
+    @Transactional
 	public boolean modifyOrderByPayment(OrderBean orderBean,VoucherMember voucherMember) {
 		Order order = orderService.selectById(orderBean.getId());
-		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1");
-		if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-			wrapper.eq("type_","4");
-		}else {
-			wrapper.eq("type_","1");
-		}
-		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
-		OrderLog orderLog = new OrderLog();
-		orderLog.setOrderId(orderBean.getId());
-		String descrb = "";
-		boolean flag = false;
-		if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){
-			Category category = categoryService.selectById(order.getCategoryId());
-			descrb = category.getName();
-		}else{
-			descrb = "生活垃圾";
-		}
 		order.setStatus(OrderType.COMPLETE);
 		order.setCompleteDate(new Date());
 		if(StringUtils.isNotBlank(orderBean.getDiscountPrice())){
 			order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
 		}
-		if(null != voucherMember){
-			//通知支付宝该券码已核销
-			VoucherBean voucherBean = new VoucherBean();
-			voucherBean.setOrderId(order.getId());
-			voucherBean.setOrderNo(order.getOrderNo());
-			voucherBean.setVoucherMemberId(voucherMember.getId());
-			voucherMemberService.voucherUse(voucherBean);
-			order.setVoucherMemberId(voucherMember.getId().toString());
-		}
-		flag = orderService.updateById(order);
+		orderService.updateById(order);
+        OrderLog orderLog = new OrderLog();
+        orderLog.setOrderId(orderBean.getId());
 		orderLog.setOpStatusAfter("COMPLETE");
 		orderLog.setOp("已完成");
-		this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
+        //修改日志列表
+        orderLogService.insert(orderLog);
 		try {
+            if(null != voucherMember){
+                //通知支付宝该券码已核销
+                VoucherBean voucherBean = new VoucherBean();
+                voucherBean.setOrderId(order.getId());
+                voucherBean.setOrderNo(order.getOrderNo());
+                voucherBean.setVoucherMemberId(voucherMember.getId());
+                voucherMemberService.voucherUse(voucherBean);
+                order.setVoucherMemberId(voucherMember.getId().toString());
+            }
+            String descrb = "";
+            if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){
+                Category category = categoryService.selectById(order.getCategoryId());
+                descrb = category.getName();
+            }else{
+                descrb = "生活垃圾";
+            }
+            this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
+            Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1");
+            if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                wrapper.eq("type_","4");
+            }else {
+                wrapper.eq("type_","1");
+            }
+            CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
             if (!"1".equals(companyRecycler.getIsManager())) {
                 //阿里云推送
                 Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
@@ -1941,9 +1943,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-	//修改日志列表
-		flag = orderLogService.insert(orderLog);
-		return flag;
+		return true;
 	}
 	@Override
 	public boolean modifyOrderSta(OrderBean orderBean,MqttClient mqtt4PushOrder) {
