@@ -39,6 +39,8 @@ public class MemberBean {
 
 	private String channelId;
 
+	private String imgUrl;
+
 	public String getMemberId() {
 		return memberId;
 	}

@@ -110,7 +110,7 @@
 					p.price AS paymentPrice,
 					d.cancle_reason AS examineReason,
 					d.status_ AS examineStatus,
-					TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTimes
+					TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTimes
 					FROM
 					sb_order a
 					LEFT JOIN sb_category c ON a.category_id = c.id
@@ -1519,7 +1519,7 @@
 		d.name_ AS companyName,
 		b.name_ AS recyclerName,
 		a.complaint_type AS complaintType,
-		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
@@ -1576,7 +1576,7 @@
 		SELECT
 		 	a.id,b.id as rId,c.id as cId,
 		a.complaint_type AS complaintType,
-		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
@@ -1643,7 +1643,7 @@
 				DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
 				a.arrival_period AS arrivalPeriod,
 				(SELECT COUNT(1) FROM sb_arrival_time_log arr WHERE arr.order_id = a.id) AS num,
-				TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+				TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 			FROM
 				sb_order a
 			LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
@@ -1708,7 +1708,7 @@
 	b.name_ AS recycleerName,
 	d.name_ AS companyName,
 	a.complaint_type AS complaintType,
-	TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+	TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 	FROM
 	sb_order a
 	LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
@@ -1775,7 +1775,7 @@
 		DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
 		a.arrival_period AS arrivalPeriod,
 		(SELECT COUNT(1) FROM sb_arrival_time_log arr WHERE arr.order_id = a.id) AS num,
-		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
@@ -1894,7 +1894,7 @@
 		(SELECT COUNT(1) FROM sb_order_complaint aa WHERE aa.type_ = 2 AND aa.order_no = a.order_no) AS completeCount,
 		(SELECT COUNT(1) FROM sb_order_complaint aa WHERE aa.type_ = 4 AND aa.order_no = a.order_no) AS complaintCount,
 		(SELECT COUNT(1) FROM sb_order_complaint aa WHERE aa.order_no = a.order_no) AS count,
-		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
@@ -1948,7 +1948,7 @@
 				a.order_no AS orderNo,
 				a.complaint_type AS complaintType,
 				DATE_FORMAT(DATE_ADD(IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),interval 2 day),'%Y-%m-%d %H:%i:%s') as dates,
-				TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+				TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 			FROM
 				sb_order a
 			WHERE
@@ -2482,7 +2482,7 @@
 				SELECT
 					a.recycler_id,
 					a.status_,
-					TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 				FROM
 					sb_order a
 				WHERE
@@ -2556,7 +2556,7 @@
 		SELECT
 		a.recycler_id,
 		a.status_,
-		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		WHERE
@@ -2609,7 +2609,7 @@
 		a.tel,
 		IF (a.title = '1','废弃家电',IF(a.title = '4','大件垃圾','生活垃圾')) AS categoryName,
 		a.status_ AS status,
-		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		WHERE
@@ -2652,7 +2652,7 @@
 		a.tel,
 		IF (a.title = '1','废弃家电',IF(a.title = '4','大件垃圾','生活垃圾')) AS categoryName,
 		a.status_ AS status,
-		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
 		WHERE
@@ -2695,7 +2695,7 @@
         b.tel AS recyclerTel,
 		IF (a.title = '1','废弃家电',IF(a.title = '4','大件垃圾','生活垃圾')) AS categoryName,
 		a.status_ AS status,
-		TIMESTAMPDIFF(MINUTE, IF(a.title = '2',CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' 18:00:00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
+		TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTime
 		FROM
 		sb_order a
         LEFT JOIN sb_recyclers b ON a.recycler_id = b.id

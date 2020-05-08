@@ -1,20 +1,23 @@
-package com.tzj.collect.core.thread;
+package com.tzj.collect.common.thread;
 
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.core.service.PaymentService;
 import com.tzj.collect.core.service.VoucherAliService;
 import com.tzj.collect.core.service.VoucherMemberService;
+import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
 import com.tzj.collect.entity.VoucherMember;
 import groovy.util.logging.Slf4j;
-import java.math.BigDecimal;
-import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -34,9 +37,16 @@ public class ThreadTime {
     /**
      * 定时任务。定时执行回收人员支付完成，单钱未转账到用户支付宝
      */
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/2 * * * ?")
     public void startPaymentExecute() {
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread(new PaymentThread(paymentService, voucherMemberService, orderService,voucherAliService)));
+    }
+    /**
+     * 定时任务。订单状态未更改的单子
+     */
+    @Scheduled(cron = "0 0/2 * * * ?")
+    public void startUpdateOrderThread() {
+        NewThreadPoorExcutor.getThreadPoor().execute(new Thread(new UpdateOrderThread(paymentService, voucherMemberService, orderService,voucherAliService)));
     }
 
 //
@@ -103,6 +113,43 @@ class PaymentThread implements Runnable {
                 }
             }
         }
+    }
+}
+
+class UpdateOrderThread implements Runnable{
+
+    private VoucherAliService voucherAliService;
+    private PaymentService paymentService;
+    private VoucherMemberService voucherMemberService;
+    private OrderService orderService;
+
+    public UpdateOrderThread(PaymentService paymentService, VoucherMemberService voucherMemberService, OrderService orderService,VoucherAliService voucherAliService) {
+        this.paymentService = paymentService;
+        this.voucherMemberService = voucherMemberService;
+        this.orderService = orderService;
+        this.voucherAliService = voucherAliService;
+    }
+
+    @Override
+    public void run() {
+        List<Order> orders = orderService.selectList(new EntityWrapper<Order>().eq("status_", "2").ge("ach_price", "0"));
+            orders.stream().forEach(order -> {
+                Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", order.getOrderNo()).eq("status_", "2"));
+                //查询此单交易是否成功
+                if (null != payment){
+                    AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getId().toString());
+                    if ("Success".equals(aliPayment.getMsg()) && "SUCCESS".equals(aliPayment.getStatus())) {
+                        //修改订单状态
+                        OrderBean orderBean = new OrderBean();
+                        orderBean.setDiscountPrice(order.getAchPrice().toString());
+                        orderBean.setId(order.getId().intValue());
+                        orderBean.setAmount(order.getGreenCount());
+                        //根据订单号查询绑定券的信息
+                        VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
+                        orderService.modifyOrderByPayment(orderBean,voucherMember);
+                    }
+                }
+            });
     }
 }
 /**

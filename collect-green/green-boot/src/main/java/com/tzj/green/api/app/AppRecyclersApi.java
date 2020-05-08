@@ -409,9 +409,18 @@ public class AppRecyclersApi {
 	@Api(name = "app.getCommunityByStreetId", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getCommunityByStreetId(RecyclersBean recyclersBean){
-		return recyclersService.getCommunityByStreetId(recyclersBean.getStreetId());
+		return recyclersService.getCommunityByStreetId(recyclersBean.getStreetId(),recyclersBean.getCommunityName());
 	}
-
+	/**
+	 * 校验卡号是否是数据库存在的
+	 * @Param:
+	 * @return:
+	 */
+	@Api(name = "app.checkCardNo", version = "1.0")
+	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	public Object checkCardNo(RecyclersBean recyclersBean){
+		return recyclersService.checkCardNo(recyclersBean.getRealNo(),getRecycler().getId());
+	}
 	/**
 	 * 线下回收员绑定新用户
 	 * @author: sgmark@aliyun.com

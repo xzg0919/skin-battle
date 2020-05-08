@@ -41,7 +41,9 @@ public interface RecyclersService extends IService<Recyclers>
 
     Object getAreaDetail(String parentId);
 
-    Object getCommunityByStreetId(String streetId);
+    Object getCommunityByStreetId(String streetId,String communityName);
 
     Object getCompanyAddressByLocal(Long recyclerId,String lng,String lat);
+
+    Object checkCardNo(String realNo,Long recyclerId);
 }

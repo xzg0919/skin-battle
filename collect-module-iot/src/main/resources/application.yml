@@ -6,7 +6,7 @@ server:
         max-connections: 1000
     #    min-spare-threads: 30
         accept-count: 300
-    port: 9006
+    port: 7070
     connection-timeout: 20000
     #context-path: /collect
     jetty:
@@ -26,7 +26,7 @@ spring:
   # 环境 dev|pro || dynamicdb-test 测试多数据源配置 | dynamicdb-pro 正式多数据源配置
   profiles:
     #默认启动测试环境。可以启动应用的时候指定当前环境 java -jar myproject.jar --spring.profiles.active = dynamicdb-pro
-    active: dynamicdb-test
+    active: dynamicdb-pro
   # cache配置
   cache:
     type: ehcache
@@ -44,9 +44,9 @@ spring:
     #open: false  # 是否开启redis缓存  true开启   false关闭
     #database: 0
     # 正式地址
-    #host: r-uf6crus7stfo0npql7.redis.rds.aliyuncs.com
+    host: r-uf6crus7stfo0npql7.redis.rds.aliyuncs.com
     # 测试地址
-    host: 172.19.193.25
+    #host: 172.19.193.25
     # 测试6370 正式6379
     port: 6379
     password: sb_123456      # 密码（默认为空）

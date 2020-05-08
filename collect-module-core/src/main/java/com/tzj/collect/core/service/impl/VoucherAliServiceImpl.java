@@ -144,7 +144,7 @@ public class VoucherAliServiceImpl extends ServiceImpl<VoucherAliMapper, Voucher
             System.out.println("----------------------该券不在使用时间内，voucherId："+voucherId);
             return  price;
         }
-        if (price.compareTo(new BigDecimal(voucherMember.getLowMoney())) < 1){
+        if (!(price.compareTo(new BigDecimal(voucherMember.getLowMoney())) > -1)){
             return price;
         }
         switch (voucherMember.getVoucherType()){

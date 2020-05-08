@@ -96,7 +96,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
 
                 }
                 //调用阿里的物品识别接口 todo
-//                returnTypeByPic(messageMap.get("imgUrl")+"");
+                returnTypeByPic(messageMap.get("imgUrl")+"");
 
                 Integer nextInt =  new Random().nextInt(3);
                 //返回預定圖片
@@ -368,7 +368,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
         try {
             BizContent bizContent = new BizContent();
             if (!StringUtils.isBlank(picUrl)) {
-                bizContent.setBiz_code("biz8");
+                bizContent.setBiz_code("biz12");
                 bizContent.setSource("isv");
                 bizContent.setCognition_content(picUrl);
                 bizContent.setCognition_type("ImageUrl");
@@ -381,6 +381,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
         }
         responseResult.setKeyWords(execute.getKeyWords());
         responseResult.setTraceId(execute.getTraceId());
+        System.out.println("图片识别结果----------------------------------------------------"+JSON.toJSONString(responseResult)+"----------------------------------");
         return responseResult;
     }
 

@@ -115,10 +115,29 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         return areaService.selectList(wrapper);
     }
     @Override
-    public Object getCommunityByStreetId(String streetId){
+    public Object getCommunityByStreetId(String streetId,String communityName){
         EntityWrapper<Community> wrapper = new EntityWrapper<>();
             wrapper.eq("area_id",streetId);
+            if (StringUtils.isNotBlank(communityName)){
+                wrapper.like("community_name",communityName);
+            }
         return communityService.selectList(wrapper);
+    }
+    @Override
+    public Object checkCardNo(String realNo,Long recyclerId){
+        MemberCard memberCard = memberCardService.selectOne(new EntityWrapper<MemberCard>().eq("member_card", realNo));
+        if (null == memberCard){
+            throw new ApiException("该卡号不存在");
+        }
+        Member member = memberService.selectOne(new EntityWrapper<Member>().eq("del_flag", 0).eq("real_no", realNo));
+        if (null != member){
+            throw new ApiException("该卡号已绑定");
+        }
+        CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclerId).eq("status_","1"));
+        if (null == companyRecycler){
+            throw new ApiException("该回收人员暂无申请公司");
+        }
+        return "success";
     }
     @Override
     @Transactional(readOnly = false)
