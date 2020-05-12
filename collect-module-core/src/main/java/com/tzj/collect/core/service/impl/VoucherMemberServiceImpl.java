@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
+import com.alipay.api.domain.AlipayMarketingVoucherStockUseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -256,7 +257,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         {
             Calendar calendar  =   Calendar.getInstance();
             calendar.setTime(voucherMember.getCreateDate());
-            calendar.add(calendar.DATE, voucherCode.getValidDay());
+            calendar.add(Calendar.DATE, voucherCode.getValidDay());
             voucherMember.setValidStart(voucherMember.getCreateDate());
             voucherMember.setValidEnd(calendar.getTime());
         }
@@ -309,22 +310,12 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
             AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format,
                     AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
             AlipayMarketingVoucherStockUseRequest request = new AlipayMarketingVoucherStockUseRequest();
-            String bizContent = "";
-            bizContent = bizContent
-                    + "{"
-                    + "\"entity_no\":\""
-                    + voucherMember.getVoucherCode()
-                    + "\","
-                    + "\"out_biz_no\":\""
-                    + UUID.randomUUID().toString().replaceAll("-", "")
-                    + "}";
-            request.setBizContent(bizContent);
+            AlipayMarketingVoucherStockUseModel model = new AlipayMarketingVoucherStockUseModel();
+            model.setEntityNo(voucherMember.getVoucherCode());
+            model.setOutBizNo(UUID.randomUUID().toString().replaceAll("-", ""));
+            request.setBizModel(model);
             AlipayMarketingVoucherStockUseResponse response = alipayClient.execute(request);
-            if(!response.isSuccess())
-            {
-
-            }
-            else
+            if(response.isSuccess())
             {
                 voucherMember.setAliVoucherId(response.getVoucherId());
                 this.updateById(voucherMember);
@@ -334,7 +325,6 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         {
             e.printStackTrace();
         }
-
         return null;
     }
     /**
@@ -421,6 +411,7 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         EntityWrapper<VoucherMember> wrapper = new EntityWrapper<VoucherMember>();
         wrapper.eq("ali_user_id", aliId);
         wrapper.eq("voucher_status",VoucherConst.VOUCHER_STATUS_CREATE);
+        wrapper.eq("voucher_type","REVIVE");
         wrapper.orderBy("id", true);
         wrapper.last(" LIMIT 0,1 ");
         List<VoucherMember> voucherMemberList =  this.selectList(wrapper);
