@@ -307,8 +307,8 @@ public class VoucherMemberServiceImpl extends ServiceImpl<VoucherMemberMapper, V
         // 告诉支付宝
         try
         {
-            AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format,
-                    AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+            AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.TZJ_appId, AlipayConst.TZJ_private_key, AlipayConst.format,
+                    AlipayConst.input_charset, AlipayConst.TZJ_ali_public_key, AlipayConst.sign_type);
             AlipayMarketingVoucherStockUseRequest request = new AlipayMarketingVoucherStockUseRequest();
             AlipayMarketingVoucherStockUseModel model = new AlipayMarketingVoucherStockUseModel();
             model.setEntityNo(voucherMember.getVoucherCode());

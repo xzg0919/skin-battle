@@ -172,9 +172,9 @@ public interface CategoryService extends IService<Category> {
 	@DS("slave")
 	Object getTwoCategoryListLocale(String location,Integer categoryId,Long recyclerId);
 	@DS("slave")
-	Object getCategoryNewHouseList();
+	Object getCategoryNewHouseList(Long parentId);
 	@DS("slave")
-	Object getCategoryNewHouseListByToken(String aliUserId);
+	Object getCategoryNewHouseListByToken(String aliUserId,Long parentId);
 	@DS("slave")
 	Category selectByXyItemType(String xyItemType);
 	@DS("slave")
