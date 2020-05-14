@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
                 mapCount.put("equipNo", "");
                 listOrder.add(mapCount);
             }
-            redisUtil.lSet("order",listOrder,60*60*24);
+            redisUtil.lSet("order",listOrder,60);
         }
         /*Integer count=list.size();
         Map<String, Object> resultMap = new HashMap<>();
