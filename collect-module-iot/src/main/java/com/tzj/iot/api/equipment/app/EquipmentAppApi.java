@@ -1,5 +1,6 @@
 package com.tzj.iot.api.equipment.app;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.common.util.CompanyEquipmentUtils;
 import com.tzj.collect.common.util.MemberUtils;
@@ -8,7 +9,9 @@ import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.param.iot.EquipmentParamBean;
 import com.tzj.collect.core.param.iot.IotCompanyResult;
 import com.tzj.collect.core.param.iot.IotErrorParamBean;
+import com.tzj.collect.core.result.flcx.AlipayResponseResult;
 import com.tzj.collect.core.service.*;
+import com.tzj.collect.core.service.impl.EquipmentMessageServiceImpl;
 import com.tzj.collect.core.service.impl.FileUploadServiceImpl;
 import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.collect.entity.Member;
@@ -185,6 +188,15 @@ public class EquipmentAppApi {
         resultMap.put("code", "200");
         resultMap.put("msg", "操作成功");
         return resultMap;
+    }
+
+    @Api(name = "equipment.uploadImg", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    public Object uploadImg(MemberBean memberBean){
+        AlipayResponseResult alipayResponseResult = EquipmentMessageServiceImpl.returnTypeByPic(memberBean.getImgUrl());
+        System.out.println("----------------------"+ JSON.toJSONString(alipayResponseResult));
+        return alipayResponseResult;
     }
 
 }

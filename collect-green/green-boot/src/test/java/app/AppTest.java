@@ -32,7 +32,7 @@ import static com.tzj.green.common.content.TokenConst.*;
 
 public class AppTest {
 	public static void main(String[] args) throws Exception {
-		String token = JwtUtils.generateToken("1", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
+		String token = JwtUtils.generateToken("14", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
 		String securityToken = JwtUtils.generateEncryptToken(token, APP_API_TOKEN_CYPTO_KEY);
 		System.out.println("生成的token是："+securityToken);
 
@@ -45,13 +45,13 @@ public class AppTest {
 
 //		String api = "http://test.tcompanypoint.mayishoubei.com/company/api";
 
-		String api="http://companypointapi.mayishoubei.com:9090/app/api";
+		String api="http://localhost:9090/app/api";
 
 		RecyclersBean recyclersBean = new RecyclersBean();
-		recyclersBean.setPassword("aaaaaa");
+		recyclersBean.setRealNo("09036532010020001303");
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","app.updatePassword");
+		param.put("name","app.checkCardNo");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_2");

@@ -655,26 +655,28 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         return cityId;
     }
     @Override
-    public Object getCategoryNewHouseList() {
+    public Object getCategoryNewHouseList(Long parentId) {
         Map<String, Object> resultMap = new HashMap<>();
         List<Category> categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
         categoryList.stream().forEach(category -> {
-            List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
-            category.setCategoryList(categoryList1);
+            if (null!=parentId&&category.getId().equals(parentId)){
+                List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                category.setCategoryList(categoryList1);
+            }
         });
         categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getCode)).collect(Collectors.toList());
         resultMap.put("categoryList", categoryList);
         return resultMap;
     }
     @Override
-    public Object getCategoryNewHouseListByToken(String aliUserId) {
+    public Object getCategoryNewHouseListByToken(String aliUserId,Long parentId) {
         Map<String, Object> resultMap = new HashMap<>();
         List<Category> categoryList = null;
         MemberAddress memberAdderss = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
         if (null != memberAdderss) {
             String houseceCompanyId = companyStreetHouseService.selectStreetHouseceCompanyId(memberAdderss.getStreetId(), memberAdderss.getCommunityId());
             if (StringUtils.isNotBlank(houseceCompanyId)) {
-                categoryList = companyCategoryCityNameService.getHouseCategoryByCompanyId(Integer.parseInt(houseceCompanyId), memberAdderss.getCityId());
+                categoryList = companyCategoryCityNameService.getHouseCategoryByCompanyId(Integer.parseInt(houseceCompanyId), memberAdderss.getCityId(),parentId);
             } else {
                 Integer fiveCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAdderss.getStreetId());
                 if (null != fiveCompanyId) {
@@ -689,8 +691,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         if (null == categoryList) {
             categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
             categoryList.stream().forEach(category -> {
-                List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
-                category.setCategoryList(categoryList1);
+                if (null!=parentId&&category.getId().equals(parentId)){
+                    List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                    category.setCategoryList(categoryList1);
+                }
             });
         }
         categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getCode)).collect(Collectors.toList());
@@ -704,5 +708,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Override
     public List<Map<String,Object>> selectXyList(){
         return categoryMapper.selectXyList();
+    }
+
+    @Override
+    public Integer selectApplianceByCompany(Integer companyId) {
+        return baseMapper.selectCategoryByCompany(companyId,"1");
+    }
+
+    @Override
+    public Integer selectHouseByCompany(Integer companyId) {
+        return baseMapper.selectCategoryByCompany(companyId,"2");
+    }
+
+    @Override
+    public Integer selectBigByCompany(Integer companyId) {
+        return baseMapper.selectCategoryByCompany(companyId,"4");
     }
 }

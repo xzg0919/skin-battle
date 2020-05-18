@@ -72,25 +72,25 @@ public class CompanyCommunityServiceImpl extends ServiceImpl<CompanyCommunityMap
         companyCommunity.setPutType(companyCommunityBean.getPutType());
         if ("0".equals(companyCommunityBean.getIsDry())){
             companyCommunity.setDryTime(companyCommunityBean.getDryTime());
-        }if ("1".equals(companyCommunityBean.getIsDry())){
-            companyCommunity.setDryTime("");
+        }else if ("1".equals(companyCommunityBean.getIsDry())){
+            companyCommunity.setDryTime(" ");
         }
         if ("0".equals(companyCommunityBean.getIsWet())){
             companyCommunity.setWetTime(companyCommunityBean.getWetTime());
-        }if ("1".equals(companyCommunityBean.getIsWet())){
-            companyCommunity.setWetTime("");
+        }else if ("1".equals(companyCommunityBean.getIsWet())){
+            companyCommunity.setWetTime(" ");
         }
         if ("0".equals(companyCommunityBean.getIsHarmful())){
             companyCommunity.setHarmfulTime(companyCommunityBean.getHarmfulTime());
-        }if ("1".equals(companyCommunityBean.getIsHarmful())){
-            companyCommunity.setHarmfulTime("");
+        }else if ("1".equals(companyCommunityBean.getIsHarmful())){
+            companyCommunity.setHarmfulTime(" ");
         }
         if ("0".equals(companyCommunityBean.getIsRecovery())){
             companyCommunity.setRecoveryTime(companyCommunityBean.getRecoveryTime());
             companyCommunity.setRecoveryWeek(companyCommunityBean.getRecoveryWeek());
-        }if ("1".equals(companyCommunityBean.getIsRecovery())){
-            companyCommunity.setRecoveryTime("");
-            companyCommunity.setRecoveryWeek("");
+        }else if ("1".equals(companyCommunityBean.getIsRecovery())){
+            companyCommunity.setRecoveryTime(" ");
+            companyCommunity.setRecoveryWeek(" ");
         }
         this.insertOrUpdate(companyCommunity);
         Long communityId = companyCommunity.getId();

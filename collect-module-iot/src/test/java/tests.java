@@ -1,6 +1,7 @@
 import com.alibaba.fastjson.JSON;
 import com.tzj.collect.core.param.ali.MemberAddressBean;
 import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.param.iot.EquipmentParamBean;
 import com.tzj.collect.core.param.iot.IotPostParamBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -41,19 +42,18 @@ public class tests {
 //                String api="http://localhost:9090/business/api";
 //
 
-        System.out.println(Calendar.getInstance().getTimeInMillis());
-        MemberBean memberBean = new MemberBean();
-        memberBean.setCardNo("20204176425709979423");
+        EquipmentParamBean equipmentParamBean = new EquipmentParamBean();
+        equipmentParamBean.setHardwareCode("27a145e");
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","equipment.getMemberByCardNo");
+        param.put("name","equipment.message.getcode");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_8");
         param.put("timestamp", "3480476680000");
-        param.put("token", securityToken);
+       // param.put("token", securityToken);
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID().toString());
-        param.put("data",memberBean);
+        param.put("data",equipmentParamBean);
 
         String jsonStr= JSON.toJSONString(param);
         String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"49a4b80ab9067f25370d4dcc343aafda");

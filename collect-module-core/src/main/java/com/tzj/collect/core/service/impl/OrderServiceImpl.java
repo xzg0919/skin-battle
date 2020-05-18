@@ -54,6 +54,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -1887,44 +1888,48 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
+    @Transactional
 	public boolean modifyOrderByPayment(OrderBean orderBean,VoucherMember voucherMember) {
 		Order order = orderService.selectById(orderBean.getId());
-		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1");
-		if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-			wrapper.eq("type_","4");
-		}else {
-			wrapper.eq("type_","1");
-		}
-		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
-		OrderLog orderLog = new OrderLog();
-		orderLog.setOrderId(orderBean.getId());
-		String descrb = "";
-		boolean flag = false;
-		if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){
-			Category category = categoryService.selectById(order.getCategoryId());
-			descrb = category.getName();
-		}else{
-			descrb = "生活垃圾";
-		}
 		order.setStatus(OrderType.COMPLETE);
 		order.setCompleteDate(new Date());
+		if (null!=voucherMember){
+            order.setVoucherMemberId(voucherMember.getId().toString());
+        }
 		if(StringUtils.isNotBlank(orderBean.getDiscountPrice())){
 			order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
 		}
-		if(null != voucherMember){
-			//通知支付宝该券码已核销
-			VoucherBean voucherBean = new VoucherBean();
-			voucherBean.setOrderId(order.getId());
-			voucherBean.setOrderNo(order.getOrderNo());
-			voucherBean.setVoucherMemberId(voucherMember.getId());
-			voucherMemberService.voucherUse(voucherBean);
-			order.setVoucherMemberId(voucherMember.getId().toString());
-		}
-		flag = orderService.updateById(order);
+		orderService.updateById(order);
+        OrderLog orderLog = new OrderLog();
+        orderLog.setOrderId(orderBean.getId());
 		orderLog.setOpStatusAfter("COMPLETE");
 		orderLog.setOp("已完成");
-		this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
+        //修改日志列表
+        orderLogService.insert(orderLog);
 		try {
+            if(null != voucherMember){
+                //通知支付宝该券码已核销
+                VoucherBean voucherBean = new VoucherBean();
+                voucherBean.setOrderId(order.getId());
+                voucherBean.setOrderNo(order.getOrderNo());
+                voucherBean.setVoucherMemberId(voucherMember.getId());
+                voucherMemberService.voucherUse(voucherBean);
+            }
+            String descrb = "";
+            if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){
+                Category category = categoryService.selectById(order.getCategoryId());
+                descrb = category.getName();
+            }else{
+                descrb = "生活垃圾";
+            }
+            this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
+            Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1");
+            if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+                wrapper.eq("type_","4");
+            }else {
+                wrapper.eq("type_","1");
+            }
+            CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
             if (!"1".equals(companyRecycler.getIsManager())) {
                 //阿里云推送
                 Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
@@ -1940,9 +1945,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-	//修改日志列表
-		flag = orderLogService.insert(orderLog);
-		return flag;
+		return true;
 	}
 	@Override
 	public boolean modifyOrderSta(OrderBean orderBean,MqttClient mqtt4PushOrder) {
@@ -3535,6 +3538,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<Map<String,Object>> houseOrderItemiNoPrice = new ArrayList<>();
 		List<OrderItem> orderItemList = new ArrayList<>();
 		Category category = null;
+		Category parentCategory = null;
 		if ((Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")||(Order.TitleType.FIVEKG+"").equals(order.getTitle()+"")||(Order.TitleType.IOTORDER+"").equals(order.getTitle()+"")){
 			if ((OrderType.COMPLETE+"").equals(order.getStatus()+"")){
 				houseOrderItemiPrice  = orderItemAchService.getOrderItemDetail(order.getId(),"0");
@@ -3545,6 +3549,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			}
 		}else {
 			category = categoryService.selectById(order.getCategoryId());
+			if (null != category){
+                parentCategory = categoryService.selectById(category.getParentId());
+            }
 			orderItemList = orderItemService.selectList(new EntityWrapper<OrderItem>().eq("order_id", order.getId()));
 		}
 		//马上回收跳转过来的可领取红包的订单（当前的订单编号-随机数）保存到redis中，随机数作为发红包的order_sn
@@ -3582,6 +3589,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("orderItemList",orderItemList);
 		resultMap.put("company",company);
 		resultMap.put("category",category);
+		resultMap.put("parentCategory",parentCategory);
 		resultMap.put("houseOrderItemiPrice",houseOrderItemiPrice);
 		resultMap.put("houseOrderItemiNoPrice",houseOrderItemiNoPrice);
 		return  resultMap;
@@ -4275,7 +4283,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         try{
             order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(shipTime.split(" ")[0]));
-            order.setArrivalPeriod(shipTime.split(" ")[1]);
+            int i = Integer.parseInt(new SimpleDateFormat("HH").format(new Date()));
+            if (i < 12) {
+                order.setArrivalPeriod("am");
+            } else {
+                order.setArrivalPeriod("pm");
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -4297,6 +4310,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setAliUserId(aliUserId);
         order.setIsCash("1");
         order.setIsMysl("1");
+        order.setUnit("kg");
         order.setTitle(Order.TitleType.HOUSEHOLD);
         List<XyCategoryOrder> xyCategoryOrderList = xyCategoryOrderService.selectList(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","1"));
         XyCategoryOrder amountCategoryOrder = xyCategoryOrderService.selectOne(new EntityWrapper<XyCategoryOrder>().eq("quote_id", quoteId).eq("parent_id","2"));

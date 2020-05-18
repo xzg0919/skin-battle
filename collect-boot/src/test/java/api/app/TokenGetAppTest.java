@@ -5,6 +5,7 @@ import com.tzj.collect.core.param.admin.TransStationBean;
 import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.app.OrderPayParam;
 import com.tzj.collect.core.result.app.AppCompany;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -41,17 +42,12 @@ public class TokenGetAppTest {
 		 String api="http://localhost:9090/app/api";
 //		 String api="http://172.19.182.62:9090/app/api";
 
-		 OrderBean orderBean = new OrderBean();
-		 orderBean.setAchPrice("0");
-		 orderBean.setId(70083);
-
-		 CategoryBean categoryBean = new CategoryBean();
-		 categoryBean.setId(38);
-		 categoryBean.setOrderId("338");
+		 OrderPayParam orderPayParam = new OrderPayParam();
+		 orderPayParam.setOutTradeNo("2020043017214770408930");
 
 		 HashMap<String,Object> param=new HashMap<>();
 //	        param.put("name", "app.order.list.phone");
-	        param.put("name", "app.category.getTowCategoryList");
+	        param.put("name", "app.order.successPay");
 	        param.put("version", "1.0");
 	        param.put("format", "json");
 	        param.put("app_key", "app_id_2");
@@ -59,7 +55,7 @@ public class TokenGetAppTest {
 	        param.put("token",securityToken);
 	        //param.put("sign","111");
 	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data", categoryBean);
+	        param.put("data", orderPayParam);
 
 	        String jsonStr = JSON.toJSONString(param);
 	        String sign = ApiUtil.buildSign(JSON.parseObject(jsonStr), "sign_key_55667788");

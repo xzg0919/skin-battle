@@ -8,21 +8,22 @@ import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.ApplicaInit;
 import com.tzj.collect.core.mapper.PaymentMapper;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
-import com.tzj.collect.entity.Order;
-import com.tzj.collect.entity.Payment;
-import com.tzj.collect.entity.PaymentError;
-import com.tzj.collect.entity.Recyclers;
+import com.tzj.collect.entity.*;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.tzj.collect.common.constant.Const.*;
@@ -40,6 +41,10 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     private AsyncService asyncService;
     @Autowired
     private PaymentErrorService paymentErrorService;
+    @Autowired
+    private CompanyService companyService;
+    @Resource
+    private AliPayService aliPayService;
 
     @Override
     public Payment selectByOrderSn(String orderNo) {
@@ -59,7 +64,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
      * 小程序支付
      */
     @Override
-    public String genalPayXcx(Payment payment) {
+    public String genalPayXcx(Payment payment,Order order) {
         Assert.notNull(payment, "payment不能为空！");
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayTradeCreateRequest request = new AlipayTradeCreateRequest();
@@ -93,8 +98,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
      * @return
      */
     @Override
-    public String genalPay(Payment payment) {
-
+    public String genalPay(Payment payment,Order order) {
         Assert.notNull(payment, "payment不能为空！");
 
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
@@ -201,21 +205,19 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     public static void main(String[] args) throws Exception {
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
         AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+        request.putOtherTextParam("app_auth_token", "202004BBc31d3ee0ff544085bce8677abdeffX05");
         AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
-        model.setOutBizNo(UUID.randomUUID().toString());
+        model.setOutBizNo(UUID.randomUUID().toString().replace("-",""));
         model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
         model.setPayeeAccount("2088212854989662");
-        model.setAmount("0.11");
+        model.setAmount("0.1");
         model.setPayerShowName("垃圾分类回收(收呗)货款");
         model.setRemark("垃圾分类回收(收呗)货款");
         request.setBizModel(model);
-        AlipayFundTransToaccountTransferResponse r = alipayClient.execute(request);
-        System.out.println(r.isSuccess());
-        System.out.println(r.getSubMsg());
-        System.out.println(r.getSubCode());
-        System.out.println(r.getCode());
+        AlipayFundTransToaccountTransferResponse response = alipayClient.execute(request);
+        System.out.println(response.getBody());
     }
     /**
      * 根据支付宝交易号查询该交易的详细信息

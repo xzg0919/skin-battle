@@ -1,5 +1,6 @@
 package com.tzj.collect.core.mapper;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.tzj.collect.core.param.xianyu.XyCategory;
 import com.tzj.collect.core.result.business.CategoryResult;
@@ -61,5 +62,8 @@ public interface CategoryMapper extends BaseMapper<Category>  {
 	BigDecimal selectCategoryPriceByCityCompanyId(@Param("categoryId") Long categoryId, @Param("cityId")Integer cityId, @Param("companyId")String companyId);
 
 	List<Map<String,Object>> selectXyList();
+
+	Integer selectCategoryByCompany(@Param("companyId")Integer companyId,@Param("title")String title);
+
 
 }

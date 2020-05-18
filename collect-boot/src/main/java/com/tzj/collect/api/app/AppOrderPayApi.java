@@ -1,6 +1,7 @@
 package com.tzj.collect.api.app;
 
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.app.OrderPayParam;
 import com.tzj.collect.core.service.*;
@@ -103,10 +104,10 @@ public class AppOrderPayApi {
             if (StringUtils.isNotBlank(orderPayParam.getVoucherId())){
                 return voucherMemberService.updateOrderNo(orderPayParam.getPrice(),orderPayParam.getOrderId(),orderPayParam.getVoucherId(),payment);
             }else {
-                return paymentService.genalPayXcx(payment);
+                return paymentService.genalPayXcx(payment,order);
             }
         }else{
-            return paymentService.genalPay(payment);
+            return paymentService.genalPay(payment,order);
         }
     }
 
@@ -144,10 +145,10 @@ public class AppOrderPayApi {
             if (StringUtils.isNotBlank(orderPayParam.getVoucherId())){
                 return voucherMemberService.updateOrderNo(orderPayParam.getPrice(),orderPayParam.getOrderId(),orderPayParam.getVoucherId(),payment);
             }else {
-                return paymentService.genalPayXcx(payment);
+                return paymentService.genalPayXcx(payment,order);
             }
         }else{
-            return paymentService.genalPay(payment);
+            return paymentService.genalPay(payment,order);
         }
     }
     /**
@@ -160,5 +161,22 @@ public class AppOrderPayApi {
     public String paymentCloseByTradeNo(OrderPayParam orderPayParam) {
         paymentService.paymentCloseByTradeNo(orderPayParam.getOutTradeNo());
         return "操作成功";
+    }
+    /**
+     * 支付成功状态更改
+     * @param orderPayParam
+     * @return
+     */
+    @Api(name = "app.order.successPay", version = "1.0")
+    public String paymentSuccessPay(OrderPayParam orderPayParam) {
+        Payment payment=paymentService.selectByOutTradeNo(orderPayParam.getOutTradeNo());
+        if (payment == null) {
+            throw new ApiException("未找到相应的支付信息");
+        }
+        if (0 == payment.getStatus()){
+            payment.setStatus(Payment.STATUS_PAYED);
+        }
+        paymentService.updateById(payment);
+        return "success";
     }
 }

@@ -5,12 +5,15 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.app.ArrivalTimeLogBean;
+import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
@@ -28,6 +31,8 @@ public class ReceptionOrderApi {
     private AreaService areaService;
     @Autowired
     private CompanyStreetHouseService companyStreetHouseService;
+    @Resource(name = "mqtt4PushOrder")
+    private MqttClient mqtt4PushOrder;
 
     /**
      * 根据不同的条件查询订单列表
@@ -169,5 +174,22 @@ public class ReceptionOrderApi {
     @RequiresPermissions(values = ADMIN_RECEPTION_API_COMMON_AUTHORITY)
     public Object sendXyOrderByCompanyId(OrderBean orderBean){
         return  orderService.sendXyOrderByCompanyId(orderBean);
+    }
+    /**
+     * 中台驳回接口
+     * @author 王灿
+     * @param
+     * @return
+     */
+    @Api(name = "admin.updateOrderStatusByAdminReception", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_RECEPTION_API_COMMON_AUTHORITY)
+    public String updateOrderStatusByAdminReception(BOrderBean bOrderBean) {
+        //订单id
+        Integer orderId = bOrderBean.getId();
+        //驳回原因
+        String cancelReason = bOrderBean.getCancelReason();
+        String sta = orderService.updateOrderByBusiness(orderId,"REJECTED",cancelReason,null,mqtt4PushOrder);
+        return sta;
     }
 }

@@ -3,6 +3,7 @@ package com.tzj.collect.controller;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.thread.sendGreenOrderThread;
 import com.tzj.collect.common.push.PushUtils;
@@ -148,26 +149,7 @@ public class NotifyController {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
-                    //判断是否有券码完成转账
-//                        if(!StringUtils.isBlank(order.getEnterpriseCode())){
-//                            EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
-//                            //判断券码是否存在并且未使用
-//                            if(null!=enterpriseCode){
-//                                //储存转账信息
-//                                Payment payments = new Payment();
-//                                payments.setAliUserId(order.getAliUserId());
-//                                payments.setTradeNo("1");
-//                                payments.setPrice(enterpriseCode.getPrice());
-//                                payments.setRecyclersId(order.getRecyclerId().longValue());
-//                                payments.setOrderSn(order.getOrderNo());
-//                                paymentService.insert(payments);
-//                                //给用户转账
-//                                paymentService.transfer(payments);
-//                                enterpriseCode.setReceiveDate(new Date());
-//                                enterpriseCode.setIsUse("2");
-//                                enterpriseCodeService.updateById(enterpriseCode);
-//                            }
-//                        }
+
                 }else if (tradeStatus.equalsIgnoreCase("TRADE_CLOSED")){
                     if(null != voucherMember){
                         voucherMemberService.updateVoucherCreate(voucherMember.getId());

@@ -46,5 +46,7 @@ public class CommunityHouseName extends DataEntity<Long>
     private String address;
 
     private Integer fixedCardNum;
+    @TableField(exist = false)
+    private Integer distance;
 
 }

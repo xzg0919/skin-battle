@@ -78,7 +78,7 @@ public class OrderItemAch extends  DataEntity<Long>{
 
 	private BigDecimal companyCommissions;
 
-	private  Integer cleanUp; // 是否平铺整理  1-否 2-是
+	private  Integer cleanUp = 1; // 是否平铺整理  1-否 2-是
 
 
 

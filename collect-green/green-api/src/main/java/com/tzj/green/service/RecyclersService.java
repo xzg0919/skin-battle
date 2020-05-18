@@ -38,4 +38,12 @@ public interface RecyclersService extends IService<Recyclers>
     Map<String, Object> pointsList(RecyclersBean recyclersBean);
 
     Object updatePassword(Long recyclersId,RecyclersBean recyclersBean);
+
+    Object getAreaDetail(String parentId);
+
+    Object getCommunityByStreetId(String streetId,String communityName);
+
+    Object getCompanyAddressByLocal(Long recyclerId,String lng,String lat);
+
+    Object checkCardNo(String realNo,Long recyclerId);
 }

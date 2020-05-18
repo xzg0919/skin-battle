@@ -18,7 +18,9 @@ public class RecyclersBean {
 	private String idCardRev;//身份证反面
 	// 初始状态
 	private String status="1";
-	
+
+	private String parentId;
+
 	private List<String> comIdsList;
 	//pageBean
 	private PageBean pageBean;
@@ -45,13 +47,23 @@ public class RecyclersBean {
 
 	private Long companyId;
 
+	private String  provinceId;
+
 	private String  provinceName;
+
+	private String  cityId;
 
 	private String  cityName;
 
+	private String  areaId;
+
 	private String  areaName;
 
+	private String  streetId;
+
 	private String  streetName;
+
+	private String  communityId;
 
 	private String  communityName;
 
@@ -65,6 +77,10 @@ public class RecyclersBean {
 	private String realNo;//实体卡号
 
 	private String  captcha;//验证码
+
+	private String  lat;//31.29058
+
+	private String  lng;//121.554966
 
 	private Long recId;
 }

@@ -260,21 +260,42 @@ public class ProductApi {
         productLog.setpId(product.getId());
         if(VoucherType.revive.equals(product.getVoucherType()))
         {
-            // 1. 我的券
             VoucherMember voucherMember = new VoucherMember();
-            voucherMember.setCreateBy(member.getAliUserId());
-            voucherMember.setCreateDate(now.getTime());
-            voucherMember.setAliUserId(member.getAliUserId());
-            voucherMember.setDelFlag("0");
-            voucherMember.setMemberId(member.getId());
-            voucherMember.setValidStart(now.getTime());
-            now.add(Calendar.DATE, 30);
-            voucherMember.setValidEnd(now.getTime());
-            voucherMember.setVoucherName("答答答复活卡");
-            voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_CREATE);
-            voucherMember.setVoucherType(VoucherConst.VOUCHER_TYPE_REVIVE);
-            voucherMemberService.insert(voucherMember);
-            msg = "兑换成功，请前往我的优惠券查看";
+            if (StringUtils.isBlank(product.getOrderType())){
+                // 1. 我的券
+                voucherMember.setCreateBy(member.getAliUserId());
+                voucherMember.setCreateDate(now.getTime());
+                voucherMember.setAliUserId(member.getAliUserId());
+                voucherMember.setDelFlag("0");
+                voucherMember.setMemberId(member.getId());
+                voucherMember.setValidStart(now.getTime());
+                now.add(Calendar.DATE, 30);
+                voucherMember.setValidEnd(now.getTime());
+                voucherMember.setVoucherName("答答答复活卡");
+                voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_CREATE);
+                voucherMember.setVoucherType(VoucherConst.VOUCHER_TYPE_REVIVE);
+                voucherMemberService.insert(voucherMember);
+                msg = "兑换成功，请前往我的优惠券查看";
+            }else {
+                // 自己的优惠券
+                voucherMember.setVoucherName(product.getName());
+                voucherMember.setOrderType(product.getOrderType());
+                voucherMember.setVoucherType(product.getProductType()+"");
+                voucherMember.setDis(product.getAmount());
+                voucherMember.setMoney(product.getAmount().intValue());
+                voucherMember.setLowMoney(product.getLowLimit().intValue());
+                voucherMember.setTopMoney(100);
+                voucherMember.setPickupStart(ToolUtils.getDateTime(product.getPickStartDate()));
+                voucherMember.setPickupEnd(ToolUtils.getDateTime(product.getPickEndDate()));
+                voucherMember.setValidStart(ToolUtils.getDateTime(product.getPickStartDate()));
+                voucherMember.setValidEnd(ToolUtils.getDateTime(product.getPickEndDate()));
+                voucherMember.setVoucherStatus(VoucherConst.VOUCHER_STATUS_CREATE);
+                voucherMember.setAliUserId(member.getAliUserId());
+                voucherMember.setMemberId(member.getId());
+                voucherMemberService.insert(voucherMember);
+                msg = "兑换成功，请前往我的优惠券查看";
+            }
+
         }
         if(VoucherType.code.equals(product.getVoucherType()))
         {
@@ -384,6 +405,9 @@ public class ProductApi {
         Point point = pointService.getPoint(member.getAliUserId());
         //查询此券需要消耗多少能量兑换
         Product product = productService.selectById(productBean.getId());
+        if (product.getStock()<=product.getBindingQuantity()){
+            return "商品库存不足";
+        }
         //判断是否需要积分兑换
         if (product.getBindingPoint() != 0) {
             //判断用户积分是否足够
@@ -428,15 +452,5 @@ public class ProductApi {
         }
         //给用户发放实物
         return goodsProductOrderService.sendGoodsProduct(product, member, point, memberAddress);
-    }
-
-    public static void main(String[] args) {
-        String productId = "0d1588036d4440c2bc66b4749ce3a6e6";
-        String aliUserId = "2088212854989662";
-        String param = "productId=" + productId + "&userAliId=" + aliUserId;
-        System.out.println("给用户发券的参数:" + param);
-        //调用给用户发券接口
-        String body = PostTool.postB(ToolUtils.greenH5, param);
-        System.out.println(body);
     }
 }

@@ -48,6 +48,8 @@ public class Company extends DataEntity<Long> {
 	private String aliUserId;
 	private String appId;//
 	private String isCancelAuth = "0";//是否取消授权0不是
+	private String isOpenTrade = "0";//是否开通当面付
+	private String isOpenAppTrade = "0";//是否开通app支付
 
 	/**
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示

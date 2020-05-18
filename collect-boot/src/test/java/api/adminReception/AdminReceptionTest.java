@@ -5,6 +5,7 @@ import com.tzj.collect.core.param.admin.AdminBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.app.ArrivalTimeLogBean;
+import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
 import com.tzj.module.easyopen.util.ApiUtil;
@@ -47,10 +48,14 @@ public class AdminReceptionTest {
         orderBean.setOrderId(70368);
         orderBean.setCompanyId(41);
 
+        BOrderBean bOrderBean = new BOrderBean();
+        bOrderBean.setId(70389);
+        bOrderBean.setCancelReason("我是驳回原因");
+
 
 
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","admin.sendXyOrderByCompanyId");
+        param.put("name","admin.updateOrderStatusByAdminReception");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_4");
@@ -58,7 +63,7 @@ public class AdminReceptionTest {
         param.put("token",securityToken);
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID().toString());
-        param.put("data",orderBean);
+        param.put("data",bOrderBean);
 
         String jsonStr= JSON.toJSONString(param);
         String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_9988767");

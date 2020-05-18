@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.green.mapper.CommunityHouseNameMapper">
+
+
+<select id="selectOneByLocalCompanyId" parameterType="Object" resultType="com.tzj.green.entity.CommunityHouseName">
+		SELECT a.*,ROUND(
+                6378.138 * 2 * ASIN(
+                    SQRT(
+                        POW(
+                            SIN(
+                                (
+                                    #{lat} * PI() / 180 - a.lat * PI() / 180
+                                ) / 2
+                            ),
+                            2
+                        ) + COS(#{lat} * PI() / 180) * COS(a.lat * PI() / 180) * POW(
+                            SIN(
+                                (
+                                     #{lng} * PI() / 180 -   a.lng * PI() / 180
+                                ) / 2
+                            ),
+                            2
+                        )
+                    )
+                ) * 1000
+            ) AS distance
+        FROM sb_community_house_name a
+		INNER JOIN sb_company_community b ON b.id = a.community_id
+		WHERE
+			b.company_id = #{companyId}
+		AND a.lat is NOT NULL
+		AND a.lng IS NOT NULL
+		ORDER BY distance ASC
+		LIMIT 0,1
+</select>
+
+</mapper>
