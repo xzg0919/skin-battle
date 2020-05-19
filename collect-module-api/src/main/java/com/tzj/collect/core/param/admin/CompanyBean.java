@@ -68,6 +68,10 @@ public class CompanyBean {
 
 	private Integer blueTooth;//是否开启蓝牙（0:未开启; 1:开启）
 
+	private Integer directOperation; //是否直营(0:否；1：是)
+
+	private String zhiFuBaoAccount;  //支付宝账号（已授权）
+
 	public String getLongitude() {
 		return longitude;
 	}

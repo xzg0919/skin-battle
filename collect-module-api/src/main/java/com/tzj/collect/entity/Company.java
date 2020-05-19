@@ -17,6 +17,8 @@ public class Company extends DataEntity<Long> {
 	@TableField(value="name_")
 	private String name;   //企业名称
 	private String companyCode;  //企业编号
+	@TableField(value="direct_operation")
+	private Integer directOperation; //是否直营(0:否；1：是)
 	private String contacts;   //联系人
 	private String tel;   //联系电话
 	private String address;   //地址
@@ -50,6 +52,8 @@ public class Company extends DataEntity<Long> {
 	private String isCancelAuth = "0";//是否取消授权0不是
 	private String isOpenTrade = "0";//是否开通当面付
 	private String isOpenAppTrade = "0";//是否开通app支付
+	@TableField(value="zhi_fu_bao_account")
+	private String zhiFuBaoAccount;    //支付宝账号（已授权）
 
 	/**
 	 * 是否授权蚂蚁森林能量仅仅用于页面展示
