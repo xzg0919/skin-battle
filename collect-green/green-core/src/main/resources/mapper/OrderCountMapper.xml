@@ -33,31 +33,43 @@ l.create_date >= DATE_SUB(CURDATE(), INTERVAL 0 DAY)
         AND DATE_SUB(CURDATE(), INTERVAL 0 DAY)
     </select>
 
-    <select id="getOrderCountList"  resultType="Map">
-SELECT
-l.create_date AS createDate,
-m.name_ AS userName,
-m.mobile AS mobile,
-l.user_no AS userNo,
-i.amount AS amount,
-if(i.category_id = 1,'其他垃圾',if(i.category_id = 2,'易腐垃圾',if(i.category_id = 3,'有害垃圾','可回收垃圾')))AS garbageType,
-if(i.parent_id = 8,'金属',if(i.parent_id = 7,'塑料',if(i.parent_id = 6,'纺织',if(i.parent_id = 5,'废纸',null))))AS recycleType,
-m.province_name AS provinceName,
-m.city_name AS cityName,
-m.area_name AS areaName,
-m.street_name AS streetName,
-m.community_name AS communityName,
-m.community_house_name AS communityHouseName,
-r.name_ AS createBy ,
-CONCAT(IF(l.points_type = '0','+','-'),l.points) AS points
-FROM
-sb_points_list l
-join sb_points_list_item i on l.id=i.points_list_id
-join sb_member m on l.user_no = m.real_no
-join sb_recyclers r on l.recycler_id=r.id
-WHERE
-l.company_id=6
-AND
-l.create_date >= DATE_SUB(CURDATE(), INTERVAL 0 DAY)
+    <select id="getOrderCountList" resultType="Map">
+        SELECT
+        l.create_date AS createDate,
+        m.name_ AS userName,
+        m.mobile AS mobile,
+        l.user_no AS userNo,
+        i.amount AS amount,
+        if(i.category_id = 1,'其他垃圾',if(i.category_id = 2,'易腐垃圾',if(i.category_id = 3,'有害垃圾','可回收垃圾')))AS garbageType,
+        if(i.parent_id = 8,'金属',if(i.parent_id = 7,'塑料',if(i.parent_id = 6,'纺织',if(i.parent_id = 5,'废纸',null))))AS
+        recycleType,
+        m.province_name AS provinceName,
+        m.city_name AS cityName,
+        m.area_name AS areaName,
+        m.street_name AS streetName,
+        m.community_name AS communityName,
+        m.community_house_name AS communityHouseName,
+        r.name_ AS createBy ,
+        CONCAT(IF(l.points_type = '0','+','-'),l.points) AS points
+        FROM
+        sb_points_list l
+        join sb_points_list_item i on l.id=i.points_list_id
+        join sb_member m on l.user_no = m.real_no
+        join sb_recyclers r on l.recycler_id=r.id
+        WHERE
+        1=1
+        /*l.company_id=6
+        AND
+        l.create_date >= DATE_SUB(CURDATE(), INTERVAL 0 DAY)*/
+        <if test="companyId != null and companyId !='' ">
+            AND l.company_id = #{companyId}
+        </if>
+        <if test="startTime != null and startTime !='' ">
+            AND l.create_date > CONCAT(#{startTime},' 00:00:01')
+        </if>
+        <if test="endTime != null and endTime !='' ">
+            AND CONCAT(#{endTime},' 23:59:59')> l.create_date
+        </if>
     </select>
+
 </mapper>

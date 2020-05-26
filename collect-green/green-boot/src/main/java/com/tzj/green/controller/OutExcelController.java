@@ -3,6 +3,7 @@ package com.tzj.green.controller;
 
 import com.tzj.green.common.excel.ExcelData;
 import com.tzj.green.common.excel.ExcelUtils;
+import com.tzj.green.param.CompanyBean;
 import com.tzj.green.service.OrderCountService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +24,8 @@ public class OutExcelController {
     private OrderCountService orderCountService;
 
     @RequestMapping("/pointList")
-    public void  getPointListOutExcel(HttpServletResponse response) throws Exception{
-        List<Map<String, Object>> list =  orderCountService.getOrderCount();
+    public void  getPointListOutExcel(HttpServletResponse response ,CompanyBean companyBean) throws Exception{
+        List<Map<String, Object>> list =  orderCountService.getOrderCount(companyBean);
         ExcelData data = new ExcelData();
         data.setName("积分商户数据统计");
         //添加表头
