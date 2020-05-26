@@ -100,6 +100,7 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.orderlist", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> orderlist(OrderBean orderBean) {
         Integer status = null;
@@ -650,9 +651,18 @@ public class OrderApi {
      * @throws ApiException
      */
     @Api(name = "order.getNewOrderDetail", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getNewOrderDetail(OrderBean orderbean) throws ApiException {
         return orderService.getNewOrderDetail(orderbean.getId());
+    }
+
+    @Api(name = "order.dsddOrderDetail", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Map<String, Object> dsddOrderDetail(OrderBean orderBean) {
+        Map<String, Object> map = orderService.dsddOrderDetail(orderBean.getId());
+        return map;
     }
 
     /**

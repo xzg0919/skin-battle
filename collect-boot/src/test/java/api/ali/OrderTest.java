@@ -37,15 +37,25 @@ public class OrderTest {
                 iotPostParamBean.setEcUuid(UUID.randomUUID().toString());
                 iotPostParamBean.setTranTime(System.currentTimeMillis());
                 iotPostParamBean.setCabinetNo("869012040190428");
+
+                OrderBean orderBean = new OrderBean();
+                PageBean pageBean = new PageBean();
+                pageBean.setPageNumber(1);
+                pageBean.setPageSize(10);
+                orderBean.setStatus("3");
+                orderBean.setPagebean(pageBean);
+
+
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name", "memberAddress.memberAddress");
+                param.put("name", "order.orderlist");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
                 param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
                 param.put("token", securityToken);
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data", null);
+                param.put("data", orderBean);
+
                 String jsonStr= JSON.toJSONString(param);
                 System.out.println(jsonStr);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");

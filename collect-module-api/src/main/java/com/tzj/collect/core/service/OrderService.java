@@ -449,5 +449,6 @@ public interface OrderService extends IService<Order> {
 	Object saveXyOrder(String message);
 	@DS("slave")
 	Object sendXyOrderByCompanyId(OrderBean orderBean);
-
+	@DS("slave")
+	Map<String,Object> dsddOrderDetail(Integer orderId);
 }

@@ -169,6 +169,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private XyCategoryOrderService xyCategoryOrderService;
     @Autowired
     private QiMemService qiMemService;
+    @Autowired
+    private DsddRecyclePositionService dsddRecyclePositionService;
 
     @Resource
     private JedisPool jedisPool;
@@ -4348,5 +4350,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setCompanyId(orderBean.getCompanyId());
         this.updateById(order);
         return "操作成功";
+    }
+
+    @Override
+    public Map<String, Object> dsddOrderDetail(Integer orderId) {
+        Map<String, Object> map = new HashMap<>();
+        Order order = this.selectById(orderId);
+        if (null == order){
+            throw new ApiException("查询不到该订单信息");
+        }
+        Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+        DsddRecyclePosition dsddRecyclePosition = dsddRecyclePositionService.selectById(order.getNetId());
+        Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", order.getOrderNo()));
+        String paymentNo = payment!=null?payment.getTradeNo():"";
+        List<BusinessOrderItemBean> categoryInfoByOrderId = orderMapper.getCategoryInfoByOrderId(String.valueOf(orderId), null);
+
+        map.put("order", order);
+        map.put("recyclers", recyclers);
+        map.put("categoryInfo", categoryInfoByOrderId);
+        map.put("dsddRecyclePosition", dsddRecyclePosition);
+        map.put("payment",payment);
+        map.put("paymentNo",paymentNo);
+        return map;
     }
 }
