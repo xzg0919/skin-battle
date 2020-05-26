@@ -3420,12 +3420,11 @@
 		c.amount,
 		c.unit,
 		c.price,
-		cc.point,
+		c.point,
 		CAST(c.amount*c.price AS DECIMAL(20,2))AS priceCount
 		FROM
 		sb_category b
 		JOIN sb_order_item_ach c ON b.id = c.category_id
-		LEFT JOIN dsdd_company_category cc ON cc.category_id = c.category_id
 		WHERE
 		c.order_id = #{orderId}
 		<if test="title != null and title !='' ">
