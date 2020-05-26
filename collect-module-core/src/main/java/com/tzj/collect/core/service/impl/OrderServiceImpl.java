@@ -2672,12 +2672,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setGreenCode(orderBean.getGreenCode());
 			order.setAliUserId(member.getAliUserId());
 			order.setTitle(Order.TitleType.HOUSEHOLD);
-			order.setIsMysl(orderBean.getIsMysl());
 			if ("1".equals(orderBean.getIsCash())) {
-				order.setIsCash(orderBean.getIsCash());
-			} else {
-				order.setIsCash("0");
-			}
+                order.setIsCash(orderBean.getIsCash());
+                order.setIsMysl(orderBean.getIsCash());
+            } else {
+                order.setIsCash("0");
+                order.setIsMysl("0");
+            }
 			order.setFormId(orderBean.getFormId());
 			this.insert(order);
 			//将券码跟订单进行绑定
