@@ -73,6 +73,7 @@
         <dubbo-spring-context-support.version>1.0.2</dubbo-spring-context-support.version>
         <dubbo-spring-boot-starter.version>0.2.1.RELEASE</dubbo-spring-boot-starter.version>
         <nacos-discovery-spring-boot-starter.version>0.2.1</nacos-discovery-spring-boot-starter.version>
+        <gongyi-version>1.0.0</gongyi-version>
     </properties>
 
     <dependencyManagement>

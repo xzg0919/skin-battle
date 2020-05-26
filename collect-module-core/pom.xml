@@ -113,5 +113,10 @@
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>taobao.gongyi</artifactId>
+            <version>${gongyi-version}</version>
+        </dependency>
     </dependencies>
 </project>

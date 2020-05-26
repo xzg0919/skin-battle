@@ -143,9 +143,9 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     @Transactional(readOnly = false)
     public Map<String, Object> bindingCardByRec(RecyclersBean recyclersBean) {
         //验证手机验证码是否正确有效
-        if(!messageService.validMessage(recyclersBean.getMobile(), recyclersBean.getCaptcha())){
-            throw new ApiException("手机验证码错误");
-        }
+//        if(!messageService.validMessage(recyclersBean.getMobile(), recyclersBean.getCaptcha())){
+//            throw new ApiException("手机验证码错误");
+//        }
         Map<String, Object> returnMap = new HashMap<>();
         MemberCard memberCard = memberCardService.selectOne(new EntityWrapper<MemberCard>().eq("member_card", recyclersBean.getRealNo()));
         if (null == memberCard){
@@ -173,9 +173,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         member.setIdCardRev(recyclersBean.getIdCardRev());
         member.setIdCardObv(recyclersBean.getIdCardObv());
         member.setIdCard(recyclersBean.getIdCard());
-        member.setDetailAddress(recyclersBean.getDetailAddress());
         member.setAddress(recyclersBean.getAddress());
-        member.setDetailAddress(recyclersBean.getDetailAddress());
         try {
             if (StringUtils.isNotBlank(recyclersBean.getProvinceId())){
                 member.setProvinceId(Long.parseLong(recyclersBean.getProvinceId()));

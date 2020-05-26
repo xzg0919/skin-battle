@@ -1874,6 +1874,9 @@
 		SELECT
 		a.id,
 		a.order_no AS orderNo,
+		g.area_name AS cityName,
+		f.area_name AS areaName,
+		e.area_name AS streetName,
 		DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
 		DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
 		a.arrival_period AS arrivalPeriod,
@@ -1900,6 +1903,9 @@
 		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
 		LEFT JOIN sb_category c ON a.category_id = c.id
 		LEFT JOIN sb_company d ON a.company_id = d.id
+		LEFT JOIN sb_area e ON a.street_id  = e.id
+		LEFT JOIN sb_area f ON f.id = a.area_id
+		LEFT JOIN sb_area g ON f.parent_id = g.id
 		WHERE
 		a.del_flag = 0
 		<if test="companyId != null and companyId !='' ">
