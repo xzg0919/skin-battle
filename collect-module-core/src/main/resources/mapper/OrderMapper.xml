@@ -3408,7 +3408,45 @@
 		WHERE
 			a.order_id = #{orderId}
 	</select>
-
+	<!--B端订单详情中的回收物信息-->
+	<select id="getCategoryInfoByOrderId" parameterType="object" resultMap="categoryResultMap">
+		SELECT
+		c.category_id categoryId,
+		if(b.title = 1,'废弃家电',if(b.title = 2,'生活垃圾','生活垃圾/废弃家电')) title,
+		c.order_id orderId,
+		c.category_name categoryName,
+		c.parent_id parentId,
+		c.parent_name parentName,
+		c.amount,
+		c.unit,
+		c.price,
+		cc.point,
+		CAST(c.amount*c.price AS DECIMAL(20,2))AS priceCount
+		FROM
+		sb_category b
+		JOIN sb_order_item_ach c ON b.id = c.category_id
+		LEFT JOIN dsdd_company_category cc ON cc.category_id = c.category_id
+		WHERE
+		c.order_id = #{orderId}
+		<if test="title != null and title !='' ">
+			AND b.title = #{title}
+		</if>
+	</select>
+	<resultMap id="categoryResultMap" type="com.tzj.collect.core.param.ali.BusinessOrderItemBean">
+		<id property="parentId" column="parentId" />
+		<result property="parentName" column="parentName" />
+		<result property="title" column="title"/>
+		<collection property="businessOrderItemList" ofType="com.tzj.collect.core.param.ali.BusinessOrderItemBean">
+			<id property="categoryId" column="categoryId" />
+			<result property="orderId" column="orderId" />
+			<result property="categoryName" column="categoryName" />
+			<result property="amount" column="amount"/>
+			<result property="unit" column="unit"/>
+			<result property="price" column="price"/>
+			<result property="point" column="point"/>
+			<result property="priceCount" column="priceCount"/>
+		</collection>
+	</resultMap>
 	<!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
 	<resultMap type="com.tzj.collect.entity.Order" id="OrderResultMap">
         <id property="id" column="id" />
@@ -3417,6 +3455,12 @@
         <result property="recyclerId" column="recycler_id" />
         <result property="status" column="status_" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
         <result property="orderNo" column="order_no" />
+        <result property="orderFrom" column="order_from" />
+        <result property="netId" column="net_id" />
+		<result property="netName" column="net_name" />
+		<result property="paymentType" column="payment_type" />
+		<result property="payType" column="pay_type" />
+		<result property="companyPoint" column="company_point" />
         <result property="areaId" column="area_id" />
         <result property="communityId" column="community_id" />
         <result property="address" column="address" />
@@ -3495,6 +3539,12 @@
 		a.recycler_id,
 		a.status_,
 		a.order_no,
+		a.order_from,
+		a.net_id,
+		a.net_name,
+		a.payment_type,
+		a.pay_type,
+		a.company_point,
 		a.area_id,
 		a.community_id,
 		a.address,
