@@ -24,8 +24,13 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
     private RedisUtil redisUtil;
 
     @Override
-    public List<Map<String, Object>> getOrderCount(CompanyBean companyBean) {
-        return orderCountMapper.getOrderCountList(companyBean.getCompanyId(),companyBean.getStartTime(),companyBean.getEndTime());
+    public List<Map<String, Object>> getOrderCount() {
+        return orderCountMapper.getOrderCountList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getPointCount(CompanyBean companyBean) {
+        return orderCountMapper.getPointCountList(companyBean.getCompanyId(),companyBean.getStartTime(),companyBean.getEndTime());
     }
 
     @Override

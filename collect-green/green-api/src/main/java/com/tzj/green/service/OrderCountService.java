@@ -9,7 +9,9 @@ import java.util.Map;
 
 public interface OrderCountService extends IService<T> {
 
-    List<Map<String, Object>> getOrderCount(CompanyBean companyBean);
+    List<Map<String, Object>> getOrderCount();
+
+    List<Map<String, Object>> getPointCount(CompanyBean companyBean);
 
      Object getOrderCount1();
 }
