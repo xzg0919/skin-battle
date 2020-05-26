@@ -37,6 +37,7 @@ public class DailyVoucherMemberServiceImpl extends ServiceImpl<DailyVoucherMembe
         EntityWrapper<VoucherMember> wrapper = new EntityWrapper<VoucherMember>();
         wrapper.eq("ali_user_id", aliId);
         wrapper.eq("voucher_status", VoucherConst.VOUCHER_STATUS_CREATE);
+        wrapper.eq("voucher_type","REVIVE");
         wrapper.orderBy("id", true);
         wrapper.last(" LIMIT 0,1 ");
         List<VoucherMember> voucherMemberList =  this.selectList(wrapper);

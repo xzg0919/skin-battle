@@ -177,13 +177,21 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         member.setAddress(recyclersBean.getAddress());
         member.setDetailAddress(recyclersBean.getDetailAddress());
         try {
-            member.setProvinceId(Long.parseLong(recyclersBean.getProvinceId()));
+            if (StringUtils.isNotBlank(recyclersBean.getProvinceId())){
+                member.setProvinceId(Long.parseLong(recyclersBean.getProvinceId()));
+            }
+            if (StringUtils.isNotBlank(recyclersBean.getCityId())){
+                member.setCityId(Long.parseLong(recyclersBean.getCityId()));
+            }
+            if (StringUtils.isNotBlank(recyclersBean.getAreaId())){
+                member.setAreaId(Long.parseLong(recyclersBean.getAreaId()));
+            }
+            if (StringUtils.isNotBlank(recyclersBean.getStreetId())){
+                member.setStreetId(Long.parseLong(recyclersBean.getStreetId()));
+            }
             member.setProvinceName(recyclersBean.getProvinceName());
-            member.setCityId(Long.parseLong(recyclersBean.getCityId()));
             member.setCityName(recyclersBean.getCityName());
-            member.setAreaId(Long.parseLong(recyclersBean.getAreaId()));
             member.setAreaName(recyclersBean.getAreaName());
-            member.setStreetId(Long.parseLong(recyclersBean.getStreetId()));
             member.setStreetName(recyclersBean.getStreetName());
             if (StringUtils.isNotBlank(recyclersBean.getCommunityId())){
                 member.setCommunityId(Long.parseLong(recyclersBean.getCommunityId()));
@@ -194,7 +202,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             memberService.insertOrUpdate(member);
             returnMap.put("msg", "Y");
         }catch (Exception e){
-            throw new ApiException("录入失败:"+e.getMessage());
+            e.printStackTrace();
+            throw  new ApiException("开卡参数异常");
         }
         return returnMap;
     }

@@ -1895,6 +1895,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Order order = orderService.selectById(orderBean.getId());
 		order.setStatus(OrderType.COMPLETE);
 		order.setCompleteDate(new Date());
+		if (null!=voucherMember){
+            order.setVoucherMemberId(voucherMember.getId().toString());
+        }
 		if(StringUtils.isNotBlank(orderBean.getDiscountPrice())){
 			order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
 		}
@@ -1913,7 +1916,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 voucherBean.setOrderNo(order.getOrderNo());
                 voucherBean.setVoucherMemberId(voucherMember.getId());
                 voucherMemberService.voucherUse(voucherBean);
-                order.setVoucherMemberId(voucherMember.getId().toString());
             }
             String descrb = "";
             if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){

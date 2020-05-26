@@ -281,6 +281,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		company.setContacts(companyBean.getContacts());
 		company.setTel(companyBean.getTel());
 		company.setAddress(companyBean.getAddress());
+		//新增直营和企业支付宝账号
+		company.setDirectOperation(companyBean.getDirectOperation());
+		company.setZhiFuBaoAccount(companyBean.getZhiFuBaoAccount());
 		this.insertOrUpdate(company);
 		companyAccount.setUsername(companyBean.getUserName());
 		companyAccount.setPassword(companyBean.getPassword());

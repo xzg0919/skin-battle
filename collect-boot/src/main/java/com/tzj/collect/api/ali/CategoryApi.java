@@ -327,8 +327,12 @@ public class CategoryApi {
 	@Api(name = "category.categoryNewHouseList", version = "1.0")
 	@SignIgnore
 	@AuthIgnore
-	public Object getCategoryNewHouseList(){
-		return categoryService.getCategoryNewHouseList();
+	public Object getCategoryNewHouseList(CategoryBean categoryBean){
+		Long parentId = 25L;
+		if (null != categoryBean.getParentId()){
+			parentId = categoryBean.getParentId().longValue();
+		}
+		return categoryService.getCategoryNewHouseList(parentId);
 	}
 	/**
 	 * 小程序最新获取生活分类列表
@@ -338,10 +342,14 @@ public class CategoryApi {
 	@Api(name = "category.categoryNewHouseListByToken", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-	public Object getCategoryNewHouseListByToken(){
+	public Object getCategoryNewHouseListByToken(CategoryBean categoryBean){
 		Member member = MemberUtils.getMember();
 		String aliUserId = member.getAliUserId();
-		return categoryService.getCategoryNewHouseListByToken(aliUserId);
+		Long parentId = 25L;
+		if (null != categoryBean.getParentId()){
+			parentId = categoryBean.getParentId().longValue();
+		}
+		return categoryService.getCategoryNewHouseListByToken(aliUserId,parentId);
 	}
 
 	/**
