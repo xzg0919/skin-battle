@@ -11,6 +11,7 @@ import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.shard.ShardTableHelper;
 import com.tzj.collect.common.utils.ToolUtils;
+import com.tzj.collect.core.mapper.DsddMemberMapper;
 import com.tzj.collect.core.mapper.MemberMapper;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.service.*;
@@ -41,6 +42,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
     @Autowired
     private MemberMapper memberMapper;
+    @Autowired
+    private DsddMemberService dsddMemberService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private PointListService pointListService;
     @Autowired
     private AliPayService aliPayService;
     @Autowired
@@ -242,6 +249,15 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
                 member.setAppId(appId);
             }
             this.updateMemberByAliUserId(member);
+        }
+
+        //判断是否是定时定点用户表中存在该手机号
+        DsddMember dsddMember = dsddMemberService.selectOne(new EntityWrapper<DsddMember>().eq("mobile", userResponse.getMobile()));
+        if (dsddMember != null){
+            dsddMemberService.update(dsddMember,new EntityWrapper<DsddMember>().eq("del_flag","1"));
+            orderService.updateForSet("ali_user_id = " + userId,new EntityWrapper<Order>().eq("tel", userResponse.getMobile()));
+            pointService.updateForSet("ali_user_id = " + userId, new EntityWrapper<Point>().eq("telephone", userResponse.getMobile()));
+            pointListService.updateForSet("telephone='',ali_user_id='" + userId + "'", new EntityWrapper<PointList>().eq("telephone", userResponse.getMobile()));
         }
 
         resultMap.put("id", member.getAliUserId());

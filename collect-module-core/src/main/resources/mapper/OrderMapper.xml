@@ -3449,6 +3449,7 @@
 			<result property="unit" column="unit"/>
 			<result property="price" column="price"/>
 			<result property="point" column="point"/>
+			<result property="title" column="title"/>
 			<result property="priceCount" column="priceCount"/>
 		</collection>
 	</resultMap>
