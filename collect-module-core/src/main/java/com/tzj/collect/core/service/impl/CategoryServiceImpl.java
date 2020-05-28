@@ -675,7 +675,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         MemberAddress memberAdderss = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
         if (null != memberAdderss) {
             String houseceCompanyId = companyStreetHouseService.selectStreetHouseceCompanyId(memberAdderss.getStreetId(), memberAdderss.getCommunityId());
-            if (StringUtils.isNotBlank(houseceCompanyId)) {
+            if (StringUtils.isNotBlank(houseceCompanyId)&&this.selectHouseByCompany(Integer.parseInt(houseceCompanyId))>0) {
                 categoryList = companyCategoryCityNameService.getHouseCategoryByCompanyId(Integer.parseInt(houseceCompanyId), memberAdderss.getCityId(),parentId);
             } else {
                 Integer fiveCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAdderss.getStreetId());
