@@ -253,11 +253,15 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
         //判断是否是定时定点用户表中存在该手机号
         DsddMember dsddMember = dsddMemberService.selectOne(new EntityWrapper<DsddMember>().eq("mobile", userResponse.getMobile()));
-        if (dsddMember != null){
-            dsddMemberService.update(dsddMember,new EntityWrapper<DsddMember>().eq("del_flag","1"));
-            orderService.updateForSet("ali_user_id = " + userId,new EntityWrapper<Order>().eq("tel", userResponse.getMobile()));
-            pointService.updateForSet("ali_user_id = " + userId, new EntityWrapper<Point>().eq("telephone", userResponse.getMobile()));
-            pointListService.updateForSet("telephone='',ali_user_id='" + userId + "'", new EntityWrapper<PointList>().eq("telephone", userResponse.getMobile()));
+        try {
+            if (dsddMember != null){
+                dsddMemberService.update(dsddMember,new EntityWrapper<DsddMember>().eq("del_flag","1"));
+                orderService.updateForSet("ali_user_id = '" + userId + "'",new EntityWrapper<Order>().eq("tel", userResponse.getMobile()));
+                pointService.updateForSet("ali_user_id = " + userId + "'", new EntityWrapper<Point>().eq("telephone", userResponse.getMobile()));
+                pointListService.updateForSet("telephone='',ali_user_id='" + userId + "'", new EntityWrapper<PointList>().eq("telephone", userResponse.getMobile()));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
         resultMap.put("id", member.getAliUserId());
