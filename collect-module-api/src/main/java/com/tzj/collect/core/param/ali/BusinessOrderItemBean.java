@@ -68,7 +68,7 @@ public class BusinessOrderItemBean implements Serializable {
 
     private double priceCount;//合价
 
-    private Integer point;//分类配置积分
+    private Integer point;//积分单价
 
 	/**
 	 * 是否现金

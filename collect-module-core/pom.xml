@@ -116,7 +116,7 @@
         <dependency>
             <groupId>com.tzj</groupId>
             <artifactId>taobao.gongyi</artifactId>
-            <version>${gongyi-version}</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 </project>

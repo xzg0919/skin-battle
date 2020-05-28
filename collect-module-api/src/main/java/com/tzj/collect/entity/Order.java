@@ -42,7 +42,7 @@ public class Order extends DataEntity<Long> {
 
 	private String paymentType;//付款类型 0支付宝    1现金
 	@TableField(value = "company_point")
-	private double companyPoint;
+	private Double companyPoint;
 
 	/**
 	 * 会员id

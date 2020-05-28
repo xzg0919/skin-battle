@@ -656,7 +656,11 @@ public class OrderApi {
     public Object getNewOrderDetail(OrderBean orderbean) throws ApiException {
         return orderService.getNewOrderDetail(orderbean.getId());
     }
-
+    /**
+     * @Description 定时定点订单详情
+     * @Author yangwenhui
+     * @Date 2020-05-28 10:03
+     */
     @Api(name = "order.dsddOrderDetail", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)

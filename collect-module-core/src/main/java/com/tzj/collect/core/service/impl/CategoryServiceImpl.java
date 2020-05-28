@@ -688,7 +688,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 }
             }
         }
-        if (null == categoryList) {
+        if (null == categoryList||categoryList.isEmpty()) {
             categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
             categoryList.stream().forEach(category -> {
                 if (null!=parentId&&category.getId().equals(parentId)){
