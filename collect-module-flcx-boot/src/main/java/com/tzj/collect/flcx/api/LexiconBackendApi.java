@@ -1,19 +1,21 @@
 package com.tzj.collect.flcx.api;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.tzj.collect.core.param.flcx.FlcxBean;
-import com.tzj.collect.core.param.flcx.FlcxEggshellBean;
-import com.tzj.collect.core.param.flcx.FlcxLexiconBean;
-import com.tzj.collect.core.param.flcx.FlcxTypeBean;
+import com.taobao.api.response.AlibabaCharityUseractionSyncResponse;
+import com.tzj.collect.core.param.ali.MemberBean;
+import com.tzj.collect.core.param.flcx.*;
 import com.tzj.collect.core.service.FlcxEggshellService;
 import com.tzj.collect.core.service.FlcxLexiconService;
 import com.tzj.collect.core.service.FlcxTypeService;
+import com.tzj.collect.core.service.GongYiCharityService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -40,6 +42,9 @@ public class LexiconBackendApi {
 
     @Reference(version = "${flcx.service.version}")
     private FlcxEggshellService flcxEggshellService;
+
+    @Reference(version = "${flcx.service.version}")
+    private GongYiCharityService gongYiCharityService;
 
 
     /**
@@ -254,6 +259,72 @@ public class LexiconBackendApi {
         flcxLexiconService.updateFlcxLexicon(flcxLexiconBean);
         map.put("msg","success");
         return  map;
+    }
+    /**
+     * 小程序静默授权
+     * 根据用户授权返回的authCode,获取用户的token
+     * @author 王灿
+     * @param
+     */
+    @Api(name = "member.ali_user_id", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object userToken(FlcxUserBean flcxUserBean) {
+        if(StringUtils.isBlank(flcxUserBean.getAuthCode())){
+            throw new ApiException("uthCode不能为空!");
+        }
+        AlipaySystemOauthTokenResponse response = gongYiCharityService.selectUserToken(flcxUserBean.getAuthCode());
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("aliUserId", response.getUserId()!=null?response.getUserId():"2088212854989662");
+        return resultMap;
+    }
+    /**
+     * 静默授权获取用户code
+     * @param flcxUserBean
+     * @return
+     * @throws ApiException
+     */
+    @Api(name = "backend.selectUserIdByCode", version = "1.0")
+    @AuthIgnore
+    @SignIgnore
+    public String selectUserIdByCode (FlcxUserBean flcxUserBean) throws ApiException {
+        System.out.println("-----------------------------------------------"+flcxUserBean.getCode());
+        if(StringUtils.isBlank(flcxUserBean.getCode())){
+            throw new ApiException("code不能为空!");
+        }
+        AlipaySystemOauthTokenResponse response = gongYiCharityService.selectUserToken(flcxUserBean.getCode());
+        return  response.getUserId()!=null?response.getUserId():"2088212854989662";
+    }
+    /**
+     * 根据userId给用户0.1公益时
+     * @param flcxUserBean
+     * @return
+     * @throws ApiException
+     */
+    @Api(name = "backend.giveUserGongYi", version = "1.0")
+    @AuthIgnore
+    @SignIgnore
+    public String giveUserGongYi (FlcxUserBean flcxUserBean) throws ApiException {
+        if(StringUtils.isBlank(flcxUserBean.getAliUserId())){
+            throw new ApiException("aliUserId不能为空!");
+        }
+        AlibabaCharityUseractionSyncResponse.UserActionSyncResult result = gongYiCharityService.gongYiCharityUser(flcxUserBean.getAliUserId());
+        return  result.getCharityHours();
+    }
+    /**
+     * 查询给用户的公益时
+     * @param flcxUserBean
+     * @return
+     * @throws ApiException
+     */
+    @Api(name = "backend.selectUserGongYi", version = "1.0")
+    @AuthIgnore
+    @SignIgnore
+    public Long selectUserGongYi (FlcxUserBean flcxUserBean) throws ApiException {
+        if(StringUtils.isBlank(flcxUserBean.getAliUserId())){
+            throw new ApiException("aliUserId不能为空!");
+        }
+        return gongYiCharityService.gongYiCharityCharityTime(flcxUserBean.getAliUserId());
     }
 
 }

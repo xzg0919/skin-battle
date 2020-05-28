@@ -1,12 +1,18 @@
 package com.tzj.collect.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipaySystemOauthTokenRequest;
+import com.alipay.api.response.AlipaySystemOauthTokenResponse;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaCharityCharitytimeQueryRequest;
 import com.taobao.api.request.AlibabaCharityUseractionSyncRequest;
 import com.taobao.api.response.AlibabaCharityCharitytimeQueryResponse;
 import com.taobao.api.response.AlibabaCharityUseractionSyncResponse;
+import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.util.TaobaoUtil;
 import com.tzj.collect.core.service.GongYiCharityService;
 import org.springframework.stereotype.Component;
@@ -52,6 +58,32 @@ public class GongYiCharityServiceServiceImpl implements GongYiCharityService {
             e.printStackTrace();
         }
         return  rsp.getData();
+    }
+
+    @Override
+    public AlipaySystemOauthTokenResponse selectUserToken(String userCode) {
+        System.out.println("-------hua用户信息接口 userCode是：" + userCode);
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
+        AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
+        request.setCode(userCode);
+        request.setGrantType("authorization_code");
+        AlipaySystemOauthTokenResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+            //用户的授权的token
+            System.out.println(response.getAccessToken());
+            //用户的唯一userId
+            System.out.println(response.getUserId());
+        } catch (AlipayApiException e) {
+            //处理异常
+            e.printStackTrace();
+        }
+        if (response.isSuccess()) {
+            System.out.println("调用用户查询token接口成功");
+        } else {
+            System.out.println("调用用户查询token接口失败");
+        }
+        return response;
     }
 
 

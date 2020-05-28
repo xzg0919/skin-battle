@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
@@ -16,19 +17,19 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 @EnableTransactionManagement
-@SpringBootApplication(exclude = DruidDataSourceAutoConfigure.class)
+@SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
 @ComponentScan("com.tzj")
 @EnableCaching
 @EnableAsync
 @EnableScheduling
 @EnableDubbo(scanBasePackages = "com.tzj.collect")
 @PropertySource(value = "classpath:/dubbo-config.properties")
-public class FlcxApplication {
+public class FlcxApplicationBoot {
 
-    protected final static Logger logger = LoggerFactory.getLogger(FlcxApplication.class);
+    protected final static Logger logger = LoggerFactory.getLogger(FlcxApplicationBoot.class);
 
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(FlcxApplication.class);
+        SpringApplication app = new SpringApplication(FlcxApplicationBoot.class);
         app.setBannerMode(Banner.Mode.OFF);
         app.run(args);
         logger.info("PortalApplication is success!");
