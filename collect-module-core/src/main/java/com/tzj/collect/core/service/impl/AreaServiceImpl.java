@@ -443,7 +443,9 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 			if(null!=categoryList && !categoryList.isEmpty()){
 				for (Category category: categoryList) {
 					companyCategoryService.delete(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",category.getId()));
-					companyCategoryCityNameService.delete(new EntityWrapper<CompanyCategoryCityName>().eq("company_id",companyId).eq("category_id",category.getId()));
+					if(!"2".equals(title)){
+						companyCategoryCityNameService.delete(new EntityWrapper<CompanyCategoryCityName>().eq("company_id",companyId).eq("category_id",category.getId()));
+					}
 				}
 			}
 			if(null!=attrOptionList && !attrOptionList.isEmpty()){

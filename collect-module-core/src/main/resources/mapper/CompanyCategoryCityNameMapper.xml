@@ -83,7 +83,7 @@
 			b.icon_img,
 			b.icon_pic
 		FROM
-			sb_company_category_city_name a
+		 (select a.* from sb_company_category_city_name a INNER JOIN sb_company_category c ON a.company_id = c.company_id AND a.category_id = c.category_id) a
 		LEFT JOIN sb_category b ON a.category_id = b.id
 		LEFT JOIN sb_company_category_city c ON a.company_id = c.company_id AND a.city_id = c.city_id AND a.category_id = c.category_id
 		LEFT JOIN sb_company_category d ON a.company_id = d.company_id AND a.category_id = d.category_id
