@@ -445,10 +445,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
             Category category = categoryService.selectById(order.getCategoryId());
             order.setGreenCount(category.getGreenCount().doubleValue());
-            order.setAdminCommissions(companyCategory.getAdminCommissions());
-            order.setCompanyCommissions(companyCategory.getCompanyCommissions());
-            order.setCommissionsPrice(companyCategory.getAdminCommissions().setScale(2, BigDecimal.ROUND_DOWN));
-            order.setBackCommissionsPrice(companyCategory.getCompanyCommissions().setScale(2, BigDecimal.ROUND_DOWN));
+            order.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions());
+            order.setCompanyCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
+            order.setCommissionsPrice(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions().setScale(2, BigDecimal.ROUND_DOWN));
+            order.setBackCommissionsPrice(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions().setScale(2, BigDecimal.ROUND_DOWN));
         }if ("2".equals(order.getTitle().getValue().toString())){
             List<OrderItemAch> orderItemAches = orderItemAchService.selectByOrderId(order.getId().intValue());
             final BigDecimal[] commissionsPrice = {BigDecimal.ZERO};
