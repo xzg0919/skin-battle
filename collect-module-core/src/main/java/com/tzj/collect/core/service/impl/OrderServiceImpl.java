@@ -3085,12 +3085,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (StringUtils.isBlank(recyclers.getAliUserId())){
 			throw new ApiException("您未授权，请先在app内进行支付宝授权才能完成订单");
 		}
-        order.setCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory.getAdminCommissions()).divide(new BigDecimal(100)));
-        order.setAdminCommissions(companyCategory.getAdminCommissions());
-        order.setCompanyCommissions(companyCategory.getCompanyCommissions());
-		order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
-		order.setGreenCount(categorys.getGreenCount().doubleValue());
-        order.setBackCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory.getCompanyCommissions()).divide(new BigDecimal(100)));
+        order.setCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions()).divide(new BigDecimal(100)));
+        order.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions());
+        order.setCompanyCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
+        order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
+        order.setGreenCount(categorys.getGreenCount().doubleValue());
+        order.setBackCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions()).divide(new BigDecimal(100)));
 		if(Double.parseDouble(orderBean.getAchPrice())==0){
 			orderBean.setStatus("3");
 			orderBean.setAmount(categorys.getGreenCount());
