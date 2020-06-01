@@ -459,16 +459,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 Category category = categoryService.selectById(orderItemAch.getCategoryId());
                 if ("0".equals(order.getIsCash())){
                     greenCount[0] += category.getGreenCount()*orderItemAch.getAmount()*orderItemAch.getCleanUp();
-                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
-                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                 }else {
                     greenCount[0] += category.getFreeGreenCount()*orderItemAch.getAmount()*orderItemAch.getCleanUp();
-                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getFreeCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
-                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory==null?BigDecimal.ZERO:companyCategory.getFreeCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                 }
-                orderItemAch.setAdminCommissions(companyCategory.getAdminCommissions());
-                orderItemAch.setFreeCommissions(companyCategory.getFreeCommissions());
-                orderItemAch.setAdminCommissions(companyCategory.getCompanyCommissions());
+                orderItemAch.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions());
+                orderItemAch.setFreeCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getFreeCommissions());
+                orderItemAch.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
                 orderItemAchService.updateById(orderItemAch);
             });
             DecimalFormat df=new DecimalFormat(".##");
@@ -649,14 +649,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
 						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
-						if (companyCategoryCity!=null) {
+                        Category categorys = categoryService.selectById(item.getCategoryId());
+                        if (companyCategoryCity!=null) {
 							orderItem.setParentIds(companyCategoryCity.getParentIds());
 							orderItem.setPrice(companyCategoryCity.getPrice().floatValue());
 							orderItem.setUnit(companyCategoryCity.getUnit());
 						}else {
-							orderItem.setParentIds(companyCategory.getParentIds());
-							orderItem.setPrice(companyCategory.getPrice());
-							orderItem.setUnit(companyCategory.getUnit());
+                            orderItem.setParentIds(companyCategory!=null?companyCategory.getParentIds():categorys.getParentIds());
+                            orderItem.setPrice(companyCategory!=null?companyCategory.getPrice():categorys.getPrice().floatValue());
+                            orderItem.setUnit(companyCategory!=null?companyCategory.getUnit():categorys.getUnit());
 						}
 						if ("1".equals(isCash)){
 							orderItem.setPrice(0);
