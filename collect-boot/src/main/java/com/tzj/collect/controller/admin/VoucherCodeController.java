@@ -192,6 +192,7 @@ public class VoucherCodeController
             for (int i = 0, j = voucherAliList.size(); i < j; i++)
             {
                 voucherAli = voucherAliList.get(i);
+                sb.append("<tr>");
                 sb.append("<td class=tac>");
                 sb.append(i);
                 sb.append("</td>");
@@ -252,6 +253,7 @@ public class VoucherCodeController
                 sb.append(" 【导出券码】 </span>");
 
                 sb.append("</td>");
+                sb.append("</tr>");
             }
         }
         return sb.toString();
