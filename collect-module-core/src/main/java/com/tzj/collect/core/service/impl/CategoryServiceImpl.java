@@ -544,6 +544,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         BigDecimal cityRatio = companyCityRatioService.getCityRatioByCompanyCityId(memberAddress.getCityId(), finalCompanyId);
         price[0] = price[0].multiply(cityRatio);
         if ("BIGTHING".equals(type)&&price[0].compareTo(new BigDecimal(98)) == -1){
+            if (117==category.getId()||114==category.getId()){
+                return new BigDecimal(128);
+            }
             return new BigDecimal(98);
         }
         System.out.println("计算后的价格是："+price[0]);
