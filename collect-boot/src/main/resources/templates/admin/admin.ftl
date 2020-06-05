@@ -12,7 +12,7 @@
     <script src="/js/index.js"></script>
 </head>
 <body>
-<form action="http://localhost:9090/ali/api" method="post" enctype="multipart/form-data">
+<form action="/ali/api" method="post" enctype="multipart/form-data">
      <input type="file" name="headImg" /></br>
      <input type="hidden"  value="util.uploadImageTwo" name="name"/></br>
     <input type="hidden"  value="{name:'daxiang'}" name="date"/></br>

@@ -12,7 +12,7 @@
     <script src="/js/index.js"></script>
 </head>
 <body>
-<form action="http://localhost:9000/admin/index" method="post" enctype="multipart/form-data">
+<form action="/admin/index" method="post" enctype="multipart/form-data">
      <input type="file" name="headImg" /></br>
      <input type="hidden"  value="util.uploadImageTwo" name="name"/></br>
       <input type="hidden"  value="1.0" name="version"/></br>
