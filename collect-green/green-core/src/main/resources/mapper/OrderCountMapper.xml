@@ -36,7 +36,7 @@ l.create_date >= DATE_SUB(CURDATE(), INTERVAL 0 DAY)
     <select id="getOrderCountList" resultType="Map">
         SELECT
         l.create_date AS createDate,
-        m.name_ AS userName,
+        l.user_name AS userName,
         m.mobile AS mobile,
         l.user_no AS userNo,
         i.amount AS amount,
@@ -54,8 +54,8 @@ l.create_date >= DATE_SUB(CURDATE(), INTERVAL 0 DAY)
         FROM
         sb_points_list l
         join sb_points_list_item i on l.id=i.points_list_id
-        join sb_member m on l.user_no = m.real_no
-        join sb_recyclers r on l.recycler_id=r.id
+        LEFT join sb_member m on l.user_no = m.real_no
+        LEFT join sb_recyclers r on l.recycler_id=r.id
         WHERE
         l.company_id=6
         AND
@@ -66,7 +66,7 @@ l.create_date >= DATE_SUB(CURDATE(), INTERVAL 0 DAY)
         SELECT
         s.name_ AS companyName,
         l.create_date AS createDate,
-        m.name_ AS userName,
+        l.user_name AS userName,
         m.mobile AS mobile,
         l.user_no AS userNo,
         i.amount AS amount,
@@ -85,8 +85,8 @@ l.create_date >= DATE_SUB(CURDATE(), INTERVAL 0 DAY)
         FROM
         sb_points_list l
         LEFT join sb_points_list_item i on l.id=i.points_list_id
-        join sb_member m on l.user_no = m.real_no
-        join sb_recyclers r on l.recycler_id=r.id
+        LEFT join sb_member m on l.user_no = m.real_no
+        LEFT join sb_recyclers r on l.recycler_id=r.id
         join sb_company s on l.company_id=s.id
         WHERE
         1=1
