@@ -445,10 +445,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
             Category category = categoryService.selectById(order.getCategoryId());
             order.setGreenCount(category.getGreenCount().doubleValue());
-            order.setAdminCommissions(companyCategory.getAdminCommissions());
-            order.setCompanyCommissions(companyCategory.getCompanyCommissions());
-            order.setCommissionsPrice(companyCategory.getAdminCommissions().setScale(2, BigDecimal.ROUND_DOWN));
-            order.setBackCommissionsPrice(companyCategory.getCompanyCommissions().setScale(2, BigDecimal.ROUND_DOWN));
+            order.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions());
+            order.setCompanyCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
+            order.setCommissionsPrice(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions().setScale(2, BigDecimal.ROUND_DOWN));
+            order.setBackCommissionsPrice(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions().setScale(2, BigDecimal.ROUND_DOWN));
         }if ("2".equals(order.getTitle().getValue().toString())){
             List<OrderItemAch> orderItemAches = orderItemAchService.selectByOrderId(order.getId().intValue());
             final BigDecimal[] commissionsPrice = {BigDecimal.ZERO};
@@ -459,16 +459,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 Category category = categoryService.selectById(orderItemAch.getCategoryId());
                 if ("0".equals(order.getIsCash())){
                     greenCount[0] += category.getGreenCount()*orderItemAch.getAmount()*orderItemAch.getCleanUp();
-                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
-                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                 }else {
                     greenCount[0] += category.getFreeGreenCount()*orderItemAch.getAmount()*orderItemAch.getCleanUp();
-                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory.getFreeCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
-                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    commissionsPrice[0] = commissionsPrice[0].add(companyCategory==null?BigDecimal.ZERO:companyCategory.getFreeCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
                 }
-                orderItemAch.setAdminCommissions(companyCategory.getAdminCommissions());
-                orderItemAch.setFreeCommissions(companyCategory.getFreeCommissions());
-                orderItemAch.setAdminCommissions(companyCategory.getCompanyCommissions());
+                orderItemAch.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions());
+                orderItemAch.setFreeCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getFreeCommissions());
+                orderItemAch.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
                 orderItemAchService.updateById(orderItemAch);
             });
             DecimalFormat df=new DecimalFormat(".##");
@@ -649,14 +649,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
 						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
-						if (companyCategoryCity!=null) {
+                        Category categorys = categoryService.selectById(item.getCategoryId());
+                        if (companyCategoryCity!=null) {
 							orderItem.setParentIds(companyCategoryCity.getParentIds());
 							orderItem.setPrice(companyCategoryCity.getPrice().floatValue());
 							orderItem.setUnit(companyCategoryCity.getUnit());
 						}else {
-							orderItem.setParentIds(companyCategory.getParentIds());
-							orderItem.setPrice(companyCategory.getPrice());
-							orderItem.setUnit(companyCategory.getUnit());
+                            orderItem.setParentIds(companyCategory!=null?companyCategory.getParentIds():categorys.getParentIds());
+                            orderItem.setPrice(companyCategory!=null?companyCategory.getPrice():categorys.getPrice().floatValue());
+                            orderItem.setUnit(companyCategory!=null?companyCategory.getUnit():categorys.getUnit());
 						}
 						if ("1".equals(isCash)){
 							orderItem.setPrice(0);
@@ -3084,12 +3085,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (StringUtils.isBlank(recyclers.getAliUserId())){
 			throw new ApiException("您未授权，请先在app内进行支付宝授权才能完成订单");
 		}
-        order.setCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory.getAdminCommissions()).divide(new BigDecimal(100)));
-        order.setAdminCommissions(companyCategory.getAdminCommissions());
-        order.setCompanyCommissions(companyCategory.getCompanyCommissions());
-		order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
-		order.setGreenCount(categorys.getGreenCount().doubleValue());
-        order.setBackCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory.getCompanyCommissions()).divide(new BigDecimal(100)));
+        order.setCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions()).divide(new BigDecimal(100)));
+        order.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions());
+        order.setCompanyCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
+        order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
+        order.setGreenCount(categorys.getGreenCount().doubleValue());
+        order.setBackCommissionsPrice(new BigDecimal(orderBean.getAchPrice()).multiply(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions()).divide(new BigDecimal(100)));
 		if(Double.parseDouble(orderBean.getAchPrice())==0){
 			orderBean.setStatus("3");
 			orderBean.setAmount(categorys.getGreenCount());
