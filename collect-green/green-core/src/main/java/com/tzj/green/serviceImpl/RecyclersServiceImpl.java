@@ -231,7 +231,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         }
         List<Map<String, Object>> returnListMap = new ArrayList<>();
         if (null != companyRecycler){
-            returnListMap = (List<Map<String, Object>>)companyCategoryService.getCompanyCategoryById(companyRecycler.getCompanyId());
+            returnListMap = (List<Map<String, Object>>)companyCategoryService.getAppCompanyCategoryById(companyRecycler.getCompanyId());
         }
         return returnListMap;
     }
