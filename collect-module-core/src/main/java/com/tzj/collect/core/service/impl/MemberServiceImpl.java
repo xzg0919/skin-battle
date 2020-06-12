@@ -10,6 +10,7 @@ import com.tzj.collect.api.commom.mqtt.util.Tools;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.shard.ShardTableHelper;
+import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.MemberMapper;
 import com.tzj.collect.core.param.ali.MemberBean;
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.rmi.runtime.Log;
 
 /**
  * 会员ServiceImpl
@@ -198,6 +200,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             member.setAppId(appId);
             this.insertMember(member);
             try {
+                this.operateDsddMember(member);
+            } catch (Exception e) {
+                System.out.println("实体卡换卡出错了"+ JSONObject.toJSONString(member));
+            }
+            try {
                 voucherMemberService.reSend(member.getAliUserId());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -258,6 +265,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
         return resultMap;
 
+    }
+
+    /**
+     * 操作定时定点用户表（1. 将定时定点用户表信息【定时定点卡号 、开卡时间】移至收呗用户表中， 2 删除定时定点用户表）
+     * @param member
+     */
+    private void operateDsddMember(Member member) {
+        if(StringUtils.isNotBlank(member.getMobile())) {
+            this.baseMapper.updateMemberFromDsdd(TableNameUtils.getMemberTableName(member), member.getMobile());
+            this.baseMapper.deleteDsddMember(member.getMobile());
+        }
     }
 
     /**

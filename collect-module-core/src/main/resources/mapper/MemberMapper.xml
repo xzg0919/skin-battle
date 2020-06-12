@@ -305,7 +305,17 @@
 			)
 	</insert>
 
-
+	<update id="updateMemberFromDsdd" parameterType="String">
+        UPDATE ${tableName} sm
+        INNER JOIN ( SELECT open_dsdd_card_date, dsdd_card_no, mobile FROM dsdd_member WHERE mobile = #{mobile}) AS dm ON dm.mobile = sm.mobile
+        SET sm.dsdd_card_no = dm.dsdd_card_no,
+        sm.open_dsdd_card_date = dm.open_dsdd_card_date
+	</update>
+	<delete id="deleteDsddMember" parameterType="String">
+		delete from dsdd_member
+		WHERE
+			mobile = #{mobile}
+	</delete>
 
 
 
