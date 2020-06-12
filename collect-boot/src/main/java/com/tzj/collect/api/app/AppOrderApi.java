@@ -162,7 +162,7 @@ public class AppOrderApi {
 	 * @param orderBean
 	 * @return
 	 */
-	@Api(name = "app.order.172.19.182.97", version = "1.0")
+	@Api(name = "app.order.saveOrderByCardNo", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object saveOrderByCardNo(OrderBean orderBean) {
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());

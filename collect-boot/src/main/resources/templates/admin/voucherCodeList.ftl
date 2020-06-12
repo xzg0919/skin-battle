@@ -75,10 +75,8 @@
                 <th>核销数量</th>  
                 <th>操作</th>  
             </tr>  
-            <tr>  
-                    ${page} 
-            </tr>  
-            </c:forEach>  
+                    ${page}
+            </c:forEach>
         </table>
     </div>
    

@@ -63,6 +63,8 @@ public class OrderItemAch extends  DataEntity<Long>{
     private double amount;//数量
     
     private float price;//单价
+
+	private Integer point;//积分单价
     
     private int parentId;//父类id
     

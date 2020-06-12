@@ -40,13 +40,25 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 
     @Override
     public Object getCompanyCategoryById(Long companyId) {
-
         List<Map<String, Object>> companyCategorys = companyCategoryMapper.getCompanyCategoryById(companyId, null,"0");
         companyCategorys.stream().forEach(map -> {
                 List<Map<String, Object>> companyCategoryTs = companyCategoryMapper.getCompanyCategoryById(companyId, map.get("id").toString(), "1");
                 map.put("children",companyCategoryTs);
                 companyCategoryTs.stream().forEach(maps -> {
                         List<Map<String, Object>> companyCategoryThree = companyCategoryMapper.getCompanyCategoryById(companyId, maps.get("id").toString(), "2");
+                        maps.put("children",companyCategoryThree);
+                });
+        });
+        return companyCategorys;
+    }
+    @Override
+    public Object getAppCompanyCategoryById(Long companyId) {
+        List<Map<String, Object>> companyCategorys = companyCategoryMapper.getAppCompanyCategoryById(companyId, null,"0");
+        companyCategorys.stream().forEach(map -> {
+                List<Map<String, Object>> companyCategoryTs = companyCategoryMapper.getAppCompanyCategoryById(companyId, map.get("id").toString(), "1");
+                map.put("children",companyCategoryTs);
+                companyCategoryTs.stream().forEach(maps -> {
+                        List<Map<String, Object>> companyCategoryThree = companyCategoryMapper.getAppCompanyCategoryById(companyId, maps.get("id").toString(), "2");
                         maps.put("children",companyCategoryThree);
                 });
         });

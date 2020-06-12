@@ -23,4 +23,6 @@ public interface CompanyCategoryMapper extends BaseMapper<CompanyCategory>
 
     List<Map<String,Object>> getCompanyCategoryById(@Param("companyId") Long companyId,@Param("parentId") String parentId,@Param("level") String level);
 
+    List<Map<String,Object>> getAppCompanyCategoryById(@Param("companyId") Long companyId,@Param("parentId") String parentId,@Param("level") String level);
+
 }

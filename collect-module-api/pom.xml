@@ -77,5 +77,11 @@
             <version>3.9</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>taobao.gongyi</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
