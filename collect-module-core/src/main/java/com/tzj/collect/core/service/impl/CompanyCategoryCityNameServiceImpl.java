@@ -85,12 +85,20 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
     @Override
     public List<Category> getHouseCategoryByCompanyId(Integer houseceCompanyId,Integer cityId,Long parentId){
         List<Category> categoryList = companyCategoryCityNameMapper.getHouseCategoryByCompanyId(houseceCompanyId, cityId);
-        categoryList.stream().forEach(category -> {
-            if (null!=parentId&&category.getId().equals(parentId)){
+        if(null==parentId){
+            categoryList.stream().forEach(category -> {
                 List<Category> categoryList1 = companyCategoryCityNameMapper.getHouseCategoryByCategoryId(category.getId().intValue(),houseceCompanyId,cityId);
                 category.setCategoryList(categoryList1);
-            }
-        });
+            });
+        }else {
+            categoryList.stream().forEach(category -> {
+                if (null!=parentId&&category.getId().equals(parentId)){
+                    List<Category> categoryList1 = companyCategoryCityNameMapper.getHouseCategoryByCategoryId(category.getId().intValue(),houseceCompanyId,cityId);
+                    category.setCategoryList(categoryList1);
+                }
+            });
+        }
+
         return categoryList;
     }
     @Override

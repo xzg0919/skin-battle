@@ -345,11 +345,11 @@ public class CategoryApi {
 	public Object getCategoryNewHouseListByToken(CategoryBean categoryBean){
 		Member member = MemberUtils.getMember();
 		String aliUserId = member.getAliUserId();
-		Long parentId = 25L;
-		if (null != categoryBean.getParentId()){
-			parentId = categoryBean.getParentId().longValue();
-		}
-		return categoryService.getCategoryNewHouseListByToken(aliUserId,parentId);
+//		Long parentId = 25L;
+//		if (null != categoryBean.getParentId()){
+//			parentId = categoryBean.getParentId().longValue();
+//		}
+		return categoryService.getCategoryNewHouseListByToken(aliUserId,categoryBean.getParentId()==null?null:categoryBean.getParentId().longValue());
 	}
 
 	/**

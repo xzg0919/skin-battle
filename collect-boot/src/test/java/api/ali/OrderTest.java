@@ -14,10 +14,7 @@ import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -32,6 +29,7 @@ public class OrderTest {
 //                String token= JwtUtils.generateToken(userId, ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
+                //String api="http://shoubeics.mayishoubei.com/ali/api";
                 String api="http://localhost:9090/ali/api";
                 IotPostParamBean iotPostParamBean = new IotPostParamBean();
                 iotPostParamBean.setEcUuid(UUID.randomUUID().toString());
@@ -60,8 +58,11 @@ public class OrderTest {
                 System.out.println(jsonStr);
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");
                 param.put("sign",sign);
+                Long i = new Date().getTime();
                 Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
                 String resultJson=response.body().string();
+                Long ii = new Date().getTime();
+                System.out.println(ii-i);
                 System.out.println("返回的参数是 ："+resultJson);
         }
 }
