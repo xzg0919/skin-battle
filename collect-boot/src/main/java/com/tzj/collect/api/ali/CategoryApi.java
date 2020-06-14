@@ -328,11 +328,11 @@ public class CategoryApi {
 	@SignIgnore
 	@AuthIgnore
 	public Object getCategoryNewHouseList(CategoryBean categoryBean){
-		Long parentId = 25L;
-		if (null != categoryBean.getParentId()){
-			parentId = categoryBean.getParentId().longValue();
-		}
-		return categoryService.getCategoryNewHouseList(parentId);
+//		Long parentId = 25L;
+//		if (null != categoryBean.getParentId()){
+//			parentId = categoryBean.getParentId().longValue();
+//		}
+		return categoryService.getCategoryNewHouseList(categoryBean.getParentId()==null?null:categoryBean.getParentId().longValue());
 	}
 	/**
 	 * 小程序最新获取生活分类列表

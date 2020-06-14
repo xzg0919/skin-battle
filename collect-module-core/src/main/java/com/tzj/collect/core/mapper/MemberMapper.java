@@ -45,4 +45,8 @@ public interface MemberMapper extends BaseMapper<Member>{
     long getMemberCountToDay();
 
     Map<String, Object> selectMemberInfoByAliUserId(@Param("aliUserId") String aliUserId,@Param("tableName") String tableName);
+
+    void updateMemberFromDsdd(@Param("tableName") String tableName, @Param("mobile") String mobile);
+
+    void deleteDsddMember(@Param("mobile") String mobile);
 }

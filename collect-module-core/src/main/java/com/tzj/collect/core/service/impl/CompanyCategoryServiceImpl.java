@@ -64,6 +64,7 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
     @Autowired
     private CompanyCategoryCityNameService companyCategoryCityNameService;
 
+    @Override
     public Map<String, Object> categoryOneListToken(String aliUserId) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         List<Category> DIGITAL = null;
@@ -80,10 +81,10 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
                 BIGTHING = companyCategoryCityNameService.getBigCategoryByCompanyId(bigCompanyId, cityId);
             }
         }
-        if (null == DIGITAL) {
+        if (null == DIGITAL||DIGITAL.isEmpty()) {
             DIGITAL = categoryService.topList(0, 1, null);
         }
-        if (null == BIGTHING) {
+        if (null == BIGTHING||BIGTHING.isEmpty()) {
             BIGTHING = categoryService.topList(0, 4, null);
         }
         resultMap.put("DIGITAL", DIGITAL);
@@ -346,11 +347,13 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
         return companyCategoryMapper.selectCompanys(categoryId, communityId);
     }
 
+    @Override
     public Company selectCompanyByTitle(String title, Integer communityId) {
         return companyCategoryMapper.selectCompanyByTitle(title, communityId);
     }
 
-    public CompanyCategory selectCompanyCategory(String companyId,String categoryId){
+    @Override
+    public CompanyCategory selectCompanyCategory(String companyId, String categoryId){
         return selectOne(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId));
     }
 

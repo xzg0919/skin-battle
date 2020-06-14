@@ -86,6 +86,7 @@
         INNER JOIN sb_recyclers c ON c.id = a.recycler_id
         WHERE
             a.company_id = #{companyId}
+        AND a.status_ = '1'
         AND a.card_type in (0,2)
     </select>
 

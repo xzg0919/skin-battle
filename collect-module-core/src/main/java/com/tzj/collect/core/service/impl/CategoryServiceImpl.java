@@ -544,6 +544,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         BigDecimal cityRatio = companyCityRatioService.getCityRatioByCompanyCityId(memberAddress.getCityId(), finalCompanyId);
         price[0] = price[0].multiply(cityRatio);
         if ("BIGTHING".equals(type)&&price[0].compareTo(new BigDecimal(98)) == -1){
+            if (117==category.getId()||114==category.getId()){
+                return new BigDecimal(128);
+            }
             return new BigDecimal(98);
         }
         System.out.println("计算后的价格是："+price[0]);
@@ -658,12 +661,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public Object getCategoryNewHouseList(Long parentId) {
         Map<String, Object> resultMap = new HashMap<>();
         List<Category> categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
-        categoryList.stream().forEach(category -> {
-            if (null!=parentId&&category.getId().equals(parentId)){
-                List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
-                category.setCategoryList(categoryList1);
-            }
-        });
+        if(null==parentId){
+            categoryList.stream().forEach(category -> {
+                    List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                    category.setCategoryList(categoryList1);
+            });
+        }else {
+            categoryList.stream().forEach(category -> {
+                if (null!=parentId&&category.getId().equals(parentId)){
+                    List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                    category.setCategoryList(categoryList1);
+                }
+            });
+        }
+
         categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getCode)).collect(Collectors.toList());
         resultMap.put("categoryList", categoryList);
         return resultMap;
@@ -675,7 +686,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         MemberAddress memberAdderss = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
         if (null != memberAdderss) {
             String houseceCompanyId = companyStreetHouseService.selectStreetHouseceCompanyId(memberAdderss.getStreetId(), memberAdderss.getCommunityId());
-            if (StringUtils.isNotBlank(houseceCompanyId)) {
+            if (StringUtils.isNotBlank(houseceCompanyId)&&this.selectHouseByCompany(Integer.parseInt(houseceCompanyId))>0) {
                 categoryList = companyCategoryCityNameService.getHouseCategoryByCompanyId(Integer.parseInt(houseceCompanyId), memberAdderss.getCityId(),parentId);
             } else {
                 Integer fiveCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAdderss.getStreetId());
@@ -688,7 +699,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 }
             }
         }
-        if (null == categoryList) {
+        if (null == categoryList||categoryList.isEmpty()) {
             categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
             categoryList.stream().forEach(category -> {
                 if (null!=parentId&&category.getId().equals(parentId)){

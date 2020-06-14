@@ -12,7 +12,7 @@
     <script src="/js/index.js"></script>
 </head>
 <body>
-<form action="http://localhost:9090/add/picc/piccOrderImport" method="post" enctype="multipart/form-data">
+<form action="/add/picc/piccOrderImport" method="post" enctype="multipart/form-data">
      <input type="file" name="file" /></br>
     <input type="hidden"  value="1" name="id"/></br>
      <input type="submit"  value="保存"/>

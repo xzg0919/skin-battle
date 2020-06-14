@@ -1,6 +1,7 @@
 package com.tzj.collect.core.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.tzj.collect.core.param.ali.BusinessOrderItemBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.app.ScoreAppBean;
 import com.tzj.collect.core.param.app.TimeBean;
@@ -253,5 +254,7 @@ public interface OrderMapper extends BaseMapper<Order> {
     List<Map<String, Object>> selectIotRecList(@Param("recId")String recId, @Param("status")String status, @Param("pageStart") Integer pageStart,@Param("pageSize") Integer pageSize);
 
     Double getAmountByOrderId(@Param("orderId")Long orderId);
+
+	List<BusinessOrderItemBean> getCategoryInfoByOrderId(@Param("orderId") String orderId,@Param("title") String title);
 }
 

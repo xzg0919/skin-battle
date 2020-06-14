@@ -13,6 +13,8 @@ public interface OrderCountMapper extends BaseMapper<T> {
 
     List<Map<String, Object>>getOrderCountList();
 
+    List<Map<String, Object>>getPointCountList(@Param("companyId") Long companyId,@Param("startTime") String startTime,@Param("endTime") String endTime);
+
     List<Map<String, Object>>getOrderCountList1();
 
     Integer getOrderCountList2();

@@ -3,6 +3,7 @@ package com.tzj.green.serviceImpl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.green.common.redis.RedisUtil;
 import com.tzj.green.mapper.OrderCountMapper;
+import com.tzj.green.param.CompanyBean;
 import com.tzj.green.service.OrderCountService;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,11 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
     @Override
     public List<Map<String, Object>> getOrderCount() {
         return orderCountMapper.getOrderCountList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getPointCount(CompanyBean companyBean) {
+        return orderCountMapper.getPointCountList(companyBean.getCompanyId(),companyBean.getStartTime(),companyBean.getEndTime());
     }
 
     @Override

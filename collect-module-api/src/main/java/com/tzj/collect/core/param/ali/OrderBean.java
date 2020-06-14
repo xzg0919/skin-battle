@@ -276,4 +276,6 @@ public class OrderBean {
 
     private  Integer cleanUp; // 是否平铺整理  1-否 2-是
 
+    private Integer netId;//回收点id
+
 }

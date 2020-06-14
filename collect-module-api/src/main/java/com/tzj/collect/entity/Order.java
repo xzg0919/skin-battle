@@ -32,6 +32,18 @@ public class Order extends DataEntity<Long> {
 
 	private String isItemAch;//是否编辑过完成重量
 
+	private Integer netId;//回收点id
+
+	private String netName;//回收点名称
+
+	private String payType;//结算方式 0-卖钱 1-环保积分 2-能量
+
+	private String orderFrom;//订单来源0-其他 1-定时定点
+
+	private String paymentType;//付款类型 0支付宝    1现金
+	@TableField(value = "company_point")
+	private Double companyPoint;
+
 	/**
 	 * 会员id
 	 */
@@ -1041,7 +1053,8 @@ public class Order extends DataEntity<Long> {
 		FIVEKG(3),		//5公斤废纺衣物回收
 		BIGTHING(4),	//大件垃圾
 		IOTORDER(5), // iot设备
-		IOTCLEANORDER(6);//iot清运订单
+		IOTCLEANORDER(6),//iot清运订单
+		HOUSEDIGITAL(7);//生活垃圾/废弃家电
 		private int value;
 
 		TitleType(final int value) {

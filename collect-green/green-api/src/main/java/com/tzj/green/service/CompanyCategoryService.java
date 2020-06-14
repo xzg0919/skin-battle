@@ -21,5 +21,7 @@ public interface CompanyCategoryService extends IService<CompanyCategory>
 
     Object getCompanyCategoryById(Long companyId);
 
+    Object getAppCompanyCategoryById(Long companyId);
+
     Object updateCompanyCategoryPoints(Long companyId, CategoryBean categoryBean);
 }
