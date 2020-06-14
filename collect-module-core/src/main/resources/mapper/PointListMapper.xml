@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.PointListMapper">
+
+	<update id="updatePointAndOrderFromDsdd" >
+
+		UPDATE sb_point sp,
+		sb_point_list spl,
+		sb_order so
+		SET sp.ali_user_id = #{aliUserId},
+		spl.ali_user_id =  #{aliUserId},
+		so.ali_user_id =  #{aliUserId},
+		sp.mobile = '',
+		spl.card_no = #{cardNo}
+		WHERE
+			sp.telephone = #{mobile}
+			AND spl.telephone = #{mobile}
+			AND so.tel = #{mobile}
+	</update>
+	
+
+
+
+</mapper>
+

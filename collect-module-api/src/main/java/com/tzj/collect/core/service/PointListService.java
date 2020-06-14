@@ -16,5 +16,9 @@ public interface PointListService  extends IService<PointList>{
 	 */
 	@DS("slave")
 	List<Object>  getPointListByType(String aliUserId, PageBean pageBean);
-	
+
+	/*
+	订单、积分、积分流水表中相应添加aliuserId 和 card_no
+	 */
+	void updatePointAndOrderFromDsdd(String aliUserId, String mobile, String cardNo);
 }
