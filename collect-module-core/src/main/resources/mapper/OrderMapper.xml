@@ -3530,7 +3530,7 @@
             <result property="categoryId" column="categoryId" />
             <result property="name" column="name_" />
             <result property="icon" column="icon" />
-            <result property="title" column="title"  typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+            <!--<result property="title" column="title"  typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>-->
         </association>
         <association property="recyclers" javaType="com.tzj.collect.entity.Recyclers">
             <result property="name" column="Recyclers_name" />
