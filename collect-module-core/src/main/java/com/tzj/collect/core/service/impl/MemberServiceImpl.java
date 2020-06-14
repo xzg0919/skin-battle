@@ -206,6 +206,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             member.setCardNo(cardNo);
             member.setAppId(appId);
             this.insertMember(member);
+            //定时定点用户进来更新同步收呗用户信息（step:1 将定时定点实体卡绑到收呗用户表中 ，2 删除定时定点用户 3 订单、积分、积分流水表中相应添加aliuserId 和 card_no）
             try {
                 this.operateDsddMember(member);
             } catch (Exception e) {
@@ -259,18 +260,23 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
 
         //判断是否是定时定点用户表中存在该手机号
-        DsddMember dsddMember = dsddMemberService.selectOne(new EntityWrapper<DsddMember>().eq("mobile", userResponse.getMobile()));
+//        DsddMember dsddMember = dsddMemberService.selectOne(new EntityWrapper<DsddMember>().eq("mobile", userResponse.getMobile()));
+//        try {
+//            if (dsddMember != null){
+//                dsddMemberService.update(dsddMember,new EntityWrapper<DsddMember>().eq("del_flag","1"));
+//                orderService.updateForSet("ali_user_id = '" + userId + "'",new EntityWrapper<Order>().eq("tel", userResponse.getMobile()));
+//                pointService.updateForSet("ali_user_id = " + userId + "'", new EntityWrapper<Point>().eq("telephone", userResponse.getMobile()));
+//                pointListService.updateForSet("telephone='',ali_user_id='" + userId + "'", new EntityWrapper<PointList>().eq("telephone", userResponse.getMobile()));
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+        //定时定点用户进来更新同步收呗用户信息（step:1 将定时定点实体卡绑到收呗用户表中 ，2 删除定时定点用户 3 订单、积分、积分流水表中相应添加aliuserId 和 card_no）
         try {
-            if (dsddMember != null){
-                dsddMemberService.update(dsddMember,new EntityWrapper<DsddMember>().eq("del_flag","1"));
-                orderService.updateForSet("ali_user_id = '" + userId + "'",new EntityWrapper<Order>().eq("tel", userResponse.getMobile()));
-                pointService.updateForSet("ali_user_id = " + userId + "'", new EntityWrapper<Point>().eq("telephone", userResponse.getMobile()));
-                pointListService.updateForSet("telephone='',ali_user_id='" + userId + "'", new EntityWrapper<PointList>().eq("telephone", userResponse.getMobile()));
-            }
-        }catch (Exception e){
-            e.printStackTrace();
+            this.operateDsddMember(member);
+        } catch (Exception e) {
+            System.out.println("实体卡换卡出错了"+ JSONObject.toJSONString(member));
         }
-
         resultMap.put("id", member.getAliUserId());
         if (StringUtils.isNotBlank(member.getMobile()) || "XCX".equals(source)) {
             resultMap.put("mobile", "1");
@@ -288,13 +294,17 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     }
 
     /**
-     * 操作定时定点用户表（1. 将定时定点用户表信息【定时定点卡号 、开卡时间】移至收呗用户表中， 2 删除定时定点用户表）
+     * 操作定时定点用户表（1. 将定时定点用户表信息【定时定点卡号 、开卡时间】移至收呗用户表中， 2 删除定时定点用户表 3 订单、积分、积分流水表中相应添加aliuserId 和 card_no
      * @param member
      */
     private void operateDsddMember(Member member) {
         if(StringUtils.isNotBlank(member.getMobile())) {
+            //1. 将定时定点用户表信息【定时定点卡号 、开卡时间】移至收呗用户表中，
             this.baseMapper.updateMemberFromDsdd(TableNameUtils.getMemberTableName(member), member.getMobile());
+            //2 删除定时定点用户表
             this.baseMapper.deleteDsddMember(member.getMobile());
+            //3 订单、积分、积分流水表中相应添加aliuserId 和 card_no
+            pointListService.updatePointAndOrderFromDsdd(member.getAliUserId(), member.getMobile(), member.getCardNo());
         }
     }
 

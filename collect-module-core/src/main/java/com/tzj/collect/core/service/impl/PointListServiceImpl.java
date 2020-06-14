@@ -47,4 +47,14 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
 		return resultList;
 	}
 
+	/**
+	 * 订单、积分、积分流水表中相应添加aliuserId 和 card_no
+	 * @param aliUserId
+	 * @param mobile
+	 */
+	@Override
+	public void updatePointAndOrderFromDsdd(String aliUserId, String mobile, String cardNo) {
+		this.baseMapper.updatePointAndOrderFromDsdd(aliUserId, mobile, cardNo);
+	}
+
 }
