@@ -209,6 +209,7 @@
 			WHERE
 				so.del_flag = '0'
 			and  so.title != 4
+			AND so.order_from != '1'
 			AND  bb.type_ = 1
 				<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 					AND so.recycler_id = #{orderBean.recyclerId}
@@ -287,6 +288,7 @@
 			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 			WHERE
 				so.del_flag = '0'
+				AND so.order_from != '1'
 		AND srcl.recycler_id = #{orderBean.recyclerId}
 		and so.title != 4
 		GROUP BY so.id
