@@ -253,6 +253,9 @@ public class Order extends DataEntity<Long> {
 
 	@TableField(exist = false)//页面需要
 	private String doublePoint;//双倍积分奖励  “greenCount/2 * 2”
+	@TableField(exist = false)//页面需要
+	private String categoryTitle;// 垃圾类型
+
 
 	public String getDoublePoint() {
 		if (2==cleanUp&&null!=greenCount){

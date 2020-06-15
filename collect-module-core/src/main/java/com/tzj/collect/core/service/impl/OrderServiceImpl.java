@@ -691,66 +691,84 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Set<String> attName = null;
         List<ComCatePrice> attrList = null;
         for (Order order : orderList) {
-            if (order.getTitle() == Order.TitleType.HOUSEHOLD) {
-                attName = new HashSet<>();
-                //获得父类名称
-                attrList = orderItemService.selectCateName(Integer.parseInt(order.getId().toString()));
-                if (attrList != null && attrList.size() > 0) {
-                    try {
-                        for (ComCatePrice comCatePrice : attrList) {
-                            if (null != comCatePrice) {
+            if ("1".equals(order.getOrderFrom())) {
+                switch (order.getTitle().getValue().toString()){
+                    case "1":
+                        order.setCategoryTitle("废弃家电");
+                        break;
+                    case "2":
+                        order.setCategoryTitle("生活垃圾");
+                        break;
+                    case "7":
+                        order.setCategoryTitle("生活垃圾/废弃家电");
+                        break;
+                }
+            } else {
+                if (order.getTitle() == Order.TitleType.HOUSEHOLD) {
+                    attName = new HashSet<>();
+                    //获得父类名称
+                    attrList = orderItemService.selectCateName(Integer.parseInt(order.getId().toString()));
+                    if (attrList != null && attrList.size() > 0) {
+                        try {
+                            for (ComCatePrice comCatePrice : attrList) {
+                                if (null != comCatePrice) {
+                                    attName.add(comCatePrice.getName());
+                                }
+                            }
+                            order.setOrderFrom("0");
+                            order.setTitle(Order.TitleType.HOUSEHOLD);
+                            order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else if (order.getTitle() == Order.TitleType.DIGITAL) {
+
+                    //根据分类Id查询父级分类名字
+                    Category category = categoryService.selectById(order.getCategory().getCategoryId());
+                    order.setCateAttName4Page(category.getName());
+                    order.setTitle(Order.TitleType.DIGITAL);
+                    order.setOrderFrom("0");
+                } else if (order.getTitle() == Order.TitleType.BIGTHING) {
+                    //根据分类Id查询父级分类名字
+                    Category category = categoryService.selectById(order.getCategory().getCategoryId());
+                    order.setCateAttName4Page(category.getName());
+                    order.setTitle(Order.TitleType.BIGTHING);
+                    order.setOrderFrom("0");
+                } else if (order.getTitle() == Order.TitleType.FIVEKG) {
+                    attName = new HashSet<>();
+                    //获得父类名称
+                    attrList = orderItemService.selectCateName(Integer.parseInt(order.getId().toString()));
+                    if (attrList != null && attrList.size() > 0) {
+                        try {
+                            for (ComCatePrice comCatePrice : attrList) {
                                 attName.add(comCatePrice.getName());
                             }
+                            order.setOrderFrom("0");
+                            order.setTitle(Order.TitleType.FIVEKG);
+                            order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        order.setTitle(Order.TitleType.HOUSEHOLD);
-                        order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                }
-            } else if (order.getTitle() == Order.TitleType.DIGITAL) {
-
-                //根据分类Id查询父级分类名字
-                Category category = categoryService.selectById(order.getCategory().getCategoryId());
-                order.setCateAttName4Page(category.getName());
-                order.setTitle(Order.TitleType.DIGITAL);
-            } else if (order.getTitle() == Order.TitleType.BIGTHING) {
-                //根据分类Id查询父级分类名字
-                Category category = categoryService.selectById(order.getCategory().getCategoryId());
-                order.setCateAttName4Page(category.getName());
-                order.setTitle(Order.TitleType.BIGTHING);
-            } else if (order.getTitle() == Order.TitleType.FIVEKG) {
-                attName = new HashSet<>();
-                //获得父类名称
-                attrList = orderItemService.selectCateName(Integer.parseInt(order.getId().toString()));
-                if (attrList != null && attrList.size() > 0) {
-                    try {
-                        for (ComCatePrice comCatePrice : attrList) {
-                            attName.add(comCatePrice.getName());
+                } else if (order.getTitle() == Order.TitleType.IOTORDER) {
+                    attName = new HashSet<>();
+                    //获得父类名称
+                    attrList = orderItemService.selectCateAchName(Integer.parseInt(order.getId().toString()));
+                    if (attrList != null && attrList.size() > 0) {
+                        try {
+                            for (ComCatePrice comCatePrice : attrList) {
+                                attName.add(comCatePrice.getName());
+                            }
+                            order.setOrderFrom("0");
+                            order.setTitle(Order.TitleType.IOTORDER);
+                            order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        order.setTitle(Order.TitleType.FIVEKG);
-                        order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else if (order.getTitle() == Order.TitleType.IOTORDER) {
-                attName = new HashSet<>();
-                //获得父类名称
-                attrList = orderItemService.selectCateAchName(Integer.parseInt(order.getId().toString()));
-                if (attrList != null && attrList.size() > 0) {
-                    try {
-                        for (ComCatePrice comCatePrice : attrList) {
-                            attName.add(comCatePrice.getName());
-                        }
-                        order.setTitle(Order.TitleType.IOTORDER);
-                        order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
             }
-
         }
         return orderList;
     }
