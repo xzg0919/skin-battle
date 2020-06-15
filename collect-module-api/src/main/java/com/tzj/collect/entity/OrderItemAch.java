@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  *
@@ -16,63 +17,73 @@ import java.math.BigDecimal;
 @TableName("sb_order_item_ach")
 @Data
 public class OrderItemAch extends  DataEntity<Long>{
-    private Long id;
-    /**
-     * 订单id
-     */
-    private  Integer orderId;
-    @TableField(exist=false)
-    private Order order;
-    /**
-     * 分类id
-     */
-    private  Integer categoryId;
-    /**
-     * 分类名称
-     */
-    private  String categoryName;
-    /**
-     * 分类属性id
-     */
-    private  Integer categoryAttrId;
-    /**
-     * 分类属性名字
-     */
-    private String categoryAttrName;
-    /**
-     * 分类属性选项id
-     */
-    private  Integer categoryAttrOppId;
-    /**
-     * 分类属性选项名称
-     */
-    private  String categoryAttrOpptionName;
-    @TableField(exist=false) 
-    private CategoryAttr categoryAttr;
-    @TableField(exist=false) 
-    private String categoryAttrOppIds;
-    /**
-     * 调整价
-     */
-    private BigDecimal adjustOrice;
-    
-    /**
-     * 2018年6月27日 09:44:56
-     * @author sgmark@aliyun.com
-     */
-    private double amount;//数量
-    
-    private float price;//单价
+	private Long id;
+	/**
+	 * 订单id
+	 */
+	private  Integer orderId;
+	@TableField(exist=false)
+	private Order order;
+	/**
+	 * 分类id
+	 */
+	private  Integer categoryId;
+	/**
+	 * 分类名称
+	 */
+	private  String categoryName;
+	/**
+	 * 分类属性id
+	 */
+	private  Integer categoryAttrId;
+	/**
+	 * 分类属性名字
+	 */
+	private String categoryAttrName;
+	/**
+	 * 分类属性选项id
+	 */
+	private  Integer categoryAttrOppId;
 
-	private Integer point;//积分单价
-    
-    private int parentId;//父类id
-    
-    private String parentIds;//父类ids
-    
-    private String unit;//单位
-    
-    private String parentName;//父类名称
+	@TableField(exist=false)
+	private CategoryAttr categoryAttr;
+	/**
+	 * 分类属性选项名称
+	 */
+	private  String categoryAttrOpptionName;
+
+	@TableField(exist=false)
+	private String categoryAttrOppIds;
+	/**
+	 * 调整价
+	 */
+	private BigDecimal adjustOrice;
+	@TableField(exist = false)
+	private List<OrderItemAch> orderItemAchList;
+	@TableField(exist = false)
+	private String title;
+
+	/**
+	 * 2018年6月27日 09:44:56
+	 * @author sgmark@aliyun.com
+	 */
+	private double amount;//数量
+
+	private float price;//单价
+
+	private Double platformPoint;//平台积分单价
+
+	private Double companyPoint;//服务商积分单价
+
+	private BigDecimal platformPrice;//平台信息费单价
+
+	private int parentId;//父类id
+
+	private String parentIds;//父类ids
+
+	private String unit;//单位
+
+	private String parentName;//父类名称
 
 	private BigDecimal adminCommissions;
 
@@ -85,14 +96,21 @@ public class OrderItemAch extends  DataEntity<Long>{
 
 
 	@Override
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public CategoryAttr getCategoryAttr() {
+		return categoryAttr;
+	}
+
+	public void setCategoryAttr(CategoryAttr categoryAttr) {
+		this.categoryAttr = categoryAttr;
+	}
 
 	public Integer getOrderId() {
 		return orderId;
@@ -158,14 +176,6 @@ public class OrderItemAch extends  DataEntity<Long>{
 		this.categoryAttrOpptionName = categoryAttrOpptionName;
 	}
 
-	public CategoryAttr getCategoryAttr() {
-		return categoryAttr;
-	}
-
-	public void setCategoryAttr(CategoryAttr categoryAttr) {
-		this.categoryAttr = categoryAttr;
-	}
-
 	public String getCategoryAttrOppIds() {
 		return categoryAttrOppIds;
 	}
@@ -182,7 +192,7 @@ public class OrderItemAch extends  DataEntity<Long>{
 		this.adjustOrice = adjustOrice;
 	}
 
-	
+
 
 	public double getAmount() {
 		return amount;
