@@ -223,22 +223,14 @@
 			<when test="orderBean.status == '3'.toString()">
 				ORDER BY so.completeDate DESC
 			</when>
+			<when test="orderBean.status == '2'.toString()">
+				ORDER BY so.overTime DESC,so.arrivalTime ASC,so.arrival_period ASC,so.creatDate ASC
+			</when>
+			<when test="orderBean.status == '1'.toString()">
+				ORDER BY so.overTime DESC,so.creatDate DESC
+			</when>
 			<otherwise>
-				<choose>
-					<when test="orderBean.status == '2'.toString()">
-						ORDER BY so.overTime DESC,so.arrivalTime ASC,so.arrival_period ASC,so.creatDate ASC
-					</when>
-					<otherwise>
-						<choose>
-						<when test="orderBean.status == '1'.toString()">
-							ORDER BY so.overTime DESC,so.creatDate DESC
-						</when>
-							<otherwise>
-								ORDER BY so.creatDate DESC
-							</otherwise>
-						</choose>
-					</otherwise>
-				</choose>
+				ORDER BY so.creatDate DESC
 			</otherwise>
 		</choose>
 		LIMIT #{startSize} , #{pageSize}
