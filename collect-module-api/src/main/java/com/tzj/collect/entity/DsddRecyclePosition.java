@@ -53,33 +53,9 @@ public class DsddRecyclePosition extends DataEntity<Long> {
     private String address;
 
     /**
-     * 累计积分
-     */
-    private Integer totalPoints;
-
-    /**
-     * 累计消纳积分
-     */
-    private Integer consumePoints;
-
-    /**
      * 启用状态标志位；
      */
     private String isEnable;
 
-    @Override
-    public String toString() {
-        return "DsddRecyclePosition{" +
-                "id=" + id +
-                ", positionNo='" + positionNo + '\'' +
-                ", companyId=" + companyId +
-                ", positionName='" + positionName + '\'' +
-                ", contactTel='" + contactTel + '\'' +
-                ", lng=" + lng +
-                ", lat=" + lat +
-                ", address='" + address + '\'' +
-                ", totalPoints=" + totalPoints +
-                ", consumePoints=" + consumePoints +
-                '}';
-    }
+
 }

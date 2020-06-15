@@ -3426,7 +3426,7 @@
 		c.amount,
 		c.unit,
 		c.price,
-		c.point,
+		c.company_point AS point,
 		CAST(c.amount*c.price AS DECIMAL(20,2))AS priceCount
 		FROM
 		sb_category b
