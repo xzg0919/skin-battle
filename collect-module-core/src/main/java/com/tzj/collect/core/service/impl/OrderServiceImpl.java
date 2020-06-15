@@ -171,6 +171,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private QiMemService qiMemService;
     @Autowired
     private DsddRecyclePositionService dsddRecyclePositionService;
+    @Autowired
+    private DsddPaymentService dsddPaymentService;
 
     @Resource
     private JedisPool jedisPool;
@@ -4384,15 +4386,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Double sumPoint = greenCount + companyPoint;
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
         DsddRecyclePosition dsddRecyclePosition = dsddRecyclePositionService.selectById(order.getNetId());
-        Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", order.getOrderNo()));
-        String paymentNo = payment!=null?payment.getTradeNo():"";
+        DsddPayment dsddPayment = dsddPaymentService.selectOne(new EntityWrapper<DsddPayment>().eq("out_trade_no", order.getOrderNo()));
+        String paymentNo = dsddPayment!=null?dsddPayment.getTradeNo():"/";
         List<BusinessOrderItemBean> categoryInfoList = orderMapper.getCategoryInfoByOrderId(String.valueOf(orderId), null);
 
         map.put("order", order);
         map.put("recyclers", recyclers);
         map.put("categoryInfo", categoryInfoList);
         map.put("dsddRecyclePosition", dsddRecyclePosition);
-        map.put("payment",payment);
+        map.put("payment",dsddPayment);
         map.put("paymentNo",paymentNo);
         map.put("sumPoint", sumPoint);
         return map;
