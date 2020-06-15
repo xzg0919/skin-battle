@@ -209,6 +209,7 @@
 			WHERE
 				so.del_flag = '0'
 			and  so.title != 4
+			AND so.order_from != '1'
 			AND  bb.type_ = 1
 				<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 					AND so.recycler_id = #{orderBean.recyclerId}
@@ -222,22 +223,14 @@
 			<when test="orderBean.status == '3'.toString()">
 				ORDER BY so.completeDate DESC
 			</when>
+			<when test="orderBean.status == '2'.toString()">
+				ORDER BY so.overTime DESC,so.arrivalTime ASC,so.arrival_period ASC,so.creatDate ASC
+			</when>
+			<when test="orderBean.status == '1'.toString()">
+				ORDER BY so.overTime DESC,so.creatDate DESC
+			</when>
 			<otherwise>
-				<choose>
-					<when test="orderBean.status == '2'.toString()">
-						ORDER BY so.overTime DESC,so.arrivalTime ASC,so.arrival_period ASC,so.creatDate ASC
-					</when>
-					<otherwise>
-						<choose>
-						<when test="orderBean.status == '1'.toString()">
-							ORDER BY so.overTime DESC,so.creatDate DESC
-						</when>
-							<otherwise>
-								ORDER BY so.creatDate DESC
-							</otherwise>
-						</choose>
-					</otherwise>
-				</choose>
+				ORDER BY so.creatDate DESC
 			</otherwise>
 		</choose>
 		LIMIT #{startSize} , #{pageSize}
@@ -287,6 +280,7 @@
 			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 			WHERE
 				so.del_flag = '0'
+				AND so.order_from != '1'
 		AND srcl.recycler_id = #{orderBean.recyclerId}
 		and so.title != 4
 		GROUP BY so.id
