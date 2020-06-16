@@ -3025,11 +3025,11 @@
         AND soo.company_id = #{companyId}
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND soo.title IN (1, 3)
+                AND soo.title IN (1)
             </when>
-			<otherwise>
-				AND soo.title IN (#{categoryType})
-			</otherwise>
+            <otherwise>
+                AND soo.title IN #{categoryType}
+            </otherwise>
         </choose>
         AND soo.create_date BETWEEN #{startTime}
         AND CONCAT(#{endTime}, ' 23:59:59')
@@ -3056,7 +3056,7 @@
         AND soo.del_flag = 0
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND soo.title IN (1,2, 3, 5)
+                AND soo.title IN (2, 3, 5)
             </when>
             <otherwise>
                 AND soo.title IN (#{categoryType})
