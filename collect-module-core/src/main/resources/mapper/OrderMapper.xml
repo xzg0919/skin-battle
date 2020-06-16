@@ -209,6 +209,7 @@
 			WHERE
 				so.del_flag = '0'
 			and  so.title != 4
+			AND so.order_from != '1'
 			AND  bb.type_ = 1
 				<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 					AND so.recycler_id = #{orderBean.recyclerId}
@@ -222,22 +223,14 @@
 			<when test="orderBean.status == '3'.toString()">
 				ORDER BY so.completeDate DESC
 			</when>
+			<when test="orderBean.status == '2'.toString()">
+				ORDER BY so.overTime DESC,so.arrivalTime ASC,so.arrival_period ASC,so.creatDate ASC
+			</when>
+			<when test="orderBean.status == '1'.toString()">
+				ORDER BY so.overTime DESC,so.creatDate DESC
+			</when>
 			<otherwise>
-				<choose>
-					<when test="orderBean.status == '2'.toString()">
-						ORDER BY so.overTime DESC,so.arrivalTime ASC,so.arrival_period ASC,so.creatDate ASC
-					</when>
-					<otherwise>
-						<choose>
-						<when test="orderBean.status == '1'.toString()">
-							ORDER BY so.overTime DESC,so.creatDate DESC
-						</when>
-							<otherwise>
-								ORDER BY so.creatDate DESC
-							</otherwise>
-						</choose>
-					</otherwise>
-				</choose>
+				ORDER BY so.creatDate DESC
 			</otherwise>
 		</choose>
 		LIMIT #{startSize} , #{pageSize}
@@ -287,6 +280,7 @@
 			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 			WHERE
 				so.del_flag = '0'
+				AND so.order_from != '1'
 		AND srcl.recycler_id = #{orderBean.recyclerId}
 		and so.title != 4
 		GROUP BY so.id
@@ -2968,7 +2962,7 @@
 		</if>
 	</select>
     <select id="outAchOrderListOverview" resultType="Map" parameterType="String">
-        SELECT
+        SELECT DISTINCT
         CASE order_.status_
         WHEN 0 THEN
         '待接单'
@@ -3028,16 +3022,13 @@
         INNER JOIN sb_order_item soi ON soo.id = soi.order_id
         WHERE
         soo.del_flag = 0
-        AND soo.company_id = 4
+        AND soo.company_id = #{companyId}
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND soo.title IN (1, 3)
-            </when>
-            <when test="categoryType == 1 or categoryType == 3 ">
-                AND soo.title IN (#{categoryType})
+                AND soo.title IN (1)
             </when>
             <otherwise>
-                AND soo.title IN (0)
+                AND soo.title IN #{categoryType}
             </otherwise>
         </choose>
         AND soo.create_date BETWEEN #{startTime}
@@ -3065,7 +3056,7 @@
         AND soo.del_flag = 0
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND soo.title IN (1,2, 3, 5)
+                AND soo.title IN (2, 3, 5)
             </when>
             <otherwise>
                 AND soo.title IN (#{categoryType})
@@ -3426,7 +3417,7 @@
 		c.amount,
 		c.unit,
 		c.price,
-		c.point,
+		c.company_point AS point,
 		CAST(c.amount*c.price AS DECIMAL(20,2))AS priceCount
 		FROM
 		sb_category b
@@ -3530,7 +3521,7 @@
             <result property="categoryId" column="categoryId" />
             <result property="name" column="name_" />
             <result property="icon" column="icon" />
-            <result property="title" column="title"  typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+            <!--<result property="title" column="title"  typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>-->
         </association>
         <association property="recyclers" javaType="com.tzj.collect.entity.Recyclers">
             <result property="name" column="Recyclers_name" />

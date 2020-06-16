@@ -22,15 +22,15 @@ public class PointList extends DataEntity<Long> {
 	private String documentNo;   //单据号
 	private String descrb;   //描述
 	@TableField(exist = false)
-    private Member member;
-	
+	private Member member;
+
 	/**
 	 * 返回创建时间（用于返回页面）
 	 * @return
 	 */
 	@TableField(exist = false)
 	private String createDatePage;
-	
+
 
 	public String getDate(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

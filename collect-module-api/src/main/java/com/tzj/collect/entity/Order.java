@@ -1,5 +1,6 @@
 package com.tzj.collect.entity;
 
+import com.alipay.api.domain.OrderItem;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
@@ -31,18 +32,6 @@ public class Order extends DataEntity<Long> {
 	private String voucherMemberId;
 
 	private String isItemAch;//是否编辑过完成重量
-
-	private Integer netId;//回收点id
-
-	private String netName;//回收点名称
-
-	private String payType;//结算方式 0-卖钱 1-环保积分 2-能量
-
-	private String orderFrom;//订单来源0-其他 1-定时定点
-
-	private String paymentType;//付款类型 0支付宝    1现金
-	@TableField(value = "company_point")
-	private Double companyPoint;
 
 	/**
 	 * 会员id
@@ -130,7 +119,7 @@ public class Order extends DataEntity<Long> {
 	/**
 	 * 基准价
 	 */
-	private BigDecimal price;
+	private BigDecimal price=new BigDecimal("0");
 	/**
 	 * 计量单位
 	 */
@@ -190,7 +179,7 @@ public class Order extends DataEntity<Long> {
 	private BigDecimal achPrice;//已完成价格
 
 	private BigDecimal discountPrice;//优惠价格
-	
+
 	//是否是扫码完成的订单 0不是 1是
 	private String isScan;
 	//是否读取0未读 1以读取
@@ -243,16 +232,33 @@ public class Order extends DataEntity<Long> {
 	private String orderRemarks;
 
 	private String isRisk;
-	
+
 	private String formId;
-	
-	
+
+
 	private BigDecimal priceT;
 
 	private Integer cleanUp = 1; //生活垃圾-是否平铺整理 1-否 2-是
 
 	@TableField(exist = false)//页面需要
 	private String doublePoint;//双倍积分奖励  “greenCount/2 * 2”
+	@TableField(exist = false)//页面需要
+	private String itemType;//回收类型
+
+	private Integer netId;//回收点id
+
+	private String netName;//回收点名称
+
+	private String payType;//结算方式 0-卖钱 1-环保积分 2-能量
+
+	private String orderFrom = "0";//订单来源0-其他 1-定时定点
+
+	private String paymentType;//付款类型 0支付宝    1现金
+	@TableField(value = "company_point")
+	private double companyPoint;
+	@TableField(exist = false)//页面需要
+	private String categoryTitle;// 垃圾类型
+
 
 	public String getDoublePoint() {
 		if (2==cleanUp&&null!=greenCount){
@@ -431,13 +437,13 @@ public class Order extends DataEntity<Long> {
 	}
 
 	private String isCash;//是否以现金支付
-	
+
 	private String achRemarks;//订单完成备注
 	/**
 	 * 订单完成时,用户的签名的图片链接
 	 */
 	private String signUrl;
-	
+
 	/**
 	 * 接单时间
 	 */
@@ -590,26 +596,26 @@ public class Order extends DataEntity<Long> {
 	public String getDatePage() {
 		try {
 			switch (this.status) {
-			case INIT:
-				datePage = createDate != null ? this.getDate(this.createDate) : "";
-				break;
-			case COMPLETE:
-				datePage = completeDate != null ? this.getDate(this.completeDate) : "";
-				break;
-			case CANCEL:
-				datePage = cancelTime != null ? this.getDate(this.cancelTime) : "";
-				break;
-			case TOSEND:
-				datePage = distributeTime != null ? this.getDate(this.distributeTime) : "";
-				break;
-			case ALREADY:
-				datePage = receiveTime != null ? this.getDate(this.receiveTime) : "";
-				break;
-			case REJECTED:
-				datePage = cancelTime != null ? this.getDate(this.cancelTime) : "";
-				break;
-			default:
-				break;
+				case INIT:
+					datePage = createDate != null ? this.getDate(this.createDate) : "";
+					break;
+				case COMPLETE:
+					datePage = completeDate != null ? this.getDate(this.completeDate) : "";
+					break;
+				case CANCEL:
+					datePage = cancelTime != null ? this.getDate(this.cancelTime) : "";
+					break;
+				case TOSEND:
+					datePage = distributeTime != null ? this.getDate(this.distributeTime) : "";
+					break;
+				case ALREADY:
+					datePage = receiveTime != null ? this.getDate(this.receiveTime) : "";
+					break;
+				case REJECTED:
+					datePage = cancelTime != null ? this.getDate(this.cancelTime) : "";
+					break;
+				default:
+					break;
 			}
 		} catch (Exception e) {
 			return "返回的时间有误";
@@ -631,26 +637,26 @@ public class Order extends DataEntity<Long> {
 	public String getStatusDatePage() {
 		try {
 			switch (this.status) {
-			case INIT:
-				statusDatePage = "下单时间: " + this.getDate(this.createDate);
-				break;
-			case COMPLETE:
-				statusDatePage = "完成时间: " + this.getDate(this.completeDate);
-				break;
-			case CANCEL:
-				statusDatePage = "取消时间: " + this.getDate(this.cancelTime);
-				break;
-			case TOSEND:
-				statusDatePage = "下单时间: " + this.getDate(this.createDate);
-				break;
-			case ALREADY:
-				statusDatePage = "下单时间: " + this.getDate(this.createDate);
-				break;
-			case REJECTED:
-				statusDatePage = "取消时间: " + this.getDate(this.cancelTime);
-				break;
-			default:
-				break;
+				case INIT:
+					statusDatePage = "下单时间: " + this.getDate(this.createDate);
+					break;
+				case COMPLETE:
+					statusDatePage = "完成时间: " + this.getDate(this.completeDate);
+					break;
+				case CANCEL:
+					statusDatePage = "取消时间: " + this.getDate(this.cancelTime);
+					break;
+				case TOSEND:
+					statusDatePage = "下单时间: " + this.getDate(this.createDate);
+					break;
+				case ALREADY:
+					statusDatePage = "下单时间: " + this.getDate(this.createDate);
+					break;
+				case REJECTED:
+					statusDatePage = "取消时间: " + this.getDate(this.cancelTime);
+					break;
+				default:
+					break;
 			}
 		} catch (Exception e) {
 			return "返回的时间有误";
@@ -670,27 +676,27 @@ public class Order extends DataEntity<Long> {
 
 	public String getStatusPage() {
 		switch (this.status) {
-		case INIT:
-			statusPage = "待接单";
-			break;
-		case COMPLETE:
-			statusPage = "已完成";
-			break;
-		case CANCEL:
-			statusPage = "已取消";
-			break;
-		case TOSEND:
-			// statusPage = "已派单";
-			statusPage = "待接单";
-			break;
-		case ALREADY:
-			statusPage = "进行中";
-			break;
-		case REJECTED:
-			statusPage = "平台已取消";
-			break;
-		default:
-			break;
+			case INIT:
+				statusPage = "待接单";
+				break;
+			case COMPLETE:
+				statusPage = "已完成";
+				break;
+			case CANCEL:
+				statusPage = "已取消";
+				break;
+			case TOSEND:
+				// statusPage = "已派单";
+				statusPage = "待接单";
+				break;
+			case ALREADY:
+				statusPage = "进行中";
+				break;
+			case REJECTED:
+				statusPage = "平台已取消";
+				break;
+			default:
+				break;
 		}
 		return statusPage;
 	}
@@ -700,7 +706,7 @@ public class Order extends DataEntity<Long> {
 	}
 
 	@TableField(exist = false)
-	private OrderItem orderItem;
+	private com.alipay.api.domain.OrderItem orderItem;
 
 	@TableField(exist = false)
 	private OrderPic OrderPic;// orderLog
@@ -860,7 +866,7 @@ public class Order extends DataEntity<Long> {
 	}
 
 	public BigDecimal getPrice() {
-		 return price.setScale(2,BigDecimal.ROUND_DOWN);
+		return price.setScale(2,BigDecimal.ROUND_DOWN);
 	}
 
 	public String getPrice4Page(){
@@ -868,7 +874,7 @@ public class Order extends DataEntity<Long> {
 	}
 
 	public void setPrice(BigDecimal price) {
-		
+
 		this.price = price;
 	}
 
@@ -966,7 +972,7 @@ public class Order extends DataEntity<Long> {
 		this.aliUserId = aliUserId;
 	}
 
-	public OrderItem getOrderItem() {
+	public com.alipay.api.domain.OrderItem getOrderItem() {
 		return orderItem;
 	}
 
@@ -1013,7 +1019,7 @@ public class Order extends DataEntity<Long> {
 	public void setAchRemarks(String achRemarks) {
 		this.achRemarks = achRemarks;
 	}
-	
+
 	public String getSignUrl() {
 		return signUrl;
 	}

@@ -543,11 +543,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         }
         BigDecimal cityRatio = companyCityRatioService.getCityRatioByCompanyCityId(memberAddress.getCityId(), finalCompanyId);
         price[0] = price[0].multiply(cityRatio);
-        if ("BIGTHING".equals(type)&&price[0].compareTo(new BigDecimal(98)) == -1){
-            if (117==category.getId()||114==category.getId()){
+        if ("BIGTHING".equals(type)){
+            if ((117==category.getId()||114==category.getId())&&price[0].compareTo(new BigDecimal(128)) == -1){
                 return new BigDecimal(128);
+            }else if (price[0].compareTo(new BigDecimal(98)) == -1){
+                return new BigDecimal(98);
             }
-            return new BigDecimal(98);
         }
         System.out.println("计算后的价格是："+price[0]);
         return price[0].setScale(2, BigDecimal.ROUND_DOWN);
@@ -701,12 +702,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         }
         if (null == categoryList||categoryList.isEmpty()) {
             categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
-            categoryList.stream().forEach(category -> {
-                if (null!=parentId&&category.getId().equals(parentId)){
+            if(null==parentId){
+                categoryList.stream().forEach(category -> {
                     List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
                     category.setCategoryList(categoryList1);
-                }
-            });
+                });
+            }else {
+                categoryList.stream().forEach(category -> {
+                    if (null!=parentId&&category.getId().equals(parentId)){
+                        List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                        category.setCategoryList(categoryList1);
+                    }
+                });
+            }
+
         }
         categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getCode)).collect(Collectors.toList());
         resultMap.put("categoryList", categoryList);

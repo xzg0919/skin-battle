@@ -501,7 +501,7 @@ public class OutExcelController {
             if("3".equals(complaint.get("complaintType"))){
                 complaints = "催促两次";
             }
-            if (2880<Integer.parseInt(complaint.get("overTime")+"")){
+            if (null != complaint.get("overTime") && 2880<Integer.parseInt(complaint.get("overTime")+"")){
                 complaints += "超时两天";
             }
             row.add(complaints);
@@ -526,7 +526,7 @@ public class OutExcelController {
             if("3".equals(complaint.get("complaintType"))){
                 complaints = "催促两次";
             }
-            if (2880<Integer.parseInt(complaint.get("overTime")+"")){
+            if (null != complaint.get("overTime") && 2880<Integer.parseInt(complaint.get("overTime")+"")){
                 complaints += "超时两天";
             }
             row.add(complaints);
