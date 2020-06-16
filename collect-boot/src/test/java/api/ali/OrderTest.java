@@ -37,11 +37,8 @@ public class OrderTest {
                 iotPostParamBean.setCabinetNo("869012040190428");
 
                 OrderBean orderBean = new OrderBean();
-                PageBean pageBean = new PageBean();
-                pageBean.setPageNumber(1);
-                pageBean.setPageSize(10);
-                orderBean.setStatus("3");
-                orderBean.setPagebean(pageBean);
+                orderBean.setPagebean(new PageBean());
+                orderBean.setStatus("1");
 
 
                 HashMap<String,Object> param=new HashMap<>();
@@ -52,7 +49,7 @@ public class OrderTest {
                 param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
                 param.put("token", securityToken);
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data", null);
+                param.put("data", orderBean);
 
                 String jsonStr= JSON.toJSONString(param);
                 System.out.println(jsonStr);
