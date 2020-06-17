@@ -40,5 +40,10 @@ public class TransStationBean {
 
     private String endTime;
 
+    /**
+     * 全程分类回收公司编号
+     */
+    private String companyNo;
+
 
 }
