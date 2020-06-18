@@ -592,6 +592,16 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     }
 
     @Override
+    public Object getXyAuthCode(String authCode) {
+        Map<String,Object> resultMap = new HashMap<>();
+            String token = JwtUtils.generateToken("2088432503718960", ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
+            String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
+            System.out.println("token:" + securityToken);
+            resultMap.put("token", securityToken);
+            return resultMap;
+    }
+
+    @Override
     public Member selectMemberByAliUserId(String aliUserId) {
         String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
         return memberMapper.selectMemberByAliUserId(aliUserId, memberName);
