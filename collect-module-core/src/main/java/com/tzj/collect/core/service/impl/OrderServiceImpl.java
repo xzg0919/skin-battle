@@ -822,7 +822,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     public Order createName4PC(Order order) {
         Category category = order.getCategory();
-        ;
+        if (null==category){
+            category = new Category();
+        }
         if (order.getTitle() == Order.TitleType.HOUSEHOLD) {
             category.setName("生活垃圾");
             order.setCategory(category);
