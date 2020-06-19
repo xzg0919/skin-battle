@@ -414,7 +414,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderbean.setCityId(city.getParentId().toString());
         //保存orderItem
         if ("0".equals(order.getIsItemAch())) {
-            this.saveOrderItemAch(orderbean, null);
+            double amount = this.saveOrderItemAch(orderbean, order);
+            order.setGreenCount(amount);
         }
         flag = this.updateById(order);
         //储存图片链接
@@ -626,11 +627,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return ii;
     }
 
-	private double saveOrderItemAch(OrderBean orderbean, Category category) {
+	private double saveOrderItemAch(OrderBean orderbean, Order order) {
 		//是否是免费的 0 不是 1是 
 		String isCash = orderbean.getIsCash();
 		//得到用户的垃圾总量
-		double amount = 0;
+		double amount = 0.0;
 		OrderItemAch orderItem = null;
 		List<OrderItemBean> idAmount = null;
 		if (CategoryType.HOUSEHOLD.name().equals(orderbean.getTitle())) {
@@ -663,11 +664,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						}
 						if ("1".equals(isCash)){
 							orderItem.setPrice(0);
-						}
+                            amount += categorys.getFreeGreenCount();
+                        }else{
+                            amount += categorys.getGreenCount();
+                        }
 						orderItemAchService.insert(orderItem);
 					}
 				}
-		}
+		}else {
+		    if(null!=order.getCategoryId()){
+                Category category = categoryService.selectById(order.getCategoryId());
+                amount = category.getGreenCount().doubleValue();
+            }
+        }
 		return ApiUtils.privatedoublegetTwoDecimal(amount);
 	}
 
