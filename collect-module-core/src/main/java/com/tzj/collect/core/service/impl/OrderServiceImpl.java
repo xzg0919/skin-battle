@@ -171,6 +171,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private QiMemService qiMemService;
     @Autowired
     private DsddRecyclePositionService dsddRecyclePositionService;
+    @Autowired
+    private DsddPaymentService dsddPaymentService;
 
     @Resource
     private JedisPool jedisPool;
@@ -412,7 +414,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderbean.setCityId(city.getParentId().toString());
         //保存orderItem
         if ("0".equals(order.getIsItemAch())) {
-            this.saveOrderItemAch(orderbean, null);
+            double amount = this.saveOrderItemAch(orderbean, order);
+            order.setGreenCount(amount);
         }
         flag = this.updateById(order);
         //储存图片链接
@@ -624,11 +627,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return ii;
     }
 
-	private double saveOrderItemAch(OrderBean orderbean, Category category) {
+	private double saveOrderItemAch(OrderBean orderbean, Order order) {
 		//是否是免费的 0 不是 1是 
 		String isCash = orderbean.getIsCash();
 		//得到用户的垃圾总量
-		double amount = 0;
+		double amount = 0.0;
 		OrderItemAch orderItem = null;
 		List<OrderItemBean> idAmount = null;
 		if (CategoryType.HOUSEHOLD.name().equals(orderbean.getTitle())) {
@@ -661,11 +664,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						}
 						if ("1".equals(isCash)){
 							orderItem.setPrice(0);
-						}
+                            amount += categorys.getFreeGreenCount();
+                        }else{
+                            amount += categorys.getGreenCount();
+                        }
 						orderItemAchService.insert(orderItem);
 					}
 				}
-		}
+		}else {
+		    if(null!=order.getCategoryId()){
+                Category category = categoryService.selectById(order.getCategoryId());
+                amount = category.getGreenCount().doubleValue();
+            }
+        }
 		return ApiUtils.privatedoublegetTwoDecimal(amount);
 	}
 
@@ -820,7 +831,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     public Order createName4PC(Order order) {
         Category category = order.getCategory();
-        ;
+        if (null==category){
+            category = new Category();
+        }
         if (order.getTitle() == Order.TitleType.HOUSEHOLD) {
             category.setName("生活垃圾");
             order.setCategory(category);
@@ -4384,15 +4397,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Double sumPoint = greenCount + companyPoint;
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
         DsddRecyclePosition dsddRecyclePosition = dsddRecyclePositionService.selectById(order.getNetId());
-        Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", order.getOrderNo()));
-        String paymentNo = payment!=null?payment.getTradeNo():"";
+        DsddPayment dsddPayment = dsddPaymentService.selectOne(new EntityWrapper<DsddPayment>().eq("out_trade_no", order.getOrderNo()));
+        String paymentNo = dsddPayment!=null?dsddPayment.getTradeNo():"/";
         List<BusinessOrderItemBean> categoryInfoList = orderMapper.getCategoryInfoByOrderId(String.valueOf(orderId), null);
 
         map.put("order", order);
         map.put("recyclers", recyclers);
         map.put("categoryInfo", categoryInfoList);
         map.put("dsddRecyclePosition", dsddRecyclePosition);
-        map.put("payment",payment);
+        map.put("payment",dsddPayment);
         map.put("paymentNo",paymentNo);
         map.put("sumPoint", sumPoint);
         return map;

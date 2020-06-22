@@ -10,7 +10,7 @@
 		SET sp.ali_user_id = #{aliUserId},
 		spl.ali_user_id =  #{aliUserId},
 		so.ali_user_id =  #{aliUserId},
-		sp.mobile = '',
+		sp.telephone = '',
 		spl.card_no = #{cardNo}
 		WHERE
 			sp.telephone = #{mobile}

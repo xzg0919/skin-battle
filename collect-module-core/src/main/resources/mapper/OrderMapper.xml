@@ -2962,7 +2962,7 @@
 		</if>
 	</select>
     <select id="outAchOrderListOverview" resultType="Map" parameterType="String">
-        SELECT
+        SELECT DISTINCT
         CASE order_.status_
         WHEN 0 THEN
         '待接单'
@@ -3022,16 +3022,13 @@
         INNER JOIN sb_order_item soi ON soo.id = soi.order_id
         WHERE
         soo.del_flag = 0
-        AND soo.company_id = 4
+        AND soo.company_id = #{companyId}
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND soo.title IN (1, 3)
-            </when>
-            <when test="categoryType == 1 or categoryType == 3 ">
-                AND soo.title IN (#{categoryType})
+                AND soo.title IN (1)
             </when>
             <otherwise>
-                AND soo.title IN (0)
+                AND soo.title IN #{categoryType}
             </otherwise>
         </choose>
         AND soo.create_date BETWEEN #{startTime}
@@ -3059,7 +3056,7 @@
         AND soo.del_flag = 0
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND soo.title IN (1,2, 3, 5)
+                AND soo.title IN (2, 3, 5)
             </when>
             <otherwise>
                 AND soo.title IN (#{categoryType})

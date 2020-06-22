@@ -36,23 +36,19 @@ public class OrderTest {
                 iotPostParamBean.setTranTime(System.currentTimeMillis());
                 iotPostParamBean.setCabinetNo("869012040190428");
 
-                OrderBean orderBean = new OrderBean();
-                PageBean pageBean = new PageBean();
-                pageBean.setPageNumber(1);
-                pageBean.setPageSize(10);
-                orderBean.setStatus("3");
-                orderBean.setPagebean(pageBean);
+                MemberBean memberBean = new MemberBean();
+                memberBean.setAuthCode("dasdasdwadsadsadsad");
 
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name", "category.categoryNewHouseListByToken");
+                param.put("name", "member.getXyAuthCode");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
                 param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
-                param.put("token", securityToken);
+                //param.put("token", securityToken);
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data", null);
+                param.put("data", memberBean);
 
                 String jsonStr= JSON.toJSONString(param);
                 System.out.println(jsonStr);

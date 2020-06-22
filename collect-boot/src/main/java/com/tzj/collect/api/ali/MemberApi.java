@@ -38,6 +38,17 @@ public class MemberApi {
     public Object getAuthCode(MemberBean memberBean) {
        return memberService.getAuthCode(memberBean.getAuthCode(),memberBean.getState(),memberBean.getCityName(),memberBean.getSource());
     }
+	/**
+	 * 根据用户授权返回的authCode,闲鱼授权解析接口
+	 * @author 王灿
+	 * @param
+	 */
+	@Api(name = "member.getXyAuthCode", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public Object getXyAuthCode(MemberBean memberBean) {
+		return memberService.getXyAuthCode(memberBean.getAuthCode());
+	}
     /**
      * 根据用户授权返回的authCode,获取用户的token
      * @author 王灿
