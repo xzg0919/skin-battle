@@ -550,6 +550,7 @@ public class OutExcelController {
         List<String> titles = new ArrayList<>();
         //for(String title: excelInfo.getNames())
         titles.add("订单号");
+        titles.add("省");
         titles.add("市");
         titles.add("区");
         titles.add("街道");
@@ -580,9 +581,10 @@ public class OutExcelController {
             row= new ArrayList();
             outComplaintOrderMap = list.get(i);
             row.add(outComplaintOrderMap.get("orderNo"));
+            row.add(outComplaintOrderMap.get("provinceName"));
             row.add(outComplaintOrderMap.get("cityName"));
-            row.add(outComplaintOrderMap.get("streetName"));
             row.add(outComplaintOrderMap.get("areaName"));
+            row.add(outComplaintOrderMap.get("streetName"));
             row.add(outComplaintOrderMap.get("createDate"));
             row.add(outComplaintOrderMap.get("arrivalTime")+" "+outComplaintOrderMap.get("arrivalPeriod"));
             row.add(outComplaintOrderMap.get("tel"));

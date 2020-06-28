@@ -1868,6 +1868,7 @@
 		SELECT
 		a.id,
 		a.order_no AS orderNo,
+		h.area_name AS provinceName,
 		g.area_name AS cityName,
 		f.area_name AS areaName,
 		e.area_name AS streetName,
@@ -1900,6 +1901,7 @@
 		LEFT JOIN sb_area e ON a.street_id  = e.id
 		LEFT JOIN sb_area f ON f.id = a.area_id
 		LEFT JOIN sb_area g ON f.parent_id = g.id
+		LEFT JOIN sb_area h ON g.parent_id = h.id
 		WHERE
 		a.del_flag = 0
 		<if test="companyId != null and companyId !='' ">
