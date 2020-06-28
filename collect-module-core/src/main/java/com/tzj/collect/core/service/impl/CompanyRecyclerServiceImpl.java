@@ -557,4 +557,9 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		return "操作成功";
 	}
 
+    @Override
+    public Integer dsddPositionCount(Long recyclerId) {
+        return baseMapper.dsddPositionCount(recyclerId);
+    }
+
 }

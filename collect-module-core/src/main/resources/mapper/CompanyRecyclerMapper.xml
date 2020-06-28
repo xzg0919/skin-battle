@@ -519,4 +519,15 @@
 			a.parents_id = #{recyclerId}
 		AND a.type_ = #{type};
 	</update>
+	<select id="dsddPositionCount" parameterType="Long" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			sb_company_recycler a
+		INNER JOIN dsdd_recycle_position b ON a.company_id = b.company_id
+		WHERE
+			a.recycler_id = #{recyclerId}
+		AND a.status_ = 1
+	</select>
+
 </mapper>

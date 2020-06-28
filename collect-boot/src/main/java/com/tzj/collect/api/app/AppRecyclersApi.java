@@ -130,6 +130,10 @@ public class AppRecyclersApi {
 		List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(wrapper);
 		if (!companyRecyclerList.isEmpty()){
 			recyclers.setIsManager(companyRecyclerList.get(0).getIsManager());
+			Integer count = companyRecyclerService.dsddPositionCount(this.getRecycler().getId());
+			if (count!=null&&count>0){
+				recyclers.setIsPosition("1");
+			}
 		}else {
 			recyclers.setIsManager("0");
 		}

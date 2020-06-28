@@ -76,6 +76,8 @@ public class Recyclers extends DataEntity<Long> {
 	private String aliUserId;
 	@TableField(exist = false)
 	private String isManager;
+	@TableField(exist = false)
+	private String isPosition = "0"; //是否存在定时定点
 
 	public String getAliUserId() {
 		return aliUserId;

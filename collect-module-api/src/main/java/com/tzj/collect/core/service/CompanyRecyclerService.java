@@ -157,4 +157,6 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	Map<String, Object> getRecyclerList(String recyclerName, String recyclerTel, String cityId, PageBean pageBean);
 
 	String closeRecyclerArea(Long recyclerId,String companyId,String type);
+
+	Integer dsddPositionCount(Long recyclerId);
 }
