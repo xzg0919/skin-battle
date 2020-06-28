@@ -528,6 +528,7 @@
 		WHERE
 			a.recycler_id = #{recyclerId}
 		AND a.status_ = 1
+		AND b.is_enable = 1
 	</select>
 
 </mapper>
