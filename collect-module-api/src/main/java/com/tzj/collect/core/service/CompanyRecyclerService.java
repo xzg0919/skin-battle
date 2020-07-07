@@ -102,7 +102,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
      * @return CompanyRecycler    返回类型
       */
      @DS("slave")
-	 CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId,String isBigRecycle);
+	 CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId,String isBigRecycle,Integer companyId);
 
 /**
  * 通过条件回收员姓名,id返回某公司回收人员列表
@@ -123,6 +123,8 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	 * @return
 	 */
 	@DS("slave")
+	List<Map<String,Object>> getCompanyRange(Integer companyId,String title);
+	@DS("slave")
 	List<Map<String,Object>> getCompanyRange(Integer companyId);
 	/**
 	 * 获取企业大件服务范围（例南京市，苏州市等）
@@ -142,7 +144,7 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 
 	Object recyclersDel(Integer companyId, String recycleId);
 
-	Object recycleDelete(Integer companyId, String recycleId, String title);
+	Object recycleDelete(Integer companyId, String recycleId);
 
 	Object recycleIsDelete(Integer companyId, String recycleId, String title);
 	@DS("slave")

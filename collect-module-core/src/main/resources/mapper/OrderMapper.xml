@@ -208,9 +208,7 @@
 			LEFT JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id
 			WHERE
 				so.del_flag = '0'
-			and  so.title != 4
 			AND so.order_from != '1'
-			AND  bb.type_ = 1
 				<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 					AND so.recycler_id = #{orderBean.recyclerId}
 				</if>
@@ -244,7 +242,6 @@
 		LEFT JOIN sb_category sc  ON so.category_id = sc.id
 		WHERE
 			so.del_flag = '0'
-			and so.title != 4
 			<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 				AND so.recycler_id = #{orderBean.recyclerId}
 			</if>
@@ -282,7 +279,6 @@
 				so.del_flag = '0'
 				AND so.order_from != '1'
 		AND srcl.recycler_id = #{orderBean.recyclerId}
-		and so.title != 4
 		GROUP BY so.id
 			ORDER BY so.create_date DESC LIMIT #{startSize} , #{pageSize}
     </select>
@@ -314,7 +310,6 @@
 			INNER JOIN sb_order so ON so.category_id = sc.id
 			WHERE
 				so.del_flag = '0'
-			and so.title != 4
 			<if test="orderBean.recyclerId != null and orderBean.recyclerId != '' ">
 				AND so.recycler_id = #{orderBean.recyclerId}
 			</if>
@@ -658,9 +653,7 @@
 	LEFT JOIN sb_company_recycler c ON a.id = c.recycler_id
 	WHERE
 		c.parents_id = #{recyclerId}
-	AND c.type_ = '1'
 	AND c.status_ = 1
-	AND b.title != 4
 	AND b.status_ in (1,2)
 	AND a.del_flag = 0
 	AND b.del_flag = 0
@@ -875,7 +868,6 @@
 		LEFT JOIN sb_company_recycler d ON a.id = d.recycler_id
 		WHERE
 			d.parents_id = #{recycleId}
-		AND d.type_ = '4'
 		AND d.status_ = 1
 		AND b.title = 4
 		AND b.status_ in (1,2)
@@ -940,7 +932,6 @@
 		WHERE
 		b.recycler_id = #{recycleId}
 		AND b.title = 4
-		AND bb.type_ = 4
 		<choose>
 			<when test="status == 4">
 				and (b.status_ = 4 or b.status_ = 5)
@@ -957,22 +948,14 @@
 			<when test="status == '3'.toString()">
 				ORDER BY b.completeDate DESC
 			</when>
+			<when test="status == '2'.toString()">
+				ORDER BY b.overTime DESC,b.arrivalTime ASC,b.createDate ASC
+			</when>
+			<when test="status == '1'.toString()">
+				ORDER BY b.overTime DESC,b.arrivalTime ASC,b.createDate DESC
+			</when>
 			<otherwise>
-				<choose>
-					<when test="status == '2'.toString()">
-						ORDER BY b.overTime DESC,b.arrivalTime ASC,b.createDate ASC
-					</when>
-					<otherwise>
-						<choose>
-						<when test="status == '1'.toString()">
-							ORDER BY b.overTime DESC,b.arrivalTime ASC,b.createDate DESC
-						</when>
-							<otherwise>
-								ORDER BY b.createDate DESC
-							</otherwise>
-						</choose>
-					</otherwise>
-				</choose>
+				ORDER BY b.createDate DESC
 			</otherwise>
 		</choose>
 		LIMIT #{startPage},#{endPage}
@@ -1217,7 +1200,6 @@
 				LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 				WHERE
 				so.del_flag = '0'
-				AND so.title in ('1','2')
 				AND so.recycler_id = #{orderBean.recyclerId}
 				<if test="orderBean.tel != null and orderBean.tel != '' ">
 					AND so.tel like #{orderBean.tel}
@@ -1263,7 +1245,6 @@
 				LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 				WHERE
 					so.del_flag = '0'
-				AND so.title in ('1','2')
 				AND srcl.recycler_id = #{orderBean.recyclerId}
 				AND so.recycler_id = #{orderBean.recyclerId}
 				<if test="orderBean.tel != null and orderBean.tel != '' ">
@@ -1785,14 +1766,11 @@
 		<if test="status != null and status !='' ">
 			AND a.status_ = #{status}
 		</if>
-		<if test="tel != null and tel !='' ">
-			AND a.tel = #{tel}
-		</if>
 		<if test="orderNo != null and orderNo !='' ">
 			AND a.order_no = #{orderNo}
 		</if>
 		<if test="linkName != null and linkName !='' ">
-			AND a.link_man = #{linkName}
+			AND (a.link_man = #{linkName} or a.tel = #{tel})
 		</if>
 		<if test="startTime != null and startTime !='' ">
 			AND a.create_date > concat(#{startTime},' 00:00:01')
@@ -1832,14 +1810,11 @@
 		<if test="status != null and status !='' ">
 			AND a.status_ = #{status}
 		</if>
-		<if test="tel != null and tel !='' ">
-			AND a.tel = #{tel}
-		</if>
 		<if test="orderNo != null and orderNo !='' ">
 			AND a.order_no = #{orderNo}
 		</if>
 		<if test="linkName != null and linkName !='' ">
-			AND a.link_man = #{linkName}
+			AND (a.link_man = #{linkName} or a.tel = #{tel})
 		</if>
 		<if test="startTime != null and startTime !='' ">
 			AND a.create_date > concat(#{startTime},' 00:00:01')
@@ -2466,15 +2441,6 @@
 				INNER JOIN sb_recyclers b ON a.recycler_id = b.id
 				WHERE
 					a.status_ = '1'
-					<choose>
-						<when test="isBig == 'Y'.toString()">
-							AND type_ = '4'
-						</when>
-						<otherwise>
-							AND type_ = '1'
-						</otherwise>
-					</choose>
-
 				AND a.company_id = #{companyId}
 			) b
 		LEFT JOIN (
@@ -2494,14 +2460,6 @@
 				<if test="endTime != null and endTime != '' ">
 					AND CONCAT(#{endTime}, ' 23:59:59') > a.create_date
 				</if>
-				<choose>
-					<when test="isBig == 'Y'.toString()">
-						AND a.title = '4'
-					</when>
-					<otherwise>
-						AND a.title != '4'
-					</otherwise>
-				</choose>
 				AND a.recycler_id is not NULL
 				AND a.recycler_id != 0
 				) a
@@ -2540,15 +2498,6 @@
 		INNER JOIN sb_recyclers b ON a.recycler_id = b.id
 		WHERE
 		a.status_ = '1'
-		<choose>
-			<when test="isBig == 'Y'.toString()">
-				AND type_ = '4'
-			</when>
-			<otherwise>
-				AND type_ = '1'
-			</otherwise>
-		</choose>
-
 		AND a.company_id = #{companyId}
 		) b
 		LEFT JOIN (
@@ -2560,7 +2509,6 @@
 		FROM
 		sb_order a
 		WHERE
-
 		a.company_id = #{companyId}
 		<if test="startTime != null and startTime != '' ">
 			AND a.create_date > CONCAT(#{startTime}, ' 00:00:01')
@@ -2568,14 +2516,6 @@
 		<if test="endTime != null and endTime != '' ">
 			AND CONCAT(#{endTime}, ' 23:59:59') > a.create_date
 		</if>
-		<choose>
-			<when test="isBig == 'Y'.toString()">
-				AND a.title = '4'
-			</when>
-			<otherwise>
-				AND a.title != '4'
-			</otherwise>
-		</choose>
 		AND a.recycler_id is not NULL
 		AND a.recycler_id != 0
 		) a
@@ -2867,14 +2807,9 @@
 			WHERE
 			del_flag = 0
 			AND company_id = #{companyId}
-			<choose>
-				<when test="categoryType == null  or categoryType == ''">
-					AND title IN (1,2, 3, 5)
-				</when>
-				<otherwise>
-					AND title IN (#{categoryType})
-				</otherwise>
-			</choose>
+			<if test="categoryType != null and categoryType != ''">
+				AND title IN (#{categoryType})
+			</if>
 			<if test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
 				AND create_date BETWEEN #{startTime}
 				AND CONCAT(#{endTime}, ' 23:59:59')
@@ -2929,14 +2864,9 @@
 		WHERE
 		del_flag = 0
 		AND company_id = #{companyId}
-		<choose>
-			<when test="categoryType == null  or categoryType == ''">
-				AND title IN (1,2, 3, 5)
-			</when>
-			<otherwise>
-				AND title IN (#{categoryType})
-			</otherwise>
-		</choose>
+		<if test="categoryType != null and categoryType != ''">
+			AND title IN (#{categoryType})
+		</if>
 		<if test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
 			AND create_date BETWEEN #{startTime}
 			AND CONCAT(#{endTime}, ' 23:59:59')
@@ -3024,15 +2954,14 @@
         soo.del_flag = 0
         AND soo.company_id = #{companyId}
         <choose>
-            <when test="categoryType == null  or categoryType == ''">
-                AND soo.title IN (1)
+            <when test="categoryType != null and categoryType != ''">
+				AND soo.title = #{categoryType}
             </when>
             <otherwise>
-                AND soo.title IN #{categoryType}
+				AND soo.title IN (1)
             </otherwise>
         </choose>
-        AND soo.create_date BETWEEN #{startTime}
-        AND CONCAT(#{endTime}, ' 23:59:59')
+        AND soo.create_date BETWEEN #{startTime} AND CONCAT(#{endTime}, ' 23:59:59')
         AND soo.status_ = 3
         UNION ALL
         SELECT
@@ -3055,16 +2984,15 @@
         soo.status_ = 3
         AND soo.del_flag = 0
         <choose>
-            <when test="categoryType == null  or categoryType == ''">
-                AND soo.title IN (2, 3, 5)
+            <when test="categoryType != null  and categoryType != ''">
+				AND soo.title = (#{categoryType})
             </when>
             <otherwise>
-                AND soo.title IN (#{categoryType})
+				AND soo.title IN (2, 3, 5)
             </otherwise>
         </choose>
         AND soo.company_id = #{companyId}
-        AND soo.create_date BETWEEN #{startTime}
-        AND CONCAT(#{endTime}, ' 23:59:59')
+        AND soo.create_date BETWEEN #{startTime} AND CONCAT(#{endTime}, ' 23:59:59')
         ) order_
         LEFT JOIN sb_area saa ON order_.street_id = saa.id
         LEFT JOIN sb_area saa2 ON order_.area_id = saa2.id
@@ -3148,11 +3076,11 @@
 					soo.del_flag = 0
 				AND soo.company_id = #{companyId}
 				<choose>
-					<when test="categoryType == null  or categoryType == ''">
-						AND soo.title IN (1,2, 3, 5)
+					<when test="categoryType != null and categoryType != ''">
+						AND soo.title IN (#{categoryType})
 					</when>
 					<otherwise>
-						AND soo.title IN (#{categoryType})
+						AND soo.title IN (1,2, 3, 5)
 					</otherwise>
 				</choose>
 				AND soo.create_date BETWEEN #{startTime}

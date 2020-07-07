@@ -155,7 +155,7 @@ public interface RecyclersService extends IService<Recyclers>{
 	 * @return
 	 */
 	@DS("slave")
-	List<Map<String,Object>> getRecyclers(Integer companyId, String isBigRecycle);
+	List<Map<String,Object>> getRecyclers(Integer companyId);
 
 	/**
 	 * 保存业务经理，和下属回收人员的信息
@@ -203,7 +203,7 @@ public interface RecyclersService extends IService<Recyclers>{
 	 * @return
 	 */
 	@DS("slave")
-	Object getRangeRecyclersList(Integer companyId, String recycleName, String cityId, Integer pageNum, Integer pageSize, String isBigRecycle, String tel);
+	Object getRangeRecyclersList(Integer companyId, String recycleName, String cityId, Integer pageNum, Integer pageSize, String tel);
 	/**
 	 * 获取回收经理的详细信息
 	 * @author wangcan
@@ -215,7 +215,7 @@ public interface RecyclersService extends IService<Recyclers>{
 
 	String getAuthCode(String authCode, Long recyclersId) throws Exception;
 	@DS("slave")
-	List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId, String isBigRecycle);
+	List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId);
 	@DS("slave")
 	Object getAreaRecyclersRangeList(RecyclersServiceRangeBean recyclersServiceRangeBean, String companyId);
 	@DS("slave")

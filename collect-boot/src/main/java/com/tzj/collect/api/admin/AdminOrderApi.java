@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.app.ArrivalTimeLogBean;
 import com.tzj.collect.core.param.business.BOrderBean;
-import com.tzj.collect.core.service.ArrivalTimeLogService;
-import com.tzj.collect.core.service.OrderCancleExamineService;
-import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.OrderCancleExamine;
 import com.tzj.collect.entity.OrderStatusType;
@@ -15,6 +13,7 @@ import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,6 +33,12 @@ public class AdminOrderApi {
     private ArrivalTimeLogService arrivalTimeLogService;
     @Resource(name = "mqtt4PushOrder")
     private MqttClient mqtt4PushOrder;
+    @Autowired
+    private CompanyService companyService;
+    @Autowired
+    private AreaService areaService;
+    @Autowired
+    private CompanyStreetHouseService companyStreetHouseService;
 
     /**
      * 根据条件获取订单内容
@@ -219,4 +224,59 @@ public class AdminOrderApi {
     public Object getOrderDetailByOrderId(OrderBean orderbean) {
         return orderService.getOrderDetailByOrderId(orderbean.getId());
     }
+
+
+    /**
+     * 根据不查询闲鱼订单列表
+     * @param
+     * @return
+     */
+    @Api(name = "admin.order.getXyOrderListByAdminReception", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object getXyOrderListByAdminReception(OrderBean orderBean){
+        return orderService.getXyOrderListByAdminReception(orderBean);
+    }
+
+    /**
+     * 根据父级id获取相关城市列表
+     * @param
+     * @return
+     */
+    @Api(name = "admin.area.getAreaListByParentId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object getAreaListByParentId(OrderBean orderBean){
+        return areaService.getAreaListByParentId(orderBean);
+    }
+
+    /**
+     * 根据街道id查询相关公司
+     * @param
+     * @return
+     */
+    @Api(name = "admin.getCompanyIdByStreetId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object getCompanyIdByStreetId(OrderBean orderBean){
+        Integer companyId = companyStreetHouseService.selectStreetHouseCompanyId(orderBean.getStreetId());
+        if (null==companyId){
+            throw new ApiException("查询失败，该区域未覆盖生活垃圾");
+        }
+        return  companyService.selectById(companyId);
+    }
+
+    /**
+     * 根据公司Id，和订单id进行派单
+     * @param
+     * @return
+     */
+    @Api(name = "admin.sendXyOrderByCompanyId", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object sendXyOrderByCompanyId(OrderBean orderBean){
+        return  orderService.sendXyOrderByCompanyId(orderBean);
+    }
+
+
 }

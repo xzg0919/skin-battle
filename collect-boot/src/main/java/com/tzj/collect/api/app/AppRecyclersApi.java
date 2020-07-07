@@ -438,13 +438,7 @@ public class AppRecyclersApi {
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getRecycleDetails(RecyclersBean recyclersBean){
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler().getId());
-		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recycler.getId()).eq("status_", "1");
-				if("Y".equals(recyclersBean.getIsBigRecycle())){
-					wrapper.eq("type_","4");
-				}else {
-					wrapper.eq("type_","1");
-				}
-		List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(wrapper);
+		List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recycler.getId()).eq("status_", "1"));
 		if(companyRecyclerList.isEmpty()){
 			return "暂无信息";
 		}

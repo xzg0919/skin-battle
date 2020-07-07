@@ -112,9 +112,9 @@ public class BusinessCompanyApi {
 	 */
 	@Api(name = "business.company.getCompanyRange", version = "1.0")
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public Object getCompanyRange() {
+	public Object getCompanyRange(RecyclersBean recyclersBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return comRecService.getCompanyRange(companyAccount.getCompanyId());
+		return comRecService.getCompanyRange(companyAccount.getCompanyId(),recyclersBean.getTitle());
 	}
 	/**
 	 * 根据名称获取企业服务范围（例南京市，苏州市等）

@@ -179,7 +179,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
      */
     @Override
     public List<Recyclers> getRecyclersApply(BusinessRecyclerBean recyclerBean) {
-        return recyclersMapper.getRecyclersApply(recyclerBean.getCompanyId(), recyclerBean.getIsBigRecycle());
+        return recyclersMapper.getRecyclersApply(recyclerBean.getCompanyId());
     }
 
     @Override
@@ -201,8 +201,9 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
      * @param companyId : 企业Id
      * @return
      */
-    public List<Map<String, Object>> getRecyclers(Integer companyId, String isBigRecycle) {
-        return recyclersMapper.getRecyclers(companyId, isBigRecycle);
+    @Override
+    public List<Map<String, Object>> getRecyclers(Integer companyId) {
+        return recyclersMapper.getRecyclers(companyId);
     }
 
     /**
@@ -223,13 +224,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
         //根据回收人员Id查询回收人员信息
         Recyclers recyclers = recyclerService.selectById(recyclersServiceRangeBean.getRecycleId());
         //根据企业Id和回收人员Id获取关联信息表
-        Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_", "0");
-        if ("Y".equals(recyclersServiceRangeBean.getIsBigRecycle())) {
-            wrapper.eq("type_", "4");
-        } else {
-            wrapper.eq("type_", "1");
-        }
-        CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
+        CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_", "0"));
         if (companyRecycler == null || recyclers == null) {
             return "查询不到该回收人员申请信息";
         }
@@ -244,13 +239,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             //根据经理Id查询经理信息
             Recyclers ManagerRecyclers = recyclerService.selectById(recyclersServiceRangeBean.getManagerId());
             //根据企业Id和经理人员Id获取关联信息
-            Wrapper<CompanyRecycler> wrappers = new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclersServiceRangeBean.getManagerId()).eq("company_id", companyId).eq("status_", "1");
-            if ("Y".equals(recyclersServiceRangeBean.getIsBigRecycle())) {
-                wrappers.eq("type_", "4");
-            } else {
-                wrappers.eq("type_", "1");
-            }
-            CompanyRecycler companyRecyclers = companyRecyclerService.selectOne(wrappers);
+            CompanyRecycler companyRecyclers = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclersServiceRangeBean.getManagerId()).eq("company_id", companyId).eq("status_", "1"));
             if (ManagerRecyclers == null) {
                 return "查询不到传入的经理信息";
             }
@@ -267,11 +256,6 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             companyRecycler.setIsManager("1");
             companyRecycler.setStatus("1");
             companyRecyclerService.updateById(companyRecycler);
-            RecyclersTitle recyclersTitle = new RecyclersTitle();
-            recyclersTitle.setRecycleId(Integer.parseInt(recyclersServiceRangeBean.getRecycleId()));
-            recyclersTitle.setTitleId(Integer.parseInt(recyclersServiceRangeBean.getTitle()));
-            recyclersTitleService.insert(recyclersTitle);
-
             return "操作成功";
         }
         return "您的操作有误";
@@ -293,15 +277,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     @Transactional
     @Override
     public Object updateOrSaveRecyclersRange(RecyclersServiceRangeBean recyclersServiceRangeBean, Integer companyId) {
-        Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_", "1");
-        CompanyRecycler companyRecycler = null;
-        if ("1".equals(recyclersServiceRangeBean.getTitle()) || "2".equals(recyclersServiceRangeBean.getTitle())) {
-            wrapper.eq("type_", "1");
-            companyRecycler = companyRecyclerService.selectOne(wrapper);
-        } else if ("4".equals(recyclersServiceRangeBean.getTitle())) {
-            wrapper.eq("type_", "4");
-            companyRecycler = companyRecyclerService.selectOne(wrapper);
-        }
+        CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_", "1"));
         //根据市级id查询具体信息
         Area area = areaService.selectById(recyclersServiceRangeBean.getCityId());
         if (area == null) {
@@ -409,12 +385,6 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             resultMap.put("areaList", areaList);
             return resultMap;
         } else if ("2".equals(title)) {
-//			areaList = ( List<Map<String,Object>>)recyclersRangeHouseholdService.getStreeRecyclersRange(areaId, recycleId, companyId.toString());
-//			for (Map<String, Object> map:areaList){
-//				communityList = recyclersRangeHouseholdService.getCommunityRecyclersRange(map.get("id").toString(), recycleId, companyId.toString());
-//				map.put("communityList",communityList);
-//			}
-//			resultMap.put("areaList",areaList);
             areaList = (List<Map<String, Object>>) recyclersRangeHouseService.getStreeRecyclersRange(areaId, recycleId, companyId.toString());
             for (Map<String, Object> map : areaList) {
                 communityList = recyclersRangeHouseService.getCommunityRecyclersRange(map.get("id").toString(), recycleId, companyId.toString());
@@ -442,10 +412,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
      * @return
      */
     @Override
-    public Object getRangeRecyclersList(Integer companyId, String recycleName, String cityId, Integer pageNum, Integer pageSize, String isBigRecycle, String tel) {
+    public Object getRangeRecyclersList(Integer companyId, String recycleName, String cityId, Integer pageNum, Integer pageSize, String tel) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        List<Map<String, Object>> recycleList = recyclersMapper.getRangeRecyclersList(companyId.toString(), recycleName, cityId, (pageNum - 1) * pageSize, pageSize, isBigRecycle, tel);
-        Integer count = recyclersMapper.getRangeRecyclersListCount(companyId.toString(), recycleName, cityId, isBigRecycle, tel);
+        List<Map<String, Object>> recycleList = recyclersMapper.getRangeRecyclersList(companyId.toString(), recycleName, cityId, (pageNum - 1) * pageSize, pageSize, tel);
+        Integer count = recyclersMapper.getRangeRecyclersListCount(companyId.toString(), recycleName, cityId, tel);
         if (recycleList.isEmpty()) {
             return resultMap;
         }
@@ -485,24 +455,21 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     }
 
     @Override
-    public List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId, String isBigRecycle) {
-        return recyclersMapper.getRecyclersListByParentId(companyId, recycleId, isBigRecycle);
+    public List<Recyclers> getRecyclersListByParentId(Integer companyId, String recycleId) {
+        return recyclersMapper.getRecyclersListByParentId(companyId, recycleId);
     }
 
     @Override
     public Object getAreaRecyclersRangeList(RecyclersServiceRangeBean recyclersServiceRangeBean, String companyId) {
-        RecyclerCompany recyclerCompany = recyclerCompanyService.selectOne(new EntityWrapper<RecyclerCompany>().eq("recycler_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("status_", 1));
         Map<String, Object> resultMap = new HashMap<>();
         List<Map<String, Object>> areaList = null;
         if ("4".equals(recyclersServiceRangeBean.getTitle())) {
             areaList = (List<Map<String, Object>>) recyclersRangeBigService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
         } else if ("2".equals(recyclersServiceRangeBean.getTitle())) {
-            //areaList = ( List<Map<String,Object>>)recyclersRangeHouseholdService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
             areaList = (List<Map<String, Object>>) recyclersRangeHouseService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
         } else if ("1".equals(recyclersServiceRangeBean.getTitle())) {
             areaList = (List<Map<String, Object>>) recyclersRangeApplianceService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
         }
-
         List<Map<String, Object>> recyclerTitleList = recyclersTitleService.getRecyclerTitleList(recyclersServiceRangeBean.getRecycleId());
         resultMap.put("recyclerTitleList", recyclerTitleList);
         resultMap.put("areaList", areaList);

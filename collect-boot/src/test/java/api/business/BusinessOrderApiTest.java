@@ -14,6 +14,7 @@ import com.tzj.collect.core.param.ali.IdAmountListBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.OrderItemBean;
 import com.tzj.collect.core.param.business.CompanyBean;
+import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.api.utils.SignUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -49,12 +50,12 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		CompanyBean companyBean = new CompanyBean();
-		companyBean.setCode("faa2acff6aba45bfb6c10eddf0dc3F05");
+		RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
+		recyclersServiceRangeBean.setRecycleId("2205");
 
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.token.saveAliTokenByCode");
+		param.put("name","business.recycle.getRecyclers");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -62,7 +63,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",companyBean);
+		param.put("data",recyclersServiceRangeBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);

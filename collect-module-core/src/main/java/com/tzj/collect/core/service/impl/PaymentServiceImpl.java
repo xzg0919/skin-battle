@@ -205,19 +205,33 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     public static void main(String[] args) throws Exception {
-        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
-        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
-        request.putOtherTextParam("app_auth_token", "202004BBc31d3ee0ff544085bce8677abdeffX05");
-        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
-        model.setOutBizNo(UUID.randomUUID().toString().replace("-",""));
-        model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
-        model.setPayeeAccount("2088212854989662");
-        model.setAmount("0.1");
-        model.setPayerShowName("垃圾分类回收(收呗)货款");
-        model.setRemark("垃圾分类回收(收呗)货款");
-        request.setBizModel(model);
-        AlipayFundTransToaccountTransferResponse response = alipayClient.execute(request);
-        System.out.println(response.getBody());
+//        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+//        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+//        request.putOtherTextParam("app_auth_token", "202004BBc31d3ee0ff544085bce8677abdeffX05");
+//        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
+//        model.setOutBizNo(UUID.randomUUID().toString().replace("-",""));
+//        model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
+//        model.setPayeeAccount("2088212854989662");
+//        model.setAmount("0.1");
+//        model.setPayerShowName("垃圾分类回收(收呗)货款");
+//        model.setRemark("垃圾分类回收(收呗)货款");
+//        request.setBizModel(model);
+//        AlipayFundTransToaccountTransferResponse response = alipayClient.execute(request);
+//        System.out.println(response.getBody());
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
+        request.setBizContent("{" +
+                "\"out_biz_no\":\""+7338322+"\"" +
+                //"\"order_id\":\"20160627110070001502260006780837\"" +
+                "  }");
+        AlipayFundTransOrderQueryResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        } catch (AlipayApiException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(response.getBody());;
     }
     /**
      * 根据支付宝交易号查询该交易的详细信息

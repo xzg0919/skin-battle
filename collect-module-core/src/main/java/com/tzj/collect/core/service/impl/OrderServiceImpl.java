@@ -855,11 +855,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             } else {
                 order.setIsTenGreen("0");
             }
-            //获取当前定单的成交价格
-            Object paymentPrice = orderMapper.paymentPriceByOrderId(Integer.parseInt(order.getOrderId()));
-            if (paymentPrice == null) {
-                paymentPrice = 0;
-            }
             if (order.getTitle() == CategoryType.HOUSEHOLD) {
                 attName = new HashSet<>();
                 //获得父类名称(如果订单已完成，名称从完成订单分类中获取)
@@ -876,12 +871,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
                 order.setTitle(CategoryType.HOUSEHOLD);
                 order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
-                order.setPaymentPrice(paymentPrice);
                 orderLists.add(order);
             } else if (order.getTitle() == CategoryType.DIGITAL) {
                 order.setCateAttName4Page(order.getCateName());
                 order.setTitle(CategoryType.DIGITAL);
-                order.setPaymentPrice(paymentPrice);
+                orderLists.add(order);
+            }else if (order.getTitle() == CategoryType.BIGTHING) {
+                order.setCateAttName4Page(order.getCateName());
+                order.setTitle(CategoryType.BIGTHING);
                 orderLists.add(order);
             }
         }
@@ -1717,6 +1714,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			case "ALREADY":
 				order.setStatus(OrderType.ALREADY);
 				order.setReceiveTime(new Date());
+                order.setAchPrice(BigDecimal.ZERO);
 				orderLog.setOpStatusAfter("ALREADY");
                 orderLog.setOp("已接单");
                 this.updateById(order);
@@ -1988,13 +1986,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		String descrb = "";
 		Order order = orderService.selectById(orderBean.getId());
 		Recyclers recycler = recyclersService.selectById(order.getRecyclerId());
-		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1");
-		if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-			wrapper.eq("type_","4");
-		}else {
-			wrapper.eq("type_","1");
-		}
-		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
+		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1"));
 		if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){
 			Category category = categoryService.selectById(order.getCategoryId());
 			descrb = category.getName();
@@ -3291,6 +3283,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @param orderId
 	 * @return
 	 */
+	@Override
 	public String orderSendRecycleByOrderId(Integer orderId){
 
 		List<Recyclers> sendOrderRecyclersList = recyclersService.getSendOrderRecyclersList(orderId);

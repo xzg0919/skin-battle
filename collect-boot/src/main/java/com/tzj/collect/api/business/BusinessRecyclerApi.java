@@ -109,8 +109,9 @@ public class BusinessRecyclerApi {
 	 */
 	 @Api(name = "business.search.editorDelflag", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public String editorDelflag(BusinessRecyclerBean recyclerBean){		
-		 CompanyRecycler companyRecycler = companyRecyclerService.getCompanyRecyclerByRecyclerId(recyclerBean.getId(),recyclerBean.getIsBigRecycle());
+	public String editorDelflag(BusinessRecyclerBean recyclerBean){
+		 CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		 CompanyRecycler companyRecycler = companyRecyclerService.getCompanyRecyclerByRecyclerId(recyclerBean.getId(),recyclerBean.getIsBigRecycle(),companyAccount.getCompanyId());
 		 companyRecycler.setDelFlag(recyclerBean.getDelFlag());
 		 companyRecyclerService.updateById(companyRecycler);
 		return "操作成功";
@@ -153,13 +154,7 @@ public class BusinessRecyclerApi {
 			companyRecyclerService.update(companyRecycler, new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId()));
 		   break;
 		case "2" :
-			Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId());
-			if ("Y".equals(recyclerBean.getIsBigRecycle())){
-				wrapper.eq("type_","4");
-			}else {
-				wrapper.eq("type_","1");
-			}
-			CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(wrapper);
+			CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId()));
 			companyRecycler1.setStatus("2");//拒绝
 			companyRecycler1.setUpdateDate(Calendar.getInstance().getTime());
 			companyRecyclerService.updateById(companyRecycler1);
@@ -196,11 +191,7 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getRecyclers(BusinessRecyclerBean recyclerBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		String isBigRecycle = "N";
-		if (recyclerBean != null){
-			isBigRecycle = recyclerBean.getIsBigRecycle();
-		}
-		return recycleService.getRecyclers(companyAccount.getCompanyId(), isBigRecycle);
+		return recycleService.getRecyclers(companyAccount.getCompanyId());
 	}
 	/**
 	 * 保存业务经理，和下属回收人员的信息(最新)
@@ -275,7 +266,7 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getRecyclersList(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return recycleService.getRangeRecyclersList(companyAccount.getCompanyId(),recyclersServiceRangeBean.getRecycleName(),recyclersServiceRangeBean.getCityId(),recyclersServiceRangeBean.getPageNum(),recyclersServiceRangeBean.getPageSize(),recyclersServiceRangeBean.getIsBigRecycle(), recyclersServiceRangeBean.getTel());
+		return recycleService.getRangeRecyclersList(companyAccount.getCompanyId(),recyclersServiceRangeBean.getRecycleName(),recyclersServiceRangeBean.getCityId(),recyclersServiceRangeBean.getPageNum(),recyclersServiceRangeBean.getPageSize(), recyclersServiceRangeBean.getTel());
 	}
 	/**
 	 * 根据回收经理Id获取下属回收人员列表
@@ -288,11 +279,7 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public List<Recyclers> getSunRecyclersList(RecyclersServiceRangeBean recyclerBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-			String isBigRecycle = "N";
-			if (recyclerBean != null){
-				isBigRecycle = recyclerBean.getIsBigRecycle();
-			}
-		return recycleService.getRecyclersListByParentId(companyAccount.getCompanyId(), recyclerBean.getRecycleId(), isBigRecycle);
+		return recycleService.getRecyclersListByParentId(companyAccount.getCompanyId(), recyclerBean.getRecycleId());
 	}
 	/**
 	 * 根据回收人员Id查询详细信息列表
@@ -346,7 +333,7 @@ public class BusinessRecyclerApi {
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object recycleDelete(RecyclersServiceRangeBean recyclersServiceRangeBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return companyRecyclerService.recycleDelete(companyAccount.getCompanyId(), recyclersServiceRangeBean.getRecycleId(),recyclersServiceRangeBean.getTitle());
+		return companyRecyclerService.recycleDelete(companyAccount.getCompanyId(), recyclersServiceRangeBean.getRecycleId());
 	}
 	/**
 	 * 查询选中小区数量信息

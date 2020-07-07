@@ -173,7 +173,7 @@ public class OutExcelController {
     @RequestMapping("/outOrderExcel")
     public void outOrderExcel(HttpServletResponse response, OrderBean orderBean)throws Exception {
         //五废订单需要单独格式导出
-        if ( !"2".equals(orderBean.getType())) {
+        if ("1".equals(orderBean.getType())||"4".equals(orderBean.getType())) {
             List<Map<String, Object>> list = orderService.outOrderExcel(orderBean.getId(), orderBean.getType(), orderBean.getStartTime(), orderBean.getEndTime(),orderBean.getRecyclerName());
             //添加表头
             List<String> titles = new ArrayList<>();
@@ -454,7 +454,11 @@ public class OutExcelController {
         String redisKeyName = LocalDate.now().getYear()+":"+LocalDate.now().getDayOfYear()+":"+bOrderBean.getCompanyId()+":"+ type;
         RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
         if (null == saveOrGetFromRedis.getFromRedis(redisKeyName, jedisPool)){
-            saveOrGetFromRedis.saveInRedis(redisKeyName,System.currentTimeMillis(), 24*3600, jedisPool);
+            try{
+                saveOrGetFromRedis.saveInRedis(redisKeyName,System.currentTimeMillis(), 24*3600, jedisPool);
+            }catch (Exception e){
+                throw new ApiException("今日已经导出过，不能再执行此操作");
+            }
         }else {
             throw new ApiException("今日已经导出过，不能再执行此操作");
         }
