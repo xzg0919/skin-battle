@@ -3024,6 +3024,7 @@
         INNER JOIN sb_order_item soi ON soo.id = soi.order_id
         WHERE
         soo.del_flag = 0
+		AND soo.order_from = 0
         AND soo.company_id = #{companyId}
         <choose>
             <when test="categoryType == null  or categoryType == ''">
@@ -3056,9 +3057,10 @@
         WHERE
         soo.status_ = 3
         AND soo.del_flag = 0
+		AND soo.order_from = 0
         <choose>
             <when test="categoryType == null  or categoryType == ''">
-                AND soo.title IN (2, 3, 5)
+                AND soo.title IN (2,3,4,5)
             </when>
             <otherwise>
                 AND soo.title IN (#{categoryType})
@@ -3148,10 +3150,11 @@
 				LEFT JOIN sb_order_item soi ON soo.id = soi.order_id
 				WHERE
 					soo.del_flag = 0
+		        AND soo.order_from = 0
 				AND soo.company_id = #{companyId}
 				<choose>
 					<when test="categoryType == null  or categoryType == ''">
-						AND soo.title IN (1,2, 3, 5)
+						AND soo.title IN (1,2,3,4,5)
 					</when>
 					<otherwise>
 						AND soo.title IN (#{categoryType})
