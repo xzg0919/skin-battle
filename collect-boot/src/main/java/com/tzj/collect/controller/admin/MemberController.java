@@ -17,6 +17,8 @@ public class MemberController {
 
 
 
+
+
     @RequestMapping("/get/token")
     public String getAliUserId(HttpServletRequest request){
         Map<String,String> paramMap = new HashMap<>();

@@ -19,4 +19,11 @@ public class TaobaoUtil {
 
 
 
+    public static  String TZJ_TAOBAO_APP_KEY = "30416949";
+
+    public static  String TZJ_TAOBAO_APP_SECRET = "481655b0e174bc85a844e298e028d241";
+
+    public static  String TZJ_TAOBAO_APP_URL = "http://gw.api.taobao.com/router/rest";
+
+
 }
