@@ -1714,7 +1714,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			case "ALREADY":
 				order.setStatus(OrderType.ALREADY);
 				order.setReceiveTime(new Date());
-                order.setAchPrice(BigDecimal.ZERO);
 				orderLog.setOpStatusAfter("ALREADY");
                 orderLog.setOp("已接单");
                 this.updateById(order);
@@ -1730,7 +1729,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 				//异步保存至redis中(订单号，派单时间)
 //				asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclerId.longValue(), System.currentTimeMillis(), "save");
-
+                order.setAchPrice(BigDecimal.ZERO);
 				order.setRecyclerId(recyclerId);
 				order.setDistributeTime(new Date());
 				order.setIsRead("0");
@@ -1825,7 +1824,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				List<Map<String, Object>> priceAndAmount = (List<Map<String, Object>>) map.get("listMapObject");
 				result.setPriceAndAmount(priceAndAmount);
 				//result.setGreenCount(map.get("greenCount"));
-			} else if (result.getTitle() == CategoryType.DIGITAL) {
+			} else{
 				orderbean.setId(Integer.parseInt(result.getOrderId()));
 				List<AttrItem> orderAttrItem = orderMapper.getOrderItemList(orderbean);
 				result.setAttrItemlist(orderAttrItem);

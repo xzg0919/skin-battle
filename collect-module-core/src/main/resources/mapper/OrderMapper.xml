@@ -61,6 +61,7 @@
 			) f ON a.id = f.order_id
 			WHERE
 			a.del_flag = '0'
+			AND a.order_from = '0'
 			AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
 			<if test="status != null">
 				AND  a.status_ in
@@ -129,6 +130,7 @@
 					) f ON a.id = f.order_id
 					WHERE
 					a.del_flag = '0'
+					AND a.order_from = '0'
 					AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
 					<if test="status != null">
 						AND  a.status_ in
@@ -2809,6 +2811,7 @@
 			WHERE
 			del_flag = 0
 			AND company_id = #{companyId}
+			AND order_from = '0'
 			<if test="categoryType != null and categoryType != ''">
 				AND title IN (#{categoryType})
 			</if>
@@ -2866,6 +2869,7 @@
 		WHERE
 		del_flag = 0
 		AND company_id = #{companyId}
+		AND order_from = '0'
 		<if test="categoryType != null and categoryType != ''">
 			AND title IN (#{categoryType})
 		</if>
@@ -2955,6 +2959,7 @@
         WHERE
         soo.del_flag = 0
         AND soo.company_id = #{companyId}
+        AND soo.order_from = '0'
         <choose>
             <when test="categoryType != null and categoryType != ''">
 				AND soo.title = #{categoryType}
@@ -2984,6 +2989,7 @@
         INNER JOIN sb_order_item_ach soia ON soo.id = soia.order_id
         WHERE
         soo.status_ = 3
+        AND soo.order_from = '0'
         AND soo.del_flag = 0
         <choose>
             <when test="categoryType != null  and categoryType != ''">
@@ -3076,6 +3082,7 @@
 				LEFT JOIN sb_order_item soi ON soo.id = soi.order_id
 				WHERE
 					soo.del_flag = 0
+				AND soo.order_from = '0'
 				AND soo.company_id = #{companyId}
 				<choose>
 					<when test="categoryType != null and categoryType != ''">

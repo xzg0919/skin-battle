@@ -624,6 +624,14 @@ public class OrderApi {
             orderbean.setCompanyName(company.getName());
             orderbean.setDingDingUrl(company.getDingDingUrl());
             orderbean.setDingDingSing(company.getDingDingSing());
+            //判断是否开启自动派单
+            try {
+                if ("1".equals(company.getIsOpenOrder())) {
+                    orderService.orderSendRecycleByOrderId(Integer.parseInt(resultMap.get("id") + ""));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             throw new ApiException("回收公司异常！！！！！");
         }
