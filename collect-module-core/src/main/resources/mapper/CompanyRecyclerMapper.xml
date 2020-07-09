@@ -40,15 +40,6 @@
 		INNER JOIN sb_company_recycler scr ON sc.id = scr.company_id
 		WHERE
 			scr.recycler_id = #{recyclerId}
-		<choose>
-			<when test=" isBigRecycle == 'Y'.toString() ">
-				and scr.type_ = '4'
-			</when>
-			<otherwise>
-				and scr.type_ = '1'
-			</otherwise>
-		</choose>
-
 	</select>
 	
 	 <select id="findIdCard" resultType="Recyclers" parameterType="com.tzj.collect.core.param.business.BusinessRecyclerBean">

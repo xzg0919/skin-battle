@@ -75,7 +75,7 @@ public class AppRecyclersApi {
 	@Autowired
 	private FileUploadServiceImpl fileUploadServiceImpl;
 	@Autowired
-	private FileUpload fileUpload;
+	private CompanyService companyService;
 	@Autowired
 	private AliPayService aliPayService;
 	@Autowired
@@ -262,31 +262,25 @@ public class AppRecyclersApi {
 			map.put("sta", "isReal");// 资料未芝麻实名
 			return JSON.toJSONString(map);
 		}
-		List<AppCompany> list = companyRecyclerService.getRecyclerCompanyStatus(recyclers.getId().toString(),recyclersBean.getIsBigRecycle());
-		String fail = "";
-		map.put("failName", "");
-		if (list.size() > 0) {
-			for (AppCompany appCompany : list) {
-				switch (appCompany.getStatus()) {
-				case "1":
-					map.put("sta", "success");// 入驻成功
-					return JSON.toJSONString(map);
-				case "2":
-					fail += appCompany.getComName() + ",";
-				default:
-					break;
-				}
-				;
-			}
-		} else {
+		EntityWrapper<CompanyRecycler> wrapper = new EntityWrapper<>();
+		wrapper.eq("recycler_id",recyclers.getId());
+		List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(wrapper);
+		if (null==companyRecyclerList||companyRecyclerList.isEmpty()){
 			map.put("sta", "empty");// 未申请任何公司
 			return JSON.toJSONString(map);
 		}
-		if (fail != null && !"".equals(fail)) {
-			map.put("failName", fail.substring(0, fail.length() - 1));
+		wrapper.eq("status_","1");
+		List<CompanyRecycler> companyRecyclerList1 = companyRecyclerService.selectList(wrapper);
+		if (null==companyRecyclerList1||companyRecyclerList1.isEmpty()){
+			CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recyclers.getId()).eq("status_", "2").orderBy("update_date", false).last("limit 0,1"));
+			Company company = companyService.selectById(companyRecycler.getCompanyId());
+			map.put("failName", company.getName());
+			map.put("sta", "failure");// 被所有公司拒绝
+			return JSON.toJSONString(map);
+		}else {
+			map.put("sta", "success");// 入驻成功
+			return JSON.toJSONString(map);
 		}
-		map.put("sta", "failure");// 被所有公司拒绝
-		return JSON.toJSONString(map);
 	}
 
 	/**
