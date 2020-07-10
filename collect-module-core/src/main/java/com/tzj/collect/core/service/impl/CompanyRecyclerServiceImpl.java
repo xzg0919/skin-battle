@@ -232,6 +232,8 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 			resultList = mapper.getHouseCompanyRange(companyId);
 		}else if ("4".equals(title)){
 			resultList = mapper.getBigCompanyRange(companyId);
+		}else {
+			resultList = mapper.getCompanyRange(companyId);
 		}
 		return resultList;
 	}
