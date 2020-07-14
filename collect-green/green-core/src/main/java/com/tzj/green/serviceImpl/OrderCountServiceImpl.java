@@ -53,7 +53,9 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
                 mapCount.put("equipNo", "");
                 listOrder.add(mapCount);
             }
-            redisUtil.lSet("order",listOrder,60);
+            if (list!=null&&!list.isEmpty()) {
+                redisUtil.lSet("order",listOrder,60);
+            }
         }
         /*Integer count=list.size();
         Map<String, Object> resultMap = new HashMap<>();
