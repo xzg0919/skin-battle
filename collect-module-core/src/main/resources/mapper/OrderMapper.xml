@@ -744,7 +744,7 @@
 		<if test="recyclerName !=null and recyclerName !=''">
 			AND sr.name_ like CONCAT('%',#{recyclerName},'%')
 		</if>
-		AND soo.title IN (2, 3)
+		AND soo.title = #{title}
 		and sr.id = soo.recycler_id
 		and soo.company_id=#{companyId}
 		ORDER BY

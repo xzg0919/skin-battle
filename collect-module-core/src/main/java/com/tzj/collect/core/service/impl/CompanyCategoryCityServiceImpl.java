@@ -127,7 +127,7 @@ public class CompanyCategoryCityServiceImpl extends ServiceImpl<CompanyCategoryC
     @Transactional
     public String updateCompanyCategoryPriceByCategoryId(CategoryBean categoryBean){
 
-        if (StringUtils.isNotBlank(categoryBean.getAdminCommissions())||StringUtils.isNotBlank(categoryBean.getCompanyCommissions())){
+        if (StringUtils.isNotBlank(categoryBean.getAdminCommissions())||StringUtils.isNotBlank(categoryBean.getCompanyCommissions())||StringUtils.isNotBlank(categoryBean.getFreeCommissions())){
             CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", categoryBean.getCompanyId()).eq("category_id", categoryBean.getCategoryId()));
             if (StringUtils.isNotBlank(categoryBean.getAdminCommissions())){
                 companyCategory.setAdminCommissions(new BigDecimal(categoryBean.getAdminCommissions()));

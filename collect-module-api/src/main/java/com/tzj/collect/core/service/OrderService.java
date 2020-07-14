@@ -397,7 +397,7 @@ public interface OrderService extends IService<Order> {
 	 * added by michael_wang
 	 */
 	@DS("slave")
-	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime,String recyclerName);
+	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime,String recyclerName,String title);
 	@DS("slave")
 	Object getReyclersServiceAbility(OrderBean orderBean,Integer companyId);
 	@DS("slave")

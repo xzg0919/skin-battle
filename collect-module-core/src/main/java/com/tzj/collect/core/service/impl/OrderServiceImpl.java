@@ -3791,8 +3791,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * added by michael_wang
 	 */
 	@Override
-	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName){
-		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName);
+	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName,String title){
+		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName,title);
 	}
 	@Override
     public Object getReyclersServiceAbility(OrderBean orderBean, Integer companyId){

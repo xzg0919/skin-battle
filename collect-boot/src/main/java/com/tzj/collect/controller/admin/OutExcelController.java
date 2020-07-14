@@ -213,8 +213,7 @@ public class OutExcelController {
             String fileName = fdate.format(new Date()) + ".xlsx";
             ExcelUtils.exportExcel(response, fileName, data);
         }else {
-            List<Map<String, Object>> list = orderService.
-                    orderDetail4HorseHold(orderBean.getId(),orderBean.getStartTime(), orderBean.getEndTime(),orderBean.getRecyclerName());
+            List<Map<String, Object>> list = orderService.orderDetail4HorseHold(orderBean.getId(),orderBean.getStartTime(), orderBean.getEndTime(),orderBean.getRecyclerName(),orderBean.getType());
             //添加表头
             List<String> titles = new ArrayList<>();
             ExcelData data = new ExcelData();
