@@ -57,7 +57,11 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
     @Override
     public Payment selectPayByOrderSn(String orderNo){
-        return selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).eq("status_",Payment.STATUS_PAYED));
+        Payment payment = selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).eq("status_", Payment.STATUS_PAYED));
+        if(null == payment){
+            payment = selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).eq("status_", Payment.STATUS_TRANSFER));
+        }
+        return payment;
     }
 
     /**
@@ -86,6 +90,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         try {
             //这里和普通的接口调用不同，使用的是sdkExecutee
             AlipayTradeCreateResponse response = alipayClient.execute(request);
+            payment.setTradeNo(response.getTradeNo());
+            this.updateById(payment);
             return response.getTradeNo();
         } catch (AlipayApiException e) {
             throw new ApiException("系统异常：" + e.getErrMsg());
@@ -394,5 +400,10 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             throw new ApiException("系统异常：" + e.getErrMsg());
         }
         return response;
+    }
+
+    @Override
+    public Payment selectPayOneMinByOrderSn(String orderNo) {
+        return baseMapper.selectPayOneMinByOrderSn(orderNo);
     }
 }

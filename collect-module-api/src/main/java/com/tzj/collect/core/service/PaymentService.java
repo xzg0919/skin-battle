@@ -23,7 +23,7 @@ public interface PaymentService extends IService<Payment> {
      */
     Payment selectByOutTradeNo(String outTradeNo);
     /**
-     * 根据订单号查询是否又成功支付的订单 payment
+     * 根据订单号查询是否有成功支付的订单 payment
      * @param orderNo
      * @return
      */
@@ -80,4 +80,6 @@ public interface PaymentService extends IService<Payment> {
       * @return: 
       */
     AlipayFundTransToaccountTransferResponse iotTransfer(String aliUserId, String price, String outBizNo);
+
+    Payment selectPayOneMinByOrderSn(String orderNo);
 }

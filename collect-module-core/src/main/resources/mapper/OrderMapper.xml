@@ -728,7 +728,7 @@
 		'%Y-%m-%d'
 		) AS dateFor
 		FROM
-		sb_order soo,sb_recyclers sr
+		sb_order soo LEFT JOIN sb_recyclers sr ON soo.recycler_id = sr.id
 		WHERE
 		1=1
 		<if test="startTime !=null and startTime !=''">
@@ -745,7 +745,6 @@
 			AND sr.name_ like CONCAT('%',#{recyclerName},'%')
 		</if>
 		AND soo.title = #{title}
-		and sr.id = soo.recycler_id
 		and soo.company_id=#{companyId}
 		ORDER BY
 		dateFor

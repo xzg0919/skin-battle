@@ -131,7 +131,14 @@ public class AppOrderPayApi {
         if (null != payment){
             return "该订单已被支付，请勿重复支付";
         }else {
-            payment=new Payment();
+            if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
+                //查询最近一分钟内未支付成功的订单
+                payment=paymentService.selectPayOneMinByOrderSn(order.getOrderNo());
+                if (null!=payment){
+                    return payment.getTradeNo();
+                }
+            }
+                payment=new Payment();
         }
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 
