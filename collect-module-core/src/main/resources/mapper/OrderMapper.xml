@@ -207,7 +207,7 @@
 				 sb_order so
 			LEFT JOIN sb_category sc ON so.category_id = sc.id
 			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
-			LEFT JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id
+			LEFT JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id AND bb.status_ = 1
 			WHERE
 				so.del_flag = '0'
 			AND so.order_from != '1'
