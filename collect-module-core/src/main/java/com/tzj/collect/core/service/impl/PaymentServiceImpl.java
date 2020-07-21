@@ -68,6 +68,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
      * 小程序支付
      */
     @Override
+    @Transactional
     public String genalPayXcx(Payment payment,Order order) {
         Assert.notNull(payment, "payment不能为空！");
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
