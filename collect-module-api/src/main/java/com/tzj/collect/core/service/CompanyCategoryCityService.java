@@ -37,4 +37,6 @@ public interface CompanyCategoryCityService extends IService<CompanyCategoryCity
 
     String updateCompanyCategoryAttrOptionByOptionId(CategoryBean categoryBean);
 
+    List<Map<String, Object>> getCompanyCategoryListByCityTitle(Integer companyId, Integer cityId, Integer categoryId);
+
 }

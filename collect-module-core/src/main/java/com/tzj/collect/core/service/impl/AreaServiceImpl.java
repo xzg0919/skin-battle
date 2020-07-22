@@ -715,7 +715,22 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		resultMap.put("cityRatio",cityRatio);
 		return resultMap;
 	}
-
+	@Override
+	public Map<String,Object> getRatioByCompanyId(Long cityId,Long companyId){
+		CompanyCityRatio companyCityRatio = companyCityRatioService.selectOne(new EntityWrapper<CompanyCityRatio>().eq("company_id", companyId).eq("city_id", cityId));
+		BigDecimal cityRatio = null;
+		if (null == companyCityRatio){
+			Area area = this.selectById(cityId);
+			if (null!=area){
+				cityRatio = area.getRatio();
+			}
+		}else {
+			cityRatio = companyCityRatio.getRatio();
+		}
+		Map<String,Object> resultMap = new HashMap<>();
+		resultMap.put("cityRatio",cityRatio);
+		return resultMap;
+	}
 	@Override
 	@Cacheable(value = "allAreaStreetIdNameInfo" , key = "'allAreaStreetIdNameInfo'",   sync = true)
 	public Map<String, Object> allAreaStreetIdNameInfo() {

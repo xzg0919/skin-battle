@@ -188,4 +188,9 @@ public class CompanyCategoryCityServiceImpl extends ServiceImpl<CompanyCategoryC
         return "操作成功";
     }
 
+    @Override
+    public List<Map<String, Object>> getCompanyCategoryListByCityTitle(Integer companyId, Integer cityId, Integer categoryId) {
+        return companyCategoryCityMapper.getCompanyCategoryListByCityTitle(companyId,cityId,categoryId);
+    }
+
 }
