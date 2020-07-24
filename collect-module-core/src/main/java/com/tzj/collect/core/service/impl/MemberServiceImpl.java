@@ -49,7 +49,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Autowired
     private MemberMapper memberMapper;
     @Autowired
-    private DsddMemberService dsddMemberService;
+    private MemberXianyuService memberXianyuService;
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -602,6 +602,65 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     }
 
     @Override
+    @Transactional
+    public Object saveXianYuMember(String openId, String accessToken,String linkName,String picUrl) {
+        //查询用户是否在闲鱼用户表内存在
+        MemberXianyu memberXianyu = memberXianyuService.selectOne(new EntityWrapper<MemberXianyu>().eq("open_id", openId));
+        if (null == memberXianyu){
+            memberXianyu = new MemberXianyu();
+        }
+        memberXianyu.setLinkName(linkName);
+        memberXianyu.setPicUrl(picUrl);
+        memberXianyu.setOpenId(openId);
+        memberXianyu.setAccessToken(accessToken);
+        memberXianyuService.insertOrUpdate(memberXianyu);
+        //查询用户在支付宝是否存在
+        Member member = this.selectMemberByAliUserId(memberXianyu.getAliUserId());
+        if (null == member){
+            member = new Member();
+        }
+        member.setName(linkName);
+        member.setIsCertified("1");
+        member.setCity("闲鱼");
+        member.setAliUserId(memberXianyu.getAliUserId());
+        member.setLinkName(linkName);
+        member.setPicUrl(picUrl);
+        member.setAddress("闲鱼");
+        member.setAliCardNo(memberXianyu.getCardNo());
+        member.setCardNo(memberXianyu.getCardNo());
+        member.setChannelId("1");
+        this.inserOrUpdatetMember(member);
+        Map<String,Object> resultMap = new HashMap<>();
+        String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
+        String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
+        System.out.println("token:" + securityToken);
+        resultMap.put("member", member);
+        resultMap.put("token", securityToken);
+        return resultMap;
+
+    }
+
+    @Override
+    @Transactional
+    public Object updateAliAccount(String aliAccount, String aliUserId) {
+        //查询用户在支付宝是否存在
+        Member member = this.selectMemberByAliUserId(aliUserId);
+        if (null == member){
+           throw new ApiException("用户信息异常");
+        }
+        if ("1".equals(member.getChannelId())){
+            //查询用户是否在闲鱼用户表内存在
+            MemberXianyu memberXianyu = memberXianyuService.selectOne(new EntityWrapper<MemberXianyu>().eq("ali_user_id", aliUserId));
+            if (null == memberXianyu){
+                throw new ApiException("用户信息异常");
+            }
+            memberXianyu.setAliAccount(aliAccount);
+            memberXianyuService.updateById(memberXianyu);
+        }
+        return "操作成功";
+    }
+
+    @Override
     public Member selectMemberByAliUserId(String aliUserId) {
         String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
         return memberMapper.selectMemberByAliUserId(aliUserId, memberName);
@@ -633,7 +692,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Override
     @Transactional
     public Integer inserOrUpdatetMember(Member member) {
-        if (StringUtils.isBlank(member.getAliUserId())) {
+        if (null==member.getId()) {
             return this.insertMember(member);
         } else {
             return this.updateMemberByAliUserId(member);

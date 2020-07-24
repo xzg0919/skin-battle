@@ -25,7 +25,7 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("2088432503718960", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("3020072410353660", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
 //                String token= JwtUtils.generateToken(userId, ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
@@ -37,16 +37,16 @@ public class OrderTest {
                 iotPostParamBean.setCabinetNo("869012040190428");
 
                 MemberBean memberBean = new MemberBean();
-                memberBean.setAuthCode("dasdasdwadsadsadsad");
+                memberBean.setAliAccount("118375336389");
 
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name", "member.getXyAuthCode");
+                param.put("name", "member.updateAliAccount");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
                 param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
-                //param.put("token", securityToken);
+                param.put("token", securityToken);
                 param.put("nonce", UUID.randomUUID().toString());
                 param.put("data", memberBean);
 
@@ -55,6 +55,7 @@ public class OrderTest {
                 String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_11223344");
                 param.put("sign",sign);
                 Long i = new Date().getTime();
+                System.out.println("请求的参数是 ："+JSON.toJSONString(param));
                 Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
                 String resultJson=response.body().string();
                 Long ii = new Date().getTime();

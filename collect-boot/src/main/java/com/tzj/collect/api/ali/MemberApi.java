@@ -171,6 +171,15 @@ public class MemberApi {
 	@AuthIgnore
 	public Object getMember(MemberBean memberBean) {
 		return memberService.selectMemberByAliUserId(memberBean.getAliUserId());
+	}
+	/**
+	 * 闲鱼用户更新支付宝账号
+	 */
+	@Api(name = "member.updateAliAccount", version = "1.0")
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object updateAliAccount(MemberBean memberBean) {
+		String aliUserId = MemberUtils.getMember().getAliUserId();
+		return memberService.updateAliAccount(memberBean.getAliAccount(),aliUserId);
 
 	}
 }

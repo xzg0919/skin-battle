@@ -2,9 +2,11 @@ package com.tzj.collect.controller.admin;
 
 
 import com.alibaba.fastjson.JSON;
+import com.tzj.collect.core.service.MemberService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,13 +16,11 @@ import java.util.Map;
 @RequestMapping("member")
 public class MemberController {
 
-
-
-
-
+    @Resource
+    private MemberService memberService;
 
     @RequestMapping("/get/token")
-    public String getAliUserId(HttpServletRequest request){
+    public Object getAliUserId(HttpServletRequest request,String accessToken,String linkName,String picUrl){
         Map<String,String> paramMap = new HashMap<>();
         Map<String, String[]> parameterMap = request.getParameterMap();
         for (Iterator iterator = parameterMap.keySet().iterator();iterator.hasNext();){
@@ -34,7 +34,7 @@ public class MemberController {
             paramMap.put(key,valueStr);
             System.out.println(key+"======================"+valueStr);
         }
-        return JSON.toJSONString(paramMap);
+       return memberService.saveXianYuMember(paramMap.get("open_id"),accessToken,linkName,picUrl);
     }
 
 }
