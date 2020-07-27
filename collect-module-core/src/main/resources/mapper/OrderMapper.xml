@@ -205,9 +205,9 @@
 				TIMESTAMPDIFF(MINUTE, IF(so.title = '2',CONCAT(so.arrival_time,' ',SUBSTR(so.arrival_period, 7,5),':00'),IF(so.arrival_period='am',CONCAT(so.arrival_time,' 12:00:00'),CONCAT(so.arrival_time,' 18:00:00'))), IF(so.status_ = '3',so.complete_date,if(so.status_ in ('4','5'),so.cancel_time,NOW()))) AS overTimes
 			FROM
 				 sb_order so
-			LEFT JOIN sb_category sc ON so.category_id = sc.id
-			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
-			LEFT JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id AND bb.status_ = 1
+			INNER JOIN sb_category sc ON so.category_id = sc.id
+			INNER JOIN sb_recyclers sr ON sr.id = so.recycler_id
+			INNER JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id AND bb.status_ = 1
 			WHERE
 				so.del_flag = '0'
 			AND so.order_from != '1'
@@ -275,8 +275,8 @@
 			FROM
 				sb_category sc
 			INNER JOIN sb_order so ON so.category_id = sc.id
-			LEFT JOIN sb_recycle_cancel_log srcl ON srcl.order_id = so.id
-			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
+			INNER JOIN sb_recycle_cancel_log srcl ON srcl.order_id = so.id
+			INNER JOIN sb_recyclers sr ON sr.id = so.recycler_id
 			WHERE
 				so.del_flag = '0'
 				AND so.order_from != '1'
