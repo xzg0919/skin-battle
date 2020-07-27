@@ -687,6 +687,7 @@
 		comId.ach_price as price,
 		comId.amount as weight,
 		comId.adminCommissions,
+		comId.commissionsPrice,
 		comId.backCommissionsPrice,
 		comId.name_ as recycleName
 		FROM
@@ -704,6 +705,7 @@
 		SELECT
 		soo.order_no,
 		soo.id,
+		soo.commissions_price AS commissionsPrice,
 		soo.admin_commissions AS adminCommissions,
 		soo.back_commissions_price AS backCommissionsPrice,
 		sr.name_,
@@ -765,14 +767,15 @@
 			) AS isCash,
 			ROUND(a.ach_price, 2) AS amount,
 			d.name_ AS recyclerName,
+			a.commissions_price AS commissionsPrice,
 			a.admin_commissions AS adminCommissions,
 			a.back_commissions_price as backCommissionsPrice
 			FROM
 			sb_order a
-			LEFT JOIN sb_category b ON a.category_id = b.id
-			LEFT JOIN sb_category bb ON b.parent_id = bb.id
-			LEFT JOIN sb_company c ON a.company_id = c.id
-			LEFT JOIN sb_recyclers d ON a.recycler_id = d.id
+			inner JOIN sb_category b ON a.category_id = b.id
+			inner JOIN sb_category bb ON b.parent_id = bb.id
+			inner JOIN sb_company c ON a.company_id = c.id
+			inner JOIN sb_recyclers d ON a.recycler_id = d.id
 			WHERE
 				a.del_flag = '0'
 			AND a.company_id = #{companyId}
