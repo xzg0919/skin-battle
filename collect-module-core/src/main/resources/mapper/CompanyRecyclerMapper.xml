@@ -383,10 +383,11 @@
 			sce.set_value
 		FROM
 			sb_company_recycler scr
-		INNER JOIN sb_company_equipment sce
+		INNER JOIN sb_company_equipment sce ON scr.company_id = sce.company_id
 		WHERE
 			sce.del_flag = 0
 		AND scr.del_flag = 0
+		AND scr.status_ = 1
 		AND sce.hardware_code = #{topic}
 		ORDER BY
 			RAND()
