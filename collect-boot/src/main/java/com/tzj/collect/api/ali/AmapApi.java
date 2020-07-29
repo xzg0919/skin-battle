@@ -11,10 +11,7 @@ import com.tzj.collect.core.param.ali.AmapAroundParam;
 import com.tzj.collect.core.service.CommunityService;
 import com.tzj.collect.core.service.MapService;
 import com.tzj.collect.entity.Community;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.AuthIgnore;
-import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.*;
 
 import com.tzj.module.easyopen.exception.ApiException;
 import io.itit.itf.okhttp.FastHttpClient;
@@ -48,6 +45,7 @@ public class AmapApi {
      * 更新小区的高德名称
      */
     @Api(name = "amap.update", version = "1.0", ignoreSign = true)
+    @SignIgnore
     public void completeCommunity() throws Exception {
         List<Community> communityList = communityService.list20CommunityByAmapNameNull();
         for (Community community : communityList) {
@@ -65,6 +63,7 @@ public class AmapApi {
      * @return
      */
     @Api(name = "amap.regeo", version = "1.0", ignoreSign = true)
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public AmapResult regeo(String location) throws Exception {
         Assert.hasLength(location, "请输入当前经纬度");
@@ -73,6 +72,7 @@ public class AmapApi {
     }
 
     @Api(name = "amap.around", version = "1.0", ignoreSign = true)
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<AmapResult> around(AmapAroundParam aroundParam) throws Exception {
 

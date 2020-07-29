@@ -132,6 +132,7 @@ public class MemberApi {
 
 
 	@Api(name = "member.getPassIdUrl", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getPassIdUrl() {
 		Member member = MemberUtils.getMember();
@@ -144,6 +145,7 @@ public class MemberApi {
 	 * @param
 	 */
 	@Api(name = "member.saveChannelId", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object saveChannel(MemberBean memberBean) {
 		Member member = MemberUtils.getMember();
@@ -151,6 +153,7 @@ public class MemberApi {
 	}
 
 	@Api(name = "member.form.id", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Map<String, Object> updateUserFormId(OrderBean orderBean){
 		Member member = MemberUtils.getMember();
@@ -176,6 +179,7 @@ public class MemberApi {
 	 * 闲鱼用户更新支付宝账号
 	 */
 	@Api(name = "member.updateAliAccount", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object updateAliAccount(MemberBean memberBean) {
 		String aliUserId = MemberUtils.getMember().getAliUserId();

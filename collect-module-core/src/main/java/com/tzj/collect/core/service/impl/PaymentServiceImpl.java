@@ -159,15 +159,12 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             aliUserId = recyclers.getAliUserId();
         }else {
             aliUserId = payment.getAliUserId();
-            Member member = memberService.selectMemberByAliUserId(aliUserId);
-            if (null != member){
-                if ("1".equals(member.getChannelId())){
-                    //查询用户是否在闲鱼用户表内存在
-                    MemberXianyu memberXianyu = memberXianyuService.selectOne(new EntityWrapper<MemberXianyu>().eq("ali_user_id", aliUserId));
-                    if (null != memberXianyu){
-                        aliUserId = memberXianyu.getAliAccount();
-                        payeeType = "ALIPAY_LOGONID";
-                    }
+            if ("2".equals(order.getOrderFrom())){
+                //查询用户是否在闲鱼用户表内存在
+                MemberXianyu memberXianyu = memberXianyuService.selectOne(new EntityWrapper<MemberXianyu>().eq("ali_user_id", aliUserId));
+                if (null != memberXianyu){
+                    aliUserId = memberXianyu.getAliAccount();
+                    payeeType = "ALIPAY_LOGONID";
                 }
             }
         }

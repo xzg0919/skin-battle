@@ -636,7 +636,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         System.out.println("token:" + securityToken);
         resultMap.put("member", member);
         resultMap.put("token", securityToken);
-        return resultMap;
+        Map<String,Object> map = new HashMap<>();
+        map.put("data",resultMap);
+        map.put("status","sucess");
+        map.put("code","0");
+        map.put("msg","操作成功");
+        return map;
 
     }
 

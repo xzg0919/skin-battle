@@ -258,7 +258,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setUnit(orderbean.getUnit());
             order.setQty(orderbean.getQty());
             order.setLevel(orderbean.getLevel());
-
+            order.setOrderFrom("2");
             order.setGreenCode(orderbean.getGreenCode());
             order.setAliUserId(orderbean.getAliUserId());
             order.setRemarks(orderbean.getRemarks());
@@ -2703,6 +2703,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 order.setIsMysl("0");
             }
 			order.setFormId(orderBean.getFormId());
+            order.setOrderFrom("2");
 			this.insert(order);
 			//将券码跟订单进行绑定
 			if (StringUtils.isNoneBlank(orderBean.getVoucherId())){
@@ -2835,6 +2836,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setQty(orderBean.getQty());
 			order.setRemarks(orderBean.getRemarks());
 			order.setFormId(orderBean.getFormId());
+            order.setOrderFrom("2");
 			this.insert(order);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2956,7 +2958,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setUnit("个");
 			order.setQty(1);
 			order.setLevel(orderbean.getLevel());
-
+            order.setOrderFrom("2");
 			order.setGreenCode(orderbean.getGreenCode());
 			order.setAliUserId(orderbean.getAliUserId());
 			order.setRemarks(orderbean.getRemarks());
