@@ -160,12 +160,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         }else {
             aliUserId = payment.getAliUserId();
             if ("2".equals(order.getOrderFrom())){
-                //查询用户是否在闲鱼用户表内存在
-                MemberXianyu memberXianyu = memberXianyuService.selectOne(new EntityWrapper<MemberXianyu>().eq("ali_user_id", aliUserId));
-                if (null != memberXianyu){
-                    aliUserId = memberXianyu.getAliAccount();
+                    aliUserId = order.getAliAccount();
                     payeeType = "ALIPAY_LOGONID";
-                }
             }
         }
         AlipayFundTransToaccountTransferResponse response = null;
