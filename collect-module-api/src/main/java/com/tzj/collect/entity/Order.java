@@ -259,6 +259,8 @@ public class Order extends DataEntity<Long> {
 	@TableField(exist = false)//页面需要
 	private String categoryTitle;// 垃圾类型
 
+	private String aliAccount;//支付宝账号
+
 
 	public String getDoublePoint() {
 		if (2==cleanUp&&null!=greenCount){
