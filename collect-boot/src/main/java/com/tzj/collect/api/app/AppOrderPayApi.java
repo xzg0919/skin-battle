@@ -118,6 +118,7 @@ public class AppOrderPayApi {
      * @return
      */
     @Api(name = "app.order.tradePay", version = "1.0")
+    @SignIgnore
     public String orderTradePay(OrderPayParam orderPayParam) {
         if(orderPayParam.getPrice().compareTo(BigDecimal.ZERO)==0){
             throw new ApiException("不能支付0元");

@@ -236,7 +236,10 @@ public class OrderApi {
         orderbean.setCommunityId(communityId);
         orderbean.setStreetId(memberAddress.getStreetId());
         //随机生成订单号
-        String orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
         orderbean.setOrderNo(orderNo);
         //保存订单
         resultMap = orderService.saveOrder(orderbean,mqtt4PushOrder);
@@ -383,7 +386,10 @@ public class OrderApi {
         orderbean.setCityId(cityId);
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
-        String orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
         orderbean.setOrderNo(orderNo);
         Map<String, Object> resultMap = (Map<String, Object>) orderService.XcxSaveOrder(orderbean, member,mqtt4PushOrder);
         //钉钉消息赋值回收公司名称
@@ -530,7 +536,10 @@ public class OrderApi {
         orderbean.setStreetId(memberAddress.getStreetId());
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
-        String orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
         orderbean.setOrderNo(orderNo);
         resultMap = (Map<String, Object>) orderService.savefiveKgOrder(orderbean);
         //钉钉消息赋值回收公司名称
@@ -626,7 +635,10 @@ public class OrderApi {
         orderbean.setAreaId(Integer.parseInt(areaId));
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
-        String orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
         orderbean.setOrderNo(orderNo);
         //保存订单
         Map<String, Object> resultMap = orderService.saveBigThingOrder(orderbean,mqtt4PushOrder);
