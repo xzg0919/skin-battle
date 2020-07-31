@@ -110,4 +110,8 @@ public interface MemberService extends IService<Member>{
     Object getAllPoints(String aliUserId);
 
     Object getXyAuthCode(String authCode);
+
+    Object saveXianYuMember(String openId, String accessToken,String linkName,String picUrl);
+
+    Object updateAliAccount(String aliAccount, String aliUserId);
 }

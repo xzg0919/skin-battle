@@ -13,6 +13,7 @@ import com.tzj.collect.entity.VoucherMember;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
+import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -41,6 +42,7 @@ public class VoucherApi {
      * @return
      */
     @Api(name = "voucher.voucherAllList", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object voucherAllList(VoucherBean voucherBean){
         Member member = MemberUtils.getMember();
@@ -77,6 +79,7 @@ public class VoucherApi {
      * @return
      */
     @Api(name = "voucher.voucherUseList", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object voucherUseList(VoucherBean voucherBean){
         Member member = MemberUtils.getMember();
@@ -111,6 +114,7 @@ public class VoucherApi {
      * @return
      */
     @Api(name = "voucher.getDiscountPrice", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getDiscountPrice(VoucherBean voucherBean){
         return voucherAliService.getDiscountPriceByVoucherId(new BigDecimal(voucherBean.getPrice()),voucherBean.getVoucherId());

@@ -41,6 +41,8 @@ public class MemberBean {
 
 	private String imgUrl;
 
+	private String aliAccount;
+
 	public String getMemberId() {
 		return memberId;
 	}

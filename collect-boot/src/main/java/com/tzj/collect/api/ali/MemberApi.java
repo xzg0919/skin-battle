@@ -3,6 +3,7 @@ package com.tzj.collect.api.ali;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.param.ali.OrderBean;
+import com.tzj.collect.core.service.MemberAliAccountService;
 import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
@@ -10,6 +11,7 @@ import com.tzj.module.api.utils.JwtUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +28,8 @@ public class MemberApi {
 	private MemberService memberService;
 	@Autowired
 	private com.tzj.collect.core.service.MessageService MessageService;
+	@Resource
+	private MemberAliAccountService memberAliAccountService;
 
 	/**
      * 根据用户授权返回的authCode,解析用户的数据
@@ -132,6 +136,7 @@ public class MemberApi {
 
 
 	@Api(name = "member.getPassIdUrl", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getPassIdUrl() {
 		Member member = MemberUtils.getMember();
@@ -144,6 +149,7 @@ public class MemberApi {
 	 * @param
 	 */
 	@Api(name = "member.saveChannelId", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object saveChannel(MemberBean memberBean) {
 		Member member = MemberUtils.getMember();
@@ -151,6 +157,7 @@ public class MemberApi {
 	}
 
 	@Api(name = "member.form.id", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Map<String, Object> updateUserFormId(OrderBean orderBean){
 		Member member = MemberUtils.getMember();
@@ -171,6 +178,38 @@ public class MemberApi {
 	@AuthIgnore
 	public Object getMember(MemberBean memberBean) {
 		return memberService.selectMemberByAliUserId(memberBean.getAliUserId());
+	}
+	/**
+	 * 闲鱼用户更新支付宝账号
+	 */
+	@Api(name = "member.updateAliAccount", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object updateAliAccount(MemberBean memberBean) {
+		String aliUserId = MemberUtils.getMember().getAliUserId();
+		return memberAliAccountService.saveAliAccount(memberBean.getAliAccount(),aliUserId);
+
+	}
+	/**
+	 * 根据Id删除支付宝账号
+	 */
+	@Api(name = "member.deleteAliAccountById", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object deleteAliAccountById(MemberBean memberBean) {
+		String aliUserId = MemberUtils.getMember().getAliUserId();
+		return memberAliAccountService.deleteAliAccountById(memberBean.getId(),aliUserId);
+
+	}
+	/**
+	 * 根据查询该用户得支付宝账号列表
+	 */
+	@Api(name = "member.getAliAccountList", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object getAliAccountList() {
+		String aliUserId = MemberUtils.getMember().getAliUserId();
+		return memberAliAccountService.getAliAccountList(aliUserId);
 
 	}
 }

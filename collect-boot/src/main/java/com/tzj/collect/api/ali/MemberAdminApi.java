@@ -35,6 +35,7 @@ public class MemberAdminApi {
      * @param
      */
     @Api(name = "admin.memberAdmin", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object memberAdmin() {
         Member member = MemberUtils.getMember();
@@ -59,6 +60,7 @@ public class MemberAdminApi {
      * @param
      */
     @Api(name = "admin.insuranceDetal", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object insuranceDetal(PiccInsurancePolicyBean piccInsurancePolicyBean) {
         Member member = MemberUtils.getMember();

@@ -48,6 +48,7 @@ public class AreaApi {
      * @return
      */
     @Api(name = "area.getByArea", version = "1.0")
+	@SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getByArea(AreaBean area){
     	if(StringUtils.isBlank(area.getCityId())||"0".equals(area.getCityId())) {
@@ -64,6 +65,7 @@ public class AreaApi {
      * @return
      */
     @Api(name = "area.child", version = "1.0")
+	@SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public JSONArray childArea(AreaBean area){
     	 List<Area>  areaLi= areaService.getChildArea(Long.valueOf(area.getId()));
@@ -92,6 +94,7 @@ public class AreaApi {
 	 * @return
 	 */
 	@Api(name = "area.getStreetByAreaName", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getStreetByAreaName(AreaBean areaBean){
@@ -110,6 +113,7 @@ public class AreaApi {
 	 * @return
 	 */
 	@Api(name = "area.getCommunityBystreetName", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getCommunityBystreetName(AreaBean areaBean){
 		if(StringUtils.isBlank(areaBean.getStreetName())) {
@@ -129,6 +133,7 @@ public class AreaApi {
 	 * @return
 	 */
 	@Api(name = "area.getCityList", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getCityList(){
@@ -149,6 +154,7 @@ public class AreaApi {
 	 * @return
 	 */
 	@Api(name = "area.getCityAreaList", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	@DS("slave")
 	public Object getCityAreaList(){

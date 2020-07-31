@@ -34,6 +34,7 @@ public class CategoryAttrOptionApi {
      * @return List<CategoryAttr>
      */
 	@Api(name = "categoryAttrOption.listCategoryAttrOption", version = "1.0")
+	@SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getCategoryAttrOptionList(CategoryAttr categoryAttr){
 		if(categoryAttr.getCommunityId()==null) {
