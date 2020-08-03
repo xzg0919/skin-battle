@@ -130,7 +130,7 @@ public class AppOrderPayApi {
         }else if ("2".equals(order.getOrderFrom())){
             //如果是闲鱼订单，直接完成
             OrderBean orderBean = new OrderBean();
-            orderBean.setStatus("2");
+            orderBean.setStatus("3");
             orderBean.setId(order.getId().intValue());
             orderBean.setAchPrice(order.getAchPrice().toString());
             orderBean.setAmount(order.getGreenCount());
