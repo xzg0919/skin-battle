@@ -635,43 +635,47 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		String isCash = orderbean.getIsCash();
 		//得到用户的垃圾总量
 		double amount = 0.0;
-		OrderItemAch orderItem = null;
+		OrderItemAch orderItemAch = null;
 		List<OrderItemBean> idAmount = null;
 		if (CategoryType.HOUSEHOLD.name().equals(orderbean.getTitle())) {
 			List<IdAmountListBean> listBean = orderbean.getIdAndListList();
 				for (IdAmountListBean idAmountListBean : listBean) {
-					orderItem = new OrderItemAch();
-					orderItem.setOrderId(Integer.parseInt(orderbean.getId() + ""));
-					orderItem.setParentId(idAmountListBean.getCategoryParentId());
-					orderItem.setParentName(idAmountListBean.getCategoryParentName());
+                    orderItemAch = new OrderItemAch();
+                    orderItemAch.setOrderId(Integer.parseInt(orderbean.getId() + ""));
+                    orderItemAch.setParentId(idAmountListBean.getCategoryParentId());
+                    orderItemAch.setParentName(idAmountListBean.getCategoryParentName());
 					idAmount = idAmountListBean.getIdAndAmount();
 					for (OrderItemBean item : idAmount) {
-						orderItem.setCategoryId(Integer.parseInt(item.getCategoryId() + ""));
-						orderItem.setCategoryName(item.getCategoryName());
-						orderItem.setAmount(item.getAmount());
+                        orderItemAch.setCategoryId(Integer.parseInt(item.getCategoryId() + ""));
+                        orderItemAch.setCategoryName(item.getCategoryName());
+                        orderItemAch.setAmount(item.getAmount());
                         //新需求：增加评价 用户是否平铺整理 1-否 2-是
-                        orderItem.setCleanUp(orderbean.getCleanUp());
-
+                        orderItemAch.setCleanUp(orderbean.getCleanUp());
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
-						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
+                        OrderItem orderItem = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("category_id", item.getCategoryId()).eq("order_id", order.getId()));
+                        CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
                         Category categorys = categoryService.selectById(item.getCategoryId());
-                        if (companyCategoryCity!=null) {
-							orderItem.setParentIds(companyCategoryCity.getParentIds());
-							orderItem.setPrice(companyCategoryCity.getPrice().floatValue());
-							orderItem.setUnit(companyCategoryCity.getUnit());
+                        if (null != orderItem){
+                            orderItemAch.setParentIds(orderItem.getParentIds());
+                            orderItemAch.setPrice(orderItem.getPrice());
+                            orderItemAch.setUnit(orderItem.getUnit());
+                        }else if (companyCategoryCity!=null) {
+                            orderItemAch.setParentIds(companyCategoryCity.getParentIds());
+                            orderItemAch.setPrice(companyCategoryCity.getPrice().floatValue());
+                            orderItemAch.setUnit(companyCategoryCity.getUnit());
 						}else {
-                            orderItem.setParentIds(companyCategory!=null?companyCategory.getParentIds():categorys.getParentIds());
-                            orderItem.setPrice(companyCategory!=null?companyCategory.getPrice():categorys.getPrice().floatValue());
-                            orderItem.setUnit(companyCategory!=null?companyCategory.getUnit():categorys.getUnit());
+                            orderItemAch.setParentIds(companyCategory!=null?companyCategory.getParentIds():categorys.getParentIds());
+                            orderItemAch.setPrice(companyCategory!=null?companyCategory.getPrice():categorys.getPrice().floatValue());
+                            orderItemAch.setUnit(companyCategory!=null?companyCategory.getUnit():categorys.getUnit());
 						}
 						if ("1".equals(isCash)){
-							orderItem.setPrice(0);
+                            orderItemAch.setPrice(0);
                             amount += categorys.getFreeGreenCount();
                         }else{
                             amount += categorys.getGreenCount();
                         }
-						orderItemAchService.insert(orderItem);
+						orderItemAchService.insert(orderItemAch);
 					}
 				}
 		}else {
