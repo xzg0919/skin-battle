@@ -226,8 +226,9 @@ public class AreaApi {
 						"[\\u4E00-\\u9FA5]+")) {
 					t2 = PinyinHelper.toHanyuPinyinStringArray(t1[i], t3);
 					t4 += t2[0];
-				} else
+				} else{
 					t4 += java.lang.Character.toString(t1[i]);
+				}
 			}
 			// System.out.println(t4);
 			return t4;
@@ -236,6 +237,19 @@ public class AreaApi {
 		}
 		return t4;
 	}
+	/**
+	 * 根据父级Id获取下级城市列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "area.getAreaListById", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	@DS("slave")
+	public Object getAreaListById(AreaBean areaBean){
+		 return areaService.getAreaListById(areaBean.getParentId());
+	}
+
 
 
 }

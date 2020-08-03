@@ -93,4 +93,6 @@ public interface MemberAddressService extends IService<MemberAddress>{
 	 * @return
 	 */
 	Integer inserOrUpdatetMemberAddress(MemberAddress memberAddress);
+
+    String saveMemberAddressByHand(MapAddressBean mapAddressBean, String aliUserId);
 }

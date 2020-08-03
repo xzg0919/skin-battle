@@ -66,7 +66,10 @@ public class MapAddressBean {
      */
     private String mapAddress;
 
-
+    private Integer provinceId;//省级Id
+    private Integer cityId;//城市Id
+    private Integer areaId;//区域id
+    private Integer streetId;//街道Id
 
 
 

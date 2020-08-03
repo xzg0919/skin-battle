@@ -305,5 +305,20 @@ public class MemberAddressApi {
 		Member member = MemberUtils.getMember();
 		return memberAddressService.saveMemberAddressdByMap(mapAddressBean,member.getAliUserId());
 	}
-    
+
+	/**
+	 * 用户手动填写地址
+	 * @author 王灿
+	 * @param
+	 * @return
+	 */
+	@Api(name = "memberAddress.saveMemberAddressByHand", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public String saveMemberAddressByHand(MapAddressBean mapAddressBean) {
+		//获取当前登录的会员
+		Member member = MemberUtils.getMember();
+		return memberAddressService.saveMemberAddressByHand(mapAddressBean,member.getAliUserId());
+	}
+
 }

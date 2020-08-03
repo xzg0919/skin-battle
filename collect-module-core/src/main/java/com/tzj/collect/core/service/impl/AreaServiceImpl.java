@@ -785,4 +785,15 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 			return this.selectList(new EntityWrapper<Area>().eq("parent_id",orderBean.getParentId()));
 		}
 	}
+
+    @Override
+    public Object getAreaListById(String parentId) {
+		List<Area> areaList = null;
+		if (StringUtils.isNotBlank(parentId)){
+			areaList = this.selectList(new EntityWrapper<Area>().eq("parent_id",Integer.parseInt(parentId)));
+		}else {
+			areaList = this.selectList(new EntityWrapper<Area>().eq("type", 0));
+		}
+        return areaList;
+    }
 }

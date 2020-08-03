@@ -127,6 +127,15 @@ public class AppOrderPayApi {
         Order order=orderService.selectById(orderPayParam.getOrderId());
         if(order==null){
             throw new ApiException("未找到Order信息！id:"+orderPayParam.getOrderId());
+        }else if ("2".equals(order.getOrderFrom())){
+            //如果是闲鱼订单，直接完成
+            OrderBean orderBean = new OrderBean();
+            orderBean.setStatus("2");
+            orderBean.setId(order.getId().intValue());
+            orderBean.setAchPrice(order.getAchPrice().toString());
+            orderBean.setAmount(order.getGreenCount());
+            orderService.modifyOrderSta(orderBean,mqtt4PushOrder);
+            return "确认完成";
         }
         Payment payment=paymentService.selectPayByOrderSn(order.getOrderNo());
         if (null != payment){
