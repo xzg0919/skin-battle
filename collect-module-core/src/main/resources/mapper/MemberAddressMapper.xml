@@ -217,6 +217,12 @@
 		<if test="memberAddress.mapAddress != null and memberAddress.mapAddress != ''">
 			map_address = #{memberAddress.mapAddress},
 		</if>
+		<if test="memberAddress.provinceName != null and memberAddress.provinceName != ''">
+			province_name = #{memberAddress.provinceName},
+		</if>
+		<if test="memberAddress.provinceId != null ">
+			province_id = #{memberAddress.provinceId},
+		</if>
 			update_date = NOW()
 		WHERE
 			id = #{memberAddress.id}
@@ -286,6 +292,12 @@
 		<if test="memberAddress.mapAddress != null and memberAddress.mapAddress != ''">
 			map_address,
 		</if>
+		<if test="memberAddress.provinceName != null and memberAddress.provinceName != ''">
+			province_name,
+		</if>
+		<if test="memberAddress.provinceId != null ">
+			province_id,
+		</if>
 			create_date,
 			update_date
 			)
@@ -353,6 +365,12 @@
 		</if>
 		<if test="memberAddress.mapAddress != null and memberAddress.mapAddress != ''">
 			#{memberAddress.mapAddress},
+		</if>
+		<if test="memberAddress.provinceName != null and memberAddress.provinceName != ''">
+			#{memberAddress.provinceName},
+		</if>
+		<if test="memberAddress.provinceId != null ">
+			#{memberAddress.provinceId},
 		</if>
 			NOW(),
 			NOW()

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.core.param.ali.AreaBean;
+import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.AreaService;
 import com.tzj.collect.core.service.CommunityService;
 import com.tzj.collect.entity.Area;
@@ -247,6 +248,19 @@ public class AreaApi {
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getAreaListById(AreaBean areaBean){
 		 return areaService.getAreaListById(areaBean.getParentId());
+	}
+
+
+	/**
+	 * 根据父级Id获取下级城市列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "area.getAreaListByParentId", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object getAreaListByParentId(OrderBean orderBean){
+		return areaService.getAreaListByParentId(orderBean);
 	}
 
 
