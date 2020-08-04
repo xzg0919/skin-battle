@@ -103,5 +103,5 @@ public interface AreaService  extends IService<Area>{
 	@DS("slave")
 	List<Area> getAreaListByParentId(OrderBean orderBean);
 
-    Object getAreaListById(String parentId);
+    Object getAreaListById(Integer parentId);
 }

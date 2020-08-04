@@ -184,6 +184,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	 * @return
 	 */
 	@Transactional(readOnly=false)
+	@Override
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean) {
 		String isSelected = memberAddressBean.getIsSelected();
 		//判断是否将地址设置为默认
@@ -478,6 +479,8 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		memberAddress.setStreetName(street.getAreaName());
 		memberAddress.setCommunityName(mapAddressBean.getName());
 		memberAddress.setTownCode(street.getCode());
+		memberAddress.setProvinceId(province.getId().intValue());
+		memberAddress.setProvinceName(province.getAreaName());
 		this.inserOrUpdatetMemberAddress(memberAddress);
 		return "操作成功";
 	}

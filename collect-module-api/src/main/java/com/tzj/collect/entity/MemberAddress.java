@@ -122,4 +122,8 @@ public class MemberAddress extends  DataEntity<Long>{
 	@TableField(exist = false)
 	private String tableName;
 
+	private Integer provinceId;
+
+	private String provinceName;
+
 }
