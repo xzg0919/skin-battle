@@ -66,7 +66,7 @@ public class AreaBean {
 
 	private String ratio; //城市系数
 
-	private String parentId;
+	private Integer parentId;
 
 
 	
