@@ -22,6 +22,7 @@
 		LEFT JOIN sb_payment d ON a.order_no = d.order_sn
 		WHERE
 		a.ali_user_id = #{aliUserId}
+		AND d.status_ = '2'
 		AND a.del_flag = '0'
 		<if test="status != -1">
 			<choose>
@@ -132,6 +133,7 @@
 					a.del_flag = '0'
 					AND (a.order_from = '0' or a.order_from is null)
 					AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
+					AND p.status_ = '2'
 					<if test="status != null">
 						AND  a.status_ in
 						<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
