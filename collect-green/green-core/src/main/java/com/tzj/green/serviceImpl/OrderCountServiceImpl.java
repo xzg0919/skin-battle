@@ -39,6 +39,7 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
     }
 
     @Override
+    @Transactional(readOnly = false)
     public Object getOrderCount1() {
         //插入日志
         Logs logs = new Logs();
@@ -71,6 +72,8 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
             else{
                 logs.setBody("今天无数据");
             }
+        }else {
+            logs.setBody(listOrder.toString());
         }
         try {
             logsService.insert(logs);
