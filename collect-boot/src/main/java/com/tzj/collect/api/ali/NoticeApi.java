@@ -33,6 +33,7 @@ public class NoticeApi {
      */
     @Api(name = "notice.getVaildNotices", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    @SignIgnore
     @AuthIgnore
     public List<Notice> getVaildNotices(){
         return noticeService.getVaildNotices();
@@ -45,6 +46,7 @@ public class NoticeApi {
      */
     @Api(name = "notice.getNoticeDetail", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    @SignIgnore
     @AuthIgnore
     public Notice getNoticeDetail(Long id){
         if(null == id){

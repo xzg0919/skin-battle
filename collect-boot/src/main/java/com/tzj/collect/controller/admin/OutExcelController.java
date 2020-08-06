@@ -204,7 +204,7 @@ public class OutExcelController {
                 row.add(list.get(i).get("isCash"));
                 row.add(list.get(i).get("amount"));
                 row.add(list.get(i).get("recyclerName"));
-                row.add(list.get(i).get("adminCommissions"));
+                row.add(list.get(i).get("commissionsPrice"));
                 row.add(list.get(i).get("backCommissionsPrice"));
                 rows.add(row);
             }
@@ -244,7 +244,7 @@ public class OutExcelController {
                 row.add(list.get(i).get("price"));
                 row.add(list.get(i).get("weight"));
                 row.add(list.get(i).get("recycleName"));
-                row.add(list.get(i).get("adminCommissions"));
+                row.add(list.get(i).get("commissionsPrice"));
                 row.add(list.get(i).get("backCommissionsPrice"));
                 rows.add(row);
             }

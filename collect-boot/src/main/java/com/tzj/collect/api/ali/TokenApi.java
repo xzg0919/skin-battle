@@ -41,6 +41,7 @@ public class TokenApi {
      * @return
      */
     @Api(name = "token.get", version = "1.0")
+    @SignIgnore
     @AuthIgnore //这个api忽略token验证
     //@SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
     public TokenBean getToken(MemberBean memberBean) {
@@ -68,6 +69,7 @@ public class TokenApi {
      * @return
      */
     @Api(name = "token.flush", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public TokenBean flushToken() {
 
@@ -94,6 +96,7 @@ public class TokenApi {
      * @return
      */
     @Api(name = "green.token.get", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public TokenBean greenToken() {
         Subject subject= ApiContext.getSubject();

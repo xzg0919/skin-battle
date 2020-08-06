@@ -1,19 +1,19 @@
 package com.tzj.collect.api.business;
 
 import com.taobao.api.ApiException;
+import com.tzj.collect.core.mapper.CompanyCategoryCityMapper;
 import com.tzj.collect.core.result.business.BusinessCategoryResult;
 import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.business.CategoryBean;
 import com.tzj.collect.core.param.business.ComIdAndCateOptIdBean;
 import com.tzj.collect.core.result.business.CategoryResult;
-import com.tzj.collect.core.service.CategoryService;
-import com.tzj.collect.core.service.CompanyCategoryAttrOptionService;
-import com.tzj.collect.core.service.CompanyCategoryService;
-import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Category.CategoryType;
 import com.tzj.collect.entity.CompanyAccount;
+
+import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
@@ -21,6 +21,8 @@ import com.tzj.module.api.annotation.RequiresPermissions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -39,6 +41,8 @@ public class BusinessCategoryApi {
     private CompanyCategoryAttrOptionService attrOptionService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private CompanyCategoryCityService companyCategoryCityService;
 
     /**
      * 取得所有一级分类
@@ -80,13 +84,9 @@ public class BusinessCategoryApi {
      */
     @Api(name = "business.category.digitalsecondlist", version = "1.0")
     @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-    public List<CategoryResult> getSecondList(CategoryBean categoryBean) {
-//		String parentId = categoryBean.getParentId();
-////		return categoryService.getSecondList(parentId);
-        String parentId = categoryBean.getParentId();
-        CompanyAccount companyAccount = getCompanyAccount();
-        String companyId = companyAccount.getCompanyId().toString();
-        return categoryService.getHouseHoldDetail(parentId, companyId, categoryBean.getCityId());
+    public List<Map<String,Object>> getSecondList(CategoryBean categoryBean) {
+        //return companyCategoryCityService.getHouseHoldDetail(parentId, companyId, categoryBean.getCityId());
+        return companyCategoryCityService.getCompanyCategoryListByCityTitle(BusinessUtils.getCompanyAccount().getCompanyId(),Integer.parseInt(categoryBean.getCityId()),Integer.parseInt(categoryBean.getParentId()));
     }
 
     /**
@@ -97,13 +97,9 @@ public class BusinessCategoryApi {
      */
     @Api(name = "business.category.digitaldetail", version = "1.0")
     @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-    public Map<String, Object> getDigitalDetail(CategoryBean categoryBean) throws ApiException {
-        CompanyAccount companyAccount = getCompanyAccount();
-        if (companyAccount != null) {
-            return categoryService.getDigitalDetail(categoryBean, companyAccount.getCompanyId().toString());
-        } else {
-            throw new ApiException("请先登录,再执行更新操作");
-        }
+    public Object getDigitalDetail(com.tzj.collect.core.param.ali.CategoryBean categoryBean) throws ApiException {
+        categoryBean.setCompanyId(BusinessUtils.getCompanyAccount().getCompanyId());
+        return companyCategoryCityService.getCompanyCategoryAttrOptionCityLists(categoryBean);
 
         //return categoryAttrOptionService.getDigitName(categoryBean);
     }
@@ -116,11 +112,12 @@ public class BusinessCategoryApi {
      */
     @Api(name = "business.category.householddetail", version = "1.0")
     @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-    public List<CategoryResult> getHouseHold(CategoryBean categoryBean) {
-        String parentId = categoryBean.getParentId();
-        CompanyAccount companyAccount = getCompanyAccount();
-        String companyId = companyAccount.getCompanyId().toString();
-        return categoryService.getHouseHoldDetail(parentId, companyId, categoryBean.getCityId());
+    public Object getHouseHold(CategoryBean categoryBean) {
+//        String parentId = categoryBean.getParentId();
+//        CompanyAccount companyAccount = getCompanyAccount();
+//        String companyId = companyAccount.getCompanyId().toString();
+//        return categoryService.getHouseHoldDetail(parentId, companyId, categoryBean.getCityId());
+        return companyCategoryCityService.getCompanyCategoryListByCityTitle(BusinessUtils.getCompanyAccount().getCompanyId(),Integer.parseInt(categoryBean.getCityId()),Integer.parseInt(categoryBean.getParentId()));
     }
 
     /**
@@ -257,5 +254,16 @@ public class BusinessCategoryApi {
     public boolean updateOrderAchItem(OrderBean orderBean) {
         return orderService.updateOrderAchItem(orderBean);
     }
-
+    /**
+     * 根据服务商Id,城市Id和回收物属性Id修改相关的回收物属性信息
+     * @author: 王灿
+     * @param
+     * @return TokenBean    返回类型
+     */
+    @Api(name = "business.updateCompanyCategoryAttrOptionByOptionId", version = "1.0")
+    @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+    public String updateCompanyCategoryAttrOptionByOptionId(com.tzj.collect.core.param.ali.CategoryBean categoryBean){
+        categoryBean.setCompanyId(BusinessUtils.getCompanyAccount().getCompanyId());
+        return  companyCategoryCityService.updateCompanyCategoryAttrOptionByOptionId(categoryBean);
+    }
 }

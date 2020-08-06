@@ -210,6 +210,9 @@ public class MQTTMessageListener {
                     //收呗 收到推送信息并更改日志中版本为2.0 确保消息已发送
                     String orderNo = (String) mqttMessageMap.get("orderNo");
                     Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo));
+                    if (null == order){
+                        return;
+                    }
                     Wrapper<OrderLog> orderLogWrapper = new EntityWrapper<OrderLog>().eq("order_id", order.getId());
                     OrderLog orderLog = null;
                     if(Order.OrderType.CANCEL.name().equals(order.getStatus().name())) {

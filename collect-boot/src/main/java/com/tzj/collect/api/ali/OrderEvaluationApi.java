@@ -32,6 +32,7 @@ public class OrderEvaluationApi {
      * @return
      */
 	 @Api(name = "evaluation.getEvaluationByOrder", version = "1.0")
+	 @SignIgnore
 	 @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	 public OrderEvaluation getEvaluationByOrder(OrderBean order){
 		 return orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", order.getId()));
@@ -45,6 +46,7 @@ public class OrderEvaluationApi {
      * @return
      */
 	 @Api(name = "evaluation.evaluationByOrder", version = "1.0")
+	 @SignIgnore
 	 @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	 public OrderEvaluation evaluationByOrder(OrderEvaluationBean orderEvaluationBean){
 		 

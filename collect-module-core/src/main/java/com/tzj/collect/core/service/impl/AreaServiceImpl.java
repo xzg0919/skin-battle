@@ -715,7 +715,22 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		resultMap.put("cityRatio",cityRatio);
 		return resultMap;
 	}
-
+	@Override
+	public Map<String,Object> getRatioByCompanyId(Long cityId,Long companyId){
+		CompanyCityRatio companyCityRatio = companyCityRatioService.selectOne(new EntityWrapper<CompanyCityRatio>().eq("company_id", companyId).eq("city_id", cityId));
+		BigDecimal cityRatio = null;
+		if (null == companyCityRatio){
+			Area area = this.selectById(cityId);
+			if (null!=area){
+				cityRatio = area.getRatio();
+			}
+		}else {
+			cityRatio = companyCityRatio.getRatio();
+		}
+		Map<String,Object> resultMap = new HashMap<>();
+		resultMap.put("cityRatio",cityRatio);
+		return resultMap;
+	}
 	@Override
 	@Cacheable(value = "allAreaStreetIdNameInfo" , key = "'allAreaStreetIdNameInfo'",   sync = true)
 	public Map<String, Object> allAreaStreetIdNameInfo() {
@@ -770,4 +785,15 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 			return this.selectList(new EntityWrapper<Area>().eq("parent_id",orderBean.getParentId()));
 		}
 	}
+
+    @Override
+    public Object getAreaListById(Integer parentId) {
+		List<Area> areaList = null;
+		if (null != parentId){
+			areaList = this.selectList(new EntityWrapper<Area>().eq("parent_id",parentId));
+		}else {
+			areaList = this.selectList(new EntityWrapper<Area>().eq("type", 0));
+		}
+        return areaList;
+    }
 }

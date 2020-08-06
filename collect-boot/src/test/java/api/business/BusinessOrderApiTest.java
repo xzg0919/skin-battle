@@ -9,10 +9,10 @@
 package api.business;
 
 import com.alibaba.fastjson.JSON;
-import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.param.ali.IdAmountListBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.OrderItemBean;
+import com.tzj.collect.core.param.business.CategoryBean;
 import com.tzj.collect.core.param.business.CompanyBean;
 import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.module.api.utils.JwtUtils;
@@ -50,12 +50,16 @@ public class BusinessOrderApiTest {
 
 		String api="http://localhost:9090/business/api";
 
-		RecyclersServiceRangeBean recyclersServiceRangeBean = new RecyclersServiceRangeBean();
-		recyclersServiceRangeBean.setRecycleId("2205");
-
+		com.tzj.collect.core.param.ali.CategoryBean categoryBean = new com.tzj.collect.core.param.ali.CategoryBean();
+		categoryBean.setCityId("46365");
+		categoryBean.setAttrOptionId("2277");
+		categoryBean.setIsRecovery("1");
+		categoryBean.setIsSpecial("1");
+		categoryBean.setPrice("0");
+		categoryBean.setSpecialPrice("0");
 
 		HashMap<String,Object> param=new HashMap<>();
-		param.put("name","business.recycle.getRecyclers");
+		param.put("name","business.updateCompanyCategoryAttrOptionByOptionId");
 		param.put("version","1.0");
 		param.put("format","json");
 		param.put("app_key","app_id_3");
@@ -63,7 +67,7 @@ public class BusinessOrderApiTest {
 		param.put("token",securityToken);
 		//param.put("sign","111");
 		param.put("nonce", UUID.randomUUID().toString());
-		param.put("data",recyclersServiceRangeBean);
+		param.put("data",categoryBean);
 
 		String signKey = SignUtils.produceSignKey(token, BUSINESS_API_TOKEN_SIGN_KEY);
 		System.out.println(signKey);

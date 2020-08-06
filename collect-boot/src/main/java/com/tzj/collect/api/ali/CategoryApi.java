@@ -66,6 +66,7 @@ public class CategoryApi {
      * @return
      */
 	 @Api(name = "category.listTop", version = "1.0")
+	 @SignIgnore
 	 @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	 public List<Category> toplist(CategoryBean categoryBean){
 		Serializable title = null;
@@ -84,6 +85,7 @@ public class CategoryApi {
      * @return
      */
 	 @Api(name = "category.listchild", version = "1.0")
+	 @SignIgnore
 	 @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	 public  Map<String, Object> childlist(CategoryBean categoryBean){
 //		 if (categoryBean.getTitle().equals(CategoryType.DIGITAL.name())) {
@@ -101,6 +103,7 @@ public class CategoryApi {
      * @return BigDecimal : 预估价格
      */
 	@Api(name = "categoryAttr.computeValue", version = "1.0")
+	@SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object computeValue(CategoryAttrBean categoryAttrBean){
 		Member member = MemberUtils.getMember();
@@ -156,6 +159,7 @@ public class CategoryApi {
 	}
 	
 	@Api(name = "categoryAttr.computeValue4house", version = "1.0")
+	@SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public ClassifyAndMoney computeValue4Household(CategoryAttrBean categoryAttrBean) {
 		return categoryService.reckon(categoryAttrBean);
@@ -168,6 +172,7 @@ public class CategoryApi {
      * @return BigDecimal : 预估价格
      */
 	@Api(name = "category.communityBycompany", version = "1.0")
+	@SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object communityBycompany(CategoryAttrBean categoryAttrBean){
 		//分类Id
@@ -203,6 +208,7 @@ public class CategoryApi {
 	 * @return
 	 */
 	@Api(name = "category.categoryOneListToken", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object categoryOneListToken(){
 		Member member = MemberUtils.getMember();
@@ -227,6 +233,7 @@ public class CategoryApi {
 	 * @return
 	 */
 	@Api(name = "category.categoryHouseTwoList", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object categoryHouseTwoList(CategoryBean categoryBean){
 		Member member = MemberUtils.getMember();

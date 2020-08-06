@@ -85,6 +85,7 @@ public class OrderApi {
      * @return List<Order>:未完成的订单列表
      */
     @Api(name = "order.unfinishlist", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<Order> orderUnfinishlist() {
         Member member = MemberUtils.getMember();
@@ -125,6 +126,7 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.detail", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> getOrderDetail(OrderBean orderbean) {
         Map<String, Object> map = orderService.selectDetail(orderbean);
@@ -139,6 +141,7 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.cancel", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String cancelOrder(OrderBean orderbean) {
         Order order = orderService.selectById(orderbean.getId());
@@ -163,6 +166,7 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.completeOrder", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String completeOrder(OrderBean orderbean) {
         Order order = orderService.selectById(orderbean.getId());
@@ -183,6 +187,7 @@ public class OrderApi {
      * @throws ApiException
      */
     @Api(name = "order.create", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object createOrder(OrderBean orderbean) throws ApiException {
         Member member = MemberUtils.getMember();
@@ -232,6 +237,9 @@ public class OrderApi {
         orderbean.setStreetId(memberAddress.getStreetId());
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
         orderbean.setOrderNo(orderNo);
         //保存订单
         resultMap = orderService.saveOrder(orderbean,mqtt4PushOrder);
@@ -278,6 +286,7 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.getCompanyByIds", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getCompanyByIds(OrderBean orderbean) {
         Member member = MemberUtils.getMember();
@@ -332,6 +341,7 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.getprice", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> getPrice(CategoryBean categoryBean) {
         return priceService.getPrice(categoryBean);
@@ -344,7 +354,8 @@ public class OrderApi {
      * @param
      * @return
      */
-                                    @Api(name = "order.XcxSaveOrder", version = "1.0")
+    @Api(name = "order.XcxSaveOrder", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object XcxSaveOrder(OrderBean orderbean) {
         Member member = MemberUtils.getMember();
@@ -376,6 +387,9 @@ public class OrderApi {
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
         orderbean.setOrderNo(orderNo);
         Map<String, Object> resultMap = (Map<String, Object>) orderService.XcxSaveOrder(orderbean, member,mqtt4PushOrder);
         //钉钉消息赋值回收公司名称
@@ -437,6 +451,7 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.isEnterpriseCodeByCode", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object isEnterpriseCodeByCode(EnterpriseCodeBean enterpriseCodeBean) {
         EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", enterpriseCodeBean.getCode()).eq("del_flag", 0));
@@ -471,6 +486,7 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.savefiveKgOrder", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object savefiveKgOrder(OrderBean orderbean) throws Exception {
         //获取当前登录的会员
@@ -521,6 +537,9 @@ public class OrderApi {
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
         orderbean.setOrderNo(orderNo);
         resultMap = (Map<String, Object>) orderService.savefiveKgOrder(orderbean);
         //钉钉消息赋值回收公司名称
@@ -570,6 +589,7 @@ public class OrderApi {
     }
 
     @Api(name = "order.updateForest", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object updateForest(OrderBean orderbean) {
         //给用户增加蚂蚁能量
@@ -586,6 +606,7 @@ public class OrderApi {
      * @throws ApiException
      */
     @Api(name = "order.saveBigThingOrder", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object saveBigThingOrder(OrderBean orderbean) throws Exception {
         Member member = MemberUtils.getMember();
@@ -615,6 +636,9 @@ public class OrderApi {
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
         orderbean.setOrderNo(orderNo);
         //保存订单
         Map<String, Object> resultMap = orderService.saveBigThingOrder(orderbean,mqtt4PushOrder);
@@ -719,7 +743,6 @@ public class OrderApi {
             resultMap.put("memberCount", memberCount);
             resultMap.put("OrderCount", OrderCount);
             resultMap.put("greenCount", greenCount);
-            redisUtil.set("collectDetail", resultMap, 19800);
             return resultMap;
     }
 
@@ -732,6 +755,7 @@ public class OrderApi {
      * @return
      */
     @Api(name = "order.receiving.money", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Map<String, Object> receivingMoney(OrderBean orderbean) {
         orderbean.setAliUserId(MemberUtils.getMember().getAliUserId());

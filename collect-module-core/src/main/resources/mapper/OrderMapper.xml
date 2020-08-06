@@ -22,6 +22,7 @@
 		LEFT JOIN sb_payment d ON a.order_no = d.order_sn
 		WHERE
 		a.ali_user_id = #{aliUserId}
+		AND d.status_ = '2'
 		AND a.del_flag = '0'
 		<if test="status != -1">
 			<choose>
@@ -132,6 +133,7 @@
 					a.del_flag = '0'
 					AND (a.order_from = '0' or a.order_from is null)
 					AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
+					AND p.status_ = '2'
 					<if test="status != null">
 						AND  a.status_ in
 						<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
@@ -205,9 +207,9 @@
 				TIMESTAMPDIFF(MINUTE, IF(so.title = '2',CONCAT(so.arrival_time,' ',SUBSTR(so.arrival_period, 7,5),':00'),IF(so.arrival_period='am',CONCAT(so.arrival_time,' 12:00:00'),CONCAT(so.arrival_time,' 18:00:00'))), IF(so.status_ = '3',so.complete_date,if(so.status_ in ('4','5'),so.cancel_time,NOW()))) AS overTimes
 			FROM
 				 sb_order so
-			LEFT JOIN sb_category sc ON so.category_id = sc.id
-			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
-			LEFT JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id AND bb.status_ = 1
+			INNER JOIN sb_category sc ON so.category_id = sc.id
+			INNER JOIN sb_recyclers sr ON sr.id = so.recycler_id
+			INNER JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id AND bb.status_ = 1
 			WHERE
 				so.del_flag = '0'
 			AND so.order_from != '1'
@@ -275,8 +277,8 @@
 			FROM
 				sb_category sc
 			INNER JOIN sb_order so ON so.category_id = sc.id
-			LEFT JOIN sb_recycle_cancel_log srcl ON srcl.order_id = so.id
-			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
+			INNER JOIN sb_recycle_cancel_log srcl ON srcl.order_id = so.id
+			INNER JOIN sb_recyclers sr ON sr.id = so.recycler_id
 			WHERE
 				so.del_flag = '0'
 				AND so.order_from != '1'
@@ -687,6 +689,7 @@
 		comId.ach_price as price,
 		comId.amount as weight,
 		comId.adminCommissions,
+		comId.commissionsPrice,
 		comId.backCommissionsPrice,
 		comId.name_ as recycleName
 		FROM
@@ -704,6 +707,7 @@
 		SELECT
 		soo.order_no,
 		soo.id,
+		soo.commissions_price AS commissionsPrice,
 		soo.admin_commissions AS adminCommissions,
 		soo.back_commissions_price AS backCommissionsPrice,
 		sr.name_,
@@ -728,7 +732,7 @@
 		'%Y-%m-%d'
 		) AS dateFor
 		FROM
-		sb_order soo,sb_recyclers sr
+		sb_order soo LEFT JOIN sb_recyclers sr ON soo.recycler_id = sr.id
 		WHERE
 		1=1
 		<if test="startTime !=null and startTime !=''">
@@ -745,7 +749,6 @@
 			AND sr.name_ like CONCAT('%',#{recyclerName},'%')
 		</if>
 		AND soo.title = #{title}
-		and sr.id = soo.recycler_id
 		and soo.company_id=#{companyId}
 		ORDER BY
 		dateFor
@@ -766,14 +769,15 @@
 			) AS isCash,
 			ROUND(a.ach_price, 2) AS amount,
 			d.name_ AS recyclerName,
+			a.commissions_price AS commissionsPrice,
 			a.admin_commissions AS adminCommissions,
 			a.back_commissions_price as backCommissionsPrice
 			FROM
 			sb_order a
-			LEFT JOIN sb_category b ON a.category_id = b.id
-			LEFT JOIN sb_category bb ON b.parent_id = bb.id
-			LEFT JOIN sb_company c ON a.company_id = c.id
-			LEFT JOIN sb_recyclers d ON a.recycler_id = d.id
+			inner JOIN sb_category b ON a.category_id = b.id
+			inner JOIN sb_category bb ON b.parent_id = bb.id
+			inner JOIN sb_company c ON a.company_id = c.id
+			inner JOIN sb_recyclers d ON a.recycler_id = d.id
 			WHERE
 				a.del_flag = '0'
 			AND a.company_id = #{companyId}
