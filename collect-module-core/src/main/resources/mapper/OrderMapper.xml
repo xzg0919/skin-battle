@@ -14,15 +14,13 @@
     </select> 
     <select id="getOrderlist" parameterType="Object" resultMap="OrderResultMap">
 		SELECT
-		<include refid="zd"/>, d.price AS paymentPrice,
+		<include refid="zd"/>, a.ach_price AS paymentPrice,
 		c.parent_id AS categoryId
 		FROM
 		sb_order a
 		LEFT JOIN sb_category c ON a.category_id = c.id
-		LEFT JOIN sb_payment d ON a.order_no = d.order_sn
 		WHERE
 		a.ali_user_id = #{aliUserId}
-		AND d.status_ = '2'
 		AND a.del_flag = '0'
 		<if test="status != -1">
 			<choose>
@@ -109,14 +107,13 @@
 					<include refid="zd"/>, b.name_ AS Recyclers_name,
 					b.tel AS BTel,
 					f.num,
-					p.price AS paymentPrice,
+					a.ach_price AS paymentPrice,
 					d.cancle_reason AS examineReason,
 					d.status_ AS examineStatus,
 					TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,' 18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,' ',SUBSTR(a.arrival_period, 7,5),':00'))),IF(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,NOW()))) AS overTimes
 					FROM
 					sb_order a
 					LEFT JOIN sb_category c ON a.category_id = c.id
-					LEFT JOIN sb_payment p ON p.order_sn = a.order_no
 					LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
 					LEFT JOIN sb_order_cancle_examine d ON a.order_no = d.order_no
 					LEFT JOIN (
@@ -133,7 +130,6 @@
 					a.del_flag = '0'
 					AND (a.order_from = '0' or a.order_from is null)
 					AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
-					AND p.status_ = '2'
 					<if test="status != null">
 						AND  a.status_ in
 						<foreach collection="status" index="index" item="item" open="(" separator="," close=")">

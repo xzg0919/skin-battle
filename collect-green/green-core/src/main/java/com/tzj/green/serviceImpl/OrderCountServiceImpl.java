@@ -41,11 +41,6 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
     @Override
     @Transactional(readOnly = false)
     public Object getOrderCount1() {
-        //插入日志
-        Logs logs = new Logs();
-        logs.setCompanyId(6);
-        logs.setParam("萧山城管局获取信息");
-
         List<Object> listOrder = redisUtil.lGet("order", 0, -1);
         if (listOrder == null||listOrder.isEmpty()) {
             List<Map<String, Object>> list = orderCountMapper.getOrderCountList1();
@@ -64,22 +59,10 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
                 mapCount.put("equipNo", "");
                 listOrder.add(mapCount);
             }
-
-            if (list!=null&&!list.isEmpty()) {
-                redisUtil.lSet("order",listOrder,60);
-                logs.setBody(listOrder.toString());
+            if (list != null && !list.isEmpty()) {
+                redisUtil.lSet("order", listOrder, 60);
             }
-            else{
-                logs.setBody("今天无数据");
-            }
-        }else {
-            logs.setBody(listOrder.toString());
         }
-        try {
-            logsService.insert(logs);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-         return listOrder;
+        return listOrder;
     }
 }
