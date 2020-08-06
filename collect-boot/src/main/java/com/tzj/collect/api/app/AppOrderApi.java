@@ -68,6 +68,7 @@ public class AppOrderApi {
 	 * 根据订单传来的状态获取订单列表
 	 */
 	@Api(name = "app.order.getorderlist", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Map<String,Object> getOrderList(OrderBean orderbean){
 		orderbean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));

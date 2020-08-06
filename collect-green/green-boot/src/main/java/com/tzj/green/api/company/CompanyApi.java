@@ -1,5 +1,6 @@
 package com.tzj.green.api.company;
 
+import com.tzj.green.entity.Logs;
 import com.tzj.green.service.OrderCountService;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
