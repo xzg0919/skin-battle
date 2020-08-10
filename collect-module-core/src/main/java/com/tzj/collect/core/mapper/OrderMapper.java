@@ -52,13 +52,13 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @author 王灿
 	 * @return
 	*/
-	List<Order> getOrderLists(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title);
+	List<Order> getOrderLists(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title,@Param("reInit") String reInit);
 	/**
 	 * 根据各种查询条件获取订单的条数
 	 * @author 王灿
 	 * @return
 	*/
-	Integer getOrderListsCount(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title);
+	Integer getOrderListsCount(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title,@Param("reInit") String reInit);
 
 	AppOrderResult getOrderDetails(@Param("orderBean") OrderBean orderbean);
 	/**

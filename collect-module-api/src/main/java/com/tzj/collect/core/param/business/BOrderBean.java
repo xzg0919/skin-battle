@@ -154,6 +154,9 @@ public class BOrderBean {
 	    //是否是扫码完成的订单 0不是 1是
 		private String isScan;
 
+	    // 0不是 1是
+	    private String reInit; //订单回调订单
+
 		private String categoryType;//订单类型
 
 		public Integer getId() {

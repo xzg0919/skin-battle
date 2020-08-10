@@ -72,7 +72,9 @@
 				AND a.order_no LIKE concat(concat('%',#{orderNo}),'%')
 			</if>
 			<if test="linkMan != null and linkMan !='' ">
-				AND a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+				AND
+				(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+				or a.tel LIKE CONCAT('%',#{linkName},'%'))
 			</if>
 			<if test="recyclersName !=null and recyclersName!='' ">
 				<choose>
@@ -80,7 +82,9 @@
 						and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
 					</when>
 					<otherwise>
-						AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%'))
+						AND
+						(b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+						or b.tel LIKE concat(concat('%',#{recyclersName}),'%'))
 					</otherwise>
 				</choose>
 			</if>
@@ -97,12 +101,19 @@
 			<if test="title != null and title !='' ">
 				AND a.title  = #{title}
 			</if>
+		    <if test="reInit != null and reInit !='' ">
+			AND a.cancel_reason  = '订单回调'
+		    </if>
 			GROUP BY a.id
 		)a
     	</select>
     <select id="getOrderLists" parameterType="Object" resultMap="OrderResultMap">
 			select * from (
-				select a.*,IF(0>a.overTimes,-1,a.overTimes) AS overTime, IF(a.overTimes > 2880,'1',if(a.complaint_type = '3','1','0')) AS isComplaint from (
+				select a.*,
+		            IF(0>a.overTimes,-1,a.overTimes) AS overTime,
+		            IF(a.complaint_type = '3','3',if(a.overTimes > 2880,'2',if(a.complaint_type in ('0','1','2'),'1','0'))) AS isComplaint,
+		            if(a.overTimes > 2880,'1','0') isOverTimes
+		            from (
 					SELECT
 					<include refid="zd"/>, b.name_ AS Recyclers_name,
 					b.tel AS BTel,
@@ -140,7 +151,9 @@
 						AND a.order_no LIKE concat(concat('%',#{orderNo}),'%')
 					</if>
 					<if test="linkMan != null and linkMan !='' ">
-						AND a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+						AND
+						(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+						or a.tel LIKE CONCAT('%',#{linkName},'%'))
 					</if>
 					<if test="recyclersName !=null and recyclersName!='' ">
 						<choose>
@@ -148,7 +161,9 @@
 								and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
 							</when>
 							<otherwise>
-								AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%'))
+								AND
+								(b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+								or b.tel LIKE concat(concat('%',#{recyclersName}),'%'))
 							</otherwise>
 						</choose>
 					</if>
@@ -165,10 +180,13 @@
 					<if test="title != null and title !='' ">
 						AND a.title  = #{title}
 					</if>
+		           <if test="reInit != null and reInit !='' ">
+			       AND a.cancel_reason  = '订单回调'
+		           </if>
 					GROUP BY a.id
 				)a
 			)a
-		ORDER BY a.isComplaint DESC, IF(a.status_='3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,a.overTime)) DESC ,a.create_date DESC
+		ORDER BY a.isComplaint DESC, IF(a.status_='3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,a.overTime)) DESC ,a.create_date
 		LIMIT #{startSize} , #{pageSize}
     	</select>
     	
