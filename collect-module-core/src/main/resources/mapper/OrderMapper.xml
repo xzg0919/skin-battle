@@ -102,7 +102,7 @@
 				AND a.title  = #{title}
 			</if>
 		    <if test="reInit != null and reInit !='' ">
-			AND a.cancel_reason  = '订单回调'
+			AND a.cancel_reason IS NOT NULL
 		    </if>
 			GROUP BY a.id
 		)a
@@ -181,7 +181,7 @@
 						AND a.title  = #{title}
 					</if>
 		           <if test="reInit != null and reInit !='' ">
-			       AND a.cancel_reason  = '订单回调'
+			       AND a.cancel_reason IS NOT NULL
 		           </if>
 					GROUP BY a.id
 				)a
@@ -3359,6 +3359,22 @@
 			sb_order_item_ach a
 		WHERE
 			a.order_id = #{orderId}
+	</select>
+
+	<select id="getCategoryPriceList" parameterType="object" resultType="java.util.Map">
+		SELECT
+		i.category_name AS categoryName,
+		i.parent_name AS parentName,
+		concat(round(i.amount,2),'') AS amount,
+		i.unit AS unit,
+		i.platform_price AS platformPrice
+		FROM
+		sb_order_item_ach i
+		WHERE
+		1=1
+		<if test="orderId != null and orderId != ''">
+			AND i.order_id = #{orderId}
+		</if>
 	</select>
 	<!--B端订单详情中的回收物信息-->
 	<select id="getCategoryInfoByOrderId" parameterType="object" resultMap="categoryResultMap">

@@ -46,4 +46,6 @@ public interface OrderItemService extends IService<OrderItem>{
 	Map<String, Object> selectItemOne(Integer orderId);
 	@DS("slave")
 	List<Map<String,Object>> getOrderItemDetail(Long orderId,String isCash);
+	@DS("slave")
+	List<OrderItem> selectByOrderIdName(Integer orderId);
 }

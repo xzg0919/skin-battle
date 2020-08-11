@@ -426,7 +426,7 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Object getOrderComplaintDetail(String orderNo);
 
-	Object addOrderComplaintBack(Integer id,String complaintBack);
+	Object addOrderComplaintBack(Integer id,String type,String complaintBack);
 	@DS("slave")
 	Map<String, Object> getOrderAchItemDatail(OrderBean orderBean);
 	@DS("slave")
@@ -451,4 +451,6 @@ public interface OrderService extends IService<Order> {
 	Object sendXyOrderByCompanyId(OrderBean orderBean);
 	@DS("slave")
 	Map<String,Object> dsddOrderDetail(Integer orderId);
+	@DS("slave")
+	Object getOrderDetailPrice(Integer id);
 }

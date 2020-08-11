@@ -143,7 +143,7 @@ public interface RecyclersService extends IService<Recyclers>{
  * @return
  */
 	@DS("slave")
-	List<Recyclers> getRecyclersList2(Integer companyId, Integer orderId);
+	Object getRecyclersList2(Integer companyId, Integer orderId);
 
 	@DS("slave")
 	List<Recyclers> getSendOrderRecyclersList(Integer orderId);

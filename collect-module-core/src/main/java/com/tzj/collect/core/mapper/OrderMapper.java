@@ -256,5 +256,7 @@ public interface OrderMapper extends BaseMapper<Order> {
     Double getAmountByOrderId(@Param("orderId")Long orderId);
 
 	List<BusinessOrderItemBean> getCategoryInfoByOrderId(@Param("orderId") String orderId,@Param("title") String title);
+
+	List<Map<String, Object>>getCategoryPriceList(@Param("orderId")Integer id);
 }
 

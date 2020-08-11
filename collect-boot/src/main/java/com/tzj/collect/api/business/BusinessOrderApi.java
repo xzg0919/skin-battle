@@ -45,6 +45,8 @@ public class BusinessOrderApi {
 	@Autowired
 	private CompanyService companyService;
 	@Autowired
+	private OrderComplaintService orderComplaintService;
+	@Autowired
 	private SendRocketmqMessageService sendRocketmqMessageService;
 	@Autowired
 	private OrderCancleExamineService orderCancleExamineService;
@@ -116,6 +118,7 @@ public class BusinessOrderApi {
 	 */
 	 @Api(name = "business.order.getOrderDetail", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	 @SignIgnore
 	public Map<String,Object> getOrderDetail(BOrderBean bOrderBean){
 		 int orderId = bOrderBean.getId();
 		//查询订单详情
@@ -165,6 +168,7 @@ public class BusinessOrderApi {
 	 */
 	 @Api(name = "business.order.getInitDetail", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	 @SignIgnore
 	public Map<String,Object> getInitDetail(BOrderBean bOrderBean){
 		 int orderId = bOrderBean.getId();
 		//查询订单详情
@@ -179,10 +183,23 @@ public class BusinessOrderApi {
 		 */
 		 @Api(name = "business.order.getRecyclersList", version = "1.0")
 		 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-		 public List<Recyclers> getRecyclersList2(BOrderBean bOrderBean){
-			 List<Recyclers> list =  recyclersService.getRecyclersList2(bOrderBean.getCompanyId(),bOrderBean.getId());
-			 return list;
+		 public Object getRecyclersList2(BOrderBean bOrderBean){
+			 return recyclersService.getRecyclersList2(bOrderBean.getCompanyId(),bOrderBean.getId());
+
 		 }
+
+	/**
+	 * 平台信息费明细
+	 * @author
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.order.getOrderDetailPrice", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getOrderDetailPrice(BOrderBean bOrderBean){
+		return orderService.getOrderDetailPrice(bOrderBean.getId());
+
+	}
 		 
 	 /**
 	 * 返回取消原因
@@ -386,6 +403,17 @@ public class BusinessOrderApi {
 	}
 
 	/**
+	 * 获取订单客诉是否已反馈
+	 * @date 2019/08/30
+	 * @return
+	 */
+	@Api(name = "business.order.getIsOrderComplaint", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getIsOrderComplaint(OrderBean orderBean){
+		return orderComplaintService.getIsOrderComplaint(orderBean.getOrderNo());
+	}
+
+	/**
 	 * 增加客诉反馈接口
 	 * @date 2019/08/30
 	 * @return
@@ -393,7 +421,7 @@ public class BusinessOrderApi {
 	@Api(name = "business.order.addOrderComplaintBack", version = "1.0")
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object addOrderComplaintBack(OrderBean orderBean){
-		return orderService.addOrderComplaintBack(orderBean.getId(),orderBean.getComplaintBack());
+		return orderService.addOrderComplaintBack(orderBean.getId(),orderBean.getType(),orderBean.getComplaintBack());
 	}
 
 	/** 根据订单Id获取编辑后的回收物明细

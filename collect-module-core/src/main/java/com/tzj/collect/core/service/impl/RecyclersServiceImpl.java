@@ -28,6 +28,8 @@ import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.module.easyopen.exception.ApiException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +76,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     private OrderService orderService;
     @Autowired
     private RecyclersRangeHouseService recyclersRangeHouseService;
+    @Autowired
+    private RecyclerCancelLogService recyclerCancelLogService;
+    @Autowired
+    private RecyclersService recyclersService;
 
     /**
      * 根据手机号查询回收人员
@@ -183,9 +189,21 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     }
 
     @Override
-    public List<Recyclers> getRecyclersList2(Integer companyId, Integer orderId) {
+    public Object getRecyclersList2(Integer companyId, Integer orderId) {
         Order order = orderService.selectById(orderId);
-        return recyclersMapper.getRecyclersLists(companyId, orderId, Integer.parseInt(order.getTitle().getValue() + ""));
+        Map<String,Object>map = new HashMap<>();
+        if(null !=order.getCancelReason()){
+            RecyclerCancelLog recyclerCancelLog = recyclerCancelLogService.selectOne(new EntityWrapper<RecyclerCancelLog>().eq("order_id",orderId).orderBy("create_date",false));
+            Recyclers recyclers = recyclersService.selectById(recyclerCancelLog.getRecycleId());
+
+            map.put("userAddress",order.getAddress());
+            map.put("name",recyclers.getName());
+            map.put("cancelTime",recyclerCancelLog.getCreateDate());
+            map.put("cancelReason",recyclerCancelLog.getCancelReason());
+        }
+        List<Recyclers>recyclers = recyclersMapper.getRecyclersLists(companyId, orderId, Integer.parseInt(order.getTitle().getValue() + ""));
+        map.put("recyclersList",recyclers);
+        return map;
     }
 
     @Override
