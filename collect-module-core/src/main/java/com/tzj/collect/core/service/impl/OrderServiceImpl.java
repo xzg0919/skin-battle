@@ -1639,8 +1639,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         int AlreadyCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "2"));
 
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		//order.setPrice(order.getAchPrice());
-		//resultMap.put("order", order);
+
 		resultMap.put("company", company);                          //企业信息
 		resultMap.put("OrderEvaluation", orderEvaluation);         //评价信息
 		resultMap.put("orderCancleExamine", orderCancleExamine);  //取消订单信息
@@ -1666,10 +1665,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
             List<Map<String, Object>> priceAmount1 = (List<Map<String, Object>>) map1.get("listMapObject");
 
-			resultMap.put("priceAmount", priceAmount);  //实际详情
-            resultMap.put("userPriceAmount", priceAmount1); //询价详情
+			resultMap.put("priceAmount", priceAmount);  //生活垃圾实际详情
+            resultMap.put("userPriceAmount", priceAmount1); //生活垃圾询价详情
 			resultMap.put("greenCount", map.get("greenCount")); //积分
-            resultMap.put("sumAmount", bigDecimal.toString()); //总重量
+            resultMap.put("sumAmount", bigDecimal.toString()); //生活垃圾总重量
 		}else{
             List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
             List<OrderItem> OrderItemName = orderItemService.selectByOrderIdName(orderId);
@@ -1699,8 +1698,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     list3.add(map1);
 
                 }
-            resultMap.put("realAmount", list1);  //实际详情
-            resultMap.put("userAmount", list3); //询价详情
+            resultMap.put("realAmount", list1);  //家电实际详情
+            resultMap.put("userAmount", list3); //家电询价详情
 		}
 
 		if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
@@ -1710,11 +1709,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
 			if (CategoryType.DIGITAL.getValue().equals(order.getTitle().getValue()) || CategoryType.BIGTHING.getValue().equals(order.getTitle().getValue())) {
 				List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
-				resultMap.put("OrderItemList", OrderItemList);
+				resultMap.put("OrderItemList", OrderItemList);  //大件 家电
 			} else {
 				//查询订单表的分了明细表
 				List<OrderItemAch> orderItemAchList = orderItemAchService.selectByOrderId(orderId);
-				resultMap.put("OrderItemList", orderItemAchList);
+				resultMap.put("OrderItemList", orderItemAchList); //生活垃圾
 			}
             Recyclers recyclers = order.getRecyclers();
             Recyclers recyclerManager = new Recyclers();
@@ -1732,10 +1731,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             Payment payment = new Payment();
             payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn",order.getOrderNo()));
             resultMap.put("payment", payment);
-            resultMap.put("recyclerManager", recyclerManager);
-			resultMap.put("order", order);
-			resultMap.put("orderPicList", orderPicAchList);
-			resultMap.put("orderUserPicList", orderPicList);
+            resultMap.put("recyclerManager", recyclerManager); //业务经理信息
+			resultMap.put("order", order); //订单信息
+			resultMap.put("orderPicList", orderPicAchList); //实际完成
+			resultMap.put("orderUserPicList", orderPicList); //询价
+            resultMap.putAll(this.voucherInfo(order));
 			return resultMap;
 		}
 		//查询订单表的关联图片表
@@ -1847,8 +1847,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 asyncService.pushOrder(order,mqtt4PushOrder);
                 break;
 			case "TOSEND":
-				if (order.getStatus().name().equals("INIT")) {
-					order.setStatus(OrderType.TOSEND);
+				if (order.getStatus().name().equals("INIT")||order.getStatus().name().equals("TOSEND")||order.getStatus().name().equals("ALREADY")) {
+                    CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",order.getRecyclerId()));
+                    if("1".equals(recycler.getIsManager())){
+                        order.setStatus(OrderType.TOSEND);
+                    }else{
+                        throw new ApiException("该订单已被业务经理转派给下属回收人员");
+                    }
 				} else {
 					throw new ApiException("该订单已被操作，请刷新页面查看状态");
 				}
@@ -4563,33 +4568,48 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public Object getOrderDetailPrice(Integer id) {
-        List<Map<String, Object>> list = orderMapper.getCategoryPriceList(id);
+
         Order order = this.selectOne(new EntityWrapper<Order>().eq("id", id));
-        if (list.size() > 0) {
-            for (Map map : list) {
-                BigDecimal price = new BigDecimal(Double.valueOf(String.valueOf(map.get("amount")))) ;
-                BigDecimal platformPrice = new BigDecimal(Double.valueOf(String.valueOf(map.get("platformPrice"))));
-                BigDecimal platform=price.multiply(platformPrice);
-                BigDecimal commission = platform.setScale(2, RoundingMode.DOWN);
-                map.put("price",String.valueOf(commission));
-            }
-            Map<String, Object> map2 = list.get(0);
-            map2.put("sort", 1);
-            for (int i = 1; i < list.size(); i++) {
-                for (int j = i - 1; j < i; j++) {
-                    Map<String, Object> map = list.get(i);
-                    Map<String, Object> map1 = list.get(j);
-                    if (map.get("parentName").equals(map1.get("parentName"))) {
-                        map.put("sort", Integer.valueOf(String.valueOf(map1.get("sort"))) + 1);
-                    } else {
-                        map.put("sort", 1);
-                    }
-                }
-            }
-        }
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("listReturn", list);
-        resultMap.put("sumPrice", order.getCommissionsPrice());
+        if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER){
+            List<Map<String, Object>> list = orderMapper.getCategoryPriceList(id);
+            if (list.size() > 0) {
+                for (Map map : list) {
+                    BigDecimal price = new BigDecimal(Double.valueOf(String.valueOf(map.get("amount")))) ;
+                    BigDecimal platformPrice = new BigDecimal(Double.valueOf(String.valueOf(map.get("platformPrice"))));
+                    BigDecimal platform=price.multiply(platformPrice);
+                    BigDecimal commission = platform.setScale(2, RoundingMode.DOWN);
+                    map.put("price",String.valueOf(commission));
+                }
+                /*Map<String, Object> map2 = list.get(0);
+                map2.put("sort", 1);
+                for (int i = 1; i < list.size(); i++) {
+                    for (int j = i - 1; j < i; j++) {
+                        Map<String, Object> map = list.get(i);
+                        Map<String, Object> map1 = list.get(j);
+                        if (map.get("parentName").equals(map1.get("parentName"))) {
+                            map.put("sort", Integer.valueOf(String.valueOf(map1.get("sort"))) + 1);
+                        } else {
+                            map.put("sort", 1);
+                        }
+                    }
+                }*/
+            }
+            resultMap.put("listReturn", list);
+            resultMap.put("sumPrice", order.getCommissionsPrice());
+        }else{
+            Category category = categoryService.selectById(order.getCategory().getParentId());
+            List<Map<String, Object>> list = new ArrayList<>();
+            Map<String, Object> map = new HashMap<>();
+            map.put("parentName",category.getName() );
+            map.put("categoryName",order.getCateAttName4Page());
+            map.put("amount","1" );
+            map.put("unit",order.getCategory().getUnit() );
+            map.put("price",order.getCommissionsPrice() );
+            list.add(map);
+            resultMap.put("listReturn",list);
+            resultMap.put("sumPrice", order.getCommissionsPrice());
+        }
         return resultMap;
     }
 }

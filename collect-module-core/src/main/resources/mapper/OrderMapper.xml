@@ -3367,9 +3367,10 @@
 		i.parent_name AS parentName,
 		concat(round(i.amount,2),'') AS amount,
 		i.unit AS unit,
-		i.platform_price AS platformPrice
+		if(o.is_cash = 0,i.admin_commissions,i.free_commissions) AS platformPrice
 		FROM
 		sb_order_item_ach i
+		INNER JOIN sb_order o on i.order_id = o.id
 		WHERE
 		1=1
 		<if test="orderId != null and orderId != ''">
