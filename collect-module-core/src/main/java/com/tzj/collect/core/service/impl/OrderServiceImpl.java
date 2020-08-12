@@ -19,6 +19,7 @@ import com.tzj.collect.common.amap.AmapUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.MiniTemplatemessageUtil;
 import com.tzj.collect.common.push.PushUtils;
+import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
@@ -49,6 +50,9 @@ import com.tzj.collect.entity.CategoryAttrOption;
 import com.tzj.collect.entity.Order.OrderType;
 import static com.tzj.collect.entity.Payment.STATUS_PAYED;
 import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
+
+import com.tzj.module.api.entity.Subject;
+import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -175,7 +179,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private DsddRecyclePositionService dsddRecyclePositionService;
     @Autowired
     private DsddPaymentService dsddPaymentService;
-
+    @Autowired
+    private OrderOperateService orderOperateService;
     @Resource
     private JedisPool jedisPool;
     /**
@@ -1310,11 +1315,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 */
 	@Override
-	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime,String recyclerName){
+	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String linkMan,String startTime,String endTime,String recyclerName){
 		if ("2".equals(type)){
-			return orderMapper.outOrderExcelHouse(companyId,startTime,endTime,recyclerName);
+			return orderMapper.outOrderExcelHouse(companyId,startTime,endTime,linkMan,recyclerName);
 		}
-		return orderMapper.outOrderExcel(companyId,type,startTime,endTime,recyclerName);
+		return orderMapper.outOrderExcel(companyId,type,startTime,endTime,linkMan,recyclerName);
 	}
 	/**
 	 * 根据各种查询条件获取订单列表
@@ -1784,6 +1789,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public String updateOrderByBusiness(Integer orderId, String status, String cancelReason, Integer recyclerId,MqttClient mqtt4PushOrder) {
 		Order order = orderMapper.selectById(orderId);
+
+        //新增操作流水日志
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+
 		//修改订单日志表的
 		OrderLog orderLog = new OrderLog();
 		orderLog.setOpStatusBefore(order.getStatus().toString());
@@ -1800,8 +1810,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				orderLog.setOpStatusAfter("REJECTED");
 				orderLog.setOp("已驳回");
 				this.updateById(order);
+
+                orderOperate.setOperateLog("取消订单");
+                orderOperate.setReason(cancelReason);
+                orderOperate.setOperatorMan("平台");
 				//取消订单消息推送
 				asyncService.pushOrder(order,mqtt4PushOrder);
+
 				//判断是否有以旧换新券码
 				if(!StringUtils.isBlank(order.getEnterpriseCode())){
 					EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
@@ -1870,6 +1885,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				this.updateById(order);//放这里的目的是为了取得order中回收员id
 				//查询回收人员信息
 				Recyclers recyclers = recyclersService.selectById(recyclerId);
+
+                orderOperate.setOperateLog("派单给业务经理-"+recyclers.getName());
+                orderOperate.setReason("/");
+                Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
+                orderOperate.setOperatorMan(company.getName());
+
 				PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 				break;
 			default:
@@ -1878,6 +1899,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		//boolean bool = this.updateById(order);
 		//修改订单日志表的
+        orderOperateService.insert(orderOperate);
 		orderLogService.insert(orderLog);
 		return res;
 	}
@@ -1985,9 +2007,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public boolean modifyOrder(OrderBean orderBean) {
 		Order order = this.selectById(orderBean.getId());
+         Recyclers recyclers = recyclersService.selectById(orderBean.getRecyclerId());
 		if (orderBean.getArrivalTime() != null && !"".equals(orderBean.getArrivalTime())) {
 			try {
 				order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(orderBean.getArrivalTime()));
+
+                OrderOperate orderOperate = new OrderOperate();
+                orderOperate.setOrderNo(order.getOrderNo());
+                orderOperate.setOperateLog("预约时间由"+order.getArrivalTimePage()+" "
+                        +"变更为"+" "+orderBean.getArrivalTime()+" "+("am".equals(order.getArrivalPeriod())?"上午":"下午"));
+                orderOperate.setReason("/");
+                orderOperate.setOperatorMan("回收人员-"+recyclers.getName());
+                orderOperateService.insert(orderOperate);
+
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -2116,6 +2148,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		String descrb = "";
 		Order order = orderService.selectById(orderBean.getId());
 		Recyclers recycler = recyclersService.selectById(order.getRecyclerId());
+        //新增操作流水日志
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+
 		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1"));
 		if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){
 			Category category = categoryService.selectById(order.getCategoryId());
@@ -2138,10 +2174,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						if ("1".equals(companyRecycler.getIsManager())) {
 							//是经理
 							order.setRecyclerId(0);
+                            orderOperate.setOperateLog("取消任务");
+                            orderOperate.setOperatorMan("业务经理-"+recycler.getName());
 							order.setStatus(OrderType.INIT);
 						} else {
 							//是下属回收人员
 							order.setStatus(OrderType.TOSEND);
+                            orderOperate.setOperateLog("取消任务");
+                            orderOperate.setOperatorMan("回收人员-"+recycler.getName());
 							order.setRecyclerId(companyRecycler.getParentsId());
 							//阿里云推送
 							Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
@@ -2156,7 +2196,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 					if (orderBean.getCancelReason() != null && !"".equals(orderBean.getCancelReason())) {
 						order.setCancelReason(orderBean.getCancelReason());
+                        orderOperate.setReason(orderBean.getCancelReason());
 					} else {
+                        orderOperate.setReason("没有取消原因");
 						throw new ApiException("没有取消原因");
 					}
 					RecyclerCancelLog cancelLog = new RecyclerCancelLog();
@@ -2164,7 +2206,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					cancelLog.setRecycleId(recycler.getId().toString());
 					cancelLog.setOrderId(order.getId().toString());
 					recyclerCancelLogService.insert(cancelLog);
-
 
 					flag = orderService.updateById(order);
 					orderLog.setOpStatusAfter("CANCELTASK");
@@ -2187,6 +2228,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     asyncService.pushOrder(order,mqtt4PushOrder);
 					orderLog.setOpStatusAfter("COMPLETE");
 					orderLog.setOp("已完成");
+
+                    orderOperate.setOperateLog("完成订单");
+                    orderOperate.setOperatorMan("回收人员-"+recycler.getName());
+                    orderOperate.setReason("/");
+
 					this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
 					if (!"1".equals(companyRecycler.getIsManager())) {
 						//阿里云推送
@@ -2217,6 +2263,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderLog.setOp("已接单");
 					//查询此单属于具体某个回收人员
 					Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+
+                    orderOperate.setOperateLog("确认接单");
+                    orderOperate.setOperatorMan("回收人员-"+recyclers.getName());
+                    orderOperate.setReason("/");
+
+                    order.setRecyclerId(companyRecycler.getParentsId());
 					if (recyclers != null) {
 						Company company = companyService.selectById(order.getCompanyId());
 						if (company != null) {
@@ -2249,6 +2301,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					throw new ApiException("不能修改为此状态");
 			}
 		}
+        orderOperateService.insert(orderOperate);
 		//修改日志列表
 		flag = orderLogService.insert(orderLog);
 		return flag;
@@ -2278,6 +2331,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			if(!orderService.updateById(order)){
 				return "订单已被修改，稍后重试";
 			}
+            //新增操作流水日志
+            OrderOperate orderOperate = new OrderOperate();
+            orderOperate.setOrderNo(order.getOrderNo());
+            orderOperate.setOperateLog("撤回订单");
+            orderOperate.setReason("/");
+            Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
+            orderOperate.setOperatorMan(company.getName());
+            orderOperateService.insert(orderOperate);
 			orderLogService.insert(orderLog);
 			return "修改成功";
 		}catch (Exception e){
@@ -2766,15 +2827,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
     public Object distributeOrder(Integer orderId, Integer recyclerId) {
 		Order order = this.selectById(orderId);
+
 		if (null == order) {
 			return "未找到该订单 id：" + orderId;
 		}
+        Recyclers recycler = recyclersService.selectById(order.getRecyclerId());
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+        orderOperate.setOperatorMan("业务经理-"+recycler.getName());
+
 		order.setRecyclerId(recyclerId);
 		boolean b = this.updateById(order);
 		if (!b) {
 			return "转派失败";
 		}
 		Recyclers recyclers = recyclersService.selectById(recyclerId);
+        //新增操作流水日志
+        orderOperate.setOperateLog("将订单转派给 回收人员-"+recyclers.getName());
+        orderOperate.setReason("/");
+        orderOperateService.insert(orderOperate);
 		PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 		return "转派成功";
 	}
@@ -3527,6 +3598,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			if (!b) {
 				return "转派失败";
 			}
+            OrderOperate orderOperate = new OrderOperate();
+            orderOperate.setOrderNo(order.getOrderNo());
+            orderOperate.setOperateLog("撤回转派");
+            orderOperate.setReason("/");
+            orderOperate.setOperatorMan("业务经理-"+recyclers.getName());
+            orderOperateService.insert(orderOperate);
+
 			PushUtils.getAcsResponse(recrcleTel, status, order.getTitle().getValue() + "");
 			PushUtils.getAcsResponse(recyclers.getTel(), order.getStatus().getValue() + "", order.getTitle().getValue() + "");
 			return "操作成功";
@@ -3953,8 +4031,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * added by michael_wang
 	 */
 	@Override
-	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName,String title){
-		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName,title);
+	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName,String title,String linkMan){
+		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName,title,linkMan);
 	}
 	@Override
     public Object getReyclersServiceAbility(OrderBean orderBean, Integer companyId){
@@ -4002,10 +4080,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (null == orderCancleExamine){
 			orderCancleExamine = new OrderCancleExamine();
 		}
+        //新增操作流水日志
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(orderBean.getOrderNo());
+        orderOperate.setOperateLog("申请取消订单");
+        orderOperate.setReason(orderBean.getCancelReason());
+        Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
+        orderOperate.setOperatorMan(company.getName());
+
 		orderCancleExamine.setOrderNo(orderBean.getOrderNo());
 		orderCancleExamine.setCancleReason(orderBean.getCancelReason());
 		orderCancleExamine.setStatus("0");
 		orderCancleExamineService.insertOrUpdate(orderCancleExamine);
+        orderOperateService.insert(orderOperate);
 		return "操作成功";
 	}
 	@Override
@@ -4030,8 +4117,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			throw new ApiException("该订单的状态，目前不可被申请取消");
 		}
 		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
+
+        //新增操作流水日志
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+
 		if ("1".equals(orderbean.getStatus())){
 			this.updateOrderByBusiness(orderbean.getId(),"REJECTED",orderbean.getCancelReason(),null,mqtt4PushOrder);
+            orderOperate.setOperateLog("同意申请取消订单");
             //如果是咸鱼的单子，就通知咸鱼订单取消
             if (StringUtils.isNotBlank(order.getTaobaoNo())){
                 QiMemOrder qiMemOrder = new QiMemOrder();
@@ -4040,7 +4133,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 qiMemOrder.setReason(orderbean.getCancelReason());
                 boolean bool = qiMemService.updateQiMemOrder(qiMemOrder);
             }
-		}
+		}else{
+            orderOperate.setOperateLog("拒绝申请取消订单");
+        }
+        orderOperate.setReason("/");
+        orderOperate.setOperatorMan("平台");
+        orderOperateService.insert(orderOperate);
+
 		orderCancleExamine.setUpdateDate(new Date());
 		orderCancleExamine.setStatus(orderbean.getStatus());
 		orderCancleExamineService.updateById(orderCancleExamine);
@@ -4200,25 +4299,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", orderbean.getOrderNo()));
 		int count = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()));
 		OrderComplaint orderComplaint = new OrderComplaint();
+        OrderOperate orderOperate = new OrderOperate();
+
 		orderComplaint.setOrderNo(orderbean.getOrderNo());
 		orderComplaint.setType(orderbean.getType());
+
+        orderOperate.setOrderNo(orderbean.getOrderNo());
+
 		if ("0".equals(orderbean.getType())){
 			if(!(OrderType.INIT+"").equals(order.getStatus()+"")){
 				throw new ApiException("该订单不是待派单状态");
 			}
 			orderComplaint.setTypes("催派");
+            orderOperate.setOperateLog("催派");
+            orderOperate.setReason("/");
 		}else if ("1".equals(orderbean.getType())){
 			if(!(OrderType.TOSEND+"").equals(order.getStatus()+"")){
 				throw new ApiException("该订单不是待接单状态");
 			}
 			orderComplaint.setTypes("催接");
+            orderOperate.setOperateLog("催接");
+            orderOperate.setReason("/");
 		}else if ("2".equals(orderbean.getType())){
 			if(!(OrderType.ALREADY+"").equals(order.getStatus()+"")){
 				throw new ApiException("该订单不是待完成状态");
 			}
 			orderComplaint.setTypes("催收");
+            orderOperate.setOperateLog("催收");
+            orderOperate.setReason("/");
 		}else if ("4".equals(orderbean.getType())){
 			orderComplaint.setTypes("主动客诉");
+            orderOperate.setOperateLog("投诉");
+            orderOperate.setReason(orderbean.getReason());
 		}
 		orderComplaint.setReason(orderbean.getReason());
 		//判断订单是否超时
@@ -4230,6 +4342,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setComplaintType(orderbean.getType());
 			orderComplaint.setIsComplaint("0");
 		}
+        orderOperate.setOperatorMan("平台");
+
+        orderOperateService.insert(orderOperate);
 		orderComplaintService.insert(orderComplaint);
 		this.updateById(order);
 		return "操作成功";
@@ -4277,6 +4392,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (null == orderComplaint){
 			throw new ApiException("该客诉无法进行反馈");
 		}
+        OrderOperate orderOperate = orderOperateService.selectOne(new EntityWrapper<OrderOperate>().eq("operate_log",orderComplaint.getTypes()).orderBy("create_date",false));
+		if(orderOperate != null){
+            orderOperate.setReason(complaintBack);
+            orderOperateService.updateById(orderOperate);
+        }
 		orderComplaint.setComplaintBack(complaintBack);
 		orderComplaintService.updateById(orderComplaint);
 		return "操作成功";

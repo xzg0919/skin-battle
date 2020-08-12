@@ -687,7 +687,6 @@
 		WHERE
 			a.id = #{orderId}
 		AND b.seller_id is NOT NULL
-
 	</select>
 
 	<!--五废订单 -->
@@ -759,8 +758,14 @@
 							AND soo.complete_date <= CONCAT(#{endTime},' 23:59:59')
 						 ]]>
 		</if>
+		<if test="linkMan != null and linkMan !='' ">
+			AND
+			(soo.link_man LIKE concat(concat('%',#{linkMan}),'%')
+			or soo.tel LIKE CONCAT('%',#{linkName},'%'))
+		</if>
 		<if test="recyclerName !=null and recyclerName !=''">
-			AND sr.name_ like CONCAT('%',#{recyclerName},'%')
+			AND (sr.name_ like CONCAT('%',#{recyclerName},'%')
+			or sr.tel like CONCAT('%',#{recyclerName},'%'))
 		</if>
 		AND soo.title = #{title}
 		and soo.company_id=#{companyId}
@@ -807,8 +812,14 @@
 						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
 					 ]]>
 			</if>
+		    <if test="linkMan != null and linkMan !='' ">
+			    AND
+			  (a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+			   or a.tel LIKE CONCAT('%',#{linkName},'%'))
+		    </if>
 			<if test="recyclerName !=null and recyclerName !=''">
-				AND d.name_ like CONCAT('%',#{recyclerName},'%')
+				AND (d.name_ like CONCAT('%',#{recyclerName},'%')
+				or d.tel like CONCAT('%',#{recyclerName},'%'))
 			</if>
 	</select>
 	<select id="outOrderExcelHouse" parameterType="Object" resultType="Map">
@@ -845,8 +856,14 @@
 						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
 					 ]]>
 		</if>
+		<if test="linkMan != null and linkMan !='' ">
+			AND
+			(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+			or a.tel LIKE CONCAT('%',#{linkName},'%'))
+		</if>
 		<if test="recyclerName !=null and recyclerName !=''">
-			AND d.name_ like CONCAT('%',#{recyclerName},'%')
+			AND (d.name_ like CONCAT('%',#{recyclerName},'%')
+			or d.tel like CONCAT('%',#{recyclerName},'%'))
 		</if>
 		GROUP BY
 			b.order_id,

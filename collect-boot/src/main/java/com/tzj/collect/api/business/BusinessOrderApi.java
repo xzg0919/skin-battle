@@ -52,6 +52,8 @@ public class BusinessOrderApi {
 	private OrderCancleExamineService orderCancleExamineService;
 	@Resource(name = "mqtt4PushOrder")
 	private MqttClient mqtt4PushOrder;
+	@Autowired
+	private OrderOperateService orderOperateService;
 	/**
 	 * 根据各种查询条件获取订单 列表
 	 * @author 王灿
@@ -154,6 +156,14 @@ public class BusinessOrderApi {
 	public Object withdrawApplication(BOrderBean bOrderBean){
 		//查询订单详情
 		if (orderCancleExamineService.delete(new EntityWrapper<OrderCancleExamine>().eq("order_no", bOrderBean.getOrderNo()))){
+			//新增操作流水日志
+			OrderOperate orderOperate = new OrderOperate();
+			orderOperate.setOrderNo(bOrderBean.getOrderNo());
+			orderOperate.setOperateLog("撤销申请");
+			orderOperate.setReason("/");
+			Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
+			orderOperate.setOperatorMan(company.getName());
+			orderOperateService.insert(orderOperate);
 			return "Y";
 		}
 		return "N";
@@ -436,4 +446,14 @@ public class BusinessOrderApi {
 		return orderService.getOrderAchItemDatail(orderbean);
 	}
 
+	/** 获取操作日志流水表
+	 * @author
+	 * @return
+	 */
+	@Api(name = "order.getOrderOperateByOrderId", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public List<OrderOperate> getOrderOperateByOrderId(OrderBean orderbean) {
+		return orderOperateService.selectOperate(orderbean);
+	}
 }

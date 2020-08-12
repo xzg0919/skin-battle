@@ -214,7 +214,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             map.put("recyclersList",recycler);
         }else{
             List<Recyclers>recyclers = recyclersMapper.getRecyclersLists(companyId, orderId, Integer.parseInt(order.getTitle().getValue() + ""));
-            map.put("recyclersList",recyclers);
+            return recyclers;
         }
         return map;
     }

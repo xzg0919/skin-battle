@@ -18,10 +18,9 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.util.List;
 import java.util.Map;
 
-import static com.tzj.collect.common.constant.TokenConst.*;
+import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
 @ApiService
 public class AdminOrderApi {
@@ -39,6 +38,8 @@ public class AdminOrderApi {
     private AreaService areaService;
     @Autowired
     private CompanyStreetHouseService companyStreetHouseService;
+    @Autowired
+    private OrderOperateService orderOperateService;
 
     /**
      * 根据条件获取订单内容
