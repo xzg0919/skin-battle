@@ -41,14 +41,16 @@ public class OrderComplaintServiceImpl extends ServiceImpl<OrderComplaintMapper,
                 Map<String, Object> map = new HashMap<>();
               if("0".equals(list.getType())){
                   map.put("催派",null ==list.getComplaintBack()?"未反馈":"已反馈");
+                  returnMap.add(map);
               }else if("1".equals(list.getType())){
                     map.put("催接",null ==list.getComplaintBack()?"未反馈":"已反馈");
+                    returnMap.add(map);
                 }else if("2".equals(list.getType())){
                   map.put("催收",null ==list.getComplaintBack()?"未反馈":"已反馈");
+                  returnMap.add(map);
               }
-                returnMap.add(map);
             }
         }
-        return orderComplaintList;
+        return returnMap;
     }
 }

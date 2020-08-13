@@ -135,7 +135,7 @@ public interface OrderService extends IService<Order> {
 	 * @return
 	*/
 	@DS("slave")
-	Map<String,Object> selectCountByStatus(String status, Integer companyId, Order.TitleType titleType);
+	Map<String,Object> selectCountByStatus(BOrderBean orderBean);
 
 	/**
 	 * 根据订单状态获得订单列表
@@ -426,7 +426,7 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Object getOrderComplaintDetail(String orderNo);
 
-	Object addOrderComplaintBack(Integer id,String type,String complaintBack);
+	Object addOrderComplaintBack(String orderNo,String type,String complaintBack);
 	@DS("slave")
 	Map<String, Object> getOrderAchItemDatail(OrderBean orderBean);
 	@DS("slave")

@@ -169,6 +169,8 @@ public class Order extends DataEntity<Long> {
 	private String cateAttName4Page;// 父类名称/父类名称
 	@TableField(exist = false)
 	private String num;// 页面需要
+	@TableField(exist = false)
+	private String isOverTimes;// 1-已超时
 	@TableField(exist = false)//成交价格，页面需要
 	private String paymentPrice;
 	@TableField(exist = false)//页面需要

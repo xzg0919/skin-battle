@@ -60,6 +60,8 @@ public interface OrderMapper extends BaseMapper<Order> {
 	*/
 	Integer getOrderListsCount(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title,@Param("reInit") String reInit);
 
+	Integer getReOrderListsCount(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title,@Param("reInit") String reInit);
+
 	AppOrderResult getOrderDetails(@Param("orderBean") OrderBean orderbean);
 	/**
 	 * @author sgmark@aliyun.com

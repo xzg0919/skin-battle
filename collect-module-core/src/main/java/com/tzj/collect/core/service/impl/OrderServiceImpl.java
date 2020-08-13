@@ -985,7 +985,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         int size = pageBean.getPageSize();
         int num = pageBean.getPageNumber();
         Map<String, Object> map = new HashMap<String, Object>();
-        Integer rejectedCount= 0;
         if(orderBean.getStatus().equals("CANCEL")){
             statusList.add("REJECTED");
         }
@@ -993,11 +992,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             List<Order> list = orderMapper.getOrderLists(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title,reInit);
 
             if(orderBean.getStatus().equals("INIT")&&!"1".equals(reInit)){
-                for(Order order:list){
-                    if(StringUtils.isNoneBlank(order.getCancelReason())){
-                        rejectedCount+=1;
-                    }
-                }
+                Integer rejectedCount = orderMapper.getReOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title,reInit);
                 map.put("reCount", rejectedCount);
             }
 
@@ -1367,32 +1362,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	/**
 	 * 根据各种状态查询相订单表相关的条数
 	 *
-	 * @param status:订单的条件
-	 * @param companyId:企业Id
+	 * @param
+	 * @param
 	 * @return
 	 * @author 王灿
 	 */
 	@Override
-	public Map<String, Object> selectCountByStatus(String status, Integer companyId, Order.TitleType categoryType) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		if (categoryType == null){
-			throw new ApiException("参数错误");
-		}
-		if(StringUtils.isBlank(categoryType.toString())){
-            int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
-            int TOSENDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
-            int ALREADYCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
-            int COMPLETECount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
-            int CANCELCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
-            int REJECTEDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("REJECTED")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
-
-            map.put("INIT", INITCount);
-            map.put("TOSEND", TOSENDCount);
-            map.put("ALREADY", ALREADYCount);
-            map.put("COMPLETE", COMPLETECount);
-            map.put("CANCEL", CANCELCount);
-            map.put("REJECTED", REJECTEDCount);
-        }else {
+	public Map<String, Object> selectCountByStatus(BOrderBean orderBean) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        Integer companyId = orderBean.getCompanyId();
+        if(StringUtils.isNotBlank(orderBean.getCategoryType())){
+            Order.TitleType categoryType = Order.TitleType.valueOf(orderBean.getCategoryType());
             int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).eq("order_from", 0));
             int TOSENDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).eq("order_from", 0));
             int ALREADYCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).eq("order_from", 0));
@@ -1406,8 +1386,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             map.put("COMPLETE", COMPLETECount);
             map.put("CANCEL", CANCELCount);
             map.put("REJECTED", REJECTEDCount);
-        }
+        }else {
+            int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title", 1,2,4));
+            int TOSENDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
+            int ALREADYCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
+            int COMPLETECount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
+            int CANCELCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
+            int REJECTEDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("REJECTED")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
 
+            map.put("INIT", INITCount);
+            map.put("TOSEND", TOSENDCount);
+            map.put("ALREADY", ALREADYCount);
+            map.put("COMPLETE", COMPLETECount);
+            map.put("CANCEL", CANCELCount);
+            map.put("REJECTED", REJECTEDCount);
+        }
 		return map;
 	}
 
@@ -2268,7 +2261,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     orderOperate.setOperatorMan("回收人员-"+recyclers.getName());
                     orderOperate.setReason("/");
 
-                    order.setRecyclerId(companyRecycler.getParentsId());
 					if (recyclers != null) {
 						Company company = companyService.selectById(order.getCompanyId());
 						if (company != null) {
@@ -4384,11 +4376,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
 	@Transactional
-	public Object addOrderComplaintBack(Integer id,String type,String complaintBack){
-    	if (null == id){
+	public Object addOrderComplaintBack(String orderNo,String type,String complaintBack){
+    	if (StringUtils.isBlank(orderNo)){
     		throw new ApiException("该客诉无法进行反馈");
 		}
-		OrderComplaint orderComplaint = orderComplaintService.selectOne(new EntityWrapper<OrderComplaint>().eq("order_no",id).eq("type_",type).orderBy("create_date",false));
+        if (StringUtils.isBlank(complaintBack)){
+            throw new ApiException("请输入反馈内容");
+        }
+		OrderComplaint orderComplaint = orderComplaintService.selectOne(new EntityWrapper<OrderComplaint>().eq("order_no",orderNo).eq("type_",type).orderBy("create_date",false));
 		if (null == orderComplaint){
 			throw new ApiException("该客诉无法进行反馈");
 		}
@@ -4701,34 +4696,40 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     BigDecimal commission = platform.setScale(2, RoundingMode.DOWN);
                     map.put("price",String.valueOf(commission));
                 }
-                /*Map<String, Object> map2 = list.get(0);
-                map2.put("sort", 1);
-                for (int i = 1; i < list.size(); i++) {
-                    for (int j = i - 1; j < i; j++) {
-                        Map<String, Object> map = list.get(i);
-                        Map<String, Object> map1 = list.get(j);
-                        if (map.get("parentName").equals(map1.get("parentName"))) {
-                            map.put("sort", Integer.valueOf(String.valueOf(map1.get("sort"))) + 1);
-                        } else {
-                            map.put("sort", 1);
-                        }
-                    }
-                }*/
             }
             resultMap.put("listReturn", list);
             resultMap.put("sumPrice", order.getCommissionsPrice());
         }else{
-            Category category = categoryService.selectById(order.getCategory().getParentId());
-            List<Map<String, Object>> list = new ArrayList<>();
-            Map<String, Object> map = new HashMap<>();
-            map.put("parentName",category.getName() );
-            map.put("categoryName",order.getCateAttName4Page());
-            map.put("amount","1" );
-            map.put("unit",order.getCategory().getUnit() );
-            map.put("price",order.getCommissionsPrice() );
-            list.add(map);
-            resultMap.put("listReturn",list);
-            resultMap.put("sumPrice", order.getCommissionsPrice());
+            OrderItem orderItem = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id",order.getId()));
+            if(orderItem!=null){
+                Category category = categoryService.selectById(orderItem.getCategoryId());
+                Category category1 = categoryService.selectById(category.getParentId());
+                List<Map<String, Object>> list = new ArrayList<>();
+                Map<String, Object> map = new HashMap<>();
+                map.put("parentName",category1.getName() );
+                map.put("categoryName",category.getName());
+                map.put("amount","1" );
+                map.put("unit",category.getUnit());
+                map.put("price",order.getCommissionsPrice() );
+                list.add(map);
+                resultMap.put("listReturn",list);
+                resultMap.put("sumPrice", order.getCommissionsPrice());
+            }else{
+                if(order.getCategoryId()!=null){
+                    Category category = categoryService.selectById(order.getCategoryId());
+                    Category category1 = categoryService.selectById(category.getParentId());
+                    List<Map<String, Object>> list = new ArrayList<>();
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("parentName",category1.getName() );
+                    map.put("categoryName",category.getName());
+                    map.put("amount","1" );
+                    map.put("unit",category.getUnit());
+                    map.put("price",order.getCommissionsPrice() );
+                    list.add(map);
+                    resultMap.put("listReturn",list);
+                    resultMap.put("sumPrice", order.getCommissionsPrice());
+                }
+            }
         }
         return resultMap;
     }

@@ -9,9 +9,9 @@ public class RecyclerCancelLog extends  DataEntity<Long>{
 	
 	private String orderId;
 	
-	private String cancelDate;//取消时间
+	/*private String cancelDate;//取消时间
 	
-	private String recycleName;//回收人员姓名
+	private String recycleName;//回收人员姓名*/
 	
 	private String cancelReason;//取消原因
 	
@@ -36,7 +36,7 @@ public class RecyclerCancelLog extends  DataEntity<Long>{
 		this.id = id;
 	}
 
-	public String getCancelDate() {
+	/*public String getCancelDate() {
 		return cancelDate;
 	}
 
@@ -50,7 +50,7 @@ public class RecyclerCancelLog extends  DataEntity<Long>{
 
 	public void setRecycleName(String recycleName) {
 		this.recycleName = recycleName;
-	}
+	}*/
 
 	public String getCancelReason() {
 		return cancelReason;

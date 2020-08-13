@@ -74,7 +74,7 @@
 			<if test="linkMan != null and linkMan !='' ">
 				AND
 				(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
-				or a.tel LIKE CONCAT('%',#{linkName},'%'))
+				or a.tel LIKE CONCAT('%',#{linkMan},'%'))
 			</if>
 			<if test="recyclersName !=null and recyclersName!='' ">
 				<choose>
@@ -101,12 +101,83 @@
 			<if test="title != null and title !='' ">
 				AND a.title  = #{title}
 			</if>
+		    <if test="title == null  ">
+			    AND a.title in (1,2,4)
+		    </if>
 		    <if test="reInit != null and reInit !='' ">
 			AND a.cancel_reason IS NOT NULL
+			AND a.cancel_reason != '订单回调'
 		    </if>
 			GROUP BY a.id
 		)a
     	</select>
+	<select id="getReOrderListsCount" parameterType="Object" resultType="Integer">
+		SELECT COUNT(1) FROM (
+		SELECT
+		a.*
+		FROM
+		sb_order a
+		LEFT JOIN sb_category c ON a.category_id = c.id
+		LEFT JOIN sb_payment p ON p.order_sn = a.order_no
+		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		LEFT JOIN (
+		SELECT
+		d.order_id,
+		max(d.num) AS num
+		FROM
+		sb_arrival_time_log d
+		LEFT JOIN sb_order a ON d.order_id = a.id
+		GROUP BY
+		d.order_id
+		) f ON a.id = f.order_id
+		WHERE
+		a.del_flag = '0'
+		AND (a.order_from = '0' or a.order_from is null)
+		AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
+		AND a.cancel_reason IS NOT NULL
+		AND a.cancel_reason != '订单回调'
+		<if test="status != null">
+			AND  a.status_ in
+			<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="orderNo != null and orderNo !='' ">
+			AND a.order_no LIKE concat(concat('%',#{orderNo}),'%')
+		</if>
+		<if test="linkMan != null and linkMan !='' ">
+			AND
+			(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+			or a.tel LIKE CONCAT('%',#{linkMan},'%'))
+		</if>
+		<if test="recyclersName !=null and recyclersName!='' ">
+			<choose>
+				<when test="title == 3">
+					and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
+				</when>
+				<otherwise>
+					AND
+					(b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+					or b.tel LIKE concat(concat('%',#{recyclersName}),'%'))
+				</otherwise>
+			</choose>
+		</if>
+		<if test="startTime !=null and startTime !=''">
+			<![CDATA[
+						AND a.complete_date >= CONCAT(#{startTime},' 00:00:00')
+					 ]]>
+		</if>
+		<if test="endTime !=null and endTime !=''">
+			<![CDATA[
+						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
+					 ]]>
+		</if>
+		<if test="title != null and title !='' ">
+			AND a.title  = #{title}
+		</if>
+		GROUP BY a.id
+		)a
+	</select>
     <select id="getOrderLists" parameterType="Object" resultMap="OrderResultMap">
 			select * from (
 				select a.*,
@@ -153,7 +224,7 @@
 					<if test="linkMan != null and linkMan !='' ">
 						AND
 						(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
-						or a.tel LIKE CONCAT('%',#{linkName},'%'))
+						or a.tel LIKE CONCAT('%',#{linkMan},'%'))
 					</if>
 					<if test="recyclersName !=null and recyclersName!='' ">
 						<choose>
@@ -180,8 +251,12 @@
 					<if test="title != null and title !='' ">
 						AND a.title  = #{title}
 					</if>
+		           <if test="title == null  ">
+			         AND a.title in (1,2,4)
+		           </if>
 		           <if test="reInit != null and reInit !='' ">
 			       AND a.cancel_reason IS NOT NULL
+				   AND a.cancel_reason != '订单回调'
 		           </if>
 					GROUP BY a.id
 				)a
@@ -3496,6 +3571,7 @@
 		<result property="iotEquipmentCode" column="iot_equipment_code"/>
 		<result property="overTime" column="overTime"/>
 		<result property="overTimes" column="overTimes"/>
+		<result property="isOverTimes" column="isOverTimes"/>
 		<result property="examineReason" column="examineReason"/>
 		<result property="examineStatus" column="examineStatus"/>
 		<result property="isComplaint" column="isComplaint"/>

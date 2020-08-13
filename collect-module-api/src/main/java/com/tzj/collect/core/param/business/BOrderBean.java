@@ -155,7 +155,7 @@ public class BOrderBean {
 		private String isScan;
 
 	    // 0不是 1是
-	    private String reInit; //订单回调订单
+	    private String reInit; //再处理订单
 
 		private String categoryType;//订单类型
 

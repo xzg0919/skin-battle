@@ -62,6 +62,7 @@ public class BusinessOrderApi {
 	 * 
 	*/
 	 @Api(name = "business.order.getOrderLists", version = "1.0")
+	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderLists(BOrderBean orderBean)
 	{	//获取分页数据
@@ -92,10 +93,11 @@ public class BusinessOrderApi {
 	 * 
 	*/
 	 @Api(name = "business.order.getOrderCounts", version = "1.0")
+	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderCounts(BOrderBean orderBean){
 		 	//根据各种状态查询相订单表相关的条数
-			Map<String, Object> resultMap = orderService.selectCountByStatus(orderBean.getStatus(),orderBean.getCompanyId(), Order.TitleType.valueOf(orderBean.getCategoryType()));
+			Map<String, Object> resultMap = orderService.selectCountByStatus(orderBean);
 			return  resultMap;
 	 }
 
@@ -193,6 +195,7 @@ public class BusinessOrderApi {
 		 */
 		 @Api(name = "business.order.getRecyclersList", version = "1.0")
 		 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+		 @SignIgnore
 		 public Object getRecyclersList2(BOrderBean bOrderBean){
 			 return recyclersService.getRecyclersList2(bOrderBean.getCompanyId(),bOrderBean.getId());
 
@@ -205,6 +208,7 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	@Api(name = "business.order.getOrderDetailPrice", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getOrderDetailPrice(BOrderBean bOrderBean){
 		return orderService.getOrderDetailPrice(bOrderBean.getId());
@@ -420,6 +424,7 @@ public class BusinessOrderApi {
 	 * @return
 	 */
 	@Api(name = "business.order.getIsOrderComplaint", version = "1.0")
+	@SignIgnore
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Object getIsOrderComplaint(OrderBean orderBean){
 		return orderComplaintService.getIsOrderComplaint(orderBean.getOrderNo());
@@ -432,8 +437,9 @@ public class BusinessOrderApi {
 	 */
 	@Api(name = "business.order.addOrderComplaintBack", version = "1.0")
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@SignIgnore
 	public Object addOrderComplaintBack(OrderBean orderBean){
-		return orderService.addOrderComplaintBack(orderBean.getId(),orderBean.getType(),orderBean.getComplaintBack());
+		return orderService.addOrderComplaintBack(orderBean.getOrderNo(),orderBean.getType(),orderBean.getComplaintBack());
 	}
 
 	/** 根据订单Id获取编辑后的回收物明细
