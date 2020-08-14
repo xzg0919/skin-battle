@@ -1384,7 +1384,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             map.put("TOSEND", TOSENDCount);
             map.put("ALREADY", ALREADYCount);
             map.put("COMPLETE", COMPLETECount);
-            map.put("CANCEL", CANCELCount);
+            map.put("CANCEL", CANCELCount+REJECTEDCount);
             map.put("REJECTED", REJECTEDCount);
         }else {
             int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title", 1,2,4));
@@ -1398,7 +1398,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             map.put("TOSEND", TOSENDCount);
             map.put("ALREADY", ALREADYCount);
             map.put("COMPLETE", COMPLETECount);
-            map.put("CANCEL", CANCELCount);
+            map.put("CANCEL", CANCELCount+REJECTEDCount);
             map.put("REJECTED", REJECTEDCount);
         }
 		return map;
