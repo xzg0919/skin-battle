@@ -574,6 +574,27 @@ public class Order extends DataEntity<Long> {
 		this.arrivalTimePage = arrivalTimePage;
 	}
 
+	@TableField(exist = false)
+	private String isReOrder; //是否为再处理订单 1-是 0-否
+
+	public String getIsReOrder() {
+		String status = this.status.toString();
+		String temp = this.cancelReason;
+		if ("INIT".equals(status)){
+			if (null != temp && !"订单回调".equals(temp)) {
+				return "1";
+			}else{
+				return "0";
+			}
+		}else{
+			return null;
+		}
+	}
+
+	public void setIsReOrder(String isReOrder) {
+		this.isReOrder = isReOrder;
+	}
+
 	/**
 	 * 预约时间(只用于页面需求)
 	 */
