@@ -1855,17 +1855,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 asyncService.pushOrder(order,mqtt4PushOrder);
                 break;
 			case "TOSEND":
-				if (order.getStatus().name().equals("INIT")||order.getStatus().name().equals("TOSEND")||order.getStatus().name().equals("ALREADY")) {
+                if (order.getStatus().name().equals("INIT")) {
+                    order.setStatus(OrderType.TOSEND);
+                } else if(order.getStatus().name().equals("TOSEND")||order.getStatus().name().equals("ALREADY")){
                     CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",order.getRecyclerId()));
-                    if("1".equals(recycler.getIsManager())){
-                        order.setStatus(OrderType.TOSEND);
+                    if(recycler!=null){
+                        if("1".equals(recycler.getIsManager())){
+                            order.setStatus(OrderType.TOSEND);
+                        }else{
+                            throw new ApiException("该订单已被业务经理转派给下属回收人员");
+                        }
                     }else{
-                        throw new ApiException("该订单已被业务经理转派给下属回收人员");
+                        throw new ApiException("未找到该回收人员");
                     }
-				} else {
-					throw new ApiException("该订单已被操作，请刷新页面查看状态");
-				}
-
+                }else{
+                    throw new ApiException("该订单已被操作，请刷新页面查看状态");
+                }
 				//异步保存至redis中(订单号，派单时间)
 //				asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclerId.longValue(), System.currentTimeMillis(), "save");
                 order.setAchPrice(BigDecimal.ZERO);

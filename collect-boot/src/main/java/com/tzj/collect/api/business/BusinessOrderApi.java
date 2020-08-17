@@ -235,6 +235,7 @@ public class BusinessOrderApi {
 	 */
 	 @Api(name = "business.order.updateOdrerStatus", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	 @SignIgnore
 	public String updateOdrerStatus(BOrderBean orderbean) {
 		 //订单id 
 		 Integer orderId = orderbean.getId();

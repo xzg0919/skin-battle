@@ -836,7 +836,7 @@
 		<if test="linkMan != null and linkMan !='' ">
 			AND
 			(soo.link_man LIKE concat(concat('%',#{linkMan}),'%')
-			or soo.tel LIKE CONCAT('%',#{linkName},'%'))
+			or soo.tel LIKE CONCAT('%',#{linkMan},'%'))
 		</if>
 		<if test="recyclerName !=null and recyclerName !=''">
 			AND (sr.name_ like CONCAT('%',#{recyclerName},'%')
@@ -890,7 +890,7 @@
 		    <if test="linkMan != null and linkMan !='' ">
 			    AND
 			  (a.link_man LIKE concat(concat('%',#{linkMan}),'%')
-			   or a.tel LIKE CONCAT('%',#{linkName},'%'))
+			   or a.tel LIKE CONCAT('%',#{linkMan},'%'))
 		    </if>
 			<if test="recyclerName !=null and recyclerName !=''">
 				AND (d.name_ like CONCAT('%',#{recyclerName},'%')
@@ -934,7 +934,7 @@
 		<if test="linkMan != null and linkMan !='' ">
 			AND
 			(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
-			or a.tel LIKE CONCAT('%',#{linkName},'%'))
+			or a.tel LIKE CONCAT('%',#{linkMan},'%'))
 		</if>
 		<if test="recyclerName !=null and recyclerName !=''">
 			AND (d.name_ like CONCAT('%',#{recyclerName},'%')
