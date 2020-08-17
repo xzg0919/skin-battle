@@ -712,7 +712,7 @@ public class Order extends DataEntity<Long> {
 				break;
 			case TOSEND:
 				// statusPage = "已派单";
-				statusPage = "待接单";
+				statusPage = "已派发";
 				break;
 			case ALREADY:
 				statusPage = "进行中";

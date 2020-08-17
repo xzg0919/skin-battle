@@ -223,7 +223,7 @@
 		<if test="type != null and type != ''">
 			AND a.type_ = #{type}
 		</if>
-		<if test="recyclerId != null ">
+		<if test="recyclerId != null and recyclerId != '' ">
 			AND a.recycler_id != #{recyclerId}
 		</if>
 	</select>
