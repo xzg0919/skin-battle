@@ -213,8 +213,7 @@
 		sb_company_recycler a
 		inner JOIN sb_recyclers b ON a.recycler_id = b.id
 		WHERE
-	    a.is_enable_area = '0'
-		AND a.status_ = '1'
+	    a.status_ = '1'
 		AND a.is_manager ='1'
 		and a.del_flag = 0
 		<if test="companyId != null and companyId != ''">
