@@ -4390,7 +4390,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 		OrderComplaint orderComplaint = orderComplaintService.selectOne(new EntityWrapper<OrderComplaint>().eq("order_no",orderNo).eq("type_",type).orderBy("create_date",false));
 		if (null == orderComplaint){
-			throw new ApiException("该客诉无法进行反馈");
+			throw new ApiException("未查到该客诉信息，无法进行反馈");
 		}
         OrderOperate orderOperate = orderOperateService.selectOne(new EntityWrapper<OrderOperate>().eq("operate_log",orderComplaint.getTypes()).orderBy("create_date",false));
 		if(orderOperate != null){
