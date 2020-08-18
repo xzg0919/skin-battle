@@ -1857,7 +1857,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			case "TOSEND":
                 if (order.getStatus().name().equals("INIT")) {
                     order.setStatus(OrderType.TOSEND);
-                } else if(order.getStatus().name().equals("TOSEND")||order.getStatus().name().equals("ALREADY")){
+                } else if(order.getStatus().name().equals("TOSEND")){
                     CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",order.getRecyclerId()));
                     if(recycler!=null){
                         if("1".equals(recycler.getIsManager())){
@@ -4718,7 +4718,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     Map<String, Object> map = new HashMap<>();
                     map.put("parentName",category1.getName() );
                     map.put("categoryName",category.getName());
-                    map.put("amount","1" );
+                    map.put("amount","1.00" );
                     map.put("unit",category.getUnit());
                     map.put("price",order.getCommissionsPrice() );
                     list.add(map);

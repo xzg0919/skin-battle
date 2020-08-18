@@ -786,7 +786,7 @@ public class Order extends DataEntity<Long> {
 		this.recyclerId = recyclerId;
 	}
 
-	public OrderType getStatus() {
+	public OrderType  getStatus() {
 		return status;
 	}
 
