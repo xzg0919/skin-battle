@@ -4690,34 +4690,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public Object getOrderDetailPrice(Integer id) {
 
         Order order = this.selectOne(new EntityWrapper<Order>().eq("id", id));
-        Map<String, Object> resultMap = new HashMap<>();
-        if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER){
-            List<Map<String, Object>> list = orderMapper.getCategoryPriceList(id);
-            if (list.size() > 0) {
-                for (Map map : list) {
-                    BigDecimal price = new BigDecimal(Double.valueOf(String.valueOf(map.get("amount")))) ;
-                    BigDecimal platformPrice = new BigDecimal(Double.valueOf(String.valueOf(map.get("platformPrice"))));
-                    BigDecimal platform=price.multiply(platformPrice);
-                    BigDecimal commission = platform.setScale(2, RoundingMode.DOWN);
-                    map.put("price",String.valueOf(commission));
+        if(order==null) {
+               throw new RuntimeException("该订单不存在");
+        }
+        if(OrderType.COMPLETE != (order.getStatus())) {
+              throw new RuntimeException("该订单不是完成状态");
+        }
+            Map<String, Object> resultMap = new HashMap<>();
+            if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER){
+                List<Map<String, Object>> list = orderMapper.getCategoryPriceList(id);
+                if (list.size() > 0) {
+                    for (Map map : list) {
+                        BigDecimal price = new BigDecimal(Double.valueOf(String.valueOf(map.get("amount")))) ;
+                        BigDecimal platformPrice = new BigDecimal(Double.valueOf(String.valueOf(map.get("platformPrice"))));
+                        BigDecimal platform=price.multiply(platformPrice);
+                        BigDecimal commission = platform.setScale(2, RoundingMode.DOWN);
+                        map.put("price",String.valueOf(commission));
+                    }
                 }
-            }
-            resultMap.put("listReturn", list);
-            resultMap.put("sumPrice", order.getCommissionsPrice());
-        }else{
-            OrderItem orderItem = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("order_id",order.getId()));
-            if(orderItem!=null){
-                Category category = categoryService.selectById(orderItem.getCategoryId());
-                Category category1 = categoryService.selectById(category.getParentId());
-                List<Map<String, Object>> list = new ArrayList<>();
-                Map<String, Object> map = new HashMap<>();
-                map.put("parentName",category1.getName() );
-                map.put("categoryName",category.getName());
-                map.put("amount","1" );
-                map.put("unit",category.getUnit());
-                map.put("price",order.getCommissionsPrice() );
-                list.add(map);
-                resultMap.put("listReturn",list);
+                resultMap.put("listReturn", list);
                 resultMap.put("sumPrice", order.getCommissionsPrice());
             }else{
                 if(order.getCategoryId()!=null){
@@ -4735,7 +4726,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     resultMap.put("sumPrice", order.getCommissionsPrice());
                 }
             }
-        }
-        return resultMap;
+            return resultMap;
     }
 }
