@@ -74,5 +74,5 @@ public class DailyDaApiTest {
 //
 //
 //        System.out.println("四等奖"+ JSONArray.toJSONString(dailyLexiconService.sendMoneyByLocal(aliUserIds4, "0.88")));
-//    }
+   }
 }
