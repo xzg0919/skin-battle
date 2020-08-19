@@ -6,6 +6,7 @@ import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.core.service.DailyLexiconService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,11 @@ public class OutExcelController {
     @Resource
     private DailyLexiconService dailyLexiconService;
 
+    @RequestMapping("/getYesterdayNumber")
+    @ResponseBody
+    public Map<String, Object>  getYesterdayNumber(String date) throws Exception {
+        return dailyLexiconService.getYesterdayNumber(date);
+    }
     @RequestMapping("/week")
     public void  getRecruitListOutExcel(HttpServletResponse response) throws Exception{
         List<Map<String, Object>> dailyLastWeekRanking =  dailyLexiconService.weekDresserList();
