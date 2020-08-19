@@ -272,7 +272,7 @@
         )a
         ORDER BY a.isComplaint DESC, IF(a.status_='3',a.complete_date,if(a.status_ in
         ('4','5'),a.cancel_time,a.overTime)) DESC ,a.create_date
-        LIMIT #{startSize} , #{pageSize}
+        LIMIT #{startSize},#{pageSize}
     </select>
 
     <select id="getAppOrderList" parameterType="com.tzj.collect.core.param.ali.OrderBean"
@@ -933,8 +933,8 @@
 		sb_order a
 		inner JOIN sb_category b ON a.category_id = b.id
 		inner JOIN sb_category bb ON b.parent_id = bb.id
-		inner JOIN sb_company c ON a.company_id = c.id
-		inner JOIN sb_recyclers d ON a.recycler_id = d.id
+		LEFT JOIN sb_company c ON a.company_id = c.id
+		LEFT JOIN sb_recyclers d ON a.recycler_id = d.id
 		WHERE
 		a.id = #{id}
 		ORDER BY createDate
@@ -956,8 +956,8 @@ r.name_ as recyclerName
 from
 sb_order o
 INNER JOIN sb_order_item_ach i on o.id = i.order_id
-INNER JOIN sb_company c on o.company_id = c.id
-INNER JOIN sb_recyclers r on r.id = o.recycler_id
+LEFT JOIN sb_company c on o.company_id = c.id
+LEFT JOIN sb_recyclers r on r.id = o.recycler_id
 WHERE o.id=#{id}
 ORDER BY time
 	</select>
