@@ -25,4 +25,6 @@ public class DailyDaParam {
     private String year;//年数
 
     private String week;//周数
+
+    private String number;
 }

@@ -224,10 +224,13 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
 
     public static void main(String[] args) {
 
-        for (int i = 0; i < 1000; i++){
-            System.out.println(Double.parseDouble(new Random().nextInt(4) + 2  +""));
-        }
+//        for (int i = 0; i < 1000; i++){
+//            System.out.println(Double.parseDouble(new Random().nextInt(4) + 2  +""));
+//        }
 //        System.out.println(a+"-----------------"+b+"--------"+c +"----------" +d);
+        for (int i = 0; i < 1000; i++) {
+            System.out.println((Math.random() * .01 + .10 + "").substring(0, 4));
+        }
     }
 
     /** 每个位置随机金额（万分之1几率99
@@ -266,7 +269,7 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
             return "99.00";
         }else if (setNum == 4){
             System.out.println("三等奖---------------------------3---------------------------");
-            return (Math.random() * .02+ .12 + "").substring(0,4);
+            return (Math.random() * .01+ .10 + "").substring(0,4);
         }else {
             return "0";
         }

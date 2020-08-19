@@ -237,5 +237,19 @@ public class DailyDaApi {
     public List<Map<String, Object>> dailyPersonRanking(){
         return dailyWeekRankingService.dailyPersonRanking(MemberUtils.getMember());
     }
+
+    /**
+     * 获取上周排名（指定到位）
+     * @Param:   setNum  位数
+     * @return:
+     */
+    @Api(name = "daily.person.getLastWeekMemberRank", version = "1.0")
+    @AuthIgnore
+    @SignIgnore
+    public List<Map<String, Object>> getLastWeekMemberRank(DailyDaParam dailyDaParam){
+        List<Map<String, Object>> lastWeekRankSendMoney = dailyLexiconService.getLastWeekMemberRank(dailyDaParam.getSetNum());
+        return lastWeekRankSendMoney;
+    }
+
 }
 

@@ -294,4 +294,25 @@
 	<delete id="deleteDailyRecords" parameterType="String">
 		DELETE FROM ${tableName} WHERE ali_user_id = #{aliUserId} AND create_date LIKE #{todayTime}
 	</delete>
+
+	<select id="selectYesterdayNumber" resultType="Map">
+		SELECT
+	(select count(DISTINCT ali_user_id) as al from ${tableName} where  DATE_FORMAT(create_date,'%Y-%m-%d') = #{yesterday}) as '昨日答题总人数',count(1) as '完成所有答题人数'
+
+FROM
+	(
+		SELECT
+			count(1) al
+		FROM
+			${tableName}
+		WHERE
+			DATE_FORMAT(create_date, '%Y-%m-%d') = #{yesterday}
+		AND user_type_id IS NOT NULL
+		GROUP BY
+			ali_user_id
+		HAVING
+			al = 10
+	) AS a
+
+	</select>
 </mapper>
