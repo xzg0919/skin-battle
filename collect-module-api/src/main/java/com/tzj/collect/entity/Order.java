@@ -702,7 +702,7 @@ public class Order extends DataEntity<Long> {
 	public String getStatusPage() {
 		switch (this.status) {
 			case INIT:
-				statusPage = "待接单";
+				statusPage = "待处理";
 				break;
 			case COMPLETE:
 				statusPage = "已完成";

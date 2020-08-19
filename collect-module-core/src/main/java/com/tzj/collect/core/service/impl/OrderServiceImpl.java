@@ -1310,11 +1310,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @return
 	 */
 	@Override
-	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String linkMan,String startTime,String endTime,String recyclerName){
+	public List<Map<String,Object>> outOrderExcel(Integer companyId,String type,String startTime,String endTime,String recyclerName){
 		if ("2".equals(type)){
-			return orderMapper.outOrderExcelHouse(companyId,startTime,endTime,linkMan,recyclerName);
+			return orderMapper.outOrderExcelHouse(companyId,startTime,endTime,recyclerName);
 		}
-		return orderMapper.outOrderExcel(companyId,type,startTime,endTime,linkMan,recyclerName);
+		return orderMapper.outOrderExcel(companyId,type,startTime,endTime,recyclerName);
 	}
 	/**
 	 * 根据各种查询条件获取订单列表
@@ -4028,10 +4028,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * added by michael_wang
 	 */
 	@Override
-	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName,String title,String linkMan){
-		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName,title,linkMan);
+	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName,String title){
+		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName,title);
 	}
-	@Override
+
+    @Override
+    public List<Order> getOrderListss(Integer companyId, String orderNo, String linkMan, String recyclerName, String startTime, String endTime, String title) {
+        return orderMapper.getOrderListss(companyId,orderNo,linkMan,recyclerName,startTime,endTime,title);
+    }
+
+    @Override
+    public Map<String, Object> select1Or4Map(Long id) {
+        return orderMapper.select1Or4Map(id);
+    }
+
+    @Override
+    public List<Map<String, Object>> select2Or3Map(Long id) {
+        return orderMapper.select2Or3Map(id);
+    }
+
+    @Override
     public Object getReyclersServiceAbility(OrderBean orderBean, Integer companyId){
 		PageBean pagebean = orderBean.getPagebean();
 		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
