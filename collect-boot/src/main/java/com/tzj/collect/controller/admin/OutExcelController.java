@@ -308,7 +308,7 @@ public class OutExcelController {
                     row.add(map.get("commissionsPrice"));
                     row.add(map.get("backCommissionsPrice"));
                     rows.add(row);
-                    data.setRows(rows);
+                    /*data.setRows(rows);*/
                 } else {
                     List<Map<String, Object>> list = orderService.select2Or3Map(id);
                     for (int i = 0; i < list.size(); i++) {
@@ -332,10 +332,11 @@ public class OutExcelController {
                         row.add(String.valueOf(price22));
                         row.add(String.valueOf(price33));
                         rows.add(row);
-                        data.setRows(rows);
+                        /*data.setRows(rows);*/
                     }
                 }
             }
+            data.setRows(rows);
         } else {
             row = new ArrayList();
             rows.add(row);
