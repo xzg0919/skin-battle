@@ -2,14 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tzj.collect.core.mapper.OrderLogMapper">
 	
-	<select id="getOrderData" parameterType="String" resultType="Integer">  
-        SELECT count(*) FROM sb_order_log a 
-		LEFT JOIN sb_order b ON a.order_id = b.id 
+	<select id="getOrderData" parameterType="String" resultType="Integer">
+		SELECT count(*) FROM  sb_order b
 		WHERE b.company_id = #{id}
-		AND a.op_status_after = #{status} 
+		AND b.status_ = #{status}
 		<if test=" startTime != null and startTime != '' ">
-			AND a.create_date BETWEEN CONCAT(#{startTime},' 00:00:00') and CONCAT(#{startTime},' 23:59:59')
+			AND b.complete_date BETWEEN CONCAT(#{startTime},' 00:00:00') and CONCAT(#{startTime},' 23:59:59')
 		</if>
-    </select> 
-   
+	</select>
+
 </mapper>
