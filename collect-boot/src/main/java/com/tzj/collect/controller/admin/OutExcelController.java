@@ -174,7 +174,7 @@ public class OutExcelController {
     public void outOrderExcel(HttpServletResponse response, OrderBean orderBean)throws Exception {
         //五废订单需要单独格式导出
         if ("1".equals(orderBean.getType())||"4".equals(orderBean.getType())) {
-            List<Map<String, Object>> list = orderService.outOrderExcel(orderBean.getId(), orderBean.getType(), orderBean.getStartTime(), orderBean.getEndTime(),orderBean.getRecyclerName());
+            List<Map<String, Object>> list = orderService.outOrderExcel(orderBean.getId(), orderBean.getType(),orderBean.getLinkMan(), orderBean.getStartTime(), orderBean.getEndTime(),orderBean.getRecyclerName());
             //添加表头
             List<String> titles = new ArrayList<>();
             //for(String title: excelInfo.getNames())
@@ -213,7 +213,7 @@ public class OutExcelController {
             String fileName = fdate.format(new Date()) + ".xlsx";
             ExcelUtils.exportExcel(response, fileName, data);
         }else {
-            List<Map<String, Object>> list = orderService.orderDetail4HorseHold(orderBean.getId(),orderBean.getStartTime(), orderBean.getEndTime(),orderBean.getRecyclerName(),orderBean.getType());
+            List<Map<String, Object>> list = orderService.orderDetail4HorseHold(orderBean.getId(),orderBean.getStartTime(), orderBean.getEndTime(),orderBean.getRecyclerName(),orderBean.getType(),orderBean.getLinkMan());
             //添加表头
             List<String> titles = new ArrayList<>();
             ExcelData data = new ExcelData();

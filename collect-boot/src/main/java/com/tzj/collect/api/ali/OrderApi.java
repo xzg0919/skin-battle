@@ -76,6 +76,8 @@ public class OrderApi {
     private MemberService memberService;
     @Resource
     private JedisPool jedisPool;
+    @Autowired
+    private OrderOperateService orderOperateService;
 
     /**
      * 获取会员的未完成订单列表 不分页
@@ -154,6 +156,14 @@ public class OrderApi {
         order.setCancelReason(orderbean.getCancelReason());
         //取消时间
         order.setCancelTime(new Date());
+
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+        orderOperate.setOperateLog("取消订单");
+        orderOperate.setReason(orderbean.getCancelReason());
+        orderOperate.setOperatorMan("用户");
+        orderOperateService.insert(orderOperate);
+
         String status = orderService.orderCancel(order, orderInitStatus,mqtt4PushOrder);
         return status;
     }

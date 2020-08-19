@@ -280,4 +280,8 @@ public class OrderBean {
 
     private String aliAccount;
 
+    private Integer operatorId;//操作员编号
+
+    private String operatorName;//操作员
+
 }

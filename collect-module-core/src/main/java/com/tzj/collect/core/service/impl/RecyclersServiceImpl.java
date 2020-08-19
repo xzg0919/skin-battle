@@ -28,6 +28,9 @@ import com.tzj.collect.core.param.business.RecyclersServiceRangeBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.module.easyopen.exception.ApiException;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +77,10 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     private OrderService orderService;
     @Autowired
     private RecyclersRangeHouseService recyclersRangeHouseService;
+    @Autowired
+    private RecyclerCancelLogService recyclerCancelLogService;
+    @Autowired
+    private RecyclersService recyclersService;
 
     /**
      * 根据手机号查询回收人员
@@ -183,9 +190,34 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     }
 
     @Override
-    public List<Recyclers> getRecyclersList2(Integer companyId, Integer orderId) {
+    public Object getRecyclersList2(Integer companyId, Integer orderId) {
         Order order = orderService.selectById(orderId);
-        return recyclersMapper.getRecyclersLists(companyId, orderId, Integer.parseInt(order.getTitle().getValue() + ""));
+        Integer title = Integer.parseInt(order.getTitle().getValue() + "");
+        Integer type = null;
+        if(title == 1||title == 2){
+            type = 1;
+        }else if (title == 4){
+            type = 4;
+        }
+        Map<String,Object>map = new HashMap<>();
+        if(null !=order.getCancelReason()&&order.getStatus().name().equals("INIT")&&!"订单回调".equals(order.getCancelReason())){
+            RecyclerCancelLog recyclerCancelLog = recyclerCancelLogService.selectOne(new EntityWrapper<RecyclerCancelLog>().eq("order_id",orderId).orderBy("create_date",false));
+            Recyclers recyclers = recyclersService.selectById(recyclerCancelLog.getRecycleId());
+
+            map.put("userAddress",order.getAddress());
+            map.put("name",recyclers.getName());
+            map.put("cancelTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(recyclerCancelLog.getCreateDate()));
+            map.put("cancelReason",recyclerCancelLog.getCancelReason());
+            List<Recyclers>recycler = recyclersMapper.getRecyclersListAll(companyId,type,null);
+            map.put("recyclersList",recycler);
+        }else if(order.getStatus().name().equals("TOSEND")||order.getStatus().name().equals("ALREADY")){
+            List<Recyclers>recycler = recyclersMapper.getRecyclersListAll(companyId,type,order.getRecyclerId());
+            map.put("recyclersList",recycler);
+        }else{
+            List<Recyclers>recyclers = recyclersMapper.getRecyclersLists(companyId, orderId, Integer.parseInt(order.getTitle().getValue() + ""));
+            return recyclers;
+        }
+        return map;
     }
 
     @Override

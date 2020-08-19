@@ -74,6 +74,8 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 
 	public List<Recyclers> getRecyclersLists(@Param("companyId") Integer companyId, @Param("orderId") Integer orderId, @Param("title") Integer title);
 
+	public List<Recyclers> getRecyclersListAll(@Param("companyId") Integer companyId, @Param("type") Integer type,@Param("recyclerId") Integer recyclerId);
+
 	public List<Recyclers> getSendOrderRecyclersList(@Param("companyId") Integer companyId, @Param("orderId") Integer orderId, @Param("title") Integer title);
 
 	/**

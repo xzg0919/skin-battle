@@ -151,6 +151,9 @@
 		<if test="title == 4">
 			INNER JOIN sb_recyclers_range_big c ON f.street_id = c.street_id AND f.company_id = c.company_id
 		</if>
+		<if test="title == 3">
+			INNER JOIN sb_recyclers_range_household c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
 		INNER JOIN sb_company_recycler d ON c.recyclers_id = d.recycler_id AND f.company_id = d.company_id
 		INNER JOIN sb_recyclers a ON c.recyclers_id = a.id
 		INNER JOIN sb_recyclers_title e ON f.title = e.title_id AND e.recycle_id = a.id
@@ -200,6 +203,27 @@
 			AND a.is_enable_area = '0'
 		<if test="recyclerName != null and recyclerName != ''">
 			AND b.name_ like CONCAT('%',CONCAT(#{recyclerName},'%'))
+		</if>
+	</select>
+
+	<select id="getRecyclersListAll" parameterType="Object" resultType="com.tzj.collect.entity.Recyclers">
+		SELECT
+		b.*
+		FROM
+		sb_company_recycler a
+		inner JOIN sb_recyclers b ON a.recycler_id = b.id
+		WHERE
+	    a.status_ = '1'
+		AND a.is_manager ='1'
+		and a.del_flag = 0
+		<if test="companyId != null and companyId != ''">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="type != null and type != ''">
+			AND a.type_ = #{type}
+		</if>
+		<if test="recyclerId != null and recyclerId != '' ">
+			AND a.recycler_id != #{recyclerId}
 		</if>
 	</select>
 

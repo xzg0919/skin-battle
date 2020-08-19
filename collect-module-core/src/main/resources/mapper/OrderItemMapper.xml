@@ -45,7 +45,11 @@ GROUP BY
 		</choose>
 </select>
 
-
+	<select id="selectByOrderIdName" parameterType="Object" resultType="com.tzj.collect.entity.OrderItem">
+		SELECT * FROM sb_order_item
+		 WHERE order_id = #{orderId}
+         GROUP BY category_name
+	</select>
 
 
 

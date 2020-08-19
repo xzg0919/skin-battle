@@ -72,7 +72,9 @@
 				AND a.order_no LIKE concat(concat('%',#{orderNo}),'%')
 			</if>
 			<if test="linkMan != null and linkMan !='' ">
-				AND a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+				AND
+				(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+				or a.tel LIKE CONCAT('%',#{linkMan},'%'))
 			</if>
 			<if test="recyclersName !=null and recyclersName!='' ">
 				<choose>
@@ -80,7 +82,9 @@
 						and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
 					</when>
 					<otherwise>
-						AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%'))
+						AND
+						(b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+						or b.tel LIKE concat(concat('%',#{recyclersName}),'%'))
 					</otherwise>
 				</choose>
 			</if>
@@ -97,12 +101,90 @@
 			<if test="title != null and title !='' ">
 				AND a.title  = #{title}
 			</if>
+		    <if test="title == null  ">
+			    AND a.title in (1,2,4)
+		    </if>
+		    <if test="reInit != null and reInit !='' ">
+			AND a.cancel_reason IS NOT NULL
+			AND a.cancel_reason != '订单回调'
+		    </if>
 			GROUP BY a.id
 		)a
     	</select>
+	<select id="getReOrderListsCount" parameterType="Object" resultType="Integer">
+		SELECT COUNT(1) FROM (
+		SELECT
+		a.*
+		FROM
+		sb_order a
+		LEFT JOIN sb_category c ON a.category_id = c.id
+		LEFT JOIN sb_payment p ON p.order_sn = a.order_no
+		LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+		LEFT JOIN (
+		SELECT
+		d.order_id,
+		max(d.num) AS num
+		FROM
+		sb_arrival_time_log d
+		LEFT JOIN sb_order a ON d.order_id = a.id
+		GROUP BY
+		d.order_id
+		) f ON a.id = f.order_id
+		WHERE
+		a.del_flag = '0'
+		AND (a.order_from = '0' or a.order_from is null)
+		AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
+		AND a.cancel_reason IS NOT NULL
+		AND a.cancel_reason != '订单回调'
+		<if test="status != null">
+			AND  a.status_ in
+			<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="orderNo != null and orderNo !='' ">
+			AND a.order_no LIKE concat(concat('%',#{orderNo}),'%')
+		</if>
+		<if test="linkMan != null and linkMan !='' ">
+			AND
+			(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+			or a.tel LIKE CONCAT('%',#{linkMan},'%'))
+		</if>
+		<if test="recyclersName !=null and recyclersName!='' ">
+			<choose>
+				<when test="title == 3">
+					and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
+				</when>
+				<otherwise>
+					AND
+					(b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+					or b.tel LIKE concat(concat('%',#{recyclersName}),'%'))
+				</otherwise>
+			</choose>
+		</if>
+		<if test="startTime !=null and startTime !=''">
+			<![CDATA[
+						AND a.complete_date >= CONCAT(#{startTime},' 00:00:00')
+					 ]]>
+		</if>
+		<if test="endTime !=null and endTime !=''">
+			<![CDATA[
+						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
+					 ]]>
+		</if>
+		<if test="title != null and title !='' ">
+			AND a.title  = #{title}
+		</if>
+		GROUP BY a.id
+		)a
+	</select>
     <select id="getOrderLists" parameterType="Object" resultMap="OrderResultMap">
 			select * from (
-				select a.*,IF(0>a.overTimes,-1,a.overTimes) AS overTime, IF(a.overTimes > 2880,'1',if(a.complaint_type = '3','1','0')) AS isComplaint from (
+				select a.*,
+		            IF(0>a.overTimes,-1,a.overTimes) AS overTime,
+		            IF(a.complaint_type = '3','3',if(a.overTimes > 2880,'2',if(a.complaint_type in ('0','1','2'),'1','0'))) AS isComplaint,
+		            if(a.overTimes > 2880,'1','0') isOverTimes
+		            from (
 					SELECT
 					<include refid="zd"/>, b.name_ AS Recyclers_name,
 					b.tel AS BTel,
@@ -140,7 +222,9 @@
 						AND a.order_no LIKE concat(concat('%',#{orderNo}),'%')
 					</if>
 					<if test="linkMan != null and linkMan !='' ">
-						AND a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+						AND
+						(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+						or a.tel LIKE CONCAT('%',#{linkMan},'%'))
 					</if>
 					<if test="recyclersName !=null and recyclersName!='' ">
 						<choose>
@@ -148,7 +232,9 @@
 								and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
 							</when>
 							<otherwise>
-								AND (b.name_ LIKE concat(concat('%',#{recyclersName}),'%'))
+								AND
+								(b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+								or b.tel LIKE concat(concat('%',#{recyclersName}),'%'))
 							</otherwise>
 						</choose>
 					</if>
@@ -165,10 +251,17 @@
 					<if test="title != null and title !='' ">
 						AND a.title  = #{title}
 					</if>
+		           <if test="title == null  ">
+			         AND a.title in (1,2,4)
+		           </if>
+		           <if test="reInit != null and reInit !='' ">
+			       AND a.cancel_reason IS NOT NULL
+				   AND a.cancel_reason != '订单回调'
+		           </if>
 					GROUP BY a.id
 				)a
 			)a
-		ORDER BY a.isComplaint DESC, IF(a.status_='3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,a.overTime)) DESC ,a.create_date DESC
+		ORDER BY a.isComplaint DESC, IF(a.status_='3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,a.overTime)) DESC ,a.create_date
 		LIMIT #{startSize} , #{pageSize}
     	</select>
     	
@@ -669,7 +762,6 @@
 		WHERE
 			a.id = #{orderId}
 		AND b.seller_id is NOT NULL
-
 	</select>
 
 	<!--五废订单 -->
@@ -741,8 +833,14 @@
 							AND soo.complete_date <= CONCAT(#{endTime},' 23:59:59')
 						 ]]>
 		</if>
+		<if test="linkMan != null and linkMan !='' ">
+			AND
+			(soo.link_man LIKE concat(concat('%',#{linkMan}),'%')
+			or soo.tel LIKE CONCAT('%',#{linkMan},'%'))
+		</if>
 		<if test="recyclerName !=null and recyclerName !=''">
-			AND sr.name_ like CONCAT('%',#{recyclerName},'%')
+			AND (sr.name_ like CONCAT('%',#{recyclerName},'%')
+			or sr.tel like CONCAT('%',#{recyclerName},'%'))
 		</if>
 		AND soo.title = #{title}
 		and soo.company_id=#{companyId}
@@ -789,8 +887,14 @@
 						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
 					 ]]>
 			</if>
+		    <if test="linkMan != null and linkMan !='' ">
+			    AND
+			  (a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+			   or a.tel LIKE CONCAT('%',#{linkMan},'%'))
+		    </if>
 			<if test="recyclerName !=null and recyclerName !=''">
-				AND d.name_ like CONCAT('%',#{recyclerName},'%')
+				AND (d.name_ like CONCAT('%',#{recyclerName},'%')
+				or d.tel like CONCAT('%',#{recyclerName},'%'))
 			</if>
 	</select>
 	<select id="outOrderExcelHouse" parameterType="Object" resultType="Map">
@@ -827,8 +931,14 @@
 						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
 					 ]]>
 		</if>
+		<if test="linkMan != null and linkMan !='' ">
+			AND
+			(a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+			or a.tel LIKE CONCAT('%',#{linkMan},'%'))
+		</if>
 		<if test="recyclerName !=null and recyclerName !=''">
-			AND d.name_ like CONCAT('%',#{recyclerName},'%')
+			AND (d.name_ like CONCAT('%',#{recyclerName},'%')
+			or d.tel like CONCAT('%',#{recyclerName},'%'))
 		</if>
 		GROUP BY
 			b.order_id,
@@ -3342,6 +3452,23 @@
 		WHERE
 			a.order_id = #{orderId}
 	</select>
+
+	<select id="getCategoryPriceList" parameterType="object" resultType="java.util.Map">
+		SELECT
+		i.category_name AS categoryName,
+		i.parent_name AS parentName,
+		concat(round(i.amount,2),'') AS amount,
+		i.unit AS unit,
+		if(o.is_cash = 0,i.admin_commissions,i.free_commissions) AS platformPrice
+		FROM
+		sb_order_item_ach i
+		INNER JOIN sb_order o on i.order_id = o.id
+		WHERE
+		1=1
+		<if test="orderId != null and orderId != ''">
+			AND i.order_id = #{orderId}
+		</if>
+	</select>
 	<!--B端订单详情中的回收物信息-->
 	<select id="getCategoryInfoByOrderId" parameterType="object" resultMap="categoryResultMap">
 		SELECT
@@ -3444,6 +3571,7 @@
 		<result property="iotEquipmentCode" column="iot_equipment_code"/>
 		<result property="overTime" column="overTime"/>
 		<result property="overTimes" column="overTimes"/>
+		<result property="isOverTimes" column="isOverTimes"/>
 		<result property="examineReason" column="examineReason"/>
 		<result property="examineStatus" column="examineStatus"/>
 		<result property="isComplaint" column="isComplaint"/>

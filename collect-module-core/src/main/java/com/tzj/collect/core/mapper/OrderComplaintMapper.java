@@ -9,6 +9,8 @@ import java.util.Map;
 
 public interface OrderComplaintMapper extends BaseMapper<OrderComplaint> {
 
+    List<OrderComplaint>selectComplaintList(@Param("orderNo") String orderNo);
+
 
 
 }

@@ -169,6 +169,8 @@ public class Order extends DataEntity<Long> {
 	private String cateAttName4Page;// 父类名称/父类名称
 	@TableField(exist = false)
 	private String num;// 页面需要
+	@TableField(exist = false)
+	private String isOverTimes;// 1-已超时
 	@TableField(exist = false)//成交价格，页面需要
 	private String paymentPrice;
 	@TableField(exist = false)//页面需要
@@ -572,6 +574,27 @@ public class Order extends DataEntity<Long> {
 		this.arrivalTimePage = arrivalTimePage;
 	}
 
+	@TableField(exist = false)
+	private String isReOrder; //是否为再处理订单 1-是 0-否
+
+	public String getIsReOrder() {
+		String status = this.status.toString();
+		String temp = this.cancelReason;
+		if ("INIT".equals(status)){
+			if (null != temp && !"订单回调".equals(temp)) {
+				return "1";
+			}else{
+				return "0";
+			}
+		}else{
+			return null;
+		}
+	}
+
+	public void setIsReOrder(String isReOrder) {
+		this.isReOrder = isReOrder;
+	}
+
 	/**
 	 * 预约时间(只用于页面需求)
 	 */
@@ -689,7 +712,7 @@ public class Order extends DataEntity<Long> {
 				break;
 			case TOSEND:
 				// statusPage = "已派单";
-				statusPage = "待接单";
+				statusPage = "已派发";
 				break;
 			case ALREADY:
 				statusPage = "进行中";
@@ -763,7 +786,7 @@ public class Order extends DataEntity<Long> {
 		this.recyclerId = recyclerId;
 	}
 
-	public OrderType getStatus() {
+	public OrderType  getStatus() {
 		return status;
 	}
 
