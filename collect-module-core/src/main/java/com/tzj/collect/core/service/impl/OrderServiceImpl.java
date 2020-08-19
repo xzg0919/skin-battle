@@ -19,6 +19,7 @@ import com.tzj.collect.common.amap.AmapUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.MiniTemplatemessageUtil;
 import com.tzj.collect.common.push.PushUtils;
+import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
@@ -49,8 +50,12 @@ import com.tzj.collect.entity.CategoryAttrOption;
 import com.tzj.collect.entity.Order.OrderType;
 import static com.tzj.collect.entity.Payment.STATUS_PAYED;
 import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
+
+import com.tzj.module.api.entity.Subject;
+import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,6 +66,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Resource;
 
+import javassist.runtime.Desc;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -173,7 +179,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private DsddRecyclePositionService dsddRecyclePositionService;
     @Autowired
     private DsddPaymentService dsddPaymentService;
-
+    @Autowired
+    private OrderOperateService orderOperateService;
     @Resource
     private JedisPool jedisPool;
     /**
@@ -253,12 +260,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setLinkMan(orderbean.getLinkMan());
             order.setCategoryId(orderbean.getCategoryId());
             order.setCategoryParentIds(orderbean.getCategoryParentIds());
-            order.setIsMysl(orderbean.getIsMysl());
+            order.setIsMysl("1");
             order.setPrice(price);
             order.setUnit(orderbean.getUnit());
             order.setQty(orderbean.getQty());
             order.setLevel(orderbean.getLevel());
-
+            if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+                order.setOrderFrom("2");
+                order.setAliAccount(orderbean.getAliAccount());
+            }
             order.setGreenCode(orderbean.getGreenCode());
             order.setAliUserId(orderbean.getAliUserId());
             order.setRemarks(orderbean.getRemarks());
@@ -414,7 +424,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderbean.setCityId(city.getParentId().toString());
         //保存orderItem
         if ("0".equals(order.getIsItemAch())) {
-            this.saveOrderItemAch(orderbean, null);
+            double amount = this.saveOrderItemAch(orderbean, order);
+            order.setGreenCount(amount);
         }
         flag = this.updateById(order);
         //储存图片链接
@@ -626,48 +637,60 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return ii;
     }
 
-	private double saveOrderItemAch(OrderBean orderbean, Category category) {
+	private double saveOrderItemAch(OrderBean orderbean, Order order) {
 		//是否是免费的 0 不是 1是 
 		String isCash = orderbean.getIsCash();
 		//得到用户的垃圾总量
-		double amount = 0;
-		OrderItemAch orderItem = null;
+		double amount = 0.0;
+		OrderItemAch orderItemAch = null;
 		List<OrderItemBean> idAmount = null;
 		if (CategoryType.HOUSEHOLD.name().equals(orderbean.getTitle())) {
 			List<IdAmountListBean> listBean = orderbean.getIdAndListList();
 				for (IdAmountListBean idAmountListBean : listBean) {
-					orderItem = new OrderItemAch();
-					orderItem.setOrderId(Integer.parseInt(orderbean.getId() + ""));
-					orderItem.setParentId(idAmountListBean.getCategoryParentId());
-					orderItem.setParentName(idAmountListBean.getCategoryParentName());
+                    orderItemAch = new OrderItemAch();
+                    orderItemAch.setOrderId(Integer.parseInt(orderbean.getId() + ""));
+                    orderItemAch.setParentId(idAmountListBean.getCategoryParentId());
+                    orderItemAch.setParentName(idAmountListBean.getCategoryParentName());
 					idAmount = idAmountListBean.getIdAndAmount();
 					for (OrderItemBean item : idAmount) {
-						orderItem.setCategoryId(Integer.parseInt(item.getCategoryId() + ""));
-						orderItem.setCategoryName(item.getCategoryName());
-						orderItem.setAmount(item.getAmount());
+                        orderItemAch.setCategoryId(Integer.parseInt(item.getCategoryId() + ""));
+                        orderItemAch.setCategoryName(item.getCategoryName());
+                        orderItemAch.setAmount(item.getAmount());
                         //新需求：增加评价 用户是否平铺整理 1-否 2-是
-                        orderItem.setCleanUp(orderbean.getCleanUp());
-
+                        orderItemAch.setCleanUp(orderbean.getCleanUp());
 						System.out.println(item.getCategoryName() + " 重量: " + item.getAmount());
-						CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
+                        OrderItem orderItem = orderItemService.selectOne(new EntityWrapper<OrderItem>().eq("category_id", item.getCategoryId()).eq("order_id", order.getId()));
+                        CompanyCategoryCity companyCategoryCity = companyCategoryCityService.selectOne(new EntityWrapper<CompanyCategoryCity>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()).eq("city_id", orderbean.getCityId()));
 						CompanyCategory companyCategory = comCatePriceService.selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", orderbean.getCompanyId()).eq("category_id", item.getCategoryId()));
                         Category categorys = categoryService.selectById(item.getCategoryId());
-                        if (companyCategoryCity!=null) {
-							orderItem.setParentIds(companyCategoryCity.getParentIds());
-							orderItem.setPrice(companyCategoryCity.getPrice().floatValue());
-							orderItem.setUnit(companyCategoryCity.getUnit());
+                        if (null != orderItem){
+                            orderItemAch.setParentIds(orderItem.getParentIds());
+                            orderItemAch.setPrice(orderItem.getPrice());
+                            orderItemAch.setUnit(orderItem.getUnit());
+                        }else if (companyCategoryCity!=null) {
+                            orderItemAch.setParentIds(companyCategoryCity.getParentIds());
+                            orderItemAch.setPrice(companyCategoryCity.getPrice().floatValue());
+                            orderItemAch.setUnit(companyCategoryCity.getUnit());
 						}else {
-                            orderItem.setParentIds(companyCategory!=null?companyCategory.getParentIds():categorys.getParentIds());
-                            orderItem.setPrice(companyCategory!=null?companyCategory.getPrice():categorys.getPrice().floatValue());
-                            orderItem.setUnit(companyCategory!=null?companyCategory.getUnit():categorys.getUnit());
+                            orderItemAch.setParentIds(companyCategory!=null?companyCategory.getParentIds():categorys.getParentIds());
+                            orderItemAch.setPrice(companyCategory!=null?companyCategory.getPrice():categorys.getPrice().floatValue());
+                            orderItemAch.setUnit(companyCategory!=null?companyCategory.getUnit():categorys.getUnit());
 						}
 						if ("1".equals(isCash)){
-							orderItem.setPrice(0);
-						}
-						orderItemAchService.insert(orderItem);
+                            orderItemAch.setPrice(0);
+                            amount += categorys.getFreeGreenCount();
+                        }else{
+                            amount += categorys.getGreenCount();
+                        }
+						orderItemAchService.insert(orderItemAch);
 					}
 				}
-		}
+		}else {
+		    if(null!=order.getCategoryId()){
+                Category category = categoryService.selectById(order.getCategoryId());
+                amount = category.getGreenCount().doubleValue();
+            }
+        }
 		return ApiUtils.privatedoublegetTwoDecimal(amount);
 	}
 
@@ -822,7 +845,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     public Order createName4PC(Order order) {
         Category category = order.getCategory();
-        ;
+        if (null==category){
+            category = new Category();
+        }
         if (order.getTitle() == Order.TitleType.HOUSEHOLD) {
             category.setName("生活垃圾");
             order.setCategory(category);
@@ -844,11 +869,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             } else {
                 order.setIsTenGreen("0");
             }
-            //获取当前定单的成交价格
-            Object paymentPrice = orderMapper.paymentPriceByOrderId(Integer.parseInt(order.getOrderId()));
-            if (paymentPrice == null) {
-                paymentPrice = 0;
-            }
             if (order.getTitle() == CategoryType.HOUSEHOLD) {
                 attName = new HashSet<>();
                 //获得父类名称(如果订单已完成，名称从完成订单分类中获取)
@@ -865,12 +885,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
                 order.setTitle(CategoryType.HOUSEHOLD);
                 order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
-                order.setPaymentPrice(paymentPrice);
                 orderLists.add(order);
             } else if (order.getTitle() == CategoryType.DIGITAL) {
                 order.setCateAttName4Page(order.getCateName());
                 order.setTitle(CategoryType.DIGITAL);
-                order.setPaymentPrice(paymentPrice);
+                orderLists.add(order);
+            }else if (order.getTitle() == CategoryType.BIGTHING) {
+                order.setCateAttName4Page(order.getCateName());
+                order.setTitle(CategoryType.BIGTHING);
                 orderLists.add(order);
             }
         }
@@ -931,9 +953,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<String> statusList = new ArrayList<>();
         String status = getStatus(orderBean.getStatus());
         String title = null;
-        if (orderBean.getCategoryType() == null) {
-            throw new ApiException("参数错误");
-        } else {
+        if (orderBean.getCategoryType() != null && !"".equals(orderBean.getCategoryType())) {
             title = Order.TitleType.valueOf(orderBean.getCategoryType()).getValue().toString();
         }
         statusList.add(status);
@@ -943,10 +963,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Integer companyId = null;
         String startTime = null;
         String endTime = null;
+        String reInit = null;
         String isScan = StringUtils.isBlank(orderBean.getIsScan()) ? "0" : orderBean.getIsScan();
 
         if (orderBean.getRecyclers() != null && !"".equals(orderBean.getRecyclers())) {
             recyclersName = orderBean.getRecyclers().getName();
+
         }
         if (orderBean.getCompanyId() != null && !"".equals(orderBean.getCompanyId())) {
             companyId = orderBean.getCompanyId();
@@ -957,29 +979,41 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (orderBean.getEndTime() != null && !"".equals(orderBean.getEndTime())) {
             endTime = orderBean.getEndTime();
         }
+        if (orderBean.getReInit() != null && !"".equals(orderBean.getReInit())) {
+            reInit = orderBean.getReInit();
+        }
         int size = pageBean.getPageSize();
         int num = pageBean.getPageNumber();
         Map<String, Object> map = new HashMap<String, Object>();
-        Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title);
-        List<Order> list = orderMapper.getOrderLists(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title);
+        if(orderBean.getStatus().equals("CANCEL")){
+            statusList.add("5");
+        }
+            Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title,reInit);
+            List<Order> list = orderMapper.getOrderLists(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title,reInit);
+
+            if(orderBean.getStatus().equals("INIT")&&!"1".equals(reInit)){
+                Integer rejectedCount = orderMapper.getReOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title,reInit);
+                map.put("reCount", rejectedCount);
+            }
+
 //		if ("0".equals(status)) {
 //			count += orderMapper.getOrderListsCount(companyId, "6", orderNo, linkMan, recyclersName, size,((num-1)*size),startTime,endTime);
 //			list.addAll(orderMapper.getOrderLists(companyId,"6",orderNo,linkMan,recyclersName,size,((num-1)*size),startTime,endTime));
 //		}
-        //判断生活垃圾，还是家用电器，给category.name赋值
-        for (Order order : list) {
-            createName4PC(order);
+            //判断生活垃圾，还是家用电器，给category.name赋值
+            for (Order order : list) {
+                createName4PC(order);
 //			完成列表预估价格显示不正确
-            if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue()) && order.getTitle() == Order.TitleType.HOUSEHOLD) {
-                order.setPrice(order.getAchPrice());
+                if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue()) && order.getTitle() == Order.TitleType.HOUSEHOLD) {
+                    order.setPrice(order.getAchPrice());
+                }
             }
-        }
+            map.put("count", count);
+            map.put("list", list);
+            if (CategoryType.BIGTHING.getValue().toString().equals(title)) {
+                map.put("distributedCount", this.getOrderListsDistribute(orderBean, pageBean).get("count"));// 再处理订单数量
+            }
 
-        map.put("count", count);
-        map.put("list", list);
-        if (CategoryType.BIGTHING.getValue().toString().equals(title)) {
-            map.put("distributedCount", this.getOrderListsDistribute(orderBean, pageBean).get("count"));// 再处理订单数量
-        }
         return map;
     }
 
@@ -1314,8 +1348,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		int size = pageBean.getPageSize();
 		int num = pageBean.getPageNumber();
 		Map<String, Object> map = new HashMap<>();
-		Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, null);
-		List<Order> list = orderMapper.getOrderLists(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, null);
+		Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, null,null);
+		List<Order> list = orderMapper.getOrderLists(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, null,null);
 
 		map.put("count", count);
 		map.put("list", list);
@@ -1328,29 +1362,45 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	/**
 	 * 根据各种状态查询相订单表相关的条数
 	 *
-	 * @param status:订单的条件
-	 * @param companyId:企业Id
+	 * @param
+	 * @param
 	 * @return
 	 * @author 王灿
 	 */
 	@Override
-	public Map<String, Object> selectCountByStatus(String status, Integer companyId, Order.TitleType categoryType) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		if (categoryType == null){
-			throw new ApiException("参数错误");
-		}
-		int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
-		int TOSENDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
-		int ALREADYCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
-		int COMPLETECount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
-		int CANCELCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
-		int REJECTEDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("REJECTED")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()));
-		map.put("INIT", INITCount);
-		map.put("TOSEND", TOSENDCount);
-		map.put("ALREADY", ALREADYCount);
-		map.put("COMPLETE", COMPLETECount);
-		map.put("CANCEL", CANCELCount);
-		map.put("REJECTED", REJECTEDCount);
+	public Map<String, Object> selectCountByStatus(BOrderBean orderBean) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        Integer companyId = orderBean.getCompanyId();
+        if(StringUtils.isNotBlank(orderBean.getCategoryType())){
+            Order.TitleType categoryType = Order.TitleType.valueOf(orderBean.getCategoryType());
+            int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).eq("order_from", 0));
+            int TOSENDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).eq("order_from", 0));
+            int ALREADYCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).eq("order_from", 0));
+            int COMPLETECount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).eq("order_from", 0));
+            int CANCELCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).eq("order_from", 0));
+            int REJECTEDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("REJECTED")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).eq("order_from", 0));
+
+            map.put("INIT", INITCount);
+            map.put("TOSEND", TOSENDCount);
+            map.put("ALREADY", ALREADYCount);
+            map.put("COMPLETE", COMPLETECount);
+            map.put("CANCEL", CANCELCount+REJECTEDCount);
+            map.put("REJECTED", REJECTEDCount);
+        }else {
+            int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title", 1,2,4));
+            int TOSENDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
+            int ALREADYCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
+            int COMPLETECount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
+            int CANCELCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
+            int REJECTEDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("REJECTED")).eq("del_flag", "0").eq("company_id", companyId).eq("order_from", 0).in("title",1,2,4));
+
+            map.put("INIT", INITCount);
+            map.put("TOSEND", TOSENDCount);
+            map.put("ALREADY", ALREADYCount);
+            map.put("COMPLETE", COMPLETECount);
+            map.put("CANCEL", CANCELCount+REJECTEDCount);
+            map.put("REJECTED", REJECTEDCount);
+        }
 		return map;
 	}
 
@@ -1574,14 +1624,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		//根据企业id查询企业信息
 		Company company = companyService.selectById(CompanyId);
 		//根据订单Id查询评价信息
-		OrderEvaluation OrderEvaluation = orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", orderId).eq("del_flag", "0"));
+		OrderEvaluation orderEvaluation = orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", orderId).eq("del_flag", "0"));
+
+        if (orderEvaluation == null){
+            orderEvaluation = new OrderEvaluation();
+            orderEvaluation.setContent("暂无评价");
+        }
 		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
+
+        int initCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "0"));
+        int TosendCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "1"));
+        int AlreadyCount = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()).eq("type_", "2"));
+
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		//order.setPrice(order.getAchPrice());
-		//resultMap.put("order", order);
-		resultMap.put("company", company);
-		resultMap.put("OrderEvaluation", OrderEvaluation);
-		resultMap.put("orderCancleExamine", orderCancleExamine);
+
+		resultMap.put("company", company);                          //企业信息
+		resultMap.put("OrderEvaluation", orderEvaluation);         //评价信息
+		resultMap.put("orderCancleExamine", orderCancleExamine);  //取消订单信息
+        resultMap.put("initComplaint", "催派" + initCount);
+        resultMap.put("TosendCount", "催接" + TosendCount);
+        resultMap.put("AlreadyCount", "催收" + AlreadyCount);
 		//System.out.println(11111);
 		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
 			OrderBean orderBean = new OrderBean();
@@ -1591,12 +1653,53 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			orderBean.setIsCash(order.getIsCash());
 
 			Map<String, Object> map = this.createPriceAmount4PC(orderBean);
+            Map<String, Object> map1 = this.getInitDetail(orderId);
 			List<Map<String, Object>> priceAmount = (List<Map<String, Object>>) map.get("listMapObject");
-			System.out.println(priceAmount.get(0));
-			resultMap.put("priceAmount", priceAmount);
-			resultMap.put("greenCount", map.get("greenCount"));
+            BigDecimal bigDecimal = new BigDecimal(0);
+            if(priceAmount.size()>0){
+                for(Map map5:priceAmount){
+                    bigDecimal = bigDecimal.add(new BigDecimal(map5.get("amount").toString()));
+                }
+            }
+            List<Map<String, Object>> priceAmount1 = (List<Map<String, Object>>) map1.get("listMapObject");
 
+			resultMap.put("priceAmount", priceAmount);  //生活垃圾实际详情
+            resultMap.put("userPriceAmount", priceAmount1); //生活垃圾询价详情
+			resultMap.put("greenCount", map.get("greenCount")); //积分
+            resultMap.put("sumAmount", bigDecimal.toString()); //生活垃圾总重量
+		}else{
+            List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
+            List<OrderItem> OrderItemName = orderItemService.selectByOrderIdName(orderId);
+                List<Map<String, Object>> list1 = new ArrayList<>();
+                List<Map<String, Object>> list3 = new ArrayList<>();
+                for(OrderItem list2:OrderItemName){
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    Map<String, Object> map1 = new HashMap<String, Object>();
+                    List<String>listOpption = new ArrayList();
+                    for(OrderItem list:OrderItemList) {
+                        if(list2.getCategoryName().equals(list.getCategoryName())){
+                            listOpption.add(list.getCategoryAttrOpptionName());
+                        }
+                    }
+                    Category category1 = categoryService.getCategoryById(list2.getCategoryId());
+
+                    map.put("name",category1.getName());
+                    map.put("opption",listOpption);
+                    map.put("price",order.getAchPrice());
+                    map.put("remarks",order.getAchRemarks());
+                    list1.add(map);
+
+                    map1.put("name",category1.getName());
+                    map1.put("opption",listOpption);
+                    map1.put("price",order.getPrice());
+                    map1.put("remarks",order.getRemarks());
+                    list3.add(map1);
+
+                }
+            resultMap.put("realAmount", list1);  //家电实际详情
+            resultMap.put("userAmount", list3); //家电询价详情
 		}
+
 		if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
 			//回收人员填的图片
 			List<OrderPicAch> orderPicAchList = orderPicAchService.selectbyOrderId(orderId);
@@ -1604,26 +1707,55 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
 			if (CategoryType.DIGITAL.getValue().equals(order.getTitle().getValue()) || CategoryType.BIGTHING.getValue().equals(order.getTitle().getValue())) {
 				List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
-				resultMap.put("OrderItemList", OrderItemList);
+				resultMap.put("OrderItemList", OrderItemList);  //大件 家电
 			} else {
 				//查询订单表的分了明细表
 				List<OrderItemAch> orderItemAchList = orderItemAchService.selectByOrderId(orderId);
-				resultMap.put("OrderItemList", orderItemAchList);
+				resultMap.put("OrderItemList", orderItemAchList); //生活垃圾
 			}
-			if (order.getTitle() == Order.TitleType.HOUSEHOLD){
-				order.setPrice(order.getAchPrice());
-			}
-			resultMap.put("order", order);
-			resultMap.put("orderPicList", orderPicAchList);
-			resultMap.put("orderUserPicList", orderPicList);
+            Recyclers recyclers = order.getRecyclers();
+            Recyclers recyclerManager = new Recyclers();
+            if(recyclers!=null){
+                CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclers.getId()));
+                if(("0").equals(recyclers.getIsManager())){
+                    recyclerManager = recyclersService.selectById(recycler.getParentsId());
+                    recyclers.setIsManager("0");
+                    order.setRecyclers(recyclers);
+                }else{
+                    recyclers.setIsManager("1");
+                    order.setRecyclers(recyclers);
+                }
+            }
+            Payment payment = new Payment();
+            payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn",order.getOrderNo()));
+            resultMap.put("payment", payment);
+            resultMap.put("recyclerManager", recyclerManager); //业务经理信息
+			resultMap.put("order", order); //订单信息
+			resultMap.put("orderPicList", orderPicAchList); //实际完成
+			resultMap.put("orderUserPicList", orderPicList); //询价
+            resultMap.putAll(this.voucherInfo(order));
 			return resultMap;
 		}
 		//查询订单表的关联图片表
 		List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
 		//查询订单表的分了明细表
 		List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
+        Recyclers recyclers = order.getRecyclers();
+        Recyclers recyclerManager = new Recyclers();
+        if(recyclers!=null){
+            CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclers.getId()));
+            if(("0").equals(recyclers.getIsManager())){
+                recyclerManager = recyclersService.selectById(recycler.getParentsId());
+                recyclers.setIsManager("0");
+                order.setRecyclers(recyclers);
+            }else{
+                recyclers.setIsManager("1");
+                order.setRecyclers(recyclers);
+            }
+        }
+        resultMap.put("recyclerManager", recyclerManager);
 		resultMap.put("order", order);
-		resultMap.put("orderPicList", orderPicList);
+		resultMap.put("orderUserPicList", orderPicList);
 		resultMap.put("OrderItemList", OrderItemList);
 		//回收员取消任务表中找最新取消任务的回收员名称
 		OrderBean o = new OrderBean();
@@ -1650,6 +1782,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public String updateOrderByBusiness(Integer orderId, String status, String cancelReason, Integer recyclerId,MqttClient mqtt4PushOrder) {
 		Order order = orderMapper.selectById(orderId);
+
+        //新增操作流水日志
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+
 		//修改订单日志表的
 		OrderLog orderLog = new OrderLog();
 		orderLog.setOpStatusBefore(order.getStatus().toString());
@@ -1666,8 +1803,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				orderLog.setOpStatusAfter("REJECTED");
 				orderLog.setOp("已驳回");
 				this.updateById(order);
+
+                orderOperate.setOperateLog("取消订单");
+                orderOperate.setReason(cancelReason);
+                orderOperate.setOperatorMan("平台");
 				//取消订单消息推送
 				asyncService.pushOrder(order,mqtt4PushOrder);
+
 				//判断是否有以旧换新券码
 				if(!StringUtils.isBlank(order.getEnterpriseCode())){
 					EnterpriseCode enterpriseCode = enterpriseCodeService.selectOne(new EntityWrapper<EnterpriseCode>().eq("code", order.getEnterpriseCode()).eq("del_flag", 0).eq("is_use",1));
@@ -1713,15 +1855,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 asyncService.pushOrder(order,mqtt4PushOrder);
                 break;
 			case "TOSEND":
-				if (order.getStatus().name().equals("INIT")) {
-					order.setStatus(OrderType.TOSEND);
-				} else {
-					throw new ApiException("该订单已被操作，请刷新页面查看状态");
-				}
-
+                if (order.getStatus().name().equals("INIT")) {
+                    order.setStatus(OrderType.TOSEND);
+                } else if(order.getStatus().name().equals("TOSEND")){
+                    CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",order.getRecyclerId()));
+                    if(recycler!=null){
+                        if("1".equals(recycler.getIsManager())){
+                            order.setStatus(OrderType.TOSEND);
+                        }else{
+                            throw new ApiException("该订单已被业务经理转派给下属回收人员");
+                        }
+                    }else{
+                        throw new ApiException("未找到该回收人员");
+                    }
+                }else{
+                    throw new ApiException("该订单已被操作，请刷新页面查看状态");
+                }
 				//异步保存至redis中(订单号，派单时间)
 //				asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclerId.longValue(), System.currentTimeMillis(), "save");
-
+                order.setAchPrice(BigDecimal.ZERO);
 				order.setRecyclerId(recyclerId);
 				order.setDistributeTime(new Date());
 				order.setIsRead("0");
@@ -1731,6 +1883,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				this.updateById(order);//放这里的目的是为了取得order中回收员id
 				//查询回收人员信息
 				Recyclers recyclers = recyclersService.selectById(recyclerId);
+
+                orderOperate.setOperateLog("派单给业务经理-"+recyclers.getName());
+                orderOperate.setReason("/");
+                Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
+                orderOperate.setOperatorMan(company.getName());
+
 				PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 				break;
 			default:
@@ -1739,6 +1897,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		//boolean bool = this.updateById(order);
 		//修改订单日志表的
+        orderOperateService.insert(orderOperate);
 		orderLogService.insert(orderLog);
 		return res;
 	}
@@ -1816,7 +1975,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				List<Map<String, Object>> priceAndAmount = (List<Map<String, Object>>) map.get("listMapObject");
 				result.setPriceAndAmount(priceAndAmount);
 				//result.setGreenCount(map.get("greenCount"));
-			} else if (result.getTitle() == CategoryType.DIGITAL) {
+			} else{
 				orderbean.setId(Integer.parseInt(result.getOrderId()));
 				List<AttrItem> orderAttrItem = orderMapper.getOrderItemList(orderbean);
 				result.setAttrItemlist(orderAttrItem);
@@ -1846,9 +2005,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
 	public boolean modifyOrder(OrderBean orderBean) {
 		Order order = this.selectById(orderBean.getId());
+         Recyclers recyclers = recyclersService.selectById(orderBean.getRecyclerId());
 		if (orderBean.getArrivalTime() != null && !"".equals(orderBean.getArrivalTime())) {
 			try {
 				order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(orderBean.getArrivalTime()));
+
+                OrderOperate orderOperate = new OrderOperate();
+                orderOperate.setOrderNo(order.getOrderNo());
+                orderOperate.setOperateLog("预约时间由"+order.getArrivalTimePage()+" "
+                        +"变更为"+" "+orderBean.getArrivalTime()+" "+("am".equals(order.getArrivalPeriod())?"上午":"下午"));
+                orderOperate.setReason("/");
+                orderOperate.setOperatorMan("回收人员-"+recyclers.getName());
+                orderOperateService.insert(orderOperate);
+
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -1977,13 +2146,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		String descrb = "";
 		Order order = orderService.selectById(orderBean.getId());
 		Recyclers recycler = recyclersService.selectById(order.getRecyclerId());
-		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1");
-		if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-			wrapper.eq("type_","4");
-		}else {
-			wrapper.eq("type_","1");
-		}
-		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(wrapper);
+        //新增操作流水日志
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+
+		CompanyRecycler companyRecycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", order.getRecyclerId()).eq("company_id", order.getCompanyId()).eq("status_", "1"));
 		if((order.getTitle().getValue()+"").equals("1")||(order.getTitle().getValue()+"").equals("4")){
 			Category category = categoryService.selectById(order.getCategoryId());
 			descrb = category.getName();
@@ -2005,10 +2172,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						if ("1".equals(companyRecycler.getIsManager())) {
 							//是经理
 							order.setRecyclerId(0);
+                            orderOperate.setOperateLog("取消任务");
+                            orderOperate.setOperatorMan("业务经理-"+recycler.getName());
 							order.setStatus(OrderType.INIT);
 						} else {
 							//是下属回收人员
 							order.setStatus(OrderType.TOSEND);
+                            orderOperate.setOperateLog("取消任务");
+                            orderOperate.setOperatorMan("回收人员-"+recycler.getName());
 							order.setRecyclerId(companyRecycler.getParentsId());
 							//阿里云推送
 							Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
@@ -2023,7 +2194,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 					if (orderBean.getCancelReason() != null && !"".equals(orderBean.getCancelReason())) {
 						order.setCancelReason(orderBean.getCancelReason());
+                        orderOperate.setReason(orderBean.getCancelReason());
 					} else {
+                        orderOperate.setReason("没有取消原因");
 						throw new ApiException("没有取消原因");
 					}
 					RecyclerCancelLog cancelLog = new RecyclerCancelLog();
@@ -2031,7 +2204,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					cancelLog.setRecycleId(recycler.getId().toString());
 					cancelLog.setOrderId(order.getId().toString());
 					recyclerCancelLogService.insert(cancelLog);
-
 
 					flag = orderService.updateById(order);
 					orderLog.setOpStatusAfter("CANCELTASK");
@@ -2054,6 +2226,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     asyncService.pushOrder(order,mqtt4PushOrder);
 					orderLog.setOpStatusAfter("COMPLETE");
 					orderLog.setOp("已完成");
+
+                    orderOperate.setOperateLog("完成订单");
+                    orderOperate.setOperatorMan("回收人员-"+recycler.getName());
+                    orderOperate.setReason("/");
+
 					this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(),descrb);
 					if (!"1".equals(companyRecycler.getIsManager())) {
 						//阿里云推送
@@ -2084,11 +2261,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					orderLog.setOp("已接单");
 					//查询此单属于具体某个回收人员
 					Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+
+                    orderOperate.setOperateLog("确认接单");
+                    orderOperate.setOperatorMan("回收人员-"+recyclers.getName());
+                    orderOperate.setReason("/");
+
 					if (recyclers != null) {
 						Company company = companyService.selectById(order.getCompanyId());
 						if (company != null) {
 							//发送接单短信
-							asyncService.sendOrder("垃圾分类回收", order.getTel(), "SMS_142151759", recyclers.getName(), recyclers.getTel(), company.getName());
+							asyncService.sendOrder("垃圾分类回收", order.getTel(), "SMS_199808616", recyclers.getName(), recyclers.getTel(), company.getName());
 						}
 						//異步刪除redis裡面派單id
 //						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
@@ -2116,6 +2298,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					throw new ApiException("不能修改为此状态");
 			}
 		}
+        orderOperateService.insert(orderOperate);
 		//修改日志列表
 		flag = orderLogService.insert(orderLog);
 		return flag;
@@ -2145,6 +2328,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			if(!orderService.updateById(order)){
 				return "订单已被修改，稍后重试";
 			}
+            //新增操作流水日志
+            OrderOperate orderOperate = new OrderOperate();
+            orderOperate.setOrderNo(order.getOrderNo());
+            orderOperate.setOperateLog("撤回订单");
+            orderOperate.setReason("/");
+            Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
+            orderOperate.setOperatorMan(company.getName());
+            orderOperateService.insert(orderOperate);
 			orderLogService.insert(orderLog);
 			return "修改成功";
 		}catch (Exception e){
@@ -2328,6 +2519,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	public Map<String, Object> getInitDetail(Integer orderId) {
 		//未完成订单的数据
 		List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
+		Order order = orderService.selectById(orderId);
 		List<ComCatePrice> cateName = orderItemService.selectCateName(orderId);
 		Map<String, String> map = null;
 		float price = 0l;
@@ -2345,7 +2537,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 				//listMap = new ArrayList<>();
 				if (name.getId() == list.getParentId()) {
 					map.put("cateName", list.getCategoryName());
-					map.put("price", list.getPrice() + "");
+					if(order.getIsCash().equals("1")){
+                        map.put("price", "0.00");
+                    }else{
+                        map.put("price", list.getPrice() + "");
+                    }
 					map.put("unit", list.getUnit());
 					map.put("amount", list.getAmount() + "");
 					price += list.getPrice() * list.getAmount();
@@ -2385,12 +2581,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<Map<String, String>> listMap = null;
 		Map<String, String> map = null;
 		float price = 0l;
+        float amount = 0l;
 		Map<String, Object> mapListMap = null;
 		//定义绿色能量
 		double greenCount = 0;
 		//首先取得分类name, 去重
 		for (ComCatePrice name : cateName) {
 			String categoryName = "";
+            amount = 0l;
 			price = 0l;
 			mapListMap = new HashMap<>();
 			listMap = new ArrayList<>();
@@ -2401,10 +2599,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					//listMap = new ArrayList<>();
 					if (name.getId() == list.getParentId()) {
 						map.put("cateName", list.getCategoryName());
-						map.put("price", ApiUtils.doublegetTwoDecimal(list.getPrice()));
+                        if(isCash.equals("1")){
+                            map.put("price", "0.00");
+                        }else{
+                            map.put("price", ApiUtils.doublegetTwoDecimal(list.getPrice()));
+                        }
 						map.put("unit", list.getUnit());
 						map.put("amount", ApiUtils.doublegetTwoDecimal(Float.parseFloat(list.getAmount()+"")));
 						price += list.getPrice() * list.getAmount();
+                        amount += list.getAmount();
 						//判断是否免费
 						if ("1".equals(isCash)) {
 							greenCount += list.getAmount() * 2;
@@ -2420,10 +2623,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					//listMap = new ArrayList<>();
 					if (name.getId() == list.getParentId()) {
 						map.put("cateName", list.getCategoryName());
-						map.put("price", ApiUtils.doublegetTwoDecimal(list.getPrice()));
+                        if(isCash.equals("1")){
+                            map.put("price", "0.00");
+                        }else{
+                            map.put("price", ApiUtils.doublegetTwoDecimal(list.getPrice()));
+                        }
 						map.put("unit", list.getUnit());
 						map.put("amount", ApiUtils.doublegetTwoDecimal(Float.parseFloat(list.getAmount()+"")));
 						price += list.getPrice() * list.getAmount();
+                        amount += list.getAmount();
 						listMap.add(map);
 					}
 				}
@@ -2433,6 +2641,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			mapListMap.put("list", listMap);
 			mapListMap.put("name", name == null ? null : name.getName());
 			mapListMap.put("price", ApiUtils.doublegetTwoDecimal(price));
+            mapListMap.put("amount", ApiUtils.doublegetTwoDecimal(amount));
 			listMapObject.add(mapListMap);
 		}
 		resultMap.put("listMapObject", listMapObject);
@@ -2615,15 +2824,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
     public Object distributeOrder(Integer orderId, Integer recyclerId) {
 		Order order = this.selectById(orderId);
+
 		if (null == order) {
 			return "未找到该订单 id：" + orderId;
 		}
+        Recyclers recycler = recyclersService.selectById(order.getRecyclerId());
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+        orderOperate.setOperatorMan("业务经理-"+recycler.getName());
+
 		order.setRecyclerId(recyclerId);
 		boolean b = this.updateById(order);
 		if (!b) {
 			return "转派失败";
 		}
 		Recyclers recyclers = recyclersService.selectById(recyclerId);
+        //新增操作流水日志
+        orderOperate.setOperateLog("将订单转派给 回收人员-"+recyclers.getName());
+        orderOperate.setReason("/");
+        orderOperateService.insert(orderOperate);
 		PushUtils.getAcsResponse(recyclers.getTel(),order.getStatus().getValue()+"",order.getTitle().getValue()+"");
 		return "转派成功";
 	}
@@ -2701,6 +2920,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 order.setIsMysl("0");
             }
 			order.setFormId(orderBean.getFormId());
+            if (StringUtils.isNotBlank(orderBean.getAliAccount())){
+                order.setOrderFrom("2");
+                order.setAliAccount(orderBean.getAliAccount());
+            }
 			this.insert(order);
 			//将券码跟订单进行绑定
 			if (StringUtils.isNoneBlank(orderBean.getVoucherId())){
@@ -2833,6 +3056,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setQty(orderBean.getQty());
 			order.setRemarks(orderBean.getRemarks());
 			order.setFormId(orderBean.getFormId());
+            if (StringUtils.isNotBlank(orderBean.getAliAccount())){
+                order.setOrderFrom("2");
+                order.setAliAccount(orderBean.getAliAccount());
+            }
 			this.insert(order);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2954,7 +3181,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setUnit("个");
 			order.setQty(1);
 			order.setLevel(orderbean.getLevel());
-
+            if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+                order.setOrderFrom("2");
+                order.setAliAccount(orderbean.getAliAccount());
+            }
 			order.setGreenCode(orderbean.getGreenCode());
 			order.setAliUserId(orderbean.getAliUserId());
 			order.setRemarks(orderbean.getRemarks());
@@ -3280,6 +3510,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * @param orderId
 	 * @return
 	 */
+	@Override
 	public String orderSendRecycleByOrderId(Integer orderId){
 
 		List<Recyclers> sendOrderRecyclersList = recyclersService.getSendOrderRecyclersList(orderId);
@@ -3364,6 +3595,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			if (!b) {
 				return "转派失败";
 			}
+            OrderOperate orderOperate = new OrderOperate();
+            orderOperate.setOrderNo(order.getOrderNo());
+            orderOperate.setOperateLog("撤回转派");
+            orderOperate.setReason("/");
+            orderOperate.setOperatorMan("业务经理-"+recyclers.getName());
+            orderOperateService.insert(orderOperate);
+
 			PushUtils.getAcsResponse(recrcleTel, status, order.getTitle().getValue() + "");
 			PushUtils.getAcsResponse(recyclers.getTel(), order.getStatus().getValue() + "", order.getTitle().getValue() + "");
 			return "操作成功";
@@ -3619,6 +3857,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return  resultMap;
 	}
 
+
+
 	@Override
 	public Object getAdminOrderDetail(Integer orderId){
 		Map<String,Object> resultMap = new HashMap<>();
@@ -3788,10 +4028,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * added by michael_wang
 	 */
 	@Override
-	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName){
-		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName);
+	public List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime,String endTime,String recyclerName,String title){
+		return orderMapper.orderDetail4HorseHold(companyId,startTime,endTime,recyclerName,title);
 	}
-	@Override
+
+    @Override
+    public List<Order> getOrderListss(Integer companyId, String orderNo, String linkMan, String recyclerName, String startTime, String endTime, String title) {
+        return orderMapper.getOrderListss(companyId,orderNo,linkMan,recyclerName,startTime,endTime,title);
+    }
+
+    @Override
+    public Map<String, Object> select1Or4Map(Long id) {
+        return orderMapper.select1Or4Map(id);
+    }
+
+    @Override
+    public List<Map<String, Object>> select2Or3Map(Long id) {
+        return orderMapper.select2Or3Map(id);
+    }
+
+    @Override
     public Object getReyclersServiceAbility(OrderBean orderBean, Integer companyId){
 		PageBean pagebean = orderBean.getPagebean();
 		Integer pageNumber = null!=pagebean ?pagebean.getPageNumber():1;
@@ -3837,10 +4093,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (null == orderCancleExamine){
 			orderCancleExamine = new OrderCancleExamine();
 		}
+        //新增操作流水日志
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(orderBean.getOrderNo());
+        orderOperate.setOperateLog("申请取消订单");
+        orderOperate.setReason(orderBean.getCancelReason());
+        Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
+        orderOperate.setOperatorMan(company.getName());
+
 		orderCancleExamine.setOrderNo(orderBean.getOrderNo());
 		orderCancleExamine.setCancleReason(orderBean.getCancelReason());
 		orderCancleExamine.setStatus("0");
 		orderCancleExamineService.insertOrUpdate(orderCancleExamine);
+        orderOperateService.insert(orderOperate);
 		return "操作成功";
 	}
 	@Override
@@ -3865,8 +4130,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			throw new ApiException("该订单的状态，目前不可被申请取消");
 		}
 		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
+
+        //新增操作流水日志
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+
 		if ("1".equals(orderbean.getStatus())){
 			this.updateOrderByBusiness(orderbean.getId(),"REJECTED",orderbean.getCancelReason(),null,mqtt4PushOrder);
+            orderOperate.setOperateLog("同意申请取消订单");
             //如果是咸鱼的单子，就通知咸鱼订单取消
             if (StringUtils.isNotBlank(order.getTaobaoNo())){
                 QiMemOrder qiMemOrder = new QiMemOrder();
@@ -3875,7 +4146,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 qiMemOrder.setReason(orderbean.getCancelReason());
                 boolean bool = qiMemService.updateQiMemOrder(qiMemOrder);
             }
-		}
+		}else{
+            orderOperate.setOperateLog("拒绝申请取消订单");
+        }
+        orderOperate.setReason("/");
+        orderOperate.setOperatorMan("平台");
+        orderOperateService.insert(orderOperate);
+
 		orderCancleExamine.setUpdateDate(new Date());
 		orderCancleExamine.setStatus(orderbean.getStatus());
 		orderCancleExamineService.updateById(orderCancleExamine);
@@ -4035,25 +4312,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Order order = this.selectOne(new EntityWrapper<Order>().eq("order_no", orderbean.getOrderNo()));
 		int count = orderComplaintService.selectCount(new EntityWrapper<OrderComplaint>().eq("order_no", order.getOrderNo()));
 		OrderComplaint orderComplaint = new OrderComplaint();
+        OrderOperate orderOperate = new OrderOperate();
+
 		orderComplaint.setOrderNo(orderbean.getOrderNo());
 		orderComplaint.setType(orderbean.getType());
+
+        orderOperate.setOrderNo(orderbean.getOrderNo());
+
 		if ("0".equals(orderbean.getType())){
 			if(!(OrderType.INIT+"").equals(order.getStatus()+"")){
 				throw new ApiException("该订单不是待派单状态");
 			}
 			orderComplaint.setTypes("催派");
+            orderOperate.setOperateLog("催派");
+            orderOperate.setReason("/");
 		}else if ("1".equals(orderbean.getType())){
 			if(!(OrderType.TOSEND+"").equals(order.getStatus()+"")){
 				throw new ApiException("该订单不是待接单状态");
 			}
 			orderComplaint.setTypes("催接");
+            orderOperate.setOperateLog("催接");
+            orderOperate.setReason("/");
 		}else if ("2".equals(orderbean.getType())){
 			if(!(OrderType.ALREADY+"").equals(order.getStatus()+"")){
 				throw new ApiException("该订单不是待完成状态");
 			}
 			orderComplaint.setTypes("催收");
+            orderOperate.setOperateLog("催收");
+            orderOperate.setReason("/");
 		}else if ("4".equals(orderbean.getType())){
 			orderComplaint.setTypes("主动客诉");
+            orderOperate.setOperateLog("投诉");
+            orderOperate.setReason(orderbean.getReason());
 		}
 		orderComplaint.setReason(orderbean.getReason());
 		//判断订单是否超时
@@ -4065,6 +4355,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			order.setComplaintType(orderbean.getType());
 			orderComplaint.setIsComplaint("0");
 		}
+        orderOperate.setOperatorMan("平台");
+
+        orderOperateService.insert(orderOperate);
 		orderComplaintService.insert(orderComplaint);
 		this.updateById(order);
 		return "操作成功";
@@ -4101,16 +4394,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return  resultList;
 	}
 
-	@Override
+
+    @Override
 	@Transactional
-	public Object addOrderComplaintBack(Integer id,String complaintBack){
-    	if (null == id){
+	public Object addOrderComplaintBack(String orderNo,String type,String complaintBack){
+    	if (StringUtils.isBlank(orderNo)){
     		throw new ApiException("该客诉无法进行反馈");
 		}
-		OrderComplaint orderComplaint = orderComplaintService.selectById(id);
+        if (StringUtils.isBlank(complaintBack)){
+            throw new ApiException("请输入反馈内容");
+        }
+		OrderComplaint orderComplaint = orderComplaintService.selectOne(new EntityWrapper<OrderComplaint>().eq("order_no",orderNo).eq("type_",type).orderBy("create_date",false));
 		if (null == orderComplaint){
-			throw new ApiException("该客诉无法进行反馈");
+			throw new ApiException("未查到该客诉信息，无法进行反馈");
 		}
+        OrderOperate orderOperate = orderOperateService.selectOne(new EntityWrapper<OrderOperate>().eq("operate_log",orderComplaint.getTypes()).orderBy("create_date",false));
+		if(orderOperate != null){
+            orderOperate.setReason(complaintBack);
+            orderOperateService.updateById(orderOperate);
+        }
 		orderComplaint.setComplaintBack(complaintBack);
 		orderComplaintService.updateById(orderComplaint);
 		return "操作成功";
@@ -4398,5 +4700,48 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         map.put("paymentNo",paymentNo);
         map.put("sumPoint", sumPoint);
         return map;
+    }
+
+    @Override
+    public Object getOrderDetailPrice(Integer id) {
+
+        Order order = this.selectOne(new EntityWrapper<Order>().eq("id", id));
+        if(order==null) {
+               throw new RuntimeException("该订单不存在");
+        }
+        if(OrderType.COMPLETE != (order.getStatus())) {
+              throw new RuntimeException("该订单不是完成状态");
+        }
+            Map<String, Object> resultMap = new HashMap<>();
+            if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER){
+                List<Map<String, Object>> list = orderMapper.getCategoryPriceList(id);
+                if (list.size() > 0) {
+                    for (Map map : list) {
+                        BigDecimal price = new BigDecimal(Double.valueOf(String.valueOf(map.get("amount")))) ;
+                        BigDecimal platformPrice = new BigDecimal(Double.valueOf(String.valueOf(map.get("platformPrice"))));
+                        BigDecimal platform=price.multiply(platformPrice);
+                        BigDecimal commission = platform.setScale(2, RoundingMode.DOWN);
+                        map.put("price",String.valueOf(commission));
+                    }
+                }
+                resultMap.put("listReturn", list);
+                resultMap.put("sumPrice", order.getCommissionsPrice());
+            }else{
+                if(order.getCategoryId()!=null){
+                    Category category = categoryService.selectById(order.getCategoryId());
+                    Category category1 = categoryService.selectById(category.getParentId());
+                    List<Map<String, Object>> list = new ArrayList<>();
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("parentName",category1.getName() );
+                    map.put("categoryName",category.getName());
+                    map.put("amount","1.00" );
+                    map.put("unit",category.getUnit());
+                    map.put("price",order.getCommissionsPrice() );
+                    list.add(map);
+                    resultMap.put("listReturn",list);
+                    resultMap.put("sumPrice", order.getCommissionsPrice());
+                }
+            }
+            return resultMap;
     }
 }

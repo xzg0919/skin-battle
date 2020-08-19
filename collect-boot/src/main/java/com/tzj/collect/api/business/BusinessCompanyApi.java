@@ -7,6 +7,7 @@ import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.core.param.admin.AdminCommunityBean;
 import com.tzj.collect.core.param.admin.CompanyBean;
 import com.tzj.collect.core.param.admin.RecyclersBean;
+import com.tzj.collect.core.param.ali.AreaBean;
 import com.tzj.collect.core.param.business.CompanyAccountBean;
 import com.tzj.collect.core.result.business.BusinessRecType;
 import com.tzj.collect.core.service.*;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.tzj.collect.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 import static com.tzj.collect.common.constant.TokenConst.BUSINESS_API_COMMON_AUTHORITY;
 
 @ApiService
@@ -112,9 +114,9 @@ public class BusinessCompanyApi {
 	 */
 	@Api(name = "business.company.getCompanyRange", version = "1.0")
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-	public Object getCompanyRange() {
+	public Object getCompanyRange(RecyclersBean recyclersBean) {
 		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
-		return comRecService.getCompanyRange(companyAccount.getCompanyId());
+		return comRecService.getCompanyRange(companyAccount.getCompanyId(),recyclersBean.getTitle());
 	}
 	/**
 	 * 根据名称获取企业服务范围（例南京市，苏州市等）
@@ -250,5 +252,15 @@ public class BusinessCompanyApi {
 			resultMap.put("isOpenOrder",0);
 		}
 		return resultMap;
+	}
+	/**
+	 * 根据服务商ID和城市Id获取服务商回收的类型
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.getRatioByCompanyId", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getRatioByCompanyId(AreaBean areaBean) throws Exception{
+		return areaService.getRatioByCompanyId(Long.parseLong(areaBean.getCityId()),BusinessUtils.getCompanyAccount().getCompanyId().longValue());
 	}
 }

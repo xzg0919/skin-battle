@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.core.mapper.ArrivalTimeLogMapper;
 import com.tzj.collect.core.service.ArrivalTimeLogService;
+import com.tzj.collect.core.service.OrderOperateService;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.ArrivalTimeLog;
 import com.tzj.collect.entity.Order;
+import com.tzj.collect.entity.OrderOperate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,8 @@ public class ArrivalTimeLogServiceImpl extends ServiceImpl<ArrivalTimeLogMapper,
 	private ArrivalTimeLogMapper arrivalTimeLogMapper;
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private OrderOperateService orderOperateService;
 	
 	/**
      * 修改上门回收时间 
@@ -44,6 +48,15 @@ public class ArrivalTimeLogServiceImpl extends ServiceImpl<ArrivalTimeLogMapper,
 		arrivalTimeLogs.setBeforeDate(order.getArrivalTime());
 		arrivalTimeLogs.setBeforePeriod(order.getArrivalPeriod());
 		arrivalTimeLogs.setAfterPeriod(afterPeriod);
+
+		OrderOperate orderOperate = new OrderOperate();
+		orderOperate.setOrderNo(order.getOrderNo());
+		orderOperate.setOperateLog("预约时间由"+order.getArrivalTimePage()+" "
+				+"变更为"+" "+afterDate+" "+afterPeriod);
+		orderOperate.setReason("/");
+		orderOperate.setOperatorMan("平台");
+		orderOperateService.insert(orderOperate);
+
 		try {
 			arrivalTimeLogs.setAfterDate(new SimpleDateFormat("yyyy-MM-dd").parse(afterDate));
 			order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(afterDate));

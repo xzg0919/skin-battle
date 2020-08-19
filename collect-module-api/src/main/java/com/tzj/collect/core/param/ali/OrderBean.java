@@ -278,4 +278,10 @@ public class OrderBean {
 
     private Integer netId;//回收点id
 
+    private String aliAccount;
+
+    private Integer operatorId;//操作员编号
+
+    private String operatorName;//操作员
+
 }

@@ -53,6 +53,7 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
 	 * @param mobile
 	 */
 	@Override
+	@Transactional
 	public void updatePointAndOrderFromDsdd(String aliUserId, String mobile, String cardNo) {
 		this.baseMapper.updatePointAndOrderFromDsdd(aliUserId, mobile, cardNo);
 	}

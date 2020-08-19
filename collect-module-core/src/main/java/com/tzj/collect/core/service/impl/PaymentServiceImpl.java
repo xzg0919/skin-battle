@@ -14,6 +14,7 @@ import com.tzj.collect.core.mapper.PaymentMapper;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.collect.entity.Member;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,9 +43,9 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     @Autowired
     private PaymentErrorService paymentErrorService;
     @Autowired
-    private CompanyService companyService;
+    private MemberService memberService;
     @Resource
-    private AliPayService aliPayService;
+    private MemberXianyuService memberXianyuService;
 
     @Override
     public Payment selectByOrderSn(String orderNo) {
@@ -57,13 +58,18 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
     @Override
     public Payment selectPayByOrderSn(String orderNo){
-        return selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).eq("status_",Payment.STATUS_PAYED));
+        Payment payment = selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).eq("status_", Payment.STATUS_PAYED));
+        if(null == payment){
+            payment = selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).eq("status_", Payment.STATUS_TRANSFER));
+        }
+        return payment;
     }
 
     /**
      * 小程序支付
      */
     @Override
+    @Transactional
     public String genalPayXcx(Payment payment,Order order) {
         Assert.notNull(payment, "payment不能为空！");
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
@@ -86,6 +92,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         try {
             //这里和普通的接口调用不同，使用的是sdkExecutee
             AlipayTradeCreateResponse response = alipayClient.execute(request);
+            payment.setTradeNo(response.getTradeNo());
+            this.updateById(payment);
             return response.getTradeNo();
         } catch (AlipayApiException e) {
             throw new ApiException("系统异常：" + e.getErrMsg());
@@ -145,15 +153,20 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         OrderBean orderBean = new OrderBean();
         orderBean.setDiscountPrice(payment.getDiscountPrice().toString());
         String aliUserId = "";
+        String payeeType = "ALIPAY_USERID";
         if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
             Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
             aliUserId = recyclers.getAliUserId();
         }else {
             aliUserId = payment.getAliUserId();
+            if ("2".equals(order.getOrderFrom())){
+                    aliUserId = order.getAliAccount();
+                    payeeType = "ALIPAY_LOGONID";
+            }
         }
         AlipayFundTransToaccountTransferResponse response = null;
         try {
-            response =this.aliPayTransfer(payment.getId().toString(),aliUserId,payment.getTransferPrice());
+            response =this.aliPayTransfer(payment.getId().toString(),aliUserId,payment.getTransferPrice(),payeeType);
             if ((response.isSuccess()&&"10000".equals(response.getCode()))||payment.getTransferPrice().compareTo(BigDecimal.ZERO)==0) {
                 System.out.println("转账成功，更改信息");
                 payment.setStatus(Payment.STATUS_TRANSFER);
@@ -190,12 +203,12 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     //支付宝转账
-    public AlipayFundTransToaccountTransferResponse aliPayTransfer(String outBizNo,String aliUserId,BigDecimal amount) throws AlipayApiException {
+    public AlipayFundTransToaccountTransferResponse aliPayTransfer(String outBizNo,String aliUserId,BigDecimal amount,String payeeType) throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
         AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
             model.setOutBizNo(outBizNo);
-            model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
+            model.setPayeeType(payeeType); //ALIPAY_LOGONID  ALIPAY_USERID
             model.setPayeeAccount(aliUserId);
             model.setAmount(amount.setScale(2, BigDecimal.ROUND_DOWN).toString());
             model.setPayerShowName("垃圾分类回收(收呗)货款");
@@ -205,19 +218,33 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     public static void main(String[] args) throws Exception {
-        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
-        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
-        request.putOtherTextParam("app_auth_token", "202004BBc31d3ee0ff544085bce8677abdeffX05");
-        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
-        model.setOutBizNo(UUID.randomUUID().toString().replace("-",""));
-        model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
-        model.setPayeeAccount("2088212854989662");
-        model.setAmount("0.1");
-        model.setPayerShowName("垃圾分类回收(收呗)货款");
-        model.setRemark("垃圾分类回收(收呗)货款");
-        request.setBizModel(model);
-        AlipayFundTransToaccountTransferResponse response = alipayClient.execute(request);
-        System.out.println(response.getBody());
+//        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+//        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+//        request.putOtherTextParam("app_auth_token", "202004BBc31d3ee0ff544085bce8677abdeffX05");
+//        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
+//        model.setOutBizNo(UUID.randomUUID().toString().replace("-",""));
+//        model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
+//        model.setPayeeAccount("2088212854989662");
+//        model.setAmount("0.1");
+//        model.setPayerShowName("垃圾分类回收(收呗)货款");
+//        model.setRemark("垃圾分类回收(收呗)货款");
+//        request.setBizModel(model);
+//        AlipayFundTransToaccountTransferResponse response = alipayClient.execute(request);
+//        System.out.println(response.getBody());
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
+        request.setBizContent("{" +
+                "\"out_biz_no\":\""+7338322+"\"" +
+                //"\"order_id\":\"20160627110070001502260006780837\"" +
+                "  }");
+        AlipayFundTransOrderQueryResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        } catch (AlipayApiException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(response.getBody());;
     }
     /**
      * 根据支付宝交易号查询该交易的详细信息
@@ -380,5 +407,10 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             throw new ApiException("系统异常：" + e.getErrMsg());
         }
         return response;
+    }
+
+    @Override
+    public Payment selectPayOneMinByOrderSn(String orderNo) {
+        return baseMapper.selectPayOneMinByOrderSn(orderNo);
     }
 }

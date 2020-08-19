@@ -2,8 +2,10 @@ package com.tzj.green.serviceImpl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.green.common.redis.RedisUtil;
+import com.tzj.green.entity.Logs;
 import com.tzj.green.mapper.OrderCountMapper;
 import com.tzj.green.param.CompanyBean;
+import com.tzj.green.service.LogsService;
 import com.tzj.green.service.OrderCountService;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
     private OrderCountMapper orderCountMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private LogsService logsService;
+
 
     @Override
     public List<Map<String, Object>> getOrderCount() {
@@ -34,6 +39,7 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
     }
 
     @Override
+    @Transactional(readOnly = false)
     public Object getOrderCount1() {
         List<Object> listOrder = redisUtil.lGet("order", 0, -1);
         if (listOrder == null||listOrder.isEmpty()) {
@@ -53,14 +59,10 @@ public class OrderCountServiceImpl extends ServiceImpl<OrderCountMapper, T> impl
                 mapCount.put("equipNo", "");
                 listOrder.add(mapCount);
             }
-            redisUtil.lSet("order",listOrder,60);
+            if (list != null && !list.isEmpty()) {
+                redisUtil.lSet("order", listOrder, 60);
+            }
         }
-        /*Integer count=list.size();
-        Map<String, Object> resultMap = new HashMap<>();
-        Map<String, Object> pagination = new HashMap<>();
-        pagination.put("total",count);
-        resultMap.put("pagination", pagination);
-        resultMap.put("orderList", listCount);*/
-         return listOrder;
+        return listOrder;
     }
 }

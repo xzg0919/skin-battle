@@ -108,4 +108,10 @@ public interface MemberService extends IService<Member>{
     Map<String, Object> updateUserFormId(Member member);
 
     Object getAllPoints(String aliUserId);
+
+    Object getXyAuthCode(String authCode);
+
+    Object saveXianYuMember(String openId, String accessToken,String linkName,String picUrl);
+
+    Object updateAliAccount(String aliAccount, String aliUserId);
 }

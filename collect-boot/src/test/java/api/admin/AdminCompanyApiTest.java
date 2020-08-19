@@ -53,7 +53,7 @@ public class AdminCompanyApiTest {
 		 //String api="http://open.mayishoubei.com/admin/api";
 		 //String api =  "http://api.station.mayishoubei.com/app/api";
 		 //String api =  "http://172.19.182.84:9001/admin/api";
-		 String api =  "http://localhost:9090/admin/api";
+		 String api =  "http://localhost:8080/admin/api";
 		 AdminShareCodeBean adminShareCodeBean = new AdminShareCodeBean();
 //		 adminShareCodeBean.setQrType(LineQrCode.QrType.OFFLINE);
 //		 adminShareCodeBean.setQrName("测试");
@@ -78,15 +78,14 @@ public class AdminCompanyApiTest {
 //		 adminShareCodeBean.setPageBean(pageBean);
 	        HashMap<String,Object> param=new HashMap<>();
 	        param.put("name","admin.getTransStationList");
-	        param.put("version","1.0");  
-	        param.put("format","json");
-	        param.put("app_key","app_id_4");
-	        param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-	        param.put("token",securityToken);
-	        //param.put("sign","111");
-	        param.put("nonce", UUID.randomUUID().toString());
-	        param.put("data","{name: \"\", pageNum: 1, pageSize: 10, tel: \"\"}");
-
+	        param.put("version","1.0");
+		    param.put("nonce", UUID.randomUUID().toString());
+		    param.put("timestamp", Calendar.getInstance().getTimeInMillis());
+		    param.put("token",securityToken);
+		    param.put("format","json");
+		    param.put("app_key","app_id_4");
+		    //param.put("sign","111");
+	        param.put("data","");
 	        String jsonStr=JSON.toJSONString(param);
 	        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_998877");
 	        param.put("sign",sign);

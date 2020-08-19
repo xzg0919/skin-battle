@@ -43,6 +43,14 @@ public class QiMemServiceImpl implements QiMemService {
             }
             return response.isSuccess();
         }
+//
+//    public static void main(String[] args) {
+//        TaobaoClient client = new DefaultTaobaoClient(TaobaoUtil.TAOBAO_APP_URL, TaobaoUtil.TAOBAO_APP_KEY, TaobaoUtil.TAOBAO_APP_SECRET);
+//        UserBuyerGetRequest req = new UserBuyerGetRequest();
+//        req.setFields("nick,sex");
+//        UserBuyerGetResponse rsp = client.execute(req, sessionKey);
+//        System.out.println(rsp.getBody());
+//    }
 
 
 

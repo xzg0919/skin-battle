@@ -79,8 +79,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	@Override
 	public CompanyRecycler getCompanyRecycler(BusinessRecyclerBean recyclerBean) {
 
-		return selectOne(new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId())
-				.eq("recycler_id", recyclerBean.getId()));
+		return selectOne(new EntityWrapper<CompanyRecycler>().eq("company_id", recyclerBean.getCompanyId()).eq("recycler_id", recyclerBean.getId()));
 	}
 
 	/*
@@ -182,41 +181,16 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	public boolean insertComRecByComIds(AppCompany company, long recId) {
 		
 		String comIds = company.getComIds();
-		EntityWrapper<CompanyRecycler> wrapper = null;
-		CompanyRecycler companyRecycler = null;
-		List<CompanyRecycler> list = new ArrayList<>();
-		List<CompanyRecycler> companyRecyclers = null;
-		Wrapper<CompanyRecycler> wrapper1 = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recId).in("status_", "0,1");
-		Wrapper<CompanyRecycler> wrapper2 = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recId).eq("company_id", comIds).eq("status_", "2");
-		if("Y".equals((company.getIsBigRecycle()))){
-			wrapper1.eq("type_","4");
-			wrapper2.eq("type_","4");
-			companyRecyclers = this.selectList(wrapper1);
+
+		List<CompanyRecycler> companyRecyclers = this.selectList(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recId).in("status_", "0,1"));
 			if (null != companyRecyclers &&!companyRecyclers.isEmpty()){
 				throw new ApiException("你已申请或入住公司，不能再申请公司");
 			}
-			List<CompanyStreetBig> companyStreetBigList = companyStreetBigService.selectList(new EntityWrapper<CompanyStreetBig>().eq("company_id", comIds).eq("del_flag",0));
-			if (companyStreetBigList.isEmpty()){
-				throw new ApiException("您申请的公司，不回收大件类型垃圾");
-			}
-			companyRecycler = this.selectOne(wrapper2);
+		CompanyRecycler companyRecycler = this.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recId).eq("company_id", comIds).eq("status_", "2"));
 			if(null == companyRecycler){
 				companyRecycler = new CompanyRecycler();
 			}
-			companyRecycler.setType("4");
-		}else {
-			wrapper1.eq("type_","1");
-			wrapper2.eq("type_","1");
-			companyRecyclers = this.selectList(wrapper1);
-			if (null != companyRecyclers &&!companyRecyclers.isEmpty()){
-				throw new ApiException("你已申请或入住公司，不能再申请公司");
-			}
-			companyRecycler = this.selectOne(wrapper2);
-			if(null == companyRecycler){
-				companyRecycler = new CompanyRecycler();
-			}
-			companyRecycler.setType("1");
-		}
+		companyRecycler.setType("1");
 		companyRecycler.setRecyclerId(Integer.parseInt(recId + ""));
 		companyRecycler.setCompanyId(Integer.parseInt(comIds));
 		companyRecycler.setStatus("0");
@@ -226,29 +200,15 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 
 	@Override
 	public Object deleteCompanyRecycle(AppCompany appCompanys, long recId){
-
-		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recId).eq("company_id", appCompanys.getId()).eq("status_", 0);
-		if ("Y".equals(appCompanys.getIsBigRecycle())){
-			wrapper.eq("type_","4");
-		}else {
-			wrapper.eq("type_","1");
-		}
-		this.delete(wrapper);
+		this.delete(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recId).eq("company_id", appCompanys.getId()).eq("status_", 0));
 		return "操作成功";
 	}
 	/**
 	 * 修改回收人员的启用状态
 	 */
 	@Override
-	public CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId,String isBigRecycle) {
-		EntityWrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>();
-		wrapper.eq("recycler_id", recyclerId);
-		if ("Y".equals(isBigRecycle)){
-			wrapper.eq("type_","4");
-		}else {
-			wrapper.eq("type_","1");
-		}
-		return this.selectOne(wrapper);
+	public CompanyRecycler getCompanyRecyclerByRecyclerId(Long recyclerId,String isBigRecycle,Integer companyId) {
+		return this.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclerId).eq("company_id",companyId));
 	}
 /**
  *  通过回收员姓名,id返回某公司回收人员列表
@@ -263,6 +223,20 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	 * @param
 	 * @return
 	 */
+	@Override
+	public List<Map<String,Object>> getCompanyRange(Integer companyId,String title){
+		List<Map<String,Object>> resultList = null;
+		if ("1".equals(title)){
+			resultList = mapper.getAppliceCompanyRange(companyId);
+		}else if ("2".equals(title)){
+			resultList = mapper.getHouseCompanyRange(companyId);
+		}else if ("4".equals(title)){
+			resultList = mapper.getBigCompanyRange(companyId);
+		}else {
+			resultList = mapper.getCompanyRange(companyId);
+		}
+		return resultList;
+	}
 	@Override
 	public List<Map<String,Object>> getCompanyRange(Integer companyId){
 		return mapper.getCompanyRange(companyId);
@@ -299,44 +273,26 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	}
 
 	@Override
-	public Object recycleDelete(Integer companyId, String recycleId,String title) {
+	public Object recycleDelete(Integer companyId, String recycleId) {
 
 		Recyclers recyclers = recyclersService.selectById(recycleId);
 		if(null == recyclers){
 			throw  new ApiException("找不到该回收人员");
 		}
-		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recycleId).eq("company_id", companyId).eq("status_", "1");
-		if("4".equals(title)){
-			wrapper.eq("type_","4");
-		}else {
-			wrapper.eq("type_","1");
-		}
-		CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(wrapper);
+		CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recycleId).eq("company_id", companyId).eq("status_", "1"));
 		List<Order> orderList = orderService.selectList(new EntityWrapper<Order>().eq("recycler_id", recycleId).in("status_", "1,2"));
 		if(!orderList.isEmpty()){
 			throw  new ApiException("该回收人员还有订单，无法删除");
 		}
 		if("1".equals(companyRecycler1.getIsManager())){
-			List<CompanyRecycler> companyRecyclerList = null;
-			Wrapper<CompanyRecycler> wrapper1 = new EntityWrapper<CompanyRecycler>().eq("parents_id", recycleId);
-			if("4".equals(title)){
-				wrapper1.eq("type_","4");
-				companyRecyclerList = companyRecyclerService.selectList(wrapper1);
-				if(!companyRecyclerList.isEmpty()){
-					throw  new ApiException("还有下属回收人员，无法删除");
-				}
-				recyclersTitleService.delete(new EntityWrapper<RecyclersTitle>().eq("recycle_id",recycleId).eq("title_id","4"));
-				recyclersRangeBigService.delete(new EntityWrapper<RecyclersRangeBig>().eq("recyclers_id",recycleId).eq("company_id",companyId));
-			}else {
-				wrapper1.eq("type_","1");
-				companyRecyclerList = companyRecyclerService.selectList(wrapper1);
-				if(!companyRecyclerList.isEmpty()){
-					throw  new ApiException("还有下属回收人员，无法删除");
-				}
-				recyclersTitleService.delete(new EntityWrapper<RecyclersTitle>().eq("recycle_id",recycleId).in("title_id","1,2"));
-				recyclersRangeApplianceService.delete(new EntityWrapper<RecyclersRangeAppliance>().eq("recyclers_id",recycleId).eq("company_id",companyId));
-				recyclersRangeHouseService.delete(new EntityWrapper<RecyclersRangeHouse>().eq("recyclers_id",recycleId).eq("company_id",companyId));
+			List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(new EntityWrapper<CompanyRecycler>().eq("parents_id", recycleId));
+			if(!companyRecyclerList.isEmpty()){
+				throw  new ApiException("还有下属回收人员，无法删除");
 			}
+			recyclersTitleService.delete(new EntityWrapper<RecyclersTitle>().eq("recycle_id",recycleId).in("title_id","1,2,4"));
+			recyclersRangeApplianceService.delete(new EntityWrapper<RecyclersRangeAppliance>().eq("recyclers_id",recycleId).eq("company_id",companyId));
+			recyclersRangeHouseService.delete(new EntityWrapper<RecyclersRangeHouse>().eq("recyclers_id",recycleId).eq("company_id",companyId));
+			recyclersRangeBigService.delete(new EntityWrapper<RecyclersRangeBig>().eq("recyclers_id",recycleId).eq("company_id",companyId));
 		}
 		companyRecycler1.setIsManager("0");
 		companyRecycler1.setCity(0);
@@ -355,13 +311,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		if(null == recyclers){
 			throw  new ApiException("找不到该回收人员");
 		}
-		Wrapper<CompanyRecycler> wrapper = new EntityWrapper<CompanyRecycler>().eq("recycler_id", recycleId).eq("company_id", companyId).eq("status_", "1");
-		if("4".equals(title)){
-			wrapper.eq("type_","4");
-		}else {
-			wrapper.eq("type_","1");
-		}
-		CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(wrapper);
+		CompanyRecycler companyRecycler1 = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id", recycleId).eq("company_id", companyId).eq("status_", "1"));
 		String isDelete = "";
 		List<Order> orderList = orderService.selectList(new EntityWrapper<Order>().eq("recycler_id", recycleId).in("status_", "1,2"));
 		if(!orderList.isEmpty()){
@@ -372,14 +322,7 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 			isDelete = "yes";
 		}
 		if("1".equals(companyRecycler1.getIsManager())) {
-			List<CompanyRecycler> companyRecyclerList = null;
-			Wrapper<CompanyRecycler> wrapper1 = new EntityWrapper<CompanyRecycler>().eq("parents_id", recycleId);
-			if("4".equals(title)) {
-				wrapper1.eq("type_", "4");
-			}else {
-				wrapper1.eq("type_", "1");
-			}
-			companyRecyclerList = companyRecyclerService.selectList(wrapper1);
+			List<CompanyRecycler> companyRecyclerList = companyRecyclerService.selectList(new EntityWrapper<CompanyRecycler>().eq("parents_id", recycleId));
 			if (!companyRecyclerList.isEmpty()) {
 				map.put("recycleNum",companyRecyclerList.size());
 				isDelete = "no";
@@ -408,15 +351,6 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 				streetNum = recyclersRangeBigStreet.size();
 			}
 		}else if("2".equals(title)){
-//			areaNum = recyclersRangeHouseholdService.selectAreaRangeCount(companyId, recyclerId);
-//			List<RecyclersRangeHousehold> recyclersRangeHouseholds = recyclersRangeHouseholdService.selectList(new EntityWrapper<RecyclersRangeHousehold>().eq("company_id", companyId).eq("recyclers_id", recyclerId).groupBy("street_id"));
-//			if (!recyclersRangeHouseholds.isEmpty()){
-//				streetNum = recyclersRangeHouseholds.size();
-//			}
-//			List<RecyclersRangeHousehold> recyclersRangeHouseholdsCommunity = recyclersRangeHouseholdService.selectList(new EntityWrapper<RecyclersRangeHousehold>().eq("company_id", companyId).eq("recyclers_id", recyclerId));
-//			if (!recyclersRangeHouseholdsCommunity.isEmpty()){
-//				communityNum = recyclersRangeHouseholdsCommunity.size();
-//			}
 			List<RecyclersRangeHouse> recyclersRangeHouseliances = recyclersRangeHouseService.selectList(new EntityWrapper<RecyclersRangeHouse>().eq("company_id", companyId).eq("recyclers_id", recyclerId).groupBy("area_id"));
 			if (!recyclersRangeHouseliances.isEmpty()){
 				areaNum = recyclersRangeHouseliances.size();
@@ -556,5 +490,10 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		this.updateById(companyRecycler);
 		return "操作成功";
 	}
+
+    @Override
+    public Integer dsddPositionCount(Long recyclerId) {
+        return baseMapper.dsddPositionCount(recyclerId);
+    }
 
 }

@@ -16,16 +16,21 @@ import com.tzj.collect.core.mapper.DsddMemberMapper;
 import com.tzj.collect.core.mapper.MemberMapper;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.service.*;
+import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.utils.TableNameUtils;
 import com.tzj.collect.entity.*;
+
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_EXPRIRE;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
+
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +41,6 @@ import sun.rmi.runtime.Log;
  * 会员ServiceImpl
  *
  * @Author 王灿
- *
  */
 @Service
 @Transactional(readOnly = true)
@@ -45,7 +49,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Autowired
     private MemberMapper memberMapper;
     @Autowired
-    private DsddMemberService dsddMemberService;
+    private MemberXianyuService memberXianyuService;
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -90,9 +94,9 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     /**
      * 根据用户的code解析用户数据并保存
      *
-     * @author 王灿
      * @param authCode
      * @return
+     * @author 王灿
      */
     @Transactional
     @Override
@@ -156,30 +160,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         //用户会员开卡时间
         Date openCardDate = null;
         if (member == null) {
-            UUID uuid = UUID.randomUUID();
-            Object obj = null;
-            try {
-                obj = redisUtil.get(userId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (obj != null) {
-                throw new ApiException("用户已注册");
-            }
-            try {
-                redisUtil.set(userId, uuid, 10);
-                Thread.sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                obj = redisUtil.get(userId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (!(obj + "").equals(uuid + "")) {
-                throw new ApiException("用户已注册");
-            }
             member = new Member();
             member.setAliUserId(userId);
             if ("XCX".equals(source)) {
@@ -207,11 +187,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             member.setAppId(appId);
             this.insertMember(member);
             //定时定点用户进来更新同步收呗用户信息（step:1 将定时定点实体卡绑到收呗用户表中 ，2 删除定时定点用户 3 订单、积分、积分流水表中相应添加aliuserId 和 card_no）
-            try {
-                this.operateDsddMember(member);
-            } catch (Exception e) {
-                System.out.println("实体卡换卡出错了"+ JSONObject.toJSONString(member));
-            }
+//            try {
+//                this.operateDsddMember(member);
+//            } catch (Exception e) {
+//                System.out.println("实体卡换卡出错了" + JSONObject.toJSONString(member));
+//            }
             try {
                 voucherMemberService.reSend(member.getAliUserId());
             } catch (Exception e) {
@@ -229,11 +209,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
                 member.setLinkName(userResponse.getNickName());
                 member.setPicUrl(userResponse.getAvatar());
             }
-//			member.setIdCard(userResponse.getCertNo());
-//			member.setName(userResponse.getUserName());
-//			if(StringUtils.isNotBlank(userResponse.getMobile())) {
-//				member.setMobile(userResponse.getMobile());
-//			}
             member.setAddress(cityName);
             //判断是否给用户发过会员卡
             if (StringUtils.isBlank(member.getAliCardNo()) || !userId.equals(ToolUtils.getAliUserIdByOrderNo(member.getCardNo()))) {
@@ -273,9 +248,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 //        }
         //定时定点用户进来更新同步收呗用户信息（step:1 将定时定点实体卡绑到收呗用户表中 ，2 删除定时定点用户 3 订单、积分、积分流水表中相应添加aliuserId 和 card_no）
         try {
-            this.operateDsddMember(member);
+            Member finalMember = member;
+            NewThreadPoorExcutor.getThreadPoor().execute(new Thread(()->{
+                this.operateDsddMember(finalMember);
+            }));
         } catch (Exception e) {
-            System.out.println("实体卡换卡出错了"+ JSONObject.toJSONString(member));
+            System.out.println("实体卡换卡出错了" + JSONObject.toJSONString(member));
         }
         resultMap.put("id", member.getAliUserId());
         if (StringUtils.isNotBlank(member.getMobile()) || "XCX".equals(source)) {
@@ -295,10 +273,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
     /**
      * 操作定时定点用户表（1. 将定时定点用户表信息【定时定点卡号 、开卡时间】移至收呗用户表中， 2 删除定时定点用户表 3 订单、积分、积分流水表中相应添加aliuserId 和 card_no
+     *
      * @param member
      */
-    private void operateDsddMember(Member member) {
-        if(StringUtils.isNotBlank(member.getMobile())) {
+    @Transactional
+    public void operateDsddMember(Member member) {
+        if (StringUtils.isNotBlank(member.getMobile())) {
             //1. 将定时定点用户表信息【定时定点卡号 、开卡时间】移至收呗用户表中，
             this.baseMapper.updateMemberFromDsdd(TableNameUtils.getMemberTableName(member), member.getMobile());
             //2 删除定时定点用户表
@@ -311,9 +291,9 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     /**
      * 根据用户授权返回的authCode,获取用户的token
      *
-     * @author 王灿
      * @param authCode : 用户授权返回的Code
      * @return
+     * @author 王灿
      */
     @Override
     public Object getUserToken(String authCode, String cityName) {
@@ -356,8 +336,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     /**
      * 获取会员个人中心的相关数据
      *
-     * @author 王灿
      * @param
+     * @author 王灿
      */
     @Override
     public Object memberAdmin(String aliUserId) {
@@ -436,9 +416,9 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     /**
      * 小程序静默授权 根据用户授权返回的authCode,获取用户的token
      *
-     * @author 王灿
      * @param authCode : 用户授权返回的Code
      * @return
+     * @author 王灿
      */
     @Transactional
     @Override
@@ -561,6 +541,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
     /**
      * 获取用户积分（包括积分商户）
+     *
      * @param aliUserId
      * @return
      */
@@ -584,7 +565,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         try {
             //JSONObject result = Tools.httpsPost("https://open.mayishoubei.com/company/api", params);
             JSONObject result = Tools.httpsPost("http://localhost:9080/company/api", params);
-            if(result != null && "0".equals(result.get("code"))){
+            if (result != null && "0".equals(result.get("code"))) {
                 JSONObject data = (JSONObject) result.get("data");
                 tatalPoints = (double) data.get("tatalPoints");
                 validPoints = (double) data.get("validPoints");
@@ -608,6 +589,80 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             resultMap.put("remainPoint", validPoints);
         }
         return resultMap;
+    }
+
+    @Override
+    public Object getXyAuthCode(String authCode) {
+        Map<String,Object> resultMap = new HashMap<>();
+            String token = JwtUtils.generateToken("2088432503718960", ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
+            String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
+            System.out.println("token:" + securityToken);
+            resultMap.put("token", securityToken);
+            return resultMap;
+    }
+
+    @Override
+    @Transactional
+    public Object saveXianYuMember(String openId, String accessToken,String linkName,String picUrl) {
+        //查询用户是否在闲鱼用户表内存在
+        MemberXianyu memberXianyu = memberXianyuService.selectOne(new EntityWrapper<MemberXianyu>().eq("open_id", openId));
+        if (null == memberXianyu){
+            memberXianyu = new MemberXianyu();
+        }
+        memberXianyu.setLinkName(linkName);
+        memberXianyu.setPicUrl(picUrl);
+        memberXianyu.setOpenId(openId);
+        memberXianyu.setAccessToken(accessToken);
+        memberXianyuService.insertOrUpdate(memberXianyu);
+        //查询用户在支付宝是否存在
+        Member member = this.selectMemberByAliUserId(memberXianyu.getAliUserId());
+        if (null == member){
+            member = new Member();
+        }
+        member.setName(linkName);
+        member.setIsCertified("1");
+        member.setCity("闲鱼");
+        member.setAliUserId(memberXianyu.getAliUserId());
+        member.setLinkName(linkName);
+        member.setPicUrl(picUrl);
+        member.setAddress("闲鱼");
+        member.setAliCardNo(memberXianyu.getCardNo());
+        member.setCardNo(memberXianyu.getCardNo());
+        member.setChannelId("1");
+        this.inserOrUpdatetMember(member);
+        Map<String,Object> resultMap = new HashMap<>();
+        String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
+        String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
+        System.out.println("token:" + securityToken);
+        resultMap.put("member", member);
+        resultMap.put("token", securityToken);
+        Map<String,Object> map = new HashMap<>();
+        map.put("data",resultMap);
+        map.put("status","sucess");
+        map.put("code","0");
+        map.put("msg","操作成功");
+        return map;
+
+    }
+
+    @Override
+    @Transactional
+    public Object updateAliAccount(String aliAccount, String aliUserId) {
+        //查询用户在支付宝是否存在
+        Member member = this.selectMemberByAliUserId(aliUserId);
+        if (null == member){
+           throw new ApiException("用户信息异常");
+        }
+        if ("1".equals(member.getChannelId())){
+            //查询用户是否在闲鱼用户表内存在
+            MemberXianyu memberXianyu = memberXianyuService.selectOne(new EntityWrapper<MemberXianyu>().eq("ali_user_id", aliUserId));
+            if (null == memberXianyu){
+                throw new ApiException("用户信息异常");
+            }
+            memberXianyu.setAliAccount(aliAccount);
+            memberXianyuService.updateById(memberXianyu);
+        }
+        return "操作成功";
     }
 
     @Override
@@ -642,7 +697,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Override
     @Transactional
     public Integer inserOrUpdatetMember(Member member) {
-        if (StringUtils.isBlank(member.getAliUserId())) {
+        if (null==member.getId()) {
             return this.insertMember(member);
         } else {
             return this.updateMemberByAliUserId(member);

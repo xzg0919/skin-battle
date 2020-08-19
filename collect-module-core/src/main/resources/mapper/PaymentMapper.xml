@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.PaymentMapper">
+
+
+    <select id="selectPayOneMinByOrderSn"   resultType="com.tzj.collect.entity.Payment" parameterType="String">
+        SELECT
+        *
+        FROM
+            sb_payment a
+        WHERE
+        a.id IN (
+            SELECT
+                a.id
+                FROM
+                (
+                    SELECT
+                    a.id,
+                    TIMESTAMPDIFF(SECOND, a.create_date, NOW()) AS time
+                    FROM
+                    sb_payment a
+                    WHERE
+                    a.order_sn = #{orderNo}
+                    AND a.trade_no IS NOT NULL
+                ) a
+            WHERE
+            61 > a.time
+            )
+        LIMIT 0,1
+    </select>
+
+
+</mapper>

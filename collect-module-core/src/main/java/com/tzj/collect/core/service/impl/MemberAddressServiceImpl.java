@@ -43,6 +43,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
      * @return
      */ 
     @Transactional(readOnly=false)
+	@Override
 	public String saveMemberAddress(MemberAddressBean memberAddressBean) {
 		MemberAddress memberAddress1 = this.getMemberAdderssByAliUserId(memberAddressBean.getAliUserId());
 		if (null != memberAddress1){
@@ -183,6 +184,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 	 * @return
 	 */
 	@Transactional(readOnly=false)
+	@Override
 	public String saveMemberAddressd(MemberAddressBean memberAddressBean) {
 		String isSelected = memberAddressBean.getIsSelected();
 		//判断是否将地址设置为默认
@@ -432,6 +434,55 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		}else {
 			return this.updateMemberAddressByAliUserId(memberAddress);
 		}
+	}
+
+	@Override
+	@Transactional
+	public String saveMemberAddressByHand(MapAddressBean mapAddressBean, String aliUserId) {
+		System.out.println("用户开始新增地址了"+JSON.toJSONString(mapAddressBean));
+		Area province = areaService.selectById(mapAddressBean.getProvinceId());
+		Area city = areaService.selectById(mapAddressBean.getCityId());
+		Area area = areaService.selectById(mapAddressBean.getAreaId());
+		Area street = areaService.selectById(mapAddressBean.getStreetId());
+		Integer communityId = -1;
+		if("1".equals(mapAddressBean.getIsSelected())){
+			MemberAddress memberAddress1 = this.getMemberAdderssByAliUserId(aliUserId);
+			if (null != memberAddress1){
+				memberAddress1.setIsSelected(0);
+				this.updateMemberAddressByAliUserId(memberAddress1);
+			}
+		}
+		MemberAddress memberAddress = null;
+		//判断是否是修改还是新增
+		if(StringUtils.isNotBlank(mapAddressBean.getId())) {
+			MemberAddress select = new MemberAddress();
+			select.setId(Long.parseLong(mapAddressBean.getId()));
+			select.setAliUserId(aliUserId);
+			memberAddress = this.selectMemberAddressByAliUserIdOne(select);
+			if (null == memberAddress){
+				return "更改的地址不存在";
+			}
+		}else {
+			memberAddress = new MemberAddress();
+		}
+		memberAddress.setAliUserId(aliUserId);
+		memberAddress.setName(mapAddressBean.getUserName());
+		memberAddress.setTel(mapAddressBean.getTel());
+		memberAddress.setCityId(city.getId().intValue());
+		memberAddress.setAreaId(area.getId().intValue());
+		memberAddress.setStreetId(street.getId().intValue());
+		memberAddress.setCommunityId(communityId);
+		memberAddress.setAddress(mapAddressBean.getAddress());
+		memberAddress.setIsSelected(Integer.parseInt(mapAddressBean.getIsSelected()));
+		memberAddress.setCityName(city.getAreaName());
+		memberAddress.setAreaName(area.getAreaName());
+		memberAddress.setStreetName(street.getAreaName());
+		memberAddress.setCommunityName(mapAddressBean.getName());
+		memberAddress.setTownCode(street.getCode());
+		memberAddress.setProvinceId(province.getId().intValue());
+		memberAddress.setProvinceName(province.getAreaName());
+		this.inserOrUpdatetMemberAddress(memberAddress);
+		return "操作成功";
 	}
 
 	public Object selectMemberAddress(MemberAddress memberAddress,boolean isSelectOne) {

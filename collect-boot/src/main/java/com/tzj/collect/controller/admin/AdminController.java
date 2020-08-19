@@ -53,7 +53,7 @@ public class AdminController {
 
 	@RequestMapping("/get/sing")
 	public @ResponseBody String getCode(String signature,String timestamp,String nonce,String echostr) {
-		return echostr;
+		return "hello word";
 	}
 	@RequestMapping("/get/code")
 	public String getCode(HttpServletRequest request) {

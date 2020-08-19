@@ -83,4 +83,9 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemMapper, OrderItem
 	public List<Map<String, Object>> getOrderItemDetail(Long orderId, String isCash) {
 		return orderItemMapper.getOrderItemDetail(orderId,isCash);
 	}
+
+	@Override
+	public List<OrderItem> selectByOrderIdName(Integer orderId) {
+		return orderItemMapper.selectByOrderIdName(orderId);
+	}
 }

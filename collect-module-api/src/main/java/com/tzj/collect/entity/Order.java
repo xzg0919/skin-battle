@@ -169,6 +169,8 @@ public class Order extends DataEntity<Long> {
 	private String cateAttName4Page;// 父类名称/父类名称
 	@TableField(exist = false)
 	private String num;// 页面需要
+	@TableField(exist = false)
+	private String isOverTimes;// 1-已超时
 	@TableField(exist = false)//成交价格，页面需要
 	private String paymentPrice;
 	@TableField(exist = false)//页面需要
@@ -251,13 +253,15 @@ public class Order extends DataEntity<Long> {
 
 	private String payType;//结算方式 0-卖钱 1-环保积分 2-能量
 
-	private String orderFrom = "0";//订单来源0-其他 1-定时定点
+	private String orderFrom = "0";//订单来源0-其他 1-定时定点  2闲鱼
 
 	private String paymentType;//付款类型 0支付宝    1现金
 	@TableField(value = "company_point")
 	private double companyPoint;
 	@TableField(exist = false)//页面需要
 	private String categoryTitle;// 垃圾类型
+
+	private String aliAccount;//支付宝账号
 
 
 	public String getDoublePoint() {
@@ -570,6 +574,27 @@ public class Order extends DataEntity<Long> {
 		this.arrivalTimePage = arrivalTimePage;
 	}
 
+	@TableField(exist = false)
+	private String isReOrder; //是否为再处理订单 1-是 0-否
+
+	public String getIsReOrder() {
+		String status = this.status.toString();
+		String temp = this.cancelReason;
+		if ("INIT".equals(status)){
+			if (null != temp && !"订单回调".equals(temp)) {
+				return "1";
+			}else{
+				return "0";
+			}
+		}else{
+			return null;
+		}
+	}
+
+	public void setIsReOrder(String isReOrder) {
+		this.isReOrder = isReOrder;
+	}
+
 	/**
 	 * 预约时间(只用于页面需求)
 	 */
@@ -677,7 +702,7 @@ public class Order extends DataEntity<Long> {
 	public String getStatusPage() {
 		switch (this.status) {
 			case INIT:
-				statusPage = "待接单";
+				statusPage = "待处理";
 				break;
 			case COMPLETE:
 				statusPage = "已完成";
@@ -687,7 +712,7 @@ public class Order extends DataEntity<Long> {
 				break;
 			case TOSEND:
 				// statusPage = "已派单";
-				statusPage = "待接单";
+				statusPage = "已派发";
 				break;
 			case ALREADY:
 				statusPage = "进行中";
@@ -761,7 +786,7 @@ public class Order extends DataEntity<Long> {
 		this.recyclerId = recyclerId;
 	}
 
-	public OrderType getStatus() {
+	public OrderType  getStatus() {
 		return status;
 	}
 

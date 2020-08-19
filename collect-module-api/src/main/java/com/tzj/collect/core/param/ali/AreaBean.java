@@ -66,93 +66,9 @@ public class AreaBean {
 
 	private String ratio; //城市系数
 
-	public String getSaveOrDelete() {
-		return saveOrDelete;
-	}
+	private Integer parentId;
 
-	public void setSaveOrDelete(String saveOrDelete) {
-		this.saveOrDelete = saveOrDelete;
-	}
 
-	public List<CommunityBean> getCommunityIdList() {
-		return communityIdList;
-	}
-
-	public void setCommunityIdList(List<CommunityBean> communityIdList) {
-		this.communityIdList = communityIdList;
-	}
-
-	public String getAreaId() {
-		return areaId;
-	}
-
-	public void setAreaId(String areaId) {
-		this.areaId = areaId;
-	}
-
-	public String getStreeId() {
-		return streeId;
-	}
-
-	public void setStreeId(String streeId) {
-		this.streeId = streeId;
-	}
-
-	public String getAreaName() {
-		return areaName;
-	}
-
-	public void setAreaName(String areaName) {
-		this.areaName = areaName;
-	}
-
-	public String getStreetName() {
-		return streetName;
-	}
-
-	public void setStreetName(String streetName) {
-		this.streetName = streetName;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public Integer getLevel() {
-		return level;
-	}
-
-	public void setLevel(Integer level) {
-		this.level = level;
-	}
-
-	public String getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(String longitude) {
-		this.longitude = longitude;
-	}
-
-	public String getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
-	}
-
-	public String getCityId() {
-		return cityId;
-	}
-
-	public void setCityId(String cityId) {
-		this.cityId = cityId;
-	}
 	
 	
 }

@@ -52,13 +52,15 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @author 王灿
 	 * @return
 	*/
-	List<Order> getOrderLists(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title);
+	List<Order> getOrderLists(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title,@Param("reInit") String reInit);
 	/**
 	 * 根据各种查询条件获取订单的条数
 	 * @author 王灿
 	 * @return
 	*/
-	Integer getOrderListsCount(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title);
+	Integer getOrderListsCount(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title,@Param("reInit") String reInit);
+
+	Integer getReOrderListsCount(@Param("companyId") Integer companyId, @Param("status") List<String> status, @Param("orderNo") String orderNo, @Param("linkMan") String linkMan, @Param("recyclersName") String recyclersName, @Param("pageSize") int pageSize, @Param("startSize") int startSize, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("isScan") String isScan, @Param("title") String title,@Param("reInit") String reInit);
 
 	AppOrderResult getOrderDetails(@Param("orderBean") OrderBean orderbean);
 	/**
@@ -209,7 +211,13 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @return
 	 * added by michael_wang
 	 */
-	List<Map<String,Object>> orderDetail4HorseHold(@Param("companyId") Integer companyId,@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("recyclerName")String recyclerName);
+	List<Map<String,Object>> orderDetail4HorseHold(@Param("companyId") Integer companyId,@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("recyclerName")String recyclerName,@Param("title")String title);
+
+	List<Order> getOrderListss(@Param("companyId") Integer companyId,@Param("orderNo") String orderNo,@Param("linkMan") String linkMan,@Param("recyclerName")String recyclerName,@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("title")String title);
+
+	Map<String, Object> select1Or4Map(@Param("id") Long id);
+
+	List<Map<String,Object>>select2Or3Map(@Param("id") Long id);
 
 	List<Map<String,Object>> getReyclersServiceAbility(@Param("companyId") Integer companyId,@Param("recyclerName") String recyclerName,@Param("mobile")String mobile,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("isBig")String isBig,@Param("isOverTime")String isOverTime,@Param("pageStart")Integer pageStart,@Param("pageSize")Integer pageSize);
 
@@ -256,5 +264,7 @@ public interface OrderMapper extends BaseMapper<Order> {
     Double getAmountByOrderId(@Param("orderId")Long orderId);
 
 	List<BusinessOrderItemBean> getCategoryInfoByOrderId(@Param("orderId") String orderId,@Param("title") String title);
+
+	List<Map<String, Object>>getCategoryPriceList(@Param("orderId")Integer id);
 }
 

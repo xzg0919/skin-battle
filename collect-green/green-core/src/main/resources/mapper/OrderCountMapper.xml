@@ -80,7 +80,7 @@ l.create_date >= DATE_SUB(CURDATE(), INTERVAL 0 DAY)
         m.community_name AS communityName,
         m.community_house_name AS communityHouseName,
         r.name_ AS createBy ,
-        IF(l.points_type = '0',l.points,0) AS addPoints,
+        round(IF(l.points_type = '0',i.points*i.amount,0),0) AS addPoints,
         IF(l.points_type = '1',l.points,0) AS sumPoints
         FROM
         sb_points_list l

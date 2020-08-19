@@ -21,7 +21,7 @@ public class BusinessRecycleTitleApi {
     private RecyclersTitleService recyclersTitleService;
 
     /**
-     * 获取回收人员的回收类型范围
+     * 获取回收人员的回收类型范围business.search.editorStatus
      * @param
      * @return
      */

@@ -15,4 +15,6 @@ public interface OrderItemMapper extends BaseMapper<OrderItem>{
     Map<String, Object> selectItemOne(Integer orderId);
 
     List<Map<String,Object>> getOrderItemDetail(@Param("orderId") Long orderId,@Param("isCash") String isCash);
+
+    List<OrderItem> selectByOrderIdName(@Param("orderId") Integer orderId);
 }

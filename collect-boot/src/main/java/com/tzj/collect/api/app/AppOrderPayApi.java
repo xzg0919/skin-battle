@@ -118,6 +118,7 @@ public class AppOrderPayApi {
      * @return
      */
     @Api(name = "app.order.tradePay", version = "1.0")
+    @SignIgnore
     public String orderTradePay(OrderPayParam orderPayParam) {
         if(orderPayParam.getPrice().compareTo(BigDecimal.ZERO)==0){
             throw new ApiException("不能支付0元");
@@ -126,12 +127,28 @@ public class AppOrderPayApi {
         Order order=orderService.selectById(orderPayParam.getOrderId());
         if(order==null){
             throw new ApiException("未找到Order信息！id:"+orderPayParam.getOrderId());
+        }else if ("2".equals(order.getOrderFrom())){
+            //如果是闲鱼订单，直接完成
+            OrderBean orderBean = new OrderBean();
+            orderBean.setStatus("3");
+            orderBean.setId(order.getId().intValue());
+            orderBean.setAchPrice(order.getAchPrice().toString());
+            orderBean.setAmount(order.getGreenCount());
+            orderService.modifyOrderSta(orderBean,mqtt4PushOrder);
+            return "确认完成";
         }
         Payment payment=paymentService.selectPayByOrderSn(order.getOrderNo());
         if (null != payment){
             return "该订单已被支付，请勿重复支付";
         }else {
-            payment=new Payment();
+            if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
+                //查询最近一分钟内未支付成功的订单
+                payment=paymentService.selectPayOneMinByOrderSn(order.getOrderNo());
+                if (null!=payment){
+                    return payment.getTradeNo();
+                }
+            }
+                payment=new Payment();
         }
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
 

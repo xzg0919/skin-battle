@@ -119,4 +119,6 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 	void closeCompanyBigByRecyclerId(@Param("companyId")String companyId,@Param("recyclerId")Long recyclerId);
 
 	void updateRecycler(@Param("recyclerId")Long recyclerId,@Param("type")String type);
+
+    Integer dsddPositionCount(@Param("recyclerId")Long recyclerId);
 }

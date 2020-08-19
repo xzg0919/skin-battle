@@ -18,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly=true)
 public class SendRocketmqMessageServiceImpl extends ServiceImpl<SendRocketmqMessageMapper, SendRocketmqMessage> implements SendRocketmqMessageService {
-        @Autowired
-        private SendRocketmqMessageMapper sendRocketmqMessageMapper;
 
         //向socket发送消息
         @Transactional
@@ -38,7 +36,7 @@ public class SendRocketmqMessageServiceImpl extends ServiceImpl<SendRocketmqMess
                         System.out.println("rocketMq发送消息成功 ："+msg.getMessageId()+" 内容是："+param);
                         SendRocketmqMessage sendRocketmqMessage = new SendRocketmqMessage();
                         sendRocketmqMessage.setMessageId(msg.getMessageId());
-                        sendRocketmqMessage.setMessage(param);
+                        sendRocketmqMessage.setMessage(param+"---topicName : "+topicName);
                         this.insert(sendRocketmqMessage);
 //            System.out.println(msg.getMessageBodyMD5());
                 } catch (Exception e) {

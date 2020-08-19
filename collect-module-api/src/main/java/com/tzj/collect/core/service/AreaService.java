@@ -94,10 +94,14 @@ public interface AreaService  extends IService<Area>{
 	List<Map<String,Object>> getAllCityListByCompanyId(AreaBean areaBean);
 	@DS("slave")
 	Map<String,Object> getTitleByCompanyId(AreaBean areaBean);
+	@DS("slave")
+	Map<String,Object> getRatioByCompanyId(Long cityId,Long companyId);
 
 	Map<String, Object> allAreaStreetIdNameInfo();
 	@DS("slave")
 	Area selectByCode(String townId);
 	@DS("slave")
 	List<Area> getAreaListByParentId(OrderBean orderBean);
+
+    Object getAreaListById(Integer parentId);
 }

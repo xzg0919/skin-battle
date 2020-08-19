@@ -135,7 +135,7 @@ public interface OrderService extends IService<Order> {
 	 * @return
 	*/
 	@DS("slave")
-	Map<String,Object> selectCountByStatus(String status, Integer companyId, Order.TitleType titleType);
+	Map<String,Object> selectCountByStatus(BOrderBean orderBean);
 
 	/**
 	 * 根据订单状态获得订单列表
@@ -397,7 +397,13 @@ public interface OrderService extends IService<Order> {
 	 * added by michael_wang
 	 */
 	@DS("slave")
-	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime,String recyclerName);
+	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime,String recyclerName,String title);
+	@DS("slave")
+	List<Order> getOrderListss(Integer companyId,String orderNo,String linkMan,String recyclerName,String startTime, String endTime,String title);
+	@DS("slave")
+	Map<String, Object> select1Or4Map(Long id);
+	@DS("slave")
+	List<Map<String,Object>>select2Or3Map(Long id);
 	@DS("slave")
 	Object getReyclersServiceAbility(OrderBean orderBean,Integer companyId);
 	@DS("slave")
@@ -426,7 +432,7 @@ public interface OrderService extends IService<Order> {
 	@DS("slave")
 	Object getOrderComplaintDetail(String orderNo);
 
-	Object addOrderComplaintBack(Integer id,String complaintBack);
+	Object addOrderComplaintBack(String orderNo,String type,String complaintBack);
 	@DS("slave")
 	Map<String, Object> getOrderAchItemDatail(OrderBean orderBean);
 	@DS("slave")
@@ -451,4 +457,6 @@ public interface OrderService extends IService<Order> {
 	Object sendXyOrderByCompanyId(OrderBean orderBean);
 	@DS("slave")
 	Map<String,Object> dsddOrderDetail(Integer orderId);
+	@DS("slave")
+	Object getOrderDetailPrice(Integer id);
 }

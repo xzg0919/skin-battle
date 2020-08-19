@@ -102,7 +102,7 @@ public class EquipmentAppTokenApi {
      *
      * @return
      */
-    @Api(name = "equipment.token.flush", version = "1.0")
+    @Api(name = "equiment.token.flush", version = "1.0")
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
     public TokenBean flushToken() {
 

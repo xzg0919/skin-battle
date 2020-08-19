@@ -43,7 +43,7 @@ public class PointApi {
      * @return
      */
     @Api(name = "point.getPointListByType", version = "1.0")
-    //@AuthIgnore //这个api忽略token验证
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public List<Object> getPointListByType(PageBean pageBean){
         //接口里面获取  Member 的例子
@@ -60,6 +60,7 @@ public class PointApi {
      * @return: 
      */
     @Api(name = "point.reduce", version = "1.0")
+    @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Map<String, Object> RpcReducePoint(Map<String, Object> paramMap){
         Map<String, Object> returnMap = new HashMap<>();
@@ -78,6 +79,7 @@ public class PointApi {
      * @return
      */
     @Api(name = "point.getPoint", version = "1.0")
+    @SignIgnore
     //@AuthIgnore //这个api忽略token验证
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Point getPoint(){
@@ -94,6 +96,7 @@ public class PointApi {
      * @return
      */
     @Api(name = "point.getPointLists", version = "1.0")
+    @SignIgnore
     //@AuthIgnore //这个api忽略token验证
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object getPointLists(){

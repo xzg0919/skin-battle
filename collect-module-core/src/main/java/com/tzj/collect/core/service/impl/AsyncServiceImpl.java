@@ -147,7 +147,7 @@ public class AsyncServiceImpl implements AsyncService {
         req.setExtend("123456");
         req.setSmsType("normal");
         req.setSmsFreeSignName(freeSignName);
-        req.setSmsParamString("{\"name\":\"" + recyclerName + "\",\"phone\":\"" + phone + "\",\"company\":\"" + companyName + "\"}");
+        req.setSmsParamString("{\"recyclers\":\"" + recyclerName + "\",\"tel\":\"" + phone + "\"}");
         req.setRecNum(moblie);
         req.setSmsTemplateCode(temlateCode);
         AlibabaAliqinFcSmsNumSendResponse rsp;

@@ -22,6 +22,8 @@ public class CategoryBean {
 
 	private String orderId;
 
+	private Integer categoryId;
+
 	public String getCityId() {
 		return cityId;
 	}

@@ -68,11 +68,13 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	/*
 	 * 查询回收人员的申请列表
 	 */
-	public List<Recyclers> getRecyclersApply(@Param("companyId") long companyId, @Param("isBigRecycle") String isBigRecycle);
+	public List<Recyclers> getRecyclersApply(@Param("companyId") long companyId);
 
 
 
 	public List<Recyclers> getRecyclersLists(@Param("companyId") Integer companyId, @Param("orderId") Integer orderId, @Param("title") Integer title);
+
+	public List<Recyclers> getRecyclersListAll(@Param("companyId") Integer companyId, @Param("type") Integer type,@Param("recyclerId") Integer recyclerId);
 
 	public List<Recyclers> getSendOrderRecyclersList(@Param("companyId") Integer companyId, @Param("orderId") Integer orderId, @Param("title") Integer title);
 
@@ -82,7 +84,7 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	 * @param companyId : 企业Id
 	 * @return
 	 */
-    List<Map<String,Object>> getRecyclers(@Param("companyId") Integer companyId, @Param("isBigRecycle") String isBigRecycle);
+    List<Map<String,Object>> getRecyclers(@Param("companyId") Integer companyId);
 
 	/**
 	 * 根据市级Id和回收人员id获取区域信息
@@ -104,14 +106,14 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	 * @param companyId : 企业Id
 	 * @return
 	 */
-	List<Map<String,Object>> getRangeRecyclersList(@Param("companyId") String companyId, @Param("recycleName") String recycleName, @Param("cityId") String cityId, @Param("pageStartCount") Integer pageStartCount, @Param("pageSize") Integer pageSize, @Param("isBigRecycle") String isBigRecycle, @Param("tel") String tel);
+	List<Map<String,Object>> getRangeRecyclersList(@Param("companyId") String companyId, @Param("recycleName") String recycleName, @Param("cityId") String cityId, @Param("pageStartCount") Integer pageStartCount, @Param("pageSize") Integer pageSize, @Param("tel") String tel);
 	/**
 	 * 获取回收经理人员条数
 	 * @author wangcan
 	 * @param companyId : 企业Id
 	 * @return
 	 */
-	Integer getRangeRecyclersListCount(@Param("companyId") String companyId, @Param("recycleName") String recycleName, @Param("cityId") String cityId, @Param("isBigRecycle") String isBigRecycle, @Param("tel") String tel);
+	Integer getRangeRecyclersListCount(@Param("companyId") String companyId, @Param("recycleName") String recycleName, @Param("cityId") String cityId, @Param("tel") String tel);
 	/**
 	 * 获取回收经理的详细信息
 	 * @author wangcan
@@ -120,7 +122,7 @@ public interface RecyclersMapper extends BaseMapper<Recyclers>{
 	 */
 	List<Map<String,Object>> getRecycleDetails(@Param("recyclerId") Integer recyclerId,@Param("isBigRecycle")String isBigRecycle,@Param("companyId")Integer companyId);
 
-	List<Recyclers> getRecyclersListByParentId(@Param("companyId") Integer companyId, @Param("recycleId") String recycleId, @Param("isBigRecycle") String isBigRecycle);
+	List<Recyclers> getRecyclersListByParentId(@Param("companyId") Integer companyId, @Param("recycleId") String recycleId);
 
 	List<Recyclers> getRecycleSon(@Param("recyclerId") Long recyclerId,@Param("isBigRecycle") String isBigRecycle,@Param("recyclerName") String recyclerName);
 

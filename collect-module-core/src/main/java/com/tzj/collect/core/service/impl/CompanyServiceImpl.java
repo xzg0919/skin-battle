@@ -166,8 +166,6 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		}else if("2".equals(title)){
 			companyRange = companyStreetHouseService.companyAreaRanges(companyId);
 			companyRecycleRange = recyclersRangeHouseService.companyAreaRecyclerRanges(companyId);
-//			companyRange = companyServiceService.companyAreaRanges(companyId);
-//			companyRecycleRange = recyclersRangeHouseholdService.companyAreaRecyclerRanges(companyId);
 		}else if("4".equals(title)){
 			companyRange = companyStreetBigService.companyAreaRanges(companyId);
 			companyRecycleRange = recyclersRangeBigService.companyAreaRecyclerRanges(companyId);

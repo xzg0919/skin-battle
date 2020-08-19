@@ -27,9 +27,11 @@ spring:
 #          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/sb_pointcompany?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
 #          username: wangcan
 #          password: Wangcan123
+#          url: jdbc:mysql://rm-uf6aj80zy36o1mb10.mysql.rds.aliyuncs.com/sb_pointcompany?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong
+#          username: lushan
+#          password: lsP@ssw0rd
           driver-class-name: com.mysql.cj.jdbc.Driver
           #driver-class-name: com.mysql.jdbc.Driver
-
   #配置MQ
   rabbitmq:
     host: 106.15.72.157 #内网IP 172.19.182.81

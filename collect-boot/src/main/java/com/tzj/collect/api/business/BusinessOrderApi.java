@@ -45,11 +45,15 @@ public class BusinessOrderApi {
 	@Autowired
 	private CompanyService companyService;
 	@Autowired
+	private OrderComplaintService orderComplaintService;
+	@Autowired
 	private SendRocketmqMessageService sendRocketmqMessageService;
 	@Autowired
 	private OrderCancleExamineService orderCancleExamineService;
 	@Resource(name = "mqtt4PushOrder")
 	private MqttClient mqtt4PushOrder;
+	@Autowired
+	private OrderOperateService orderOperateService;
 	/**
 	 * 根据各种查询条件获取订单 列表
 	 * @author 王灿
@@ -58,6 +62,7 @@ public class BusinessOrderApi {
 	 * 
 	*/
 	 @Api(name = "business.order.getOrderLists", version = "1.0")
+	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderLists(BOrderBean orderBean)
 	{	//获取分页数据
@@ -88,10 +93,11 @@ public class BusinessOrderApi {
 	 * 
 	*/
 	 @Api(name = "business.order.getOrderCounts", version = "1.0")
+	 @SignIgnore
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	public Map<String, Object> getOrderCounts(BOrderBean orderBean){
 		 	//根据各种状态查询相订单表相关的条数
-			Map<String, Object> resultMap = orderService.selectCountByStatus(orderBean.getStatus(),orderBean.getCompanyId(), Order.TitleType.valueOf(orderBean.getCategoryType()));
+			Map<String, Object> resultMap = orderService.selectCountByStatus(orderBean);
 			return  resultMap;
 	 }
 
@@ -116,6 +122,7 @@ public class BusinessOrderApi {
 	 */
 	 @Api(name = "business.order.getOrderDetail", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	 @SignIgnore
 	public Map<String,Object> getOrderDetail(BOrderBean bOrderBean){
 		 int orderId = bOrderBean.getId();
 		//查询订单详情
@@ -151,6 +158,14 @@ public class BusinessOrderApi {
 	public Object withdrawApplication(BOrderBean bOrderBean){
 		//查询订单详情
 		if (orderCancleExamineService.delete(new EntityWrapper<OrderCancleExamine>().eq("order_no", bOrderBean.getOrderNo()))){
+			//新增操作流水日志
+			OrderOperate orderOperate = new OrderOperate();
+			orderOperate.setOrderNo(bOrderBean.getOrderNo());
+			orderOperate.setOperateLog("撤销申请");
+			orderOperate.setReason("/");
+			Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
+			orderOperate.setOperatorMan(company.getName());
+			orderOperateService.insert(orderOperate);
 			return "Y";
 		}
 		return "N";
@@ -165,6 +180,7 @@ public class BusinessOrderApi {
 	 */
 	 @Api(name = "business.order.getInitDetail", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	 @SignIgnore
 	public Map<String,Object> getInitDetail(BOrderBean bOrderBean){
 		 int orderId = bOrderBean.getId();
 		//查询订单详情
@@ -179,10 +195,25 @@ public class BusinessOrderApi {
 		 */
 		 @Api(name = "business.order.getRecyclersList", version = "1.0")
 		 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
-		 public List<Recyclers> getRecyclersList2(BOrderBean bOrderBean){
-			 List<Recyclers> list =  recyclersService.getRecyclersList2(bOrderBean.getCompanyId(),bOrderBean.getId());
-			 return list;
+		 @SignIgnore
+		 public Object getRecyclersList2(BOrderBean bOrderBean){
+			 return recyclersService.getRecyclersList2(bOrderBean.getCompanyId(),bOrderBean.getId());
+
 		 }
+
+	/**
+	 * 平台信息费明细
+	 * @author
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.order.getOrderDetailPrice", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getOrderDetailPrice(BOrderBean bOrderBean){
+		return orderService.getOrderDetailPrice(bOrderBean.getId());
+
+	}
 		 
 	 /**
 	 * 返回取消原因
@@ -204,6 +235,7 @@ public class BusinessOrderApi {
 	 */
 	 @Api(name = "business.order.updateOdrerStatus", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	 @SignIgnore
 	public String updateOdrerStatus(BOrderBean orderbean) {
 		 //订单id 
 		 Integer orderId = orderbean.getId();
@@ -227,6 +259,8 @@ public class BusinessOrderApi {
 	public String callbackForground(OrderBean orderbean) {
 		return orderService.callbackForGround(orderbean);
 	}
+
+
 	/**
 	 * 企业取消订单
 	 * @author 王灿
@@ -386,14 +420,27 @@ public class BusinessOrderApi {
 	}
 
 	/**
+	 * 获取订单客诉是否已反馈
+	 * @date 2019/08/30
+	 * @return
+	 */
+	@Api(name = "business.order.getIsOrderComplaint", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public Object getIsOrderComplaint(OrderBean orderBean){
+		return orderComplaintService.getIsOrderComplaint(orderBean.getOrderNo());
+	}
+
+	/**
 	 * 增加客诉反馈接口
 	 * @date 2019/08/30
 	 * @return
 	 */
 	@Api(name = "business.order.addOrderComplaintBack", version = "1.0")
 	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@SignIgnore
 	public Object addOrderComplaintBack(OrderBean orderBean){
-		return orderService.addOrderComplaintBack(orderBean.getId(),orderBean.getComplaintBack());
+		return orderService.addOrderComplaintBack(orderBean.getOrderNo(),orderBean.getType(),orderBean.getComplaintBack());
 	}
 
 	/** 根据订单Id获取编辑后的回收物明细
@@ -406,4 +453,14 @@ public class BusinessOrderApi {
 		return orderService.getOrderAchItemDatail(orderbean);
 	}
 
+	/** 获取操作日志流水表
+	 * @author
+	 * @return
+	 */
+	@Api(name = "order.getOrderOperateByOrderId", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	public List<OrderOperate> getOrderOperateByOrderId(OrderBean orderbean) {
+		return orderOperateService.selectOperate(orderbean);
+	}
 }
