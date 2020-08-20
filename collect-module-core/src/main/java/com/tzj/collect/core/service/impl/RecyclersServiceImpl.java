@@ -205,7 +205,7 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             Recyclers recyclers = recyclersService.selectById(recyclerCancelLog.getRecycleId());
 
             map.put("userAddress",order.getAddress());
-            map.put("name",recyclers.getName());
+            map.put("name",null==recyclers?"回收人员已被删除":recyclers.getName());
             map.put("cancelTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(recyclerCancelLog.getCreateDate()));
             map.put("cancelReason",recyclerCancelLog.getCancelReason());
             List<Recyclers>recycler = recyclersMapper.getRecyclersListAll(companyId,type,null);
