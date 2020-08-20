@@ -184,11 +184,12 @@
         )a
     </select>
     <select id="getOrderLists" parameterType="Object" resultMap="OrderResultMap">
-        select * from (
+        select a.*,
+        IF(b.type_ = '4','3',if(b.type_ in ('0','1','2'),'1',if(a.overTimes > 2880,'2','0'))) AS
+        isComplaint
+        from (
         select a.*,
         IF(0>a.overTimes,-1,a.overTimes) AS overTime,
-        IF(a.complaint_type = '3','3',if(a.overTimes > 2880,'2',if(a.complaint_type in ('0','1','2'),'1','0'))) AS
-        isComplaint,
         if(a.overTimes > 2880,'1','0') isOverTimes
         from (
         SELECT
@@ -270,8 +271,68 @@
         GROUP BY a.id
         )a
         )a
-        ORDER BY a.isComplaint DESC, IF(a.status_='3',a.complete_date,if(a.status_ in
-        ('4','5'),a.cancel_time,a.overTime)) DESC ,a.create_date
+        LEFT JOIN
+        (SELECT
+        a.order_no,
+        a.type_
+        FROM
+        (SELECT c.*from
+        sb_order a
+        INNER JOIN sb_order_complaint c on a.order_no = c.order_no
+        LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+        WHERE
+        a.del_flag = '0'
+        AND (a.order_from = '0' or a.order_from is null)
+        AND a.company_id =#{companyId}
+        <if test="status != null">
+            AND a.status_ in
+            <foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="orderNo != null and orderNo !='' ">
+            AND a.order_no LIKE concat(concat('%',#{orderNo}),'%')
+        </if>
+        <if test="linkMan != null and linkMan !='' ">
+            AND
+            (a.link_man LIKE concat(concat('%',#{linkMan}),'%')
+            or a.tel LIKE CONCAT('%',#{linkMan},'%'))
+        </if>
+        <if test="recyclersName !=null and recyclersName!='' ">
+            <choose>
+                <when test="title == 3">
+                    and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
+                </when>
+                <otherwise>
+                    AND
+                    (b.name_ LIKE concat(concat('%',#{recyclersName}),'%')
+                    or b.tel LIKE concat(concat('%',#{recyclersName}),'%'))
+                </otherwise>
+            </choose>
+        </if>
+        <if test="startTime !=null and startTime !=''">
+            <![CDATA[
+							AND a.complete_date >= CONCAT(#{startTime},' 00:00:00')
+						 ]]>
+        </if>
+        <if test="endTime !=null and endTime !=''">
+            <![CDATA[
+							AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
+						 ]]>
+        </if>
+        <if test="title != null and title !='' ">
+            AND a.title = #{title}
+        </if>
+        <if test="title == null  ">
+            AND a.title in (1,2,4)
+        </if>
+        <if test="reInit != null and reInit !='' ">
+            AND a.cancel_reason IS NOT NULL
+            AND a.cancel_reason != '订单回调'
+        </if>
+        order by c.order_no,c.type_ DESC) a
+        GROUP BY a.order_no) b on a.order_no = b.order_no
+        ORDER BY if(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,isComplaint))DESC, a.create_date
         LIMIT #{startSize},#{pageSize}
     </select>
 
