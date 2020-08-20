@@ -854,6 +854,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         } else if (order.getTitle() == Order.TitleType.DIGITAL) {
             category.setName("家电数码");
             order.setCategory(category);
+        }else if (order.getTitle() == Order.TitleType.BIGTHING) {
+            category.setName("大件回收");
+            order.setCategory(category);
         }
         return order;
     }

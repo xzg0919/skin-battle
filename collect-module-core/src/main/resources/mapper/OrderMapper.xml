@@ -66,7 +66,7 @@
         WHERE
         a.del_flag = '0'
         AND (a.order_from = '0' or a.order_from is null)
-        AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
+        AND a.company_id =#{companyId}
         <if test="status != null">
             AND a.status_ in
             <foreach collection="status" index="index" item="item" open="(" separator="," close=")">
@@ -138,7 +138,7 @@
         WHERE
         a.del_flag = '0'
         AND (a.order_from = '0' or a.order_from is null)
-        AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
+        AND a.company_id =#{companyId}
         AND a.cancel_reason IS NOT NULL
         AND a.cancel_reason != '订单回调'
         <if test="status != null">
@@ -220,7 +220,7 @@
         WHERE
         a.del_flag = '0'
         AND (a.order_from = '0' or a.order_from is null)
-        AND a.company_id =#{companyId} AND a.is_scan = #{isScan}
+        AND a.company_id =#{companyId}
         <if test="status != null">
             AND a.status_ in
             <foreach collection="status" index="index" item="item" open="(" separator="," close=")">
