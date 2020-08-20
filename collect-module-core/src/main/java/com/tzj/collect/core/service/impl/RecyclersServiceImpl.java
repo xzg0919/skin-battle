@@ -192,13 +192,13 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     @Override
     public Object getRecyclersList2(Integer companyId, Integer orderId) {
         Order order = orderService.selectById(orderId);
-        Integer title = Integer.parseInt(order.getTitle().getValue() + "");
+        /*Integer title = Integer.parseInt(order.getTitle().getValue() + "");*/
         Integer type = null;
-        if(title == 1||title == 2){
+        /*if(title == 1||title == 2){
             type = 1;
         }else if (title == 4){
             type = 4;
-        }
+        }*/
         Map<String,Object>map = new HashMap<>();
         if(null !=order.getCancelReason()&&order.getStatus().name().equals("INIT")&&!"订单回调".equals(order.getCancelReason())){
             RecyclerCancelLog recyclerCancelLog = recyclerCancelLogService.selectOne(new EntityWrapper<RecyclerCancelLog>().eq("order_id",orderId).orderBy("create_date",false));
