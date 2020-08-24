@@ -292,10 +292,15 @@ public class Order extends DataEntity<Long> {
 	public String getMoney() {
 		try {
 			if (StringUtils.isBlank(money)){
+				if(this.achPrice==null){
+					achPrice=new BigDecimal(0.00);
+				}
+				if(this.discountPrice==null){
+					discountPrice=new BigDecimal(0.00);
+				}
 				return achPrice.subtract(discountPrice).abs().toString();
 			}
 		}catch (Exception e){
-
 		}
 		return null;
 	}
@@ -702,7 +707,7 @@ public class Order extends DataEntity<Long> {
 	public String getStatusPage() {
 		switch (this.status) {
 			case INIT:
-				statusPage = "待接单";
+				statusPage = "待处理";
 				break;
 			case COMPLETE:
 				statusPage = "已完成";

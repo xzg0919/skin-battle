@@ -269,7 +269,7 @@ public interface OrderService extends IService<Order> {
 	 * @return
 	 */
 	@DS("slave")
-	List<Map<String,Object>> outOrderExcel(Integer companyId, String type,String linkMan, String startTime, String endTime,String recyclerName);
+	List<Map<String,Object>> outOrderExcel(Integer companyId, String type, String startTime, String endTime,String recyclerName);
 
 	Object savefiveKgOrder(OrderBean orderBean);
 
@@ -397,7 +397,13 @@ public interface OrderService extends IService<Order> {
 	 * added by michael_wang
 	 */
 	@DS("slave")
-	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime,String recyclerName,String title,String linkMan);
+	List<Map<String,Object>> orderDetail4HorseHold(Integer companyId,String startTime, String endTime,String recyclerName,String title);
+	@DS("slave")
+	List<Order> getOrderListss(Integer companyId,String orderNo,String linkMan,String recyclerName,String startTime, String endTime,String title);
+	@DS("slave")
+	Map<String, Object> select1Or4Map(Long id);
+	@DS("slave")
+	List<Map<String,Object>>select2Or3Map(Long id);
 	@DS("slave")
 	Object getReyclersServiceAbility(OrderBean orderBean,Integer companyId);
 	@DS("slave")

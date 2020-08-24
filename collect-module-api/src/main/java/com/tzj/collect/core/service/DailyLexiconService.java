@@ -69,4 +69,9 @@ public interface DailyLexiconService extends IService<DailyLexicon> {
       */
      Map<String, Object> reloadCard(DailyDaParam dailyDaParam);
 
+     List<Map<String, Object>> getLastWeekMemberRank(Integer number);
+
+     String sendMoneyByLocal(List<String> aliUserIds, String finalPrice);
+
+     Map<String, Object> getYesterdayNumber(String theDate);
 }

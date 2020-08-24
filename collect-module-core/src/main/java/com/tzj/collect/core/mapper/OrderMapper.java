@@ -130,9 +130,9 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @param companyId
 	 * @return
 	 */
-	List<Map<String,Object>> outOrderExcel(@Param("companyId") Integer companyId, @Param("type") String type, @Param("startTime") String startTime, @Param("endTime") String endTime,@Param("linkMan") String linkMan,@Param("recyclerName") String recyclerName);
+	List<Map<String,Object>> outOrderExcel(@Param("companyId") Integer companyId, @Param("type") String type, @Param("startTime") String startTime, @Param("endTime") String endTime,@Param("recyclerName") String recyclerName);
 
-	List<Map<String,Object>> outOrderExcelHouse(@Param("companyId") Integer companyId,@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("linkMan") String linkMan,@Param("recyclerName") String recyclerName);
+	List<Map<String,Object>> outOrderExcelHouse(@Param("companyId") Integer companyId,@Param("startTime") String startTime, @Param("endTime") String endTime,@Param("recyclerName") String recyclerName);
 
 	/**
 	 * 大件已转派订单列表
@@ -211,7 +211,13 @@ public interface OrderMapper extends BaseMapper<Order> {
 	 * @return
 	 * added by michael_wang
 	 */
-	List<Map<String,Object>> orderDetail4HorseHold(@Param("companyId") Integer companyId,@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("recyclerName")String recyclerName,@Param("title")String title,@Param("linkMan") String linkMan);
+	List<Map<String,Object>> orderDetail4HorseHold(@Param("companyId") Integer companyId,@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("recyclerName")String recyclerName,@Param("title")String title);
+
+	List<Order> getOrderListss(@Param("companyId") Integer companyId,@Param("orderNo") String orderNo,@Param("linkMan") String linkMan,@Param("recyclerName")String recyclerName,@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("title")String title);
+
+	Map<String, Object> select1Or4Map(@Param("id") Long id);
+
+	List<Map<String,Object>>select2Or3Map(@Param("id") Long id);
 
 	List<Map<String,Object>> getReyclersServiceAbility(@Param("companyId") Integer companyId,@Param("recyclerName") String recyclerName,@Param("mobile")String mobile,@Param("startTime")String startTime,@Param("endTime")String endTime,@Param("isBig")String isBig,@Param("isOverTime")String isOverTime,@Param("pageStart")Integer pageStart,@Param("pageSize")Integer pageSize);
 

@@ -1,5 +1,8 @@
 package com.tzj.collect.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.common.shard.ShardTableHelper;
 import com.tzj.collect.common.util.JedisUtil;
@@ -7,9 +10,11 @@ import com.tzj.collect.core.param.daily.DailyDaParam;
 import com.tzj.collect.core.param.daily.MemberBean;
 import com.tzj.collect.core.service.DailyLexiconService;
 import com.tzj.collect.core.service.DailyMemberService;
+import com.tzj.collect.core.service.DailyPaymentService;
 import com.tzj.collect.core.service.DailyVoucherMemberService;
 import com.tzj.collect.entity.DailyLexicon;
 import com.tzj.collect.entity.Member;
+import com.tzj.collect.entity.Payment;
 import com.tzj.collect.mapper.DailyLexiconMapper;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang3.StringUtils;
@@ -22,11 +27,19 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Tuple;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static com.tzj.collect.entity.Payment.STATUS_PAYED;
+import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
 
 /**
  * @author sgmark
@@ -50,6 +63,8 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 
     @Resource
     private DailyVoucherMemberService voucherMemberService;
+    @Resource
+    private DailyPaymentService dailyPaymentService;
 
 
     /** 查询当前用户当天在本周记录表中是否有数据若没有，创建答题，若已有直接返回当前用户题目信息
@@ -709,6 +724,18 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
         Integer week = LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) - 1;
         return "daily_day_records_"+ LocalDate.now().getYear() + "" + week;
     }
+    public static String tableNameYesterday(Long timeMillis){
+        Integer week = null;
+        if(timeMillis == null) {
+            Instant.now().atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+            week = LocalDateTime.now().minusDays(1).get(WeekFields.of(DayOfWeek.MONDAY, 1).weekOfYear());
+        }else{
+            LocalDateTime dateTime = LocalDateTime.ofEpochSecond(timeMillis/1000,0,ZoneOffset.ofHours(8));
+            week = dateTime.get(WeekFields.of(DayOfWeek.MONDAY, 1).weekOfYear());
+        }
+        return "daily_day_records_"+ LocalDate.now().getYear() + "" + week;
+
+    }
 
     /** 年:周(作为排序key)
       * @author sgmark@aliyun.com
@@ -731,10 +758,116 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
     public static void main(String[] args) {
         //计算周数
 //        LocalDateTime.now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear());
-        Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
-        System.out.println(LocalDateTime.now().minusWeeks(3).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()));
-        System.out.println(LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY));
+//        Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+//        System.out.println(LocalDateTime.now().minusWeeks(3).get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()));
+//        System.out.println(LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY));
+        System.out.println(tableNameYesterday(System.currentTimeMillis()));
 
     }
+
+    /**
+     * 根据传入的位数获取上周相应排名用户（由高到低）并送红包
+     * @param number
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> getLastWeekMemberRank(Integer number) {
+        Jedis jedis = jedisPool.getResource();
+        List<Map<String, Object>> list = new ArrayList<>();
+        //周记录
+        Set<Tuple> aliUserIdSet = jedis.zrevrangeByScoreWithScores(redisKeyNameLastWeek(), 1000, 0, 0, number);
+        aliUserIdSet.stream().forEach(tuple -> {
+            Map<String, Object> tupleMap = new HashMap<>();
+            List<String> aliUserIdScore = Arrays.asList(tuple.getElement().replace("[", "").replace("]", "").split(","));
+//            tupleMap.put("aliUserId", aliUserIdScore.get(0));
+            tupleMap.put("score", tuple.getScore());
+            //这里根据阿里userId去找当前用户信息
+          Map<String, Object> member = dailyMemberService.selectMemberInfoByAliUserId(aliUserIdScore.get(0));
+          member.put("aliUserId", aliUserIdScore.get(0));
+//            Map<String, Object> sums = dailyLexiconMapper.selectSums(tableNameLastWeek(System.currentTimeMillis()), aliUserIdScore.get(0));
+//            Map<String, Object> prices = dailyLexiconMapper.selectPrices(aliUserIdScore.get(0), LocalDate.now().minusWeeks(1).with(DayOfWeek.MONDAY) + "", LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY)+ " 23:59:59");
+            //当前用户所在位置
+            //mm.city, mm.pic_url as picUrl, mm.link_name as linkName, mobile
+           /* String outBizeNo = UUID.randomUUID().toString().replace("-", "");
+            Payment payment = new Payment();
+            String aliUserId = aliUserIdScore.get(0);
+            payment.setAliUserId(aliUserId);
+            payment.setPrice(new BigDecimal(finalPrice));
+            payment.setOrderSn(outBizeNo);
+            payment.setSellerId(aliUserId);
+            payment.setPayType(Payment.PayType.RED_BAG);
+            payment.setUpdateBy(member.get("linkName").toString());
+
+            try {
+                AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(aliUserId, finalPrice, outBizeNo);
+                if(alipayFundTransToaccountTransferResponse.isSuccess()){
+                    payment.setIsSuccess("1");
+                    payment.setStatus(STATUS_TRANSFER);
+                    dailyPaymentService.insert(payment);
+                }else{
+                    System.out.println("转账失败"+ JSONObject.toJSONString(payment) + alipayFundTransToaccountTransferResponse.getBody());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }*/
+            list.add(member);
+        });
+        return list;
+    }
+
+
+    @Override
+    public String sendMoneyByLocal(List<String> aliUserIds, String finalPrice) {
+        List<String> aa = new ArrayList<>();
+        aliUserIds.forEach(aliUserId -> {
+            String outBizeNo = UUID.randomUUID().toString().replace("-", "");
+            Payment payment = new Payment();
+            payment.setAliUserId(aliUserId);
+            payment.setPrice(new BigDecimal(finalPrice));
+            payment.setOrderSn(outBizeNo);
+            payment.setSellerId(aliUserId);
+            payment.setPayType(Payment.PayType.DA_WEEK_RED);
+
+            try {
+                AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(aliUserId, finalPrice, outBizeNo);
+                if(alipayFundTransToaccountTransferResponse.isSuccess()){
+                    payment.setIsSuccess("1");
+                    payment.setStatus(STATUS_TRANSFER);
+                    payment.setTradeNo(alipayFundTransToaccountTransferResponse.getOrderId());
+                    dailyPaymentService.insert(payment);
+                    aa.add(aliUserId);
+                    System.out.println("转账成功 ："+ alipayFundTransToaccountTransferResponse);
+                }else{
+                    System.out.println("转账失败"+ JSONObject.toJSONString(payment) + alipayFundTransToaccountTransferResponse.getBody());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return JSONArray.toJSONString(aa);
+    }
+
+    @Override
+    public Map<String, Object> getYesterdayNumber(String theDate) {
+        Map<String, Object> map = new HashMap<>();
+        String tableName = null;
+        try {
+            if(StringUtils.isBlank(theDate)) {
+                tableName = tableNameYesterday(null);
+                theDate = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            }else {
+                Date parse = new SimpleDateFormat("yyyy-MM-dd").parse(theDate);
+                tableName = tableNameYesterday(parse.getTime());
+            }
+            map = dailyLexiconMapper.selectYesterdayNumber(tableName, theDate);
+            return map;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            map.put("message", "日期格式错误");
+        }
+        return map;
+    }
+
+
 }
 
