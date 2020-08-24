@@ -18,4 +18,6 @@ public interface CompanyEquipmentService extends IService<CompanyEquipment> {
     List<Map<String, Object>> adminIotOrderList(AdminIotErrorBean adminIotBean);
 
     void insertIotImg(String topic, Object imgUrl);
+
+    Object uploadEquipmentCoordinates(Integer compannyId,String equipmentCode, Double equipmentLongitude, Double equipmentLatitude);
 }

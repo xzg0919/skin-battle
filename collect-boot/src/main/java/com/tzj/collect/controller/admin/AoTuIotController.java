@@ -3,6 +3,7 @@ package com.tzj.collect.controller.admin;
 
 import com.taobao.api.ApiException;
 import com.tzj.collect.common.utils.ToolUtils;
+import com.tzj.collect.core.service.CompanyEquipmentService;
 import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Member;
@@ -32,6 +33,8 @@ public class AoTuIotController {
     private MemberService memberService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private CompanyEquipmentService companyEquipmentService;
 
     @RequestMapping("/memberLogin")
     public Object memberLogin(HttpServletRequest request,User user){
@@ -63,7 +66,7 @@ public class AoTuIotController {
 
     }
     @RequestMapping("/submitWeight")
-    public Object uploadCategoryByAoTu(HttpServletRequest request,User user){
+    public Object submitWeight(HttpServletRequest request,User user){
         String aliUserId = null;
         try{
             String key = CipherTools.initKey(ALI_API_TOKEN_CYPTO_KEY);
@@ -75,6 +78,19 @@ public class AoTuIotController {
         }
         return orderService.uploadCategoryByAoTu(aliUserId,user.getEquipmentCode(),User.getCategoryNameById(user.getRubbishId()),user.getRubbishWeight());
     }
+    @RequestMapping("/upLoadEquipmentCoordinates")
+    public Object uploadEquipmentCoordinates(HttpServletRequest request,User user){
+        Map<String, String> resultMap = new HashMap<>();
+        try{
+            companyEquipmentService.uploadEquipmentCoordinates(1,user.getEquipmentCode(),user.getEquipmentLongitude(),user.getEquipmentLatitude());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        resultMap.put("respCode","0");
+        resultMap.put("respInfo",null);
+        return resultMap;
+    }
+
     public Map<String,String> getRequestMap(HttpServletRequest request){
         Map<String, String> params = new HashMap<>();
         Map requestParams = request.getParameterMap();
@@ -104,6 +120,8 @@ class User{
     private String equipmentCode;
     private Integer rubbishId;
     private Double rubbishWeight;
+    private Double equipmentLongitude;
+    private Double equipmentLatitude;
 
     public static String getCategoryNameById(Integer categoryId){
         String categoryName = null;

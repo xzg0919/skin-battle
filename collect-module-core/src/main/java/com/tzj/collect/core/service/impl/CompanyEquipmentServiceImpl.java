@@ -3,12 +3,17 @@ package com.tzj.collect.core.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.core.mapper.CompanyEquipmentMapper;
 import com.tzj.collect.core.param.iot.AdminIotErrorBean;
 import com.tzj.collect.core.service.CompanyEquipmentService;
+import com.tzj.collect.core.service.EquipmentLocationListService;
+import com.tzj.collect.core.service.MapService;
 import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.collect.entity.EquipmentErrorList;
+import com.tzj.collect.entity.EquipmentLocationList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +36,10 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
     private CompanyEquipmentMapper companyEquipmentMapper;
     @Resource
     private MemberService memberService;
+    @Autowired
+    private MapService mapService;
+    @Autowired
+    private EquipmentLocationListService equipmentLocationListService;
 
     /**
      * 查询iot设备订单数人数统计
@@ -94,6 +103,44 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
     @Transactional(readOnly = false)
     public void insertIotImg(String topic, Object imgUrl) {
         companyEquipmentMapper.insertIotImg(topic, imgUrl);
+    }
+
+    @Override
+    @Transactional
+    public Object uploadEquipmentCoordinates(Integer companyId,String equipmentCode, Double equipmentLongitude, Double equipmentLatitude) {
+        CompanyEquipment companyEquipment = this.selectOne(new EntityWrapper<CompanyEquipment>().eq("del_flag", 0).eq("hardware_code", equipmentCode));
+        if (null == companyEquipment){
+            companyEquipment = new CompanyEquipment();
+            companyEquipment.setEquipmentCode(equipmentCode);
+            companyEquipment.setCompanyId(companyId.longValue());
+            companyEquipment.setHardwareCode(equipmentCode);
+        }
+        companyEquipment.setLongitude(equipmentLongitude);
+        companyEquipment.setLatitude(equipmentLatitude);
+        AmapResult result = null;
+        try {
+            result = mapService.getAmap(equipmentLongitude + "," +equipmentLatitude);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        companyEquipment.setAddress(result.getAddress());
+        this.insertOrUpdate(companyEquipment);
+        //上传定位（保存最新10条记录）
+        EquipmentLocationList equipmentLocationList = new EquipmentLocationList();
+        equipmentLocationList.setEquipmentCode(equipmentCode);
+        equipmentLocationList.setLatitude(equipmentLatitude.toString());
+        equipmentLocationList.setLongitude(equipmentLongitude.toString());
+        equipmentLocationList.setLocation(result.getAddress());
+        equipmentLocationListService.insert(equipmentLocationList);
+        //只保留最新10条
+        Integer equipmentLocationCount = equipmentLocationListService.selectCount(new EntityWrapper<EquipmentLocationList>().eq("del_flag", 0).eq("equipment_code", equipmentCode));
+        if(equipmentLocationCount - 10 > 0){
+            List<EquipmentLocationList> equipmentLocationLists = equipmentLocationListService.selectList(new EntityWrapper<EquipmentLocationList>().eq("del_flag", 0).eq("equipment_code", equipmentCode).orderBy("id", true).last(" limit " + (equipmentLocationCount - 10)));
+            equipmentLocationLists.stream().forEach(locationList -> {
+                equipmentLocationListService.deleteById(locationList);
+            });
+        }
+        return "success";
     }
 
 }
