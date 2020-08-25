@@ -4762,6 +4762,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setPrice(BigDecimal.ZERO);
         order.setUnit("kg");
         order.setQty(9999);
+        order.setCompanyId(1);
         order.setCompleteDate(new Date());
         order.setIsEvaluated("0");
         order.setLevel("0");
