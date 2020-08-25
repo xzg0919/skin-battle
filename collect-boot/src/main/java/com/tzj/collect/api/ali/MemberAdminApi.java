@@ -2,7 +2,9 @@ package com.tzj.collect.api.ali;
 
 
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.param.picc.PiccInsurancePolicyBean;
+import com.tzj.collect.core.service.CompanyEquipmentService;
 import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.core.service.PiccInsurancePolicyService;
@@ -24,7 +26,7 @@ public class MemberAdminApi {
     @Autowired
     private PiccInsurancePolicyService piccInsurancePolicyService;
     @Autowired
-    private OrderService orderService;
+    private CompanyEquipmentService companyEquipmentService;
 
 
 
@@ -65,5 +67,18 @@ public class MemberAdminApi {
     public Object insuranceDetal(PiccInsurancePolicyBean piccInsurancePolicyBean) {
         Member member = MemberUtils.getMember();
         return piccInsurancePolicyService.insuranceDetal(member.getAliUserId(),Integer.parseInt(piccInsurancePolicyBean.getId()));
+    }
+
+    /**获取用户周围的iot设备
+     * @author 王灿
+     * 根据
+     * @param
+     */
+    @Api(name = "admin.getIotList", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Object getIotList(MemberBean memberBean) {
+        Member member = MemberUtils.getMember();
+        return companyEquipmentService.getIotList(member.getAliUserId(),memberBean.getLng(),memberBean.getLat(),memberBean.getPageBean());
     }
 }

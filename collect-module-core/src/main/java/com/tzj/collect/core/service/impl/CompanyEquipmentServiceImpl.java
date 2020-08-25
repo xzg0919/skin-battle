@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.core.mapper.CompanyEquipmentMapper;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.iot.AdminIotErrorBean;
 import com.tzj.collect.core.service.CompanyEquipmentService;
 import com.tzj.collect.core.service.EquipmentLocationListService;
@@ -141,6 +142,21 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
             });
         }
         return "success";
+    }
+
+    @Override
+    public Object getIotList(String aliUserId, Double lng, Double lat, PageBean pageBean) {
+        if (null == pageBean){
+            pageBean = new PageBean();
+        }
+        Integer pageStart = (pageBean.getPageNumber() - 1)*pageBean.getPageSize();
+        Map<String,Object> resultMap = new HashMap<>();
+        List<CompanyEquipment> iotList = baseMapper.getIotList(lng, lat,pageStart,pageBean.getPageSize());
+        int count = this.selectCount(new EntityWrapper<CompanyEquipment>().eq("del_flag", "0").eq("is_activated","1"));
+        resultMap.put("iotList",iotList);
+        resultMap.put("count",count);
+        resultMap.put("pageNum",pageBean.getPageNumber());
+        return resultMap;
     }
 
 }

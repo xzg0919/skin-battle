@@ -28,4 +28,7 @@ public interface CompanyEquipmentMapper extends BaseMapper<CompanyEquipment> {
     List<Map<String, Object>> adminIotOrderList(@Param("equipmentCode")String equipmentCode, @Param("companyId")String companyId, @Param("startTime")String startTime, @Param("endTime")String endTime);
 
     void insertIotImg(@Param("equipmentCode")String topic,@Param("imgUrl")Object imgUrl);
+
+    List<CompanyEquipment> getIotList(@Param("lng")Double lng,@Param("lat") Double lat,@Param("pageStart")Integer pageStart,@Param("pageSize")Integer pageSize);
+
 }

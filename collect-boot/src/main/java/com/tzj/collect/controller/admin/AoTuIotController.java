@@ -74,7 +74,10 @@ public class AoTuIotController {
             Claims claims = JwtUtils.getClaimByToken(decodeToken, ALI_API_TOKEN_SECRET_KEY);
             aliUserId = claims.getSubject();
         }catch (Exception e){
-            throw new RuntimeException("token解析异常");
+            Map<String,Object> resultMap = new HashMap<>();
+            resultMap.put("respCode","1");
+            resultMap.put("respInfo",0);
+            return resultMap;
         }
         return orderService.uploadCategoryByAoTu(aliUserId,user.getEquipmentCode(),User.getCategoryNameById(user.getRubbishId()),user.getRubbishWeight());
     }

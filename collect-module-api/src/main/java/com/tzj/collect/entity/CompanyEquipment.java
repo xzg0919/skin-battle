@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IEnum;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -49,6 +52,10 @@ public class CompanyEquipment extends  DataEntity<Long> {
 
     private String  workHours;//设备工作时间
 
+    private String  workWeek;//设备工作周
+    @TableField(exist = false)
+    private String  workWeeks;//设备工作周
+
     private Date enablingTime;//设备启用时间
 
     private  String isActivated;//是否已激活的（默认未激活0）
@@ -62,6 +69,8 @@ public class CompanyEquipment extends  DataEntity<Long> {
     private double currentValue;//满溢当前值
 
     private Integer isClose;//柜门是否打开（0关闭 1打开）
+    @TableField(exist = false)
+    private Integer distance;//距离
     /**
      * 设备动作指令
      * @author: sgmark@aliyun.com
@@ -117,4 +126,34 @@ public class CompanyEquipment extends  DataEntity<Long> {
         }
     }
 
+    public String getWorkWeeks() {
+        if (StringUtils.isBlank(workWeek)){
+            return workWeeks;
+        }
+        final String[] s = {""};
+        String[] split = workWeek.split(",");
+        Arrays.stream(split).forEach(week -> {
+            switch (week){
+                case "1": s[0] += "星期一/";
+                    break;
+                case "2": s[0] += "星期二/";
+                    break;
+                case "3": s[0] += "星期三/";
+                    break;
+                case "4": s[0] += "星期四/";
+                    break;
+                case "5": s[0] += "星期无/";
+                    break;
+                case "6": s[0] += "星期六/";
+                    break;
+                case "7": s[0] += "星期天";
+                    break;
+            }
+        });
+        return s[0];
+    }
+
+    public void setWorkWeeks(String workWeeks) {
+        this.workWeeks = workWeeks;
+    }
 }

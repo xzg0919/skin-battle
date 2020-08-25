@@ -72,6 +72,7 @@ public class EquipmentAppTokenApi {
                 TokenBean tokenBean = new TokenBean();
                 tokenBean.setExpire(EQUIPMENT_APP_API_EXPRIRE);
                 tokenBean.setToken(securityToken);
+                tokenBean.setCompanyEquipment(companyEquipment);
                 return tokenBean;
             }
 
@@ -89,6 +90,7 @@ public class EquipmentAppTokenApi {
                 TokenBean tokenBean = new TokenBean();
                 tokenBean.setExpire(EQUIPMENT_APP_API_EXPRIRE);
                 tokenBean.setToken(securityToken);
+                tokenBean.setCompanyEquipment(companyEquipment);
                 return tokenBean;
             }else{
                 throw new ApiException("验证码错误");
@@ -115,6 +117,24 @@ public class EquipmentAppTokenApi {
         tokenBean.setExpire(EQUIPMENT_APP_API_EXPRIRE);
         tokenBean.setToken(securityToken);
         return tokenBean;
+    }
+
+    /**
+     * 得到code
+     * @return
+     */
+    @Api(name = "equipment.openTheDoor", version = "1.0")
+    @AuthIgnore
+    public String openTheDoor(EquipmentParamBean equipmentParamBean) {
+        //根据设备硬件号进行登录
+        CompanyEquipment companyEquipment = companyEquipmentService.selectOne(new EntityWrapper<CompanyEquipment>().eq("hardware_code", equipmentParamBean.getHardwareCode()).eq("is_activated", "1").eq("del_flag", 0));
+        if(companyEquipment==null){
+            throw new ApiException("设备未激活");
+        }
+        if(!messageService.validMessage(companyEquipment.getActivateTel(),equipmentParamBean.getCaptcha())) {
+            throw new ApiException("密码不正确");
+        }
+        return "success";
     }
 
 }
