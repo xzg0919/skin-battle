@@ -23,4 +23,6 @@ public interface CompanyEquipmentService extends IService<CompanyEquipment> {
     Object uploadEquipmentCoordinates(Integer compannyId,String equipmentCode, Double equipmentLongitude, Double equipmentLatitude);
 
     Object getIotList(String aliUserId, Double lng, Double lat, PageBean pageBean);
+
+    Object getQRCodeUrl(String equipmentCode);
 }

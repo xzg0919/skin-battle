@@ -25,28 +25,25 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("2088702358089923", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088212854989662", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
 //                String token= JwtUtils.generateToken(userId, ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
                 //String api="http://shoubeics.mayishoubei.com/ali/api";
-                String api="http://localhost:9090/ali/api";
+                String api="http://shoubeics.mayishoubei.com/ali/api";
 
-                MemberBean memberBean = new MemberBean();
-                memberBean.setLng(121.5595040000);
-                memberBean.setLat(31.2819030000);
-                memberBean.setPageBean(new PageBean());
-
+                IotPostParamBean iotPostParamBean = new IotPostParamBean();
+                iotPostParamBean.setCabinetNo("wangcan");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name", "admin.getIotList");
+                param.put("name", "iot.scan");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
                 param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
                 param.put("token", securityToken);
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data", memberBean);
+                param.put("data", iotPostParamBean);
 
                 String jsonStr= JSON.toJSONString(param);
                 System.out.println(jsonStr);

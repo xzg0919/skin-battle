@@ -2,10 +2,14 @@ package com.tzj.collect.controller.admin;
 
 
 import com.taobao.api.ApiException;
+import com.tzj.collect.common.util.CompanyEquipmentUtils;
 import com.tzj.collect.common.utils.ToolUtils;
+import com.tzj.collect.core.param.ali.UserBean;
+import com.tzj.collect.core.param.iot.IotCompanyResult;
 import com.tzj.collect.core.service.CompanyEquipmentService;
 import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.collect.entity.Member;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.common.utils.security.CipherTools;
@@ -16,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
 
@@ -37,7 +43,7 @@ public class AoTuIotController {
     private CompanyEquipmentService companyEquipmentService;
 
     @RequestMapping("/memberLogin")
-    public Object memberLogin(HttpServletRequest request,User user){
+    public Object memberLogin(HttpServletRequest request,UserBean user){
         Map<String,Object> resultMap = new HashMap<>();
         String aliUserId = null;
         try {
@@ -66,7 +72,7 @@ public class AoTuIotController {
 
     }
     @RequestMapping("/submitWeight")
-    public Object submitWeight(HttpServletRequest request,User user){
+    public Object submitWeight(HttpServletRequest request,UserBean user){
         String aliUserId = null;
         try{
             String key = CipherTools.initKey(ALI_API_TOKEN_CYPTO_KEY);
@@ -79,10 +85,15 @@ public class AoTuIotController {
             resultMap.put("respInfo",0);
             return resultMap;
         }
-        return orderService.uploadCategoryByAoTu(aliUserId,user.getEquipmentCode(),User.getCategoryNameById(user.getRubbishId()),user.getRubbishWeight());
+        return orderService.uploadCategoryByAoTu(aliUserId,user.getEquipmentCode(),UserBean.getCategoryNameById(user.getRubbishId()),user.getRubbishWeight());
     }
+    @RequestMapping("/getQRCodeUrl")
+    public Object getQRCodeUrl(HttpServletRequest request, UserBean user){
+        return companyEquipmentService.getQRCodeUrl(user.getEquipmentCode());
+    }
+
     @RequestMapping("/upLoadEquipmentCoordinates")
-    public Object uploadEquipmentCoordinates(HttpServletRequest request,User user){
+    public Object uploadEquipmentCoordinates(HttpServletRequest request,UserBean user){
         Map<String, String> resultMap = new HashMap<>();
         try{
             companyEquipmentService.uploadEquipmentCoordinates(1,user.getEquipmentCode(),user.getEquipmentLongitude(),user.getEquipmentLatitude());
@@ -110,35 +121,6 @@ public class AoTuIotController {
             params.put(name, valueStr);
         }
         return params;
-    }
-
-}
-@Data
-class User{
-    private String userImg ;
-    private String userPhone;
-    private String userName;
-    private String token;
-    private String qrCode;
-    private String equipmentCode;
-    private Integer rubbishId;
-    private Double rubbishWeight;
-    private Double equipmentLongitude;
-    private Double equipmentLatitude;
-
-    public static String getCategoryNameById(Integer categoryId){
-        String categoryName = null;
-        switch (categoryId){
-            case 101:   categoryName = "废纸";
-                break;
-            case 102:   categoryName = "废塑料";
-                break;
-            case 103:   categoryName = "废纺织品";
-                break;
-            case 104:   categoryName = "废金属";
-                break;
-        }
-        return categoryName;
     }
 
 }

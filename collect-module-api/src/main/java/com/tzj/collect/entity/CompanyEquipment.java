@@ -68,6 +68,8 @@ public class CompanyEquipment extends  DataEntity<Long> {
 
     private double currentValue;//满溢当前值
 
+    private String equipmentFrom;//设备来源  0自己的   1奥图的
+
     private Integer isClose;//柜门是否打开（0关闭 1打开）
     @TableField(exist = false)
     private Integer distance;//距离
