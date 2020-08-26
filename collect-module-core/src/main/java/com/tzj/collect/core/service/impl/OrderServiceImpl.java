@@ -1645,13 +1645,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("OrderEvaluation", orderEvaluation);         //评价信息
 		resultMap.put("orderCancleExamine", orderCancleExamine);
 		if(initCount!=0){
-            resultMap.put("initComplaint", "催派" + initCount);
+            resultMap.put("initComplaint", "催派" + initCount + "次");
         }
         if(TosendCount!=0){
-            resultMap.put("TosendCount", "催接" + TosendCount);
+            resultMap.put("TosendCount", "催接" + TosendCount + "次");
         }
         if(AlreadyCount!=0){
-            resultMap.put("AlreadyCount", "催收" + AlreadyCount);
+            resultMap.put("AlreadyCount", "催收" + AlreadyCount + "次");
         }
 		//System.out.println(11111);
 		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
