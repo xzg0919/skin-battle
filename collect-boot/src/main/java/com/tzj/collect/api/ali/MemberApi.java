@@ -1,5 +1,7 @@
 package com.tzj.collect.api.ali;
 
+
+import com.tzj.collect.common.util.DesUtil;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.param.ali.OrderBean;
@@ -9,9 +11,13 @@ import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +36,8 @@ public class MemberApi {
 	private com.tzj.collect.core.service.MessageService MessageService;
 	@Resource
 	private MemberAliAccountService memberAliAccountService;
+
+	private static Logger logger = LoggerFactory.getLogger(MemberApi.class);
 
 	/**
      * 根据用户授权返回的authCode,解析用户的数据
@@ -211,5 +219,52 @@ public class MemberApi {
 		String aliUserId = MemberUtils.getMember().getAliUserId();
 		return memberAliAccountService.getAliAccountList(aliUserId);
 
+	}
+	/**
+	 * 招行解析用户信息
+	 */
+	@Api(name = "member.getMemberMessage", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public Object getMemberMessage(MemberBean memberBean) throws Exception {
+		if(StringUtils.isBlank(memberBean.getMessage())){
+			throw new RuntimeException("参数不可为空");
+		}
+		String s = null;
+		try {
+			s = DesUtil.decrypt(memberBean.getMessage());   //解析用户信息
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("用户信息解析失败");
+		}
+		if( null!=s){
+			JSONObject json = new JSONObject(s);
+			//转码拼接字符串，api签名验证
+			String t = new String(Base64.getEncoder().encode(s.getBytes()));
+			String strBody = json.get("verify").toString();
+			String signData=t+"&signature="+strBody;
+			boolean flag = false;
+			flag = DesUtil.VerifySignature(signData,"D:/signature/java/public.key");
+			/*return json;*/
+			//将解析的客户信息存入会员表
+			if(flag==true){
+				Member member = new Member();
+				String name = json.getJSONObject("data").getJSONObject("customerInfo").get("realName").toString();
+				String tel  = json.getJSONObject("data").getJSONObject("customerInfo").get("mobile2").toString();
+				if(name!=null){
+					member.setLinkName(name);
+				}
+				if(tel!=null){
+					member.setMobile(tel);
+				}
+				if(null!=member.getLinkName()||null!=member.getMobile()){
+					memberService.insert(member);
+					return true;
+				}
+			}else{
+				logger.info("验证签名为false");
+			}
+		}
+		return false;
 	}
 }
