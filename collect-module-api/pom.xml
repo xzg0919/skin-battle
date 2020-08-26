@@ -39,7 +39,6 @@
             <artifactId>hufm-module-common</artifactId>
         </dependency>
         <!-- API 框架 -->
-
         <dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
@@ -83,5 +82,35 @@
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>tzj.auth</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+            <compilerArgs>
+                <arg>-XDignore.symbol.file</arg>
+            </compilerArgs>
+            <fork>true</fork>
+        </configuration>
+    </plugin>
+        </plugins>
+    </build>
 </project>
