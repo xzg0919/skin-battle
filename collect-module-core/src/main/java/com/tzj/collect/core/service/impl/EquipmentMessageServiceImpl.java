@@ -12,6 +12,7 @@ import com.tzj.collect.api.commom.constant.MQTTConst;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.amap.AmapConst;
 import com.tzj.collect.common.amap.AmapRegeoJson;
+import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.param.iot.EquipmentParamBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
@@ -73,6 +74,8 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
     private RecyclersService recyclersService;
     @Resource
     private MemberService memberService;
+    @Autowired
+    private MapService mapService;
     @Override
     @Transactional(readOnly = false)
     public void dealWithMessage(String topic,String message, MqttClient mqttClient) {
@@ -173,6 +176,11 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
                 this.creatIotOrderByMqtt(topic, message, mqttClient);
             }else if (CompanyEquipment.EquipmentAction.EquipmentActionCode.UPLOAD_LOCATION.getKey().equals(messageMap.get("code"))){
                 try {
+                    companyEquipment.setLongitude(Double.parseDouble(messageMap.get("longitude").toString()));
+                    companyEquipment.setLatitude(Double.parseDouble(messageMap.get("latitude").toString()));
+                    AmapResult result = mapService.getAmap(messageMap.get("longitude") + "," + messageMap.get("latitude"));
+                    companyEquipment.setAddress(result.getAddress());
+                    companyEquipmentService.updateById(companyEquipment);
                     //上传定位（保存最新10条记录）
                     EquipmentLocationList equipmentLocationList = new EquipmentLocationList();
                     equipmentLocationList.setEquipmentCode(topic);

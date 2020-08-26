@@ -253,7 +253,7 @@ public class Order extends DataEntity<Long> {
 
 	private String payType;//结算方式 0-卖钱 1-环保积分 2-能量
 
-	private String orderFrom = "0";//订单来源0-其他 1-定时定点  2闲鱼
+	private String orderFrom = "0";//订单来源0-其他 1-定时定点  2闲鱼  3奥图Iot订单
 
 	private String paymentType;//付款类型 0支付宝    1现金
 	@TableField(value = "company_point")

@@ -3391,7 +3391,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			if (null == digitalMap || digitalMap.isEmpty() ){
 				return null;
 			}
-		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")){
+		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.IOTORDER.getValue()+"").equals(order.getTitle().getValue()+"")){
 			houseList = orderItemAchService.selectItemSumAmount(Integer.parseInt(orderId));
 		}else {
 			return null;
@@ -3415,7 +3415,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			extInfo.add(orderExtInfo);
 			itemOrder.setExtInfo(extInfo);
 			orderItemList.add(itemOrder);
-		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")){
+		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.IOTORDER.getValue()+"").equals(order.getTitle().getValue()+"")){
 			for (Map<String, Object> itemMap:houseList) {
 				if (null==itemMap.get("aliItemType")){
 					continue;
@@ -4753,4 +4753,78 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
             return resultMap;
     }
+
+    @Override
+    @Transactional
+    public Object uploadCategoryByAoTu(String aliUserId, String equipmentCode, String categoryName, Double rubbishWeight) {
+        Map<String,Object> resultMap = new HashMap<>();
+        Member member = memberService.selectMemberByAliUserId(aliUserId);
+        Order order = new Order();
+        order.setStatus(OrderType.COMPLETE);
+        //随机生成订单号
+        String orderNo = "IOT"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        order.setOrderNo(orderNo);
+        order.setTel(member.getMobile() == null ? "" : member.getMobile());
+        order.setPrice(BigDecimal.ZERO);
+        order.setUnit("kg");
+        order.setQty(9999);
+        order.setCompanyId(1);
+        order.setCompleteDate(new Date());
+        order.setIsEvaluated("0");
+        order.setLevel("0");
+        order.setLinkMan(member.getLinkName());
+        order.setAliUserId(member.getAliUserId());
+        order.setIsCash("0");
+        order.setIsDistributed("0");
+        order.setAreaId(0);
+        order.setIsMysl("1");
+        order.setTitle(Order.TitleType.IOTORDER);
+        order.setAchPrice(BigDecimal.ZERO);
+        order.setIsScan("0");
+        order.setCompleteDate(new Date());
+        order.setIotEquipmentCode(equipmentCode);
+        order.setOrderFrom("3");
+        orderService.insert(order);
+        //得到用户的垃圾总量
+        Category category = categoryService.selectOne(new EntityWrapper<Category>().eq("name_",categoryName));
+        Double amount = 0.0;
+        if (null==category){
+            resultMap.put("respCode","0");
+            resultMap.put("respInfo",0);
+        }else {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrderId(order.getId().intValue());
+            orderItem.setCategoryName(categoryName);
+            orderItem.setParentName(categoryName);
+            orderItem.setAmount(rubbishWeight);
+            orderItem.setCategoryId(category.getId().intValue());
+            orderItem.setParentId(category.getParentId());
+            orderItem.setParentIds(category.getParentIds());
+            orderItem.setUnit(category.getUnit());
+            orderItem.setPrice(0);
+            orderItemService.insert(orderItem);
+            OrderItemAch orderItemAch = new OrderItemAch();
+            orderItemAch.setOrderId(order.getId().intValue());
+            orderItemAch.setCategoryName(categoryName);
+            orderItemAch.setParentName(categoryName);
+            orderItemAch.setAmount(rubbishWeight);
+            orderItemAch.setCategoryId(category.getId().intValue());
+            orderItemAch.setParentId(category.getParentId());
+            orderItemAch.setParentIds(category.getParentIds());
+            orderItemAch.setUnit(category.getUnit());
+            orderItemAch.setPrice(0);
+            orderItemAchService.insert(orderItemAch);
+            amount = rubbishWeight*category.getGreenCount();
+            order.setGreenCount(amount);
+            this.updateById(order);
+            //给用户增加积分
+            this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), amount,"定点回收物");
+            //给用户增加蚂蚁能量
+            orderService.myslOrderData(order.getId().toString());
+            resultMap.put("respCode","0");
+            resultMap.put("respInfo",amount);
+        }
+        return resultMap;
+    }
+
 }

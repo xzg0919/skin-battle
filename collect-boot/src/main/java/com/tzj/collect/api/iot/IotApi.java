@@ -2,9 +2,11 @@ package com.tzj.collect.api.iot;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.common.async.AsyncRedis;
 import com.tzj.collect.api.iot.localmap.LatchMap;
 import com.tzj.collect.api.iot.messagecode.MessageCode;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.core.param.iot.IotCompanyResult;
@@ -57,6 +59,8 @@ public class IotApi {
     @Resource
     private EquipmentErrorCodeService equipmentErrorCodeService;
     @Resource
+    private CompanyEquipmentService companyEquipmentService;
+    @Resource
     private EquipmentErrorListService equipmentErrorListService;
     @Resource
     private FileUploadServiceImpl fileUploadServiceImpl;
@@ -64,6 +68,8 @@ public class IotApi {
     private EquipmentMessageService equipmentMessageService;
     @Resource(name = "mqttClient")
     private MqttClient mqttClient;
+    @Resource
+    private RedisUtil redisUtil;
 
 
     public static AtomicBoolean flag = new AtomicBoolean(true);//保证当前线程能执行
@@ -125,6 +131,14 @@ public class IotApi {
                 equipmentCode = equipmentCode.substring(0, equipmentCode.indexOf("@"));
             }
             iotCompanyResult = companyService.selectIotUrlByEquipmentCode(equipmentCode);
+            //检查是否是奥图的机器
+            CompanyEquipment companyEquipment = companyEquipmentService.selectOne(new EntityWrapper<CompanyEquipment>().eq("equipment_from", "1").eq("hardware_code",equipmentCode));
+            if (null!=companyEquipment){
+                redisUtil.set(equipmentCode,member,30);
+                map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
+                map.put("status", MessageCode.SUCCESS_OPEN.getKey());
+                return map;
+            }
             if (null == iotCompanyResult){
                 map.put("msg", MessageCode.ERROR_QRCODE.getValue());
                 map.put("status", MessageCode.ERROR_QRCODE.getKey());
@@ -179,34 +193,35 @@ public class IotApi {
                 map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
                 map.put("status", MessageCode.SUCCESS_OPEN.getKey());
                 return map;
-            }
-            try {
-                response =  FastHttpClient.get().url(iotUrl).build().execute();
-            }catch (Exception e){
-                map.put("msg", "连接超时");
-                map.put("status", MessageCode.STOPPAGE_ERROR.getKey());
-                return map;
-            }
-            String resultJson=response.body().string();
-            Object object = JSON.parseObject(resultJson);
-//            map.put("status", ((JSONObject) object).get("errorcode"));
-            if (MessageCode.SUCCESS_OPEN.getKey().equals(((JSONObject) object).get("errorcode"))){
-                map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
-                map.put("status", MessageCode.SUCCESS_OPEN.getKey());
-            }else if (MessageCode.EMPLOY_ERROR.getKey().equals(((JSONObject) object).get("errorcode"))){
-                map.put("msg", MessageCode.EMPLOY_ERROR.getValue());
-                map.put("status", MessageCode.EMPLOY_ERROR.getKey());
-            }else if (MessageCode.STOPPAGE_ERROR.getKey().equals(((JSONObject) object).get("errorcode"))){
-                map.put("msg", MessageCode.STOPPAGE_ERROR.getValue());
-                map.put("status", MessageCode.STOPPAGE_ERROR.getKey());
             }else {
-                map.put("msg", MessageCode.OTHERS_ERROR.getValue());
-                map.put("status", MessageCode.OTHERS_ERROR.getKey());
+                try {
+                    response =  FastHttpClient.get().url(iotUrl).build().execute();
+                }catch (Exception e){
+                    map.put("msg", "连接超时");
+                    map.put("status", MessageCode.STOPPAGE_ERROR.getKey());
+                    return map;
+                }
+                String resultJson=response.body().string();
+                Object object = JSON.parseObject(resultJson);
+//            map.put("status", ((JSONObject) object).get("errorcode"));
+                if (MessageCode.SUCCESS_OPEN.getKey().equals(((JSONObject) object).get("errorcode"))){
+                    map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
+                    map.put("status", MessageCode.SUCCESS_OPEN.getKey());
+                }else if (MessageCode.EMPLOY_ERROR.getKey().equals(((JSONObject) object).get("errorcode"))){
+                    map.put("msg", MessageCode.EMPLOY_ERROR.getValue());
+                    map.put("status", MessageCode.EMPLOY_ERROR.getKey());
+                }else if (MessageCode.STOPPAGE_ERROR.getKey().equals(((JSONObject) object).get("errorcode"))){
+                    map.put("msg", MessageCode.STOPPAGE_ERROR.getValue());
+                    map.put("status", MessageCode.STOPPAGE_ERROR.getKey());
+                }else {
+                    map.put("msg", MessageCode.OTHERS_ERROR.getValue());
+                    map.put("status", MessageCode.OTHERS_ERROR.getKey());
+                }
+                map.put("errorMsg", ((JSONObject) object).get("errormsg"));
+                map.put("APIName", ((JSONObject) object).get("APIName"));
+                map.put("remark", ((JSONObject) object).get("remark"));
+                System.out.println(resultJson);
             }
-            map.put("errorMsg", ((JSONObject) object).get("errormsg"));
-            map.put("APIName", ((JSONObject) object).get("APIName"));
-            map.put("remark", ((JSONObject) object).get("remark"));
-            System.out.println(resultJson);
         }
         return map;
     }

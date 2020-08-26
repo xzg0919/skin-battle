@@ -27,7 +27,7 @@ public class tests {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        String token= JwtUtils.generateToken("14", EQUIPMENT_APP_API_EXPRIRE,EQUIPMENT_APP_API_TOKEN_SECRET_KEY);
+        String token= JwtUtils.generateToken("12", EQUIPMENT_APP_API_EXPRIRE,EQUIPMENT_APP_API_TOKEN_SECRET_KEY);
         String securityToken=JwtUtils.generateEncryptToken(token,EQUIPMENT_APP_API_TOKEN_CYPTO_KEY);
         System.out.println("token是 : "+securityToken);
 
@@ -38,26 +38,27 @@ public class tests {
         String subjectStr = claims.getSubject();
         System.out.println("反向編譯 token是："+subjectStr);
 
-        String api="http://localhost:9006/equipment/iot/app/api";
+        String api="http://localhost:7070/equipment/iot/app/api";
 //                String api="http://localhost:9090/business/api";
 //
 
         EquipmentParamBean equipmentParamBean = new EquipmentParamBean();
-        equipmentParamBean.setHardwareCode("27a145e");
+        equipmentParamBean.setHardwareCode("SH0024");
+        equipmentParamBean.setCaptcha("226267");
         HashMap<String,Object> param=new HashMap<>();
-        param.put("name","equipment.message.getcode");
+        param.put("name","equipment.openTheDoor");
         param.put("version","1.0");
         param.put("format","json");
         param.put("app_key","app_id_8");
-        param.put("timestamp", "3480476680000");
-       // param.put("token", securityToken);
+        param.put("timestamp", Calendar.getInstance().getTimeInMillis());
+        param.put("token", securityToken);
         //param.put("sign","111");
         param.put("nonce", UUID.randomUUID().toString());
         param.put("data",equipmentParamBean);
 
         String jsonStr= JSON.toJSONString(param);
-        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"49a4b80ab9067f25370d4dcc343aafda");
-        param.put("sign","sign_key_55667788");
+        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_55667788");
+        param.put("sign",sign);
 
 
         System.out.println("请求的参数是 ："+JSON.toJSONString(param));

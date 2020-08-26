@@ -132,4 +132,34 @@
             );
 
     </insert>
+    <select id="getIotList" parameterType="Object" resultType="com.tzj.collect.entity.CompanyEquipment">
+        SELECT *,
+					ROUND(
+					6378.138 * 2 * ASIN(
+							SQRT(
+									POW(
+											SIN(
+													(
+															#{lat} * PI() / 180 - a.latitude * PI() / 180
+													) / 2
+											),
+											2
+									) + COS(#{lat} * PI() / 180) * COS(a.latitude * PI() / 180) * POW(
+											SIN(
+													(
+															 #{lng} * PI() / 180 -   a.Longitude * PI() / 180
+													) / 2
+											),
+											2
+									)
+							)
+					) * 1000
+				) AS distance
+			FROM sb_company_equipment a
+		WHERE
+			a.del_flag = '0'
+		AND a.is_activated = '1'
+		ORDER BY distance ASC
+		LIMIT #{pageStart},#{pageSize}
+    </select>
 </mapper>

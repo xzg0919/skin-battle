@@ -25,34 +25,25 @@ public class OrderTest {
          * @throws Exception
          */
         public static void main(String[] args) throws Exception {
-                String token= JwtUtils.generateToken("3020072915491038", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
+                String token= JwtUtils.generateToken("2088212854989662", ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
 //                String token= JwtUtils.generateToken(userId, ALI_API_EXPRIRE,ALI_API_TOKEN_SECRET_KEY);
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
                 //String api="http://shoubeics.mayishoubei.com/ali/api";
-                String api="http://localhost:8080/ali/api";
+                String api="http://shoubeics.mayishoubei.com/ali/api";
 
-                MapAddressBean mapAddressBean = new MapAddressBean();
-                mapAddressBean.setProvinceId(1);
-                mapAddressBean.setCityId(2);
-                mapAddressBean.setAreaId(3);
-                mapAddressBean.setStreetId(4);
-                mapAddressBean.setId("163451");
-                mapAddressBean.setIsSelected("1");
-                mapAddressBean.setUserName("王先生");
-                mapAddressBean.setTel("18375669651");
-                mapAddressBean.setAddress("伟业金景苑二村38栋201");
-
+                IotPostParamBean iotPostParamBean = new IotPostParamBean();
+                iotPostParamBean.setCabinetNo("wangcan");
 
                 HashMap<String,Object> param=new HashMap<>();
-                param.put("name", "memberAddress.saveMemberAddressByHand");
+                param.put("name", "iot.scan");
                 param.put("version","1.0");
                 param.put("format","json");
                 param.put("app_key","app_id_1");
                 param.put("timestamp",  Calendar.getInstance().getTimeInMillis());
                 param.put("token", securityToken);
                 param.put("nonce", UUID.randomUUID().toString());
-                param.put("data", mapAddressBean);
+                param.put("data", iotPostParamBean);
 
                 String jsonStr= JSON.toJSONString(param);
                 System.out.println(jsonStr);

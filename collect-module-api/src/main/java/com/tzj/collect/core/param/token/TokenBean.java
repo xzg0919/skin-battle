@@ -1,6 +1,7 @@
 package com.tzj.collect.core.param.token;
 
 
+import com.tzj.collect.entity.CompanyEquipment;
 import lombok.Data;
 
 /**
@@ -18,5 +19,7 @@ public class TokenBean {
     private String blueTooth;
 
     private String isAuth;//是否授权，0授权了，1没有授权
+
+    private CompanyEquipment companyEquipment;//是否授权，0授权了，1没有授权
 
 }

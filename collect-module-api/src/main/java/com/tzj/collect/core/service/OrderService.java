@@ -459,4 +459,6 @@ public interface OrderService extends IService<Order> {
 	Map<String,Object> dsddOrderDetail(Integer orderId);
 	@DS("slave")
 	Object getOrderDetailPrice(Integer id);
+	@DS("slave")
+    Object uploadCategoryByAoTu(String aliUserId, String equipmentCode, String categoryName, Double rubbishWeight);
 }

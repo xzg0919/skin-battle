@@ -3,6 +3,7 @@ package com.tzj.collect.core.service;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.param.iot.AdminIotErrorBean;
 import com.tzj.collect.entity.CompanyEquipment;
 
@@ -18,4 +19,10 @@ public interface CompanyEquipmentService extends IService<CompanyEquipment> {
     List<Map<String, Object>> adminIotOrderList(AdminIotErrorBean adminIotBean);
 
     void insertIotImg(String topic, Object imgUrl);
+
+    Object uploadEquipmentCoordinates(Integer compannyId,String equipmentCode, Double equipmentLongitude, Double equipmentLatitude);
+
+    Object getIotList(String aliUserId, Double lng, Double lat, PageBean pageBean);
+
+    Object getQRCodeUrl(String equipmentCode);
 }
