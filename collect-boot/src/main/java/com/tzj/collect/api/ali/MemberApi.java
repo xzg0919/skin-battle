@@ -1,6 +1,8 @@
 package com.tzj.collect.api.ali;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.tzj.collect.common.util.DesUtil;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.core.param.ali.MemberBean;
@@ -11,13 +13,12 @@ import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
 import org.apache.commons.lang.StringUtils;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -227,8 +228,15 @@ public class MemberApi {
 	@SignIgnore
 	@AuthIgnore
 	public Object getMemberMessage(MemberBean memberBean) throws Exception {
-		if(StringUtils.isBlank(memberBean.getMessage())){
+		if(StringUtils.isBlank(memberBean.getMessage())||StringUtils.isBlank(memberBean.getTimestamp())){
 			throw new RuntimeException("参数不可为空");
+		}
+		//令牌时间是否过期
+		Long startTime = Long.parseLong(memberBean.getTimestamp());
+		Long endTime = System.currentTimeMillis();
+		long diff = endTime - startTime;
+		if (diff>30*60*1000){
+			return "当前令牌失效，提示用户重新登录";
 		}
 		String s = null;
 		try {
@@ -237,34 +245,40 @@ public class MemberApi {
 			e.printStackTrace();
 			logger.info("用户信息解析失败");
 		}
+		//拿到key的地址
+		/*InputStream is = new FileInputStream(new File("/collect/key/public.key"));
+		URL url =is.getClass().getResource("/collect/key/public.key");
+		String path = new String(url.getPath()).substring(1);*/
 		if( null!=s){
-			JSONObject json = new JSONObject(s);
+			JSONObject json = JSONObject.parseObject(s, Feature.OrderedField);
 			//转码拼接字符串，api签名验证
-			String t = new String(Base64.getEncoder().encode(s.getBytes()));
+			String t1 = new BASE64Encoder().encode(json.get("data").toString().getBytes());
+			String t = t1.replaceAll("\r|\n", "");
 			String strBody = json.get("verify").toString();
 			String signData=t+"&signature="+strBody;
 			boolean flag = false;
-			flag = DesUtil.VerifySignature(signData,"D:/signature/java/public.key");
+			flag = DesUtil.VerifySignature(signData,"/collect/key/public.key");
 			/*return json;*/
 			//将解析的客户信息存入会员表
 			if(flag==true){
 				Member member = new Member();
-				String name = json.getJSONObject("data").getJSONObject("customerInfo").get("realName").toString();
-				String tel  = json.getJSONObject("data").getJSONObject("customerInfo").get("mobile2").toString();
-				if(name!=null){
+				if(json.getJSONObject("data").getJSONObject("customerInfo").get("realName")!=null){
+					String name = json.getJSONObject("data").getJSONObject("customerInfo").get("realName").toString();
 					member.setLinkName(name);
 				}
-				if(tel!=null){
+				if(json.getJSONObject("data").getJSONObject("customerInfo").get("mobile2")!=null){
+					String tel  = json.getJSONObject("data").getJSONObject("customerInfo").get("mobile2").toString();
 					member.setMobile(tel);
 				}
 				if(null!=member.getLinkName()||null!=member.getMobile()){
 					memberService.insert(member);
-					return true;
 				}
+				return true;
 			}else{
 				logger.info("验证签名为false");
 			}
 		}
 		return false;
 	}
+
 }
