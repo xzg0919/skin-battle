@@ -31,7 +31,7 @@ public class OrderTest {
                 String securityToken=JwtUtils.generateEncryptToken(token,ALI_API_TOKEN_CYPTO_KEY);
                 System.out.println("token是 : "+securityToken);
                 //String api="http://shoubeics.mayishoubei.com/ali/api";
-                String api="http://localhost:9090/ali/api";
+                String api="https://domain.mayishoubei.com/ali/api";
 
                 FileBase64Param file = new FileBase64Param();
                 file.setFileName("tests");
