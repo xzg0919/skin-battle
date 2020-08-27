@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
+import sun.misc.BASE64Decoder;
 
 import javax.imageio.ImageIO;
 import javax.net.ssl.SSLContext;
@@ -113,9 +114,10 @@ public class FileUploadServiceImpl implements FileUploadService {
     	        }
     		
     		String uuid = UUID.randomUUID().toString();
+            System.out.println(tempPath + "original_" + uuid + "." +extensionName);
        	 	//先把文件放入临时的地方
            File tempFile = new File(
-                   tempPath + "/original_" + uuid + "." +extensionName);
+                   tempPath + "original_" + uuid + "." +extensionName);
            
 //	        byte[] bytes;
 //			try {
@@ -136,19 +138,22 @@ public class FileUploadServiceImpl implements FileUploadService {
 			
 			  BufferedImage image = null;
 				byte[] imageByte = null;
-				
+                OutputStream out = null;
 				try {
-					imageByte = DatatypeConverter.parseBase64Binary(file.getFileContentBase64().
-							substring(file.getFileContentBase64().lastIndexOf(",")+1,file.getFileContentBase64().length()));
-					ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
-					image = ImageIO.read(new ByteArrayInputStream(imageByte));
-					bis.close();
-
-					ImageIO.write(image,extensionName,tempFile);
+//					imageByte = DatatypeConverter.parseBase64Binary(file.getFileContentBase64().
+//							substring(file.getFileContentBase64().lastIndexOf(",")+1,file.getFileContentBase64().length()));
+//					ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+//					image = ImageIO.read(new ByteArrayInputStream(imageByte));
+//					bis.close();
+//					ImageIO.write(image,extensionName,tempFile);
+                    imageByte = new BASE64Decoder().decodeBuffer(file.getFileContentBase64());
+                    out = new FileOutputStream(tempFile);
+                    out.write(imageByte);
 				} catch (IOException e) {
-					e.printStackTrace();
-				}
-         
+                    e.printStackTrace();
+                }finally {
+
+                }
        	
 
 
@@ -165,6 +170,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 
             //上传到OSS后，删除临时文件
             try{
+                out.close();
                 tempFile.delete();
             }catch (Exception e){
                 e.printStackTrace();
