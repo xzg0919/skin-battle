@@ -12,22 +12,14 @@ import com.tzj.collect.core.service.MemberService;
 import com.tzj.collect.entity.Member;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.*;
@@ -254,14 +246,9 @@ public class MemberApi {
 			logger.info("用户信息解析失败");
 		}
 		//拿到key的地址
-		/*InputStream is = new FileInputStream(new File("/collect/key/public.key"));
-		URL url =is.getClass().getResource("/collect/key/public.key");
-		String path = new String(url.getPath()).substring(1);*/
 		/*URI resource = MemberBean.class.getClassLoader().getResource("key/public.key").toURI();
 		String str2 = new File(resource).getAbsolutePath();*/
-		String path = Thread.currentThread().getContextClassLoader()
-				.getResource("key/public.key").getPath();
-		System.out.println(path.substring(1));
+		//String path = Thread.currentThread().getContextClassLoader().getResource("key/public.key").getPath();
 		String str = System.getProperty("user.dir");
 		String str1 = str +"/key/public.key";
 		if( null!=s){
@@ -272,7 +259,7 @@ public class MemberApi {
 			String strBody = json.get("verify").toString();
 			String signData=t+"&signature="+strBody;
 			boolean flag = false;
-			flag = DesUtil.VerifySignature(signData,path);
+			flag = DesUtil.VerifySignature(signData,str1);
 			/*return json;*/
 			//将解析的客户信息存入会员表
 			if(flag==true){
