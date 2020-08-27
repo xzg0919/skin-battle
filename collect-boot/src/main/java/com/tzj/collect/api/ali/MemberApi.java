@@ -246,9 +246,11 @@ public class MemberApi {
 			logger.info("用户信息解析失败");
 		}
 		//拿到key的地址
-		/*InputStream is = new FileInputStream(new File("/collect/key/public.key"));
-		URL url =is.getClass().getResource("/collect/key/public.key");
-		String path = new String(url.getPath()).substring(1);*/
+		/*URI resource = MemberBean.class.getClassLoader().getResource("key/public.key").toURI();
+		String str2 = new File(resource).getAbsolutePath();*/
+		//String path = Thread.currentThread().getContextClassLoader().getResource("key/public.key").getPath();
+		String str = System.getProperty("user.dir");
+		String str1 = str +"/key/public.key";
 		if( null!=s){
 			JSONObject json = JSONObject.parseObject(s, Feature.OrderedField);
 			//转码拼接字符串，api签名验证
@@ -257,7 +259,7 @@ public class MemberApi {
 			String strBody = json.get("verify").toString();
 			String signData=t+"&signature="+strBody;
 			boolean flag = false;
-			flag = DesUtil.VerifySignature(signData,"/collect/key/public.key");
+			flag = DesUtil.VerifySignature(signData,str1);
 			/*return json;*/
 			//将解析的客户信息存入会员表
 			if(flag==true){
