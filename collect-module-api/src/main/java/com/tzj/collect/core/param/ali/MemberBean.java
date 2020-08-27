@@ -55,6 +55,8 @@ public class MemberBean {
 
 	private PageBean pageBean;
 
+    private String timestamp;//时间戳
+
 
 
 
