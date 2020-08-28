@@ -65,7 +65,7 @@
         ) f ON a.id = f.order_id
         WHERE
         a.del_flag = '0'
-        AND (a.order_from = '0' or a.order_from is null)
+        AND a.order_from != '1'
         AND a.company_id =#{companyId}
         <if test="status != null">
             AND a.status_ in
@@ -137,7 +137,7 @@
         ) f ON a.id = f.order_id
         WHERE
         a.del_flag = '0'
-        AND (a.order_from = '0' or a.order_from is null)
+        AND a.order_from != '1'
         AND a.company_id =#{companyId}
         AND a.cancel_reason IS NOT NULL
         AND a.cancel_reason != '订单回调'
@@ -220,7 +220,7 @@
         ) f ON a.id = f.order_id
         WHERE
         a.del_flag = '0'
-        AND (a.order_from = '0' or a.order_from is null)
+        AND a.order_from != '1'
         AND a.company_id =#{companyId}
         <if test="status != null">
             AND a.status_ in
@@ -282,7 +282,7 @@
         LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
         WHERE
         a.del_flag = '0'
-        AND (a.order_from = '0' or a.order_from is null)
+        AND a.order_from != '1'
         AND a.company_id =#{companyId}
         <if test="status != null">
             AND a.status_ in
