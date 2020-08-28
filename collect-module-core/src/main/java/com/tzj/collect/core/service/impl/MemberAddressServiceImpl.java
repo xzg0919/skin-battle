@@ -391,7 +391,14 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				streetName = area.getAreaName();
 			}
 		}
-		return cityName+areaName+streetName+memberAddress.getAddress()+memberAddress.getHouseNumber();
+		String address = memberAddress.getProvinceName()+cityName+areaName+streetName;
+		if (StringUtils.isNotBlank(memberAddress.getAddress())){
+			address += memberAddress.getAddress();
+		}
+		if (StringUtils.isNotBlank(memberAddress.getHouseNumber())){
+			address += memberAddress.getHouseNumber();
+		}
+		return address;
 	}
 	@Override
 	public List<MemberAddress> selectMemberAddressByAliUserId(MemberAddress memberAddress) {
