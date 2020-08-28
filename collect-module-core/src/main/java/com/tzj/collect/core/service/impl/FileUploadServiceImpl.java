@@ -114,10 +114,10 @@ public class FileUploadServiceImpl implements FileUploadService {
     	        }
     		
     		String uuid = UUID.randomUUID().toString();
-            System.out.println(tempPath + "original_" + uuid + "." +extensionName);
+            System.out.println(tempPath + "/original_" + uuid + "." +extensionName);
        	 	//先把文件放入临时的地方
            File tempFile = new File(
-                   tempPath + "original_" + uuid + "." +extensionName);
+                   tempPath + "/original_" + uuid + "." +extensionName);
            
 //	        byte[] bytes;
 //			try {
@@ -178,7 +178,7 @@ public class FileUploadServiceImpl implements FileUploadService {
            
            fileBeanList.add(fileBean);
     	}
-    	 
+
     	return fileBeanList;
     }
 

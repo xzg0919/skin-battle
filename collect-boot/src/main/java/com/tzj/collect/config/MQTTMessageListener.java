@@ -220,12 +220,15 @@ public class MQTTMessageListener {
                     Wrapper<OrderLog> orderLogWrapper = new EntityWrapper<OrderLog>().eq("order_id", order.getId());
                     OrderLog orderLog = null;
                     if(Order.OrderType.CANCEL.name().equals(order.getStatus().name())) {
-                        orderLogWrapper = orderLogWrapper.like("op_status_after", order.getStatus().name());
+                        orderLogWrapper.like("op_status_after", order.getStatus().name());
                     }else{
                         //取消订单，分用户和管理员端 有日志中记录取消时日志记录为 CANCELTASK 订单记录为CANCEL 情况
-                        orderLogWrapper = orderLogWrapper.eq("op_status_after", order.getStatus().name());
+                        orderLogWrapper.eq("op_status_after", order.getStatus().name());
                     }
                     orderLog = orderLogService.selectOne(orderLogWrapper);
+                    if (null == orderLog){
+                        return;
+                    }
                     orderLogService.updateById(orderLog);
                 }
 
