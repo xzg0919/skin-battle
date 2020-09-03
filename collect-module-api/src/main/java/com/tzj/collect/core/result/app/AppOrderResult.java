@@ -28,6 +28,8 @@ public class AppOrderResult {
 	private String orderNo;//订单编号
 	
 	private String price;//预计回收价格
+
+	private String commissionsPrice;//信息费
 	
 	private String achPrice;//实际回收价格
 	
