@@ -360,6 +360,21 @@ public class CategoryApi {
 	}
 
 	/**
+	 * 小程序最新获取五公斤分类列表
+	 * @param
+	 * @return
+	 */
+	@Api(name = "category.categoryNewHouseListByToken", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object getCategoryFiveListByToken(CategoryBean categoryBean){
+		Member member = MemberUtils.getMember();
+		String aliUserId = member.getAliUserId();
+		return categoryService.getCategoryFiveListByToken(aliUserId,categoryBean.getParentId()==null?null:categoryBean.getParentId().longValue());
+	}
+
+
+	/**
 	 * 小程序计算价格
 	 * @param
 	 * @return

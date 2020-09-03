@@ -715,12 +715,49 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                     }
                 });
             }
-
         }
         categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getCode)).collect(Collectors.toList());
         resultMap.put("categoryList", categoryList);
         return resultMap;
     }
+    @Override
+    public Object getCategoryFiveListByToken(String aliUserId,Long parentId) {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<Category> categoryList = null;
+        MemberAddress memberAdderss = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
+        if (null != memberAdderss) {
+                Integer fiveCompanyId = companyStreeService.selectStreeCompanyIds(45, memberAdderss.getStreetId());
+                if (null != fiveCompanyId) {
+                    categoryList = companyCategoryCityNameService.getFiveCategoryByCompanyId(fiveCompanyId, memberAdderss.getCityId());
+                    categoryList = categoryList.stream().filter(category -> category.getId() == 45).collect(Collectors.toList());
+                    List<Category> categoryLists = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
+                    categoryLists = categoryLists.stream().filter(category -> category.getId() != 45).collect(Collectors.toList());
+                    categoryList.addAll(categoryLists);
+                }
+        }
+        if (null == categoryList||categoryList.isEmpty()) {
+            categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
+            if(null==parentId){
+                categoryList.stream().forEach(category -> {
+                    List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                    category.setCategoryList(categoryList1);
+                });
+            }else {
+                categoryList.stream().forEach(category -> {
+                    if (null!=parentId&&category.getId().equals(parentId)){
+                        List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                        category.setCategoryList(categoryList1);
+                    }
+                });
+            }
+        }
+        categoryList = categoryList.stream().sorted(Comparator.comparing(Category::getCode)).collect(Collectors.toList());
+        resultMap.put("categoryList", categoryList);
+        return resultMap;
+    }
+
+
+
     @Override
     public Category selectByXyItemType(String xyItemType){
         return this.selectOne(new EntityWrapper<Category>().eq("xy_item_type",xyItemType));

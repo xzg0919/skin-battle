@@ -176,6 +176,8 @@ public interface CategoryService extends IService<Category> {
 	@DS("slave")
 	Object getCategoryNewHouseListByToken(String aliUserId,Long parentId);
 	@DS("slave")
+	Object getCategoryFiveListByToken(String aliUserId,Long parentId);
+	@DS("slave")
 	Category selectByXyItemType(String xyItemType);
 	@DS("slave")
 	List<Map<String,Object>> selectXyList();
