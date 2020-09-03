@@ -364,7 +364,7 @@ public class CategoryApi {
 	 * @param
 	 * @return
 	 */
-	@Api(name = "category.categoryNewHouseListByToken", version = "1.0")
+	@Api(name = "category.getCategoryFiveListByToken", version = "1.0")
 	@SignIgnore
 	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
 	public Object getCategoryFiveListByToken(CategoryBean categoryBean){
