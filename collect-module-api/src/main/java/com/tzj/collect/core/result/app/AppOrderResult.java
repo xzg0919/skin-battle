@@ -29,6 +29,8 @@ public class AppOrderResult {
 	
 	private String price;//预计回收价格
 
+	private String commissionsPrice;//信息费
+
 	private String achPrice;//实际回收价格
 	
 	private String linkName;//联系人姓名
