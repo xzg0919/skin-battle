@@ -2429,6 +2429,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	public Map<String, Object> createPriceAmount(OrderBean orderbean) {
+	    Order order = this.selectById(orderbean.getId());
+	    if (null==order){
+	        throw new RuntimeException("订单不存在");
+        }
+	    Integer companyId = order.getCompanyId();
 		//查询订单表的分了明细表
 		List<OrderItemAch> OrderItemAchList = null;
 		List<OrderItem> OrderItemList = null;
@@ -2471,6 +2476,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					if (name.getId() == list.getParentId()) {
 						map.put("cateName", list.getCategoryName());
 						map.put("price", list.getPrice() + "");
+						if("0".equals(isCash)){
+                            map.put("commission", list.getAdminCommissions() + "");
+                        }else{
+                            map.put("commission", list.getFreeCommissions() + "");
+                        }
 						map.put("unit", list.getUnit());
 						map.put("amount", list.getAmount() + "");
 						price += list.getPrice() * list.getAmount();
@@ -2484,7 +2494,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					map = new HashMap<>();
 					//listMap = new ArrayList<>();
 					if (name.getId() == list.getParentId()) {
-						map.put("cateName", list.getCategoryName());
+					    CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("category_id",list.getCategoryId()).eq("company_id",companyId));
+					    if(companyCategory==null){
+                            map.put("commission", "0.00");
+                        }else{
+                            if("0".equals(isCash)){
+                                map.put("commission", companyCategory.getAdminCommissions() + "");
+                            }else{
+                                map.put("commission", companyCategory.getFreeCommissions() + "");
+                            }
+                        }
+					    map.put("cateName", list.getCategoryName());
 						map.put("price", list.getPrice() + "");
 						map.put("unit", list.getUnit());
 						map.put("amount", list.getAmount() + "");
