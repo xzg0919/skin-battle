@@ -1757,11 +1757,16 @@ ORDER BY time
         countAll.createDate DESC LIMIT #{startPage},#{endPage}
     </select>
     <select id="getOrderListByAdmin" parameterType="Object" resultType="Map">
-        SELECT
-        a.*,
-        IF(a.overTime > 2880,'1',if(a.complaintType = '3','1','0')) AS isComplaint
-        FROM (
-        SELECT
+        select a.*
+        from
+        (select a.*,
+        CASE WHEN b.type_ = '4' THEN '4'
+             WHEN b.type_ in ('0','1','2') AND a.overTime > 2880 THEN '3'
+             WHEN b.type_ in ('0','1','2') AND 2880 >= a.overTime  THEN '1'
+             WHEN a.overTime > 2880  THEN '2'
+             ELSE '0'END AS isComplaint
+        from
+        (SELECT
         a.id,
         a.order_no AS orderNo,
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as categoryDate,
@@ -1812,8 +1817,46 @@ ORDER BY time
         <if test="endTime != null and endTime !='' ">
             AND concat(#{endTime},' 23:59:59') > a.create_date
         </if>
-        ORDER BY a.create_date DESC
-        ) a
+        )a
+        LEFT JOIN
+        (SELECT
+        a.order_no,
+        a.type_
+        FROM
+        (SELECT c.*from
+        sb_order a
+        INNER JOIN sb_order_complaint c on a.order_no = c.order_no
+        LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+        WHERE
+        a.del_flag = '0'
+        and a.title != 5
+        <if test="companyId != null and companyId !='' ">
+            AND a.company_id = #{companyId}
+        </if>
+        <if test="title != null and title !='' ">
+            AND a.title = #{title}
+        </if>
+        <if test="status != null and status !='' ">
+            AND a.status_ = #{status}
+        </if>
+        <if test="tel != null and tel !='' ">
+            AND a.tel = #{tel}
+        </if>
+        <if test="orderNo != null and orderNo !='' ">
+            AND a.order_no = #{orderNo}
+        </if>
+        <if test="linkName != null and linkName !='' ">
+            AND a.link_man = #{linkName}
+        </if>
+        <if test="startTime != null and startTime !='' ">
+            AND a.create_date > concat(#{startTime},' 00:00:01')
+        </if>
+        <if test="endTime != null and endTime !='' ">
+            AND concat(#{endTime},' 23:59:59') > a.create_date
+        </if>
+        order by c.order_no,c.type_ DESC) a
+        GROUP BY a.order_no) b on a.orderNo = b.order_no
+        ORDER BY a.categoryDate DESC)a
         WHERE
         1 = 1
         <if test="complaintType != null and complaintType !='' ">
