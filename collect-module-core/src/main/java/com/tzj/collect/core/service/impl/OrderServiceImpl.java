@@ -1714,7 +1714,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             Recyclers recyclerManager = new Recyclers();
             if(recyclers!=null){
                 CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclers.getId()));
-                if(("0").equals(recyclers.getIsManager())){
+                if(("0").equals(recycler.getIsManager())){
                     recyclerManager = recyclersService.selectById(recycler.getParentsId());
                     recyclers.setIsManager("0");
                     order.setRecyclers(recyclers);
@@ -1733,6 +1733,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             resultMap.putAll(this.voucherInfo(order));
 			return resultMap;
 		}
+        if (OrderType.REJECTED.getValue().equals(order.getStatus().getValue())){
+            OrderCancleExamine orderCancleExamineList = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()).orderBy("create_date",false));
+            if(orderCancleExamineList!=null){
+                resultMap.put("cancleExamineTime", orderCancleExamineList.getCreateTime()); //
+            }else{
+                resultMap.put("cancleExamineTime", order.getCancelTime());
+            }
+        }
 		//查询订单表的关联图片表
 		List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
 		//查询订单表的分了明细表
@@ -1741,7 +1749,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Recyclers recyclerManager = new Recyclers();
         if(recyclers!=null){
             CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclers.getId()));
-            if(("0").equals(recyclers.getIsManager())){
+            if(("0").equals(recycler.getIsManager())){
                 recyclerManager = recyclersService.selectById(recycler.getParentsId());
                 recyclers.setIsManager("0");
                 order.setRecyclers(recyclers);
@@ -4103,9 +4111,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (null == order){
 			throw new ApiException("输入的订单号查找不到订单");
 		}
-		if(!(OrderType.INIT+"").equals(order.getStatus()+"")){
+		/*if(!(OrderType.INIT+"").equals(order.getStatus()+"")){
 			throw new ApiException("该订单的不是初始状态，目前不可被申请取消");
-		}
+		}*/
 		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no",orderBean.getOrderNo()));
 		if (null == orderCancleExamine){
 			orderCancleExamine = new OrderCancleExamine();
