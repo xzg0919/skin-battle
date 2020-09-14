@@ -371,10 +371,22 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			select.setAliUserId(aliUserId);
 		MemberAddress memberAddress = this.selectMemberAddressByAliUserIdOne(select);
 		String cityName = memberAddress.getCityName()==null?"":memberAddress.getCityName();
-		if(org.apache.commons.lang3.StringUtils.isBlank(cityName)){
+		String provinceName = "";
+		if(StringUtils.isNotBlank(cityName)){
+			Area city = areaService.selectById(memberAddress.getCityId());
+			if(null != city){
+				if(city.getAreaName().equals(cityName)){
+					Area area = areaService.selectById(city.getParentId());
+					provinceName = area.getAreaName();
+				}
+			}
+		}
+		if(StringUtils.isBlank(cityName)){
 			Area city = areaService.selectById(memberAddress.getCityId());
 			if(null != city){
 				cityName = city.getAreaName();
+				Area area = areaService.selectById(city.getParentId());
+				provinceName = area.getAreaName();
 			}
 		}
 		String areaName = memberAddress.getAreaName()==null?"":memberAddress.getAreaName();
@@ -391,7 +403,12 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				streetName = area.getAreaName();
 			}
 		}
-		String address = memberAddress.getProvinceName()+cityName+areaName+streetName;
+		String address = "";
+		if(StringUtils.isNotBlank(memberAddress.getProvinceName())){
+			 address = memberAddress.getProvinceName()+cityName+areaName+streetName;
+		}else{
+			 address = provinceName+cityName+areaName+streetName;
+		}
 		if (StringUtils.isNotBlank(memberAddress.getAddress())){
 			address += memberAddress.getAddress();
 		}

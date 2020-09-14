@@ -1631,6 +1631,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("company", company);                          //企业信息
 		resultMap.put("OrderEvaluation", orderEvaluation);         //评价信息
 		resultMap.put("orderCancleExamine", orderCancleExamine);
+        resultMap.put("dingOrder", initCount+TosendCount+AlreadyCount);//催单总次数
 		if(initCount!=0){
             resultMap.put("initComplaint", "催派" + initCount + "次");
         }
