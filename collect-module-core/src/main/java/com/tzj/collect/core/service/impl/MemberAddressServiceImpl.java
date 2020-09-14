@@ -330,6 +330,9 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		memberAddress.setStreetName(mapAddressBean.getTownShip());
 		memberAddress.setCommunityName(mapAddressBean.getName());
 		memberAddress.setTownCode(mapAddressBean.getTownCode());
+		if(!mapAddressBean.getProvince().equals(mapAddressBean.getCity())){
+			memberAddress.setProvinceName(mapAddressBean.getProvince());
+		}
 		this.inserOrUpdatetMemberAddress(memberAddress);
 		return "操作成功";
 	}
@@ -404,13 +407,17 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			}
 		}
 		String address = "";
+		String a = areaName.replaceAll(cityName, "");
+		String b = streetName.replaceAll(areaName, "");
 		if(StringUtils.isNotBlank(memberAddress.getProvinceName())){
-			 address = memberAddress.getProvinceName()+cityName+areaName+streetName;
+			 address = memberAddress.getProvinceName()+cityName+a+b;
 		}else{
-			 address = provinceName+cityName+areaName+streetName;
+			 address = provinceName+cityName+a+b;
 		}
 		if (StringUtils.isNotBlank(memberAddress.getAddress())){
-			address += memberAddress.getAddress();
+			String d = address.replaceAll(b, "");
+			String c = memberAddress.getAddress().replaceAll(d, "");
+			address += c;
 		}
 		if (StringUtils.isNotBlank(memberAddress.getHouseNumber())){
 			address += memberAddress.getHouseNumber();
