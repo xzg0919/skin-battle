@@ -1480,9 +1480,11 @@ ORDER BY time
         sb_order so
         LEFT JOIN sb_category sc ON so.category_id = sc.id
         LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
+        LEFT JOIN sb_company_recycler c ON sr.id = c.recycler_id
         WHERE
         so.del_flag = '0'
-        AND so.recycler_id = #{orderBean.recyclerId}
+        AND (so.recycler_id = #{orderBean.recyclerId}
+        or c.parents_id = #{orderBean.recyclerId})
         <if test="orderBean.tel != null and orderBean.tel != '' ">
             AND so.tel like #{orderBean.tel}
         </if>
