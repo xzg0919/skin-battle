@@ -383,7 +383,14 @@
             AND so.recycler_id = #{orderBean.recyclerId}
         </if>
         <if test="orderBean.status != null and orderBean.status != '' ">
-            AND so.status_ = #{orderBean.status}
+            <choose>
+                <when test="orderBean.status == '4'.toString()">
+                    AND so.status_ in (4,5)
+                </when>
+                <otherwise>
+                    AND so.status_ = #{orderBean.status}
+                </otherwise>
+            </choose>
         </if>
         )so
         ) so
@@ -445,7 +452,7 @@
 				sb_category sc
 			INNER JOIN sb_order so ON so.category_id = sc.id
 			INNER JOIN sb_recycle_cancel_log srcl ON srcl.order_id = so.id
-			INNER JOIN sb_recyclers sr ON sr.id = so.recycler_id
+			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 			WHERE
 				so.del_flag = '0'
 				AND so.order_from != '1'
