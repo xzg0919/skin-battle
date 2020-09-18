@@ -468,7 +468,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
                 orderItemAch.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions());
                 orderItemAch.setFreeCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getFreeCommissions());
-                orderItemAch.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
+                orderItemAch.setCompanyCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
                 orderItemAchService.updateById(orderItemAch);
             });
             DecimalFormat df=new DecimalFormat(".##");
@@ -2132,6 +2132,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
                 PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
             }
+            Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+            OrderOperate orderOperate = new OrderOperate();
+            orderOperate.setOrderNo(order.getOrderNo());
+            orderOperate.setOperateLog("完成订单");
+            orderOperate.setOperatorMan("回收人员-"+recyclers.getName());
+            orderOperate.setReason("/");
+            orderOperateService.insert(orderOperate);
             if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
 				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","大件回收");
 			}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
@@ -3372,7 +3379,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			//修改订单状态
 			this.modifyOrderSta(orderBean,mqtt4PushOrder);
 			order.setStatus(OrderType.COMPLETE);
+
 		}
+
 		orderService.updateById(order);
 
 		return "操作成功";

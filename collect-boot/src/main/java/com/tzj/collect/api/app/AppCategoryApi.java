@@ -156,6 +156,7 @@ public class AppCategoryApi {
 	 */
 	@Api(name = "app.category.getTwoCategoryListByOrder", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	@SignIgnore
 	public Object getTwoCategoryListByOrder(CategoryBean categoryBean){
 		return categoryService.getTwoCategoryListByOrder(categoryBean.getId(),categoryBean.getOrderId());
 	}
