@@ -1581,15 +1581,112 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return resultMap;
 	}
 
+    /**
+     * 订单详情(企业)老接口
+     *
+     * @param orderId:订单
+     * @return
+     * @author 王灿
+     */
+    @Override
+    public Map<String, Object> selectOrderByBusiness(Integer orderId) {
+        //查询订单详情
+        //Order order = orderMapper.selectOrder(orderId);
+        Order order = createName4Ali(orderMapper.selectOrder(orderId));
+        Category category = null;
+        String cateName = "";
+        //categoryId 再查他的父亲
+        if (order.getCategoryId() != null) {
+            category = categoryService.getCategoryById(order.getCategoryId());
+            if (category != null) {
+                Category pCategory = null;
+                if (category.getParentId() != null && !"".equals(category.getParentId())) {
+                    pCategory = categoryService.getCategoryById(category.getParentId());
+                    if (pCategory != null) {
+                        cateName = pCategory.getName() + "-" + category.getName();
+                        category.setName(cateName);
+                        order.setCategory(category);
+                    }
+                }
+            }
+        }
+        int CompanyId = order.getCompanyId();
+        //根据企业id查询企业信息
+        Company company = companyService.selectById(CompanyId);
+        //根据订单Id查询评价信息
+        OrderEvaluation OrderEvaluation = orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", orderId).eq("del_flag", "0"));
+        OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        //order.setPrice(order.getAchPrice());
+        //resultMap.put("order", order);
+        resultMap.put("company", company);
+        resultMap.put("OrderEvaluation", OrderEvaluation);
+        resultMap.put("orderCancleExamine", orderCancleExamine);
+        //System.out.println(11111);
+        if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
+            OrderBean orderBean = new OrderBean();
+            orderBean.setId(orderId);
+            orderBean.setTitle(order.getTitle().toString());
+            orderBean.setStatus(order.getStatus().getValue().toString());
+            orderBean.setIsCash(order.getIsCash());
+
+            Map<String, Object> map = this.createPriceAmount4PC(orderBean);
+            List<Map<String, Object>> priceAmount = (List<Map<String, Object>>) map.get("listMapObject");
+            System.out.println(priceAmount.get(0));
+            resultMap.put("priceAmount", priceAmount);
+            resultMap.put("greenCount", map.get("greenCount"));
+
+        }
+        if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
+            //回收人员填的图片
+            List<OrderPicAch> orderPicAchList = orderPicAchService.selectbyOrderId(orderId);
+            //查询订单表的用户填的图片
+            List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
+            if (CategoryType.DIGITAL.getValue().equals(order.getTitle().getValue()) || CategoryType.BIGTHING.getValue().equals(order.getTitle().getValue())) {
+                List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
+                resultMap.put("OrderItemList", OrderItemList);
+            } else {
+                //查询订单表的分了明细表
+                List<OrderItemAch> orderItemAchList = orderItemAchService.selectByOrderId(orderId);
+                resultMap.put("OrderItemList", orderItemAchList);
+            }
+            if (order.getTitle() == Order.TitleType.HOUSEHOLD){
+                order.setPrice(order.getAchPrice());
+            }
+            resultMap.put("order", order);
+            resultMap.put("orderPicList", orderPicAchList);
+            resultMap.put("orderUserPicList", orderPicList);
+            return resultMap;
+        }
+        //查询订单表的关联图片表
+        List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
+        //查询订单表的分了明细表
+        List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
+        resultMap.put("order", order);
+        resultMap.put("orderPicList", orderPicList);
+        resultMap.put("OrderItemList", OrderItemList);
+        //回收员取消任务表中找最新取消任务的回收员名称
+        OrderBean o = new OrderBean();
+        o.setId(orderId);
+        CancelResult cancelResult = recyclerCancelLogService.selectCancel(o);
+        if(cancelResult != null){
+            resultMap.put("cancelTime", cancelResult.getCancelDate());
+            resultMap.put("cancelNameLast", cancelResult.getRecycleName());
+        }
+        //优惠券详情
+        resultMap.putAll(this.voucherInfo(order));
+        return resultMap;
+    }
+
 	/**
-	 * 订单详情(企业)
+	 * 订单详情(企业)新接口
 	 *
 	 * @param orderId:订单
 	 * @return
 	 * @author 王灿
 	 */
 	@Override
-	public Map<String, Object> selectOrderByBusiness(Integer orderId) {
+	public Map<String, Object> selectOrderByBusiness1(Integer orderId) {
 		//查询订单详情
 		//Order order = orderMapper.selectOrder(orderId);
 		Order order = createName4Ali(orderMapper.selectOrder(orderId));
