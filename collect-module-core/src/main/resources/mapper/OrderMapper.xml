@@ -3838,6 +3838,7 @@ ORDER BY time
         <result property="isScan" column="is_scan"/>
         <result property="isRead" column="is_read"/>
         <result property="isRisk" column="is_risk"/>
+        <result property="isMysl" column="is_mysl"/>
         <result property="paymentPrice" column="paymentPrice"/>
         <result property="greenCount" column="green_count"/>
         <result property="enterpriseCode" column="enterprise_code"/>
@@ -3923,6 +3924,7 @@ ORDER BY time
 		a.is_scan,
 		a.is_read,
 		a.is_risk,
+		a.is_mysl,
 		a.green_count,
 		a.enterprise_code,
 		a.express_amount,
