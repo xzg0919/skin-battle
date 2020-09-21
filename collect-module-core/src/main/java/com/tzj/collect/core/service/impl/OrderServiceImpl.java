@@ -975,7 +975,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         int size = pageBean.getPageSize();
         int num = pageBean.getPageNumber();
         Map<String, Object> map = new HashMap<String, Object>();
-        if(orderBean.getStatus().equals("CANCEL")){
+        if(orderBean.getStatus().equals("CANCEL") && !"3".equals(title)){
             statusList.add("5");
         }
             Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title,reInit);
