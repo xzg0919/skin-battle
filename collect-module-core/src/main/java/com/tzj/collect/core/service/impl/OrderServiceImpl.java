@@ -4572,6 +4572,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					}catch (Exception e){
 						resultMap.put("money", voucherMembers.getMoney());
 					}
+
 				}else {
 					//进行中订单展示的优惠券抵扣价格（优惠金额）也称作平台支付金额
 					resultMap.put("money", voucherMembers.getMoney());
@@ -4591,8 +4592,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					resultMap.put("money", voucherMembers.getMoney());
 				}
 			}
+            order.setPriceAch(order.getDiscountPrice().add(order.getCommissionsPrice()));
 			resultMap.put("voucherMembers", voucherMembers);//整个券码
 		}else {
+            order.setPriceAch(order.getAchPrice().add(order.getCommissionsPrice()));
 			resultMap.put("useVoucher", "未使用优惠券");
 		}
 		return resultMap;

@@ -274,6 +274,16 @@ public class Order extends DataEntity<Long> {
 	public void setDoublePoint(String doublePoint) {
 		this.doublePoint = doublePoint;
 	}
+	@TableField(exist = false)
+	private BigDecimal priceAch = BigDecimal.ZERO;
+
+	public BigDecimal getPriceAch() {
+		return priceAch;
+	}
+
+	public void setPriceAch(BigDecimal priceAch) {
+		this.priceAch = priceAch;
+	}
 
 	/**
 	 * 是否待支付
