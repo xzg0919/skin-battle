@@ -3302,6 +3302,7 @@ ORDER BY time
         order_.is_cash,
         order_.category_name,
         order_.amount,
+        order_.recyclerName,
         IF(order_.isOverTime > 2880,'1',if(order_.complaintType = '3','1','0')) AS isComplaint,
         saa.area_name streetName,
         saa2.area_name areaName,
@@ -3319,6 +3320,7 @@ ORDER BY time
         soo.ach_price,
         soo.is_cash,
         soo.complaint_type AS complaintType,
+        sr.name_ AS recyclerName,
         TIMESTAMPDIFF(MINUTE, IF(soo.title = '2',CONCAT(soo.arrival_time,' ',SUBSTR(soo.arrival_period,
         7,5),':00'),IF(soo.arrival_period='am',CONCAT(soo.arrival_time,' 12:00:00'),CONCAT(soo.arrival_time,'
         18:00:00'))),IF(soo.status_ = '3',soo.complete_date,if(soo.status_ in ('4','5'),soo.cancel_time,NOW()))) AS
@@ -3328,6 +3330,7 @@ ORDER BY time
         FROM
         sb_order soo
         INNER JOIN sb_order_item soi ON soo.id = soi.order_id
+        LEFT JOIN sb_recyclers sr ON soo.recycler_id = sr.id
         WHERE
         soo.del_flag = 0
         AND soo.company_id = #{companyId}
@@ -3352,6 +3355,7 @@ ORDER BY time
         soo.create_date,
         soo.ach_price,
         soo.is_cash,
+        sr.name_ AS recyclerName,
         soo.complaint_type AS complaintType,
         TIMESTAMPDIFF(MINUTE, IF(soo.title = '2',CONCAT(soo.arrival_time,' ',SUBSTR(soo.arrival_period,
         7,5),':00'),IF(soo.arrival_period='am',CONCAT(soo.arrival_time,' 12:00:00'),CONCAT(soo.arrival_time,'
@@ -3362,6 +3366,7 @@ ORDER BY time
         FROM
         sb_order soo
         INNER JOIN sb_order_item_ach soia ON soo.id = soia.order_id
+        LEFT JOIN sb_recyclers sr ON soo.recycler_id = sr.id
         WHERE
         soo.status_ = 3
         AND soo.order_from = '0'
@@ -3432,6 +3437,7 @@ ORDER BY time
         order_.is_cash,
         order_.category_name,
         order_.amount,
+        order_.recyclerName,
         IF(order_.isOverTime > 2880,'1',if(order_.complaintType = '3','1','0')) AS isComplaint,
         saa.area_name streetName,
         saa2.area_name areaName,
@@ -3448,6 +3454,7 @@ ORDER BY time
         soo.create_date,
         soo.ach_price,
         soo.is_cash,
+        sr.name_ AS recyclerName,
         soo.complaint_type AS complaintType,
         TIMESTAMPDIFF(MINUTE, IF(soo.title = '2',CONCAT(soo.arrival_time,' ',SUBSTR(soo.arrival_period,
         7,5),':00'),IF(soo.arrival_period='am',CONCAT(soo.arrival_time,' 12:00:00'),CONCAT(soo.arrival_time,'
@@ -3458,6 +3465,7 @@ ORDER BY time
         FROM
         sb_order soo
         LEFT JOIN sb_order_item soi ON soo.id = soi.order_id
+        LEFT JOIN sb_recyclers sr ON soo.recycler_id = sr.id
         WHERE
         soo.del_flag = 0
         AND soo.order_from = '0'
