@@ -247,7 +247,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setLinkMan(orderbean.getLinkMan());
             order.setCategoryId(orderbean.getCategoryId());
             order.setCategoryParentIds(orderbean.getCategoryParentIds());
-            order.setIsMysl("1");
+            if(StringUtils.isNotBlank(orderbean.getIsMysl())){
+                order.setIsMysl(orderbean.getIsMysl());
+            }else{
+                order.setIsMysl("1");
+            }
             order.setPrice(price);
             order.setUnit(orderbean.getUnit());
             order.setQty(orderbean.getQty());
