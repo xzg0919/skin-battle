@@ -3052,7 +3052,7 @@ ORDER BY time
         SELECT
         DATE_FORMAT(a.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
         a.order_no AS orderNo,
-        IF(c.title = '1','家电数码',IF(c.title = '4','大件垃圾','生活垃圾')) AS title,
+        IF(b.title = '1','家电数码',IF(b.title = '4','大件垃圾','生活垃圾')) AS title,
         b.link_man AS linkMan,
         b.id,
         b.tel,
@@ -3063,9 +3063,9 @@ ORDER BY time
         FROM
         sb_order_cancle_examine a
         inner JOIN sb_order b ON a.order_no = b.order_no
-        inner JOIN sb_category c ON b.category_id = c.id
         inner JOIN sb_company d ON b.company_id = d.id
         WHERE a.status_ = '0'
+        AND b.status_ in (0,1,2)
         <if test="companyId != null and companyId != '' ">
             AND b.company_id = #{companyId}
         </if>
@@ -3087,10 +3087,9 @@ ORDER BY time
         FROM
         sb_order_cancle_examine a
         inner JOIN sb_order b ON a.order_no = b.order_no
-        inner JOIN sb_category c ON b.category_id = c.id
         inner JOIN sb_company d ON b.company_id = d.id
         WHERE a.status_ = '0'
-        and b.status_ = '0'
+        AND b.status_ in (0,1,2)
         <if test="companyId != null and companyId != '' ">
             AND b.company_id = #{companyId}
         </if>

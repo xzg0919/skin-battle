@@ -1821,7 +1821,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
             }
             Payment payment = new Payment();
-            payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn",order.getOrderNo()));
+            payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn",order.getOrderNo()).eq("status_","2"));
             resultMap.put("payment", payment);
             resultMap.put("recyclerManager", recyclerManager); //业务经理信息
 			resultMap.put("order", order); //订单信息
