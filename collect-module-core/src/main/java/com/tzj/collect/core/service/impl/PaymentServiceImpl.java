@@ -234,7 +234,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
         request.setBizContent("{" +
-                "\"out_biz_no\":\""+7338322+"\"" +
+                "\"out_biz_no\":\""+72244439+"\"" +
                 //"\"order_id\":\"20160627110070001502260006780837\"" +
                 "  }");
         AlipayFundTransOrderQueryResponse response = null;
