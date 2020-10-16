@@ -60,8 +60,10 @@ public class ArrivalTimeLogServiceImpl extends ServiceImpl<ArrivalTimeLogMapper,
 				+"变更为"+" "+afterDate+" "+afterPeriod);
 		if(StringUtils.isNotBlank(cancleDesc)){
 			orderOperate.setReason(cancleDesc);
-			Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
-			orderOperate.setOperatorMan("回收人员-"+recyclers.getName());
+			if(order.getRecyclerId()!=null && order.getRecyclerId()!=0){
+				Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+				orderOperate.setOperatorMan(recyclers == null ? null : "回收人员-"+ recyclers.getName());
+			}
 		}else{
 			orderOperate.setReason("/");
 			orderOperate.setOperatorMan("平台");
