@@ -200,6 +200,9 @@ public interface OrderService extends IService<Order> {
 	*/
 	@DS("slave")
 	Map<String,Object> selectOrderByBusiness(Integer orderId);
+
+	@DS("slave")
+	Map<String,Object> selectOrderByBusiness1(Integer orderId);
 	/**
 	 * 获取用户提交生活垃圾订单id详情
 	 * @author 王灿

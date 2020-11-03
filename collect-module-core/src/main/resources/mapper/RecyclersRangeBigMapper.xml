@@ -6,11 +6,20 @@
 			SELECT DISTINCT
 				c.id,
 				c.area_name,
-				IF (b.id IS NULL, 1, 2) AS isChoose,
-			(SELECT COUNT(1) FROM (	SELECT * FROM sb_recyclers_range_big a WHERE a.recyclers_id =  #{recycleId} AND a.company_id =  #{companyId} AND a.del_flag = 0) b WHERE b.area_id = c.id) AS num
+			IF (b.id IS NULL, 1, 2) AS isChoose,
+			(SELECT COUNT(*) FROM (	SELECT * FROM sb_recyclers_range_big a WHERE a.recyclers_id =  #{recycleId} AND a.company_id =  #{companyId} AND a.del_flag = 0) b WHERE b.area_id = c.id) AS num
 			FROM
-				sb_company_street_big a
-			INNER JOIN sb_area c ON a.area_id = c.id
+				(SELECT d.id,d.parent_id,d.area_name FROM
+				sb_company_service a
+				LEFT JOIN sb_area c ON a.area_id = c.id
+				LEFT JOIN sb_area d ON c.parent_id = d.id
+				WHERE a.company_id = #{companyId}
+				UNION
+				SELECT c.id,c.parent_id,c.area_name FROM
+					sb_company_street_big a
+				INNER JOIN sb_area c ON a.area_id = c.id
+				WHERE a.company_id = #{companyId}
+				) c
 			LEFT JOIN (
 				SELECT
 					a.id,a.area_id
@@ -22,8 +31,7 @@
 				AND a.del_flag = 0
 			) b ON c.id = b.area_id
 			WHERE
-				a.company_id = #{companyId}
-			AND c.parent_id =#{cityId}
+				c.parent_id =#{cityId}
 		</select>
 
     <select id="getStreeRecyclersRange" parameterType="String" resultType="Map">
@@ -34,14 +42,16 @@
 			IF (c.id IS NULL, 1, 2) AS isEdit,
 				0 AS num
 			FROM
-				(
-			SELECT
-				c.id,c.area_name
-			FROM sb_company_street_big a
-			INNER JOIN sb_area c ON a.street_id = c.id
-			WHERE a.company_id = #{companyId}
-			and c.parent_id = #{areaId}
-			)  a
+				(SELECT c.id,c.area_name FROM
+				sb_company_service a
+				LEFT JOIN sb_area c ON a.area_id = c.id
+				WHERE a.company_id = #{companyId} AND c.parent_id = #{areaId}
+				UNION
+				SELECT c.id,c.area_name FROM
+					sb_company_street_big a
+				INNER JOIN sb_area c ON a.street_id = c.id
+				WHERE a.company_id = #{companyId} AND c.parent_id = #{areaId}
+				)  a
 			LEFT JOIN (
 				SELECT
 					a.id,a.street_id
@@ -81,7 +91,17 @@
 					b.parent_id AS cityId
 				FROM
 					sb_recyclers_range_big a
-				INNER JOIN sb_company_street_big c ON a.company_id = c.company_id AND a.street_id = c.street_id
+				INNER JOIN (SELECT
+				a.company_id,a.street_id
+				 FROM
+				sb_company_street_big a
+				WHERE a.company_id = #{companyId}
+				UNION
+				SELECT
+				a.company_id,a.area_id AS street_id
+				 FROM
+				sb_company_service a
+				WHERE a.company_id = #{companyId}) c ON a.company_id = c.company_id AND a.street_id = c.street_id
 				INNER JOIN sb_area b ON a.area_id = b.id
 				WHERE
 					a.company_id = #{companyId}
@@ -94,7 +114,17 @@
 					a.area_id AS areaId
 				FROM
 					sb_recyclers_range_big a
-				INNER JOIN sb_company_street_big c ON a.company_id = c.company_id AND a.street_id = c.street_id
+				INNER JOIN (SELECT
+				a.company_id,a.street_id
+				 FROM
+				sb_company_street_big a
+				WHERE a.company_id = #{companyId}
+				UNION
+				SELECT
+				a.company_id,a.area_id AS street_id
+				 FROM
+				sb_company_service a
+				WHERE a.company_id = #{companyId}) c ON a.company_id = c.company_id AND a.street_id = c.street_id
 				WHERE
 					a.company_id = #{companyId}
 				AND a.del_flag = 0
@@ -106,7 +136,17 @@
 					a.street_id AS streetId
 				FROM
 					sb_recyclers_range_big a
-				INNER JOIN sb_company_street_big c ON a.company_id = c.company_id AND a.street_id = c.street_id
+				INNER JOIN (SELECT
+				a.company_id,a.street_id
+				 FROM
+				sb_company_street_big a
+				WHERE a.company_id = #{companyId}
+				UNION
+				SELECT
+				a.company_id,a.area_id AS street_id
+				 FROM
+				sb_company_service a
+				WHERE a.company_id = #{companyId}) c ON a.company_id = c.company_id AND a.street_id = c.street_id
 				WHERE
 					a.company_id = #{companyId}
 				AND a.del_flag = 0

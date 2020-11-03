@@ -330,6 +330,9 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		memberAddress.setStreetName(mapAddressBean.getTownShip());
 		memberAddress.setCommunityName(mapAddressBean.getName());
 		memberAddress.setTownCode(mapAddressBean.getTownCode());
+		if( StringUtils.isNotBlank(mapAddressBean.getProvince()) && !mapAddressBean.getProvince().equals(mapAddressBean.getCity())){
+				memberAddress.setProvinceName(mapAddressBean.getProvince());
+		}
 		this.inserOrUpdatetMemberAddress(memberAddress);
 		return "操作成功";
 	}
@@ -371,10 +374,22 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			select.setAliUserId(aliUserId);
 		MemberAddress memberAddress = this.selectMemberAddressByAliUserIdOne(select);
 		String cityName = memberAddress.getCityName()==null?"":memberAddress.getCityName();
-		if(org.apache.commons.lang3.StringUtils.isBlank(cityName)){
+		String provinceName = "";
+		if(StringUtils.isNotBlank(cityName)){
+			Area city = areaService.selectById(memberAddress.getCityId());
+			if(null != city){
+				if(city.getAreaName().equals(cityName)){
+					Area area = areaService.selectById(city.getParentId());
+					provinceName = area.getAreaName();
+				}
+			}
+		}
+		if(StringUtils.isBlank(cityName)){
 			Area city = areaService.selectById(memberAddress.getCityId());
 			if(null != city){
 				cityName = city.getAreaName();
+				Area area = areaService.selectById(city.getParentId());
+				provinceName = area.getAreaName();
 			}
 		}
 		String areaName = memberAddress.getAreaName()==null?"":memberAddress.getAreaName();
@@ -391,9 +406,18 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 				streetName = area.getAreaName();
 			}
 		}
-		String address = memberAddress.getProvinceName()+cityName+areaName+streetName;
+		String address = "";
+		String a = areaName.replaceAll(cityName, "");
+		String b = streetName.replaceAll(areaName, "");
+		if(StringUtils.isNotBlank(memberAddress.getProvinceName())){
+			 address = memberAddress.getProvinceName()+cityName+a+b;
+		}else{
+			 address = provinceName+cityName+a+b;
+		}
 		if (StringUtils.isNotBlank(memberAddress.getAddress())){
-			address += memberAddress.getAddress();
+			String d = address.replaceAll(b, "");
+			String c = memberAddress.getAddress().replaceAll(d, "");
+			address += c;
 		}
 		if (StringUtils.isNotBlank(memberAddress.getHouseNumber())){
 			address += memberAddress.getHouseNumber();

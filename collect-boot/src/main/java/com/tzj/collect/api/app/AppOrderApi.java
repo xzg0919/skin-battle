@@ -187,6 +187,7 @@ public class AppOrderApi {
 	 */
 	@Api(name = "app.order.distributeOrderList", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
+	@SignIgnore
 	public Object distributeOrderList() {
 		Recyclers recycler = recyclersService.selectById(RecyclersUtils.getRecycler());
 		List<Map<String,Object>> orderList = (List<Map<String,Object>>)orderService.distributeOrderList(recycler.getId().intValue());
@@ -204,6 +205,8 @@ public class AppOrderApi {
 						itemName += orderItem.getCategoryName()+"/";
 					}
 				}
+			}else{
+				itemName = " ";
 			}
 			map.put("category",category);
 			map.put("orderPicList",orderPicList);

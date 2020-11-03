@@ -178,7 +178,7 @@ public class Order extends DataEntity<Long> {
 
 	private TitleType title;// 回收物类型
 
-	private BigDecimal achPrice;//已完成价格
+	private BigDecimal achPrice = BigDecimal.ZERO;//已完成价格
 
 	private BigDecimal discountPrice;//优惠价格
 
@@ -273,6 +273,16 @@ public class Order extends DataEntity<Long> {
 
 	public void setDoublePoint(String doublePoint) {
 		this.doublePoint = doublePoint;
+	}
+	@TableField(exist = false)
+	private BigDecimal priceAch = BigDecimal.ZERO;
+
+	public BigDecimal getPriceAch() {
+		return priceAch;
+	}
+
+	public void setPriceAch(BigDecimal priceAch) {
+		this.priceAch = priceAch;
 	}
 
 	/**

@@ -37,10 +37,10 @@ public class ThreadTime {
     /**
      * 定时任务。定时执行回收人员支付完成，单钱未转账到用户支付宝
      */
-//    @Scheduled(cron = "0 0/2 * * * ?")
-//    public void startPaymentExecute() {
-//        NewThreadPoorExcutor.getThreadPoor().execute(new Thread(new PaymentThread(paymentService, voucherMemberService, orderService,voucherAliService)));
-//    }
+   /*@Scheduled(cron = "0 0/2 * * * ?")
+   public void startPaymentExecute() {
+       NewThreadPoorExcutor.getThreadPoor().execute(new Thread(new PaymentThread(paymentService, voucherMemberService, orderService,voucherAliService)));
+   }*/
     /**
      * 定时任务。订单状态未更改的单子
      */

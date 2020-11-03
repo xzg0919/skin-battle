@@ -247,7 +247,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setLinkMan(orderbean.getLinkMan());
             order.setCategoryId(orderbean.getCategoryId());
             order.setCategoryParentIds(orderbean.getCategoryParentIds());
-            order.setIsMysl("1");
+            if(StringUtils.isNotBlank(orderbean.getIsMysl())){
+                order.setIsMysl(orderbean.getIsMysl());
+            }else{
+                order.setIsMysl("1");
+            }
             order.setPrice(price);
             order.setUnit(orderbean.getUnit());
             order.setQty(orderbean.getQty());
@@ -468,7 +472,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
                 orderItemAch.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions());
                 orderItemAch.setFreeCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getFreeCommissions());
-                orderItemAch.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
+                orderItemAch.setCompanyCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getCompanyCommissions());
                 orderItemAchService.updateById(orderItemAch);
             });
             DecimalFormat df=new DecimalFormat(".##");
@@ -975,7 +979,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         int size = pageBean.getPageSize();
         int num = pageBean.getPageNumber();
         Map<String, Object> map = new HashMap<String, Object>();
-        if(orderBean.getStatus().equals("CANCEL")){
+        if(orderBean.getStatus().equals("CANCEL") && !"3".equals(title)){
             statusList.add("5");
         }
             Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title,reInit);
@@ -1374,7 +1378,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             map.put("TOSEND", TOSENDCount);
             map.put("ALREADY", ALREADYCount);
             map.put("COMPLETE", COMPLETECount);
-            map.put("CANCEL", CANCELCount+REJECTEDCount);
+            map.put("CANCEL", CANCELCount);
             map.put("REJECTED", REJECTEDCount);
         }else {
             int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1).in("title", 1,2,4));
@@ -1388,7 +1392,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             map.put("TOSEND", TOSENDCount);
             map.put("ALREADY", ALREADYCount);
             map.put("COMPLETE", COMPLETECount);
-            map.put("CANCEL", CANCELCount+REJECTEDCount);
+            map.put("CANCEL", CANCELCount);
             map.put("REJECTED", REJECTEDCount);
         }
 		return map;
@@ -1581,15 +1585,112 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return resultMap;
 	}
 
+    /**
+     * 订单详情(企业)老接口
+     *
+     * @param orderId:订单
+     * @return
+     * @author 王灿
+     */
+    @Override
+    public Map<String, Object> selectOrderByBusiness(Integer orderId) {
+        //查询订单详情
+        //Order order = orderMapper.selectOrder(orderId);
+        Order order = createName4Ali(orderMapper.selectOrder(orderId));
+        Category category = null;
+        String cateName = "";
+        //categoryId 再查他的父亲
+        if (order.getCategoryId() != null) {
+            category = categoryService.getCategoryById(order.getCategoryId());
+            if (category != null) {
+                Category pCategory = null;
+                if (category.getParentId() != null && !"".equals(category.getParentId())) {
+                    pCategory = categoryService.getCategoryById(category.getParentId());
+                    if (pCategory != null) {
+                        cateName = pCategory.getName() + "-" + category.getName();
+                        category.setName(cateName);
+                        order.setCategory(category);
+                    }
+                }
+            }
+        }
+        int CompanyId = order.getCompanyId();
+        //根据企业id查询企业信息
+        Company company = companyService.selectById(CompanyId);
+        //根据订单Id查询评价信息
+        OrderEvaluation OrderEvaluation = orderEvaluationService.selectOne(new EntityWrapper<OrderEvaluation>().eq("order_id", orderId).eq("del_flag", "0"));
+        OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()));
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        //order.setPrice(order.getAchPrice());
+        //resultMap.put("order", order);
+        resultMap.put("company", company);
+        resultMap.put("OrderEvaluation", OrderEvaluation);
+        resultMap.put("orderCancleExamine", orderCancleExamine);
+        //System.out.println(11111);
+        if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
+            OrderBean orderBean = new OrderBean();
+            orderBean.setId(orderId);
+            orderBean.setTitle(order.getTitle().toString());
+            orderBean.setStatus(order.getStatus().getValue().toString());
+            orderBean.setIsCash(order.getIsCash());
+
+            Map<String, Object> map = this.createPriceAmount4PC(orderBean);
+            List<Map<String, Object>> priceAmount = (List<Map<String, Object>>) map.get("listMapObject");
+            System.out.println(priceAmount.get(0));
+            resultMap.put("priceAmount", priceAmount);
+            resultMap.put("greenCount", map.get("greenCount"));
+
+        }
+        if (OrderType.COMPLETE.getValue().equals(order.getStatus().getValue())) {
+            //回收人员填的图片
+            List<OrderPicAch> orderPicAchList = orderPicAchService.selectbyOrderId(orderId);
+            //查询订单表的用户填的图片
+            List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
+            if (CategoryType.DIGITAL.getValue().equals(order.getTitle().getValue()) || CategoryType.BIGTHING.getValue().equals(order.getTitle().getValue())) {
+                List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
+                resultMap.put("OrderItemList", OrderItemList);
+            } else {
+                //查询订单表的分了明细表
+                List<OrderItemAch> orderItemAchList = orderItemAchService.selectByOrderId(orderId);
+                resultMap.put("OrderItemList", orderItemAchList);
+            }
+            if (order.getTitle() == Order.TitleType.HOUSEHOLD){
+                order.setPrice(order.getAchPrice());
+            }
+            resultMap.put("order", order);
+            resultMap.put("orderPicList", orderPicAchList);
+            resultMap.put("orderUserPicList", orderPicList);
+            return resultMap;
+        }
+        //查询订单表的关联图片表
+        List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
+        //查询订单表的分了明细表
+        List<OrderItem> OrderItemList = orderItemService.selectByOrderId(orderId);
+        resultMap.put("order", order);
+        resultMap.put("orderPicList", orderPicList);
+        resultMap.put("OrderItemList", OrderItemList);
+        //回收员取消任务表中找最新取消任务的回收员名称
+        OrderBean o = new OrderBean();
+        o.setId(orderId);
+        CancelResult cancelResult = recyclerCancelLogService.selectCancel(o);
+        if(cancelResult != null){
+            resultMap.put("cancelTime", cancelResult.getCancelDate());
+            resultMap.put("cancelNameLast", cancelResult.getRecycleName());
+        }
+        //优惠券详情
+        resultMap.putAll(this.voucherInfo(order));
+        return resultMap;
+    }
+
 	/**
-	 * 订单详情(企业)
+	 * 订单详情(企业)新接口
 	 *
 	 * @param orderId:订单
 	 * @return
 	 * @author 王灿
 	 */
 	@Override
-	public Map<String, Object> selectOrderByBusiness(Integer orderId) {
+	public Map<String, Object> selectOrderByBusiness1(Integer orderId) {
 		//查询订单详情
 		//Order order = orderMapper.selectOrder(orderId);
 		Order order = createName4Ali(orderMapper.selectOrder(orderId));
@@ -1631,6 +1732,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("company", company);                          //企业信息
 		resultMap.put("OrderEvaluation", orderEvaluation);         //评价信息
 		resultMap.put("orderCancleExamine", orderCancleExamine);
+        resultMap.put("dingOrder", initCount+TosendCount+AlreadyCount);//催单总次数
 		if(initCount!=0){
             resultMap.put("initComplaint", "催派" + initCount + "次");
         }
@@ -1713,7 +1815,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             Recyclers recyclerManager = new Recyclers();
             if(recyclers!=null){
                 CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclers.getId()));
-                if(("0").equals(recyclers.getIsManager())){
+                if(("0").equals(recycler.getIsManager())){
                     recyclerManager = recyclersService.selectById(recycler.getParentsId());
                     recyclers.setIsManager("0");
                     order.setRecyclers(recyclers);
@@ -1723,7 +1825,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
             }
             Payment payment = new Payment();
-            payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn",order.getOrderNo()));
+            payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn",order.getOrderNo()).eq("status_","2"));
             resultMap.put("payment", payment);
             resultMap.put("recyclerManager", recyclerManager); //业务经理信息
 			resultMap.put("order", order); //订单信息
@@ -1732,6 +1834,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             resultMap.putAll(this.voucherInfo(order));
 			return resultMap;
 		}
+        if (OrderType.REJECTED.getValue().equals(order.getStatus().getValue())){
+            OrderCancleExamine orderCancleExamineList = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no", order.getOrderNo()).orderBy("create_date",false));
+            if(orderCancleExamineList!=null){
+                resultMap.put("cancleExamineTime", orderCancleExamineList.getCreateTime()); //
+            }else{
+                resultMap.put("cancleExamineTime", order.getCancelTime());
+            }
+        }
 		//查询订单表的关联图片表
 		List<OrderPic> orderPicList = orderPicService.selectbyOrderId(orderId);
 		//查询订单表的分了明细表
@@ -1740,7 +1850,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Recyclers recyclerManager = new Recyclers();
         if(recyclers!=null){
             CompanyRecycler recycler = companyRecyclerService.selectOne(new EntityWrapper<CompanyRecycler>().eq("recycler_id",recyclers.getId()));
-            if(("0").equals(recyclers.getIsManager())){
+            if(("0").equals(recycler.getIsManager())){
                 recyclerManager = recyclersService.selectById(recycler.getParentsId());
                 recyclers.setIsManager("0");
                 order.setRecyclers(recyclers);
@@ -2123,6 +2233,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 Recyclers recyclers = recyclersService.selectById(companyRecycler.getParentsId());
                 PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
             }
+            Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+            OrderOperate orderOperate = new OrderOperate();
+            orderOperate.setOrderNo(order.getOrderNo());
+            orderOperate.setOperateLog("完成订单");
+            orderOperate.setOperatorMan("回收人员-"+recyclers.getName());
+            orderOperate.setReason("/");
+            orderOperateService.insert(orderOperate);
             if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
 				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"已完成","大件回收");
 			}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
@@ -3363,7 +3480,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			//修改订单状态
 			this.modifyOrderSta(orderBean,mqtt4PushOrder);
 			order.setStatus(OrderType.COMPLETE);
+
 		}
+
 		orderService.updateById(order);
 
 		return "操作成功";
@@ -4102,9 +4221,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if (null == order){
 			throw new ApiException("输入的订单号查找不到订单");
 		}
-		if(!(OrderType.INIT+"").equals(order.getStatus()+"")){
+		/*if(!(OrderType.INIT+"").equals(order.getStatus()+"")){
 			throw new ApiException("该订单的不是初始状态，目前不可被申请取消");
-		}
+		}*/
 		OrderCancleExamine orderCancleExamine = orderCancleExamineService.selectOne(new EntityWrapper<OrderCancleExamine>().eq("order_no",orderBean.getOrderNo()));
 		if (null == orderCancleExamine){
 			orderCancleExamine = new OrderCancleExamine();
@@ -4457,6 +4576,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					}catch (Exception e){
 						resultMap.put("money", voucherMembers.getMoney());
 					}
+
 				}else {
 					//进行中订单展示的优惠券抵扣价格（优惠金额）也称作平台支付金额
 					resultMap.put("money", voucherMembers.getMoney());
@@ -4476,8 +4596,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 					resultMap.put("money", voucherMembers.getMoney());
 				}
 			}
+            order.setPriceAch(order.getDiscountPrice().add(order.getCommissionsPrice()));
 			resultMap.put("voucherMembers", voucherMembers);//整个券码
 		}else {
+            order.setPriceAch(order.getAchPrice().add(order.getCommissionsPrice()));
 			resultMap.put("useVoucher", "未使用优惠券");
 		}
 		return resultMap;

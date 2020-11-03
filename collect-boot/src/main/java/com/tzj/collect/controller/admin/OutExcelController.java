@@ -579,6 +579,7 @@ public class OutExcelController {
         titles.add("数量");
         titles.add("是否为客诉");
         titles.add("客诉原因");
+        titles.add("回收人员");
         otherData.setTitles(titles);
         achData.setTitles(titles);
         //添加列
@@ -605,6 +606,7 @@ public class OutExcelController {
                 complaints += "超时两天";
             }
             row.add(complaints);
+            row.add(otherList.get(i).get("recyclerName"));
             rows.add(row);
         }
         otherData.setRows(rows);
@@ -630,6 +632,7 @@ public class OutExcelController {
                 complaints += "超时两天";
             }
             row.add(complaints);
+            row.add(achList.get(i).get("recyclerName"));
             rows.add(row);
         }
         achData.setRows(rows);

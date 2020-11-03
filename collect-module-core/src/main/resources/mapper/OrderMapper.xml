@@ -39,7 +39,7 @@
         LIMIT #{sizeStart} , #{size}
     </select>
     <select id="selectOrder" parameterType="int" resultMap="OrderResultMap">
-        SELECT<include refid="zd"/>,b.name_ AS Recyclers_name,b.tel AS BTel,b.head_pic_url AS headPicUrl,e.price AS
+        SELECT<include refid="zd"/>,b.id AS Recyclers_id ,b.name_ AS Recyclers_name,b.tel AS BTel,b.head_pic_url AS headPicUrl,e.price AS
         paymentPrice FROM sb_order a LEFT JOIN sb_category c ON a.category_id = c.id LEFT JOIN sb_recyclers b ON b.id =
         a.recycler_id LEFT JOIN sb_payment e ON a.order_no = e.order_sn WHERE a.id = #{orderId} AND a.del_flag = '0'
         ORDER BY a.create_date DESC
@@ -383,7 +383,14 @@
             AND so.recycler_id = #{orderBean.recyclerId}
         </if>
         <if test="orderBean.status != null and orderBean.status != '' ">
-            AND so.status_ = #{orderBean.status}
+            <choose>
+                <when test="orderBean.status == '4'.toString()">
+                    AND so.status_ in (4,5)
+                </when>
+                <otherwise>
+                    AND so.status_ = #{orderBean.status}
+                </otherwise>
+            </choose>
         </if>
         )so
         ) so
@@ -445,7 +452,7 @@
 				sb_category sc
 			INNER JOIN sb_order so ON so.category_id = sc.id
 			INNER JOIN sb_recycle_cancel_log srcl ON srcl.order_id = so.id
-			INNER JOIN sb_recyclers sr ON sr.id = so.recycler_id
+			LEFT JOIN sb_recyclers sr ON sr.id = so.recycler_id
 			WHERE
 				so.del_flag = '0'
 				AND so.order_from != '1'
@@ -1757,11 +1764,16 @@ ORDER BY time
         countAll.createDate DESC LIMIT #{startPage},#{endPage}
     </select>
     <select id="getOrderListByAdmin" parameterType="Object" resultType="Map">
-        SELECT
-        a.*,
-        IF(a.overTime > 2880,'1',if(a.complaintType = '3','1','0')) AS isComplaint
-        FROM (
-        SELECT
+        select a.*
+        from
+        (select a.*,
+        CASE WHEN b.type_ = '4' THEN '4'
+             WHEN b.type_ in ('0','1','2') AND a.overTime > 2880 THEN '3'
+             WHEN b.type_ in ('0','1','2') AND 2880 >= a.overTime  THEN '1'
+             WHEN a.overTime > 2880  THEN '2'
+             ELSE '0'END AS isComplaint
+        from
+        (SELECT
         a.id,
         a.order_no AS orderNo,
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as categoryDate,
@@ -1812,8 +1824,46 @@ ORDER BY time
         <if test="endTime != null and endTime !='' ">
             AND concat(#{endTime},' 23:59:59') > a.create_date
         </if>
-        ORDER BY a.create_date DESC
-        ) a
+        )a
+        LEFT JOIN
+        (SELECT
+        a.order_no,
+        a.type_
+        FROM
+        (SELECT c.*from
+        sb_order a
+        INNER JOIN sb_order_complaint c on a.order_no = c.order_no
+        LEFT JOIN sb_recyclers b ON a.recycler_id = b.id
+        WHERE
+        a.del_flag = '0'
+        and a.title != 5
+        <if test="companyId != null and companyId !='' ">
+            AND a.company_id = #{companyId}
+        </if>
+        <if test="title != null and title !='' ">
+            AND a.title = #{title}
+        </if>
+        <if test="status != null and status !='' ">
+            AND a.status_ = #{status}
+        </if>
+        <if test="tel != null and tel !='' ">
+            AND a.tel = #{tel}
+        </if>
+        <if test="orderNo != null and orderNo !='' ">
+            AND a.order_no = #{orderNo}
+        </if>
+        <if test="linkName != null and linkName !='' ">
+            AND a.link_man = #{linkName}
+        </if>
+        <if test="startTime != null and startTime !='' ">
+            AND a.create_date > concat(#{startTime},' 00:00:01')
+        </if>
+        <if test="endTime != null and endTime !='' ">
+            AND concat(#{endTime},' 23:59:59') > a.create_date
+        </if>
+        order by c.order_no,c.type_ DESC) a
+        GROUP BY a.order_no) b on a.orderNo = b.order_no
+        ORDER BY a.categoryDate DESC)a
         WHERE
         1 = 1
         <if test="complaintType != null and complaintType !='' ">
@@ -3002,7 +3052,7 @@ ORDER BY time
         SELECT
         DATE_FORMAT(a.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
         a.order_no AS orderNo,
-        IF(c.title = '1','家电数码',IF(c.title = '4','大件垃圾','生活垃圾')) AS title,
+        IF(b.title = '1','家电数码',IF(b.title = '4','大件垃圾','生活垃圾')) AS title,
         b.link_man AS linkMan,
         b.id,
         b.tel,
@@ -3013,10 +3063,9 @@ ORDER BY time
         FROM
         sb_order_cancle_examine a
         inner JOIN sb_order b ON a.order_no = b.order_no
-        inner JOIN sb_category c ON b.category_id = c.id
         inner JOIN sb_company d ON b.company_id = d.id
         WHERE a.status_ = '0'
-        and b.status_ = '0'
+        AND b.status_ in (0,1,2)
         <if test="companyId != null and companyId != '' ">
             AND b.company_id = #{companyId}
         </if>
@@ -3038,10 +3087,9 @@ ORDER BY time
         FROM
         sb_order_cancle_examine a
         inner JOIN sb_order b ON a.order_no = b.order_no
-        inner JOIN sb_category c ON b.category_id = c.id
         inner JOIN sb_company d ON b.company_id = d.id
         WHERE a.status_ = '0'
-        and b.status_ = '0'
+        AND b.status_ in (0,1,2)
         <if test="companyId != null and companyId != '' ">
             AND b.company_id = #{companyId}
         </if>
@@ -3253,6 +3301,7 @@ ORDER BY time
         order_.is_cash,
         order_.category_name,
         order_.amount,
+        order_.recyclerName,
         IF(order_.isOverTime > 2880,'1',if(order_.complaintType = '3','1','0')) AS isComplaint,
         saa.area_name streetName,
         saa2.area_name areaName,
@@ -3270,6 +3319,7 @@ ORDER BY time
         soo.ach_price,
         soo.is_cash,
         soo.complaint_type AS complaintType,
+        sr.name_ AS recyclerName,
         TIMESTAMPDIFF(MINUTE, IF(soo.title = '2',CONCAT(soo.arrival_time,' ',SUBSTR(soo.arrival_period,
         7,5),':00'),IF(soo.arrival_period='am',CONCAT(soo.arrival_time,' 12:00:00'),CONCAT(soo.arrival_time,'
         18:00:00'))),IF(soo.status_ = '3',soo.complete_date,if(soo.status_ in ('4','5'),soo.cancel_time,NOW()))) AS
@@ -3279,6 +3329,7 @@ ORDER BY time
         FROM
         sb_order soo
         INNER JOIN sb_order_item soi ON soo.id = soi.order_id
+        LEFT JOIN sb_recyclers sr ON soo.recycler_id = sr.id
         WHERE
         soo.del_flag = 0
         AND soo.company_id = #{companyId}
@@ -3303,6 +3354,7 @@ ORDER BY time
         soo.create_date,
         soo.ach_price,
         soo.is_cash,
+        sr.name_ AS recyclerName,
         soo.complaint_type AS complaintType,
         TIMESTAMPDIFF(MINUTE, IF(soo.title = '2',CONCAT(soo.arrival_time,' ',SUBSTR(soo.arrival_period,
         7,5),':00'),IF(soo.arrival_period='am',CONCAT(soo.arrival_time,' 12:00:00'),CONCAT(soo.arrival_time,'
@@ -3313,6 +3365,7 @@ ORDER BY time
         FROM
         sb_order soo
         INNER JOIN sb_order_item_ach soia ON soo.id = soia.order_id
+        LEFT JOIN sb_recyclers sr ON soo.recycler_id = sr.id
         WHERE
         soo.status_ = 3
         AND soo.order_from = '0'
@@ -3383,6 +3436,7 @@ ORDER BY time
         order_.is_cash,
         order_.category_name,
         order_.amount,
+        order_.recyclerName,
         IF(order_.isOverTime > 2880,'1',if(order_.complaintType = '3','1','0')) AS isComplaint,
         saa.area_name streetName,
         saa2.area_name areaName,
@@ -3399,6 +3453,7 @@ ORDER BY time
         soo.create_date,
         soo.ach_price,
         soo.is_cash,
+        sr.name_ AS recyclerName,
         soo.complaint_type AS complaintType,
         TIMESTAMPDIFF(MINUTE, IF(soo.title = '2',CONCAT(soo.arrival_time,' ',SUBSTR(soo.arrival_period,
         7,5),':00'),IF(soo.arrival_period='am',CONCAT(soo.arrival_time,' 12:00:00'),CONCAT(soo.arrival_time,'
@@ -3409,6 +3464,7 @@ ORDER BY time
         FROM
         sb_order soo
         LEFT JOIN sb_order_item soi ON soo.id = soi.order_id
+        LEFT JOIN sb_recyclers sr ON soo.recycler_id = sr.id
         WHERE
         soo.del_flag = 0
         AND soo.order_from = '0'
@@ -3781,6 +3837,7 @@ ORDER BY time
         <result property="isScan" column="is_scan"/>
         <result property="isRead" column="is_read"/>
         <result property="isRisk" column="is_risk"/>
+        <result property="isMysl" column="is_mysl"/>
         <result property="paymentPrice" column="paymentPrice"/>
         <result property="greenCount" column="green_count"/>
         <result property="enterpriseCode" column="enterprise_code"/>
@@ -3811,6 +3868,7 @@ ORDER BY time
             <!--<result property="title" column="title"  typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>-->
         </association>
         <association property="recyclers" javaType="com.tzj.collect.entity.Recyclers">
+            <id property="id" column="Recyclers_id"/>
             <result property="name" column="Recyclers_name"/>
             <result property="tel" column="BTel"/>
             <result property="headPicUrl" column="headPicUrl"/>
@@ -3865,6 +3923,7 @@ ORDER BY time
 		a.is_scan,
 		a.is_read,
 		a.is_risk,
+		a.is_mysl,
 		a.green_count,
 		a.enterprise_code,
 		a.express_amount,

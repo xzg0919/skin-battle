@@ -26,6 +26,13 @@ public class OrderCancleExamineServiceImpl extends ServiceImpl<OrderCancleExamin
         Map<String,Object> resultMap = new HashMap<>();
         List<OrderCancleExamine> orderCancleExamineList = this.selectList(new EntityWrapper<OrderCancleExamine>().eq("order_no", orderbean.getOrderNo()));
         Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderbean.getOrderNo()));
+        if(orderCancleExamineList.size()==0){
+            OrderCancleExamine order1 = new OrderCancleExamine();
+            order1.setCreateTime(order.getCancelTime().toString());
+            order1.setUpdateTime(order.getCancelTime().toString());
+            order1.setCancleReason(order.getCancelReason());
+            orderCancleExamineList.add(order1);
+        }
         resultMap.put("orderCancleExamineList",orderCancleExamineList);
         resultMap.put("order",order);
         return resultMap;

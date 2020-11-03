@@ -115,21 +115,39 @@ public class BusinessOrderApi {
 	 }
 
 	/**
-	 * 根据订单id获取订单详情
+	 * 根据订单id获取订单详情(新接口)
 	 * @author 王灿
 	 * @param
 	 * @return
 	 */
-	 @Api(name = "business.order.getOrderDetail", version = "1.0")
+	 @Api(name = "business.order.getOrderDetailNew", version = "1.0")
 	 @RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
 	 @SignIgnore
-	public Map<String,Object> getOrderDetail(BOrderBean bOrderBean){
+	public Map<String,Object> getOrderDetailNew(BOrderBean bOrderBean){
 		 int orderId = bOrderBean.getId();
 		//查询订单详情
-		 Map<String,Object> resultMap = orderService.selectOrderByBusiness(orderId);
+		 Map<String,Object> resultMap = orderService.selectOrderByBusiness1(orderId);
 		 CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
 		 Company company = companyService.selectById(companyAccount.getCompanyId());
 		 resultMap.put("blueTooth","1".equals(company.getBlueTooth()+"") ? "Y":"N");
+		return resultMap;
+	}
+	/**
+	 * 根据订单id获取订单详情(老接口)
+	 * @author 王灿
+	 * @param
+	 * @return
+	 */
+	@Api(name = "business.order.getOrderDetail", version = "1.0")
+	@RequiresPermissions(values = BUSINESS_API_COMMON_AUTHORITY)
+	@SignIgnore
+	public Map<String,Object> getOrderDetail(BOrderBean bOrderBean){
+		int orderId = bOrderBean.getId();
+		//查询订单详情
+		Map<String,Object> resultMap = orderService.selectOrderByBusiness(orderId);
+		CompanyAccount companyAccount = BusinessUtils.getCompanyAccount();
+		Company company = companyService.selectById(companyAccount.getCompanyId());
+		resultMap.put("blueTooth","1".equals(company.getBlueTooth()+"") ? "Y":"N");
 		return resultMap;
 	}
 	/**
