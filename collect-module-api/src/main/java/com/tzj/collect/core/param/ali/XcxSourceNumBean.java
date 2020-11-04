@@ -11,4 +11,6 @@ public class XcxSourceNumBean {
      */
     private String code;
 
+    private String aliUserId;
+
 }

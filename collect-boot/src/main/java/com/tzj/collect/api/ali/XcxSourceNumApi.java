@@ -26,7 +26,7 @@ public class XcxSourceNumApi {
     @AuthIgnore
     public Object saveXcxSourceNum(XcxSourceNumBean xcxSourceNumBean) {
 
-       return xcxSourceNumService.saveXcxSourceNum(xcxSourceNumBean.getCode());
+       return xcxSourceNumService.saveXcxSourceNum(xcxSourceNumBean.getCode(),xcxSourceNumBean.getAliUserId());
 
     }
 }

@@ -6,6 +6,6 @@ import com.tzj.collect.entity.XcxSourceNum;
 public interface XcxSourceNumService extends IService<XcxSourceNum> {
 
 
-Object saveXcxSourceNum(String xcxCode);
+Object saveXcxSourceNum(String xcxCode,String aliUserId);
 
 }
