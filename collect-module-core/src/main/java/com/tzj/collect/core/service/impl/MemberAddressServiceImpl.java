@@ -273,12 +273,14 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		Integer areaId = -1;
 		Integer streetId = -1;
 		Integer communityId = -1;
+		String areaName = "";
 		Area townShip = areaService.selectOne(new EntityWrapper<Area>().eq("code_", mapAddressBean.getTownCode()));
 		if(null!=townShip){
 			streetId = townShip.getId().intValue();
 			Area area = areaService.selectById(townShip.getParentId());
 			cityId = area.getParentId();
 			areaId = area.getId().intValue();
+			areaName = area.getAreaName();
 		}else {
 			Area city = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", mapAddressBean.getCity()).eq("type", 1));
 			if(null!=city){
@@ -287,6 +289,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			Area district = areaService.selectOne(new EntityWrapper<Area>().eq("parent_id", cityId).eq("area_name", mapAddressBean.getDistrict()).eq("type", 2));
 			if(null!=district){
 				areaId = district.getId().intValue();
+				areaName = district.getAreaName();
 			}
 		}
 		Community community = communityService.selectOne(new EntityWrapper<Community>().eq("area_id", streetId).eq("name_", mapAddressBean.getName()));
@@ -326,7 +329,7 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		memberAddress.setHouseNumber(mapAddressBean.getHouseNumber());
 		memberAddress.setIsSelected(Integer.parseInt(mapAddressBean.getIsSelected()));
 		memberAddress.setCityName(mapAddressBean.getCity());
-		memberAddress.setAreaName(mapAddressBean.getDistrict());
+		memberAddress.setAreaName(areaName);
 		memberAddress.setStreetName(mapAddressBean.getTownShip());
 		memberAddress.setCommunityName(mapAddressBean.getName());
 		memberAddress.setTownCode(mapAddressBean.getTownCode());
@@ -382,6 +385,8 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 					Area area = areaService.selectById(city.getParentId());
 					provinceName = area.getAreaName();
 				}
+			}else{
+				cityName = "";
 			}
 		}
 		if(StringUtils.isBlank(cityName)){
@@ -393,17 +398,21 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 			}
 		}
 		String areaName = memberAddress.getAreaName()==null?"":memberAddress.getAreaName();
-		if(org.apache.commons.lang3.StringUtils.isBlank(areaName)){
+		if(org.apache.commons.lang3.StringUtils.isBlank(areaName) || "[]".equals(areaName)){
 			Area area = areaService.selectById(memberAddress.getAreaId());
 			if(null != area){
 				areaName = area.getAreaName();
+			}else{
+				areaName = "";
 			}
 		}
 		String streetName = memberAddress.getStreetName()==null?"":memberAddress.getStreetName();
-		if(org.apache.commons.lang3.StringUtils.isBlank(streetName)){
+		if(org.apache.commons.lang3.StringUtils.isBlank(streetName) || "[]".equals(streetName)){
 			Area area = areaService.selectById(memberAddress.getStreetId());
 			if(null != area){
 				streetName = area.getAreaName();
+			}else{
+				streetName = "";
 			}
 		}
 		String address = "";
