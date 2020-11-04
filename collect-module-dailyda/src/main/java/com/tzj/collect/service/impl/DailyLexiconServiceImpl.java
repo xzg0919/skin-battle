@@ -630,6 +630,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
                     tupleMap.put("sum", null == stringObjectMap.get("sum_") ? 0: stringObjectMap.get("sum_"));
                     tupleMap.put("picUrl", null == stringObjectMap.get("picUrl") ? "" : stringObjectMap.get("picUrl"));
                     tupleMap.put("linkName", null == stringObjectMap.get("linkName") ? "" : stringObjectMap.get("linkName"));
+                    tupleMap.put("aliUserId", stringObjectMap.get("aliUserId"));
                     tupleMap.put("mobile", stringObjectMap.get("mobile"));
                     tupleMap.put("city", null == stringObjectMap.get("city") ? "" : stringObjectMap.get("city"));
                 }
@@ -784,6 +785,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             //这里根据阿里userId去找当前用户信息
           Map<String, Object> member = dailyMemberService.selectMemberInfoByAliUserId(aliUserIdScore.get(0));
           member.put("aliUserId", aliUserIdScore.get(0));
+          member.put("score", tuple.getScore());
 //            Map<String, Object> sums = dailyLexiconMapper.selectSums(tableNameLastWeek(System.currentTimeMillis()), aliUserIdScore.get(0));
 //            Map<String, Object> prices = dailyLexiconMapper.selectPrices(aliUserIdScore.get(0), LocalDate.now().minusWeeks(1).with(DayOfWeek.MONDAY) + "", LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY)+ " 23:59:59");
             //当前用户所在位置

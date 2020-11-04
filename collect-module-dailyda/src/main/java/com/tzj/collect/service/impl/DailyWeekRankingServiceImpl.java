@@ -140,6 +140,7 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
         titles.add("排名");
         titles.add("昵称");
         titles.add("电话");
+        titles.add("aliUserId");
         titles.add("分数");
         titles.add("答题次数");
         titles.add("红包领取次数");
@@ -153,6 +154,7 @@ public class DailyWeekRankingServiceImpl extends ServiceImpl<DailyWeekRankingMap
             row.add(integer.getAndIncrement());
             row.add(dailyLastWeekRankings.get("linkName"));
             row.add(dailyLastWeekRankings.get("mobile"));
+            row.add(dailyLastWeekRankings.get("aliUserId"));
             row.add(dailyLastWeekRankings.get("score"));
             row.add(dailyLastWeekRankings.get("sum"));
             row.add(dailyLastWeekRankings.get("count_"));

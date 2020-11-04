@@ -243,6 +243,7 @@
 			mm.city,
 			mm.pic_url AS picUrl,
 			mm.link_name AS linkName,
+			mm.ali_user_id AS aliUserId,
 			mobile
 		FROM
 			(
