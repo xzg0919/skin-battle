@@ -40,7 +40,7 @@ public class NotifyController {
     private AreaService areaService;
     @Autowired
     private OrderItemAchService orderItemAchService;
-	@Autowired
+    @Autowired
     private AsyncService asyncService;
     @Autowired
     private RecyclersService recyclersService;
@@ -52,6 +52,7 @@ public class NotifyController {
 
     /**
      * 支付宝支付通知
+     *
      * @param request
      * @param model
      * @return
@@ -73,7 +74,7 @@ public class NotifyController {
             //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
             params.put(name, valueStr);
         }
-        System.out.println("支付异部通知-------------------------------------------------------"+JSON.toJSONString(params));
+        System.out.println("支付异部通知-------------------------------------------------------" + JSON.toJSONString(params));
         try {
             boolean flag = AlipaySignature.rsaCheckV1(params, ALI_PUBLIC_KEY, "UTF-8", "RSA2");
             if (flag) {
@@ -92,7 +93,7 @@ public class NotifyController {
                     return "failure";
                 }
 
-                Payment payment=paymentService.selectByOutTradeNo(outTradeNo);
+                Payment payment = paymentService.selectByOutTradeNo(outTradeNo);
                 if (payment == null) {
                     //未找到相对应的订单
                     return "failure";
@@ -103,6 +104,10 @@ public class NotifyController {
 //                }
                 //根據order_no查询相关订单
                 Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", payment.getOrderSn()).eq("del_flag", 0));
+                //如果订单完成了就直接返回成功
+                if (Order.OrderType.COMPLETE.getValue().equals(order.getStatus())) {
+                    return "success";
+                }
                 //根据订单号查询绑定券的信息
                 VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
 
@@ -123,35 +128,35 @@ public class NotifyController {
                     payment.setTotalAmount(totalAmount);
                     payment.setVoucherMember(voucherMember);
                     //給用戶轉賬
-                    if(!(Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-                        if(null != voucherMember){
+                    if (!(Order.TitleType.BIGTHING + "").equals(order.getTitle() + "")) {
+                        if (null != voucherMember) {
                             //如果不是大件并且有优惠券，则计算使用该券后的价格给用户进行转账
                             BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(order.getAchPrice(), voucherMember.getId().toString());
                             payment.setDiscountPrice(discountPrice);
                             payment.setTransferPrice(discountPrice);
-                        }else {
+                        } else {
                             payment.setDiscountPrice(order.getAchPrice());
                             payment.setTransferPrice(order.getAchPrice());
                         }
-                    }else {
+                    } else {
                         payment.setDiscountPrice(new BigDecimal(totalAmount));
                         payment.setTransferPrice(order.getAchPrice().subtract(order.getCommissionsPrice()));
                     }
                     paymentService.transfer(payment);
                     Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
-                    if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
-                        PushUtils.getAcsResponse(recyclers.getTel(),"3",order.getTitle().getValue()+"");
+                    if ((Order.TitleType.BIGTHING + "").equals(order.getTitle() + "")) {
+                        PushUtils.getAcsResponse(recyclers.getTel(), "3", order.getTitle().getValue() + "");
                     }
-					try {
-                        if (order.getAddress().startsWith("上海市")&&(Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")){
-                            NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new sendGreenOrderThread(orderService,areaService,orderItemAchService,order.getId().intValue())));
+                    try {
+                        if (order.getAddress().startsWith("上海市") && (Order.TitleType.HOUSEHOLD + "").equals(order.getTitle() + "")) {
+                            NewThreadPoorExcutor.getThreadPoor().execute(new Thread(new sendGreenOrderThread(orderService, areaService, orderItemAchService, order.getId().intValue())));
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                }else if (tradeStatus.equalsIgnoreCase("TRADE_CLOSED")){
-                    if(null != voucherMember){
+                } else if (tradeStatus.equalsIgnoreCase("TRADE_CLOSED")) {
+                    if (null != voucherMember) {
                         voucherMemberService.updateVoucherCreate(voucherMember.getId());
                     }
                     return "failure";
