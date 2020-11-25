@@ -771,4 +771,42 @@ public class OrderApi {
         orderbean.setAliUserId(MemberUtils.getMember().getAliUserId());
         return orderService.receivingMoney(orderbean);
     }
+
+
+    @Autowired
+    IotOrderService iotOrderService;
+
+
+
+    /**
+     * IOT4分类订单列表
+     * @param
+     * @return
+     */
+    @Api(name = "order.iot4.orderList", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Object iot4OrderList(OrderBean orderBean) {
+        PageBean pageBean = orderBean.getPagebean();
+        //获取当前登录的会员信息
+        Member member = MemberUtils.getMember();
+        //根据会员ID回去订单列表
+        Map<String, Object> map = iotOrderService.findOrderListByUserId(member.getAliUserId(),   pageBean.getPageNumber(), pageBean.getPageSize());
+        return map;
+    }
+
+    /**
+     * iot4分类订单明细
+     * @param orderBean
+     * @return
+     */
+    @Api(name = "order.iot4.orderDetail", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Object iot4OrderDetail(OrderBean orderBean) {
+       return  iotOrderService.getOrderDetail(orderBean.getOrderNo());
+
+    }
+
+
 }

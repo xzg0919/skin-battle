@@ -47,6 +47,7 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
 
     /**
      * 查询iot设备订单数人数统计
+     *
      * @author: sgmark@aliyun.com
      * @Date: 2019/12/13 0013
      * @Param:
@@ -55,20 +56,22 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
     @Override
     public Page<Map<String, Object>> adminIotOrderPage(AdminIotErrorBean adminIotErrorBean) {
         EntityWrapper<CompanyEquipment> entityWrapper = new EntityWrapper<>();
-        if (!StringUtils.isEmpty(adminIotErrorBean.getEquipmentCode())){
+        if (!StringUtils.isEmpty(adminIotErrorBean.getEquipmentCode())) {
             entityWrapper.eq("equipment_code", adminIotErrorBean.getEquipmentCode());
         }
-        if (!StringUtils.isEmpty(adminIotErrorBean.getEndTime()) && !StringUtils.isEmpty(adminIotErrorBean.getStartTime())){
+        if (!StringUtils.isEmpty(adminIotErrorBean.getEndTime()) && !StringUtils.isEmpty(adminIotErrorBean.getStartTime())) {
             adminIotErrorBean.setEndTime(adminIotErrorBean.getEndTime() + " 23:59:59");
         }
         Page<CompanyEquipment> equipmentErrorListPage = this.selectPage(new Page(adminIotErrorBean.getPageBean().getPageNumber(), adminIotErrorBean.getPageBean().getPageSize()), entityWrapper);
         Page<Map<String, Object>> returnPage = new Page(adminIotErrorBean.getPageBean().getPageNumber(), adminIotErrorBean.getPageBean().getPageSize());
         returnPage.setTotal(equipmentErrorListPage.getTotal());
-        returnPage.setRecords(companyEquipmentMapper.adminIotOrderPage(adminIotErrorBean.getEquipmentCode(), adminIotErrorBean.getCompanyId(), adminIotErrorBean.getStartTime(), adminIotErrorBean.getEndTime(), (adminIotErrorBean.getPageBean().getPageNumber()-1)*adminIotErrorBean.getPageBean().getPageSize(), adminIotErrorBean.getPageBean().getPageSize()));
+        returnPage.setRecords(companyEquipmentMapper.adminIotOrderPage(adminIotErrorBean.getEquipmentCode(), adminIotErrorBean.getCompanyId(), adminIotErrorBean.getStartTime(), adminIotErrorBean.getEndTime(), (adminIotErrorBean.getPageBean().getPageNumber() - 1) * adminIotErrorBean.getPageBean().getPageSize(), adminIotErrorBean.getPageBean().getPageSize()));
         return returnPage;
     }
+
     /**
      * 近15天iot转化率
+     *
      * @author: sgmark@aliyun.com
      * @Date: 2019/12/13 0013
      * @Param:
@@ -81,6 +84,7 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
 
     /**
      * iot导出订单信息（gary后台）
+     *
      * @author: sgmark@aliyun.com
      * @Date: 2019/12/13 0013
      * @Param:
@@ -91,13 +95,13 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
         /**
          * 包含用户ali_user_id
          */
-        List<Map<String, Object>> orderLists = companyEquipmentMapper.adminIotOrderList(adminIotBean.getEquipmentCode(), adminIotBean.getCompanyId(), adminIotBean.getStartTime(), adminIotBean.getEndTime()+ " 23:59:59");
-        orderLists.stream().forEach(orderList ->{
+        List<Map<String, Object>> orderLists = companyEquipmentMapper.adminIotOrderList(adminIotBean.getEquipmentCode(), adminIotBean.getCompanyId(), adminIotBean.getStartTime(), adminIotBean.getEndTime() + " 23:59:59");
+        orderLists.stream().forEach(orderList -> {
             /**
              * 根据用户uId查手机号
              */
-            if (!StringUtils.isEmpty(orderList.get("ali_user_id"))){
-                orderList.put("tel", memberService.selectMemberByAliUserId(orderList.get("ali_user_id")+"").getMobile());
+            if (!StringUtils.isEmpty(orderList.get("ali_user_id"))) {
+                orderList.put("tel", memberService.selectMemberByAliUserId(orderList.get("ali_user_id") + "").getMobile());
             }
         });
         return orderLists;
@@ -111,9 +115,9 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
 
     @Override
     @Transactional
-    public Object uploadEquipmentCoordinates(Integer companyId,String equipmentCode, Double equipmentLongitude, Double equipmentLatitude) {
+    public Object uploadEquipmentCoordinates(Integer companyId, String equipmentCode, Double equipmentLongitude, Double equipmentLatitude) {
         CompanyEquipment companyEquipment = this.selectOne(new EntityWrapper<CompanyEquipment>().eq("del_flag", 0).eq("hardware_code", equipmentCode));
-        if (null == companyEquipment){
+        if (null == companyEquipment) {
             companyEquipment = new CompanyEquipment();
             companyEquipment.setEquipmentCode(equipmentCode);
             companyEquipment.setCompanyId(companyId.longValue());
@@ -125,7 +129,7 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
         companyEquipment.setLatitude(equipmentLatitude);
         AmapResult result = null;
         try {
-            result = mapService.getAmap(equipmentLongitude + "," +equipmentLatitude);
+            result = mapService.getAmap(equipmentLongitude + "," + equipmentLatitude);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -140,7 +144,7 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
         equipmentLocationListService.insert(equipmentLocationList);
         //只保留最新10条
         Integer equipmentLocationCount = equipmentLocationListService.selectCount(new EntityWrapper<EquipmentLocationList>().eq("del_flag", 0).eq("equipment_code", equipmentCode));
-        if(equipmentLocationCount - 10 > 0){
+        if (equipmentLocationCount - 10 > 0) {
             List<EquipmentLocationList> equipmentLocationLists = equipmentLocationListService.selectList(new EntityWrapper<EquipmentLocationList>().eq("del_flag", 0).eq("equipment_code", equipmentCode).orderBy("id", true).last(" limit " + (equipmentLocationCount - 10)));
             equipmentLocationLists.stream().forEach(locationList -> {
                 equipmentLocationListService.deleteById(locationList);
@@ -151,16 +155,16 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
 
     @Override
     public Object getIotList(String aliUserId, Double lng, Double lat, PageBean pageBean) {
-        if (null == pageBean){
+        if (null == pageBean) {
             pageBean = new PageBean();
         }
-        Integer pageStart = (pageBean.getPageNumber() - 1)*pageBean.getPageSize();
-        Map<String,Object> resultMap = new HashMap<>();
-        List<CompanyEquipment> iotList = baseMapper.getIotList(lng, lat,pageStart,pageBean.getPageSize());
-        int count = this.selectCount(new EntityWrapper<CompanyEquipment>().eq("del_flag", "0").eq("is_activated","1"));
-        resultMap.put("iotList",iotList);
-        resultMap.put("count",count);
-        resultMap.put("pageNum",pageBean.getPageNumber());
+        Integer pageStart = (pageBean.getPageNumber() - 1) * pageBean.getPageSize();
+        Map<String, Object> resultMap = new HashMap<>();
+        List<CompanyEquipment> iotList = baseMapper.getIotList(lng, lat, pageStart, pageBean.getPageSize());
+        int count = this.selectCount(new EntityWrapper<CompanyEquipment>().eq("del_flag", "0").eq("is_activated", "1"));
+        resultMap.put("iotList", iotList);
+        resultMap.put("count", count);
+        resultMap.put("pageNum", pageBean.getPageNumber());
         return resultMap;
     }
 
@@ -168,7 +172,7 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
     @Transactional
     public Object getQRCodeUrl(String equipmentCode) {
         CompanyEquipment companyEquipment = this.selectOne(new EntityWrapper<CompanyEquipment>().eq("del_flag", 0).eq("hardware_code", equipmentCode));
-        if (null == companyEquipment){
+        if (null == companyEquipment) {
             companyEquipment = new CompanyEquipment();
             companyEquipment.setEquipmentCode(equipmentCode);
             companyEquipment.setCompanyId(1L);
@@ -180,9 +184,14 @@ public class CompanyEquipmentServiceImpl extends ServiceImpl<CompanyEquipmentMap
         Map<String, Object> returnMap = new HashMap<>();
         IotCompanyResult iotCompanyResult = companyService.selectIotUrlByEquipmentCode(companyEquipment.getEquipmentCode());
         String aliUrl = "alipays://platformapi/startapp?appId=2018060660292753&page=pages/view/index/index&query=";
-        String encodeString = URLEncoder.encode("tranTime="+ System.currentTimeMillis()+ "&ecUuid="+ UUID.randomUUID().toString().substring(0,15)+ "&cabinetNo="+companyEquipment.getEquipmentCode());
-        returnMap.put("qrCode", aliUrl+URLEncoder.encode("qrCode=Y&type=appliance&sourceId="+companyEquipment.getEquipmentCode()+"&qrUrl="+iotCompanyResult.getIotUrl()+"?"+encodeString));
+        String encodeString = URLEncoder.encode("tranTime=" + System.currentTimeMillis() + "&ecUuid=" + UUID.randomUUID().toString().substring(0, 15) + "&cabinetNo=" + companyEquipment.getEquipmentCode());
+        returnMap.put("qrCode", aliUrl + URLEncoder.encode("qrCode=Y&type=appliance&sourceId=" + companyEquipment.getEquipmentCode() + "&qrUrl=" + iotCompanyResult.getIotUrl() + "?" + encodeString));
         return returnMap;
+    }
+
+    @Override
+    public CompanyEquipment getByEquipmentCode(String equipmentCode) {
+        return this.selectOne(new EntityWrapper<CompanyEquipment>().eq("del_flag", 0).eq("equipment_code", equipmentCode));
     }
 
 }

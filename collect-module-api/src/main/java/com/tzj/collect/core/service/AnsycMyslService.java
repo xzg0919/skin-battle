@@ -2,10 +2,11 @@ package com.tzj.collect.core.service;
 
 
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
+import com.tzj.collect.core.param.mysl.MyslBean;
 
 public interface AnsycMyslService {
 
-    public AntMerchantExpandTradeorderSyncResponse updateForest(String orderId, String myslParam);
+      AntMerchantExpandTradeorderSyncResponse updateForest(String orderId, String myslParam);
     AntMerchantExpandTradeorderSyncResponse  updateCansForest(String aliUserId, String outBizNo, long count, String type);
-
+        AntMerchantExpandTradeorderSyncResponse updateCansForestByList(MyslBean myslBean);
 }

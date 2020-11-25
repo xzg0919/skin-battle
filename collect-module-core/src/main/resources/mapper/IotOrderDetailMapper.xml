@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzj.collect.core.mapper.IotOrderDetailMapper" >
+
+    <select id="findMyslParamsByOrderId" parameterType="Long" resultType="com.tzj.collect.core.param.mysl.MyslItemBean">
+        SELECT
+    sic.name_ as itemName,
+    sic.ali_item_type as extValue,
+    CASE
+    WHEN title = 2 THEN
+    siod.unit_amount * 1000
+    WHEN title = 1 THEN
+    siod.unit_amount
+    end  as count
+    FROM
+    sb_iot_order_detail siod
+    INNER JOIN sb_iot_category sic ON sic.id = siod.category_id
+    WHERE
+    order_id = #{orderId} and siod.del_flag =0 and sic.del_flag =0 and title !=0
+    </select>
+
+
+
+
+
+
+    <select id="selectDetailByOrderId" parameterType="Long" resultType="java.util.Map">
+        SELECT
+ sic2.name_ as parentName,sic.name_ as categoryName,siod.unit_amount as weight,siod.unit
+    FROM
+    sb_iot_order_detail siod left join
+    sb_iot_category sic on sic.id =siod.category_id
+		left join sb_iot_category sic2 on  sic2.id =sic.parent_id
+    WHERE
+    order_id = #{orderId} and siod.del_flag =0
+    </select>
+</mapper>

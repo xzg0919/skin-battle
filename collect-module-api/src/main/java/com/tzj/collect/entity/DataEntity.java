@@ -112,7 +112,22 @@ public abstract class DataEntity<ID> extends AbstractEntity<ID> {
 
 	@Transactional
 	public String getDate(Date date) {
+		if(date ==null){
+			return "" ;
+		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(date);
 	}
+
+
+	public String getCreateDateStr() {
+		return getDate(getCreateDate());
+	}
+
+
+	@TableField(exist = false)
+	protected  String createDateStr;
+
+
+
 }

@@ -25,4 +25,6 @@ public interface CompanyEquipmentService extends IService<CompanyEquipment> {
     Object getIotList(String aliUserId, Double lng, Double lat, PageBean pageBean);
 
     Object getQRCodeUrl(String equipmentCode);
+
+    CompanyEquipment getByEquipmentCode(String equipmentCode);
 }
