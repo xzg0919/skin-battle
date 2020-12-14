@@ -25,6 +25,7 @@ import com.tzj.module.common.utils.security.CipherTools;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
 import io.jsonwebtoken.Claims;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -393,8 +394,53 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
         return responseResult;
     }
 
+
+    /**
+     * 根据图片识别垃圾
+     * @param picUrl
+     * @return
+     */
+    @SneakyThrows
+    public static String picQuery(String picUrl) {
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
+        AlipayIserviceCognitiveClassificationWasteQueryRequest request = new
+                AlipayIserviceCognitiveClassificationWasteQueryRequest();
+        JSONObject params = new JSONObject();
+        params.put("biz_code", "sdefgthbvfghytfg");
+        params.put("cognition_type", "ImageUrl");
+        params.put("cognition_content", picUrl);
+        request.setBizContent(params.toJSONString());
+        AlipayIserviceCognitiveClassificationWasteQueryResponse response = alipayClient.execute(request);
+        if (response.isSuccess()) {
+            if(response.getKeyWords()!=null && response.getKeyWords().size()!=0){
+                JSONObject object = (JSONObject) JSONObject.toJSON(response.getKeyWords().get(0));
+                return  object.get("keyWord")==null?null:object.getString("keyWord");
+            }
+        }
+        return "error";
+    }
+
+
+    @SneakyThrows
     public static void main(String[] args) {
-        returnTypeByPic("http://images.sqmall.top/new_bridge/20191227/iot_07162e6c-4879-40b5-81ba-04908343ad5c.jpg");
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
+        AlipayIserviceCognitiveClassificationWasteQueryRequest request = new
+                AlipayIserviceCognitiveClassificationWasteQueryRequest();
+        JSONObject params = new JSONObject();
+        params.put("biz_code", "sdefgthbvfghytfg");
+        params.put("cognition_type", "ImageUrl");
+        params.put("cognition_content", "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=460131924,4235991852&fm=15&gp=0.jpg");
+        request.setBizContent(params.toJSONString());
+        AlipayIserviceCognitiveClassificationWasteQueryResponse response = alipayClient.execute(request);
+        System.out.println("return---------------------:" + JSONObject.toJSON(response).toString());
+        if (response.isSuccess()) {
+            if(response.getKeyWords()!=null && response.getKeyWords().size()!=0){
+                JSONObject object = (JSONObject) JSONObject.toJSON(response.getKeyWords().get(0));
+                System.out.println(object.get("keyWord"));
+            }
+        } else {
+            System.out.println("调用失败");
+        }
     }
 
 }
