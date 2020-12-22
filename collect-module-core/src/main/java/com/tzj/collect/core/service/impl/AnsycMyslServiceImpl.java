@@ -170,24 +170,52 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
 
     public static void main(String[] args) throws Exception {
 
-        Class<?> clazz = Class.forName("com.tzj.collect.entity.Area");
-        TableName annotation = clazz.getAnnotation(TableName.class);
-        System.out.println(annotation);
+//        Class<?> clazz = Class.forName("com.tzj.collect.entity.Area");
+//        TableName annotation = clazz.getAnnotation(TableName.class);
+//        System.out.println(annotation);
+//
+//
+//        Class<Area> areaClass = Area.class;
+//        Object o = areaClass.newInstance();
+//        Method[] declaredMethods = areaClass.getDeclaredMethods();
+//        Arrays.asList(declaredMethods).stream().forEach(s->{
+//            AuthIgnore annotation1 = s.getAnnotation(AuthIgnore.class);
+//            if (null!= annotation1){
+//                System.out.println(s.getName());
+//            }
+//        });
+//        System.out.println();
+//        Area o1 = (Area) o;
+//        o1.setId(11111L);
+//
+//        System.out.println(o1.getId());
 
-
-        Class<Area> areaClass = Area.class;
-        Object o = areaClass.newInstance();
-        Method[] declaredMethods = areaClass.getDeclaredMethods();
-        Arrays.asList(declaredMethods).stream().forEach(s->{
-            AuthIgnore annotation1 = s.getAnnotation(AuthIgnore.class);
-            if (null!= annotation1){
-                System.out.println(s.getName());
+        try{
+            AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
+            AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
+            AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+            request.setBizContent("{\"buyerId\":\"2088132617598237\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"appliance\"}],\"itemName\":\"冰箱\",\"quantity\":1}],\"outBizNo\":\"20201213104317486782\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}");
+            AntMerchantExpandTradeorderSyncResponse response = null;
+            try {
+                response = alipayClient.execute(request);
+            }catch (Exception e){
+                e.printStackTrace();
             }
-        });
-        System.out.println();
-        Area o1 = (Area) o;
-        o1.setId(11111L);
-
-        System.out.println(o1.getId());
+            if(response.isSuccess()){
+                System.out.println("调用成功");
+                String MorderId = response.getOrderId();
+                System.out.println("MorderId"+MorderId);
+            } else {
+                System.out.println("调用失败");
+                DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                        ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是：356035",
+                        RocketMqConst.DINGDING_ERROR,response.getBody());
+            }
+        }catch (Exception e) {
+            DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是：356035",
+                    RocketMqConst.DINGDING_ERROR,e.toString());
+            e.printStackTrace();
+        }
     }
 }

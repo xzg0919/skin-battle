@@ -1,6 +1,9 @@
 package com.tzj.collect.module.task.job;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.commom.redis.RedisUtil;
+import com.tzj.collect.core.service.FlcxMerchantThresHoldService;
+import com.tzj.collect.entity.FlcxMerchantThresHold;
 import com.tzj.collect.module.task.job.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.service.FlcxLexiconService;
 import com.tzj.collect.core.service.FlcxRecordsService;
@@ -27,6 +30,8 @@ public class FlcxJob {
     private FlcxRecordsService flcxRecordsService;
     @Resource
     private FlcxLexiconService flcxLexiconService;
+    @Resource
+    private FlcxMerchantThresHoldService flcxMerchantThresHoldService;
     @Autowired
     private RedisUtil redisUtil;
     protected final static Logger logger = LoggerFactory.getLogger(FlcxJob.class);
@@ -36,6 +41,13 @@ public class FlcxJob {
     @Scheduled(cron = "0 45 12 * * ?")
     public void flcxExecute(){
         NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new flcxThread(flcxRecordsService, redisUtil)));
+    }
+    /**
+     * 定时任务。（每天0点 10分）  重置商户的接口调用次数
+     */
+    @Scheduled(cron = "0 10 0 * * ?")
+    public void flcxThirdReset(){
+        NewThreadPoorExcutor.getThreadPoor().execute(new Thread (new FlcxThirdResetThread(flcxMerchantThresHoldService)));
     }
 
     class flcxThread implements Runnable{
@@ -58,6 +70,16 @@ public class FlcxJob {
             mapList.parallelStream().forEach(map -> {
                 redisUtil.set(map.get("name_").toString(), map.get("count_"));
             });
+        }
+    }
+    class FlcxThirdResetThread implements Runnable{
+        private FlcxMerchantThresHoldService flcxMerchantThresHoldService;
+        public FlcxThirdResetThread(FlcxMerchantThresHoldService flcxMerchantThresHoldService){
+            this.flcxMerchantThresHoldService = flcxMerchantThresHoldService;
+        }
+        @Override
+        public void run() {
+           flcxMerchantThresHoldService.updateForSet("today_times=0", new EntityWrapper<FlcxMerchantThresHold>().eq("del_flag", 0));
         }
     }
 

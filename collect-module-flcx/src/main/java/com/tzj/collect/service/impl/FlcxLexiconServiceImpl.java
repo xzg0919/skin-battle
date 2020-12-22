@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.core.param.flcx.FlcxBean;
 import com.tzj.collect.core.param.flcx.FlcxLexiconBean;
+import com.tzj.collect.core.param.flcx.FlcxThirdBean;
 import com.tzj.collect.core.result.flcx.FlcxResult;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.FlcxEggshell;
@@ -407,5 +408,77 @@ public class FlcxLexiconServiceImpl extends ServiceImpl<FlcxLexiconMapper, FlcxL
         map.put("msg","success");
         return  map;
 
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+//    @Cacheable(value = "lexCheckMap" , key = "#flcxBean.cityName + '_'+ #flcxBean.cityId + '_' + #flcxBean.name + '_' + #flcxBean.typeId",   sync = true)
+    public Map lexThirdCheck(FlcxThirdBean flcxBean) throws ApiException {
+        HashMap<String, Object> map = new HashMap<>();
+        //根据名称从redis取出结果集
+        Boolean object = false;
+        if (!StringUtils.isBlank(flcxBean.getName())){
+            object = redisUtil.hasKey(flcxBean.getName());
+        }
+        Map<String, Object> resultMap = null;
+        if (true == object|| flcxBean.getTypeId()> 0){
+            FlcxRecords flcxRecords = new FlcxRecords();
+            if (StringUtils.isEmpty(flcxBean.getName()) && flcxBean.getTypeId() == 0 ){
+                throw new ApiException("参数错误");
+            }
+            if (null == flcxBean.getName() || StringUtils.isEmpty(flcxBean.getName()) || flcxBean.getTypeId() != 0){
+                flcxBean.setName("");
+                flcxRecords.setLexicons(flcxBean.getTypeId().toString());
+            }else {
+                flcxBean.setTypeId(0L);
+                flcxRecords.setLexicons(flcxBean.getName());
+            }
+            //先查特殊表中类型
+            FlcxResult flcxResult = flcxLexiconMapper.lexThirdCheckSpecial(flcxBean.getName(), flcxBean.getTypeId(), flcxBean.getCityName(), flcxBean.getCityId());
+            if (null == flcxResult){
+                flcxResult = flcxLexiconMapper.lexThirdCheck(flcxBean.getName(), flcxBean.getTypeId(), flcxBean.getCityName(), flcxBean.getCityId());
+            }
+            //记录查询
+            flcxRecords.setAliUserId(flcxBean.getAppId());
+            String typeName = "";
+            if (null != flcxResult){
+                flcxResult.setRemarksList(Arrays.asList(flcxResult.getRemarks().split(";")));
+                Set<String> nameSet = new HashSet<>();
+                flcxResult.getImgUrlAfter().stream().forEach(imgAfter ->{
+                    nameSet.add(imgAfter.get("name_"));
+                });
+                if (nameSet.size() > 0){
+                    flcxResult.setParentName(nameSet.toString().replace("[", "").replace("]", "").replace(",", "/").replace("null", ""));
+                    typeName = flcxResult.getImgUrlAfter().get(0).get("name_");
+                }
+               // map.put("results", flcxResult);
+                map.put("type", typeName);
+                map.put("msg", "success");
+                flcxRecords.setLexiconAfter(flcxResult.getLexicon());
+//                flcxRecords.setLexiconsId(flcxResult.getLexiconId());
+            }else {
+//                //搜索是否存在彩蛋
+//                FlcxEggshell flcxEggshell = flcxEggshellService.selectOne(new EntityWrapper<FlcxEggshell>().eq("del_flag", 0).eq("lexicon_", flcxBean.getName()));
+//                if (null != flcxEggshell){
+//                    map.put("msg", "eggshell");
+//                    map.put("describe", flcxEggshell.getDescribe());
+//                }else {
+//                    map.put("msg", "empty");
+//                }
+            }
+            map.put("flcxRecords", flcxRecords.getLexiconAfter());
+            return map;
+        }else {
+            //词库里没找到，上传至标注平台
+            new Thread(()->{
+                try{
+                    aliFlcxService.lexTagging(flcxBean.getName(), "isv", flcxBean.getCityName());
+                }catch (AlipayApiException e){
+                    //发钉钉消息
+                }
+            });
+            map.put("msg", "empty");
+            return map;
+        }
     }
 }

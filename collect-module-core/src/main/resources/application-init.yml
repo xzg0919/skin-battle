@@ -5,7 +5,7 @@ isDd: true
 #五公斤推送是否用正式
 isWuGongJin: true
 #是否开启转账线程
-isOpenTransferThread: true
+isOpenTransferThread: false
 #是否开启咸鱼订单消费
 isOpenXyConsumer: false
 #是否是正式支付通知

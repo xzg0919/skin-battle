@@ -105,7 +105,7 @@ public class NotifyController {
                 //根據order_no查询相关订单
                 Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", payment.getOrderSn()).eq("del_flag", 0));
                 //如果订单完成了就直接返回成功
-                if (Order.OrderType.COMPLETE.getValue().equals(order.getStatus())) {
+                if (Order.OrderType.COMPLETE.equals(order.getStatus())) {
                     return "success";
                 }
                 //根据订单号查询绑定券的信息

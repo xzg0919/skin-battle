@@ -1824,6 +1824,7 @@ ORDER BY time
         <if test="endTime != null and endTime !='' ">
             AND concat(#{endTime},' 23:59:59') > a.create_date
         </if>
+        order by a.create_date desc
         )a
         LEFT JOIN
         (SELECT
@@ -1863,7 +1864,7 @@ ORDER BY time
         </if>
         order by c.order_no,c.type_ DESC) a
         GROUP BY a.order_no) b on a.orderNo = b.order_no
-        ORDER BY a.categoryDate DESC)a
+        )a
         WHERE
         1 = 1
         <if test="complaintType != null and complaintType !='' ">

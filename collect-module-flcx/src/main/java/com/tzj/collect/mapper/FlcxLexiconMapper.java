@@ -14,5 +14,7 @@ import org.apache.ibatis.annotations.Param;
 public interface FlcxLexiconMapper extends BaseMapper<FlcxLexicon> {
 
     FlcxResult lexCheck(@Param("lexiconName") String lexiconName, @Param("typeId") Long typeId, @Param("cityName")String cityName, @Param("cityId")Long cityId);
+    FlcxResult lexThirdCheck(@Param("lexiconName") String lexiconName, @Param("typeId") Long typeId, @Param("cityName")String cityName, @Param("cityId")Long cityId);
     FlcxResult lexCheckSpecial(@Param("lexiconName") String lexiconName, @Param("typeId") Long typeId, @Param("cityName")String cityName, @Param("cityId")Long cityId);
+    FlcxResult lexThirdCheckSpecial(@Param("lexiconName") String lexiconName, @Param("typeId") Long typeId, @Param("cityName")String cityName, @Param("cityId")Long cityId);
 }

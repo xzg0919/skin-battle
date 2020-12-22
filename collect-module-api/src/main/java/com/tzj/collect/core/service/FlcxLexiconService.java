@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.IService;
 
 import com.tzj.collect.core.param.flcx.FlcxBean;
 import com.tzj.collect.core.param.flcx.FlcxLexiconBean;
+import com.tzj.collect.core.param.flcx.FlcxThirdBean;
 import com.tzj.collect.entity.FlcxLexicon;
 import com.tzj.module.easyopen.exception.ApiException;
 
@@ -74,6 +75,6 @@ public interface FlcxLexiconService extends IService<FlcxLexicon> {
      */
     public Map updateFlcxLexicon (FlcxLexiconBean flcxLexiconBean);
 
-
+    public Map lexThirdCheck(FlcxThirdBean flcxBean);
 
 }

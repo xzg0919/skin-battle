@@ -2,7 +2,10 @@ import com.alibaba.fastjson.JSON;
 import com.tzj.module.easyopen.util.ApiUtil;
 import io.itit.itf.okhttp.FastHttpClient;
 import io.itit.itf.okhttp.Response;
+import sun.misc.BASE64Encoder;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
@@ -13,28 +16,30 @@ import java.util.UUID;
  **/
 public class MqttTest {
     public static void main(String[] args) throws Exception {
-        String api="http://localhost:9006/equipment/iot/app/api";
-        HashMap<String,Object> param=new HashMap<>();
-        param.put("name","equipment.open.door");
-        param.put("version","1.0");
-        param.put("format","json");
-        param.put("app_key","app_id_8");
-        param.put("timestamp", Calendar.getInstance().getTimeInMillis());
-        param.put("token", "F7AHNFQOKPRQTKYHDWUKCR2X5IP7P4IQNNCPRN6VQNVN6NHTTULOLHZS5OTDCQQBOOX3LCUSO4NFAYNMS3JNARBJS662CEVHWOWPJBWHHYHCZOF474ON5C7LJIOCK4OV6264ZVHDB2AGW7BSIFCZ6RUAD5FMFT3KQ2VZV5SK2LJ2UDFEN4RMVJIEJMRS6HWEFIGFVLHJEXJ2FXJK5XALQQ4VLLMOBCNAEDWVVGSQELXC6QD6QB6ZMNPKYM446O3W36DV37OPZFW5ZK6WYTPOB7UFKKZBO4TAAIFFK5OFKQ3ZXOLYZXDA");
-        //param.put("sign","111");
-        param.put("nonce", UUID.randomUUID().toString());
-
-        param.put("data","{\"cabinetNo\":\"869012040190428\"}");
-
-        String jsonStr= JSON.toJSONString(param);
-        String sign= ApiUtil.buildSign(JSON.parseObject(jsonStr),"sign_key_55667788");
-        param.put("sign",sign);
-
-        String s = "{\"app_key\":\"app_id_1\",\"data\":{\"cityId\":745},\"name\":\"memberAddress.memberAddressList\",\"format\":\"json\",\"sign\":\"FC9A826D26B306554FA6EEA9F5633520\",\"version\":\"1.0\",\"nonce\":1236131394899.91299,\"token\":\"3F3TEMH74565Q5QORHNPE76UZM6VT4JPWVV4OPUNTGAXLLRLC6B5GYU3LW34YHVNOEFL2LXPVT24U65CVPQU32QS6WCOW4OQQ3AURAVX5JCW3DOJFI7QONQRCOYHSMZITFGRL7NE5YTTFKOD4CHYYW5XCU546HJVXIOTWEUH553LW7Q5I5HMBELSQBTBTYOQZEB2JBJEI7CERPJ5GXZGKOKLSCQFMEABHE2O75VTH57K7GHNNLDWI3HIJKS743QNBZCVVCNMPXWADKD4T3M3QCMWPAM7SRGIBEE27W26GDOMZF2JEZLQ\",\"timestamp\":\""+Calendar.getInstance().getTimeInMillis()+"\"}";
-
-        System.out.println("请求的参数是 ："+JSON.toJSONString(param));
-        Response response= FastHttpClient.post().url(api).body(JSON.toJSONString(param)).build().execute();
-        String resultJson=response.body().string();
-        System.out.println("返回的参数是 ："+resultJson);
+        String url = "https://183.194.243.82/clientgateway/";
+        String appid = "6fa10b76-2444-44f5-aed5-de48d46c85e5";
+        String appkey = "4d4c10af-46c1-46d8-8fa2-e00b06bfb084";
+//        String appsignature = "b6892d8d-5823-4001-976e-96881f730740";
+//        String apikey = "a6477c8196119cf6940b3e0e9542dc89";
+        String apiID = "55030e2c-49d3-4e9b-a6b2-814ee17e9dbb";
+        String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
+        String key = appkey.replaceAll("-", "");
+        String stringtosign = appid + apiID + timestamp+100;
+        System.out.println(stringtosign);
+        SecretKeySpec keySpec = new SecretKeySpec(key.getBytes("utf-8"), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+//        6OB2hgp0irC5Rngf2kReRT5YvvW+303ptWYrR9XrBI3SNJeW5QFm76IqjqFCxTpe1bfM9zeCEV9TLsZnsNoBTaRTqxtFmZyAWgdSq7U2r/B8RLtjGECH9P7Vb3LomLHo
+//        3vSk9Jx85VONjqyz5b04Bv8NsXtn85qqAMoQdtdo0ZseKklK+nCo41H+AcLEIEJCn+p+BD2MycPrEgqIFmFbE1sEzVrPZnxQkwfvZ8y1yfynSZpUUjAqWBC6AtINstIr
+        //stringtosign是1.1生成的签名字符串
+        byte[] bytes = cipher.doFinal(stringtosign.getBytes("utf-8"));
+        String signature = new BASE64Encoder().encode(bytes).replaceAll("\r|\n|\t", "").replaceAll(" ", "");
+        System.out.println("signature" + signature);
+        System.out.println(FastHttpClient.post().url(url)
+                .addHeader("appid", appid)
+                .addHeader("apiname", apiID)
+                .addHeader("signature", signature)
+                .addParams("data", "https://s.sh.gov.cn/7f78f6ac4a18b8dfa7cc6b6c1852081599211252260")
+                .addParams("from", key).build().execute().getResponse().body().string());
     }
 }

@@ -93,4 +93,12 @@ public class TokenConst {
     public static final String JFAPP_API_TOKEN_CYPTO_KEY="Poasdasdadasasd231dasdsad2L";
     public static final String JFAPP_API_TOKEN_SECRET_KEY="2012p0876jnx42a8888ForShenZhenBgsdf561869839";
     public static final String JFAPP_API_TOKEN_SIGN_KEY="llsbadokx7s43dflkasda12kkkk";
+
+    //FLCX 客户端的一些常量======================
+    public static final long FLCX_API_EXPRIRE=60*60;
+    public static final String FLCX_API_COMMON_AUTHORITY="flcx:api";
+
+    public static final String FLCX_API_TOKEN_CYPTO_KEY="Poasdasdadasfs231dasdsad2L";
+    public static final String FLCX_API_TOKEN_SECRET_KEY="2012p0876jnx42a88sdfsdForShenZhenBgsdf561869839";
+    public static final String FLCX_API_TOKEN_SIGN_KEY="llsbadokx7s43dflsdkasda12kkkk";
 }

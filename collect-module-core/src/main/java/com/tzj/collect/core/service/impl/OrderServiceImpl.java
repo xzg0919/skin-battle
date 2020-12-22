@@ -3488,6 +3488,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return "操作成功";
 	}
 
+    public static void main(String[] args) {
+        System.out.println(new BigDecimal(162.03).multiply(new BigDecimal(10)).divide(new BigDecimal(100)));
+    }
 	@Override
 	public void deleteBigOrderRemarks(Integer orderId){
 		orderMapper.deleteBigOrderRemarks(orderId);

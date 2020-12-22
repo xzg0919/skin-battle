@@ -26,13 +26,13 @@ public abstract class DataEntity<ID> extends AbstractEntity<ID> {
 	@TableField(value = "create_date", fill = FieldFill.INSERT)
 	protected Date createDate; // 创建日期
 
-	@TableField(value = "update_date", fill = FieldFill.INSERT_UPDATE)
+	@TableField(value = "update_date", fill = FieldFill.INSERT_UPDATE, update = "NOW()")
 	protected Date updateDate; // 更新日期
 	@TableField(value = "del_flag", fill = FieldFill.INSERT)
 	protected String delFlag = "0";
 
 	@Version
-	@TableField(value = "version_")
+	@TableField(value = "version_" , fill = FieldFill.INSERT, update="%s+1")
 	private Integer version;
 
 	public DataEntity() {
