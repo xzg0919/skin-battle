@@ -37,10 +37,11 @@ import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * iot 设备 api
+ *
  * @author: sgmark@aliyun.com
  * @Date: 2019/11/13 0013
- * @Param: 
- * @return: 
+ * @Param:
+ * @return:
  */
 @ApiService
 public class EquipmentAppApi {
@@ -64,10 +65,11 @@ public class EquipmentAppApi {
 
     /**
      * 广告位
+     *
      * @author: sgmark@aliyun.com
      * @Date: 2019/11/13 0013
-     * @Param: 
-     * @return: 
+     * @Param:
+     * @return:
      */
     @Api(name = "equipment.advert", version = "1.0")
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
@@ -77,15 +79,16 @@ public class EquipmentAppApi {
 
     /**
      * 验证码验证开门
+     *
      * @author: sgmark@aliyun.com
      * @Date: 2019/12/24 0024
-     * @Param: 
-     * @return: 
+     * @Param:
+     * @return:
      */
     @Api(name = "equipment.code.open", version = "1.0")
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
     public Map<String, Object> equipmentCodeOpen(EquipmentParamBean equipmentParamBean) {
-        if (StringUtils.isEmpty(equipmentParamBean.getHardwareCode())|| StringUtils.isEmpty(equipmentParamBean.getCaptcha())){
+        if (StringUtils.isEmpty(equipmentParamBean.getHardwareCode()) || StringUtils.isEmpty(equipmentParamBean.getCaptcha())) {
             throw new ApiException("参数错误");
         }
         return equipmentMessageService.equipmentCodeOpen(equipmentParamBean, mqttClient);
@@ -93,11 +96,12 @@ public class EquipmentAppApi {
 
 
     /**
-     *  获取动态二维码
+     * 获取动态二维码
+     *
      * @author: sgmark@aliyun.com
      * @Date: 2019/12/10 0010
-     * @Param: 
-     * @return: 
+     * @Param:
+     * @return:
      */
     @Api(name = "equipment.qrcode", version = "1.0")
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
@@ -106,20 +110,21 @@ public class EquipmentAppApi {
         CompanyEquipment equipment = CompanyEquipmentUtils.getCompanyEquipment();
         IotCompanyResult iotCompanyResult = companyService.selectIotUrlByEquipmentCode(equipment.getEquipmentCode());
         String aliUrl = "alipays://platformapi/startapp?appId=2018060660292753&page=pages/view/index/index&query=";
-        String encodeString = URLEncoder.encode("tranTime="+ System.currentTimeMillis()+ "&ecUuid="+UUID.randomUUID().toString().substring(0,15)+ "&cabinetNo="+equipment.getEquipmentCode());
-        returnMap.put("qrCode", aliUrl+URLEncoder.encode("qrCode=Y&type=appliance&sourceId="+equipment.getEquipmentCode()+"&qrUrl="+iotCompanyResult.getIotUrl()+"?"+encodeString));
+        String encodeString = URLEncoder.encode("tranTime=" + System.currentTimeMillis() + "&ecUuid=" + UUID.randomUUID().toString().substring(0, 15) + "&cabinetNo=" + equipment.getEquipmentCode());
+        returnMap.put("qrCode", aliUrl + URLEncoder.encode("qrCode=Y&type=appliance&sourceId=" + equipment.getEquipmentCode() + "&qrUrl=" + iotCompanyResult.getIotUrl() + "?" + encodeString));
         return returnMap;
     }
 
     public static void main(String[] args) {
         String aliUrl = "alipays://platformapi/startapp?appId=2018060660292753&page=pages/view/index/index&query=";
-        String encodeString = URLEncoder.encode("tranTime="+ System.currentTimeMillis()+ "&ecUuid="+UUID.randomUUID().toString().substring(0,15)+ "&cabinetNo="+"SH0024");
-        System.out.println(aliUrl+URLEncoder.encode("qrCode=Y&type=appliance&sourceId="+"SH0024"+"&qrUrl="+"http://apibox.weee-ec.cn/service/Api/Alipay.src"+"?"+encodeString));
+        String encodeString = URLEncoder.encode("tranTime=" + System.currentTimeMillis() + "&ecUuid=" + UUID.randomUUID().toString().substring(0, 15) + "&cabinetNo=" + "SH0024");
+        System.out.println(aliUrl + URLEncoder.encode("qrCode=Y&type=appliance&sourceId=" + "SH0024" + "&qrUrl=" + "http://apibox.weee-ec.cn/service/Api/Alipay.src" + "?" + encodeString));
     }
 
 
     /**
      * iot错误信息列表
+     *
      * @author: sgmark@aliyun.com
      * @Date: 2019/10/16 0016
      * @Param:
@@ -127,11 +132,13 @@ public class EquipmentAppApi {
      */
     @Api(name = "equipment.error.code", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    public List<Map<String, Object>> iotErrorCode(IotErrorParamBean iotErrorParamBean){
+    public List<Map<String, Object>> iotErrorCode(IotErrorParamBean iotErrorParamBean) {
         return equipmentErrorCodeService.iotErrorCode(iotErrorParamBean);
     }
+
     /**
      * 用户上传iot错误信息
+     *
      * @author: sgmark@aliyun.com
      * @Date: 2019/10/16 0016
      * @Param:
@@ -139,22 +146,24 @@ public class EquipmentAppApi {
      */
     @Api(name = "equipment.error.list.member", version = "1.0")
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    public Map<String, Object>  iotErrorListByMember(IotErrorParamBean iotErrorParamBean){
+    public Map<String, Object> iotErrorListByMember(IotErrorParamBean iotErrorParamBean) {
         iotErrorParamBean.setMember(MemberUtils.getMember());
         return equipmentErrorListService.iotErrorListByMember(iotErrorParamBean);
     }
+
     /**
      * 上传文件0
      */
     @Api(name = "equipment.upload.image", version = "1.0")
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
-    public List<FileBean> uploadImage(List<FileBase64Param> fileBase64ParamLists){
+    public List<FileBean> uploadImage(List<FileBase64Param> fileBase64ParamLists) {
         return fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
     }
+
     @Api(name = "equipment.open.door", version = "1.0")
     @SignIgnore
     @AuthIgnore
-    public void openDoor(){
+    public void openDoor() {
         Map<String, String> messageMap = new HashMap<>();
         messageMap.put("code", CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_OPEN.getKey());
         messageMap.put("msg", CompanyEquipment.EquipmentAction.EquipmentActionCode.RECYCLE_OPEN.getValue());
@@ -164,15 +173,16 @@ public class EquipmentAppApi {
             e.printStackTrace();
         }
     }
+
     @Api(name = "equipment.getMemberByCardNo", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
     public Object getMemberByCardNo(MemberBean memberBean) throws MqttException {
         CompanyEquipment companyEquipment = CompanyEquipmentUtils.getCompanyEquipment();
-        Map<String,Object> resultMap = new HashMap<String,Object>();
+        Map<String, Object> resultMap = new HashMap<String, Object>();
         String aliUserId = ToolUtils.getAliUserIdByOrderNo(memberBean.getCardNo());
         Member member = memberService.selectMemberByAliUserId(aliUserId);
-        if(member==null) {
+        if (member == null) {
             resultMap.put("code", "500");
             resultMap.put("msg", "该卡号不存在");
             return resultMap;
@@ -184,7 +194,7 @@ public class EquipmentAppApi {
         String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
         String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
         messageMap.put("token", securityToken);
-        equipmentMessageService.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap),companyEquipment.getHardwareCode(), mqttClient);
+        equipmentMessageService.sendMessageToMQ4IoTUseSignatureMode(JSONObject.toJSONString(messageMap), companyEquipment.getHardwareCode(), mqttClient);
         resultMap.put("code", "200");
         resultMap.put("msg", "操作成功");
         return resultMap;
@@ -193,10 +203,27 @@ public class EquipmentAppApi {
     @Api(name = "equipment.uploadImg", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
-    public Object uploadImg(MemberBean memberBean){
+    public Object uploadImg(MemberBean memberBean) {
         AlipayResponseResult alipayResponseResult = EquipmentMessageServiceImpl.returnTypeByPic(memberBean.getImgUrl());
-        System.out.println("----------------------"+ JSON.toJSONString(alipayResponseResult));
+        System.out.println("----------------------" + JSON.toJSONString(alipayResponseResult));
         return alipayResponseResult;
+    }
+
+
+    /**
+     * 传入图片返回什么垃圾
+     * @param memberBean
+     * @return
+     */
+    @Api(name = "equipment.picQuery", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    public Object picQuery(List<FileBase64Param> fileBase64ParamLists) {
+        List<FileBean> fileBeans = fileUploadServiceImpl.uploadImageForIot(fileBase64ParamLists);
+        if(fileBeans==null || fileBeans.size()==0){
+            throw new ApiException("图片上传失败");
+        }
+        return EquipmentMessageServiceImpl.picQuery(fileBeans.get(0).getThumbnail());
     }
 
 }
