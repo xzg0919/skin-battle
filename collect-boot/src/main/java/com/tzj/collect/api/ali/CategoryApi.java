@@ -342,6 +342,20 @@ public class CategoryApi {
 		return categoryService.getCategoryNewHouseList(categoryBean.getParentId()==null?null:categoryBean.getParentId().longValue());
 	}
 	/**
+	* 小程序最新获取小家电分类列表
+	* @param
+	* @return
+	*/
+	@Api(name = "category.categorySmallAppList", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public Object getCategoryNewHouseList(){
+		Map<String, Object> resultMap = new HashMap<>();
+		Object smallAppCat = categoryService.getSmallAppCat();
+		resultMap.put("smallAppCatList", smallAppCat);
+		return resultMap;
+	}
+	/**
 	 * 小程序最新获取生活分类列表
 	 * @param
 	 * @return

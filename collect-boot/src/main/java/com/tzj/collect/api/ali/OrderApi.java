@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.config.ApplicationInit;
+import com.tzj.collect.core.mapper.CompanyStreetAppSmallMapper;
 import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
@@ -78,6 +79,8 @@ public class OrderApi {
     private JedisPool jedisPool;
     @Autowired
     private OrderOperateService orderOperateService;
+    @Autowired
+    private CompanyStreetAppSmallService companyStreetAppSmallService;
 
     /**
      * 获取会员的未完成订单列表 不分页
@@ -548,7 +551,7 @@ public class OrderApi {
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
         if (StringUtils.isNotBlank(orderbean.getAliAccount())){
-            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+            orderNo = "XYZ"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
         }
         orderbean.setOrderNo(orderNo);
         resultMap = (Map<String, Object>) orderService.savefiveKgOrder(orderbean);
@@ -590,6 +593,113 @@ public class OrderApi {
             map.put("type", 9);
             map.put("msg", "操作成功");
             map.put("status", "FIVEKG");
+            map.put("code", resultMap.get("code"));
+            map.put("id", resultMap.get("id"));
+            return map;
+        } else {
+            return resultMap;
+        }
+    }
+    /**
+     * 保存小家电的订单
+     *
+     * @return
+     */
+    @Api(name = "order.saveSmallAppOrder", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Object saveSmallAppOrder(OrderBean orderbean) throws Exception {
+        //获取当前登录的会员
+        Member member = MemberUtils.getMember();
+        Map<String, Object> resultMap = null;
+        Boolean isImprisonMember = false;
+        Boolean isImprisonRule = false;
+        isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "8");
+        if (isImprisonMember) {
+            resultMap = new HashMap<>();
+            resultMap.put("type", 5);
+            resultMap.put("msg", "近期下单次数过多，系统检测异常，如有疑问请联系客服");
+            resultMap.put("code", 5);
+            return resultMap;
+        }
+        isImprisonRule = imprisonRuleService.isImprisonRuleByAliUserId(member.getAliUserId(), "8");
+        if (isImprisonRule) {
+            resultMap = new HashMap<>();
+            resultMap.put("type", 5);
+            resultMap.put("msg", "近期下单次数过多，系统检测异常，如有疑问请联系客服");
+            resultMap.put("code", 5);
+            return resultMap;
+        }
+        MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
+        if (memberAddress == null) {
+            return "您暂未添加回收地址";
+        }
+        //根据分类Id查询父类分类id
+//        Category category = categoryService.selectById(orderbean.getCategoryId());
+        orderbean.setMemberId(member.getId().intValue());
+        orderbean.setAliUserId(member.getAliUserId());
+        if (null == orderbean.getOrderItemList()) {
+            return "请选择详细内容";
+        }
+        orderbean.setCategoryId(orderbean.getOrderItemList().get(0).getId().intValue());
+        orderbean.setCategoryParentIds(categoryService.getCategoryById(orderbean.getCategoryId()).getParentId().toString());
+        Integer communityId = memberAddress.getCommunityId();
+        String areaId = memberAddress.getAreaId().toString();
+        //判断该地址是否回收5小家电
+        Integer streeCompanyId = companyStreetAppSmallService.selectStreetAppSmallCompanyIds(memberAddress.getCityId(), memberAddress.getStreetId());
+        if (streeCompanyId == null) {
+            return "该区域暂无回收企业";
+        }
+        orderbean.setCompanyId(streeCompanyId);
+        orderbean.setCommunityId(communityId);
+        orderbean.setAreaId(Integer.parseInt(areaId));
+        orderbean.setStreetId(memberAddress.getStreetId());
+        orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
+        //随机生成订单号
+        String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XYZ"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
+        orderbean.setOrderNo(orderNo);
+        resultMap = (Map<String, Object>) orderService.saveSmallAppOrder(orderbean);
+        //钉钉消息赋值回收公司名称
+        Company company = companyService.selectById(streeCompanyId);
+        if (null != company) {
+            try {
+                //判断是否开启自动派单
+                if ("1".equals(company.getIsOpenOrder())) {
+                    orderService.tosendfiveKgOrder(Integer.parseInt(resultMap.get("id") + ""));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            orderbean.setCompanyName(company.getName());
+            orderbean.setDingDingUrl(company.getDingDingUrl());
+            orderbean.setDingDingSing(company.getDingDingSing());
+            try {
+                if ("操作成功".equals(resultMap.get("msg") + "")) {
+                    if ("true".equals(applicationInit.getIsDd())) {
+                        //钉钉通知
+                        asyncService.notifyDingDingOrderCreate(orderbean);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        //是否有马上回收红包
+        if ("Y".equals(orderbean.getIsDelivery())) {
+            RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+            //保存一个月
+            saveOrGetFromRedis.saveInRedis("receive:" + orderNo, UUID.randomUUID().toString(), 30 * 24 * 60 * 60, jedisPool);
+        }
+
+        if ("操作成功".equals(resultMap.get("msg") + "")) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("type", 9);
+            map.put("msg", "操作成功");
+            map.put("status", "SMALLAPP");
             map.put("code", resultMap.get("code"));
             map.put("id", resultMap.get("id"));
             return map;

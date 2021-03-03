@@ -629,7 +629,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
 	private double saveOrderItemAch(OrderBean orderbean, Order order) {
-		//是否是免费的 0 不是 1是 
+		//是否是免费的 0 不是 1是
 		String isCash = orderbean.getIsCash();
 		//得到用户的垃圾总量
 		double amount = 0.0;
@@ -778,6 +778,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                             }
                             order.setOrderFrom("0");
                             order.setTitle(Order.TitleType.IOTORDER);
+                            order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }else if (order.getTitle() == Order.TitleType.SMALLDIGITAL) {
+                    attName = new HashSet<>();
+                    attrList = orderItemService.selectCateName(Integer.parseInt(order.getId().toString()));
+                    if (attrList != null && attrList.size() > 0) {
+                        try {
+                            for (ComCatePrice comCatePrice : attrList) {
+                                attName.add(comCatePrice.getName());
+                            }
+                            order.setOrderFrom("0");
+                            order.setTitle(Order.TitleType.SMALLDIGITAL);
                             order.setCateAttName4Page(attName.toString().replace("]", "").replace("[", "").replace(",", "/").replace(" ", ""));
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -979,7 +994,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         int size = pageBean.getPageSize();
         int num = pageBean.getPageNumber();
         Map<String, Object> map = new HashMap<String, Object>();
-        if(orderBean.getStatus().equals("CANCEL") && !"3".equals(title)){
+        if(orderBean.getStatus().equals("CANCEL") && !Order.TitleType.FIVEKG.equals(title) && !Order.TitleType.SMALLDIGITAL.equals(title)){
             statusList.add("5");
         }
             Integer count = orderMapper.getOrderListsCount(companyId, statusList, orderNo, linkMan, recyclersName, size, ((num - 1) * size), startTime, endTime, isScan, title,reInit);
@@ -1367,12 +1382,48 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Integer companyId = orderBean.getCompanyId();
         if(StringUtils.isNotBlank(orderBean.getCategoryType())){
             Order.TitleType categoryType = Order.TitleType.valueOf(orderBean.getCategoryType());
-            int INITCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).ne("order_from", 1));
-            int TOSENDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).ne("order_from", 1));
-            int ALREADYCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).ne("order_from", 1));
-            int COMPLETECount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).ne("order_from", 1));
-            int CANCELCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).ne("order_from", 1));
-            int REJECTEDCount = this.selectCount(new EntityWrapper<Order>().eq("status_", getStatus("REJECTED")).eq("del_flag", "0").eq("company_id", companyId).eq("title", categoryType.getValue()).ne("order_from", 1));
+            EntityWrapper<Order> orderEntityWrapper = new EntityWrapper<Order>();
+            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+                orderEntityWrapper.and(" title in (3,8) ");
+            }else{
+                orderEntityWrapper.eq("title", categoryType.getValue());
+            }
+            int INITCount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
+            orderEntityWrapper = new EntityWrapper<Order>();
+            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+                orderEntityWrapper.and(" title in (3,8) ");
+            }else{
+                orderEntityWrapper.eq("title", categoryType.getValue());
+            }
+            int TOSENDCount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
+            orderEntityWrapper = new EntityWrapper<Order>();
+            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+                orderEntityWrapper.and(" title in (3,8) ");
+            }else{
+                orderEntityWrapper.eq("title", categoryType.getValue());
+            }
+            int ALREADYCount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
+            orderEntityWrapper = new EntityWrapper<Order>();
+            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+                orderEntityWrapper.and(" title in (3,8) ");
+            }else{
+                orderEntityWrapper.eq("title", categoryType.getValue());
+            }
+            int COMPLETECount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
+            orderEntityWrapper = new EntityWrapper<Order>();
+            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+                orderEntityWrapper.and(" title in (3,8) ");
+            }else{
+                orderEntityWrapper.eq("title", categoryType.getValue());
+            }
+            int CANCELCount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
+            orderEntityWrapper = new EntityWrapper<Order>();
+            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+                orderEntityWrapper.and(" title in (3,8) ");
+            }else{
+                orderEntityWrapper.eq("title", categoryType.getValue());
+            }
+            int REJECTEDCount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("REJECTED")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
 
             map.put("INIT", INITCount);
             map.put("TOSEND", TOSENDCount);
@@ -1555,7 +1606,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<Map<String, Object>> listMapObject = new ArrayList<>();
 		//Map<String, Object> mapListMap = null;
 		Object obj = null;
-		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG||order.getTitle() == Order.TitleType.IOTORDER) {
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG||order.getTitle() == Order.TitleType.SMALLDIGITAL||order.getTitle() == Order.TitleType.IOTORDER) {
 			orderbean.setStatus(order.getStatus().getValue().toString());
 			orderbean.setTitle(order.getTitle().toString());
 			orderbean.setIsCash(order.getIsCash());
@@ -1627,7 +1678,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         resultMap.put("OrderEvaluation", OrderEvaluation);
         resultMap.put("orderCancleExamine", orderCancleExamine);
         //System.out.println(11111);
-        if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
+        if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG ||order.getTitle() == Order.TitleType.SMALLDIGITAL || order.getTitle() == Order.TitleType.IOTORDER) {
             OrderBean orderBean = new OrderBean();
             orderBean.setId(orderId);
             orderBean.setTitle(order.getTitle().toString());
@@ -1743,7 +1794,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             resultMap.put("AlreadyCount", "催收" + AlreadyCount + "次");
         }
 		//System.out.println(11111);
-		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD ||order.getTitle() == Order.TitleType.SMALLDIGITAL ||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
 			OrderBean orderBean = new OrderBean();
 			orderBean.setId(orderId);
 			orderBean.setTitle(order.getTitle().toString());
@@ -2565,7 +2616,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			OrderItemList = orderItemService.selectByOrderId(orderbean.getId());
 		}
 		List<ComCatePrice> cateName = null;
-		if (("IOTORDER".equals(orderbean.getTitle())||"FIVEKG".equals(orderbean.getTitle())||"HOUSEHOLD".equals(orderbean.getTitle())) && "3".equals(orderbean.getStatus())) {
+		if (("IOTORDER".equals(orderbean.getTitle())||"FIVEKG".equals(orderbean.getTitle()) || "SMALLDIGITAL".equals(orderbean.getTitle()) ||"HOUSEHOLD".equals(orderbean.getTitle())) && "3".equals(orderbean.getStatus())) {
 			cateName = orderItemService.selectCateAchName(orderbean.getId());
 		} else {
 			cateName = orderItemService.selectCateName(orderbean.getId());
@@ -2704,7 +2755,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			OrderItemList = orderItemService.selectByOrderId(orderbean.getId());
 		}
 		List<ComCatePrice> cateName = null;
-		if (("HOUSEHOLD".equals(orderbean.getTitle())||"FIVEKG".equals(orderbean.getTitle())) && "3".equals(orderbean.getStatus())) {
+		if (("HOUSEHOLD".equals(orderbean.getTitle())||"FIVEKG".equals(orderbean.getTitle()) ||"SMALLDIGITAL".equals(orderbean.getTitle())) && "3".equals(orderbean.getStatus())) {
 			cateName = orderItemService.selectCateAchName(orderbean.getId());
 		} else {
 			cateName = orderItemService.selectCateName(orderbean.getId());
@@ -3271,6 +3322,130 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		resultMap.put("status",order.getTitle());
 		return resultMap;
 	}
+	/**
+	 * 保存小家电的订单
+	 * @return
+	 */
+	@Override
+	public Object saveSmallAppOrder(OrderBean orderBean) {
+		Map<String,Object> resultMap = new HashMap<>();
+		boolean flag = false;
+		//根据分类Id查询物流公司分类的信息
+		CompanyCategory companyCategory = companyCategoryService.selectOne(new EntityWrapper<CompanyCategory>().eq("category_id", orderBean.getCategoryId()).eq("del_flag", 0).eq("company_id", orderBean.getCompanyId()));
+		//根据分类Id查询分类信息
+		Category categorys = categoryService.selectById(orderBean.getCategoryId());
+//		Category parentCategory = categoryService.selectById(categorys.getParentId());
+		Order order = new Order();
+		try{
+			order.setArrivalTime(new SimpleDateFormat("yyyy-MM-dd").parse(orderBean.getArrivalTime()));
+			order.setArrivalPeriod(orderBean.getArrivalPeriod());
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		try {
+			order.setIsMysl(orderBean.getIsMysl());
+			order.setMemberId(orderBean.getMemberId());
+			order.setOrderNo(orderBean.getOrderNo());
+			order.setAreaId(orderBean.getAreaId());
+			order.setStreetId(orderBean.getStreetId());
+			order.setCommunityId(orderBean.getCommunityId());
+			order.setCategoryId(Integer.parseInt(orderBean.getCategoryParentIds()));
+			order.setCategoryParentIds(orderBean.getCategoryParentIds());
+			order.setUnit(companyCategory.getUnit());
+			order.setPrice(new BigDecimal(companyCategory.getPrice()));
+			order.setAliUserId(orderBean.getAliUserId());
+			order.setTitle(Order.TitleType.SMALLDIGITAL);
+			order.setCompanyId(orderBean.getCompanyId());
+			order.setExpressAmount(new BigDecimal(orderBean.getQty()));
+			order.setAddress(orderBean.getAddress());
+			order.setFullAddress(orderBean.getFullAddress());
+			order.setTel(orderBean.getTel());
+			order.setLinkMan(orderBean.getLinkMan());
+			order.setQty(orderBean.getQty());
+			order.setRemarks(orderBean.getRemarks());
+			order.setFormId(orderBean.getFormId());
+            if (StringUtils.isNotBlank(orderBean.getAliAccount())){
+                order.setOrderFrom("2");
+                order.setAliAccount(orderBean.getAliAccount());
+            }
+			this.insert(order);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultMap.put("msg","FAIL");
+			return resultMap;
+		}
+
+		//储存图片链接
+		OrderPic orderPic = orderBean.getOrderPic();
+		if (orderPic != null) {
+			String origPics = orderPic.getOrigPic();
+			String picUrl = orderPic.getPicUrl();
+			String smallPic = orderPic.getSmallPic();
+			String[] origPicss = origPics.split(",");
+			String[] picUrls = picUrl.split(",");
+			String[] smallPics = smallPic.split(",");
+			OrderPic orderPicc = null;
+			for (int i = 0; i < origPicss.length; i++) {
+				orderPicc = new OrderPic();
+				orderPicc.setOrigPic(origPicss[i]);
+				orderPicc.setPicUrl(picUrls[i]);
+				orderPicc.setSmallPic(smallPics[i]);
+				orderPicc.setOrderId(Integer.parseInt(order.getId() + ""));
+				orderPicService.insert(orderPicc);
+			}
+		}
+		//储存回收人员提交的信息
+		List<OrderItemBean> orderItemList = orderBean.getOrderItemList();
+		if (!orderItemList.isEmpty()) {
+			for (OrderItemBean orderItemBean : orderItemList) {
+				//根据分类Id查询分类信息
+				Category category = categoryService.selectById(orderItemBean.getId());
+				Category categoryPar = categoryService.selectById(category.getParentId());
+				if(!(category.getTitle().getValue()==Order.TitleType.SMALLDIGITAL.getValue())){
+                    throw new ApiException("品类错误，下单失败！！");
+                }
+				OrderItem orderItem = new OrderItem();
+				orderItem.setOrderId(Integer.parseInt(order.getId() + ""));
+				orderItem.setCategoryId(Integer.parseInt(category.getId() + ""));
+				orderItem.setCategoryName(category.getName());
+				orderItem.setParentId(category.getParentId());
+				orderItem.setParentIds(category.getParentIds());
+				orderItem.setParentName(categoryPar.getName());
+				orderItem.setAmount(orderBean.getQty());
+				orderItem.setUnit(category.getUnit());
+				orderItem.setPrice(StringUtils.isBlank(orderItemBean.getPrice())?category.getPrice().floatValue():Float.parseFloat(orderItemBean.getPrice()));
+				orderItemService.insert(orderItem);
+			}
+		}else {
+			throw new ApiException("网络异常，请重新提交订单");
+		}
+        //保存分享码
+        if (!StringUtils.isEmpty(orderBean.getShareCode())){
+            lineQrCodeOrderService.insertQrCodeOrder(order.getOrderNo(), orderBean.getShareCode());
+        }
+		//储存订单的日志
+		OrderLog orderLog = new OrderLog();
+		orderLog.setOrderId(Integer.parseInt(order.getId().toString()));
+		orderLog.setOpStatusAfter("INIT");
+		orderLog.setOp("待接单");
+		orderLogService.insert(orderLog);
+		try {
+			if((Order.TitleType.BIGTHING+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","大件回收");
+			}else if ((Order.TitleType.DIGITAL+"").equals(order.getTitle()+"")){
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","家电回收");
+			}else {
+				asyncService.sendOpenAppMini(order.getAliUserId(),order.getFormId(), MiniTemplatemessageUtil.orderTemplateId,MiniTemplatemessageUtil.page,order.getOrderNo(),"平台已受理","生活垃圾");
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		resultMap.put("msg","操作成功");
+		resultMap.put("code",0);
+		resultMap.put("id",order.getId());
+		resultMap.put("status",order.getTitle());
+		return resultMap;
+	}
 
 	/**
 	 * 小程序大家具下单接口
@@ -3488,9 +3663,34 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		return "操作成功";
 	}
 
-    public static void main(String[] args) {
-        System.out.println(new BigDecimal(162.03).multiply(new BigDecimal(10)).divide(new BigDecimal(100)));
-    }
+//    public static void main(String[] args) {
+//            int amount = 0
+//            amount += (long)Math.floor((double)itemMap.get("amount"));
+//            ItemOrder itemOrder = new ItemOrder();
+//            itemOrder.setItemName(itemMap.get("parentName").toString());
+//            itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount")));
+//            List<OrderExtInfo> extInfo = new ArrayList<>();
+//            OrderExtInfo orderExtInfo = new OrderExtInfo();
+//            orderExtInfo.setExtKey("ITEM_TYPE");
+//            orderExtInfo.setExtValue(itemMap.get("aliItemType").toString());
+//            extInfo.add(orderExtInfo);
+//            itemOrder.setExtInfo(extInfo);
+//            orderItemList.add(itemOrder);
+//
+//		model.setItemOrderList(orderItemList);
+//		order.setMyslParam(JSON.toJSONString(model));
+//    OrderBean orderBean = new OrderBean();
+//		if (amount<=30000){
+//        orderBean.setIsRisk("0");
+//        order.setIsRisk("0");
+//    }else {
+//        order.setIsRisk("1");
+//        orderBean.setIsRisk("1");
+//    }
+//		orderService.updateById(order);
+//    //给用户增加能量
+//		ansycMyslService.updateForest(order.getId().toString(),JSON.toJSONString(model), 0);
+//    }
 	@Override
 	public void deleteBigOrderRemarks(Integer orderId){
 		orderMapper.deleteBigOrderRemarks(orderId);
@@ -3520,7 +3720,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			if (null == digitalMap || digitalMap.isEmpty() ){
 				return null;
 			}
-		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.IOTORDER.getValue()+"").equals(order.getTitle().getValue()+"")){
+		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.IOTORDER.getValue()+"").equals(order.getTitle().getValue()+"") || (Order.TitleType.SMALLDIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
 			houseList = orderItemAchService.selectItemSumAmount(Integer.parseInt(orderId));
 		}else {
 			return null;
@@ -3544,7 +3744,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			extInfo.add(orderExtInfo);
 			itemOrder.setExtInfo(extInfo);
 			orderItemList.add(itemOrder);
-		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.IOTORDER.getValue()+"").equals(order.getTitle().getValue()+"")){
+		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.IOTORDER.getValue()+"").equals(order.getTitle().getValue()+"") || (Order.TitleType.SMALLDIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
 			for (Map<String, Object> itemMap:houseList) {
 				if (null==itemMap.get("aliItemType")){
 					continue;
@@ -3577,7 +3777,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		orderService.updateById(order);
 		//给用户增加能量
-		ansycMyslService.updateForest(order.getId().toString(),JSON.toJSONString(model));
+		ansycMyslService.updateForest(order.getId().toString(),JSON.toJSONString(model), 0);
 		orderBean.setMyslParam(JSON.toJSONString(model));
 		return orderBean;
 	}
@@ -3609,8 +3809,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	/** 根据手机号查询大件订单列表
 	  * @author sgmark@aliyun.com
 	  * @date 2019/6/4 0004
-	  * @param 
-	  * @return 
+	  * @param
+	  * @return
 	  */
 	@Override
 	public Map<String, Object> getBigOrderListByPhone(OrderBean orderbean) {
@@ -3939,7 +4139,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		List<OrderItem> orderItemList = new ArrayList<>();
 		Category category = null;
 		Category parentCategory = null;
-		if ((Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")||(Order.TitleType.FIVEKG+"").equals(order.getTitle()+"")||(Order.TitleType.IOTORDER+"").equals(order.getTitle()+"")){
+		if ((Order.TitleType.HOUSEHOLD+"").equals(order.getTitle()+"")||(Order.TitleType.FIVEKG+"").equals(order.getTitle()+"")||(Order.TitleType.IOTORDER+"").equals(order.getTitle()+"")||(Order.TitleType.SMALLDIGITAL+"").equals(order.getTitle()+"")){
 			if ((OrderType.COMPLETE+"").equals(order.getStatus()+"")){
 				houseOrderItemiPrice  = orderItemAchService.getOrderItemDetail(order.getId(),"0");
 				houseOrderItemiNoPrice = orderItemAchService.getOrderItemDetail(order.getId(),"1");
@@ -4084,7 +4284,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		}
 		List<Map<String, Object>> houseOrderItem = new ArrayList<>();
 		List<Map<String, Object>> houseOrderAchItem = new ArrayList<>();
-		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER) {
+		if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG ||order.getTitle() == Order.TitleType.SMALLDIGITAL || order.getTitle() == Order.TitleType.IOTORDER) {
 			OrderBean orderBean = new OrderBean();
 			orderBean.setId(orderId);
 			orderBean.setTitle(order.getTitle().toString());
@@ -4559,8 +4759,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	 * 订单中使用优惠券详情
 	 * @author: sgmark@aliyun.com
 	 * @Date: 2019/10/31 0031
-	 * @Param: 
-	 * @return: 
+	 * @Param:
+	 * @return:
 	 */
     public Map<String, Object>  voucherInfo(Order order){
 		Map<String, Object> resultMap = new HashMap<>();
@@ -4685,8 +4885,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      * iot 回收人员清运订单列表
      * @author: sgmark@aliyun.com
      * @Date: 2019/12/11 0011
-     * @Param: 
-     * @return: 
+     * @Param:
+     * @return:
      */
     @Override
     public Map<String, Object> selectIotRecList(Long recId, String status, PageBean pageBean) {
@@ -4854,12 +5054,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
               throw new RuntimeException("该订单不是完成状态");
         }
             Map<String, Object> resultMap = new HashMap<>();
-            if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.IOTORDER){
+            if (order.getTitle() == Order.TitleType.HOUSEHOLD||order.getTitle() == Order.TitleType.FIVEKG || order.getTitle() == Order.TitleType.SMALLDIGITAL || order.getTitle() == Order.TitleType.IOTORDER){
                 List<Map<String, Object>> list = orderMapper.getCategoryPriceList(id);
                 if (list.size() > 0) {
                     for (Map map : list) {
-                        BigDecimal price = new BigDecimal(Double.valueOf(String.valueOf(map.get("amount")))) ;
-                        BigDecimal platformPrice = new BigDecimal(Double.valueOf(String.valueOf(map.get("platformPrice"))));
+                        BigDecimal price = new BigDecimal(String.valueOf(map.get("amount"))) ;
+                        BigDecimal platformPrice = new BigDecimal(String.valueOf(map.get("platformPrice")));
                         BigDecimal platform=price.multiply(platformPrice);
                         BigDecimal commission = platform.setScale(2, RoundingMode.DOWN);
                         map.put("price",String.valueOf(commission));

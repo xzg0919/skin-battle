@@ -6,7 +6,7 @@ import com.tzj.collect.core.param.mysl.MyslBean;
 
 public interface AnsycMyslService {
 
-      AntMerchantExpandTradeorderSyncResponse updateForest(String orderId, String myslParam);
+      AntMerchantExpandTradeorderSyncResponse updateForest(String orderId, String myslParam, Integer times);
     AntMerchantExpandTradeorderSyncResponse  updateCansForest(String aliUserId, String outBizNo, long count, String type);
         AntMerchantExpandTradeorderSyncResponse updateCansForestByList(MyslBean myslBean);
 }

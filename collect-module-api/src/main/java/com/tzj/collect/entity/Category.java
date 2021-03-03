@@ -289,7 +289,8 @@ public class Category extends DataEntity<Long> {
     	HOUSEHOLD(2),	//生活垃圾
 		FIVEKG(3),		//5公斤废纺衣物回收
 		BIGTHING(4),	//大件垃圾
-		IOTORDER(5);//iot设备
+		IOTORDER(5),//iot设备
+		SMALLDIGITAL(8); // 小家电（家电数码里归类出来的）
 
     	private int value;
 

@@ -122,4 +122,16 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
     public List<Category> getTwoCategoryListLocal(Integer categoryId,Integer companyId,Integer cityId, String isCash){
         return companyCategoryCityNameMapper.getTwoCategoryListLocal(categoryId,companyId,cityId,isCash);
     }
+
+    @Override
+    public boolean isAbleCategory(Integer companyId, Integer streetId, int parentId) {
+        Category streetCategory = categoryService.selectById(streetId);
+        Category districtCategory = categoryService.selectById(streetCategory.getParentId());
+        Integer count = companyCategoryCityNameMapper.selectCount(new EntityWrapper<CompanyCategoryCityName>().eq("city_id", districtCategory.getParentId()).eq("parent_id", parentId).eq("company_id", companyId).eq("del_flag", 0));
+        if(count!= null && count !=0){
+            return true;
+        }else {
+            return false;
+        }
+    }
 }

@@ -187,4 +187,6 @@ public interface CategoryService extends IService<Category> {
 	Integer selectHouseByCompany(Integer companyId);
 	@DS("slave")
 	Integer selectBigByCompany(Integer companyId);
+
+	Object getSmallAppCat();
 }

@@ -104,7 +104,15 @@
 					 ]]>
         </if>
         <if test="title != null and title !='' ">
-            AND a.title = #{title}
+            <choose>
+                <when test="title == 3">
+                    AND a.title IN (3,8)
+                </when>
+                <otherwise>
+                    AND a.title = #{title}
+                </otherwise>
+            </choose>
+
         </if>
         <if test="title == null  ">
             AND a.title in (1,2,4)
@@ -158,6 +166,9 @@
         <if test="recyclersName !=null and recyclersName!='' ">
             <choose>
                 <when test="title == 3">
+                    and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
+                </when>
+                <when test="title == 8">
                     and a.express_name LIKE concat(concat('%',#{recyclersName}),'%')
                 </when>
                 <otherwise>
@@ -259,7 +270,15 @@
 						 ]]>
         </if>
         <if test="title != null and title !='' ">
-            AND a.title = #{title}
+            <choose>
+                <when test="title == 3">
+                    AND a.title  IN (3,8)
+                </when>
+                <otherwise>
+                    AND a.title = #{title}
+                </otherwise>
+            </choose>
+
         </if>
         <if test="title == null  ">
             AND a.title in (1,2,4)
@@ -338,9 +357,6 @@
 
     <select id="getAppOrderList" parameterType="com.tzj.collect.core.param.ali.OrderBean"
             resultType="com.tzj.collect.core.result.app.AppOrderResult">
-        select * from (
-        select so.*,IF(0>so.overTimes,-1,so.overTimes) AS overTime,IF(so.overTimes > 2880,'1',if(so.complaintType =
-        '3','1','0')) AS isComplaint from (
         SELECT
         so.id AS orderId,
         so.create_date AS creatDate,
@@ -349,33 +365,43 @@
         so.tel,
         so.full_address,
         so.status_,
-        FORMAT(so.price, 2) AS price,
+        FORMAT( so.price, 2 ) AS price,
         so.ach_price AS achPrice,
         so.commissions_price AS commissionsPrice,
         so.order_no orderNo,
-        date_format(IF(ISNULL(so.arrival_time),"",so.arrival_time), '%Y-%m-%d') AS arrivalTime,
+        date_format( IF ( ISNULL( so.arrival_time ), "", so.arrival_time ), '%Y-%m-%d' ) AS arrivalTime,
         so.arrival_period,
         sc.name_ AS cateName,
         sc.icon,
-        so.cancel_reason as cancelReason,
+        so.cancel_reason AS cancelReason,
         so.complete_date completeDate,
         so.title,
         so.community_id,
         so.company_id,
         so.is_cash,
         so.order_remarks,
-        so.complaint_type as complaintType,
-        so.is_item_ach as isItemAch,
-        bb.is_manager as isManager,
+        so.complaint_type AS complaintType,
+        so.is_item_ach AS isItemAch,
+        bb.is_manager AS isManager,
+        so.overTimes,
+        so.overTime,
+        so.isComplaint
+        FROM
+        (
+        SELECT
+        so.*,
+        IF
+        ( 0 > so.overTimes,- 1, so.overTimes ) AS overTime,
+        IF
+        ( overTimes > 2880, '1', IF (so.complaint_type = '3', '1', '0' ) ) AS isComplaint
+        from (SELECT
+        so.*,
         TIMESTAMPDIFF(MINUTE, IF(so.title = '2',CONCAT(so.arrival_time,' ',SUBSTR(so.arrival_period,
         7,5),':00'),IF(so.arrival_period='am',CONCAT(so.arrival_time,' 12:00:00'),CONCAT(so.arrival_time,' 18:00:00'))),
         IF(so.status_ = '3',so.complete_date,if(so.status_ in ('4','5'),so.cancel_time,NOW()))) AS overTimes
+
         FROM
         sb_order so
-        INNER JOIN sb_category sc ON so.category_id = sc.id
-        INNER JOIN sb_recyclers sr ON sr.id = so.recycler_id
-        INNER JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id AND
-        bb.status_ = 1
         WHERE
         so.del_flag = '0'
         AND so.order_from != '1'
@@ -392,22 +418,26 @@
                 </otherwise>
             </choose>
         </if>
-        )so
-        ) so
         <choose>
             <when test="orderBean.status == '3'.toString()">
-                ORDER BY so.completeDate DESC
+                ORDER BY so.complete_date DESC
             </when>
             <when test="orderBean.status == '2'.toString()">
-                ORDER BY so.overTime DESC,so.arrivalTime ASC,so.arrival_period ASC,so.creatDate ASC
+                ORDER BY overTimes DESC,so.arrival_time ASC,so.arrival_period ASC,so.create_date ASC
             </when>
             <when test="orderBean.status == '1'.toString()">
-                ORDER BY so.overTime DESC,so.creatDate DESC
+                ORDER BY overTimes DESC,so.create_date DESC
             </when>
             <otherwise>
-                ORDER BY so.creatDate DESC
+                ORDER BY so.create_date DESC
             </otherwise>
         </choose>
+        LIMIT 0,50
+        )so	) so
+        INNER JOIN sb_category sc ON so.category_id = sc.id
+        INNER JOIN sb_recyclers sr ON sr.id = so.recycler_id
+        INNER JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id AND
+        bb.status_ = 1
         LIMIT #{startSize} , #{pageSize}
     </select>
 

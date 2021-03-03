@@ -276,6 +276,8 @@ public interface OrderService extends IService<Order> {
 
 	Object savefiveKgOrder(OrderBean orderBean);
 
+	Object saveSmallAppOrder(OrderBean orderBean);
+
 	/**
 	 * 小程序大家具下单接口
 	 * @param orderbean

@@ -42,6 +42,8 @@ public class MemberAddressApi {
 	private CompanyStreetApplianceService companyStreetApplianceService;
 	@Autowired
 	private CompanyStreetHouseService companyStreetHouseService;
+	@Autowired
+	private CompanyStreetAppSmallService companyStreetAppSmallService;
 
     /**
      * 保存用户的新增地址/修改后保存的地址
@@ -233,6 +235,13 @@ public class MemberAddressApi {
             }
         } else {
             memberAddress.setIsDigital("N");
+        }
+        //判断地址是否有公司回收小家电
+        Integer smallAppCompany = companyStreetAppSmallService.selectStreetAppSmallCompanyIds(memberAddress.getCityId(), memberAddress.getStreetId());
+        if (null != smallAppCompany) {
+            memberAddress.setIsSmallApp("Y");
+        } else {
+            memberAddress.setIsSmallApp("N");
         }
         //判断地址是否有公司回收大件
         Integer streetBigCompanyId = companyStreetBigService.selectStreetBigCompanyId(memberAddress.getStreetId());

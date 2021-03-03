@@ -24,6 +24,7 @@ import com.tzj.collect.common.notify.DingTalkNotify;
 import com.tzj.module.api.annotation.AuthIgnore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.lang.annotation.Annotation;
@@ -43,7 +44,8 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
     private ApplicaInit applicaInit;
 
     @Override
-    public AntMerchantExpandTradeorderSyncResponse updateForest(String orderId,String myslParam){
+    public AntMerchantExpandTradeorderSyncResponse updateForest(String orderId,String myslParam, Integer times){
+        times = times == null ? 0 : times;
         Order order = orderService.selectById(orderId);
         if ("true".equals(applicaInit.getIsMysl())){
             try{
@@ -64,9 +66,14 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
                     order.setMyslParam(JSON.toJSONString(response.getParams()));
                     orderService.updateById(order);
                 } else {
-                    System.out.println("调用失败");
+                    ++times;
+                    System.out.println("蚂蚁能量调用失败！！---递归调用次数"+times);
+                    //重复调用不超过3次
+                    if(times < 3) {
+                        updateForest(orderId, myslParam, times);
+                    }
                     DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                            ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是："+orderId,
+                            ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是："+orderId+"次数："+times,
                             RocketMqConst.DINGDING_ERROR,response.getBody());
                 }
                 return response;
@@ -163,6 +170,7 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
             System.out.println("蚂蚁森林能量发放成功:"+ JSONObject.toJSON(response));
 
         } else {
+
             System.out.println("蚂蚁森林能量发放失败:"+ JSONObject.toJSON(response));
         }
         return response;
@@ -191,10 +199,11 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
 //        System.out.println(o1.getId());
 
         try{
+            //{"biz_content":"{\"buyerId\":\"2088602988997967\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"clothes\"}],\"itemName\":\"衣服\",\"quantity\":16000}],\"outBizNo\":\"20190512184512735686\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}"}
             AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
             AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
             AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
-            request.setBizContent("{\"buyerId\":\"2088132617598237\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"appliance\"}],\"itemName\":\"冰箱\",\"quantity\":1}],\"outBizNo\":\"20201213104317486782\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}");
+            request.setBizContent("{\"buyerId\":\"2088602138844352\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"plastic\"}],\"itemName\":\"电饭煲\",\"quantity\":4500}],\"outBizNo\":\"202012121042176867521\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}");
             AntMerchantExpandTradeorderSyncResponse response = null;
             try {
                 response = alipayClient.execute(request);

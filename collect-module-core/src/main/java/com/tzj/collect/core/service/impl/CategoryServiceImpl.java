@@ -781,4 +781,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public Integer selectBigByCompany(Integer companyId) {
         return baseMapper.selectCategoryByCompany(companyId,"4");
     }
+
+    @Override
+    public Object getSmallAppCat() {
+        return this.baseMapper.selectList(new EntityWrapper<Category>().eq("title", Order.TitleType.SMALLDIGITAL.getValue()).eq("level_",1));
+    }
 }

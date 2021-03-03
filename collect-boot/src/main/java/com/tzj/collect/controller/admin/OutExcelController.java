@@ -319,10 +319,10 @@ public class OutExcelController {
                         row.add(list.get(i).get("parentName"));
                         row.add(list.get(i).get("categoryName"));
                         row.add(list.get(i).get("cash"));
-                        BigDecimal amount = new BigDecimal(Double.valueOf(String.valueOf(list.get(i).get("amount"))));
-                        BigDecimal price1 = new BigDecimal(Double.valueOf(String.valueOf(list.get(i).get("price"))));
-                        BigDecimal price2 = new BigDecimal(Double.valueOf(String.valueOf(list.get(i).get("commission"))));
-                        BigDecimal price3 = new BigDecimal(Double.valueOf(String.valueOf(list.get(i).get("backCommission"))));
+                        BigDecimal amount = new BigDecimal(String.valueOf(list.get(i).get("amount")));
+                        BigDecimal price1 = new BigDecimal(String.valueOf(list.get(i).get("price")));
+                        BigDecimal price2 = new BigDecimal(String.valueOf(list.get(i).get("commission")));
+                        BigDecimal price3 = new BigDecimal(String.valueOf(list.get(i).get("backCommission")));
                         BigDecimal price11 = amount.multiply(price1).setScale(2, RoundingMode.DOWN);
                         BigDecimal price22 = amount.multiply(price2).setScale(2, RoundingMode.DOWN);
                         BigDecimal price33 = amount.multiply(price3).setScale(2, RoundingMode.DOWN);
@@ -347,6 +347,11 @@ public class OutExcelController {
         ExcelUtils.exportExcel(response, fileName, data);
     }
 
+//    public static void main(String[] args) {
+//        BigDecimal amount = new BigDecimal(Double.valueOf(String.valueOf("10")));
+//        BigDecimal price = new BigDecimal(String.valueOf("0.3"));
+//        System.out.println(""+amount+" "+price+" "+ amount.multiply(price).setScale(2, RoundingMode.DOWN));
+//    }
     @RequestMapping("/getRecruitListOutExcel")
     public void getRecruitListOutExcel(HttpServletResponse response, RecruitExpressBean recruitExpressBean) throws Exception {
         List<RecruitExpressResult> recruitList = recruitExpressService.getRecruitListOutExcel(recruitExpressBean);
