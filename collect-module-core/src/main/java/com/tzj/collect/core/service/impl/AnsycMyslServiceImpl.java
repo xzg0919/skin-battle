@@ -197,13 +197,11 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
 //        o1.setId(11111L);
 //
 //        System.out.println(o1.getId());
-
         try{
-            //{"biz_content":"{\"buyerId\":\"2088602988997967\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"clothes\"}],\"itemName\":\"衣服\",\"quantity\":16000}],\"outBizNo\":\"20190512184512735686\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}"}
             AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
             AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
             AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
-            request.setBizContent("{\"buyerId\":\"2088602138844352\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"plastic\"}],\"itemName\":\"电饭煲\",\"quantity\":4500}],\"outBizNo\":\"202012121042176867521\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}");
+            request.setBizContent("{\"buyerId\":\"2088702631439940\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"appliance\"}],\"itemName\":\"冰箱\",\"quantity\":1}],\"outBizNo\":\"20201212224276854521\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}");
             AntMerchantExpandTradeorderSyncResponse response = null;
             try {
                 response = alipayClient.execute(request);

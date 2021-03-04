@@ -1124,7 +1124,7 @@ public class Order extends DataEntity<Long> {
 		CANCELTASK(6);// 取消任务仅用于日志
 		private int value;
 
-		OrderType(final int value) {
+		OrderType(final Integer value) {
 			this.value = value;
 		}
 
