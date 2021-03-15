@@ -226,9 +226,9 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
         model.setOutBizNo(UUID.randomUUID().toString().replace("-",""));
         model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
-//      吴银钗  2088522916529531
-        model.setPayeeAccount("2088022852795204");
-        model.setAmount("15");
+//      吴银钗  2088522916529531   明廷杰 2088412594218017
+        model.setPayeeAccount("2088602024895631");
+        model.setAmount("18.33");
         model.setPayerShowName("垃圾分类回收(收呗)货款");
         model.setRemark("垃圾分类回收(收呗)货款");
         request.setBizModel(model);

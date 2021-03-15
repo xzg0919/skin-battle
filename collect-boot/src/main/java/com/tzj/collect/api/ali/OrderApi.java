@@ -858,7 +858,7 @@ public class OrderApi {
             int counts = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1"));
             int count1 = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1").eq("category_id", "23"));
             int count2 = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1").eq("category_id", "24"));
-            greenCount += count1 * 987 + (counts - count1 - count2) * 9763;
+            greenCount += Long.valueOf(count1 * 987) + Long.valueOf(counts - count1 - count2) * 9763;
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("memberCount", memberCount);
             resultMap.put("OrderCount", OrderCount);
