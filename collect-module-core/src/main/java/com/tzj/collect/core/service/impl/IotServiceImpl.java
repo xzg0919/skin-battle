@@ -1,6 +1,7 @@
 package com.tzj.collect.core.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.response.AlipayEcoActivityRecycleSendResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.tzj.collect.core.param.iot.IOT4OrderBean;
 import com.tzj.collect.core.param.iot.IotOrderVo;
@@ -116,9 +117,9 @@ public class IotServiceImpl implements IotService {
                 });
 
                 order.setOrderType(IotOrder.OrderType.MYSL);
-                AntMerchantExpandTradeorderSyncResponse antMerchantExpandTradeorderSyncResponse = ansycMyslService.updateCansForestByList(myslBean);
+                AlipayEcoActivityRecycleSendResponse antMerchantExpandTradeorderSyncResponse = ansycMyslService.updateCansForestByList(myslBean);
                 if (antMerchantExpandTradeorderSyncResponse.isSuccess()) {
-                    order.setMyslOrderId(antMerchantExpandTradeorderSyncResponse.getOrderId());
+                    order.setMyslOrderId(antMerchantExpandTradeorderSyncResponse.getFullEnergy()+"");
                     order.setMyslParam(JSONObject.toJSON(antMerchantExpandTradeorderSyncResponse.getParams()).toString());
                 }
 
