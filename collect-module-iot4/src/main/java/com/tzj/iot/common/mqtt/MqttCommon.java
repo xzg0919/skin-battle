@@ -42,7 +42,7 @@ public class MqttCommon {
     public static JSONObject convertToJson(MqttCommon.mqttType mqttType, Object   obj,String deviceCode) {
         JSONObject jsonObject = (JSONObject) JSONObject.toJSON(obj);
         jsonObject.put("mqttType", mqttType.getValue());
-        jsonObject.put("deviceCode","deviceCode");
+        jsonObject.put("deviceCode",deviceCode);
         return jsonObject;
     }
 
