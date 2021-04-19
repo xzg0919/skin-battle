@@ -3,6 +3,7 @@ package com.tzj.collect.core.service;
 import com.tzj.collect.core.param.iot.EquipmentParamBean;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.Map;
 
@@ -18,4 +19,7 @@ public interface EquipmentMessageService {
     Boolean redisSetCheck(String key, String value);
 
     Map<String, Object> equipmentCodeOpen(EquipmentParamBean equipmentParamBean, MqttClient mqttClient);
+
+
+   void  sendMqttMessage(MqttMessage message, String clientId);
 }

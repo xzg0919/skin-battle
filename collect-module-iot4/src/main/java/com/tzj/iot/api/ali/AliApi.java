@@ -1,6 +1,8 @@
 package com.tzj.iot.api.ali;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tzj.collect.api.commom.constant.MQTTConst;
+import com.tzj.collect.api.commom.mqtt.MQTTConfig;
 import com.tzj.collect.common.security.MD5Util;
 import com.tzj.collect.core.param.iot.IOT4Bean;
 import com.tzj.collect.core.param.token.TokenBean;
@@ -10,9 +12,12 @@ import com.tzj.iot.common.mqtt.MqttCommon;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -26,10 +31,11 @@ import static com.tzj.collect.common.constant.TokenConst.*;
  * @Description:
  */
 @ApiService
+
 public class AliApi {
 
     private static final String SIGN_KEY = "40ec20dab72b49d98e876429358ab24c";
-
+    protected final static Logger logger = LoggerFactory.getLogger(AliApi.class);
     @Autowired
     MqttClient mqttClient;
 
@@ -51,7 +57,7 @@ public class AliApi {
         String deviceCode = iot4Bean.getDeviceCode();
         String sign = iot4Bean.getSign();
 
-
+        logger.info("openTheBox 请求参数-----"+ JSONObject.toJSON(iot4Bean).toString());
         //校验参数
         if (MD5Util.encode(deviceCode + timeStamp + SIGN_KEY).equals(sign)) {
             Member member  = memberService.findMemberByAliId(iot4Bean.getAliUserId());
@@ -60,10 +66,10 @@ public class AliApi {
             }
 
             //生成用户token
-            String token = JwtUtils.generateToken(member.getAliUserId(), EQUIPMENT_APP_API_EXPRIRE, EQUIPMENT_APP_API_TOKEN_SECRET_KEY);
-            String securityToken = JwtUtils.generateEncryptToken(token, EQUIPMENT_APP_API_TOKEN_CYPTO_KEY);
+            String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
+            String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
             TokenBean tokenBean = new TokenBean();
-            tokenBean.setExpire(EQUIPMENT_APP_API_EXPRIRE);
+            tokenBean.setExpire(ALI_API_EXPRIRE);
             tokenBean.setToken(securityToken);
 
             //发送用户信息
@@ -82,10 +88,6 @@ public class AliApi {
         return returnMap;
 
     }
-
-
-
-
 
 
 

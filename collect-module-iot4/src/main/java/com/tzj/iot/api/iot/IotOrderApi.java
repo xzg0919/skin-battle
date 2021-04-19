@@ -15,7 +15,7 @@ import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-import static com.tzj.collect.common.constant.TokenConst.EQUIPMENT_APP_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.*;
 
 /**
  * @Auther: xiangzhongguo
@@ -42,7 +42,7 @@ public class IotOrderApi {
      */
     @Api(name = "saveOrder", version = "1.0")
     @SignIgnore
-    @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String saveOrder(IOT4OrderBean iot4OrderBean) {
 
         Member member = MemberUtils.getMember();
@@ -85,7 +85,7 @@ public class IotOrderApi {
      */
     @Api(name = "completeOrder", version = "1.0")
     @SignIgnore
-    @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object completeOrder(IOT4OrderBean iot4OrderBean) {
         return iotService.completeOrder(iot4OrderBean.getOrderNo(), iot4OrderBean.getOrderType());
 
@@ -99,7 +99,7 @@ public class IotOrderApi {
      */
     @Api(name = "cancelOrder", version = "1.0")
     @SignIgnore
-    @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public String cancelOrder(IOT4OrderBean iot4OrderBean) {
         iotService.cancelOrder(iot4OrderBean.getOrderNo());
         return "succcess";
