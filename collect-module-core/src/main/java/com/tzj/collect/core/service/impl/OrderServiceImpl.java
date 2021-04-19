@@ -1383,42 +1383,42 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if(StringUtils.isNotBlank(orderBean.getCategoryType())){
             Order.TitleType categoryType = Order.TitleType.valueOf(orderBean.getCategoryType());
             EntityWrapper<Order> orderEntityWrapper = new EntityWrapper<Order>();
-            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+            if(Order.TitleType.FIVEKG.getValue().equals(categoryType.getValue())){
                 orderEntityWrapper.and(" title in (3,8) ");
             }else{
                 orderEntityWrapper.eq("title", categoryType.getValue());
             }
             int INITCount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("INIT")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
             orderEntityWrapper = new EntityWrapper<Order>();
-            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+            if(Order.TitleType.FIVEKG.getValue().equals(categoryType.getValue())){
                 orderEntityWrapper.and(" title in (3,8) ");
             }else{
                 orderEntityWrapper.eq("title", categoryType.getValue());
             }
             int TOSENDCount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("TOSEND")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
             orderEntityWrapper = new EntityWrapper<Order>();
-            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+            if(Order.TitleType.FIVEKG.getValue().equals(categoryType.getValue())){
                 orderEntityWrapper.and(" title in (3,8) ");
             }else{
                 orderEntityWrapper.eq("title", categoryType.getValue());
             }
             int ALREADYCount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("ALREADY")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
             orderEntityWrapper = new EntityWrapper<Order>();
-            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+            if(Order.TitleType.FIVEKG.getValue().equals(categoryType.getValue())){
                 orderEntityWrapper.and(" title in (3,8) ");
             }else{
                 orderEntityWrapper.eq("title", categoryType.getValue());
             }
             int COMPLETECount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("COMPLETE")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
             orderEntityWrapper = new EntityWrapper<Order>();
-            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+            if(Order.TitleType.FIVEKG.getValue().equals(categoryType.getValue())){
                 orderEntityWrapper.and(" title in (3,8) ");
             }else{
                 orderEntityWrapper.eq("title", categoryType.getValue());
             }
             int CANCELCount = this.selectCount(orderEntityWrapper.eq("status_", getStatus("CANCEL")).eq("del_flag", "0").eq("company_id", companyId).ne("order_from", 1));
             orderEntityWrapper = new EntityWrapper<Order>();
-            if(Order.TitleType.FIVEKG.equals(categoryType.getValue())){
+            if(Order.TitleType.FIVEKG.getValue().equals(categoryType.getValue())){
                 orderEntityWrapper.and(" title in (3,8) ");
             }else{
                 orderEntityWrapper.eq("title", categoryType.getValue());

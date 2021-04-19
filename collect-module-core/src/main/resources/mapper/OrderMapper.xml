@@ -932,6 +932,8 @@
         '5公斤废纺衣物回收'
         WHEN 4 THEN
         '大件垃圾'
+        WHEN 8 THEN
+        '生活小家电'
         ELSE
         '其他'
         END AS title,
@@ -960,12 +962,65 @@
         <if test="recyclerName !=null and recyclerName !=''">
             AND sr.name_ like CONCAT('%',#{recyclerName},'%')
         </if>
-        AND soo.title = #{title}
+        <if test="title ==3">
+            AND soo.title in (3,8)
+        </if>
+        <if test="title !=3">
+            AND soo.title = #{title}
+        </if>
         and soo.company_id=#{companyId}
         ORDER BY
         dateFor
         ) dataInfo ON dataInfo.id = soia.order_id
         ) comId ON comId.company_id = scc.id
+    </select>
+
+    <select id="outOrderExcel" parameterType="Object" resultType="Map">
+        SELECT
+        a.order_no AS orderNo,
+        date_format(a.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
+        c.name_ AS name,
+        bb.name_ AS parentName,
+        b.name_ AS categoryName,
+        IF (
+        a.ach_price > 0,
+        '现金',
+        '能量'
+        ) AS isCash,
+        ROUND(a.ach_price, 2) AS amount,
+        d.name_ AS recyclerName,
+        a.commissions_price AS commissionsPrice,
+        a.admin_commissions AS adminCommissions,
+        a.back_commissions_price as backCommissionsPrice
+        FROM
+        sb_order a
+        inner JOIN sb_category b ON a.category_id = b.id
+        inner JOIN sb_category bb ON b.parent_id = bb.id
+        inner JOIN sb_company c ON a.company_id = c.id
+        inner JOIN sb_recyclers d ON a.recycler_id = d.id
+        WHERE
+        a.del_flag = '0'
+        AND a.company_id = #{companyId}
+        <if test="type ==3">
+            AND a.title in (3,8)
+        </if>
+        <if test="type !=3">
+            AND a.title = #{type}
+        </if>
+        AND a.status_ = 3
+        <if test="startTime !=null and startTime !=''">
+            <![CDATA[
+						AND a.complete_date >= CONCAT(#{startTime},' 00:00:00')
+					 ]]>
+        </if>
+        <if test="endTime !=null and endTime !=''">
+            <![CDATA[
+						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
+					 ]]>
+        </if>
+        <if test="recyclerName !=null and recyclerName !=''">
+            AND d.name_ like CONCAT('%',#{recyclerName},'%')
+        </if>
     </select>
 
     <select id="getOrderListss" parameterType="Object" resultType="Order">
@@ -1040,6 +1095,7 @@
 		ORDER BY createDate
 	</select>
 
+
     <select id="select2Or3Map" parameterType="Object" resultType="Map">
 		SELECT
 o.order_no AS orderNo,
@@ -1061,50 +1117,6 @@ LEFT JOIN sb_recyclers r on r.id = o.recycler_id
 WHERE o.id=#{id}
 ORDER BY time
 	</select>
-
-
-    <select id="outOrderExcel" parameterType="Object" resultType="Map">
-        SELECT
-        a.order_no AS orderNo,
-        date_format(a.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
-        c.name_ AS name,
-        bb.name_ AS parentName,
-        b.name_ AS categoryName,
-        IF (
-        a.ach_price > 0,
-        '现金',
-        '能量'
-        ) AS isCash,
-        ROUND(a.ach_price, 2) AS amount,
-        d.name_ AS recyclerName,
-        a.commissions_price AS commissionsPrice,
-        a.admin_commissions AS adminCommissions,
-        a.back_commissions_price as backCommissionsPrice
-        FROM
-        sb_order a
-        inner JOIN sb_category b ON a.category_id = b.id
-        inner JOIN sb_category bb ON b.parent_id = bb.id
-        inner JOIN sb_company c ON a.company_id = c.id
-        inner JOIN sb_recyclers d ON a.recycler_id = d.id
-        WHERE
-        a.del_flag = '0'
-        AND a.company_id = #{companyId}
-        AND a.title = #{type}
-        AND a.status_ = 3
-        <if test="startTime !=null and startTime !=''">
-            <![CDATA[
-						AND a.complete_date >= CONCAT(#{startTime},' 00:00:00')
-					 ]]>
-        </if>
-        <if test="endTime !=null and endTime !=''">
-            <![CDATA[
-						AND a.complete_date <= CONCAT(#{endTime},' 23:59:59')
-					 ]]>
-        </if>
-        <if test="recyclerName !=null and recyclerName !=''">
-            AND d.name_ like CONCAT('%',#{recyclerName},'%')
-        </if>
-    </select>
     <select id="outOrderExcelHouse" parameterType="Object" resultType="Map">
         SELECT
         a.order_no AS orderNo,
@@ -1807,7 +1819,7 @@ ORDER BY time
         a.id,
         a.order_no AS orderNo,
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as categoryDate,
-        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾','')))AS categoryName,
+        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS categoryName,
         c.name_ AS name,
         a.link_man AS userName,
         a.tel,
@@ -1976,7 +1988,7 @@ ORDER BY time
         a.id,
         a.order_no AS orderNo,
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
-        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾','')))AS categoryName,
+        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS categoryName,
         c.name_ AS name,
         a.link_man AS userName,
         a.tel,
@@ -2047,7 +2059,7 @@ ORDER BY time
         a.id,
         a.order_no AS orderNo,
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
-        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾','')))AS categoryName,
+        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS categoryName,
         c.name_ AS name,
         a.link_man AS userName,
         a.tel,
@@ -2228,7 +2240,7 @@ ORDER BY time
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
         DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
         a.arrival_period AS arrivalPeriod,
-        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾','')))AS categoryName,
+        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS categoryName,
         c.name_ AS name,
         a.link_man AS userName,
         a.tel,
