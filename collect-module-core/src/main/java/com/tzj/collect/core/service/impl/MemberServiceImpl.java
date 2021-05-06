@@ -28,6 +28,7 @@ import com.tzj.module.api.utils.JwtUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -72,6 +73,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     private CompanyService companyService;
     @Autowired
     private VoucherMemberService voucherMemberService;
+    @Autowired
+    WeiXinService weiXinService;
 
     @Override
     public Member findMemberByAliId(String aliMemberId) {
@@ -523,7 +526,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
     @Override
     public Map<String, Object> selectMemberInfoByAliUserId(String aliUserId) {
-        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
+        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", aliUserId , 40);
         return memberMapper.selectMemberInfoByAliUserId(aliUserId, memberName);
     }
 
@@ -667,14 +670,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
 
     @Override
     public Member selectMemberByAliUserId(String aliUserId) {
-        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
+        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", aliUserId, 40);
         return memberMapper.selectMemberByAliUserId(aliUserId, memberName);
     }
 
     @Override
     @Transactional
     public Integer deleteMemberByAliUserId(String aliUserId) {
-        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
+        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", aliUserId, 40);
         return memberMapper.deleteMemberByAliUserId(aliUserId, memberName);
     }
 
@@ -702,6 +705,40 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         } else {
             return this.updateMemberByAliUserId(member);
         }
+    }
+
+
+    @Override
+    @Transactional
+    public Object saveWxMsgByCode(MemberBean memberBean){
+        //获取用户的token和openid
+        Map<String, String> oauthByCode = weiXinService.getXcxOauthByCode(memberBean.getCode());
+        if (oauthByCode.isEmpty()){
+            throw new ApiException("解析授权异常");
+        }
+        if(StringUtils.isBlank(oauthByCode.get("openid"))){
+            throw new ApiException("解析授权异常");
+        }
+        weiXinService.getUserByToken(oauthByCode.get(""),oauthByCode.get("openid"));
+        Member member = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", oauthByCode.get("openid")));
+        if (null==member){
+            member = new Member();
+          }
+        member.setLinkName(memberBean.getNickName());
+        member.setPicUrl(memberBean.getAvatarUrl());
+        member.setCity(memberBean.getCity());
+        //member.setProvince(memberBean.getProvince());
+        member.setGender(memberBean.getGender());
+        member.setCardNo(new SimpleDateFormat("yyyyMMdd").format(new Date()) + (new Random().nextInt(899999) + 100000));
+        member.setAliUserId(oauthByCode.get("openid")+"");
+        //member.setUnionId(oauthByCode.get("unionid")+"");
+        inserOrUpdatetMember(member);
+        Map<String,Object> resultMap = new HashMap<>();
+        String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
+        String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
+        resultMap.put("member", member);
+        resultMap.put("token", securityToken);
+        return resultMap;
     }
 
 }

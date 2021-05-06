@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzj.collect.core.mapper.PrepayOrderMapper">
+
+
+    <select id="findUnPayOrder" resultType="Map">
+    select jod.order_code as orderCode,jpo.out_trade_no as outTradeNo,jod.open_id as openId from
+     jl_prepay_order jpo inner join jl_order_detail jod
+     on jpo.order_code =jod.order_code
+     where   jod.order_status ='07'
+    </select>
+
+    <select id="findUnPayOrderDelete" resultType="Map">
+    select jod.order_code as orderCode,jpo.out_trade_no as outTradeNo,jod.open_id as openId from
+     jl_prepay_order jpo inner join jl_order_detail jod
+     on jpo.order_code =jod.order_code
+     where   NOW()> date_add(jod.create_date, interval  5 minute)
+     and jod.order_status ='07'
+    </select>
+</mapper>

@@ -33,13 +33,13 @@ public class DailyMemberServiceImpl extends ServiceImpl<DailyMemberMapper, Membe
 
     @Override
     public Map<String, Object> selectMemberInfoByAliUserId(String aliUserId) {
-        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
+        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", aliUserId, 40);
         return dailyMemberMapper.selectMemberInfoByAliUserId(aliUserId,memberName);
     }
 
     @Override
     public Member selectMemberByAliUserId(String aliUserId) {
-        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
+        String memberName = ShardTableHelper.getTableNameByModeling("sb_member", aliUserId, 40);
         return dailyMemberMapper.selectMemberByAliUserId(aliUserId,memberName);
     }
 

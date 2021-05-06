@@ -24,14 +24,14 @@ public class Member4JfApp4JfAppServiceImpl extends ServiceImpl<MemberMapper, Mem
 
 	@Override
 	public Member selectMemberByAliUserId(String aliUserId) {
-		String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserId), 40);
+		String memberName = ShardTableHelper.getTableNameByModeling("sb_member",  aliUserId, 40);
 		return memberMapper.selectMemberByAliUserId(aliUserId,memberName);
 	}
 
 	@Override
 	@Transactional
 	public Integer updateMemberByAliUserId(Member member) {
-		String memberTableName = ShardTableHelper.getTableNameByModeling("sb_member",Long.parseLong(member.getAliUserId()),40);
+		String memberTableName = ShardTableHelper.getTableNameByModeling("sb_member", member.getAliUserId(),40);
 		member.setTableName(memberTableName);
 		return memberMapper.updateMemberByAliUserId(member);
 	}
@@ -39,7 +39,7 @@ public class Member4JfApp4JfAppServiceImpl extends ServiceImpl<MemberMapper, Mem
 	@Override
 	@Transactional
 	public Integer insertMember(Member member) {
-		String memberTableName = ShardTableHelper.getTableNameByModeling("sb_member",Long.parseLong(member.getAliUserId()),40);
+		String memberTableName = ShardTableHelper.getTableNameByModeling("sb_member", member.getAliUserId(),40);
 		member.setTableName(memberTableName);
 		return memberMapper.insertMember(member);
 	}

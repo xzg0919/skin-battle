@@ -12,12 +12,12 @@ public class TableNameUtils {
         if(null==member|| StringUtils.isBlank(member.getAliUserId())){
             throw new ApiException("aliUserId不能为空");
         }
-        return ShardTableHelper.getTableNameByModeling("sb_member",Long.parseLong(member.getAliUserId()),40);
+        return ShardTableHelper.getTableNameByModeling("sb_member", member.getAliUserId() ,40);
     }
     public static String getMemberAddressTableName(MemberAddress memberAddress){
         if(null==memberAddress|| StringUtils.isBlank(memberAddress.getAliUserId())){
             throw new ApiException("aliUserId不能为空");
         }
-        return ShardTableHelper.getTableNameByModeling("sb_member_address",Long.parseLong(memberAddress.getAliUserId()),40);
+        return ShardTableHelper.getTableNameByModeling("sb_member_address", memberAddress.getAliUserId() ,40);
     }
 }

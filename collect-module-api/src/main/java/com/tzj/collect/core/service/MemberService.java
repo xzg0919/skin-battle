@@ -114,4 +114,6 @@ public interface MemberService extends IService<Member>{
     Object saveXianYuMember(String openId, String accessToken,String linkName,String picUrl);
 
     Object updateAliAccount(String aliAccount, String aliUserId);
+
+    Object saveWxMsgByCode(MemberBean memberBean);
 }
