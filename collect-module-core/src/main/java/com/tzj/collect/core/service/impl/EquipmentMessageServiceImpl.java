@@ -9,6 +9,7 @@ import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.alipay.api.response.AlipayIserviceCognitiveClassificationWasteQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.constant.MQTTConst;
+import com.tzj.collect.api.commom.mqtt.util.ConnectionOptionWrapper;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.amap.AmapConst;
 import com.tzj.collect.common.amap.AmapRegeoJson;
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static com.tzj.collect.api.commom.constant.MQTTConst.*;
+import static com.tzj.collect.api.commom.constant.MQTTConst.SECRET_KEY;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_CYPTO_KEY;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_TOKEN_SECRET_KEY;
 
@@ -406,7 +410,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
         AlipayIserviceCognitiveClassificationWasteQueryRequest request = new
                 AlipayIserviceCognitiveClassificationWasteQueryRequest();
         JSONObject params = new JSONObject();
-        params.put("biz_code", "sdefgthbvfghytfg");
+        params.put("biz_code", "isv");
         params.put("cognition_type", "ImageUrl");
         params.put("cognition_content", picUrl);
         request.setBizContent(params.toJSONString());
@@ -427,7 +431,7 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
         AlipayIserviceCognitiveClassificationWasteQueryRequest request = new
                 AlipayIserviceCognitiveClassificationWasteQueryRequest();
         JSONObject params = new JSONObject();
-        params.put("biz_code", "sdefgthbvfghytfg");
+        params.put("biz_code", "isv");
         params.put("cognition_type", "ImageUrl");
         params.put("cognition_content", "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=460131924,4235991852&fm=15&gp=0.jpg");
         request.setBizContent(params.toJSONString());
@@ -442,5 +446,33 @@ public class EquipmentMessageServiceImpl implements EquipmentMessageService {
             System.out.println("调用失败");
         }
     }
+
+
+
+    @Override
+    @SneakyThrows
+    public  void  sendMqttMessage(MqttMessage message, String clientId){
+        String topic        = MQTTConst.PARENT_TOPIC + "/" + "iot4";
+        int qos             = 1;
+        String broker       = "tcp://" + END_POINT + ":1883";
+        MemoryPersistence persistence = new MemoryPersistence();
+        try {
+            ConnectionOptionWrapper connectionOptionWrapper = new ConnectionOptionWrapper(INSTANCE_ID, ACCESS_KEY, SECRET_KEY, clientId);
+            MqttClient mqttClient = new MqttClient(broker, clientId, persistence);
+            mqttClient.setTimeToWait(5000);
+            mqttClient.connect(connectionOptionWrapper.getMqttConnectOptions());
+            message.setQos(qos);
+            mqttClient.publish(topic, message);
+            mqttClient.disconnect();
+        } catch(MqttException me) {
+            me.printStackTrace();
+        }
+    }
+
+
+
+
+
+
 
 }

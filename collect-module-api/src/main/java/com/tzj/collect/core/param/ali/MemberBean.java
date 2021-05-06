@@ -57,8 +57,13 @@ public class MemberBean {
 
     private String timestamp;//时间戳
 
+    private String avatarUrl;
 
+    private String city;//市
 
+    private String gender;
+    private String province;//省
 
-    
+    //用户授权的回调的code
+    private String code;
 }

@@ -466,4 +466,6 @@ public interface OrderService extends IService<Order> {
 	Object getOrderDetailPrice(Integer id);
 	@DS("slave")
     Object uploadCategoryByAoTu(String aliUserId, String equipmentCode, String categoryName, Double rubbishWeight);
+
+	Order getByOrderNo(String orderNo);
 }

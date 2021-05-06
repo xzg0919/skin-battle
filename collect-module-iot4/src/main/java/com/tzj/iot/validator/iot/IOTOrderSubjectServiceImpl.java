@@ -2,61 +2,57 @@ package com.tzj.iot.validator.iot;
 
 import com.tzj.collect.core.service.CompanyEquipmentService;
 import com.tzj.collect.core.service.MemberService;
-import com.tzj.collect.core.service.RecyclersService;
 import com.tzj.collect.entity.CompanyEquipment;
 import com.tzj.collect.entity.Member;
-import com.tzj.collect.entity.Recyclers;
-
-import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
-import static com.tzj.collect.common.constant.TokenConst.EQUIPMENT_APP_API_COMMON_AUTHORITY;
-
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.api.service.SubjectService;
 import com.tzj.module.easyopen.util.EhCache2Utils;
-
-import java.util.LinkedList;
-import java.util.Map;
-
 import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
+import java.util.Map;
 
-@Service("iotApiSubjectServiceImpl")
-public class IOTSubjectServiceImpl implements SubjectService {
+import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+import static com.tzj.collect.common.constant.TokenConst.EQUIPMENT_APP_API_COMMON_AUTHORITY;
 
-    private final String cacheName = "iotAppCache";
+
+@Service("iotOrderApiSubjectServiceImpl")
+public class IOTOrderSubjectServiceImpl implements SubjectService {
+
+    private final String cacheName = "iotOrderAppCache";
 
 
     @Autowired
     private CacheManager cacheManager;
 
     @Autowired
-    private CompanyEquipmentService companyEquipmentService;
+    private MemberService memberService;
 
     @Override
     public Subject getSubjectByTokenSubject(String token,String key, Map<String, Object> map) {
-
         Subject subjectCache=getSubjectCache(token);
         if(subjectCache!=null){
             return subjectCache;
         }
-
-        CompanyEquipment companyEquipment = companyEquipmentService.selectById(Long.parseLong(key));
+        Member member = memberService.selectMemberByAliUserId(key);
 
         Subject subject=new Subject();
-        subject.setId(companyEquipment.getId().toString());
-        subject.setName(companyEquipment.getEquipmentCode());
-        subject.setUser(companyEquipment);
+        subject.setId(member.getId().toString());
+        subject.setName(member.getName());
+        subject.setUser(member);
 
         LinkedList<String> authorities=new LinkedList<>();
-        authorities.add(EQUIPMENT_APP_API_COMMON_AUTHORITY);
+        authorities.add(ALI_API_COMMON_AUTHORITY);
         subject.setAuthorities(authorities);
+
+        //TODO： 分表后，后面需要取消 User 对象
+
 
         setSubjectCache(token,subject);
 
         return subject;
-
     }
 
     @Override

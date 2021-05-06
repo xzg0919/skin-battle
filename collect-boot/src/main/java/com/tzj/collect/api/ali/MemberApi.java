@@ -296,4 +296,19 @@ public class MemberApi {
 		}
 		return memberService.getRealNoByAliUserId(memberBean.getAliUserId());
 	}
+
+	/**
+	 * 根据用户的code,获取微信用户的信息
+	 * @author 王灿
+	 * @param
+	 */
+	@Api(name = "member.saveWxMsgByCode", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public Object saveWxMsgByCode(MemberBean memberBean) {
+		return memberService.saveWxMsgByCode(memberBean);
+	}
+
+
+
 }

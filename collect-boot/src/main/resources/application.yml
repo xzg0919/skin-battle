@@ -110,3 +110,18 @@ logging:
     org.springfromework.web: warn
     org.hibernate: error
     com.tzj: info
+
+wx:
+  pay:
+    #微信公众号或者小程序等的appid
+    appIdWx: wx0bbeca809b731203
+    appIdApp: wxdd992ab4ada4d36d
+    #商户号
+    mchId: 1556916841
+    #商户key
+    mchKey: XiHuHuanJingklmnopqrstuvwxyz1234
+    # p12证书的位置，可以指定绝对路径，也可以指定类路径（以classpath:开头）
+    keyPath: /jingling/wxCert/apiclient_cert.p12
+
+#微信异步通知地
+wxNotifyUrl: https://jlopen.mayishoubei.com/notify/wx

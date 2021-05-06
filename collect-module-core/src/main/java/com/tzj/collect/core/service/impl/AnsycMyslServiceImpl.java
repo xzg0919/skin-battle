@@ -5,10 +5,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.domain.AntMerchantExpandTradeorderSyncModel;
-import com.alipay.api.domain.ItemOrder;
-import com.alipay.api.domain.OrderExtInfo;
+import com.alipay.api.domain.*;
+import com.alipay.api.request.AlipayEcoActivityRecycleSendRequest;
 import com.alipay.api.request.AntMerchantExpandTradeorderSyncRequest;
+import com.alipay.api.response.AlipayEcoActivityRecycleSendResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.tzj.collect.common.constant.AlipayConst;
@@ -30,8 +30,9 @@ import org.springframework.stereotype.Service;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Service
@@ -43,16 +44,15 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
     private ApplicaInit applicaInit;
 
     @Override
-    public AntMerchantExpandTradeorderSyncResponse updateForest(String orderId,String myslParam, Integer times){
+    public AlipayEcoActivityRecycleSendResponse updateForest(String orderId,String myslParam, Integer times){
         times = times == null ? 0 : times;
         Order order = orderService.selectById(orderId);
         if ("true".equals(applicaInit.getIsMysl())){
             try{
-                AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
-                AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
-                AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+                AlipayClient alipayClient = new DefaultAlipayClient("https://openapipre.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
+                AlipayEcoActivityRecycleSendRequest request = new AlipayEcoActivityRecycleSendRequest();
                 request.setBizContent(myslParam);
-                AntMerchantExpandTradeorderSyncResponse response = null;
+                AlipayEcoActivityRecycleSendResponse response = null;
                 try {
                     response = alipayClient.execute(request);
                 }catch (Exception e){
@@ -60,8 +60,8 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
                 }
                 if(response.isSuccess()){
                     System.out.println("调用成功");
-                    String MorderId = response.getOrderId();
-                    order.setMyslOrderId(MorderId);
+                    String fullEnergy = response.getFullEnergy().toString();
+                    order.setMyslOrderId(fullEnergy);
                     order.setMyslParam(JSON.toJSONString(response.getParams()));
                     orderService.updateById(order);
                 } else {
@@ -92,28 +92,28 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
      * @update:[日期YYYY-MM-DD] [更改人姓名]
      */
     @Override
-    public AntMerchantExpandTradeorderSyncResponse  updateCansForest(String aliUserId,String outBizNo,long count,String type){
+    public AlipayEcoActivityRecycleSendResponse  updateCansForest(String aliUserId,String outBizNo,long count,String type){
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do",AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
-        AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
-        AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+        AlipayEcoActivityRecycleSendRequest request = new AlipayEcoActivityRecycleSendRequest();
+        AlipayEcoActivityRecycleSendModel model = new AlipayEcoActivityRecycleSendModel();
         model.setBuyerId(aliUserId);
         model.setSellerId(AlipayConst.SellerId);
         model.setOutBizType("RECYCLING");
         model.setOutBizNo(outBizNo);
-        List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();
-        ItemOrder itemOrder = new ItemOrder();
+        List<EnergyGoodRequest> orderItemList = new ArrayList<EnergyGoodRequest>();
+        EnergyGoodRequest itemOrder = new EnergyGoodRequest();
         itemOrder.setItemName("饮料瓶罐");
-        itemOrder.setQuantity(count);
-        List<OrderExtInfo> extInfo = new ArrayList<>();
-        OrderExtInfo orderExtInfo = new OrderExtInfo();
+        itemOrder.setQuantity(count+"");
+        List<EnergyExtRequest> extInfo = new ArrayList<>();
+        EnergyExtRequest orderExtInfo = new EnergyExtRequest();
         orderExtInfo.setExtKey("ITEM_TYPE");
         orderExtInfo.setExtValue(type);
         extInfo.add(orderExtInfo);
-        itemOrder.setExtInfo(extInfo);
+        itemOrder.setItems(extInfo);
         orderItemList.add(itemOrder);
-        model.setItemOrderList(orderItemList);
+        model.setItemList(orderItemList);
         request.setBizModel(model);
-        AntMerchantExpandTradeorderSyncResponse response = null;
+        AlipayEcoActivityRecycleSendResponse response = null;
         try {
             response = alipayClient.execute(request);
         }catch (Exception e){
@@ -134,31 +134,31 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
 
 
     @Override
-    public   AntMerchantExpandTradeorderSyncResponse updateCansForestByList(MyslBean myslBean){
+    public   AlipayEcoActivityRecycleSendResponse updateCansForestByList(MyslBean myslBean){
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
-        AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
-        AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+        AlipayEcoActivityRecycleSendRequest request = new AlipayEcoActivityRecycleSendRequest();
+        AlipayEcoActivityRecycleSendModel model=new AlipayEcoActivityRecycleSendModel();
         model.setBuyerId(myslBean.getAliUserId());
         model.setSellerId(AlipayConst.SellerId);
         model.setOutBizType("RECYCLING");
         model.setOutBizNo(myslBean.getOutBizNo());
-        List<ItemOrder> orderItemList = new ArrayList<>();
+        List<EnergyGoodRequest> itemList = new ArrayList<>();
         List<MyslItemBean> myslItemBeans = myslBean.getMyslItemBeans();
         myslItemBeans.stream().forEach(myslItemBean -> {
-            ItemOrder itemOrder = new ItemOrder();
-            itemOrder.setItemName(myslItemBean.getItemName());
-            itemOrder.setQuantity(myslItemBean.getCount());
-            List<OrderExtInfo> extInfo = new ArrayList<>();
-            OrderExtInfo orderExtInfo = new OrderExtInfo();
-            orderExtInfo.setExtKey(myslItemBean.getExtKey());
-            orderExtInfo.setExtValue(myslItemBean.getExtValue());
-            extInfo.add(orderExtInfo);
-            itemOrder.setExtInfo(extInfo);
-            orderItemList.add(itemOrder);
+            EnergyGoodRequest energyGoodRequest=new EnergyGoodRequest();
+            energyGoodRequest.setItemName(myslItemBean.getItemName());
+            energyGoodRequest.setQuantity(myslItemBean.getCount().toString());
+            List<EnergyExtRequest> items =new ArrayList<>();
+            EnergyExtRequest energyExtRequest= new EnergyExtRequest();
+            energyExtRequest.setExtKey(myslItemBean.getExtKey());
+            energyExtRequest.setExtValue(myslItemBean.getExtValue());
+            items.add(energyExtRequest);
+            energyGoodRequest.setItems(items);
+            itemList.add(energyGoodRequest);
         });
-        model.setItemOrderList(orderItemList);
+        model.setItemList(itemList);
         request.setBizModel(model);
-        AntMerchantExpandTradeorderSyncResponse response = null;
+        AlipayEcoActivityRecycleSendResponse response = null;
         try {
             System.out.println("开始发放蚂蚁森林能量:"+ JSONObject.toJSON(request));
             response = alipayClient.execute(request);
@@ -169,64 +169,38 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
             System.out.println("蚂蚁森林能量发放成功:"+ JSONObject.toJSON(response));
 
         } else {
-
             System.out.println("蚂蚁森林能量发放失败:"+ JSONObject.toJSON(response));
         }
         return response;
     }
 
     public static void main(String[] args) throws Exception {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
+        AlipayEcoActivityRecycleSendRequest request = new AlipayEcoActivityRecycleSendRequest();
+        AlipayEcoActivityRecycleSendModel model=new AlipayEcoActivityRecycleSendModel();
+        model.setBuyerId("2088122086746200");
+        model.setSellerId("2088421446748174");
+        model.setOutBizType("RECYCLING");
+        model.setOutBizNo("20210406789863783637811");
+        List<EnergyGoodRequest> itemList = new ArrayList<>();
+        List<EnergyExtRequest> items =new ArrayList<>();
+        EnergyGoodRequest energyGoodRequest=new EnergyGoodRequest();
+        energyGoodRequest.setItemName("书本");
+        energyGoodRequest.setQuantity("3.0");
+        EnergyExtRequest energyExtRequest= new EnergyExtRequest();
+        energyExtRequest.setExtKey("ITEM_TYPE");
+        energyExtRequest.setExtValue("paper");
+        items.add(energyExtRequest);
+        energyGoodRequest.setItems(items);
+        itemList.add(energyGoodRequest);
+        model.setItemList(itemList);
+        request.setBizModel(model);
+        AlipayEcoActivityRecycleSendResponse response = alipayClient.execute(request);
+        if(response.isSuccess()){
 
-//        Class<?> clazz = Class.forName("com.tzj.collect.entity.Area");
-//        TableName annotation = clazz.getAnnotation(TableName.class);
-//        System.out.println(annotation);
-//
-//
-//        Class<Area> areaClass = Area.class;
-//        Object o = areaClass.newInstance();
-//        Method[] declaredMethods = areaClass.getDeclaredMethods();
-//        Arrays.asList(declaredMethods).stream().forEach(s->{
-//            AuthIgnore annotation1 = s.getAnnotation(AuthIgnore.class);
-//            if (null!= annotation1){
-//                System.out.println(s.getName());
-//            }
-//        });
-//        System.out.println();
-//        Area o1 = (Area) o;
-//        o1.setId(11111L);
-//
-//        System.out.println(o1.getId());
-
-        for (int i = 0; i < 1; i++) {
-            String outBiz = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+"134234"+new Random(99999999).nextInt();
-            try{
-                AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
-                AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
-                AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
-                request.setBizContent("{\"buyerId\":\"2088122086746200\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"appliance\"}],\"itemName\":\"冰箱\",\"quantity\":1}],\"outBizNo\":\""+outBiz+"\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}");
-                AntMerchantExpandTradeorderSyncResponse response = null;
-                try {
-                    response = alipayClient.execute(request);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                if(response.isSuccess()){
-                    System.out.println("调用成功");
-                    String MorderId = response.getOrderId();
-                    System.out.println("MorderId"+MorderId);
-                } else {
-                    System.out.println("调用失败");
-                    DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                            ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是：356035",
-                            RocketMqConst.DINGDING_ERROR,response.getBody());
-                }
-            }catch (Exception e) {
-                DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                        ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是：356035",
-                        RocketMqConst.DINGDING_ERROR,e.toString());
-                e.printStackTrace();
-            }
+            System.out.println("调用成功");
+        } else {
+            System.out.println("调用失败");
         }
-
     }
 }

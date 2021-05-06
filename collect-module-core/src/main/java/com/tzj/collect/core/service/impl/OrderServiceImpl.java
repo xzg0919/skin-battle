@@ -1,6 +1,8 @@
 package com.tzj.collect.core.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alipay.api.domain.*;
+import com.alipay.api.response.*;
 import com.alipay.api.domain.AntMerchantExpandTradeorderSyncModel;
 import com.alipay.api.domain.ItemOrder;
 import com.alipay.api.domain.OrderExtInfo;
@@ -43,9 +45,12 @@ import com.tzj.collect.core.service.*;
 import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.thread.sendGreenOrderThread;
 import com.tzj.collect.entity.*;
+import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Category.CategoryType;
 import com.tzj.collect.entity.CategoryAttrOption;
+import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order.OrderType;
+import com.tzj.collect.entity.OrderItem;
 import com.tzj.module.easyopen.exception.ApiException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -1185,12 +1190,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     public void updateCansForestIot(Order order, String aliUserId, long count, String type) {
         //增加蚂蚁能量
-        AntMerchantExpandTradeorderSyncResponse tradeorderSyncResponse = null;
+        AlipayEcoActivityRecycleSendResponse tradeorderSyncResponse = null;
         if (count >= 1) {
             tradeorderSyncResponse = ansycMyslService.updateCansForest(aliUserId, UUID.randomUUID().toString(), count, type);
             //更新order
             if (null != tradeorderSyncResponse) {
-                order.setMyslOrderId(tradeorderSyncResponse.getOrderId());
+                order.setMyslOrderId(tradeorderSyncResponse.getFullEnergy()+"");
                 order.setMyslParam(tradeorderSyncResponse.getParams().toString());
                 this.updateById(order);
             }
@@ -3728,46 +3733,46 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			return null;
 		}
 		long amount = 0;
-		AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+        AlipayEcoActivityRecycleSendModel model=new AlipayEcoActivityRecycleSendModel();
 		model.setBuyerId(order.getAliUserId());
 		model.setSellerId(AlipayConst.SellerId);
 		model.setOutBizType("RECYCLING");
 		model.setOutBizNo(order.getOrderNo());
-		List<ItemOrder> orderItemList = new ArrayList<ItemOrder>();
+        List<EnergyGoodRequest> itemList = new ArrayList<>();
 		//如果是电器
 		if((Category.CategoryType.DIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
-			ItemOrder itemOrder = new ItemOrder();
+            EnergyGoodRequest itemOrder = new EnergyGoodRequest();
 			itemOrder.setItemName(digitalMap.get("name").toString());
-			itemOrder.setQuantity((long)1);
-			List<OrderExtInfo> extInfo = new ArrayList<>();
-			OrderExtInfo orderExtInfo = new OrderExtInfo();
+			itemOrder.setQuantity("1");
+			List<EnergyExtRequest> extInfo = new ArrayList<>();
+            EnergyExtRequest orderExtInfo = new EnergyExtRequest();
 			orderExtInfo.setExtKey("ITEM_TYPE");
 			orderExtInfo.setExtValue(digitalMap.get("aliItemType").toString());
 			extInfo.add(orderExtInfo);
-			itemOrder.setExtInfo(extInfo);
-			orderItemList.add(itemOrder);
+			itemOrder.setItems(extInfo);
+            itemList.add(itemOrder);
 		}else if((Order.TitleType.HOUSEHOLD.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.FIVEKG.getValue()+"").equals(order.getTitle().getValue()+"")||(Order.TitleType.IOTORDER.getValue()+"").equals(order.getTitle().getValue()+"") || (Order.TitleType.SMALLDIGITAL.getValue()+"").equals(order.getTitle().getValue()+"")){
 			for (Map<String, Object> itemMap:houseList) {
 				if (null==itemMap.get("aliItemType")){
 					continue;
 				}
 				amount += (long)Math.floor((double)itemMap.get("amount"));
-				ItemOrder itemOrder = new ItemOrder();
+                EnergyGoodRequest itemOrder = new EnergyGoodRequest();
 				itemOrder.setItemName(itemMap.get("parentName").toString());
-				itemOrder.setQuantity((long)Math.floor((double)itemMap.get("amount")));
-				List<OrderExtInfo> extInfo = new ArrayList<>();
-				OrderExtInfo orderExtInfo = new OrderExtInfo();
+				itemOrder.setQuantity( Math.floor((double)itemMap.get("amount"))+"");
+				List<EnergyExtRequest> extInfo = new ArrayList<>();
+                EnergyExtRequest orderExtInfo = new EnergyExtRequest();
 				orderExtInfo.setExtKey("ITEM_TYPE");
 				orderExtInfo.setExtValue(itemMap.get("aliItemType").toString());
 				extInfo.add(orderExtInfo);
-				itemOrder.setExtInfo(extInfo);
-				orderItemList.add(itemOrder);
+				itemOrder.setItems(extInfo);
+                itemList.add(itemOrder);
 			}
 		}
-		if (null == orderItemList || orderItemList.isEmpty() ){
+		if (null == itemList || itemList.isEmpty() ){
 			return null;
 		}
-		model.setItemOrderList(orderItemList);
+		model.setItemList(itemList);
 		order.setMyslParam(JSON.toJSONString(model));
 		OrderBean orderBean = new OrderBean();
 		if (amount<=30000){
@@ -5165,4 +5170,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return resultMap;
     }
 
+
+    @Override
+    public Order getByOrderNo(String orderNo) {
+        return this.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo).eq("del_flag", "0"));
+    }
 }

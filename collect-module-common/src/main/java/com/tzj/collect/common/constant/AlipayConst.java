@@ -11,7 +11,7 @@ public class AlipayConst {
     public static final String ali_public_key  = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw1AeGXQvAJYNwlxIuCRkD8nM+Y5NfDoU7lwjka69wHWOEyzALjxSPn69x3AlPMjkQS2UPpvBhKTD4s3ELpGA2mNT7DEqGGFeS6jHl80iGziQnb5dodFm98gfdRebyJMd36pSXDmht3GjBswMQpp2x06Wd1fwlBZ9lnuUBNtSN1pceawt+4F7OXuPVcNg/27MPrAZOMvaTC3UUid7kx4nwQJ6RQYSpg0m9nyVI2zPC1wj6XSmCWuhMJOAQhQxy1DikwHLtnnRr1Jur+mUYKIG+AY7yvZjs7J4DUxXZVyjB9Jfe0XkzvoXa/7TD9ZTEDcJyHyG1/vvByZ/OuqdckmcKQIDAQAB";
     
     public static final String format = "json";
-    
+
     public static final String input_charset = "utf-8";
     
     public static final String sign_type = "RSA2";
@@ -21,7 +21,7 @@ public class AlipayConst {
     public static final String XappId = "2018060660292753";
 
     //蚂蚁深林扣款Id
-    public static final String SellerId = "2088221992947092";
+    public static final String SellerId = "2088421446748174";
     //铸钱支付Id
     public static final String ant_seller_id = "zhuqian.shzq@aliyun.com";
 

@@ -202,7 +202,7 @@
             <dependency>
                 <groupId>com.alipay.sdk</groupId>
                 <artifactId>alipay-sdk-java</artifactId>
-                <version>3.7.73.ALL</version>
+                <version>4.13.0.ALL</version>
             </dependency>
 
             <dependency>
@@ -252,6 +252,13 @@
                         <artifactId>dubbo</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-pay</artifactId>
+                <version>3.7.0</version>
             </dependency>
         </dependencies>
         <!-- nacos + springboot + nacos end -->

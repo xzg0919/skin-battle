@@ -619,7 +619,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
 //            Map<String, Object> sums = dailyLexiconMapper.selectSums(tableNameLastWeek(System.currentTimeMillis()), aliUserIdScore.get(0));
 //            Map<String, Object> prices = dailyLexiconMapper.selectPrices(aliUserIdScore.get(0), LocalDate.now().minusWeeks(1).with(DayOfWeek.MONDAY) + "", LocalDate.now().minusWeeks(1).with(DayOfWeek.SUNDAY)+ " 23:59:59");
             //当前用户所在位置
-            String memberName = ShardTableHelper.getTableNameByModeling("sb_member", Long.parseLong(aliUserIdScore.get(0)), 40);
+            String memberName = ShardTableHelper.getTableNameByModeling("sb_member",  aliUserIdScore.get(0), 40);
             String yearWeek = LocalDate.now().getYear() + "" + (Instant.ofEpochMilli(System.currentTimeMillis()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime().now().get(WeekFields.of(DayOfWeek.MONDAY,1).weekOfYear()) - 1);
             //优化整合上面三条语句
             Map<String, Object> stringObjectMap = dailyLexiconMapper.selectPricesSumsAndMemInfoByAliId(aliUserIdScore.get(0), tableNameLastWeek(System.currentTimeMillis()), yearWeek, memberName);
