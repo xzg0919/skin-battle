@@ -171,7 +171,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         }
         AlipayFundTransToaccountTransferResponse response = null;
         try {
-            response =this.aliPayTransfer(payment.getId().toString(),aliUserId,payment.getTransferPrice(),payeeType);
+            response =this.aliPayTransfer(payment.getOrderSn(),aliUserId,payment.getTransferPrice(),payeeType);
             if ((response.isSuccess()&&"10000".equals(response.getCode()))||payment.getTransferPrice().compareTo(BigDecimal.ZERO)==0) {
                 System.out.println("转账成功，更改信息");
                 payment1.setStatus(Payment.STATUS_TRANSFER);

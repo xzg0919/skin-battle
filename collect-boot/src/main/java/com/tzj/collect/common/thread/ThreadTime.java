@@ -82,7 +82,7 @@ class PaymentThread implements Runnable {
         if (!paymentsList.isEmpty()) {
             for (Payment payment : paymentsList) {
                 //查询此单交易是否成功
-                AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getId().toString());
+                AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getOrderSn());
                 if ("Success".equals(aliPayment.getMsg()) && "SUCCESS".equals(aliPayment.getStatus())) {
                     //转账成功
                     System.out.println("查询转账接口成功，更正转账信息");
@@ -137,7 +137,7 @@ class UpdateOrderThread implements Runnable{
                 Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", order.getOrderNo()).eq("status_", "2"));
                 //查询此单交易是否成功
                 if (null != payment){
-                    AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getId().toString());
+                    AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getOrderSn());
                     if ("Success".equals(aliPayment.getMsg()) && "SUCCESS".equals(aliPayment.getStatus())) {
                         //修改订单状态
                         OrderBean orderBean = new OrderBean();

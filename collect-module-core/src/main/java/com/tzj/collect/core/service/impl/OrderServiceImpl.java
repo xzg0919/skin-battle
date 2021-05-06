@@ -4037,7 +4037,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		String paymentNo = "";
 		Payment payment = paymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", order.getOrderNo()));
 		if (null != payment){
-			AlipayFundTransOrderQueryResponse response = paymentService.getTransfer(payment.getId().toString());
+			AlipayFundTransOrderQueryResponse response = paymentService.getTransfer(payment.getOrderSn());
 			if(response.isSuccess()){
 				paymentNo = response.getOrderId();
 			}
@@ -4211,7 +4211,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		Payment payment = paymentService.selectByOrderSn(order.getOrderNo());
 		if (null != payment){
 			//查询此单交易是否成功
-			AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getId().toString());
+			AlipayFundTransOrderQueryResponse aliPayment = paymentService.getTransfer(payment.getOrderSn());
 			if("Success".equals(aliPayment.getMsg())){
 				paymentNo = aliPayment.getOrderId();
 			}
