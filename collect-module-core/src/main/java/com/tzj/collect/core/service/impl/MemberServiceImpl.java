@@ -704,4 +704,25 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
     }
 
+    /**
+     * 查找该用户实体卡
+     * @param aliUserId
+     * @return
+     */
+    @Override
+    public Object getRealNoByAliUserId(String aliUserId) {
+        Member me = selectMemberByAliUserId(aliUserId);
+        Map<String, Object> result = new HashMap<>(2);
+        //五实体卡 status=0
+        result.put("status", 0);
+        if(null == me || StringUtils.isBlank(me.getDsddCardNo())){
+            return result;
+        }
+        //有实体卡 status=1
+        result.put("status", 1);
+        String realNo = me.getDsddCardNo();
+        result.put("realNo", realNo);
+        return result;
+    }
+
 }

@@ -576,6 +576,12 @@ select count(1) from (
 						b.street_id
 					FROM
 						sb_company_street_big b
+					UNION
+					SELECT
+						b.company_id,
+						b.street_id
+					FROM
+						sb_company_street_app_small b
 				) b
 			GROUP BY
 				b.company_id

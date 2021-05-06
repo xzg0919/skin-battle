@@ -82,4 +82,5 @@ public interface PaymentService extends IService<Payment> {
     AlipayFundTransToaccountTransferResponse iotTransfer(String aliUserId, String price, String outBizNo);
 
     Payment selectPayOneMinByOrderSn(String orderNo);
+    void transferDemo(Payment payment);
 }

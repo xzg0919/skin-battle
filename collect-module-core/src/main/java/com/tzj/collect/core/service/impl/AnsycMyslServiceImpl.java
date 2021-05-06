@@ -30,9 +30,8 @@ import org.springframework.stereotype.Service;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 @Service
@@ -197,32 +196,37 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
 //        o1.setId(11111L);
 //
 //        System.out.println(o1.getId());
-        try{
-            AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
-            AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
-            AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
-            request.setBizContent("{\"buyerId\":\"2088702631439940\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"appliance\"}],\"itemName\":\"冰箱\",\"quantity\":1}],\"outBizNo\":\"20201212224276854521\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}");
-            AntMerchantExpandTradeorderSyncResponse response = null;
-            try {
-                response = alipayClient.execute(request);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            if(response.isSuccess()){
-                System.out.println("调用成功");
-                String MorderId = response.getOrderId();
-                System.out.println("MorderId"+MorderId);
-            } else {
-                System.out.println("调用失败");
+
+        for (int i = 0; i < 1; i++) {
+            String outBiz = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+"134234"+new Random(99999999).nextInt();
+            try{
+                AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
+                AntMerchantExpandTradeorderSyncRequest request = new AntMerchantExpandTradeorderSyncRequest();
+                AntMerchantExpandTradeorderSyncModel model = new AntMerchantExpandTradeorderSyncModel();
+                request.setBizContent("{\"buyerId\":\"2088122086746200\",\"itemOrderList\":[{\"extInfo\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"appliance\"}],\"itemName\":\"冰箱\",\"quantity\":1}],\"outBizNo\":\""+outBiz+"\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088221992947092\"}");
+                AntMerchantExpandTradeorderSyncResponse response = null;
+                try {
+                    response = alipayClient.execute(request);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                if(response.isSuccess()){
+                    System.out.println("调用成功");
+                    String MorderId = response.getOrderId();
+                    System.out.println("MorderId"+MorderId);
+                } else {
+                    System.out.println("调用失败");
+                    DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
+                            ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是：356035",
+                            RocketMqConst.DINGDING_ERROR,response.getBody());
+                }
+            }catch (Exception e) {
                 DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
                         ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是：356035",
-                        RocketMqConst.DINGDING_ERROR,response.getBody());
+                        RocketMqConst.DINGDING_ERROR,e.toString());
+                e.printStackTrace();
             }
-        }catch (Exception e) {
-            DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()
-                    ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是：356035",
-                    RocketMqConst.DINGDING_ERROR,e.toString());
-            e.printStackTrace();
         }
+
     }
 }

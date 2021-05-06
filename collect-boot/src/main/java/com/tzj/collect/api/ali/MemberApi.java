@@ -282,5 +282,18 @@ public class MemberApi {
 		}
 		return false;
 	}
-
+	/**
+	 * 获取用户实体卡
+	 * @param memberBean
+	 * @return
+	 */
+	@Api(name = "member.getRealNo", version = "1.0")
+	@SignIgnore
+	@AuthIgnore
+	public Object getRealNo(MemberBean memberBean){
+		if(org.apache.commons.lang3.StringUtils.isBlank(memberBean.getAliUserId())){
+			return "未传aliUserId";
+		}
+		return memberService.getRealNoByAliUserId(memberBean.getAliUserId());
+	}
 }

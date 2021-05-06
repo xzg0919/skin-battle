@@ -98,6 +98,8 @@ public class Member extends  DataEntity<Long>{
     private String tableName;
     //渠道Id
     private String channelId;
+    //渠道Id
+    private String dsddCardNo;
 
 
 }

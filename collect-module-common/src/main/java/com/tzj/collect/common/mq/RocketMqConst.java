@@ -88,5 +88,11 @@ public class RocketMqConst {
         return notification;
     }
 
+    public static void main(String[] args) {
+//        for (int i = 0; i < 10; i++) {
+
+            sendDeliveryOrder("{\"orderType\":\"生活小家电\",\"orderNo\":\"20210408124758740926\",\"isCancel\":\"N\",\"channelMemberId\":\"RC20190427231730100044422\",\"userTel\":\"13818136484\",\"provinceNname\":\"江苏省\",\"type\":\"appliances\",\"userName\":\"杨婷婷\",\"userAddress\":\"江苏省镇江市京口区正东路街道镇江市京口区人民政府55\",\"orderAmount\":5,\"cityName\":\"镇江市\",\"arrivalTime\":\"2021-04-09 10:00:00\",\"countyName\":\"京口区\"}", "DeliveryOrder");
+//        }
+    }
 }
 

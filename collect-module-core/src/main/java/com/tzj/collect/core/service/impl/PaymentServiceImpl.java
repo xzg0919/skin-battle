@@ -1,5 +1,6 @@
 package com.tzj.collect.core.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -151,6 +152,9 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         if (null==paymentError){
             paymentError = new PaymentError();
         }
+        //乐观锁原因需重新查询一次得到真实payment
+        // todo
+        Payment payment1 = this.selectById(payment.getId());
         OrderBean orderBean = new OrderBean();
         orderBean.setDiscountPrice(payment.getDiscountPrice().toString());
         String aliUserId = "";
@@ -170,7 +174,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             response =this.aliPayTransfer(payment.getId().toString(),aliUserId,payment.getTransferPrice(),payeeType);
             if ((response.isSuccess()&&"10000".equals(response.getCode()))||payment.getTransferPrice().compareTo(BigDecimal.ZERO)==0) {
                 System.out.println("转账成功，更改信息");
-                payment.setStatus(Payment.STATUS_TRANSFER);
+                payment1.setStatus(Payment.STATUS_TRANSFER);
                 if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
                     //给用户增加蚂蚁能量
                     orderService.myslOrderData(order.getId().toString());
@@ -188,6 +192,18 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
                 paymentError.setSendUser(order.getTel());
                 paymentError.setReceiveUser(order.getRecyclerId().toString());
                 paymentError.setOrderSn(order.getOrderNo());
+                //如果是账号有问题无法收款(40004)直接取消订单并返还所有钱到回收人员
+                if(!(order.getTitle()+"").equals(Order.TitleType.BIGTHING+"") && "40004".equals(response.getCode()) && order.getStatus()==Order.OrderType.ALREADY) {
+                    String reOutBizNo = order.getOrderNo()+payment.getId();
+                    AlipayFundTransToaccountTransferResponse responseback = this.aliPayTransfer(reOutBizNo, payment.getBuyerId(), payment.getPrice(), "ALIPAY_USERID");
+                    if ((responseback.isSuccess() && "10000".equals(responseback.getCode()))) {
+                        //返还金额到回收人员支付宝订单号
+                        payment1.setUpdateBy(reOutBizNo);
+                        order.setStatus(Order.OrderType.CANCEL);
+                        order.setRemarks("收款账号有问题无法收款，已取消订单！！");
+                        orderService.updateById(order);
+                    }
+                }
                 paymentErrorService.insertOrUpdate(paymentError);
                 asyncService.notifyDingDingPaymentError(order.getOrderNo(),response.getBody(), PaymentError.DING_DING_URL,PaymentError.DING_DING_SING,PaymentError.DING_DING_TEL);
             }
@@ -198,42 +214,31 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
                 order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
                 orderService.updateById(order);
             }
-            payment.setRemarks(response.getSubMsg());
-            this.updateById(payment);
+            if(Order.OrderType.CANCEL.equals(order.getStatus())){
+                payment1.setDelFlag("1");
+            }
+            payment1.setRemarks(response.getSubMsg());
+            this.updateById(payment1);
         }
     }
 
     //支付宝转账
-    public AlipayFundTransToaccountTransferResponse aliPayTransfer(String outBizNo,String aliUserId,BigDecimal amount,String payeeType) throws AlipayApiException {
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
-        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
-            model.setOutBizNo(outBizNo);
-            model.setPayeeType(payeeType); //ALIPAY_LOGONID  ALIPAY_USERID
-            model.setPayeeAccount(aliUserId);
-            model.setAmount(amount.setScale(2, BigDecimal.ROUND_DOWN).toString());
-            model.setPayerShowName("垃圾分类回收(收呗)货款");
-            model.setRemark("垃圾分类回收(收呗)货款");
-        request.setBizModel(model);
-        return alipayClient.execute(request);
-    }
-
     public static void main(String[] args) throws Exception {
 
-        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
-        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
-        request.putOtherTextParam("app_auth_token", "202004BBc31d3ee0ff544085bce8677abdeffX05");
-        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
-        model.setOutBizNo(UUID.randomUUID().toString().replace("-",""));
-        model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
-//      吴银钗  2088522916529531   明廷杰 2088412594218017
-        model.setPayeeAccount("2088602024895631");
-        model.setAmount("18.33");
-        model.setPayerShowName("垃圾分类回收(收呗)货款");
-        model.setRemark("垃圾分类回收(收呗)货款");
-        request.setBizModel(model);
-        AlipayFundTransToaccountTransferResponse response = alipayClient.execute(request);
-        System.out.println(response.getBody());
+//        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+//        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+//        request.putOtherTextParam("app_auth_token", "202004BBc31d3ee0ff544085bce8677abdeffX05");
+//        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
+//        model.setOutBizNo(UUID.randomUUID().toString().replace("-",""));
+//        model.setPayeeType("ALIPAY_USERID"); //ALIPAY_LOGONID  ALIPAY_USERID
+////      吴银钗  2088522916529531   明廷杰 2088802861741731    2088602024895631
+//        model.setPayeeAccount("2088522207503554");
+//        model.setAmount("12.2");
+//        model.setPayerShowName("垃圾分类回收(收呗)货款");
+//        model.setRemark("垃圾分类回收(收呗)货款");
+//        request.setBizModel(model);
+//        AlipayFundTransToaccountTransferResponse response = alipayClient.execute(request);
+//        System.out.println(response.getBody());
 
 //        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
 //        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
@@ -249,6 +254,35 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 //            e.printStackTrace();
 //        }
 //        System.out.println(response.getBody());;
+
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
+        request.setBizContent("{" +
+                "\"out_biz_no\":\""+72690371+"\"" +
+                //"\"order_id\":\"20160627110070001502260006780837\"" +
+                "  }");
+        AlipayFundTransOrderQueryResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        } catch (AlipayApiException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(response.getBody());
+    }
+
+    public AlipayFundTransToaccountTransferResponse aliPayTransfer(String outBizNo,String aliUserId,BigDecimal amount,String payeeType) throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
+        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
+        model.setOutBizNo(outBizNo);
+        model.setPayeeType(payeeType); //ALIPAY_LOGONID  ALIPAY_USERID
+        model.setPayeeAccount(aliUserId);
+        model.setAmount(amount.setScale(2, BigDecimal.ROUND_DOWN).toString());
+        model.setPayerShowName("垃圾分类回收(收呗)货款");
+        model.setRemark("垃圾分类回收(收呗)货款");
+        request.setBizModel(model);
+        return alipayClient.execute(request);
     }
     /**
      * 根据支付宝交易号查询该交易的详细信息
@@ -417,4 +451,15 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     public Payment selectPayOneMinByOrderSn(String orderNo) {
         return baseMapper.selectPayOneMinByOrderSn(orderNo);
     }
+
+    @Override
+    @Transactional
+    public void transferDemo(Payment payment) {
+        System.out.println(JSONObject.toJSONString(payment));
+        payment.setDelFlag("1");
+        this.updateById(payment);
+        System.out.println(JSONObject.toJSONString(payment));
+    }
+
+
 }

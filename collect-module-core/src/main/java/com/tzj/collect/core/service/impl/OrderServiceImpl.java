@@ -8,6 +8,7 @@ import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AntMerchantExpandTradeorderSyncResponse;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -2060,6 +2061,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	}
 
 	@Override
+    @DS("slave_1")
 	public Map<String, Object> getAppOrderList(OrderBean orderbean) {
 		int count = 0;
 		List<AppOrderResult> listOrder = null;
@@ -2434,7 +2436,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						Company company = companyService.selectById(order.getCompanyId());
 						if (company != null) {
 							//发送接单短信
-							asyncService.sendOrder("垃圾分类回收", order.getTel(), "SMS_199808616", recyclers.getName(), recyclers.getTel(), company.getName());
+							asyncService.sendOrder("垃圾分类回收", order.getTel(), "SMS_213082494", recyclers.getName(), recyclers.getTel(), company.getName());
 						}
 						//異步刪除redis裡面派單id
 //						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
@@ -3888,6 +3890,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			param.put("countyName",county.getAreaName());
 			param.put("orderNo",order.getOrderNo());
 			param.put("orderType","废纺衣物");
+			if(Order.TitleType.SMALLDIGITAL==order.getTitle()){
+                param.put("type","appliances");
+                param.put("orderType","生活小家电");
+            }
 			param.put("channelMemberId","RC20190427231730100044422");
 			param.put("orderAmount",order.getQty());
 			param.put("userName",order.getLinkMan());

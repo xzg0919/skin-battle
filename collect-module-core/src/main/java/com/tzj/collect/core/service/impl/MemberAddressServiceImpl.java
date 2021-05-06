@@ -333,9 +333,9 @@ public class MemberAddressServiceImpl extends ServiceImpl<MemberAddressMapper, M
 		memberAddress.setStreetName(mapAddressBean.getTownShip());
 		memberAddress.setCommunityName(mapAddressBean.getName());
 		memberAddress.setTownCode(mapAddressBean.getTownCode());
-		if( StringUtils.isNotBlank(mapAddressBean.getProvince()) && !mapAddressBean.getProvince().equals(mapAddressBean.getCity())){
-				memberAddress.setProvinceName(mapAddressBean.getProvince());
-		}
+//		if( StringUtils.isNotBlank(mapAddressBean.getProvince()) && !mapAddressBean.getProvince().equals(mapAddressBean.getCity())){
+//				memberAddress.setProvinceName(mapAddressBean.getProvince());
+//		}
 		this.inserOrUpdatetMemberAddress(memberAddress);
 		return "操作成功";
 	}

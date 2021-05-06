@@ -787,6 +787,22 @@ public class OutExcelController {
         List<Long> bigOrderRejectList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "4", "5");
         //大件完成订单总数
         List<Long> bigOrderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "4", "3");
+        //小家电覆盖街道到数
+        List<Long> smallAppStreetNum = companyService.getStreetNumByTableName("sb_company_street_app_small");
+        //小家电订单总数
+        List<Long> smallAppOrderList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "8", null);
+        //小家电进行中订单总数
+        List<Long> smallAppOrderIngList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "8", "0,1,2");
+        //小家电用户取消订单总数
+        List<Long> smallAppOrderCancelList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "8", "4");
+        //小家电平台取消订单总数
+        List<Long> smallAppOrderRejectList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "8", "5");
+        //小家电完成订单总数
+        List<Long> smallAppOrderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "8", "3");
+        //IOT订单总数
+        List<Long> IOTOrderList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "5", null);
+        //IOT完成订单总数
+        List<Long> IOTOrderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "5", "3");
 
         ExcelData data = new ExcelData();
         data.setName("各个品类订单完成情况");
@@ -820,6 +836,14 @@ public class OutExcelController {
         titles.add("大件用户取消");
         titles.add("大件平台取消");
         titles.add("大件完成数量");
+        titles.add("小家电覆盖街道数量");
+        titles.add("小家电订单总数");
+        titles.add("小家电进行中的数量");
+        titles.add("小家电用户取消");
+        titles.add("小家电平台取消");
+        titles.add("小家电完成数量");
+        titles.add("IOT订单总数");
+        titles.add("IOT完成数量");
         data.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
@@ -854,6 +878,14 @@ public class OutExcelController {
             row.add(bigOrderCancelList.get(i));
             row.add(bigOrderRejectList.get(i));
             row.add(bigOrderCompleteList.get(i));
+            row.add(smallAppStreetNum.get(i));
+            row.add(smallAppOrderList.get(i));
+            row.add(smallAppOrderIngList.get(i));
+            row.add(smallAppOrderCancelList.get(i));
+            row.add(smallAppOrderRejectList.get(i));
+            row.add(smallAppOrderCompleteList.get(i));
+            row.add(IOTOrderList.get(i));
+            row.add(IOTOrderCompleteList.get(i));
             rows.add(row);
         }
         data.setRows(rows);

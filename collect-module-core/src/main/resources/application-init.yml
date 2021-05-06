@@ -5,9 +5,9 @@ isDd: true
 #五公斤推送是否用正式
 isWuGongJin: true
 #是否开启转账线程
-isOpenTransferThread: false
+isOpenTransferThread: true
 #是否开启咸鱼订单消费
-isOpenXyConsumer: false
+isOpenXyConsumer: true
 #是否是正式支付通知
 notifyUrl: http://open.mayishoubei.com/notify/alipay
 #notifyUrl: http://shoubeics.mayishoubei.com/notify/alipay
