@@ -205,7 +205,6 @@ public class EquipmentAppApi {
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
     public Object uploadImg(MemberBean memberBean) {
         AlipayResponseResult alipayResponseResult = EquipmentMessageServiceImpl.returnTypeByPic(memberBean.getImgUrl());
-        System.out.println("----------------------" + JSON.toJSONString(alipayResponseResult));
         return alipayResponseResult;
     }
 

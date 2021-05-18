@@ -26,7 +26,7 @@ spring:
   # 环境 dev|pro || dynamicdb-test 测试多数据源配置 | dynamicdb-pro 正式多数据源配置
   profiles:
     #默认启动测试环境。可以启动应用的时候指定当前环境 java -jar myproject.jar --spring.profiles.active = dynamicdb-pro
-    active: dynamicdb-test
+    active: dynamicdb-pro
   # cache配置
   cache:
     type: ehcache
@@ -117,3 +117,19 @@ logging:
     org.hibernate: error
     com.tzj: info
     com.tzj.collect.mapper: debug
+
+
+wx:
+  pay:
+    #微信公众号或者小程序等的appid
+    appId-wx: wx0bbeca809b731203
+    appId-app: wxdd992ab4ada4d36d
+    #商户号
+    mch-id: 1556916841
+    #商户key
+    mch-key: XiHuHuanJingklmnopqrstuvwxyz1234
+    # p12证书的位置，可以指定绝对路径，也可以指定类路径（以classpath:开头）
+    key-path: /jingling/wxCert/apiclient_cert.p12
+
+#微信异步通知地
+wxNotifyUrl: https://jlopen.mayishoubei.com/notify/wx

@@ -18,6 +18,14 @@ public class OrderPayParam {
 
     private String outTradeNo;
 
+    private BigDecimal totalFee;
+
+    private String orderCode;
+
+    private String openId;
+
+    private String payBody;
+
     public int getOrderId() {
         return orderId;
     }

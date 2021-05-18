@@ -25,6 +25,10 @@ spring:
       time-between-eviction-runs-millis: 60000
       spring.datasource.druid.min-evictable-idle-time-millis: 300000
 
+alipay:
+  public-cert: /Users/xiangzhongguo/Downloads/证书/alipayCertPublicKey_RSA2.crt
+  root-cert: /Users/xiangzhongguo/Downloads/证书/alipayRootCert.crt
+  app-cert: /Users/xiangzhongguo/Downloads/证书/appCertPublicKey.crt
 
 
 

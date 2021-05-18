@@ -43,11 +43,7 @@
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.alipay</groupId>
-            <artifactId>alipay-sdk</artifactId>
-            <version>${alipay-sdk.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>

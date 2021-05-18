@@ -4,6 +4,8 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayFundTransToaccountTransferModel;
+import com.alipay.api.domain.AlipayFundTransUniTransferModel;
+import com.alipay.api.domain.Participant;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -17,12 +19,16 @@ import com.tzj.collect.core.service.DailyPaymentService;
 import com.tzj.collect.core.service.DailyPointService;
 import com.tzj.collect.common.notify.DingTalkNotify;
 import com.tzj.module.easyopen.exception.ApiException;
+
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 import javax.annotation.Resource;
+
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,27 +49,28 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
     @Resource
     private DailyMemberService dailyMemberService;
 
-    @Override
-    public AlipayFundTransToaccountTransferResponse dailyDaTransfer(String aliUserId, String price, String outBizNo) {
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
-        AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+    @Resource(name="certAlipayClient")
+    AlipayClient certAlipayClient;
 
-        AlipayFundTransToaccountTransferModel model = new AlipayFundTransToaccountTransferModel();
+
+    @SneakyThrows
+    @Override
+    public AlipayFundTransUniTransferResponse dailyDaTransfer(String aliUserId, String price, String outBizNo) {
+        AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
+        AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
         model.setOutBizNo(outBizNo);
-        model.setPayeeType("ALIPAY_USERID");
-        model.setPayeeAccount(aliUserId);
-        model.setAmount(price);
-        model.setPayerShowName("支付宝垃圾分类回收");
+        model.setProductCode("TRANS_ACCOUNT_NO_PWD");
+        Participant payeeInfo =new Participant();
+        payeeInfo.setIdentity(aliUserId);
+        payeeInfo.setIdentityType("ALIPAY_USER_ID");
+        model.setTransAmount(price);
+        model.setOrderTitle("支付宝垃圾分类回收");
         model.setRemark("答答答红包");
+        model.setPayeeInfo(payeeInfo);
+        model.setBizScene("DIRECT_TRANSFER");
         request.setBizModel(model);
-        AlipayFundTransToaccountTransferResponse response = null;
-        try {
-            response = alipayClient.execute(request);
-//            System.out.println(response);
-        } catch (AlipayApiException e) {
-            throw new ApiException("系统异常：" + e.getErrMsg());
-        }
-        return response;
+        return  certAlipayClient.certificateExecute(request);
+
     }
 
     /**
@@ -71,7 +78,6 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
      */
     @Override
     public AlipayFundTransOrderQueryResponse getTransfer(String paymentId) {
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", ALI_APPID, ALI_PAY_KEY, "json", "UTF-8", ALI_PUBLIC_KEY, "RSA2");
         AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
         request.setBizContent("{"
                 + "\"out_biz_no\":\"" + paymentId + "\""
@@ -79,7 +85,7 @@ public class DailyPaymentServiceImpl extends ServiceImpl<DailyPaymentMapper, Pay
                 "  }");
         AlipayFundTransOrderQueryResponse response = null;
         try {
-            response = alipayClient.execute(request);
+            response = certAlipayClient.certificateExecute(request);
         } catch (AlipayApiException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -74,8 +74,6 @@ public class WXPayServiceImpl implements WXPayService {
     @Value("${wxNotifyUrl}")
     private String  wxNotifyUrl;
 
-    @Resource(name = "mqtt4PushOrder")
-    private MqttClient mqtt4PushOrder;
 
     @Transactional(noRollbackFor = ApiException.class)
     @Override
@@ -225,7 +223,8 @@ public class WXPayServiceImpl implements WXPayService {
                 jlTransfer.setResultCode(WXConst.SUCCESS_CODE);
                 jlTransfer.setResponseParams(JSONObject.toJSONString(entPayResult));
                 //转账完成后，完成订单
-                this.orderComplete(jlTransfer.getPartnerTradeNo(), jlTransfer.getAmount().toString());
+                //TODO  后续接口参数传入mqtt
+                this.orderComplete(jlTransfer.getPartnerTradeNo(), jlTransfer.getAmount().toString(),null);
             }
         } catch (Exception e) {
             logger.error("微信转账重试接口失败！参数：{},原因:{}", JSON.toJSONString(entPayRequest), e.getMessage());
@@ -302,7 +301,7 @@ public class WXPayServiceImpl implements WXPayService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void orderComplete(String orderCode, String totalFee) {
+    public void orderComplete(String orderCode, String totalFee,MqttClient mqttClient) {
         Order order = orderService.getByOrderNo(orderCode);
         if (order != null) {
             //判断订单是否已完成
@@ -313,7 +312,7 @@ public class WXPayServiceImpl implements WXPayService {
                 orderBean.setAmount(order.getGreenCount());
                 orderBean.setAchPrice(totalFee);
                 orderBean.setStatus("3");
-                orderService.modifyOrderSta(orderBean,mqtt4PushOrder);
+                orderService.modifyOrderSta(orderBean,mqttClient);
             }
         }
     }

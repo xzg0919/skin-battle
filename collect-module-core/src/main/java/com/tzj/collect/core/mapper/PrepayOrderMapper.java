@@ -8,7 +8,4 @@ import java.util.Map;
 
 public interface PrepayOrderMapper extends BaseMapper<PrepayOrder> {
 
-    List<Map<String, Object>> findUnPayOrder();
-
-    List<Map<String, Object>> findUnPayOrderDelete();
 }

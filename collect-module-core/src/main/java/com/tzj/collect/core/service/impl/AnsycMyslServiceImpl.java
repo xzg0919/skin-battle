@@ -49,7 +49,7 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
         Order order = orderService.selectById(orderId);
         if ("true".equals(applicaInit.getIsMysl())){
             try{
-                AlipayClient alipayClient = new DefaultAlipayClient("https://openapipre.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
+                AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
                 AlipayEcoActivityRecycleSendRequest request = new AlipayEcoActivityRecycleSendRequest();
                 request.setBizContent(myslParam);
                 AlipayEcoActivityRecycleSendResponse response = null;
@@ -177,24 +177,8 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
     public static void main(String[] args) throws Exception {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
         AlipayEcoActivityRecycleSendRequest request = new AlipayEcoActivityRecycleSendRequest();
-        AlipayEcoActivityRecycleSendModel model=new AlipayEcoActivityRecycleSendModel();
-        model.setBuyerId("2088122086746200");
-        model.setSellerId("2088421446748174");
-        model.setOutBizType("RECYCLING");
-        model.setOutBizNo("20210406789863783637811");
-        List<EnergyGoodRequest> itemList = new ArrayList<>();
-        List<EnergyExtRequest> items =new ArrayList<>();
-        EnergyGoodRequest energyGoodRequest=new EnergyGoodRequest();
-        energyGoodRequest.setItemName("书本");
-        energyGoodRequest.setQuantity("3.0");
-        EnergyExtRequest energyExtRequest= new EnergyExtRequest();
-        energyExtRequest.setExtKey("ITEM_TYPE");
-        energyExtRequest.setExtValue("paper");
-        items.add(energyExtRequest);
-        energyGoodRequest.setItems(items);
-        itemList.add(energyGoodRequest);
-        model.setItemList(itemList);
-        request.setBizModel(model);
+        String myslParam="{\"buyerId\":\"2088322039337350\",\"itemList\":[{\"itemName\":\"洗衣机\",\"items\":[{\"extKey\":\"ITEM_TYPE\",\"extValue\":\"appliance\"}],\"quantity\":\"1\"}],\"outBizNo\":\"20210507184917466249\",\"outBizType\":\"RECYCLING\",\"sellerId\":\"2088421446748174\"}";
+        request.setBizContent(myslParam);
         AlipayEcoActivityRecycleSendResponse response = alipayClient.execute(request);
         if(response.isSuccess()){
 
