@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.core.param.ali.MemberBean;
 import com.tzj.collect.entity.Member;
+import com.tzj.collect.entity.Order;
 
 import java.util.Map;
 
@@ -118,4 +119,6 @@ public interface MemberService extends IService<Member>{
     Object getRealNoByAliUserId(String aliUserId);
 
     Object saveWxMsgByCode(MemberBean memberBean);
+
+    boolean checkBlackList(String aliUserId, Order.TitleType titleType);
 }

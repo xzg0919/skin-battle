@@ -75,6 +75,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     private VoucherMemberService voucherMemberService;
     @Autowired
     WeiXinService weiXinService;
+    @Autowired
+    BlackListService blackListService;
 
     @Override
     public Member findMemberByAliId(String aliMemberId) {
@@ -760,6 +762,21 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         String realNo = me.getDsddCardNo();
         result.put("realNo", realNo);
         return result;
+    }
+
+    /**
+     * 判断是否黑名单成员
+     * @param aliUserId  用户id
+     * @param titleType 下单类型
+     * @return  true 是 false 不是
+     */
+    @Override
+    public boolean checkBlackList(String aliUserId, Order.TitleType titleType) {
+        BlackList blackList = blackListService.selectOne(new EntityWrapper<BlackList>().eq("ali_user_id", aliUserId).eq("del_flag", 0));
+        if(blackList != null && blackList.getLimitType().contains(titleType.toString())){
+         return true;
+        }
+        return false;
     }
 
 }

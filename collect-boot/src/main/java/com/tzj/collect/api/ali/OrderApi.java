@@ -81,6 +81,8 @@ public class OrderApi {
     private OrderOperateService orderOperateService;
     @Autowired
     private CompanyStreetAppSmallService companyStreetAppSmallService;
+    @Autowired
+    private BlackListService blackListService;
 
     /**
      * 获取会员的未完成订单列表 不分页
@@ -207,7 +209,13 @@ public class OrderApi {
         Map<String, Object> resultMap = null;
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
-
+        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.DIGITAL)){
+            resultMap = new HashMap<>();
+            resultMap.put("type", 5);
+            resultMap.put("msg", "您的账号异常，，限制下单，如有疑问请联系客服");
+            resultMap.put("code", 5);
+            return resultMap;
+        }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "1");
         if (isImprisonMember) {
             resultMap = new HashMap<>();
@@ -372,6 +380,14 @@ public class OrderApi {
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object XcxSaveOrder(OrderBean orderbean) {
         Member member = MemberUtils.getMember();
+        Map<String, Object> resultMap = null;
+        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.HOUSEHOLD)){
+            resultMap = new HashMap<>();
+            resultMap.put("type", 5);
+            resultMap.put("msg", "您的账号异常，限制下单，如有疑问请联系客服");
+            resultMap.put("code", 5);
+            return resultMap;
+        }
         //查询用户的默认地址
         MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
         if (memberAddress == null) {
@@ -404,7 +420,7 @@ public class OrderApi {
             orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
         }
         orderbean.setOrderNo(orderNo);
-        Map<String, Object> resultMap = (Map<String, Object>) orderService.XcxSaveOrder(orderbean, member,mqtt4PushOrder);
+        resultMap = (Map<String, Object>) orderService.XcxSaveOrder(orderbean, member,mqtt4PushOrder);
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(companyId);
         if (null != company) {
@@ -507,6 +523,13 @@ public class OrderApi {
         Map<String, Object> resultMap = null;
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
+        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.FIVEKG)){
+            resultMap = new HashMap<>();
+            resultMap.put("type", 5);
+            resultMap.put("msg", "您的账号异常，限制下单，如有疑问请联系客服");
+            resultMap.put("code", 5);
+            return resultMap;
+        }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "3");
         if (isImprisonMember) {
             resultMap = new HashMap<>();
@@ -614,6 +637,13 @@ public class OrderApi {
         Map<String, Object> resultMap = null;
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
+        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.SMALLDIGITAL)){
+            resultMap = new HashMap<>();
+            resultMap.put("type", 5);
+            resultMap.put("msg", "您的账号异常，限制下单，如有疑问请联系客服");
+            resultMap.put("code", 5);
+            return resultMap;
+        }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "8");
         if (isImprisonMember) {
             resultMap = new HashMap<>();
@@ -734,6 +764,14 @@ public class OrderApi {
         orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
         orderbean.setAliUserId(member.getAliUserId());
         //查询用户的默认地址
+        Map<String, Object> resultMap = null;
+        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.BIGTHING)){
+            resultMap = new HashMap<>();
+            resultMap.put("type", 5);
+            resultMap.put("msg", "您的账号异常，限制下单，如有疑问请联系客服");
+            resultMap.put("code", 5);
+            return resultMap;
+        }
         MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
         if (memberAddress == null) {
             return "您暂未添加回收地址";
@@ -761,7 +799,7 @@ public class OrderApi {
         }
         orderbean.setOrderNo(orderNo);
         //保存订单
-        Map<String, Object> resultMap = orderService.saveBigThingOrder(orderbean,mqtt4PushOrder);
+        resultMap = orderService.saveBigThingOrder(orderbean,mqtt4PushOrder);
         //钉钉消息赋值回收公司名称
         if (StringUtils.isNoneBlank(streetBigCompanyId + "")) {
             Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", streetBigCompanyId));
