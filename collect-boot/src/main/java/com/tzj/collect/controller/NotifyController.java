@@ -3,6 +3,11 @@ package com.tzj.collect.controller;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
+import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
+import com.github.binarywang.wxpay.bean.result.BaseWxPayResult;
+import com.github.binarywang.wxpay.service.WxPayService;
+import com.tzj.collect.api.commom.constant.WXConst;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.thread.sendGreenOrderThread;
@@ -10,13 +15,20 @@ import com.tzj.collect.common.push.PushUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.module.easyopen.exception.ApiException;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -29,25 +41,28 @@ import static com.tzj.collect.common.constant.Const.ALI_PUBLIC_KEY;
 @Controller
 @RequestMapping(value = "/notify")
 public class NotifyController {
+    protected final static Logger logger = LoggerFactory.getLogger(NotifyController.class);
 
     @Autowired
     private PaymentService paymentService;
     @Autowired
     private OrderService orderService;
     @Autowired
-    private EnterpriseCodeService enterpriseCodeService;
-    @Autowired
     private AreaService areaService;
     @Autowired
     private OrderItemAchService orderItemAchService;
-    @Autowired
-    private AsyncService asyncService;
     @Autowired
     private RecyclersService recyclersService;
     @Autowired
     private VoucherMemberService voucherMemberService;
     @Autowired
     private VoucherAliService voucherAliService;
+    @Resource(name = "wxPayService")
+    WxPayService wxPayService;
+    @Autowired
+    PrepayOrderService prepayOrderService;
+    @Autowired
+    WxPaymentService wxPaymentService;
 
 
     /**
@@ -170,5 +185,89 @@ public class NotifyController {
             return "failure";
         }
         return "success";
+    }
+
+
+    /**
+     * 微信异步通知
+     *
+     * @param request
+     * @param model
+     * @return
+     */
+    @RequestMapping("/wx")
+    public @ResponseBody
+    String payNotify(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
+            WxPayOrderNotifyResult result = wxPayService.parseOrderNotifyResult(xmlResult);
+
+            String outTradeNo = result.getOutTradeNo();
+            String tradeNo = result.getTransactionId();
+            logger.info("收到微信异步通知------------------参数：" + JSON.toJSONString(result));
+            String totalFee = BaseWxPayResult.fenToYuan(result.getTotalFee());
+
+            //判断订单类型
+            PrepayOrder jlPrepayOrder = prepayOrderService.findByOutTradeNo(outTradeNo);
+            //先查找支付成功的记录有没有
+            WxPayment wxPayment = wxPaymentService.findByOutTradeNo(outTradeNo);
+            if (wxPayment != null) {
+                //说明已经处理过了直接return
+                return WxPayNotifyResponse.success("处理成功!");
+            }
+            //根據order_no查询相关订单
+            Order order = orderService.getByOrderNo(jlPrepayOrder.getOrderCode());
+
+            if (order != null) {
+                //如果订单完成了就直接返回成功
+                if (Order.OrderType.COMPLETE.equals(order.getStatus())) {
+                    return WxPayNotifyResponse.success("处理成功!");
+                }
+                //根据订单号查询绑定券的信息
+                VoucherMember voucherMember = voucherMemberService.selectOne(new EntityWrapper<VoucherMember>().eq("order_no", order.getOrderNo()).eq("ali_user_id", order.getAliUserId()));
+                wxPayment = new WxPayment();
+                BeanUtils.copyProperties(jlPrepayOrder, wxPayment);
+                wxPayment.setTransactionId(tradeNo);
+                wxPayment.setPayStatus(WxPayment.SUCCESS);
+                wxPayment.setTotalFee(new BigDecimal(totalFee));
+                wxPayment.setOrderNo(jlPrepayOrder.getOrderCode());
+                wxPayment.setTotalAmount(totalFee);
+                wxPayment.setVoucherMember(voucherMember);
+                wxPaymentService.insert(wxPayment);
+                //給用戶轉賬
+                if (!(Order.TitleType.BIGTHING + "").equals(order.getTitle() + "")) {
+                    if (null != voucherMember) {
+                        //如果不是大件并且有优惠券，则计算使用该券后的价格给用户进行转账
+                        BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(order.getAchPrice(), voucherMember.getId().toString());
+                        wxPayment.setDiscountPrice(discountPrice);
+                        wxPayment.setTransferPrice(discountPrice);
+                    } else {
+                        wxPayment.setDiscountPrice(order.getAchPrice());
+                        wxPayment.setTransferPrice(order.getAchPrice());
+                    }
+                } else {
+                    wxPayment.setDiscountPrice(new BigDecimal(totalFee));
+                    wxPayment.setTransferPrice(order.getAchPrice().subtract(order.getCommissionsPrice()));
+                }
+                wxPaymentService.transfer(wxPayment);
+                Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+                if ((Order.TitleType.BIGTHING + "").equals(order.getTitle() + "")) {
+                    PushUtils.getAcsResponse(recyclers.getTel(), "3", order.getTitle().getValue() + "");
+                }
+                try {
+                    if (order.getAddress().startsWith("上海市") && (Order.TitleType.HOUSEHOLD + "").equals(order.getTitle() + "")) {
+                        NewThreadPoorExcutor.getThreadPoor().execute(new Thread(new sendGreenOrderThread(orderService, areaService, orderItemAchService, order.getId().intValue())));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+            return WxPayNotifyResponse.success("处理成功!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("微信回调结果异常,异常原因{}", e.getMessage());
+            return WxPayNotifyResponse.fail(e.getMessage());
+        }
     }
 }

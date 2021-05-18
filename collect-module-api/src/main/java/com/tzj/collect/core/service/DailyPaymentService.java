@@ -2,6 +2,7 @@ package com.tzj.collect.core.service;
 
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
+import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.Payment;
@@ -13,7 +14,7 @@ public interface DailyPaymentService extends IService<Payment> {
      * @param
      * @return
      */
-    AlipayFundTransToaccountTransferResponse dailyDaTransfer(String aliUserId, String price, String outBizNo);
+    AlipayFundTransUniTransferResponse dailyDaTransfer(String aliUserId, String price, String outBizNo);
     //查询转账信息
     @DS("slave")
     AlipayFundTransOrderQueryResponse getTransfer(String orderSn);

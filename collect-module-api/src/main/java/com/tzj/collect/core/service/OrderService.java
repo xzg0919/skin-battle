@@ -468,4 +468,6 @@ public interface OrderService extends IService<Order> {
     Object uploadCategoryByAoTu(String aliUserId, String equipmentCode, String categoryName, Double rubbishWeight);
 
 	Order getByOrderNo(String orderNo);
+
+	List<Order> getOrders();
 }

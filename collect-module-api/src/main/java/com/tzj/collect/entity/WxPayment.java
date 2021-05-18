@@ -1,5 +1,6 @@
 package com.tzj.collect.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
@@ -21,6 +22,14 @@ public class WxPayment extends DataEntity<Long> {
     private String payStatus;
     private String outTradeNo;
     private String transactionId;
+    @TableField(exist = false)
+    private String totalAmount;
+    @TableField(exist = false)
+    private VoucherMember voucherMember;
+    @TableField(exist = false)
+    private BigDecimal transferPrice;
+    @TableField(exist = false)
+    private BigDecimal discountPrice;
 
 
     public static final String SUCCESS="SUCCESS";

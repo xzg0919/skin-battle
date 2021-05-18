@@ -1,6 +1,6 @@
 package com.tzj.collect.module.task.mq;
 
-import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
+import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.rabbitmq.client.Channel;
 import com.tzj.collect.entity.Payment;
@@ -40,7 +40,7 @@ public class OperateKeywordsListenter implements ChannelAwareMessageListener {
             Payment payment = dailyPaymentService.selectOne(new EntityWrapper<Payment>().eq("order_sn", outBizNo).eq("is_success","0").eq("del_flag", 0).isNotNull("ali_user_id").eq("status_",1).eq("pay_type", 1));
             if (null != payment){
                 //用户转账
-                AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(payment.getAliUserId(), payment.getPrice()+"", outBizNo);
+                AlipayFundTransUniTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(payment.getAliUserId(), payment.getPrice()+"", outBizNo);
                 if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())) {
                     //交易完成(状态设置为已转账)
                     payment.setStatus(STATUS_TRANSFER);

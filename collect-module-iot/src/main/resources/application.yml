@@ -116,3 +116,19 @@ logging:
     org.hibernate: error
     com.tzj: info
     com.tzj.collect.mapper: debug
+
+
+wx:
+  pay:
+    #微信公众号或者小程序等的appid
+    appId-wx: wx0bbeca809b731203
+    appId-app: wxdd992ab4ada4d36d
+    #商户号
+    mch-id: 1556916841
+    #商户key
+    mch-key: XiHuHuanJingklmnopqrstuvwxyz1234
+    # p12证书的位置，可以指定绝对路径，也可以指定类路径（以classpath:开头）
+    key-path: /jingling/wxCert/apiclient_cert.p12
+
+#微信异步通知地
+wxNotifyUrl: https://jlopen.mayishoubei.com/notify/wx

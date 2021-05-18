@@ -1,6 +1,7 @@
 package com.tzj.collect.core.service;
 
 import com.tzj.collect.entity.WxTransfer;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 
 import java.math.BigDecimal;
 
@@ -22,5 +23,5 @@ public interface WXPayService {
 
     boolean refund(String outTradeNo,BigDecimal totalFee,BigDecimal refundFee);
 
-    void orderComplete(String orderCode,String totalFee);
+    void orderComplete(String orderCode, String totalFee, MqttClient mqttClient);
 }

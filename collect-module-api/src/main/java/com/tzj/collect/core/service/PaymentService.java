@@ -1,9 +1,6 @@
 package com.tzj.collect.core.service;
 
-import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
-import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
-import com.alipay.api.response.AlipayTradeCloseResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Payment;
@@ -55,7 +52,7 @@ public interface PaymentService extends IService<Payment> {
       * @param
       * @return
       */
-    AlipayFundTransToaccountTransferResponse receivingMoneyTransfer(String aliUserId, String price, String outBizNo);
+    AlipayFundTransUniTransferResponse receivingMoneyTransfer(String aliUserId, String price, String outBizNo);
     /**
      * 交易关闭
      * @param outTradeNo
@@ -79,7 +76,7 @@ public interface PaymentService extends IService<Payment> {
       * @Param: 
       * @return: 
       */
-    AlipayFundTransToaccountTransferResponse iotTransfer(String aliUserId, String price, String outBizNo);
+     AlipayFundTransUniTransferResponse iotTransfer(String aliUserId, String price, String outBizNo);
 
     Payment selectPayOneMinByOrderSn(String orderNo);
     void transferDemo(Payment payment);

@@ -1173,7 +1173,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         if (!parentLists.isEmpty()) {
             //说明是同步传过来的
-            this.saveOrderItemAch(order, parentLists);
+             this.saveOrderItemAch(order, parentLists);
         } else {
             throw new ApiException("内容为空，新增失败");
         }
@@ -4544,7 +4544,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 			payment.setSellerId(orderbean.getAliUserId());
 			payment.setPayType(Payment.PayType.CASH_BAG);
 			//产生随机金额，发送红包
-			AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = paymentService.receivingMoneyTransfer(orderbean.getAliUserId(), price, fromRedis.toString());
+            AlipayFundTransUniTransferResponse alipayFundTransToaccountTransferResponse = paymentService.receivingMoneyTransfer(orderbean.getAliUserId(), price, fromRedis.toString());
 			if ("Success".equals(alipayFundTransToaccountTransferResponse.getMsg())) {
 				//交易完成(状态设置为已转账)
 				payment.setStatus(STATUS_TRANSFER);
@@ -5174,5 +5174,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Order getByOrderNo(String orderNo) {
         return this.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo).eq("del_flag", "0"));
+    }
+
+    @Override
+    public List<Order> getOrders() {
+        return this.selectList(new EntityWrapper<Order>().eq("status_", "3")
+                .eq("del_flag", "0").isNull("mysl_order_id").isNotNull("mysl_param"));
     }
 }

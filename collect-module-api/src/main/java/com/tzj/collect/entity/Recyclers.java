@@ -79,6 +79,20 @@ public class Recyclers extends DataEntity<Long> {
 	@TableField(exist = false)
 	private String isPosition = "0"; //是否存在定时定点
 
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
+
+	/**
+	 * 微信授权openId
+	 */
+	private String openId;
+
+
 	public String getAliUserId() {
 		return aliUserId;
 	}

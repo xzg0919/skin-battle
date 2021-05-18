@@ -37,3 +37,8 @@ spring:
     username: rabbitadmin
     password: FeiLei@123
     publisher-confirms: false
+
+alipay:
+  public-cert: /collect/alipayCert/alipayCertPublicKey_RSA2.crt
+  root-cert: /collect/alipayCert/alipayRootCert.crt
+  app-cert: /collect/alipayCert/appCertPublicKey.crt

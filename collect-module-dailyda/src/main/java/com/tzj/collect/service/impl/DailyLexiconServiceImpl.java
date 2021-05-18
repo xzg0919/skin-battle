@@ -3,6 +3,7 @@ package com.tzj.collect.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.AlipayFundTransToaccountTransferResponse;
+import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.tzj.collect.common.shard.ShardTableHelper;
 import com.tzj.collect.common.util.JedisUtil;
@@ -831,7 +832,7 @@ public class DailyLexiconServiceImpl extends ServiceImpl<DailyLexiconMapper, Dai
             payment.setPayType(Payment.PayType.DA_WEEK_RED);
 
             try {
-                AlipayFundTransToaccountTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(aliUserId, finalPrice, outBizeNo);
+                AlipayFundTransUniTransferResponse alipayFundTransToaccountTransferResponse = dailyPaymentService.dailyDaTransfer(aliUserId, finalPrice, outBizeNo);
                 if(alipayFundTransToaccountTransferResponse.isSuccess()){
                     payment.setIsSuccess("1");
                     payment.setStatus(STATUS_TRANSFER);

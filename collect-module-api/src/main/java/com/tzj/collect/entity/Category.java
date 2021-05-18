@@ -349,6 +349,7 @@ public class Category extends DataEntity<Long> {
 			return this.value;
 		}
 	}
+
 	/**
 	 * 对外IOT设备，二级类型(以code对应)
 	 * @author sgmark@aliyun.com

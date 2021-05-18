@@ -1,6 +1,8 @@
 package com.tzj.collect.api.ali;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
+import com.tzj.collect.api.commom.constant.WXConst;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.config.ApplicationInit;
@@ -8,12 +10,15 @@ import com.tzj.collect.core.mapper.CompanyStreetAppSmallMapper;
 import com.tzj.collect.core.param.ali.CategoryBean;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.ali.PageBean;
+import com.tzj.collect.core.param.app.OrderPayParam;
 import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Order.OrderType;
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
 import com.tzj.module.api.annotation.*;
+import com.tzj.module.api.entity.Subject;
+import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -83,6 +88,9 @@ public class OrderApi {
     private CompanyStreetAppSmallService companyStreetAppSmallService;
     @Autowired
     private BlackListService blackListService;
+    @Autowired
+    private WXPayService wxPayService;
+
 
     /**
      * 获取会员的未完成订单列表 不分页
@@ -956,5 +964,41 @@ public class OrderApi {
 
     }
 
+
+    /**
+     *  微信回收订单支付
+     *
+     * @param
+     * @return
+     */
+    @Api(name = "wechat.collect.prePay", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Object collectPrePay(OrderPayParam orderPayParam) {
+        Order order = orderService.selectOrder(orderPayParam.getOrderId());
+        if (order == null || !order.getTitle().equals(Order.TitleType.BIGTHING)
+                || order.getStatus().equals(Order.OrderType.COMPLETE) ||  order.getStatus().equals(Order.OrderType.CANCEL) ) {
+            throw new ApiException("订单错误");
+        }
+
+        WxPayMpOrderResult wxPayMpOrderResult = (WxPayMpOrderResult) wxPayService.prePay(getUserFromToken().getAliUserId(),
+                order.getOrderNo(),
+                WXConst.FROM_JS_API, order.getAchPrice(), "大件订单", PrepayOrder.COLLECT);
+        return wxPayMpOrderResult;
+    }
+
+
+
+    public static Member getUserFromToken() throws ApiException {
+        Subject subject = ApiContext.getSubject();
+        if (subject == null) {
+            return null;
+        }
+        Member member = (Member) subject.getUser();
+        if (member == null) {
+            throw new ApiException("未获取到数据");
+        }
+        return member;
+    }
 
 }
