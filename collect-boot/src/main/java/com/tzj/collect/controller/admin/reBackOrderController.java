@@ -40,6 +40,9 @@ public class reBackOrderController {
 	@ResponseBody
 	public String getProductOrderList(String orderNo) {
 		Order order_no = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", orderNo));
+		if(null == order_no){
+			return "订单不存在";
+		}
 		if("1,2".contains(order_no.getStatus().getValue().toString())){
 			order_no.setStatus(Order.OrderType.INIT);
 			orderService.updateById(order_no);
