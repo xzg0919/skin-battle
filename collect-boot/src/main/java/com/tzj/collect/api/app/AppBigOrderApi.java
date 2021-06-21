@@ -1,20 +1,25 @@
 package com.tzj.collect.api.app;
 
 
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.OrderPicAchService;
 import com.tzj.collect.core.service.OrderService;
+import com.tzj.collect.core.service.RecyclersService;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.common.utils.DateUtils;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.Map;
 
 import static com.tzj.collect.common.constant.TokenConst.APP_API_COMMON_AUTHORITY;
@@ -27,8 +32,12 @@ public class AppBigOrderApi {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private RedisUtil redisUtil;
     @Resource(name = "mqtt4PushOrder")
     private MqttClient mqtt4PushOrder;
+    @Autowired
+    private RecyclersService recyclersService;
 
 
     /** 根据手机号搜索
@@ -83,6 +92,13 @@ public class AppBigOrderApi {
     @Api(name = "app.bigOrder.saveBigOrderPrice", version = "1.0")
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public String saveBigOrderPrice(OrderBean orderBean){
+        Recyclers recyclers = RecyclersUtils.getRecycler();
+        String key =  "recyclerDayTimes:"+ DateUtils.formatDate(new Date(), "yyyyMMdd") +":"+recyclers.getId();
+        System.out.println("回收人员限制下单："+key+"："+redisUtil.get(key));
+        Recyclers recyclers1 = recyclersService.selectById(recyclers.getId());
+        if(recyclers1.getAllowTimes()!=0 && redisUtil.hasKey(key) && ((Integer)redisUtil.get(key))>=recyclers1.getAllowTimes()){
+            throw new ApiException("超限额，次日恢复");
+        }
         return orderService.saveBigOrderPrice(orderBean,mqtt4PushOrder);
     }
 

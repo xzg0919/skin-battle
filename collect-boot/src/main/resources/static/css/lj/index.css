@@ -217,6 +217,13 @@ input:-webkit-autofill {
     height: 47px;
     cursor: pointer;
 }
+#LeftItem3 {
+    background-color: #393D49;
+    display: inline-block;
+    color: rgba(255, 255, 255, .7);
+    height: 47px;
+    cursor: pointer;
+}
 
 .erc {
     width: 7px;
@@ -232,6 +239,13 @@ input:-webkit-autofill {
     display: inline-block;
     display: none;
 }
+.erc2 {
+    width: 7px;
+    height: 47px;
+    background-color: #009688;
+    display: inline-block;
+    display: none;
+}
 
 .span4 {
     position: absolute;
@@ -239,6 +253,10 @@ input:-webkit-autofill {
 }
 
 .span5 {
+    position: absolute;
+    margin-left: 36px;
+}
+.span6 {
     position: absolute;
     margin-left: 36px;
 }

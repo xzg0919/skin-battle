@@ -11,11 +11,15 @@ import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.api.entity.Subject;
+import com.tzj.module.common.utils.DateUtils;
+import com.tzj.module.common.utils.StringUtils;
 import com.tzj.module.easyopen.ApiContext;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -114,8 +118,15 @@ public class AppOrderApi {
 	 */
 	@Api(name = "app.order.modifyallsta", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
-	public boolean modifyOrderSta(OrderBean orderBean){
+	public boolean modifyOrderSta(OrderBean orderBean) {
 		orderBean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
+		if (StringUtils.isNotBlank(orderBean.getStatus()) && Order.OrderType.COMPLETE.getValue().toString().equals(orderBean.getStatus())) {
+			Recyclers recyclers = recyclersService.selectById(this.getRecycler().getId());
+			String key =  "recyclerDayTimes:"+ DateUtils.formatDate(new Date(), "yyyyMMdd") +":"+recyclers.getId();
+			if((recyclers.getAllowTimes()!=0 && redisUtil.hasKey(key) && ((Integer)redisUtil.get(key))>=recyclers.getAllowTimes())||recyclers.getAllowTimes()<0){
+				throw new ApiException("超限额，次日恢复");
+			}
+		}
 		return orderService.modifyOrderSta(orderBean,mqtt4PushOrder);
 	}
 	/**
@@ -144,6 +155,11 @@ public class AppOrderApi {
 	@Api(name = "app.order.getPriceByOrderId", version = "1.0")
 	@RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
 	public Object getPriceByOrderId(OrderBean orderBean) {
+		Recyclers recyclers = recyclersService.selectById(this.getRecycler().getId());
+		String key =  "recyclerDayTimes:"+ DateUtils.formatDate(new Date(), "yyyyMMdd") +":"+recyclers.getId();
+		if((recyclers.getAllowTimes()!=0 && redisUtil.hasKey(key) && ((Integer)redisUtil.get(key))>=recyclers.getAllowTimes())||recyclers.getAllowTimes()<0){
+			throw new ApiException("超限额，次日恢复");
+		}
 		return orderService.getPriceByOrderId(orderBean,mqtt4PushOrder);
 	}
 	/**

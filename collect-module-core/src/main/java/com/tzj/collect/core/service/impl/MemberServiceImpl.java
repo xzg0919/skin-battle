@@ -773,7 +773,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Override
     public boolean checkBlackList(String aliUserId, Order.TitleType titleType) {
         BlackList blackList = blackListService.selectOne(new EntityWrapper<BlackList>().eq("ali_user_id", aliUserId).eq("del_flag", 0));
-        if(blackList != null && blackList.getLimitType().contains(titleType.toString())){
+        if(blackList != null && blackList.getLimitType().contains(titleType.getValue().toString())){
          return true;
         }
         return false;

@@ -24,6 +24,11 @@
                 <span class="span5" id="aspan5">服务商管理</span>
                 <a href="/lj/admin/fwsDate" target="right" id="A2"></a>
             </li>
+            <li class="layui-nav-item" id="LeftItem3">
+                <span class="erc2" id="Erc3"></span>
+                <span class="span6" id="aspan6">回收人员额度管理</span>
+                <a href="/lj/admin/recyPage" target="right" id="A3"></a>
+            </li>
         </ul>
     </div>
 </body>

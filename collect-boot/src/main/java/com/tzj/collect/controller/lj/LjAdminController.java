@@ -2,19 +2,22 @@ package com.tzj.collect.controller.lj;
 
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.core.param.admin.LjAdminBean;
+import com.tzj.collect.core.param.admin.RecyclersBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.module.common.utils.DateUtils;
+import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("lj/admin")
@@ -32,6 +35,8 @@ public class LjAdminController {
     private CommunityService communityService;
     @Autowired
     private RecyclersService recyclersService;
+    @Autowired
+    RedisUtil redisUtil;
 
 
     @RequestMapping("/home")
@@ -50,6 +55,32 @@ public class LjAdminController {
         model.addAttribute("cityList",cityList);
         model.addAttribute("companyList",companyList);
         return "lj/fwsDate";
+    }
+    @RequestMapping("/recyPage")
+    public String recyPage(RecyclersBean recyclersBean, final ModelMap model){
+        List<Recyclers> recyclersList = new ArrayList<>();
+        if(StringUtils.isNotBlank(recyclersBean.getRecyclerTel())||StringUtils.isNotBlank(recyclersBean.getRecyclerName())){
+            recyclersList = recyclersService.selectList(new EntityWrapper<Recyclers>().eq("del_flag", 0)
+                    .eq(StringUtils.isNotBlank(recyclersBean.getRecyclerName()), "name_", recyclersBean.getRecyclerName())
+                    .eq(StringUtils.isNotBlank(recyclersBean.getRecyclerTel()), "tel", recyclersBean.getRecyclerTel()));
+            recyclersList.forEach(recycler -> {
+                String key =  "recyclerDayTimes:"+ DateUtils.formatDate(new Date(), "yyyyMMdd") +":"+recycler.getId();
+                //临时使用companyCount为下单 数
+                recycler.setCompanyCount(redisUtil.hasKey(key) ? (Integer) redisUtil.get(key) : 0);
+            });
+        }
+        model.addAttribute("recyclersList",recyclersList);
+        model.addAttribute("tel",StringUtils.isNotBlank(recyclersBean.getRecyclerTel())? recyclersBean.getRecyclerTel() : "");
+        model.addAttribute("recyclerName",StringUtils.isNotBlank(recyclersBean.getRecyclerName())? recyclersBean.getRecyclerName() : "");
+        return "lj/recyPage";
+    }
+    @RequestMapping("/editRcy")
+    @ResponseBody
+    public String editRcy(@RequestParam(name = "recyclerId") Long recyclerId, @RequestParam(name = "allowTimes") Integer allowTimes){
+        Recyclers recyclers = recyclersService.selectById(recyclerId);
+        recyclers.setAllowTimes(allowTimes);
+        recyclersService.updateById(recyclers);
+        return "success";
     }
     @RequestMapping("/homeHead")
     public String getHomeHead(){

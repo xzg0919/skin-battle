@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.constant.WXConst;
+import com.tzj.collect.commom.redis.RedisUtil;
+import com.tzj.collect.common.util.JedisUtil;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.app.OrderPayParam;
 import com.tzj.collect.core.service.*;
@@ -11,6 +13,7 @@ import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.common.utils.DateUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 订单支付接口
@@ -36,6 +40,8 @@ public class AppOrderPayApi {
     private RecyclersService recyclersService;
     @Autowired
     private VoucherMemberService voucherMemberService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Autowired
     private WXPayService wxPayService;
@@ -53,6 +59,11 @@ public class AppOrderPayApi {
             throw new ApiException("未找到Order信息！id:" + orderPayParam.getOrderId());
         }
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+        String key =  "recyclerDayTimes:"+ DateUtils.formatDate(new Date(), "yyyyMMdd") +":"+recyclers.getId();
+        System.out.println("回收人员限制下单："+key+"："+redisUtil.get(key));
+        if((recyclers.getAllowTimes()!=0 && redisUtil.hasKey(key) && ((Integer)redisUtil.get(key))>=recyclers.getAllowTimes())||recyclers.getAllowTimes()<0){
+            throw new ApiException("超限额，次日恢复");
+        }
 
         Payment payment = paymentService.selectByOrderSn(order.getOrderNo());
 
@@ -157,7 +168,11 @@ public class AppOrderPayApi {
             payment = new Payment();
         }
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
-
+        String key =  "recyclerDayTimes:"+ DateUtils.formatDate(new Date(), "yyyyMMdd") +":"+recyclers.getId();
+        System.out.println("回收人员限制下单："+key+"："+redisUtil.get(key));
+        if((recyclers.getAllowTimes()!=0 && redisUtil.hasKey(key) && ((Integer)redisUtil.get(key))>=recyclers.getAllowTimes())||recyclers.getAllowTimes()<0){
+            throw new ApiException("超限额，次日恢复");
+        }
         payment.setOrderSn(order.getOrderNo());
         payment.setPrice(orderPayParam.getPrice());
         payment.setRecyclersId(recyclers.getId());

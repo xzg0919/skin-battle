@@ -10,6 +10,7 @@ import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.ApplicaInit;
 import com.tzj.collect.core.mapper.PaymentMapper;
@@ -17,6 +18,7 @@ import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Member;
+import com.tzj.module.common.utils.DateUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +29,7 @@ import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.tzj.collect.common.constant.Const.*;
 
@@ -51,6 +50,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     private MemberService memberService;
     @Resource
     private MemberXianyuService memberXianyuService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Resource(name="certAlipayClient")
     AlipayClient certAlipayClient;
