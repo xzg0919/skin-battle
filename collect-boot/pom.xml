@@ -88,6 +88,12 @@
         <dependency>
             <groupId>com.hufm</groupId>
             <artifactId>hufm-module-api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.thoughtworks.xstream</groupId>
+                    <artifactId>xstream</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.hufm</groupId>

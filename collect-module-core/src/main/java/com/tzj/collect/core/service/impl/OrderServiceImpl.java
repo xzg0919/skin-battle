@@ -5179,6 +5179,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public List<Order> getOrders() {
         return this.selectList(new EntityWrapper<Order>().eq("status_", "3")
-                .eq("del_flag", "0").isNull("mysl_order_id").isNotNull("mysl_param"));
+                .eq("del_flag", "0").isNull("mysl_order_id").isNotNull("mysl_param").gt("complete_date","2021-06-01 00:00:00"));
     }
 }

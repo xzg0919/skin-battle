@@ -114,15 +114,15 @@ logging:
 wx:
   pay:
     #微信公众号或者小程序等的appid
-    appId-wx: wx0bbeca809b731203
-    appId-app: wxdd992ab4ada4d36d
+    appId-wx: wx96c50c79195a1f1f
+    appId-app: wxb95aa13cf7e003ca
     #商户号
-    mch-id: 1556916841
+    mch-id: 1611054727
     #商户key
-    mch-key: XiHuHuanJingklmnopqrstuvwxyz1234
+    mch-key: SHANGHAIZHUQIANnopqrstuvwxyz1257
     # p12证书的位置，可以指定绝对路径，也可以指定类路径（以classpath:开头）
-    key-path: /jingling/wxCert/apiclient_cert.p12
+    key-path: /collect/wxCert//apiclient_cert.p12
 
 
 #微信异步通知地
-wxNotifyUrl: https://jlopen.mayishoubei.com/notify/wx
+wxNotifyUrl: http://shoubeics.mayishoubei.com/notify/wx

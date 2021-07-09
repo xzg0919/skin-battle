@@ -33,12 +33,16 @@
         <module>collect-module-api</module>
         <module>collect-module-common</module>
         <module>collect-module-core</module>
+        <module>collect-module-xxl-job</module>
         <module>collect-green</module>
         <module>collect-idle-fish</module>
     </modules>
 
     <repositories>
-
+        <repository>
+            <id>maven2</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
         <!--阿里云仓库-->
         <repository>
             <id>aliyun</id>
@@ -52,6 +56,7 @@
             <id>rdc-snapshots</id>
             <url>https://repo.rdc.aliyun.com/repository/49525-snapshot-xtdJFd/</url>
         </repository>
+
     </repositories>
 
     <properties>

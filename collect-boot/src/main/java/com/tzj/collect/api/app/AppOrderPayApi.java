@@ -10,6 +10,7 @@ import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
+import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.annotation.SignIgnore;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
@@ -218,8 +219,9 @@ public class AppOrderPayApi {
      */
     @Api(name = "app.order.wxPrePay", version = "1.0")
     @SignIgnore
+    @AuthIgnore
     public Object wxPay(OrderPayParam orderPayParam) {
-        Order order = orderService.selectById(orderPayParam.getOrderCode());
+        Order order = orderService.getByOrderNo(orderPayParam.getOrderCode());
         if (order == null || !order.getDelFlag().equals("0") || order.getStatus().equals(Order.OrderType.COMPLETE) || order.getStatus().equals(Order.OrderType.CANCEL)) {
             throw new ApiException("订单错误");
         }

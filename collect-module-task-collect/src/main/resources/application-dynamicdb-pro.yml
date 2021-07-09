@@ -25,3 +25,8 @@ spring:
           username: sb_admin
           password: shoubei_123
           driver-class-name: com.mysql.cj.jdbc.Driver
+
+alipay:
+  public-cert: /shoubei/alipayCert/alipayCertPublicKey_RSA2.crt
+  root-cert: /shoubei/alipayCert/alipayRootCert.crt
+  app-cert: /shoubei/alipayCert/appCertPublicKey.crt

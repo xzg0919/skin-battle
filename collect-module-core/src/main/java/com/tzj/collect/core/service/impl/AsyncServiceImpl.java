@@ -402,4 +402,24 @@ public class AsyncServiceImpl implements AsyncService {
             e.printStackTrace();
         }
     }
+
+
+    public static void main(String[] args) {
+        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
+        AlipayOpenAppMiniTemplatemessageSendRequest request = new AlipayOpenAppMiniTemplatemessageSendRequest();
+        AlipayOpenAppMiniTemplatemessageSendModel model = new AlipayOpenAppMiniTemplatemessageSendModel();
+        model.setToUserId("2088612625979212");
+        model.setFormId("MjA4ODYxMjYyNTk3OTIxMl8xNjI1MjEzMjc2MzgzXzA5OA==");
+        model.setUserTemplateId("MTA3MDA4MzI5NDczMDkyYjg5Y2VmZjVkMjMxMGE3YzU=");
+        model.setPage("pages/view/index/index");
+        model.setData("{\"keyword1\" :{\"value\":\"" + "20210702160756376862" + "\"},\"keyword2\" :{\"value\":\"" + "平台已受理" + "\"},\"keyword3\" :{\"value\":\"订单" + "\"}}");
+        System.out.println(JSON.toJSONString(model));
+        request.setBizModel(model);
+        AlipayOpenAppMiniTemplatemessageSendResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
