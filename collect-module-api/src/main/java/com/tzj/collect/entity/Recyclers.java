@@ -72,6 +72,14 @@ public class Recyclers extends DataEntity<Long> {
 	 * 支付宝账号
 	 */
 	private String aliAccountNumber;
+	/**
+	 * 每日下单次数限制 （0 无限制 ）
+	 */
+	private Integer allowTimes;
+	/**
+	 * 完单是否给积分(0 给积分 1 不给)
+	 */
+	private char isAddPoint;
 
 	private String aliUserId;
 	@TableField(exist = false)

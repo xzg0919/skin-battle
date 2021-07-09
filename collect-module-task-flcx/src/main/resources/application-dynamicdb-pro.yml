@@ -25,3 +25,4 @@ spring:
           username: zhinan_admin
           password: Fenlei@zhinan
           driver-class-name: com.mysql.cj.jdbc.Driver
+

@@ -218,11 +218,7 @@ public class OrderApi {
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
         if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.DIGITAL)){
-            resultMap = new HashMap<>();
-            resultMap.put("type", 5);
-            resultMap.put("msg", "您的账号异常，，限制下单，如有疑问请联系客服");
-            resultMap.put("code", 5);
-            return resultMap;
+            throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "1");
         if (isImprisonMember) {
@@ -390,11 +386,7 @@ public class OrderApi {
         Member member = MemberUtils.getMember();
         Map<String, Object> resultMap = null;
         if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.HOUSEHOLD)){
-            resultMap = new HashMap<>();
-            resultMap.put("type", 5);
-            resultMap.put("msg", "您的账号异常，限制下单，如有疑问请联系客服");
-            resultMap.put("code", 5);
-            return resultMap;
+            throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         //查询用户的默认地址
         MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
@@ -532,11 +524,7 @@ public class OrderApi {
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
         if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.FIVEKG)){
-            resultMap = new HashMap<>();
-            resultMap.put("type", 5);
-            resultMap.put("msg", "您的账号异常，限制下单，如有疑问请联系客服");
-            resultMap.put("code", 5);
-            return resultMap;
+            throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "3");
         if (isImprisonMember) {
@@ -646,11 +634,7 @@ public class OrderApi {
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
         if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.SMALLDIGITAL)){
-            resultMap = new HashMap<>();
-            resultMap.put("type", 5);
-            resultMap.put("msg", "您的账号异常，限制下单，如有疑问请联系客服");
-            resultMap.put("code", 5);
-            return resultMap;
+            throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "8");
         if (isImprisonMember) {
@@ -774,11 +758,7 @@ public class OrderApi {
         //查询用户的默认地址
         Map<String, Object> resultMap = null;
         if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.BIGTHING)){
-            resultMap = new HashMap<>();
-            resultMap.put("type", 5);
-            resultMap.put("msg", "您的账号异常，限制下单，如有疑问请联系客服");
-            resultMap.put("code", 5);
-            return resultMap;
+            throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
         if (memberAddress == null) {

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class RedisUtil {
 
-    @Resource
+    @Resource(name="functionDomainRedisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
 
     public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {

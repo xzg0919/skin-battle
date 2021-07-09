@@ -20,6 +20,7 @@ import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.common.amap.AmapUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.MiniTemplatemessageUtil;
+import com.tzj.collect.common.notify.DingTalkNotify;
 import com.tzj.collect.common.push.PushUtils;
 import com.tzj.collect.common.util.BusinessUtils;
 import com.tzj.collect.common.utils.ToolUtils;
@@ -51,10 +52,13 @@ import com.tzj.collect.entity.CategoryAttrOption;
 import com.tzj.collect.entity.Member;
 import com.tzj.collect.entity.Order.OrderType;
 import com.tzj.collect.entity.OrderItem;
+import com.tzj.module.common.utils.DateUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -176,6 +180,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderOperateService orderOperateService;
     @Resource
     private JedisPool jedisPool;
+
+    protected final static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     /**
      * 获取会员的订单列表 分页
      *
@@ -453,6 +460,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order order = this.selectById(orderbean.getId());
         if ("1".equals(order.getTitle().getValue().toString())){
             CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
+            if(companyCategory!=null) {
+               logger.info("订单编号:"+order.getOrderNo()+", 设置佣金系数： adminCommissions: "+companyCategory.getAdminCommissions()+", companyCommissions:"+companyCategory.getCompanyCommissions());
+            }
             Category category = categoryService.selectById(order.getCategoryId());
             order.setGreenCount(category.getGreenCount().doubleValue());
             order.setAdminCommissions(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions());
@@ -467,6 +477,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             orderItemAches.stream().forEach(orderItemAch -> {
                 CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), orderItemAch.getCategoryId().toString());
                 Category category = categoryService.selectById(orderItemAch.getCategoryId());
+                if(companyCategory!=null) {
+                    logger.info("订单编号:"+order.getOrderNo()+", 设置佣金系数： adminCommissions: "+companyCategory.getAdminCommissions()+", companyCommissions:"+companyCategory.getCompanyCommissions());
+                }
                 if ("0".equals(order.getIsCash())){
                     greenCount[0] += category.getGreenCount()*orderItemAch.getAmount()*orderItemAch.getCleanUp();
                     commissionsPrice[0] = commissionsPrice[0].add(companyCategory==null?BigDecimal.ZERO:companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
@@ -486,7 +499,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setBackCommissionsPrice(backCommissionsPrice[0]);
             order.setCommissionsPrice(commissionsPrice[0].setScale(2, BigDecimal.ROUND_DOWN));
         }
-        this.updateById(order);
+        boolean b = this.updateById(order);
+        if(!b){
+            DingTalkNotify.sendMessage("订单编号:"+order.getOrderNo()+", 设置佣金错误", "https://oapi.dingtalk.com/robot/send?access_token=2f810a6a9488ce73a9936074ae1331e1df15f326c560d1945fae3b7fcf1565d8&&access=recy");
+            throw new ApiException("佣金设置有误，请重试");
+        }
+
         return order.getCommissionsPrice().setScale(2, BigDecimal.ROUND_DOWN);
     }
 
@@ -495,8 +513,57 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public Object getPriceByOrderId(OrderBean orderbean,MqttClient mqtt4PushOrder){
         Order order = this.selectById(orderbean.getId());
         order.setAchPrice(new BigDecimal(orderbean.getAchPrice()));
-        this.updateById(order);
-
+        //如果设置的佣金为0 判断是否是设置佣金错了，重新设置佣金
+        if(order.getCommissionsPrice().compareTo(BigDecimal.ZERO)==0) {
+            if ("1".equals(order.getTitle().getValue().toString())) {
+                CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
+                if (companyCategory != null) {
+                    logger.info("订单编号:" + order.getOrderNo() + ", 设置佣金系数： adminCommissions: " + companyCategory.getAdminCommissions() + ", companyCommissions:" + companyCategory.getCompanyCommissions());
+                }
+                Category category = categoryService.selectById(order.getCategoryId());
+                order.setGreenCount(category.getGreenCount().doubleValue());
+                order.setAdminCommissions(companyCategory == null ? BigDecimal.ZERO : companyCategory.getAdminCommissions());
+                order.setCompanyCommissions(companyCategory == null ? BigDecimal.ZERO : companyCategory.getCompanyCommissions());
+                order.setCommissionsPrice(companyCategory == null ? BigDecimal.ZERO : companyCategory.getAdminCommissions().setScale(2, BigDecimal.ROUND_DOWN));
+                order.setBackCommissionsPrice(companyCategory == null ? BigDecimal.ZERO : companyCategory.getCompanyCommissions().setScale(2, BigDecimal.ROUND_DOWN));
+            }
+            if ("2".equals(order.getTitle().getValue().toString())) {
+                List<OrderItemAch> orderItemAches = orderItemAchService.selectByOrderId(order.getId().intValue());
+                final BigDecimal[] commissionsPrice = {BigDecimal.ZERO};
+                final BigDecimal[] backCommissionsPrice = {BigDecimal.ZERO};
+                final Double[] greenCount = {0.00};
+                orderItemAches.stream().forEach(orderItemAch -> {
+                    CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), orderItemAch.getCategoryId().toString());
+                    Category category = categoryService.selectById(orderItemAch.getCategoryId());
+                    if (companyCategory != null) {
+                        logger.info("订单编号:" + order.getOrderNo() + ", 设置佣金系数： adminCommissions: " + companyCategory.getAdminCommissions() + ", companyCommissions:" + companyCategory.getCompanyCommissions());
+                    }
+                    if ("0".equals(order.getIsCash())) {
+                        greenCount[0] += category.getGreenCount() * orderItemAch.getAmount() * orderItemAch.getCleanUp();
+                        commissionsPrice[0] = commissionsPrice[0].add(companyCategory == null ? BigDecimal.ZERO : companyCategory.getAdminCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                        backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory == null ? BigDecimal.ZERO : companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    } else {
+                        greenCount[0] += category.getFreeGreenCount() * orderItemAch.getAmount() * orderItemAch.getCleanUp();
+                        commissionsPrice[0] = commissionsPrice[0].add(companyCategory == null ? BigDecimal.ZERO : companyCategory.getFreeCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                        backCommissionsPrice[0] = backCommissionsPrice[0].add(companyCategory == null ? BigDecimal.ZERO : companyCategory.getCompanyCommissions().multiply(new BigDecimal(orderItemAch.getAmount())));
+                    }
+                    orderItemAch.setAdminCommissions(companyCategory == null ? BigDecimal.ZERO : companyCategory.getAdminCommissions());
+                    orderItemAch.setFreeCommissions(companyCategory == null ? BigDecimal.ZERO : companyCategory.getFreeCommissions());
+                    orderItemAch.setCompanyCommissions(companyCategory == null ? BigDecimal.ZERO : companyCategory.getCompanyCommissions());
+                    orderItemAchService.updateById(orderItemAch);
+                });
+                DecimalFormat df = new DecimalFormat(".##");
+                order.setGreenCount(Double.parseDouble(df.format(greenCount[0])));
+                order.setBackCommissionsPrice(backCommissionsPrice[0]);
+                order.setCommissionsPrice(commissionsPrice[0].setScale(2, BigDecimal.ROUND_DOWN));
+            }
+        }
+        boolean b = this.updateById(order);
+        //如果设置佣金或价格失效 报错
+        if(!b){
+            DingTalkNotify.sendMessage("订单编号:"+order.getOrderNo()+", 设置成交价或佣金错误！ ", "https://oapi.dingtalk.com/robot/send?access_token=2f810a6a9488ce73a9936074ae1331e1df15f326c560d1945fae3b7fcf1565d8&&access=recy");
+            throw new ApiException("佣金设置有误，请重试");
+        }
         if (order.getAchPrice().add(order.getCommissionsPrice()).compareTo(BigDecimal.ZERO)==0){
             //修改订单状态
             orderbean.setAmount(order.getGreenCount());
@@ -2255,7 +2322,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 		if(StringUtils.isNotBlank(orderBean.getDiscountPrice())){
 			order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
 		}
-		orderService.updateById(order);
+        boolean flag = orderService.updateById(order);
+		if(flag) {
+            // key 格式 recyclerDayTimes:yyyyMMdd:回收人员id
+            String key = "recyclerDayTimes:" + DateUtils.formatDate(new Date(), "yyyyMMdd") + ":" + order.getRecyclerId();
+            if (redisUtil.hasKey(key)) {
+                  redisUtil.increment(key);
+            } else {
+                //初始化并设置一天时效
+                redisUtil.set(key, 1, 24 * 60 * 60);
+            }
+        }
         OrderLog orderLog = new OrderLog();
         orderLog.setOrderId(orderBean.getId());
 		orderLog.setOpStatusAfter("COMPLETE");
@@ -2393,6 +2470,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 						order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
 					}
 					flag = orderService.updateById(order);
+                   if(flag) {
+                       // key 格式 recyclerDayTimes:yyyyMMdd:回收人员id
+                       String key = "recyclerDayTimes:" + DateUtils.formatDate(new Date(), "yyyyMMdd") + ":" + order.getRecyclerId();
+                       if (redisUtil.hasKey(key)) {
+                           redisUtil.increment(key);
+                       } else {
+                           //初始化并设置一天时效
+                           redisUtil.set(key, 1, 24 * 60 * 60);
+                       }
+                   }
 					//完成订单消息推送
                     asyncService.pushOrder(order,mqtt4PushOrder);
 					orderLog.setOpStatusAfter("COMPLETE");
@@ -2521,8 +2608,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 	@Override
     public void updateMemberPoint(String aliUserId, String OrderNo, double amount, String descrb) {
 		DecimalFormat df   = new DecimalFormat("######0.00");
-		amount = Double.parseDouble(df.format(amount));
-
+        Order order = orderService.getByOrderNo(OrderNo);
+        if(order!=null && order.getRecyclerId()!=null && recyclersService.selectById(order.getRecyclerId()).getIsAddPoint()=='1'){
+            return;
+        }
+        amount = Double.parseDouble(df.format(amount));
 		Point points = pointService.getPoint(aliUserId);
 		if (points == null) {
 			points = new Point();
