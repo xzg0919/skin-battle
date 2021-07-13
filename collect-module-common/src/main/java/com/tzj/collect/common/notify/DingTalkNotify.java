@@ -13,6 +13,21 @@ public class DingTalkNotify {
 
     protected final static Logger logger = LoggerFactory.getLogger(DingTalkNotify.class);
 
+    public enum WebHook{
+        commissionPrice("佣金通知webhook","https://oapi.dingtalk.com/robot/send?access_token=2f810a6a9488ce73a9936074ae1331e1df15f326c560d1945fae3b7fcf1565d8&&access=recy");
+
+        private String description;
+        private String   webHook;
+
+        WebHook(String description,String webHook) {
+            this.webHook = webHook;
+            this.description = webHook;
+        }
+
+        public  String getWebHook(){
+            return this.webHook;
+        }
+    }
     public static void sendAliErrorMessage(String className, String method, String body, String webHook, String bizContent) {
         try {
             String content = "class-------";
@@ -79,7 +94,7 @@ public class DingTalkNotify {
     public static void main(String args[]) {
         try {
             ArrayList<String> atMobiles = new ArrayList<>();
-            atMobiles.add("18516291937");
+            atMobiles.add("18601780883");
             sendTextMessageWithAtAndAtAll("一个人测试", atMobiles, false, "https://oapi.dingtalk.com/robot/send?access_token=9125390abc8e864da7deddba297580b32948bd8752804f8d25cc524372f78fbd");
         } catch (Exception e) {
             e.printStackTrace();
