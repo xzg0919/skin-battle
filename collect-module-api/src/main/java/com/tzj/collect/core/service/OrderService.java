@@ -470,4 +470,9 @@ public interface OrderService extends IService<Order> {
 	Order getByOrderNo(String orderNo);
 
 	List<Order> getOrders();
+
+
+	void cancelOrderBatch(String companyId, String endDate);
+
+	void cancelOrder(String orderNo);
 }

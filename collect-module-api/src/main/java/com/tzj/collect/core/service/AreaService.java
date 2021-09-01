@@ -104,4 +104,10 @@ public interface AreaService  extends IService<Area>{
 	List<Area> getAreaListByParentId(OrderBean orderBean);
 
     Object getAreaListById(Integer parentId);
+
+    List<Area> findAreaByCityName(String cityName);
+
+	List<Area> findstreetByAreaId(Long areaId);
+
+	List<Area> findAllCity();
 }

@@ -83,6 +83,7 @@ public class MemberApi {
 	@SignIgnore
 	@AuthIgnore
 	public Object getStaticUserToken(MemberBean memberBean) {
+		System.out.println("进来了---------------------"+memberBean.getAuthCode());
 		return memberService.getStaticUserToken(memberBean.getAuthCode(),memberBean.getCityName());
 	}
 	/**

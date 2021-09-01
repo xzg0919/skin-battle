@@ -17,10 +17,13 @@ import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.core.service.AreaService;
 import com.tzj.collect.core.service.LineQrCodeRangeService;
 import com.tzj.collect.core.service.LineQrCodeService;
+import com.tzj.collect.core.service.XcxSourceTitleService;
 import com.tzj.collect.entity.Area;
 import com.tzj.collect.entity.LineQrCode;
 import com.tzj.collect.entity.LineQrCodeRange;
+import com.tzj.collect.entity.XcxSourceTitle;
 import com.tzj.module.easyopen.exception.ApiException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -45,6 +48,8 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
     private LineQrCodeMapper lineQrCodeMapper;
     @Resource
     private AreaService areaService;
+    @Autowired
+    private XcxSourceTitleService xcxSourceTitleService;
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public Map<String, Object> createShareCode(AdminShareCodeBean adminShareCodeBean) {
@@ -101,6 +106,10 @@ public class LineQrCodeServiceImpl extends ServiceImpl<LineQrCodeMapper, LineQrC
             //线上码
             lineQrCode.setQrType(LineQrCode.QrType.ONLINE);
             lineQrCode.setQrUrl(this.qrUrl(LineQrCode.QrType.ONLINE, lineQrCode.getShareCode()));
+            XcxSourceTitle xcxSourceTitle=new XcxSourceTitle();
+            xcxSourceTitle.setCode(lineQrCode.getShareCode());
+            xcxSourceTitle.setName(adminShareCodeBean.getQrName());
+            xcxSourceTitleService.insert(xcxSourceTitle);
         }else {
             throw new ApiException("参数错误");
         }

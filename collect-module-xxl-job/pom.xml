@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>collect</artifactId>
+        <groupId>com.tzj</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>collect-module-xxl-job</artifactId>
+    <description>定时器</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.54</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.ethz.ganymed</groupId>
+            <artifactId>ganymed-ssh2</artifactId>
+            <version>build210</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <!-- springboot -->
+
+        <!-- mybatis-plus begin -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- mybatis-plus end -->
+
+        <!-- API 框架 -->
+        <dependency>
+            <groupId>com.hufm</groupId>
+            <artifactId>hufm-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hufm</groupId>
+            <artifactId>hufm-module-common</artifactId>
+        </dependency>
+        <!-- API 框架 -->
+
+        <!-- 工具类 -->
+        <dependency>
+            <groupId>com.github.icecooly</groupId>
+            <artifactId>FastHttpClient</artifactId>
+        </dependency>
+        <!-- 工具类 -->
+
+        <!-- JSON -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <!-- JSON -->
+
+
+
+
+
+
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dyplsapi</artifactId>
+            <version>1.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun.mns</groupId>
+            <artifactId>aliyun-sdk-mns</artifactId>
+            <version>1.1.8</version>
+            <classifier>jar-with-dependencies</classifier>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP-java7</artifactId>
+            <version>${HikariCP.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+
+        <!-- JUnit test dependency -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.restassured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>2.9.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Code generator test sample-->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+
+
+
+
+        <!-- 增加cache -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>1.5.9.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+            <version>1.9.22</version>
+        </dependency>
+
+
+        <!-- 腾讯信鸽 -->
+        <dependency>
+            <groupId>com.tencent</groupId>
+            <artifactId>xinge</artifactId>
+            <version>1.1.8</version>
+        </dependency>
+
+        <!-- 阿里大鱼 -->
+        <!-- 改为云效的Maven私库 -->
+        <dependency>
+            <groupId>com.alipay</groupId>
+            <artifactId>ali-dayu</artifactId>
+            <version>20160607</version>
+        </dependency>
+
+        <!-- 支付宝 -->
+        <!-- 官方maven库 -->
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
+        <!-- 阿里云推送依赖 -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-push</artifactId>
+            <version>3.10.0</version>
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.aliyun</groupId>-->
+        <!--            <artifactId>aliyun-java-sdk-core</artifactId>-->
+        <!--            <version>3.2.8</version>-->
+        <!--        </dependency>-->
+
+        <!--添加导入/出表格依赖-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.9</version>
+        </dependency>
+
+        <!-- 整合redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- spring-redis NoSql begin -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.tzj</groupId>-->
+        <!--<artifactId>collect-module-dailyda</artifactId>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.aliyun</groupId>-->
+        <!--            <artifactId>aliyun-java-sdk-dyplsapi</artifactId>-->
+        <!--            <version>1.1.1</version>-->
+        <!--        </dependency>-->
+
+
+
+
+
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tzj</groupId>
+            <artifactId>collect-module-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.qimen</groupId>
+            <artifactId>taobao-qimen-sdk</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun.openservices</groupId>
+            <artifactId>ons-client</artifactId>
+            <version>1.7.9.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-pay</artifactId>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <finalName>collect-xxl-job</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

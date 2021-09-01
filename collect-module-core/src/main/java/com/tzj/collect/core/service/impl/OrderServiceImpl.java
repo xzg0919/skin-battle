@@ -179,6 +179,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderOperateService orderOperateService;
     @Resource
     private JedisPool jedisPool;
+    @Autowired
+    SmsBlackListService smsBlackListService;
 
     protected final static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
@@ -2304,7 +2306,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
         }
         //刷单的回收人员订单不给积分
-        if(order!=null && order.getRecyclerId()!=null && recyclersService.selectById(order.getRecyclerId()).getIsAddPoint()=='1'){
+        if (order != null && order.getRecyclerId() != null && recyclersService.selectById(order.getRecyclerId()).getIsAddPoint() == '1') {
             order.setGreenCount(null);
         }
         boolean flag = orderService.updateById(order);
@@ -2517,8 +2519,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     if (recyclers != null) {
                         Company company = companyService.selectById(order.getCompanyId());
                         if (company != null) {
-                            //发送接单短信
-                            asyncService.sendOrder("垃圾分类回收", order.getTel(), "SMS_213082494", recyclers.getName(), recyclers.getTel(), company.getName());
+                            SmsBlackList byTel = smsBlackListService.findByTel(recyclers.getTel());
+                            if (byTel == null) {
+                                //发送接单短信
+                                asyncService.sendOrder("垃圾分类回收", order.getTel(), "SMS_213082494", recyclers.getName(), recyclers.getTel(), company.getName());
+                            }
                         }
                         //異步刪除redis裡面派單id
 //						asyncRedis.saveOrRemoveOrderIdAndTimeFromRedis(order.getId(), recyclers.getId(), System.currentTimeMillis(), "remove");
@@ -5338,6 +5343,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public List<Order> getOrders() {
         return this.selectList(new EntityWrapper<Order>().eq("status_", "3")
-                .eq("del_flag", "0").isNull("mysl_order_id").isNotNull("mysl_param").gt("complete_date", "2021-06-01 00:00:00"));
+                .eq("del_flag", "0").isNull("mysl_order_id").isNotNull("mysl_param").gt("complete_date", "2021-08-01 00:00:00"));
     }
+
+    @Transactional
+    @Override
+    public void cancelOrderBatch(String companyId, String endDate) {
+        orderMapper.cancelOrderBatch(companyId, endDate + " 23:59:59");
+    }
+
+    @Override
+    public void cancelOrder(String orderNo) {
+
+    }
+
+
 }

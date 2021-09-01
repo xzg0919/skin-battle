@@ -266,5 +266,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	List<BusinessOrderItemBean> getCategoryInfoByOrderId(@Param("orderId") String orderId,@Param("title") String title);
 
 	List<Map<String, Object>>getCategoryPriceList(@Param("orderId")Integer id);
+
+	void cancelOrderBatch(@Param("companyId") String companyId, @Param("endDate") String endDate);
 }
 

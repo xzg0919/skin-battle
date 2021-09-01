@@ -39,7 +39,8 @@
         LIMIT #{sizeStart} , #{size}
     </select>
     <select id="selectOrder" parameterType="int" resultMap="OrderResultMap">
-        SELECT<include refid="zd"/>,b.id AS Recyclers_id ,b.name_ AS Recyclers_name,b.tel AS BTel,b.head_pic_url AS headPicUrl,e.price AS
+        SELECT<include refid="zd"/>,b.id AS Recyclers_id ,b.name_ AS Recyclers_name,b.tel AS BTel,b.head_pic_url AS
+        headPicUrl,e.price AS
         paymentPrice FROM sb_order a LEFT JOIN sb_category c ON a.category_id = c.id LEFT JOIN sb_recyclers b ON b.id =
         a.recycler_id LEFT JOIN sb_payment e ON a.order_no = e.order_sn WHERE a.id = #{orderId} AND a.del_flag = '0'
         ORDER BY a.create_date DESC
@@ -272,7 +273,7 @@
         <if test="title != null and title !='' ">
             <choose>
                 <when test="title == 3">
-                    AND a.title  IN (3,8)
+                    AND a.title IN (3,8)
                 </when>
                 <otherwise>
                     AND a.title = #{title}
@@ -351,7 +352,8 @@
         </if>
         order by c.order_no,c.type_ DESC) a
         GROUP BY a.order_no) b on a.order_no = b.order_no
-        ORDER BY if(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,isComplaint))DESC, a.create_date
+        ORDER BY if(a.status_ = '3',a.complete_date,if(a.status_ in ('4','5'),a.cancel_time,isComplaint))DESC,
+        a.create_date
         LIMIT #{startSize},#{pageSize}
     </select>
 
@@ -433,7 +435,7 @@
             </otherwise>
         </choose>
         LIMIT 0,50
-        )so	) so
+        )so ) so
         INNER JOIN sb_category sc ON so.category_id = sc.id
         INNER JOIN sb_recyclers sr ON sr.id = so.recycler_id
         INNER JOIN sb_company_recycler bb ON bb.recycler_id = so.recycler_id AND so.company_id = bb.company_id AND
@@ -1810,16 +1812,17 @@ ORDER BY time
         from
         (select a.*,
         CASE WHEN b.type_ = '4' THEN '4'
-             WHEN b.type_ in ('0','1','2') AND a.overTime > 2880 THEN '3'
-             WHEN b.type_ in ('0','1','2') AND 2880 >= a.overTime  THEN '1'
-             WHEN a.overTime > 2880  THEN '2'
-             ELSE '0'END AS isComplaint
+        WHEN b.type_ in ('0','1','2') AND a.overTime > 2880 THEN '3'
+        WHEN b.type_ in ('0','1','2') AND 2880 >= a.overTime THEN '1'
+        WHEN a.overTime > 2880 THEN '2'
+        ELSE '0'END AS isComplaint
         from
         (SELECT
         a.id,
         a.order_no AS orderNo,
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as categoryDate,
-        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS categoryName,
+        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS
+        categoryName,
         c.name_ AS name,
         a.link_man AS userName,
         a.tel,
@@ -1988,7 +1991,8 @@ ORDER BY time
         a.id,
         a.order_no AS orderNo,
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
-        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS categoryName,
+        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS
+        categoryName,
         c.name_ AS name,
         a.link_man AS userName,
         a.tel,
@@ -2059,7 +2063,8 @@ ORDER BY time
         a.id,
         a.order_no AS orderNo,
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
-        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS categoryName,
+        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS
+        categoryName,
         c.name_ AS name,
         a.link_man AS userName,
         a.tel,
@@ -2240,7 +2245,8 @@ ORDER BY time
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as createDate,
         DATE_FORMAT(a.arrival_time, '%Y-%c-%d' ) as arrivalTime,
         a.arrival_period AS arrivalPeriod,
-        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS categoryName,
+        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS
+        categoryName,
         c.name_ AS name,
         a.link_man AS userName,
         a.tel,
@@ -3813,6 +3819,13 @@ ORDER BY time
             AND b.title = #{title}
         </if>
     </select>
+
+    <update id="cancelOrderBatch" parameterType="String">
+        UPDATE sb_order set cancel_time=NOW(),cancel_reason='平台批量取消',
+        status_=5 where   #{endDate} >= create_date
+        and company_id = #{companyId} and status_ in (0,1,2)
+	</update>
+
     <resultMap id="categoryResultMap" type="com.tzj.collect.core.param.ali.BusinessOrderItemBean">
         <id property="parentId" column="parentId"/>
         <result property="parentName" column="parentName"/>

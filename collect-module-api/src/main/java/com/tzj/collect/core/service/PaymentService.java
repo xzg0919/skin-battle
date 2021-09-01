@@ -80,4 +80,7 @@ public interface PaymentService extends IService<Payment> {
 
     Payment selectPayOneMinByOrderSn(String orderNo);
     void transferDemo(Payment payment);
+
+    void transfer(String aliUserId,String amount,String orderNo);
+
 }

@@ -29,6 +29,12 @@
                 <span class="span6" id="aspan6">回收人员额度管理</span>
                 <a href="/lj/admin/recyPage" target="right" id="A3"></a>
             </li>
+
+            <li class="layui-nav-item" id="LeftItem4">
+                <span class="erc2" id="Erc4"></span>
+                <span class="span6" id="aspan7">批量取消订单</span>
+                <a href="/lj/admin/cancelOrderBatch" target="right" id="A4"></a>
+            </li>
         </ul>
     </div>
 </body>

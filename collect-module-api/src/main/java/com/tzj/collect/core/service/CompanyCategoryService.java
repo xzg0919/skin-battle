@@ -108,4 +108,6 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	Company selectCompanyByTitle(String title, Integer communityId);
 	@DS("slave")
 	CompanyCategory selectCompanyCategory(String companyId,String categoryId);
+
+	Integer selectCount(Long companyId,Long categoryId);
 }

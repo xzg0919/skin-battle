@@ -26,6 +26,8 @@ public class LjAdminBean {
 
     private String companyId;
 
+    private String orderNo;
+
     public String getCityId() {
         if (StringUtils.isNotBlank(cityId)){
             return cityId.replace(",","");

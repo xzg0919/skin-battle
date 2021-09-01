@@ -357,4 +357,9 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
         return selectOne(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId));
     }
 
+    @Override
+    public Integer selectCount(Long companyId, Long categoryId) {
+        return selectCount(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId).eq("del_flag","0"));
+    }
+
 }

@@ -53,22 +53,23 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     @Autowired
     private RedisUtil redisUtil;
 
-    @Resource(name="certAlipayClient")
+    @Resource(name = "certAlipayClient")
     AlipayClient certAlipayClient;
 
     @Override
     public Payment selectByOrderSn(String orderNo) {
-        return selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).in("status_","1,2"));
+        return selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).in("status_", "1,2"));
     }
+
     @Override
-    public Payment selectByOutTradeNo(String outTradeNo){
+    public Payment selectByOutTradeNo(String outTradeNo) {
         return selectOne(new EntityWrapper<Payment>().eq("out_trade_no", outTradeNo));
     }
 
     @Override
-    public Payment selectPayByOrderSn(String orderNo){
+    public Payment selectPayByOrderSn(String orderNo) {
         Payment payment = selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).eq("status_", Payment.STATUS_PAYED));
-        if(null == payment){
+        if (null == payment) {
             payment = selectOne(new EntityWrapper<Payment>().eq("order_sn", orderNo).eq("status_", Payment.STATUS_TRANSFER));
         }
         return payment;
@@ -79,7 +80,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
      */
     @Override
     @Transactional
-    public String genalPayXcx(Payment payment,Order order) {
+    public String genalPayXcx(Payment payment, Order order) {
         Assert.notNull(payment, "payment不能为空！");
         AlipayTradeCreateRequest request = new AlipayTradeCreateRequest();
         AlipayTradeCreateModel model = new AlipayTradeCreateModel();
@@ -93,7 +94,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         ExtendParams extendParams = new ExtendParams();
         extendParams.setSysServiceProviderId("2088421446748174");
         model.setExtendParams(extendParams);
-        model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_DOWN).toString());
+        model.setTotalAmount(payment.getPrice().setScale(2, BigDecimal.ROUND_DOWN).toString());
         request.setBizModel(model);
         request.setNotifyUrl(applicaInit.getNotifyUrl());
         try {
@@ -106,6 +107,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             throw new ApiException("系统异常：" + e.getErrMsg());
         }
     }
+
     /**
      * 支付宝支付
      *
@@ -113,7 +115,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
      * @return
      */
     @Override
-    public String genalPay(Payment payment,Order order) {
+    public String genalPay(Payment payment, Order order) {
         Assert.notNull(payment, "payment不能为空！");
 
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
@@ -129,7 +131,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         ExtendParams extendParams = new ExtendParams();
         extendParams.setSysServiceProviderId("2017011905224137");
         model.setExtendParams(extendParams);
-        model.setTotalAmount(payment.getPrice().setScale( 2, BigDecimal.ROUND_DOWN).toString());
+        model.setTotalAmount(payment.getPrice().setScale(2, BigDecimal.ROUND_DOWN).toString());
         model.setProductCode("QUICK_MSECURITY_PAY");
         request.setBizModel(model);
         request.setNotifyUrl(applicaInit.getNotifyUrl());
@@ -152,8 +154,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     public void transfer(Payment payment) {
 
         Order order = orderService.selectOne(new EntityWrapper<Order>().eq("order_no", payment.getOrderSn()));
-        PaymentError paymentError = paymentErrorService.selectOne(new EntityWrapper<PaymentError>().eq("order_sn",payment.getOrderSn()));
-        if (null==paymentError){
+        PaymentError paymentError = paymentErrorService.selectOne(new EntityWrapper<PaymentError>().eq("order_sn", payment.getOrderSn()));
+        if (null == paymentError) {
             paymentError = new PaymentError();
         }
         //乐观锁原因需重新查询一次得到真实payment
@@ -163,23 +165,23 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         orderBean.setDiscountPrice(payment.getDiscountPrice().toString());
         String aliUserId = "";
         String payeeType = "ALIPAY_USER_ID";
-        if ((order.getTitle()+"").equals(Order.TitleType.BIGTHING+"")){
+        if ((order.getTitle() + "").equals(Order.TitleType.BIGTHING + "")) {
             Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
             aliUserId = recyclers.getAliUserId();
-        }else {
+        } else {
             aliUserId = payment.getAliUserId();
-            if ("2".equals(order.getOrderFrom())){
-                    aliUserId = order.getAliAccount();
-                    payeeType = "ALIPAY_LOGON_ID";
+            if ("2".equals(order.getOrderFrom())) {
+                aliUserId = order.getAliAccount();
+                payeeType = "ALIPAY_LOGON_ID";
             }
         }
         AlipayFundTransUniTransferResponse response = null;
         try {
-            response =this.aliPayTransfer(payment.getOrderSn(),aliUserId,payment.getTransferPrice(),payeeType);
-            if ((response.isSuccess()&&"10000".equals(response.getCode()))||payment.getTransferPrice().compareTo(BigDecimal.ZERO)==0) {
+            response = this.aliPayTransfer(payment.getOrderSn(), aliUserId, payment.getTransferPrice(), payeeType);
+            if ((response.isSuccess() && "10000".equals(response.getCode())) || payment.getTransferPrice().compareTo(BigDecimal.ZERO) == 0) {
                 System.out.println("转账成功，更改信息");
                 payment1.setStatus(Payment.STATUS_TRANSFER);
-                if(("1".equals(order.getIsMysl())&&(order.getStatus()+"").equals(Order.OrderType.ALREADY+""))||order.getIsScan().equals("1")){
+                if (("1".equals(order.getIsMysl()) && (order.getStatus() + "").equals(Order.OrderType.ALREADY + "")) || order.getIsScan().equals("1")) {
                     //给用户增加蚂蚁能量
                     orderService.myslOrderData(order.getId().toString());
                 }
@@ -187,8 +189,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
                 orderBean.setId(order.getId().intValue());
                 orderBean.setStatus("3");
                 orderBean.setAmount(order.getGreenCount());
-                orderService.modifyOrderByPayment(orderBean,payment.getVoucherMember());
-            }else {
+                orderService.modifyOrderByPayment(orderBean, payment.getVoucherMember());
+            } else {
                 System.out.println("转账失败，保存错误信息");
                 paymentError.setReason(response.getBody());
                 paymentError.setTitle(response.getSubMsg());
@@ -197,8 +199,8 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
                 paymentError.setReceiveUser(order.getRecyclerId().toString());
                 paymentError.setOrderSn(order.getOrderNo());
                 //如果是账号有问题无法收款(40004)直接取消订单并返还所有钱到回收人员
-                if(!(order.getTitle()+"").equals(Order.TitleType.BIGTHING+"") && "40004".equals(response.getCode()) && order.getStatus()==Order.OrderType.ALREADY) {
-                    String reOutBizNo = order.getOrderNo()+payment.getId();
+                if (!(order.getTitle() + "").equals(Order.TitleType.BIGTHING + "") && "40004".equals(response.getCode()) && order.getStatus() == Order.OrderType.ALREADY) {
+                    String reOutBizNo = order.getOrderNo() + payment.getId();
                     AlipayFundTransUniTransferResponse responseback = this.aliPayTransfer(reOutBizNo, payment.getBuyerId(), payment.getPrice(), "ALIPAY_USER_ID");
                     if ((responseback.isSuccess() && "10000".equals(responseback.getCode()))) {
                         //返还金额到回收人员支付宝订单号
@@ -209,16 +211,16 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
                     }
                 }
                 paymentErrorService.insertOrUpdate(paymentError);
-                asyncService.notifyDingDingPaymentError(order.getOrderNo(),response.getBody(), PaymentError.DING_DING_URL,PaymentError.DING_DING_SING,PaymentError.DING_DING_TEL);
+                asyncService.notifyDingDingPaymentError(order.getOrderNo(), response.getBody(), PaymentError.DING_DING_URL, PaymentError.DING_DING_SING, PaymentError.DING_DING_TEL);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if (!(response.isSuccess()||"10000".equals(response.getCode()))) {
+        } finally {
+            if (!(response.isSuccess() || "10000".equals(response.getCode()))) {
                 order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
                 orderService.updateById(order);
             }
-            if(Order.OrderType.CANCEL.equals(order.getStatus())){
+            if (Order.OrderType.CANCEL.equals(order.getStatus())) {
                 payment1.setDelFlag("1");
             }
             payment1.setRemarks(response.getSubMsg());
@@ -258,12 +260,12 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
     }
 
-    public AlipayFundTransUniTransferResponse aliPayTransfer(String outBizNo,String aliUserId,BigDecimal amount,String payeeType) throws AlipayApiException {
+    public AlipayFundTransUniTransferResponse aliPayTransfer(String outBizNo, String aliUserId, BigDecimal amount, String payeeType) throws AlipayApiException {
         AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
         AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
         model.setOutBizNo(outBizNo);
         model.setProductCode("TRANS_ACCOUNT_NO_PWD");
-        Participant payeeInfo =new Participant();
+        Participant payeeInfo = new Participant();
         payeeInfo.setIdentity(aliUserId);
         payeeInfo.setIdentityType(payeeType);
         model.setTransAmount(amount.setScale(2, BigDecimal.ROUND_DOWN).toString());
@@ -272,65 +274,67 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         model.setPayeeInfo(payeeInfo);
         model.setBizScene("DIRECT_TRANSFER");
         request.setBizModel(model);
-        return  certAlipayClient.certificateExecute(request);
+        return certAlipayClient.certificateExecute(request);
 
     }
+
     /**
      * 根据支付宝交易号查询该交易的详细信息
+     *
      * @param tradeNo
      */
     @Override
-    public AlipayTradeQueryResponse getAliPayment(String tradeNo){
+    public AlipayTradeQueryResponse getAliPayment(String tradeNo) {
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
 
         AlipayTradeQueryModel model = new AlipayTradeQueryModel();
-            model.setOutTradeNo(tradeNo);
-            model.setTradeNo(tradeNo);
-            request.setBizModel(model);
+        model.setOutTradeNo(tradeNo);
+        model.setTradeNo(tradeNo);
+        request.setBizModel(model);
 
         AlipayTradeQueryResponse response = null;
-        try{
+        try {
             response = certAlipayClient.certificateExecute(request);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        if(response.isSuccess()){
-            System.out.println("调用查询交易接口成功 : "+response.getBody());
+        if (response.isSuccess()) {
+            System.out.println("调用查询交易接口成功 : " + response.getBody());
         } else {
-            System.out.println("调用查询交易接口失败 : "+response.getBody());
+            System.out.println("调用查询交易接口失败 : " + response.getBody());
         }
         return response;
     }
-    
+
     /**
      * 查询转账信息
      */
     @Override
     public AlipayFundTransOrderQueryResponse getTransfer(String paymentId) {
-    	AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
-    	request.setBizContent("{" +
-    	"\"out_biz_no\":\""+paymentId+"\"" +
-    	//"\"order_id\":\"20160627110070001502260006780837\"" +
-    	"  }");
-    	AlipayFundTransOrderQueryResponse response = null;
-		try {
-			response = certAlipayClient.certificateExecute(request);
-		} catch (AlipayApiException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-       return response;
+        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
+        request.setBizContent("{" +
+                "\"out_biz_no\":\"" + paymentId + "\"" +
+                //"\"order_id\":\"20160627110070001502260006780837\"" +
+                "  }");
+        AlipayFundTransOrderQueryResponse response = null;
+        try {
+            response = certAlipayClient.certificateExecute(request);
+        } catch (AlipayApiException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return response;
     }
 
     @SneakyThrows
     @Override
-    public  AlipayFundTransUniTransferResponse receivingMoneyTransfer(String aliUserId, String price, String outBizNo){
+    public AlipayFundTransUniTransferResponse receivingMoneyTransfer(String aliUserId, String price, String outBizNo) {
 
         AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
         AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
         model.setOutBizNo(outBizNo);
         model.setProductCode("TRANS_ACCOUNT_NO_PWD");
-        Participant payeeInfo =new Participant();
+        Participant payeeInfo = new Participant();
         payeeInfo.setIdentity(aliUserId);
         payeeInfo.setIdentityType("ALIPAY_USER_ID");
         model.setTransAmount(price);
@@ -339,28 +343,29 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         model.setPayeeInfo(payeeInfo);
         model.setBizScene("DIRECT_TRANSFER");
         request.setBizModel(model);
-        return  certAlipayClient.certificateExecute(request);
+        return certAlipayClient.certificateExecute(request);
     }
 
     /**
      * 交易关闭
+     *
      * @param outTradeNo
      * @return
      */
     @Override
-    public AlipayTradeCloseResponse paymentCloseByTradeNo(String outTradeNo){
+    public AlipayTradeCloseResponse paymentCloseByTradeNo(String outTradeNo) {
         AlipayTradeCloseRequest request = new AlipayTradeCloseRequest();
         AlipayTradeCloseModel model = new AlipayTradeCloseModel();
-            //model.setTradeNo(tradeNo);
-            model.setOutTradeNo(outTradeNo);
-            request.setBizModel(model);
+        //model.setTradeNo(tradeNo);
+        model.setOutTradeNo(outTradeNo);
+        request.setBizModel(model);
         AlipayTradeCloseResponse response = null;
-        try{
+        try {
             response = certAlipayClient.certificateExecute(request);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        if(response.isSuccess()){
+        if (response.isSuccess()) {
             System.out.println("调用成功");
         } else {
             System.out.println("调用失败");
@@ -370,7 +375,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
     @Override
-    public String iotPay(String hardwareCode, String orderNo, String price, String outTradeNo){
+    public String iotPay(String hardwareCode, String orderNo, String price, String outTradeNo) {
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
 
@@ -400,8 +405,10 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             throw new ApiException("系统异常：" + e.getErrMsg());
         }
     }
+
     /**
      * iot定金回退接口
+     *
      * @author: sgmark@aliyun.com
      * @Date: 2019/11/15 0015
      * @Param:
@@ -409,12 +416,12 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
      */
     @SneakyThrows
     @Override
-    public  AlipayFundTransUniTransferResponse iotTransfer(String aliUserId, String price, String outBizNo){
+    public AlipayFundTransUniTransferResponse iotTransfer(String aliUserId, String price, String outBizNo) {
         AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
         AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
         model.setOutBizNo(outBizNo);
         model.setProductCode("TRANS_ACCOUNT_NO_PWD");
-        Participant payeeInfo =new Participant();
+        Participant payeeInfo = new Participant();
         payeeInfo.setIdentity(aliUserId);
         payeeInfo.setIdentityType("ALIPAY_USER_ID");
         model.setTransAmount(price);
@@ -423,7 +430,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         model.setPayeeInfo(payeeInfo);
         model.setBizScene("DIRECT_TRANSFER");
         request.setBizModel(model);
-        return  certAlipayClient.certificateExecute(request);
+        return certAlipayClient.certificateExecute(request);
 
     }
 
@@ -442,4 +449,33 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     }
 
 
+    @Override
+    public void transfer(String aliUserId, String amount, String orderNo) {
+        AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
+        AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
+        model.setOutBizNo(orderNo);
+        model.setProductCode("TRANS_ACCOUNT_NO_PWD");
+        Participant payeeInfo = new Participant();
+        payeeInfo.setIdentity(aliUserId);
+        payeeInfo.setIdentityType("ALIPAY_USER_ID");
+        model.setTransAmount(amount);
+        model.setOrderTitle("垃圾分类回收(收呗)随机红包");
+        model.setRemark("垃圾分类回收(收呗)随机红包");
+        model.setPayeeInfo(payeeInfo);
+        model.setBizScene("DIRECT_TRANSFER");
+        request.setBizModel(model);
+        AlipayFundTransUniTransferResponse alipayFundTransUniTransferResponse = null;
+        try {
+              alipayFundTransUniTransferResponse = certAlipayClient.certificateExecute(request);
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            asyncService.notifyDingDingPaymentError(orderNo, "转账红包异常",
+                    PaymentError.DING_DING_URL, PaymentError.DING_DING_SING, PaymentError.DING_DING_TEL);
+        }
+        if(!alipayFundTransUniTransferResponse.isSuccess()){
+            asyncService.notifyDingDingPaymentError(orderNo, "转账红包异常--------："+alipayFundTransUniTransferResponse.getBody(),
+                    PaymentError.DING_DING_URL, PaymentError.DING_DING_SING, PaymentError.DING_DING_TEL);
+        }
+
+    }
 }

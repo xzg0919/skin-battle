@@ -2,12 +2,14 @@ package com.tzj.collect.entity;
 
 
 import com.baomidou.mybatisplus.annotations.TableName;
+import lombok.experimental.Accessors;
 
 /**
  * 物流企业关联街道表
  * @author wangcan
  *
  */
+@Accessors(chain = true)
 @TableName("sb_company_stree")
 public class CompanyStree extends DataEntity<Long>{
         private Long id;

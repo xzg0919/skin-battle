@@ -42,3 +42,5 @@ alipay:
   public-cert: /collect/alipayCert/alipayCertPublicKey_RSA2.crt
   root-cert: /collect/alipayCert/alipayRootCert.crt
   app-cert: /collect/alipayCert/appCertPublicKey.crt
+
+wxNotifyUrl: http://shoubeics.mayishoubei.com/notify/wx

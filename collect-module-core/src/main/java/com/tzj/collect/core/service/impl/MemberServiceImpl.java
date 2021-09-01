@@ -721,8 +721,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         if(StringUtils.isBlank(oauthByCode.get("openid"))){
             throw new ApiException("解析授权异常");
         }
-        weiXinService.getUserByToken(oauthByCode.get(""),oauthByCode.get("openid"));
-        Member member = this.selectOne(new EntityWrapper<Member>().eq("ali_user_id", oauthByCode.get("openid")));
+       // weiXinService.getUserByToken(oauthByCode.get(""),oauthByCode.get("openid"));
+        Member member = this.selectMemberByAliUserId(  oauthByCode.get("openid"));
         if (null==member){
             member = new Member();
           }

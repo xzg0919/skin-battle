@@ -796,4 +796,21 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
 		}
         return areaList;
     }
+
+	@Override
+	public List<Area> findAreaByCityName(String cityName) {
+
+		Area city =selectOne(new EntityWrapper<Area>().eq("area_name",cityName).eq("del_flag","0"));
+		return  selectList(new EntityWrapper<Area>().eq("parent_id",city.getId()));
+	}
+
+	@Override
+	public List<Area> findstreetByAreaId(Long areaId) {
+		return  selectList(new EntityWrapper<Area>().eq("parent_id",areaId));
+	}
+
+	@Override
+	public List<Area> findAllCity() {
+		return selectList(new EntityWrapper<Area>().eq("type",1).eq("del_flag",0));
+	}
 }
