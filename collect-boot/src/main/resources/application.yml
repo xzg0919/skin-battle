@@ -110,6 +110,7 @@ logging:
     org.springfromework.web: warn
     org.hibernate: error
     com.tzj: info
+    com.tzj.module.easyopen.util.ApiUtil: off
 
 wx:
   pay:
@@ -126,3 +127,9 @@ wx:
 
 #微信异步通知地
 wxNotifyUrl: http://shoubeics.mayishoubei.com/notify/wx
+
+plumelog:
+  appName: collect
+  redisHost: r-uf6crus7stfo0npql7pd.redis.rds.aliyuncs.com
+  redisAuth: sb_123456
+  redisPort: 6379

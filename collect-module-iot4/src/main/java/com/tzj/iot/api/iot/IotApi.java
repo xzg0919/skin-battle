@@ -75,6 +75,8 @@ public class IotApi {
      */
     @Api(name = "smile.pay.initialize", version = "1.0")
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    @SignIgnore
+    @AuthIgnore
     public Object smilePayInitialize(SmilePayBean smilePayBean){
         if (null == smilePayBean || StringUtils.isEmpty(smilePayBean.getMetaInfo())){
             throw new ApiException("参数错误");
@@ -92,6 +94,8 @@ public class IotApi {
      */
     @Api(name = "smile.pay.ali.token", version = "1.0")
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
+    @SignIgnore
+    @AuthIgnore
     public TokenBean saveUserBySmileToken(SmilePayBean smilePayBean){
         ZolozAuthenticationCustomerFtokenQueryResponse zolozAuthenticationCustomerFtokenQueryResponse = aliPayService.customerFtokenQuery(smilePayBean.getFToken());
         if (!StringUtils.isEmpty(zolozAuthenticationCustomerFtokenQueryResponse.getUid())){
@@ -176,6 +180,8 @@ public class IotApi {
      * @return
      */
     @Api(name = "equiment.token.flush", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
     @RequiresPermissions(values = EQUIPMENT_APP_API_COMMON_AUTHORITY)
     public TokenBean flushToken() {
 

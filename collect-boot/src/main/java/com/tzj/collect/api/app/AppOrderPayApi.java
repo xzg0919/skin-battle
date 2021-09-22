@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 订单支付接口
@@ -60,9 +61,9 @@ public class AppOrderPayApi {
             throw new ApiException("未找到Order信息！id:" + orderPayParam.getOrderId());
         }
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
-        String key =  "recyclerDayTimes:"+ DateUtils.formatDate(new Date(), "yyyyMMdd") +":"+recyclers.getId();
-        System.out.println("回收人员限制下单："+key+"："+redisUtil.get(key));
-        if((recyclers.getAllowTimes()!=0 && redisUtil.hasKey(key) && ((Integer)redisUtil.get(key))>=recyclers.getAllowTimes())||recyclers.getAllowTimes()<0){
+        String key = "recyclerDayTimes:" + DateUtils.formatDate(new Date(), "yyyyMMdd") + ":" + recyclers.getId();
+        System.out.println("回收人员限制下单：" + key + "：" + redisUtil.get(key));
+        if ((recyclers.getAllowTimes() != 0 && redisUtil.hasKey(key) && ((Integer) redisUtil.get(key)) >= recyclers.getAllowTimes()) || recyclers.getAllowTimes() < 0) {
             throw new ApiException("超限额，次日恢复");
         }
 
@@ -142,7 +143,10 @@ public class AppOrderPayApi {
             throw new ApiException("不能支付0元");
         }
 
+
         Order order = orderService.selectById(orderPayParam.getOrderId());
+
+
         if (order == null) {
             throw new ApiException("未找到Order信息！id:" + orderPayParam.getOrderId());
         } else if ("2".equals(order.getOrderFrom())) {
@@ -155,6 +159,22 @@ public class AppOrderPayApi {
             orderService.modifyOrderSta(orderBean, mqtt4PushOrder);
             return "确认完成";
         }
+        Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
+        List<String> allowDay = (List<String>) redisUtil.get("allowDay4AllPrice");
+        List<String> limitRecyclers = (List<String>) redisUtil.get("limitRecycler4Price");
+        if (order.getTitle().equals(Order.TitleType.DIGITAL)) {
+
+            //判断今天是否不需要限制
+            if (allowDay==null || !allowDay.contains(DateUtils.getDate())) {
+                //判断金额是否满足
+                if (null != limitRecyclers && limitRecyclers.contains(recyclers.getTel()) &&
+                        orderPayParam.getPrice().compareTo(new BigDecimal("15")) == -1) {
+                    throw new ApiException("支付金额不能小于15元！");
+                }
+            }
+        }
+
+
         Payment payment = paymentService.selectPayByOrderSn(order.getOrderNo());
         if (null != payment) {
             return "该订单已被支付，请勿重复支付";
@@ -168,12 +188,13 @@ public class AppOrderPayApi {
             }
             payment = new Payment();
         }
-        Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
-        String key =  "recyclerDayTimes:"+ DateUtils.formatDate(new Date(), "yyyyMMdd") +":"+recyclers.getId();
-        System.out.println("回收人员限制下单："+key+"："+redisUtil.get(key));
-        if((recyclers.getAllowTimes()!=0 && redisUtil.hasKey(key) && ((Integer)redisUtil.get(key))>=recyclers.getAllowTimes())||recyclers.getAllowTimes()<0){
+
+        String key = "recyclerDayTimes:" + DateUtils.formatDate(new Date(), "yyyyMMdd") + ":" + recyclers.getId();
+        System.out.println("回收人员限制下单：" + key + "：" + redisUtil.get(key));
+        if ((recyclers.getAllowTimes() != 0 && redisUtil.hasKey(key) && ((Integer) redisUtil.get(key)) >= recyclers.getAllowTimes()) || recyclers.getAllowTimes() < 0) {
             throw new ApiException("超限额，次日恢复");
         }
+
         payment.setOrderSn(order.getOrderNo());
         payment.setPrice(orderPayParam.getPrice());
         payment.setRecyclersId(recyclers.getId());
@@ -224,8 +245,6 @@ public class AppOrderPayApi {
     }
 
 
-
-
     /**
      * app微信支付预支付
      *
@@ -240,7 +259,7 @@ public class AppOrderPayApi {
         if (order == null || !order.getDelFlag().equals("0") || order.getStatus().equals(Order.OrderType.COMPLETE) || order.getStatus().equals(Order.OrderType.CANCEL)) {
             throw new ApiException("订单错误");
         }
-        return   JSONObject.toJSON(wxPayService.prePay(orderPayParam.getOpenId(), order.getOrderNo(),
+        return JSONObject.toJSON(wxPayService.prePay(orderPayParam.getOpenId(), order.getOrderNo(),
                 WXConst.FROM_APP, orderPayParam.getTotalFee(), orderPayParam.getPayBody(), PrepayOrder.COLLECT));
 
     }

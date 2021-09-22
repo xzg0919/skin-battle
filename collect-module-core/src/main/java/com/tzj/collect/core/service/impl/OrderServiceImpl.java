@@ -465,6 +465,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
             if (companyCategory != null) {
                 logger.info("订单编号:" + order.getOrderNo() + ", 设置佣金系数： adminCommissions: " + companyCategory.getAdminCommissions() + ", companyCommissions:" + companyCategory.getCompanyCommissions());
+            }else{
+                logger.error("订单编号:" + order.getOrderNo() + "，设置佣金失败！");
             }
             companyCategoryCopy = companyCategory;
             Category category = categoryService.selectById(order.getCategoryId());
@@ -485,6 +487,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
                 if (companyCategory != null) {
                     logger.info("订单编号:" + order.getOrderNo() + ", 设置佣金系数： adminCommissions: " + companyCategory.getAdminCommissions() + ", companyCommissions:" + companyCategory.getCompanyCommissions());
+                }else{
+                    logger.error("订单编号:" + order.getOrderNo() + "，设置佣金失败！");
                 }
                 if ("0".equals(order.getIsCash())) {
                     commissionPriceMap.put(category.getName(), companyCategory == null ? 0 : companyCategory.getCompanyCommissions());
@@ -511,26 +515,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         boolean updateFlag = this.updateById(order);
         try {
             if ("1".equals(order.getTitle().getValue().toString())) {
-                DingTalkNotify.sendMessage("时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
+                logger.info("时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
                         "，订单类型：家电，订单编号:" + order.getOrderNo() + "，完成价格：" + order.getAchPrice() +
                         "，实收佣金：" + order.getCommissionsPrice() + "，设置的佣金数：" + (companyCategoryCopy == null ? 0 : companyCategoryCopy.getAdminCommissions()) +
-                        "，更新状态：" + (updateFlag ? "成功" : "失败"), DingTalkNotify.WebHook.commissionPrice.getWebHook());
+                        "，更新状态：" + (updateFlag ? "成功" : "失败"));
             } else if ("2".equals(order.getTitle().getValue().toString())) {
                 StringBuffer content = new StringBuffer();
                 for (Map.Entry<String, Object> entry : commissionPriceMap.entrySet()) {
                     content.append("品类：" + entry.getKey() + "，设置的佣金：" + entry.getValue() + ",");
                 }
-                DingTalkNotify.sendMessage("时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
+                logger.info("时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
                         "，订单类型：生活垃圾，订单编号:" + order.getOrderNo() + "，完成价格：" + order.getAchPrice() +
                         "，实收佣金：" + order.getCommissionsPrice() + "，" + content +
-                        "，更新状态：" + (updateFlag ? "成功" : "失败"), DingTalkNotify.WebHook.commissionPrice.getWebHook());
+                        "，更新状态：" + (updateFlag ? "成功" : "失败"));
             }
         } catch (Exception e) {
             e.printStackTrace();
             ArrayList<String> atMobiles = new ArrayList<>();
             atMobiles.add("18601780883");
-            DingTalkNotify.sendTextMessageWithAtAndAtAll("钉钉通知异常：时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
-                    "，订单类型：家电/生活垃圾，订单编号:" + order.getOrderNo(), atMobiles, false, DingTalkNotify.WebHook.commissionPrice.getWebHook());
+            logger.info("钉钉通知异常：时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
+                    "，订单类型：家电/生活垃圾，订单编号:" + order.getOrderNo());
         }
         return order.getCommissionsPrice().setScale(2, BigDecimal.ROUND_DOWN);
     }
@@ -5342,8 +5346,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public List<Order> getOrders() {
-        return this.selectList(new EntityWrapper<Order>().eq("status_", "3")
-                .eq("del_flag", "0").isNull("mysl_order_id").isNotNull("mysl_param").gt("complete_date", "2021-08-01 00:00:00"));
+        return this.selectList(new EntityWrapper<Order>().eq("status_", "3").eq("is_mysl", "1")
+                .eq("del_flag", "0").isNull("mysl_order_id").gt("complete_date", "2021-08-27 00:00:00"));
     }
 
     @Transactional

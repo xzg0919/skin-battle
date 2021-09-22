@@ -134,6 +134,7 @@ public class IotApi {
             //检查是否是奥图的机器
             CompanyEquipment companyEquipment = companyEquipmentService.selectOne(new EntityWrapper<CompanyEquipment>().eq("equipment_from", "1").eq("hardware_code",equipmentCode));
             if (null!=companyEquipment){
+                member=memberService.findMemberByAliId(member.getAliUserId());
                 redisUtil.set(equipmentCode,member,30);
                 map.put("msg", MessageCode.SUCCESS_OPEN.getValue());
                 map.put("status", MessageCode.SUCCESS_OPEN.getKey());

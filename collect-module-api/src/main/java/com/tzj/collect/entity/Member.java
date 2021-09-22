@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 
 import java.util.Date;
@@ -16,6 +19,7 @@ import java.util.Date;
  **/
 @TableName("sb_member")
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends  DataEntity<Long>{
     private static final long serialVersionUID = -6405467088491154588L;
     @TableId(value = "id", type = IdType.AUTO)

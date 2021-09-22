@@ -133,3 +133,9 @@ wx:
 
 #微信异步通知地
 wxNotifyUrl: https://jlopen.mayishoubei.com/notify/wx
+
+plumelog:
+  appName: IOT4
+  redisHost: r-uf6crus7stfo0npql7pd.redis.rds.aliyuncs.com
+  redisAuth: sb_123456
+  redisPort: 6379

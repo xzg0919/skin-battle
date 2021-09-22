@@ -334,6 +334,11 @@
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-pay</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.plumelog</groupId>
+            <artifactId>plumelog-logback</artifactId>
+        </dependency>
     </dependencies>
     <properties>
         <timestamp>${maven.build.timestamp}</timestamp>

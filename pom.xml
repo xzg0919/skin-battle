@@ -265,7 +265,16 @@
                 <artifactId>weixin-java-pay</artifactId>
                 <version>3.7.0</version>
             </dependency>
+
+
+            <dependency>
+                <groupId>com.plumelog</groupId>
+                <artifactId>plumelog-logback</artifactId>
+                <version>3.4.2</version>
+            </dependency>
         </dependencies>
+
+
         <!-- nacos + springboot + nacos end -->
     </dependencyManagement>
 
