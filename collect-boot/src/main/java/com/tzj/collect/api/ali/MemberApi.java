@@ -310,6 +310,17 @@ public class MemberApi {
 		return memberService.saveWxMsgByCode(memberBean);
 	}
 
+	/**
+	 * 校验用户的手机号
+	 * @author 王灿
+	 * @param
 
-
+	@Api(name = "member.updateMemberTel", version = "1.0")
+	@SignIgnore
+	@RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+	public Object updateMemberTel(MemberBean memberBean) {
+		Member member = MemberUtils.getMember();
+		return memberService.updateMemberTel(member.getAliUserId(),memberBean.getMobile(),memberBean.getCaptcha(),memberBean.getNetNo());
+	}
+	 */
 }

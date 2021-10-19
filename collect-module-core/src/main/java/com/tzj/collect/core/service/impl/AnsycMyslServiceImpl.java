@@ -65,6 +65,12 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
                     order.setMyslParam(JSON.toJSONString(response.getParams()));
                     orderService.updateById(order);
                 } else {
+                    if(response.getSubMsg().equals("参数有误已发放，无需再次发放！")){
+                        order.setMyslOrderId("1111");
+                        order.setMyslParam(JSON.toJSONString(response.getParams()));
+                        orderService.updateById(order);
+                        return null;
+                    }
                     ++times;
                     System.out.println("蚂蚁能量调用失败！！---递归调用次数"+times);
                     //重复调用不超过3次

@@ -457,7 +457,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Transactional
     @Override
-    public Object getCommissionsPriceByOrderId(OrderBean orderbean) {
+    public Object getCommissionsPriceByOrderId(OrderBean orderbean,Integer count) {
         Order order = this.selectById(orderbean.getId());
         HashMap<String, Object> commissionPriceMap = new HashMap();
         CompanyCategory companyCategoryCopy = new CompanyCategory();
@@ -465,7 +465,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
             if (companyCategory != null) {
                 logger.info("订单编号:" + order.getOrderNo() + ", 设置佣金系数： adminCommissions: " + companyCategory.getAdminCommissions() + ", companyCommissions:" + companyCategory.getCompanyCommissions());
-            }else{
+            } else {
                 logger.error("订单编号:" + order.getOrderNo() + "，设置佣金失败！");
             }
             companyCategoryCopy = companyCategory;
@@ -487,7 +487,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
                 if (companyCategory != null) {
                     logger.info("订单编号:" + order.getOrderNo() + ", 设置佣金系数： adminCommissions: " + companyCategory.getAdminCommissions() + ", companyCommissions:" + companyCategory.getCompanyCommissions());
-                }else{
+                } else {
                     logger.error("订单编号:" + order.getOrderNo() + "，设置佣金失败！");
                 }
                 if ("0".equals(order.getIsCash())) {
@@ -512,30 +512,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setBackCommissionsPrice(backCommissionsPrice);
             order.setCommissionsPrice(commissionsPrice.setScale(2, BigDecimal.ROUND_DOWN));
         }
-        boolean updateFlag = this.updateById(order);
-        try {
-            if ("1".equals(order.getTitle().getValue().toString())) {
-                logger.info("时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
-                        "，订单类型：家电，订单编号:" + order.getOrderNo() + "，完成价格：" + order.getAchPrice() +
-                        "，实收佣金：" + order.getCommissionsPrice() + "，设置的佣金数：" + (companyCategoryCopy == null ? 0 : companyCategoryCopy.getAdminCommissions()) +
-                        "，更新状态：" + (updateFlag ? "成功" : "失败"));
-            } else if ("2".equals(order.getTitle().getValue().toString())) {
-                StringBuffer content = new StringBuffer();
-                for (Map.Entry<String, Object> entry : commissionPriceMap.entrySet()) {
-                    content.append("品类：" + entry.getKey() + "，设置的佣金：" + entry.getValue() + ",");
-                }
-                logger.info("时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
-                        "，订单类型：生活垃圾，订单编号:" + order.getOrderNo() + "，完成价格：" + order.getAchPrice() +
-                        "，实收佣金：" + order.getCommissionsPrice() + "，" + content +
-                        "，更新状态：" + (updateFlag ? "成功" : "失败"));
+        boolean updateFlag = super.updateById(order);
+        if ("1".equals(order.getTitle().getValue().toString())) {
+            logger.info("时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
+                    "，订单类型：家电，订单编号:" + order.getOrderNo() + "，完成价格：" + order.getAchPrice() +
+                    "，实收佣金：" + order.getCommissionsPrice() + "，设置的佣金数：" + (companyCategoryCopy == null ? 0 : companyCategoryCopy.getAdminCommissions()) +
+                    "，更新状态：" + (updateFlag ? "成功" : "失败"));
+        } else if ("2".equals(order.getTitle().getValue().toString())) {
+            StringBuffer content = new StringBuffer();
+            for (Map.Entry<String, Object> entry : commissionPriceMap.entrySet()) {
+                content.append("品类：" + entry.getKey() + "，设置的佣金：" + entry.getValue() + ",");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            ArrayList<String> atMobiles = new ArrayList<>();
-            atMobiles.add("18601780883");
-            logger.info("钉钉通知异常：时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
-                    "，订单类型：家电/生活垃圾，订单编号:" + order.getOrderNo());
+            logger.info("时间：" + DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss") +
+                    "，订单类型：生活垃圾，订单编号:" + order.getOrderNo() + "，完成价格：" + order.getAchPrice() +
+                    "，实收佣金：" + order.getCommissionsPrice() + "，" + content +
+                    "，更新状态：" + (updateFlag ? "成功" : "失败"));
         }
+
+        if(!updateFlag){
+            if(count <5){
+                count ++;
+                this.getCommissionsPriceByOrderId(orderbean ,count);
+            }else{
+                throw new ApiException("订单更新失败，请重新操作！");
+            }
+        }
+
         return order.getCommissionsPrice().setScale(2, BigDecimal.ROUND_DOWN);
     }
 
@@ -5347,7 +5349,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public List<Order> getOrders() {
         return this.selectList(new EntityWrapper<Order>().eq("status_", "3").eq("is_mysl", "1")
-                .eq("del_flag", "0").isNull("mysl_order_id").gt("complete_date", "2021-08-27 00:00:00"));
+                .eq("del_flag", "0").isNull("mysl_order_id").gt("complete_date", "2021-10-10 00:00:00"));
     }
 
     @Transactional
@@ -5357,9 +5359,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public void cancelOrder(String orderNo) {
-
+    @Transactional
+    public boolean updateById(Order order) {
+        boolean b = super.updateById(order);
+        if(!b ) {
+           throw new ApiException("操作失败，请重试");
+       }
+       return true;
     }
+
+
+
+
 
 
 }

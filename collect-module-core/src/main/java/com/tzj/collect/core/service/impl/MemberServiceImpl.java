@@ -77,6 +77,10 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     WeiXinService weiXinService;
     @Autowired
     BlackListService blackListService;
+    @Autowired
+    MessageService messageService;
+
+
 
     @Override
     public Member findMemberByAliId(String aliMemberId) {
@@ -777,6 +781,25 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
          return true;
         }
         return false;
+    }
+
+
+
+    @Override
+    @Transactional
+    public Object updateMemberTel(String aliUserId, String mobile, String captcha, String netNo) {
+        boolean bool = messageService.validMessage(mobile, captcha);
+        if (!bool){
+            throw new RuntimeException("验证码错误");
+        }
+        Member member = this.selectMemberByAliUserId(aliUserId);
+        if (null!=member){
+            member.setMobile(mobile);
+            this.updateById(member);
+        }
+
+
+        return "操作成功";
     }
 
 }

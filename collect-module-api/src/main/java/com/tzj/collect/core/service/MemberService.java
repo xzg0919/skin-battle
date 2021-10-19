@@ -121,4 +121,7 @@ public interface MemberService extends IService<Member>{
     Object saveWxMsgByCode(MemberBean memberBean);
 
     boolean checkBlackList(String aliUserId, Order.TitleType titleType);
+
+    Object updateMemberTel(String aliUserId,String mobile,String captcha,String netNo);
+
 }

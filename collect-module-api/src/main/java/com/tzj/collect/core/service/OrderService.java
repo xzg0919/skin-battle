@@ -21,8 +21,7 @@ import com.tzj.collect.entity.Order;
 import com.tzj.collect.entity.Recyclers;
 import com.tzj.collect.entity.VoucherMember;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Async;
+
 
 import java.util.List;
 import java.util.Map;
@@ -62,7 +61,7 @@ public interface OrderService extends IService<Order> {
 
 	Object getPriceByOrderId(OrderBean orderbean,MqttClient mqttClient);
 
-	Object getCommissionsPriceByOrderId(OrderBean orderbean);
+	Object getCommissionsPriceByOrderId(OrderBean orderbean,Integer count);
 	/**
 	 * 回收员无需重量提交订单其他信息
 	 * @param orderbean
@@ -474,5 +473,7 @@ public interface OrderService extends IService<Order> {
 
 	void cancelOrderBatch(String companyId, String endDate);
 
-	void cancelOrder(String orderNo);
+	@Override
+	boolean updateById(Order order);
+
 }

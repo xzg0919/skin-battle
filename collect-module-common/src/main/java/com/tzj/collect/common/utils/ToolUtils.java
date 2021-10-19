@@ -1,5 +1,7 @@
 package com.tzj.collect.common.utils;
 
+import com.tzj.module.common.utils.DateUtils;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -90,7 +92,36 @@ public class ToolUtils {
 		return LocalDate.now().getYear()+""+s;
 	}
 
+
+	/**
+	 * 判断时间是否在时间段内
+	 * @param date
+	 * @param timeBefore
+	 * @param timeAfter
+	 * @return
+	 */
+	public  static  boolean checkTime(Date date,String timeBefore,String timeAfter){
+		Calendar timeBeforeCal = Calendar.getInstance();
+		Calendar timeAfterCal = Calendar.getInstance();
+		Calendar currentTime = Calendar.getInstance();
+		currentTime.setTime(date);
+		timeBeforeCal.set(Calendar.YEAR,currentTime.get(Calendar.YEAR));
+		timeBeforeCal.set(Calendar.MONTH,currentTime.get(Calendar.MONTH));
+		timeBeforeCal.set(Calendar.DAY_OF_MONTH,currentTime.get(Calendar.DAY_OF_MONTH));
+		timeBeforeCal.set(Calendar.HOUR_OF_DAY,Integer.parseInt(timeBefore.split(":")[0]));
+		timeBeforeCal.set(Calendar.MINUTE,Integer.parseInt(timeBefore.split(":")[1]));
+		timeBeforeCal.set(Calendar.SECOND,Integer.parseInt(timeBefore.split(":")[2]));
+
+		timeAfterCal.set(Calendar.YEAR,currentTime.get(Calendar.YEAR));
+		timeAfterCal.set(Calendar.MONTH,currentTime.get(Calendar.MONTH));
+		timeAfterCal.set(Calendar.DAY_OF_MONTH,currentTime.get(Calendar.DAY_OF_MONTH));
+		timeAfterCal.set(Calendar.HOUR_OF_DAY,Integer.parseInt(timeAfter.split(":")[0]));
+		timeAfterCal.set(Calendar.MINUTE,Integer.parseInt(timeAfter.split(":")[1]));
+		timeAfterCal.set(Calendar.SECOND,Integer.parseInt(timeAfter.split(":")[2]));
+		return currentTime.after(timeBeforeCal) && currentTime.before(timeAfterCal);
+	}
+
 	public static void main(String[] args) {
-		System.out.println(getAliUserIdByOrderNo("2088522442306921"));
+		System.out.println(checkTime(new Date(),"14:01:00","14:10:00"));
 	}
 }

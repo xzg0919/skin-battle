@@ -278,16 +278,6 @@ public class LjAdminController {
     }
 
 
-    @PostMapping("cancelOrder")
-    public @ResponseBody
-    String cancelOrder(LjAdminBean ljAdminBean) {
-        try {
-            orderService.cancelOrder(   ljAdminBean.getOrderNo());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "订单取消失败";
-        }
-        return "订单取消成功";
-    }
+
 
 }

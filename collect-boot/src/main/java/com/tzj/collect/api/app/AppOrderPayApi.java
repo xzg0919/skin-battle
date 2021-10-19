@@ -1,11 +1,15 @@
 package com.tzj.collect.api.app;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.response.AlipayOpenSmsgDataSetResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.api.commom.constant.WXConst;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.util.JedisUtil;
+import com.tzj.collect.common.util.RecyclersUtils;
+import com.tzj.collect.core.handler.OrderCompleteHandler;
+import com.tzj.collect.core.handler.OrderHandler;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.param.app.OrderPayParam;
 import com.tzj.collect.core.service.*;
@@ -47,6 +51,8 @@ public class AppOrderPayApi {
 
     @Autowired
     private WXPayService wxPayService;
+     @Autowired
+    OrderHandler orderCompleteHandler;
 
     @Api(name = "app.order.pay", version = "1.0")
     public String orderPay(OrderPayParam orderPayParam) {
@@ -60,20 +66,15 @@ public class AppOrderPayApi {
         if (order == null) {
             throw new ApiException("未找到Order信息！id:" + orderPayParam.getOrderId());
         }
-        Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
-        String key = "recyclerDayTimes:" + DateUtils.formatDate(new Date(), "yyyyMMdd") + ":" + recyclers.getId();
-        System.out.println("回收人员限制下单：" + key + "：" + redisUtil.get(key));
-        if ((recyclers.getAllowTimes() != 0 && redisUtil.hasKey(key) && ((Integer) redisUtil.get(key)) >= recyclers.getAllowTimes()) || recyclers.getAllowTimes() < 0) {
-            throw new ApiException("超限额，次日恢复");
-        }
 
+        orderCompleteHandler.beforeComplete(Long.parseLong(order.getRecyclerId().toString()));
         Payment payment = paymentService.selectByOrderSn(order.getOrderNo());
 
         if (payment == null) {
             payment = new Payment();
             payment.setOrderSn(order.getOrderNo());
             payment.setPrice(orderPayParam.getPrice());
-            payment.setRecyclersId(recyclers.getId());
+            payment.setRecyclersId(Long.parseLong(order.getRecyclerId().toString()));
             payment.setAliUserId(order.getAliUserId());
             payment.setStatus(Payment.STATUS_UNPAY);
             paymentService.insert(payment);
@@ -109,7 +110,7 @@ public class AppOrderPayApi {
             if (!a.equals(b)) {
                 payment.setOrderSn(order.getOrderNo());
                 payment.setPrice(orderPayParam.getPrice());
-                payment.setRecyclersId(recyclers.getId());
+                payment.setRecyclersId(Long.parseLong(order.getRecyclerId().toString()));
                 payment.setAliUserId(order.getAliUserId());
                 payment.setStatus(Payment.STATUS_UNPAY);
                 paymentService.updateById(payment);
@@ -159,6 +160,7 @@ public class AppOrderPayApi {
             orderService.modifyOrderSta(orderBean, mqtt4PushOrder);
             return "确认完成";
         }
+
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
         List<String> allowDay = (List<String>) redisUtil.get("allowDay4AllPrice");
         List<String> limitRecyclers = (List<String>) redisUtil.get("limitRecycler4Price");
@@ -189,12 +191,7 @@ public class AppOrderPayApi {
             payment = new Payment();
         }
 
-        String key = "recyclerDayTimes:" + DateUtils.formatDate(new Date(), "yyyyMMdd") + ":" + recyclers.getId();
-        System.out.println("回收人员限制下单：" + key + "：" + redisUtil.get(key));
-        if ((recyclers.getAllowTimes() != 0 && redisUtil.hasKey(key) && ((Integer) redisUtil.get(key)) >= recyclers.getAllowTimes()) || recyclers.getAllowTimes() < 0) {
-            throw new ApiException("超限额，次日恢复");
-        }
-
+        orderCompleteHandler.beforeComplete(recyclers.getId());
         payment.setOrderSn(order.getOrderNo());
         payment.setPrice(orderPayParam.getPrice());
         payment.setRecyclersId(recyclers.getId());
