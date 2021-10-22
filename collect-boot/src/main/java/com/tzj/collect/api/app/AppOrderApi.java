@@ -134,9 +134,6 @@ public class AppOrderApi {
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public boolean modifyOrderSta(OrderBean orderBean) {
         orderBean.setRecyclerId(Integer.valueOf(this.getRecycler().getId().toString()));
-        if (StringUtils.isNotBlank(orderBean.getStatus()) && Order.OrderType.COMPLETE.getValue().toString().equals(orderBean.getStatus())) {
-            orderCompleteHandler.beforeComplete(this.getRecycler().getId());
-        }
         return orderService.modifyOrderSta(orderBean, mqtt4PushOrder);
     }
 
@@ -169,7 +166,7 @@ public class AppOrderApi {
     @Api(name = "app.order.getPriceByOrderId", version = "1.0")
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public Object getPriceByOrderId(OrderBean orderBean) {
-        orderCompleteHandler.beforeComplete(RecyclersUtils.getRecycler().getId());
+
         return orderService.getPriceByOrderId(orderBean, mqtt4PushOrder);
     }
 

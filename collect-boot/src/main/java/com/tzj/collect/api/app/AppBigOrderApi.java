@@ -97,7 +97,7 @@ public class AppBigOrderApi {
     @Api(name = "app.bigOrder.saveBigOrderPrice", version = "1.0")
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public String saveBigOrderPrice(OrderBean orderBean){
-        orderCompleteHandler.beforeComplete(RecyclersUtils.getRecycler().getId());
+
         return orderService.saveBigOrderPrice(orderBean,mqtt4PushOrder);
     }
 

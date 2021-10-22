@@ -176,55 +176,72 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
             }
         }
         AlipayFundTransUniTransferResponse response = null;
-        try {
-            response = this.aliPayTransfer(payment.getOrderSn(), aliUserId, payment.getTransferPrice(), payeeType);
-            if ((response.isSuccess() && "10000".equals(response.getCode())) || payment.getTransferPrice().compareTo(BigDecimal.ZERO) == 0) {
-                System.out.println("转账成功，更改信息");
-                payment1.setStatus(Payment.STATUS_TRANSFER);
-                if (("1".equals(order.getIsMysl()) && (order.getStatus() + "").equals(Order.OrderType.ALREADY + "")) || order.getIsScan().equals("1")) {
-                    //给用户增加蚂蚁能量
-                    orderService.myslOrderData(order.getId().toString());
-                }
-                //修改订单状态
-                orderBean.setId(order.getId().intValue());
-                orderBean.setStatus("3");
-                orderBean.setAmount(order.getGreenCount());
-                orderService.modifyOrderByPayment(orderBean, payment.getVoucherMember());
-            } else {
-                System.out.println("转账失败，保存错误信息");
-                paymentError.setReason(response.getBody());
-                paymentError.setTitle(response.getSubMsg());
-                paymentError.setNotifyType(response.getCode());
-                paymentError.setSendUser(order.getTel());
-                paymentError.setReceiveUser(order.getRecyclerId().toString());
-                paymentError.setOrderSn(order.getOrderNo());
-                //如果是账号有问题无法收款(40004)直接取消订单并返还所有钱到回收人员
-                if (!(order.getTitle() + "").equals(Order.TitleType.BIGTHING + "") && "40004".equals(response.getCode()) && order.getStatus() == Order.OrderType.ALREADY) {
-                    String reOutBizNo = order.getOrderNo() + payment.getId();
-                    AlipayFundTransUniTransferResponse responseback = this.aliPayTransfer(reOutBizNo, payment.getBuyerId(), payment.getPrice(), "ALIPAY_USER_ID");
-                    if ((responseback.isSuccess() && "10000".equals(responseback.getCode()))) {
-                        //返还金额到回收人员支付宝订单号
-                        payment1.setUpdateBy(reOutBizNo);
-                        order.setStatus(Order.OrderType.CANCEL);
-                        order.setRemarks("收款账号有问题无法收款，已取消订单！！");
-                        orderService.updateById(order);
-                    }
-                }
-                paymentErrorService.insertOrUpdate(paymentError);
-                asyncService.notifyDingDingPaymentError(order.getOrderNo(), response.getBody(), PaymentError.DING_DING_URL, PaymentError.DING_DING_SING, PaymentError.DING_DING_TEL);
+
+        if (payment.getTransferPrice().compareTo(BigDecimal.ZERO) == 0) {
+            payment1.setStatus(Payment.STATUS_TRANSFER);
+            if (("1".equals(order.getIsMysl()) && (order.getStatus() + "").equals(Order.OrderType.ALREADY + "")) || order.getIsScan().equals("1")) {
+                //给用户增加蚂蚁能量
+                orderService.myslOrderData(order.getId().toString());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (!(response.isSuccess() || "10000".equals(response.getCode()))) {
-                order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
-                orderService.updateById(order);
-            }
+            //修改订单状态
+            orderBean.setId(order.getId().intValue());
+            orderBean.setStatus("3");
+            orderBean.setAmount(order.getGreenCount());
+            orderService.modifyOrderByPayment(orderBean, payment.getVoucherMember());
             if (Order.OrderType.CANCEL.equals(order.getStatus())) {
                 payment1.setDelFlag("1");
             }
-            payment1.setRemarks(response.getSubMsg());
             this.updateById(payment1);
+        } else {
+            try {
+                response = this.aliPayTransfer(payment.getOrderSn(), aliUserId, payment.getTransferPrice(), payeeType);
+                if ((response.isSuccess() && "10000".equals(response.getCode()))) {
+                    payment1.setStatus(Payment.STATUS_TRANSFER);
+                    if (("1".equals(order.getIsMysl()) && (order.getStatus() + "").equals(Order.OrderType.ALREADY + "")) || order.getIsScan().equals("1")) {
+                        //给用户增加蚂蚁能量
+                        orderService.myslOrderData(order.getId().toString());
+                    }
+                    //修改订单状态
+                    orderBean.setId(order.getId().intValue());
+                    orderBean.setStatus("3");
+                    orderBean.setAmount(order.getGreenCount());
+                    orderService.modifyOrderByPayment(orderBean, payment.getVoucherMember());
+                } else {
+                    System.out.println("转账失败，保存错误信息");
+                    paymentError.setReason(response.getBody());
+                    paymentError.setTitle(response.getSubMsg());
+                    paymentError.setNotifyType(response.getCode());
+                    paymentError.setSendUser(order.getTel());
+                    paymentError.setReceiveUser(order.getRecyclerId().toString());
+                    paymentError.setOrderSn(order.getOrderNo());
+                    //如果是账号有问题无法收款(40004)直接取消订单并返还所有钱到回收人员
+                    if (!(order.getTitle() + "").equals(Order.TitleType.BIGTHING + "") && "40004".equals(response.getCode()) && order.getStatus() == Order.OrderType.ALREADY) {
+                        String reOutBizNo = order.getOrderNo() + payment.getId();
+                        AlipayFundTransUniTransferResponse responseback = this.aliPayTransfer(reOutBizNo, payment.getBuyerId(), payment.getPrice(), "ALIPAY_USER_ID");
+                        if ((responseback.isSuccess() && "10000".equals(responseback.getCode()))) {
+                            //返还金额到回收人员支付宝订单号
+                            payment1.setUpdateBy(reOutBizNo);
+                            order.setStatus(Order.OrderType.CANCEL);
+                            order.setRemarks("收款账号有问题无法收款，已取消订单！！");
+                            orderService.updateById(order);
+                        }
+                    }
+                    paymentErrorService.insertOrUpdate(paymentError);
+                    asyncService.notifyDingDingPaymentError(order.getOrderNo(), response.getBody(), PaymentError.DING_DING_URL, PaymentError.DING_DING_SING, PaymentError.DING_DING_TEL);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (!(response.isSuccess() || "10000".equals(response.getCode()))) {
+                    order.setDiscountPrice(new BigDecimal(orderBean.getDiscountPrice()));
+                    orderService.updateById(order);
+                }
+                if (Order.OrderType.CANCEL.equals(order.getStatus())) {
+                    payment1.setDelFlag("1");
+                }
+                payment1.setRemarks(response.getSubMsg());
+                this.updateById(payment1);
+            }
         }
     }
 
@@ -232,31 +249,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
     public static void main(String[] args) throws Exception {
 
 
-        /*CertAlipayRequest certAlipayRequest = new CertAlipayRequest();
-        certAlipayRequest.setServerUrl("https://openapi.alipay.com/gateway.do");  //gateway:支付宝网关（固定）https://openapi.alipay.com/gateway.do
-        certAlipayRequest.setAppId(ALI_APPID);  //APPID 即创建应用后生成,详情见创建应用并获取 APPID
-        certAlipayRequest.setPrivateKey(ALI_PAY_KEY);  //开发者应用私钥，由开发者自己生成
-        certAlipayRequest.setFormat("json");  //参数返回格式，只支持 json 格式
-        certAlipayRequest.setCharset("UTF-8");  //请求和签名使用的字符编码格式，支持 GBK和 UTF-8
-        certAlipayRequest.setSignType("RSA2");  //商户生成签名字符串所使用的签名算法类型，目前支持 RSA2 和 RSA，推荐商家使用 RSA2。
-        certAlipayRequest.setCertPath(appCert); //应用公钥证书路径（app_cert_path 文件绝对路径）
-        certAlipayRequest.setAlipayPublicCertPath(publicCert); //支付宝公钥证书文件路径（alipay_cert_path 文件绝对路径）
-        certAlipayRequest.setRootCertPath(rootCert);  //支付宝CA根证书文件路径（alipay_root_cert_path 文件绝对路径）
-        AlipayClient alipayClient = new DefaultAlipayClient(certAlipayRequest);
-        AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
-        AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
-        model.setOutBizNo("outBizNo21312412421233");
-        model.setProductCode("TRANS_ACCOUNT_NO_PWD");
-        Participant payeeInfo =new Participant();
-        payeeInfo.setIdentity("2088322039337350");
-        payeeInfo.setIdentityType("ALIPAY_USER_ID");
-        model.setTransAmount("0.11");
-        model.setOrderTitle("垃圾分类回收(收呗)货款");
-        model.setRemark("垃圾分类回收(收呗)货款");
-        model.setPayeeInfo(payeeInfo);
-        model.setBizScene("DIRECT_TRANSFER");
-        request.setBizModel(model);
-        alipayClient.certificateExecute(request);*/
+        System.out.println(new BigDecimal("0.00").compareTo(BigDecimal.ZERO) == 0);
 
     }
 
@@ -466,14 +459,14 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         request.setBizModel(model);
         AlipayFundTransUniTransferResponse alipayFundTransUniTransferResponse = null;
         try {
-              alipayFundTransUniTransferResponse = certAlipayClient.certificateExecute(request);
+            alipayFundTransUniTransferResponse = certAlipayClient.certificateExecute(request);
         } catch (AlipayApiException e) {
             e.printStackTrace();
             asyncService.notifyDingDingPaymentError(orderNo, "转账红包异常",
                     PaymentError.DING_DING_URL, PaymentError.DING_DING_SING, PaymentError.DING_DING_TEL);
         }
-        if(!alipayFundTransUniTransferResponse.isSuccess()){
-            asyncService.notifyDingDingPaymentError(orderNo, "转账红包异常--------："+alipayFundTransUniTransferResponse.getBody(),
+        if (!alipayFundTransUniTransferResponse.isSuccess()) {
+            asyncService.notifyDingDingPaymentError(orderNo, "转账红包异常--------：" + alipayFundTransUniTransferResponse.getBody(),
                     PaymentError.DING_DING_URL, PaymentError.DING_DING_SING, PaymentError.DING_DING_TEL);
         }
 

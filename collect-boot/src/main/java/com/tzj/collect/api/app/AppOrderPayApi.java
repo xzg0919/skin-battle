@@ -67,7 +67,8 @@ public class AppOrderPayApi {
             throw new ApiException("未找到Order信息！id:" + orderPayParam.getOrderId());
         }
 
-        orderCompleteHandler.beforeComplete(Long.parseLong(order.getRecyclerId().toString()));
+        orderCompleteHandler.beforeComplete(order.getRecyclerId()==null?null:Long.parseLong(order.getRecyclerId().toString())
+                ,order.getTitle(),order.getAliUserId());
         Payment payment = paymentService.selectByOrderSn(order.getOrderNo());
 
         if (payment == null) {
@@ -191,7 +192,7 @@ public class AppOrderPayApi {
             payment = new Payment();
         }
 
-        orderCompleteHandler.beforeComplete(recyclers.getId());
+        orderCompleteHandler.beforeComplete(recyclers.getId(),order.getTitle(),order.getAliUserId());
         payment.setOrderSn(order.getOrderNo());
         payment.setPrice(orderPayParam.getPrice());
         payment.setRecyclersId(recyclers.getId());

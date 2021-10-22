@@ -23,7 +23,9 @@ import com.tzj.collect.common.constant.MiniTemplatemessageUtil;
 import com.tzj.collect.common.notify.DingTalkNotify;
 import com.tzj.collect.common.push.PushUtils;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.common.utils.ToolUtils;
+import com.tzj.collect.core.handler.OrderHandler;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.admin.VoucherBean;
@@ -181,6 +183,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private JedisPool jedisPool;
     @Autowired
     SmsBlackListService smsBlackListService;
+
+    @Autowired
+    OrderHandler orderCompleteHandler;
 
     protected final static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
@@ -546,6 +551,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Object getPriceByOrderId(OrderBean orderbean, MqttClient mqtt4PushOrder) {
         Order order = this.selectById(orderbean.getId());
+        orderCompleteHandler.beforeComplete(order.getRecyclerId()==null?null:Long.parseLong(order.getRecyclerId().toString())
+                ,order.getTitle(),order.getAliUserId());
         order.setAchPrice(new BigDecimal(orderbean.getAchPrice()));
         this.updateById(order);
 
@@ -2459,6 +2466,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     } else {
                         throw new ApiException("该订单已被操作，请刷新页面查看状态");
                     }
+                    orderCompleteHandler.beforeComplete(order.getRecyclerId()==null?null:Long.parseLong(order.getRecyclerId().toString())
+                            ,order.getTitle(),order.getAliUserId());
                     order.setCompleteDate(new Date());
                     if (StringUtils.isNotBlank(orderBean.getAchPrice())) {
                         order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
@@ -3752,6 +3761,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public String saveBigOrderPrice(OrderBean orderBean, MqttClient mqtt4PushOrder) {
         Order order = orderService.selectById(orderBean.getId());
+        orderCompleteHandler.beforeComplete(order.getRecyclerId()==null?null:Long.parseLong(order.getRecyclerId().toString())
+                ,order.getTitle(),order.getAliUserId());
         CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
         Category categorys = categoryService.selectById(order.getCategoryId());
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
@@ -5348,8 +5359,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public List<Order> getOrders() {
-        return this.selectList(new EntityWrapper<Order>().eq("status_", "3").eq("is_mysl", "1")
-                .eq("del_flag", "0").isNull("mysl_order_id").gt("complete_date", "2021-10-10 00:00:00"));
+        return this.selectList(new EntityWrapper<Order>().eq("status_", "3")
+                .eq("del_flag", "0").isNull("mysl_order_id").gt("complete_date", "2021-10-19 00:00:00"));
     }
 
     @Transactional

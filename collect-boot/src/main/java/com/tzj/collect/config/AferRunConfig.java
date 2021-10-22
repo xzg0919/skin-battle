@@ -59,6 +59,8 @@ public class AferRunConfig implements ApplicationRunner {
             redisUtil.set("limitCompleteRecyclers", limitCompleteRecyclers);
         }
 
+        //用户限制每日完成订单数量
+         redisUtil.set("userLimitCompleteCount", 3);
 
         log.info("启动参数新增完成");
 
