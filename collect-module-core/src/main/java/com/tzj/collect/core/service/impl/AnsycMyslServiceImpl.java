@@ -17,8 +17,10 @@ import com.tzj.collect.common.mq.RocketMqConst;
 import com.tzj.collect.core.param.mysl.MyslBean;
 import com.tzj.collect.core.param.mysl.MyslItemBean;
 import com.tzj.collect.core.service.AnsycMyslService;
+import com.tzj.collect.core.service.MyslRequestLogService;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.entity.Area;
+import com.tzj.collect.entity.MyslRequestLog;
 import com.tzj.collect.entity.Order;
 import com.tzj.collect.common.notify.DingTalkNotify;
 import com.tzj.module.api.annotation.AuthIgnore;
@@ -42,6 +44,8 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
     private OrderService orderService;
     @Autowired
     private ApplicaInit applicaInit;
+    @Autowired
+    MyslRequestLogService myslRequestLogService;
 
     @Override
     public AlipayEcoActivityRecycleSendResponse updateForest(String orderId,String myslParam, Integer times){
@@ -51,6 +55,10 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
             try{
                 AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
                 AlipayEcoActivityRecycleSendRequest request = new AlipayEcoActivityRecycleSendRequest();
+                MyslRequestLog myslRequestLog=new MyslRequestLog();
+                myslRequestLog.setOrderNo(order.getOrderNo());
+                myslRequestLog.setMyslParams(myslParam);
+                myslRequestLog.setOutBizNo(JSON.parseObject(myslParam).get("outBizNo").toString());
                 request.setBizContent(myslParam);
                 AlipayEcoActivityRecycleSendResponse response = null;
                 try {
@@ -58,17 +66,12 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
+                myslRequestLog.setMyslResult(JSONObject.toJSON(response).toString());
                 if(response.isSuccess()){
                     System.out.println("调用成功");
-                    String fullEnergy = response.getFullEnergy().toString();
-                    order.setMyslOrderId(fullEnergy);
-                    order.setMyslParam(JSON.toJSONString(response.getParams()));
-                    orderService.updateById(order);
+                    myslRequestLog.setFullEnergy(Integer.parseInt(response.getFullEnergy().toString()));
                 } else {
                     if(response.getSubMsg().equals("参数有误已发放，无需再次发放！")){
-                        order.setMyslOrderId("1111");
-                        order.setMyslParam(JSON.toJSONString(response.getParams()));
-                        orderService.updateById(order);
                         return null;
                     }
                     ++times;
@@ -81,6 +84,7 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
                             ,Thread.currentThread().getStackTrace()[1].getMethodName(),"增加蚂蚁深林能量异常,订单Id是："+orderId+"次数："+times,
                             RocketMqConst.DINGDING_ERROR,response.getBody());
                 }
+                myslRequestLogService.insert(myslRequestLog);
                 return response;
             }catch (Exception e) {
                 DingTalkNotify.sendAliErrorMessage(Thread.currentThread().getStackTrace()[1].getClassName()

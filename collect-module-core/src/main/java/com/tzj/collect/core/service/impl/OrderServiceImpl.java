@@ -15,6 +15,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.google.gson.Gson;
+import com.sun.swing.internal.plaf.metal.resources.metal;
 import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.amap.AmapResult;
 import com.tzj.collect.common.amap.AmapUtil;
@@ -3872,6 +3874,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         model.setOutBizType("RECYCLING");
         model.setOutBizNo(order.getOrderNo());
         List<EnergyGoodRequest> itemList = new ArrayList<>();
+        boolean chai=false;
         //如果是电器
         if ((Category.CategoryType.DIGITAL.getValue() + "").equals(order.getTitle().getValue() + "")) {
             EnergyGoodRequest itemOrder = new EnergyGoodRequest();
@@ -3884,7 +3887,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             extInfo.add(orderExtInfo);
             itemOrder.setItems(extInfo);
             itemList.add(itemOrder);
-        } else if ((Order.TitleType.HOUSEHOLD.getValue() + "").equals(order.getTitle().getValue() + "") || (Order.TitleType.FIVEKG.getValue() + "").equals(order.getTitle().getValue() + "") || (Order.TitleType.IOTORDER.getValue() + "").equals(order.getTitle().getValue() + "") || (Order.TitleType.SMALLDIGITAL.getValue() + "").equals(order.getTitle().getValue() + "")) {
+        } else if ((Order.TitleType.HOUSEHOLD.getValue() + "").equals(order.getTitle().getValue() + "")
+                || (Order.TitleType.FIVEKG.getValue() + "").equals(order.getTitle().getValue() + "")
+                || (Order.TitleType.IOTORDER.getValue() + "").equals(order.getTitle().getValue() + "")
+                || (Order.TitleType.SMALLDIGITAL.getValue() + "").equals(order.getTitle().getValue() + "")) {
             for (Map<String, Object> itemMap : houseList) {
                 if (null == itemMap.get("aliItemType")) {
                     continue;
@@ -3900,14 +3906,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 extInfo.add(orderExtInfo);
                 itemOrder.setItems(extInfo);
                 itemList.add(itemOrder);
+
+                if("plastic".equals(itemMap.get("aliItemType").toString()) && 58000<=Math.floor((double) itemMap.get("amount"))){
+                    chai=true;
+                }
+                if("paper".equals(itemMap.get("aliItemType").toString()) && 87000<=Math.floor((double) itemMap.get("amount"))){
+                    chai=true;
+                }
+                if("metal".equals(itemMap.get("aliItemType").toString()) && 741000<=Math.floor((double) itemMap.get("amount"))){
+                    chai=true;
+                }
             }
         }
         if (null == itemList || itemList.isEmpty()) {
             return null;
         }
-        model.setItemList(itemList);
-        order.setMyslParam(JSON.toJSONString(model));
         OrderBean orderBean = new OrderBean();
+
         if (amount <= 30000) {
             orderBean.setIsRisk("0");
             order.setIsRisk("0");
@@ -3916,9 +3931,37 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             orderBean.setIsRisk("1");
         }
         orderService.updateById(order);
-        //给用户增加能量
-        ansycMyslService.updateForest(order.getId().toString(), JSON.toJSONString(model), 0);
-        orderBean.setMyslParam(JSON.toJSONString(model));
+        if(chai){
+            List<EnergyGoodRequest> itemList1 = new ArrayList<>();
+            for (EnergyGoodRequest item:itemList){
+                Double quantity=Double.parseDouble(item.getQuantity());
+                int randomNum=new Random().nextInt(quantity.intValue()-1)+1;
+                Gson gson=new Gson();
+                EnergyGoodRequest item1 =gson.fromJson(gson.toJson(item),EnergyGoodRequest.class) ;
+                item1.setQuantity(String.valueOf(randomNum));
+                itemList1.add(item1);
+                item.setQuantity(String.valueOf(quantity.intValue()-randomNum));
+            }
+            model.setItemList(itemList);
+            //给用户增加能量
+            ansycMyslService.updateForest(order.getId().toString(), JSON.toJSONString(model), 0);
+            String outBizNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+
+            model.setOutBizNo(outBizNo);
+            model.setItemList(itemList1);
+            //给用户增加能量
+            ansycMyslService.updateForest(order.getId().toString(), JSON.toJSONString(model), 0);
+            orderBean.setMyslParam(JSON.toJSONString(model));
+
+        }else{
+            model.setItemList(itemList);
+            //给用户增加能量
+            ansycMyslService.updateForest(order.getId().toString(), JSON.toJSONString(model), 0);
+            orderBean.setMyslParam(JSON.toJSONString(model));
+        }
+
+
+
         return orderBean;
     }
 
