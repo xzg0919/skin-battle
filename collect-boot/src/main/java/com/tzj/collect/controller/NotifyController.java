@@ -8,6 +8,7 @@ import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
 import com.github.binarywang.wxpay.bean.result.BaseWxPayResult;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.tzj.collect.api.commom.constant.WXConst;
+import com.tzj.collect.commom.redis.RedisUtil;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.thread.NewThreadPoorExcutor;
 import com.tzj.collect.core.thread.sendGreenOrderThread;
@@ -63,6 +64,8 @@ public class NotifyController {
     PrepayOrderService prepayOrderService;
     @Autowired
     WxPaymentService wxPaymentService;
+    @Resource
+    private RedisUtil redisUtil;
 
 
     /**
@@ -145,10 +148,17 @@ public class NotifyController {
                     //給用戶轉賬
                     if (!(Order.TitleType.BIGTHING + "").equals(order.getTitle() + "")) {
                         if (null != voucherMember) {
-                            //如果不是大件并且有优惠券，则计算使用该券后的价格给用户进行转账
-                            BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(order.getAchPrice(), voucherMember.getId().toString());
-                            payment.setDiscountPrice(discountPrice);
-                            payment.setTransferPrice(discountPrice);
+                            //限制区域内的不能使用优惠券
+                            String voucherLimitAddressId = (String) redisUtil.get("voucherLimitAddressId");
+                            if (voucherLimitAddressId != null &&
+                                    !voucherLimitAddressId.contains(order.getStreetId().toString())
+                                    && !voucherLimitAddressId.contains(order.getAreaId().toString())
+                            ) {
+                                //如果不是大件并且有优惠券，则计算使用该券后的价格给用户进行转账
+                                BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(order.getAchPrice(), voucherMember.getId().toString());
+                                payment.setDiscountPrice(discountPrice);
+                                payment.setTransferPrice(discountPrice);
+                            }
                         } else {
                             payment.setDiscountPrice(order.getAchPrice());
                             payment.setTransferPrice(order.getAchPrice());

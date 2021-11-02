@@ -59,8 +59,15 @@ public class AferRunConfig implements ApplicationRunner {
             redisUtil.set("limitCompleteRecyclers", limitCompleteRecyclers);
         }
 
-        //用户限制每日完成订单数量
-         redisUtil.set("userLimitCompleteCount", 3);
+        if (null == redisUtil.get("userLimitCompleteCount")) {
+            //用户限制每日完成订单数量
+            redisUtil.set("userLimitCompleteCount", 4);
+        }
+
+        //地区限制使用优惠券
+        if (null == redisUtil.get("voucherLimitAddressId")) {
+            redisUtil.set("voucherLimitAddressId", "24616,24638,20317,14672,24739,45368");
+        }
 
         log.info("启动参数新增完成");
 
