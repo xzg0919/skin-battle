@@ -159,6 +159,10 @@ public class NotifyController {
                                 payment.setDiscountPrice(discountPrice);
                                 payment.setTransferPrice(discountPrice);
                             }
+                            else {
+                                payment.setDiscountPrice(order.getAchPrice());
+                                payment.setTransferPrice(order.getAchPrice());
+                            }
                         } else {
                             payment.setDiscountPrice(order.getAchPrice());
                             payment.setTransferPrice(order.getAchPrice());
