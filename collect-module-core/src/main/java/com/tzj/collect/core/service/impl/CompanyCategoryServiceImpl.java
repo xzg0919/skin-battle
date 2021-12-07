@@ -11,11 +11,13 @@ import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.module.common.utils.StringUtils;
 import com.tzj.module.easyopen.exception.ApiException;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 回收企业关联ServiceImpl
  *
  * @Author 王灿
- *
  */
 @Service
 @Transactional(readOnly = true)
@@ -35,6 +36,7 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
 
         return this.selectCategoryByCompanyId(id);
     }
+
     @Autowired
     private CategoryService categoryService;
     @Autowired
@@ -81,10 +83,10 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
                 BIGTHING = companyCategoryCityNameService.getBigCategoryByCompanyId(bigCompanyId, cityId);
             }
         }
-        if (null == DIGITAL||DIGITAL.isEmpty()) {
+        if (null == DIGITAL || DIGITAL.isEmpty()) {
             DIGITAL = categoryService.topList(0, 1, null);
         }
-        if (null == BIGTHING||BIGTHING.isEmpty()) {
+        if (null == BIGTHING || BIGTHING.isEmpty()) {
             BIGTHING = categoryService.topList(0, 4, null);
         }
         resultMap.put("DIGITAL", DIGITAL);
@@ -213,8 +215,8 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
     }
 
     /**
-     * @author wangcan
      * @param categoryBean:传入小区CommunityId，id(分类ID，大的分类) 获取价格分页(不分页)
+     * @author wangcan
      */
     @Override
     public Map<String, Object> getTowCategoryList(CategoryBean categoryBean) {
@@ -353,13 +355,19 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
     }
 
     @Override
-    public CompanyCategory selectCompanyCategory(String companyId, String categoryId){
-        return selectOne(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId));
+    public CompanyCategory selectCompanyCategory(String companyId, String categoryId) {
+        return selectOne(new EntityWrapper<CompanyCategory>().eq("company_id", companyId).eq("category_id", categoryId));
     }
 
     @Override
     public Integer selectCount(Long companyId, Long categoryId) {
-        return selectCount(new EntityWrapper<CompanyCategory>().eq("company_id",companyId).eq("category_id",categoryId).eq("del_flag","0"));
+        return selectCount(new EntityWrapper<CompanyCategory>().eq("company_id", companyId).eq("category_id", categoryId).eq("del_flag", "0"));
+    }
+
+    @Transactional
+    @Override
+    public void insertBatch1(List<CompanyCategory> companyCategories) {
+        insertBatch(companyCategories);
     }
 
 }

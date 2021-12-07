@@ -1101,7 +1101,8 @@ public class Order extends DataEntity<Long> {
 		IOTORDER(5), // iot设备
 		IOTCLEANORDER(6),//iot清运订单
 		HOUSEDIGITAL(7),//生活垃圾/废弃家电
-		SMALLDIGITAL(8); // 小家电（家电数码里归类出来的）
+		SMALLDIGITAL(8), // 小家电（家电数码里归类出来的）
+		ELECTROMOBILE(9); //电动车
 		private int value;
 
 		TitleType(final int value) {

@@ -22,7 +22,10 @@ import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,7 @@ import redis.clients.jedis.JedisPool;
  *
  */
 @ApiService
+@Slf4j
 public class OrderApi {
 
     @Autowired
@@ -268,6 +272,7 @@ public class OrderApi {
         orderbean.setOrderNo(orderNo);
         //保存订单
         resultMap = orderService.saveOrder(orderbean,mqtt4PushOrder);
+        log.info("家电订单下单成功，订单号:{},品类id:{},街道id:{},小区id:{}",orderNo,category.getParentId(),memberAddress.getStreetId(),communityId);
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(companyId);
         if (null != company) {
@@ -421,6 +426,7 @@ public class OrderApi {
         }
         orderbean.setOrderNo(orderNo);
         resultMap = (Map<String, Object>) orderService.XcxSaveOrder(orderbean, member,mqtt4PushOrder);
+        log.info("五废订单下单成功，订单号:{},品类id:{},街道id:{},小区id:{}",orderNo,category.getParentId(),memberAddress.getStreetId(),communityId);
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(companyId);
         if (null != company) {
@@ -574,6 +580,7 @@ public class OrderApi {
         }
         orderbean.setOrderNo(orderNo);
         resultMap = (Map<String, Object>) orderService.savefiveKgOrder(orderbean);
+        log.info("五公斤订单下单成功，订单号:{},品类id:{},街道id:{} ",orderNo,45,memberAddress.getStreetId());
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(streeCompanyId);
         if (null != company) {
@@ -684,6 +691,7 @@ public class OrderApi {
         }
         orderbean.setOrderNo(orderNo);
         resultMap = (Map<String, Object>) orderService.saveSmallAppOrder(orderbean);
+        log.info("小家电订单下单成功，订单号:{},城市id:{},街道id:{} ",orderNo,memberAddress.getCityId(),memberAddress.getStreetId());
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(streeCompanyId);
         if (null != company) {

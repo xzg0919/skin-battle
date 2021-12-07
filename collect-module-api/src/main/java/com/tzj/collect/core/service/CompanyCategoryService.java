@@ -110,4 +110,7 @@ public interface CompanyCategoryService extends IService<CompanyCategory>{
 	CompanyCategory selectCompanyCategory(String companyId,String categoryId);
 
 	Integer selectCount(Long companyId,Long categoryId);
+
+
+	void insertBatch1(List<CompanyCategory> companyCategories);
 }

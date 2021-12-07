@@ -694,23 +694,23 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 if (null != fiveCompanyId) {
                     categoryList = companyCategoryCityNameService.getFiveCategoryByCompanyId(fiveCompanyId, memberAdderss.getCityId());
                     categoryList = categoryList.stream().filter(category -> category.getId() == 45).collect(Collectors.toList());
-                    List<Category> categoryLists = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
+                    List<Category> categoryLists = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0").eq("del_flag","0"));
                     categoryLists = categoryLists.stream().filter(category -> category.getId() != 45).collect(Collectors.toList());
                     categoryList.addAll(categoryLists);
                 }
             }
         }
         if (null == categoryList||categoryList.isEmpty()) {
-            categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
+            categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0").eq("del_flag","0"));
             if(null==parentId){
                 categoryList.stream().forEach(category -> {
-                    List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                    List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()).eq("del_flag","0"));
                     category.setCategoryList(categoryList1);
                 });
             }else {
                 categoryList.stream().forEach(category -> {
                     if (null!=parentId&&category.getId().equals(parentId)){
-                        List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                        List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()).eq("del_flag","0"));
                         category.setCategoryList(categoryList1);
                     }
                 });
@@ -730,22 +730,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 if (null != fiveCompanyId) {
                     categoryList = companyCategoryCityNameService.getFiveCategoryByCompanyId(fiveCompanyId, memberAdderss.getCityId());
                     categoryList = categoryList.stream().filter(category -> category.getId() == 45).collect(Collectors.toList());
-                    List<Category> categoryLists = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
+                    List<Category> categoryLists = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0").eq("del_flag","0"));
                     categoryLists = categoryLists.stream().filter(category -> category.getId() != 45).collect(Collectors.toList());
                     categoryList.addAll(categoryLists);
                 }
         }
         if (null == categoryList||categoryList.isEmpty()) {
-            categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0"));
+            categoryList = this.selectList(new EntityWrapper<Category>().eq("level_", "0").eq("title", "2").eq("unuseful", "0").eq("del_flag","0"));
             if(null==parentId){
                 categoryList.stream().forEach(category -> {
-                    List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                    List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()).eq("del_flag","0"));
                     category.setCategoryList(categoryList1);
                 });
             }else {
                 categoryList.stream().forEach(category -> {
                     if (null!=parentId&&category.getId().equals(parentId)){
-                        List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()));
+                        List<Category> categoryList1 = this.selectList(new EntityWrapper<Category>().eq("parent_id", category.getId()).eq("del_flag","0"));
                         category.setCategoryList(categoryList1);
                     }
                 });

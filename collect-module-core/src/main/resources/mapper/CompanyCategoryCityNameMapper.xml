@@ -63,6 +63,7 @@
 		AND a.city_id = #{cityId}
 		AND b.title = 2
 		AND b.unuseful = 0
+		and b.del_flag =0
 		ORDER BY b.code_ ASC
 	</select>
 	<select id="getHouseCategoryByCategoryId" parameterType="Integer" resultType="com.tzj.collect.entity.Category">
@@ -94,6 +95,7 @@
 			a.company_id = #{companyId}
 		AND a.city_id = #{cityId}
 		AND a.parent_id = #{categoryId}
+		AND b.del_flag =0
 
 	</select>
 	<select id="getFiveCategoryByCompanyId" parameterType="Integer" resultType="com.tzj.collect.entity.Category">
@@ -146,6 +148,7 @@
 		AND a.city_id = #{cityId}
 		AND b.title = 2
 		AND b.unuseful = 0
+		AND b.del_flag =0
 	</select>
 	<select id="getTwoCategoryList" parameterType="Object" resultType="com.tzj.collect.entity.Category">
 		SELECT DISTINCT
@@ -176,6 +179,7 @@
 			a.company_id = #{companyId}
 		AND a.city_id = #{cityId}
 		AND a.parent_id = #{categoryId}
+		AND b.del_flag =0
 	</select>
 	<select id="getTwoCategoryListLocal" parameterType="Object" resultType="com.tzj.collect.entity.Category">
 		SELECT DISTINCT

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +98,16 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
                     category.setCategoryList(categoryList1);
                 }
             });
+        }
+        List<Integer> delIndex =new ArrayList<>();
+         for (int i=0 ;i<categoryList.size();i++){
+             if(categoryList.get(i).getCategoryList()==null ||categoryList.get(i).getCategoryList().size() ==0 ){
+                 delIndex.add(i);
+             }
+         }
+        for (int i=0 ;i<delIndex.size();i++){
+            int index = delIndex.get(i);
+            categoryList.remove(index);
         }
 
         return categoryList;

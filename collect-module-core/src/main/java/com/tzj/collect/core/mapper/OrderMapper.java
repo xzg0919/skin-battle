@@ -268,5 +268,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	List<Map<String, Object>>getCategoryPriceList(@Param("orderId")Integer id);
 
 	void cancelOrderBatch(@Param("companyId") String companyId, @Param("endDate") String endDate);
+
+	List<Order> getNoMyslOrder();
 }
 

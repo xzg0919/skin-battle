@@ -464,7 +464,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Transactional
     @Override
-    public Object getCommissionsPriceByOrderId(OrderBean orderbean,Integer count) {
+    public Object getCommissionsPriceByOrderId(OrderBean orderbean, Integer count) {
         Order order = this.selectById(orderbean.getId());
         HashMap<String, Object> commissionPriceMap = new HashMap();
         CompanyCategory companyCategoryCopy = new CompanyCategory();
@@ -536,11 +536,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     "，更新状态：" + (updateFlag ? "成功" : "失败"));
         }
 
-        if(!updateFlag){
-            if(count <5){
-                count ++;
-                this.getCommissionsPriceByOrderId(orderbean ,count);
-            }else{
+        if (!updateFlag) {
+            if (count < 5) {
+                count++;
+                this.getCommissionsPriceByOrderId(orderbean, count);
+            } else {
                 throw new ApiException("订单更新失败，请重新操作！");
             }
         }
@@ -553,8 +553,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Object getPriceByOrderId(OrderBean orderbean, MqttClient mqtt4PushOrder) {
         Order order = this.selectById(orderbean.getId());
-        orderCompleteHandler.beforeComplete(order.getRecyclerId()==null?null:Long.parseLong(order.getRecyclerId().toString())
-                ,order.getTitle(),order.getAliUserId());
+        orderCompleteHandler.beforeComplete(order.getRecyclerId() == null ? null : Long.parseLong(order.getRecyclerId().toString())
+                , order.getTitle(), order.getAliUserId());
         order.setAchPrice(new BigDecimal(orderbean.getAchPrice()));
         this.updateById(order);
 
@@ -2415,6 +2415,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setUpdateDate(new Date());
         order.setIsRead("0");
         boolean flag = false;
+        Company company = companyService.selectById(companyRecycler.getCompanyId());
         if (orderBean.getStatus() != null && !"".equals(orderBean.getStatus())) {
             switch (orderBean.getStatus()) {
                 case "6"://已取消任务
@@ -2461,6 +2462,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     orderLog.setOp("已取消任务");
                     //取消订单消息推送
                     asyncService.pushOrder(order, mqtt4PushOrder);
+                    try {
+                        DingTalkNotify.sendMessage("订单号：" + order.getOrderNo() + "，取消时间:" + DateUtils.getDate("yyyy-MM-dd HH:mm:ss")
+                                        + "，服务商名称：" + company.getName()
+                                        + "，回收人员手机号:" + recycler.getTel() + "，取消原因：" + orderBean.getCancelReason()
+                                , "https://oapi.dingtalk.com/robot/send?access_token=43349239927ed1cafbdb9a9496ace0826bcebf9fe1be00f59008c31620092b7f");
+
+                    } catch (Exception e) {
+                        logger.error("订单取消钉钉通知失败，失败原因:" + e.getMessage());
+                        e.printStackTrace();
+                    }
+
                     break;
                 case "3"://已完成
                     if ("2".equals(order.getStatus().getValue().toString())) {
@@ -2468,8 +2480,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     } else {
                         throw new ApiException("该订单已被操作，请刷新页面查看状态");
                     }
-                    orderCompleteHandler.beforeComplete(order.getRecyclerId()==null?null:Long.parseLong(order.getRecyclerId().toString())
-                            ,order.getTitle(),order.getAliUserId());
+                    orderCompleteHandler.beforeComplete(order.getRecyclerId() == null ? null : Long.parseLong(order.getRecyclerId().toString())
+                            , order.getTitle(), order.getAliUserId());
                     order.setCompleteDate(new Date());
                     if (StringUtils.isNotBlank(orderBean.getAchPrice())) {
                         order.setAchPrice(new BigDecimal(orderBean.getAchPrice()));
@@ -2534,7 +2546,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     orderOperate.setReason("/");
 
                     if (recyclers != null) {
-                        Company company = companyService.selectById(order.getCompanyId());
+
                         if (company != null) {
                             SmsBlackList byTel = smsBlackListService.findByTel(recyclers.getTel());
                             if (byTel == null) {
@@ -2572,6 +2584,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //修改日志列表
         flag = orderLogService.insert(orderLog);
         return flag;
+    }
+
+
+    public static void main(String[] args) {
+        DingTalkNotify.sendMessage("订单取消通知，订单号：测试测试,取消时间:" + DateUtils.getDate("yyyy-MM-dd HH:mm:ss")
+                        + "，回收人员手机号:测试测试"
+                , "https://oapi.dingtalk.com/robot/send?access_token=43349239927ed1cafbdb9a9496ace0826bcebf9fe1be00f59008c31620092b7f");
     }
 
     @Override
@@ -3763,8 +3782,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public String saveBigOrderPrice(OrderBean orderBean, MqttClient mqtt4PushOrder) {
         Order order = orderService.selectById(orderBean.getId());
-        orderCompleteHandler.beforeComplete(order.getRecyclerId()==null?null:Long.parseLong(order.getRecyclerId().toString())
-                ,order.getTitle(),order.getAliUserId());
+        orderCompleteHandler.beforeComplete(order.getRecyclerId() == null ? null : Long.parseLong(order.getRecyclerId().toString())
+                , order.getTitle(), order.getAliUserId());
         CompanyCategory companyCategory = companyCategoryService.selectCompanyCategory(order.getCompanyId().toString(), order.getCategoryId().toString());
         Category categorys = categoryService.selectById(order.getCategoryId());
         Recyclers recyclers = recyclersService.selectById(order.getRecyclerId());
@@ -3874,7 +3893,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         model.setOutBizType("RECYCLING");
         model.setOutBizNo(order.getOrderNo());
         List<EnergyGoodRequest> itemList = new ArrayList<>();
-        boolean chai=false;
+        boolean chai = false;
         //如果是电器
         if ((Category.CategoryType.DIGITAL.getValue() + "").equals(order.getTitle().getValue() + "")) {
             EnergyGoodRequest itemOrder = new EnergyGoodRequest();
@@ -3907,14 +3926,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 itemOrder.setItems(extInfo);
                 itemList.add(itemOrder);
 
-                if("plastic".equals(itemMap.get("aliItemType").toString()) && 58000<=Math.floor((double) itemMap.get("amount"))){
-                    chai=true;
+                if ("plastic".equals(itemMap.get("aliItemType").toString()) && 58000 <= Math.floor((double) itemMap.get("amount"))) {
+                    chai = true;
                 }
-                if("paper".equals(itemMap.get("aliItemType").toString()) && 87000<=Math.floor((double) itemMap.get("amount"))){
-                    chai=true;
+                if ("paper".equals(itemMap.get("aliItemType").toString()) && 87000 <= Math.floor((double) itemMap.get("amount"))) {
+                    chai = true;
                 }
-                if("metal".equals(itemMap.get("aliItemType").toString()) && 741000<=Math.floor((double) itemMap.get("amount"))){
-                    chai=true;
+                if ("metal".equals(itemMap.get("aliItemType").toString()) && 741000 <= Math.floor((double) itemMap.get("amount"))) {
+                    chai = true;
                 }
             }
         }
@@ -3931,16 +3950,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             orderBean.setIsRisk("1");
         }
         orderService.updateById(order);
-        if(chai){
+        if (chai) {
             List<EnergyGoodRequest> itemList1 = new ArrayList<>();
-            for (EnergyGoodRequest item:itemList){
-                Double quantity=Double.parseDouble(item.getQuantity());
-                int randomNum=new Random().nextInt(quantity.intValue()-1)+1;
-                Gson gson=new Gson();
-                EnergyGoodRequest item1 =gson.fromJson(gson.toJson(item),EnergyGoodRequest.class) ;
+            for (EnergyGoodRequest item : itemList) {
+                Double quantity = Double.parseDouble(item.getQuantity());
+                int randomNum = new Random().nextInt(quantity.intValue() - 1) + 1;
+                Gson gson = new Gson();
+                EnergyGoodRequest item1 = gson.fromJson(gson.toJson(item), EnergyGoodRequest.class);
                 item1.setQuantity(String.valueOf(randomNum));
                 itemList1.add(item1);
-                item.setQuantity(String.valueOf(quantity.intValue()-randomNum));
+                item.setQuantity(String.valueOf(quantity.intValue() - randomNum));
             }
             model.setItemList(itemList);
             //给用户增加能量
@@ -3953,13 +3972,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             ansycMyslService.updateForest(order.getId().toString(), JSON.toJSONString(model), 0);
             orderBean.setMyslParam(JSON.toJSONString(model));
 
-        }else{
+        } else {
             model.setItemList(itemList);
             //给用户增加能量
             ansycMyslService.updateForest(order.getId().toString(), JSON.toJSONString(model), 0);
             orderBean.setMyslParam(JSON.toJSONString(model));
         }
-
 
 
         return orderBean;
@@ -5402,8 +5420,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public List<Order> getOrders() {
-        return this.selectList(new EntityWrapper<Order>().eq("status_", "3")
-                .eq("del_flag", "0").isNull("mysl_order_id").gt("complete_date", "2021-10-19 00:00:00"));
+        return orderMapper.getNoMyslOrder();
     }
 
     @Transactional
@@ -5416,15 +5433,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Transactional
     public boolean updateById(Order order) {
         boolean b = super.updateById(order);
-        if(!b ) {
-           throw new ApiException("操作失败，请重试");
-       }
-       return true;
+        if (!b) {
+            throw new ApiException("操作失败，请重试");
+        }
+        return true;
     }
-
-
-
-
 
 
 }

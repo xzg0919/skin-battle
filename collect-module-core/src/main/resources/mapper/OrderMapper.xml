@@ -3826,6 +3826,13 @@ ORDER BY time
         and company_id = #{companyId} and status_ in (0,1,2)
 	</update>
 
+
+
+    <select id="getNoMyslOrder" resultType="Order">
+        		select  * from  sb_order where   complete_date like '2021-12-01%' and order_no  not in
+				(				SELECT order_no from  sb_mysl_request_log
+)
+    </select>
     <resultMap id="categoryResultMap" type="com.tzj.collect.core.param.ali.BusinessOrderItemBean">
         <id property="parentId" column="parentId"/>
         <result property="parentName" column="parentName"/>
