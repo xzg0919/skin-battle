@@ -23,7 +23,7 @@ public class ExcelUtils {
         response.setHeader("content-Type", "application/vnd.ms-excel");
         // 下载文件的默认名称
         response.setHeader("Content-Disposition", "attachment; filename=\"" +
-                fileName + "\"");
+                new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
         response.setContentType("application/octet-stream; charset=utf-8");
         exportExcel(data, response.getOutputStream());
     }
