@@ -23,4 +23,13 @@ public class GasLeakageCheck extends DataEntity<Long> {
 
      String contactName;
 
+     String  province;
+
+     String city;
+
+     String district;
+
+     @TableField(value="from_")
+     String from;
+
 }

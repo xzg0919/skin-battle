@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +31,7 @@ public class GasLeakageCheckController {
 
     @ResponseBody
     @PostMapping("saveInfo")
-    public String saveInfo(String tel,String address,String contactName){
+    public String saveInfo(String tel, String address, String contactName, String province, String city, String distrct, @RequestParam(defaultValue = "",required = false) String from){
 
         if(StringUtils.isBlank(tel)){
             return "请填写手机号码！";
@@ -48,8 +49,11 @@ public class GasLeakageCheckController {
         gasLeakageCheck.setAddress(address);
         gasLeakageCheck.setContactName(contactName);
         gasLeakageCheck.setTel(tel);
+        gasLeakageCheck.setProvince(province);
+        gasLeakageCheck.setCity(city);
+        gasLeakageCheck.setDistrict(distrct);
+        gasLeakageCheck.setFrom(from);
         gasLeakageCheckService.insert(gasLeakageCheck);
-
         return "提交成功";
     }
 
@@ -63,7 +67,11 @@ public class GasLeakageCheckController {
         titles.add("序号");
         titles.add("手机号");
         titles.add("姓名");
+        titles.add("省");
+        titles.add("市");
+        titles.add("区");
         titles.add("地址");
+        titles.add("来源");
         titles.add("提交时间");
         data.setTitles(titles);
         List<List<Object>> rows = new ArrayList();
@@ -73,7 +81,11 @@ public class GasLeakageCheckController {
             row.add(listByCreateDate.get(i).getId());
             row.add(listByCreateDate.get(i).getTel());
             row.add(listByCreateDate.get(i).getContactName());
+            row.add(listByCreateDate.get(i).getProvince());
+            row.add(listByCreateDate.get(i).getCity());
+            row.add(listByCreateDate.get(i).getDistrict());
             row.add(listByCreateDate.get(i).getAddress());
+            row.add(listByCreateDate.get(i).getFrom());
             row.add(DateUtils.formatDate(listByCreateDate.get(i).getCreateDate(),"yyyy-MM-dd HH:mm:ss"));
             rows.add(row);
 
