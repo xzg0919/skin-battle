@@ -6,6 +6,7 @@ import com.tzj.collect.core.param.ali.PageBean;
 import com.tzj.collect.entity.PointList;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PointListService  extends IService<PointList>{
 	/**
@@ -21,4 +22,11 @@ public interface PointListService  extends IService<PointList>{
 	订单、积分、积分流水表中相应添加aliuserId 和 card_no
 	 */
 	void updatePointAndOrderFromDsdd(String aliUserId, String mobile, String cardNo);
+
+
+	List<Map<String,Object>> getAddPointInfoEndWithCreateDate(String endDate );
+
+	List<Map<String,Object>> getReducePointInfoEndWithCreateDate(String endDate );
+
+
 }

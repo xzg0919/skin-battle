@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly=true)
@@ -56,6 +57,16 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
 	@Transactional
 	public void updatePointAndOrderFromDsdd(String aliUserId, String mobile, String cardNo) {
 		this.baseMapper.updatePointAndOrderFromDsdd(aliUserId, mobile, cardNo);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAddPointInfoEndWithCreateDate(String endDate) {
+		return baseMapper.getPointInfoEndWithCreateDate(endDate);
+	}
+
+	@Override
+	public List<Map<String, Object>> getReducePointInfoEndWithCreateDate(String endDate) {
+		return baseMapper.getReducePointInfoEndWithCreateDate();
 	}
 
 }

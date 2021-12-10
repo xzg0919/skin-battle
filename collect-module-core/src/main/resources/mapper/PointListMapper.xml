@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tzj.collect.core.mapper.PointListMapper">
 
-	<update id="updatePointAndOrderFromDsdd" >
+    <update id="updatePointAndOrderFromDsdd">
 
 		UPDATE sb_point sp,
 		sb_point_list spl,
@@ -17,9 +17,19 @@
 			AND spl.telephone = #{mobile}
 			AND so.tel = #{mobile}
 	</update>
-	
 
 
+    <select id="getPointInfoEndWithCreateDate" parameterType="Object" resultType="Map">
 
+        SELECT ali_user_id as aliUserId,sum(abs(point)) as points from sb_point_list where #{endDate} >= create_date and type =0 GROUP BY
+        ali_user_id
+
+    </select>
+	<select id="getReducePointInfoEndWithCreateDate" parameterType="Object"  resultType="Map">
+
+		SELECT ali_user_id as aliUserId,sum(abs(point)) as points from sb_point_list where type =1 GROUP BY
+		ali_user_id
+
+	</select>
 </mapper>
 
