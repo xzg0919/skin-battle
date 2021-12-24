@@ -173,10 +173,10 @@ public class FiveKgController {
                     //给用户增加蚂蚁能量
                     OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
                     //活动  完成订单大于五公斤发送红包0.1元
-                    if ( order.getExpressAmount().compareTo(new BigDecimal("5.0")) == 1
+                    /*if ( order.getExpressAmount().compareTo(new BigDecimal("5.0")) == 1
                      || order.getExpressAmount().compareTo(new BigDecimal("5.0")) == 0) {
                         paymentService.transfer(order.getAliUserId(), "0.1", order.getOrderNo());
-                    }
+                    }*/
                 }
             } catch (Exception e) {
                 e.printStackTrace();
