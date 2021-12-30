@@ -16,6 +16,8 @@ import com.tzj.collect.common.push.PushUtils;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.module.common.utils.DateUtils;
+import com.tzj.module.common.utils.StringUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -26,12 +28,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.zip.ZipFile;
 
 import static com.tzj.collect.common.constant.Const.ALI_APPID;
 import static com.tzj.collect.common.constant.Const.ALI_PUBLIC_KEY;
@@ -66,6 +71,8 @@ public class NotifyController {
     WxPaymentService wxPaymentService;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    JedisPool jedisPool;
 
 
     /**
@@ -158,8 +165,7 @@ public class NotifyController {
                                 BigDecimal discountPrice = voucherAliService.getDiscountPriceByVoucherId(order.getAchPrice(), voucherMember.getId().toString());
                                 payment.setDiscountPrice(discountPrice);
                                 payment.setTransferPrice(discountPrice);
-                            }
-                            else {
+                            } else {
                                 payment.setDiscountPrice(order.getAchPrice());
                                 payment.setTransferPrice(order.getAchPrice());
                             }
@@ -182,6 +188,27 @@ public class NotifyController {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                    }
+
+                    if (Order.TitleType.DIGITAL.equals(order.getTitle()) && new BigDecimal("0.1").compareTo(new BigDecimal(totalAmount)) == 0) {
+                        Jedis resource = jedisPool.getResource();
+                        try {
+                            if (StringUtils.isNotBlank(resource.hget("lowPriceRecycler" + recyclers.getTel(), "limitNum"))) {
+                                String toDayCompleteCount = resource.hget("lowPriceRecycler" + recyclers.getTel(), DateUtils.getDate() + "_completeCount");
+                                if (StringUtils.isNotBlank(toDayCompleteCount)) {
+                                    resource.hset("lowPriceRecycler" + recyclers.getTel(), DateUtils.getDate() + "_completeCount", "1");
+                                } else {
+                                    int count = Integer.parseInt(toDayCompleteCount) + 1;
+                                    resource.hset("lowPriceRecycler" + recyclers.getTel(), DateUtils.getDate() + "_completeCount", String.valueOf(count));
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            resource.close();
+                        }
+
                     }
 
                 } else if (tradeStatus.equalsIgnoreCase("TRADE_CLOSED")) {

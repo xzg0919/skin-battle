@@ -23,6 +23,8 @@ import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -51,7 +53,7 @@ public class AppOrderPayApi {
 
     @Autowired
     private WXPayService wxPayService;
-     @Autowired
+    @Autowired
     OrderHandler orderCompleteHandler;
 
     @Api(name = "app.order.pay", version = "1.0")
@@ -67,8 +69,8 @@ public class AppOrderPayApi {
             throw new ApiException("未找到Order信息！id:" + orderPayParam.getOrderId());
         }
 
-        orderCompleteHandler.beforeComplete(order.getRecyclerId()==null?null:Long.parseLong(order.getRecyclerId().toString())
-                ,order.getTitle(),order.getAliUserId());
+        orderCompleteHandler.beforeComplete(order.getRecyclerId() == null ? null : Long.parseLong(order.getRecyclerId().toString())
+                , order.getTitle(), order.getAliUserId());
         Payment payment = paymentService.selectByOrderSn(order.getOrderNo());
 
         if (payment == null) {
@@ -131,6 +133,9 @@ public class AppOrderPayApi {
         }
     }
 
+    @Resource
+    JedisPool jedisPool;
+
     /**
      * 新的支付接口
      * 可支持同一订单无限制支付
@@ -166,14 +171,46 @@ public class AppOrderPayApi {
         List<String> allowDay = (List<String>) redisUtil.get("allowDay4AllPrice");
         List<String> limitRecyclers = (List<String>) redisUtil.get("limitRecycler4Price");
         if (order.getTitle().equals(Order.TitleType.DIGITAL)) {
-
             //判断今天是否不需要限制
-            if (allowDay==null || !allowDay.contains(DateUtils.getDate())) {
-                //判断金额是否满足
-                if (null != limitRecyclers && limitRecyclers.contains(recyclers.getTel()) &&
-                        orderPayParam.getPrice().compareTo(new BigDecimal("15")) == -1) {
-                    throw new ApiException("支付金额不能小于15元！");
+            if (allowDay == null || !allowDay.contains(DateUtils.getDate())) {
+                Jedis resource = jedisPool.getResource();
+                try {
+                    //获取回收人员当日0.1元完成的订单数量
+
+                    String toDayCompleteCount = resource.hget("lowPriceRecycler" + recyclers.getTel(), DateUtils.getDate() + "_completeCount");
+                    String limitCount = resource.hget("lowPriceRecycler" + recyclers.getTel(), "limitNum");
+
+                    //判断该回收人员是否需要限制
+                    if (null != limitRecyclers && limitRecyclers.contains(recyclers.getTel())) {
+                        if (StringUtils.isNotBlank(limitCount)) {
+                            //判断有没有超过次数限制
+                            if (StringUtils.isNotBlank(toDayCompleteCount)) {
+                                if (Integer.parseInt(toDayCompleteCount) >= Integer.parseInt(limitCount)) {
+                                    //不能低于15元完单
+                                    //判断金额是否满足
+                                    if (orderPayParam.getPrice().compareTo(new BigDecimal("15")) == -1) {
+                                        throw new ApiException("支付金额不能小于15元！");
+                                    }
+                                }
+                            }
+                        } else {
+                            if (
+                                    orderPayParam.getPrice().compareTo(new BigDecimal("15")) == -1) {
+                                throw new ApiException("支付金额不能小于15元！");
+                            }
+                        }
+                    }
+
+                } catch (Exception e) {
+                    if(e.getClass().equals(ApiException.class)){
+                        throw new ApiException(e.getMessage());
+                    }
+                    e.printStackTrace();
+                } finally {
+                    resource.close();
                 }
+
+
             }
         }
 
@@ -192,7 +229,7 @@ public class AppOrderPayApi {
             payment = new Payment();
         }
 
-        orderCompleteHandler.beforeComplete(recyclers.getId(),order.getTitle(),order.getAliUserId());
+        orderCompleteHandler.beforeComplete(recyclers.getId(), order.getTitle(), order.getAliUserId());
         payment.setOrderSn(order.getOrderNo());
         payment.setPrice(orderPayParam.getPrice());
         payment.setRecyclersId(recyclers.getId());
