@@ -13,6 +13,8 @@ import com.tzj.module.easyopen.exception.ApiException;
 import com.tzj.module.easyopen.file.FileBase64Param;
 import com.tzj.module.easyopen.file.FileBean;
 import com.tzj.module.easyopen.file.FileUploadService;
+import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -95,6 +97,7 @@ public class FileUploadServiceImpl implements FileUploadService {
      * 上传图片 base64加密过的
      * @return
      */
+    @SneakyThrows
     @Override
     public List<FileBean> uploadImage(List<FileBase64Param> list) {
 
@@ -114,7 +117,6 @@ public class FileUploadServiceImpl implements FileUploadService {
     	        }
     		
     		String uuid = UUID.randomUUID().toString();
-            System.out.println(tempPath + "/original_" + uuid + "." +extensionName);
        	 	//先把文件放入临时的地方
            File tempFile = new File(
                    tempPath + "/original_" + uuid + "." +extensionName);
@@ -152,7 +154,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 				} catch (IOException e) {
                     e.printStackTrace();
                 }finally {
-
+                   IOUtils.closeQuietly(out);
                 }
        	
 
@@ -170,7 +172,6 @@ public class FileUploadServiceImpl implements FileUploadService {
 
             //上传到OSS后，删除临时文件
             try{
-                out.close();
                 tempFile.delete();
             }catch (Exception e){
                 e.printStackTrace();
@@ -182,6 +183,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     	return fileBeanList;
     }
 
+    @SneakyThrows
     @Override
     public List<FileBean> uploadImage() {
         List<MultipartFile> multipartFiles= ApiContext.getUploadContext().getAllFile();
@@ -212,14 +214,16 @@ public class FileUploadServiceImpl implements FileUploadService {
             byte[] imageByte = null;
 
             if (!multipartFile.isEmpty()) {
+                BufferedOutputStream buffStream = null;
                 try {
                     byte[] bytes = multipartFile.getBytes();
-                    BufferedOutputStream buffStream =
-                            new BufferedOutputStream(new FileOutputStream(tempFile));
+                    buffStream = new BufferedOutputStream(new FileOutputStream(tempFile));
                     buffStream.write(bytes);
-                    buffStream.close();
+
                 } catch (Exception e) {
-                    throw new ApiException("api文件上传发生异常："+e.getMessage());
+                    throw new ApiException("api文件上传发生异常：" + e.getMessage());
+                } finally {
+                    IOUtils.closeQuietly(buffStream);
                 }
             }
 
@@ -251,7 +255,8 @@ public class FileUploadServiceImpl implements FileUploadService {
     /**
      * 处理文件信息
      */
-    public FileBean handleUploadField(String fileName,MultipartFile mpf) {
+    @SneakyThrows
+    public FileBean handleUploadField(String fileName, MultipartFile mpf) {
 
         FileBean fileBean=new FileBean();
         String extensionName = FileUtil.getExtension(fileName);
@@ -276,14 +281,16 @@ public class FileUploadServiceImpl implements FileUploadService {
         }
 
         if (!mpf.isEmpty()) {
+            BufferedOutputStream buffStream = null;
             try {
                 byte[] bytes = mpf.getBytes();
-                BufferedOutputStream buffStream =
-                        new BufferedOutputStream(new FileOutputStream(tempFile));
+                buffStream = new BufferedOutputStream(new FileOutputStream(tempFile));
                 buffStream.write(bytes);
-                buffStream.close();
+
             } catch (Exception e) {
-                throw new ApiException("api文件上传发生异常："+e.getMessage());
+                throw new ApiException("api文件上传发生异常：" + e.getMessage());
+            } finally {
+                IOUtils.closeQuietly(buffStream);
             }
         }
 
@@ -520,7 +527,7 @@ public class FileUploadServiceImpl implements FileUploadService {
         FileBean fileBean=new FileBean();
         List<FileBean> fileBeanList=new LinkedList<>();
         //开始上传文件
-        for(FileBase64Param file : fileBase64ParamLists){
+        for(FileBase64Param file : fileBase64ParamLists) {
             String extensionName = FileUtil.getExtension(file.getFileName());
 
             if (StringUtils.isBlank(extensionName)) {
@@ -530,42 +537,42 @@ public class FileUploadServiceImpl implements FileUploadService {
             String uuid = UUID.randomUUID().toString();
             //先把文件放入临时的地方
             File tempFile = new File(
-                    tempPath + "/original_" + uuid + "." +extensionName);
+                    tempPath + "/original_" + uuid + "." + extensionName);
 
 
             BufferedImage image = null;
             byte[] imageByte = null;
 
+            ByteArrayInputStream bis = null;
             try {
                 imageByte = DatatypeConverter.parseBase64Binary(file.getFileContentBase64().
-                        substring(file.getFileContentBase64().lastIndexOf(",")+1,file.getFileContentBase64().length()));
-                ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+                        substring(file.getFileContentBase64().lastIndexOf(",") + 1, file.getFileContentBase64().length()));
+                bis = new ByteArrayInputStream(imageByte);
                 image = ImageIO.read(new ByteArrayInputStream(imageByte));
                 bis.close();
 
-                ImageIO.write(image,extensionName,tempFile);
+                ImageIO.write(image, extensionName, tempFile);
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                IOUtils.closeQuietly(bis);
             }
-
-
-
 
 
             String savePath = "new_bridge/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
 
-            String saveLargeFile=savePath+"/iot_" + uuid + "." +extensionName;
+            String saveLargeFile = savePath + "/iot_" + uuid + "." + extensionName;
 
-            fileUpload.upload(saveLargeFile,tempFile,null);
+            fileUpload.upload(saveLargeFile, tempFile, null);
 
-            fileBean.setThumbnail(fileUpload.getImageDomain()+"/"+saveLargeFile);
-            fileBean.setBigPicture(fileUpload.getImageDomain()+"/"+saveLargeFile);
-            fileBean.setOriginal(fileUpload.getImageDomain()+"/"+saveLargeFile);
+            fileBean.setThumbnail(fileUpload.getImageDomain() + "/" + saveLargeFile);
+            fileBean.setBigPicture(fileUpload.getImageDomain() + "/" + saveLargeFile);
+            fileBean.setOriginal(fileUpload.getImageDomain() + "/" + saveLargeFile);
 
             //上传到OSS后，删除临时文件
-            try{
+            try {
                 tempFile.delete();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

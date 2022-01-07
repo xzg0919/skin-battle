@@ -13,6 +13,8 @@ public interface CompanyCategoryCityNameMapper extends BaseMapper<CompanyCategor
 
     List<Category> getAppliceCategoryByCompanyId(@Param("companyId") Integer companyId, @Param("cityId") Integer cityId);
 
+    List<Category> getElectroMobileCategoryByCompanyId(@Param("companyId") Integer companyId, @Param("cityId") Integer cityId);
+
     List<Category> getBigCategoryByCompanyId(@Param("companyId") Integer companyId, @Param("cityId") Integer cityId);
 
     List<Category> getHouseCategoryByCompanyId(@Param("companyId") Integer companyId, @Param("cityId") Integer cityId);

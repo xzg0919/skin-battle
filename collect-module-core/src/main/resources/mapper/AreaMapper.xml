@@ -179,6 +179,16 @@
 		LEFT JOIN (SELECT a.id,a.area_id FROM sb_company_street_appliance a WHERE a.company_id =  #{companyId} GROUP BY a.area_id ) b ON a.id = b.area_id
 		WHERE a.parent_id =  #{cityId}
 	</select>
+	<select id="adminGetElectroAreaRange" resultType="Map" parameterType="Integer">
+		SELECT
+			a.id,
+			a.area_name as areaName,
+		(SELECT COUNT(1) FROM ( SELECT a.area_id FROM sb_company_street_electro_mobile a WHERE  a.company_id =  #{companyId} AND a.del_flag = 0 ) b WHERE b.area_id = a.id) AS num
+		FROM
+			sb_area a
+		LEFT JOIN (SELECT a.id,a.area_id FROM sb_company_street_electro_mobile a WHERE a.company_id =  #{companyId} GROUP BY a.area_id ) b ON a.id = b.area_id
+		WHERE a.parent_id =  #{cityId}
+	</select>
 	<select id="adminGetHouseAreaRange" resultType="Map" parameterType="Integer">
 		SELECT
 			a.id,
@@ -210,6 +220,19 @@
 			sb_area a
 		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_appliance a WHERE a.company_id = #{companyId} ) b ON a.id = b.street_id
 		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_appliance a WHERE a.company_id != #{companyId} GROUP BY a.street_id) c ON a.id = c.street_id
+		WHERE a.parent_id = #{areaId}
+	</select>
+
+	<select id="adminGetElectroStreetRange" resultType="Map" parameterType="Integer">
+		SELECT
+			a.id,
+			a.area_name,
+			IF(b.id is null,'1','2') AS isChoose,
+			IF(c.id is null,'1','2') AS isEdit
+		FROM
+			sb_area a
+		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_electro_mobile a WHERE a.company_id = #{companyId} ) b ON a.id = b.street_id
+		LEFT JOIN (SELECT a.id,a.street_id FROM sb_company_street_electro_mobile a WHERE a.company_id != #{companyId} GROUP BY a.street_id) c ON a.id = c.street_id
 		WHERE a.parent_id = #{areaId}
 	</select>
 	<select id="adminGetHouseStreetRange" resultType="Map" parameterType="Integer">
@@ -390,6 +413,56 @@
 			<if test="areaId != null and areaId != ''">
 				AND a.area_id = #{areaId}
 			</if>
+		UNION
+		SELECT
+		e.area_name AS province,
+		d.area_name AS cityName,
+		c.area_name AS areaName,
+		b.name_ AS companyName,
+		a.area_id AS areaId,
+		a.street_id AS streetId,
+		a.company_id AS companyId
+		FROM
+		sb_company_street_house a
+		LEFT JOIN sb_company b ON a.company_id = b.id
+		LEFT JOIN sb_area c ON a.area_id = c.id
+		LEFT JOIN sb_area d ON c.parent_id = d.id
+		LEFT JOIN sb_area e ON d.parent_id = e.id
+		WHERE 1=1
+		<if test="companyId != null and companyId != ''">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="cityId != null and cityId != ''">
+			AND d.id = #{cityId}
+		</if>
+		<if test="areaId != null and areaId != ''">
+			AND a.area_id = #{areaId}
+		</if>
+		UNION
+		SELECT
+		e.area_name AS province,
+		d.area_name AS cityName,
+		c.area_name AS areaName,
+		b.name_ AS companyName,
+		a.area_id AS areaId,
+		a.street_id AS streetId,
+		a.company_id AS companyId
+		FROM
+		sb_company_street_electro_mobile a
+		LEFT JOIN sb_company b ON a.company_id = b.id
+		LEFT JOIN sb_area c ON a.area_id = c.id
+		LEFT JOIN sb_area d ON c.parent_id = d.id
+		LEFT JOIN sb_area e ON d.parent_id = e.id
+		WHERE 1=1
+		<if test="companyId != null and companyId != ''">
+			AND a.company_id = #{companyId}
+		</if>
+		<if test="cityId != null and cityId != ''">
+			AND d.id = #{cityId}
+		</if>
+		<if test="areaId != null and areaId != ''">
+			AND a.area_id = #{areaId}
+		</if>
 		) a
 		GROUP BY a.companyName,a.areaName
 		ORDER BY a.companyName,a.areaName
@@ -510,6 +583,16 @@
 			b.area_name
 		FROM
 			sb_company_street_big a
+		LEFT JOIN sb_area b ON a.street_id = b.id
+		WHERE
+			a.company_id = #{companyId}
+		AND a.area_id = #{areaId}
+		UNION
+		SELECT
+			b.id,
+			b.area_name
+		FROM
+			sb_company_street_electro_mobile a
 		LEFT JOIN sb_area b ON a.street_id = b.id
 		WHERE
 			a.company_id = #{companyId}
@@ -683,6 +766,13 @@
 						a.area_id
 					FROM
 						sb_company_street_big a
+					WHERE
+						a.company_id = #{companyId}
+						UNION
+					SELECT
+						a.area_id
+					FROM
+						sb_company_street_electro_mobile a
 					WHERE
 						a.company_id = #{companyId}
 			) a

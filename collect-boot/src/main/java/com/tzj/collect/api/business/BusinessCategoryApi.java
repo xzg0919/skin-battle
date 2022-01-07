@@ -59,9 +59,11 @@ public class BusinessCategoryApi {
         List<Category> digitalList = categoryService.getTopList(companyId, CategoryType.DIGITAL.getValue());
         List<Category> houseHoldList = categoryService.getTopList(companyId, CategoryType.HOUSEHOLD.getValue());
         List<Category> bigList = categoryService.getTopList(companyId, CategoryType.BIGTHING.getValue());
+        List<Category> electroList = categoryService.getTopList(companyId, CategoryType.ELECTROMOBILE.getValue());
         map.put("digitalList", digitalList);
         map.put("houseHoldList", houseHoldList);
         map.put("bigList", bigList);
+        map.put("electroList", electroList);
         return map;
     }
 

@@ -804,6 +804,20 @@ public class OutExcelController {
         //IOT完成订单总数
         List<Long> IOTOrderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "5", "3");
 
+        //电瓶车覆盖街道到数
+        List<Long> electroStreetNum = companyService.getStreetNumByTableName("sb_company_street_electro_mobile");
+        //电瓶车订单总数
+        List<Long> electroOrderList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "9", null);
+        //电瓶车进行中订单总数
+        List<Long> electroOrderIngList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "9", "0,1,2");
+        //电瓶车用户取消订单总数
+        List<Long> electroOrderCancelList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "9", "4");
+        //电瓶车平台取消订单总数
+        List<Long> electroOrderRejectList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "9", "5");
+        //电瓶车完成订单总数
+        List<Long> electroOrderCompleteList = orderService.getOrderListByTitleStatus(orderBean.getStartTime(), orderBean.getEndTime(), "9", "3");
+
+
         ExcelData data = new ExcelData();
         data.setName("各个品类订单完成情况");
         //添加表头
@@ -844,6 +858,12 @@ public class OutExcelController {
         titles.add("小家电完成数量");
         titles.add("IOT订单总数");
         titles.add("IOT完成数量");
+        titles.add("电瓶车覆盖街道数量");
+        titles.add("电瓶车订单总数");
+        titles.add("电瓶车进行中的数量");
+        titles.add("电瓶车用户取消");
+        titles.add("电瓶车平台取消");
+        titles.add("电瓶车完成数量");
         data.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
@@ -886,6 +906,12 @@ public class OutExcelController {
             row.add(smallAppOrderCompleteList.get(i));
             row.add(IOTOrderList.get(i));
             row.add(IOTOrderCompleteList.get(i));
+            row.add(electroStreetNum.get(i));
+            row.add(electroOrderList.get(i));
+            row.add(electroOrderIngList.get(i));
+            row.add(electroOrderCancelList.get(i));
+            row.add(electroOrderRejectList.get(i));
+            row.add(electroOrderCompleteList.get(i));
             rows.add(row);
         }
         data.setRows(rows);
@@ -913,7 +939,8 @@ public class OutExcelController {
         List<Long> bigOrderList = orderService.getOrderListByCity(orderBean.getStartTime(), orderBean.getEndTime(), "4");
         //查询大件订单数量
         List<Long> fiveOrderList = orderService.getOrderListByCity(orderBean.getStartTime(), orderBean.getEndTime(), "3");
-
+        //查询电瓶车订单数量
+        List<Long> electroOrderList = orderService.getOrderListByCity(orderBean.getStartTime(), orderBean.getEndTime(), "9");
         ExcelData data = new ExcelData();
         data.setName("各个品类订单完成情况");
         //添加表头
@@ -925,6 +952,7 @@ public class OutExcelController {
         titles.add("生活垃圾订单数量");
         titles.add("大件订单数量");
         titles.add("五公斤订单数量");
+        titles.add("电瓶车订单数量");
         data.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
@@ -938,6 +966,7 @@ public class OutExcelController {
             row.add(houseOrderList.get(i));
             row.add(bigOrderList.get(i));
             row.add(fiveOrderList.get(i));
+            row.add(electroOrderList.get(i));
             rows.add(row);
         }
         data.setRows(rows);
@@ -1122,11 +1151,13 @@ public class OutExcelController {
         Integer houseCompleteNum = orderService.getOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "2", "3");
         Integer fiveCompleteNum = orderService.getOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "3", "3");
         Integer bigCompleteNum = orderService.getOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "4", "3");
+        Integer electroCompleteNum = orderService.getOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "9", "3");
 
         Integer applianceManyNum = orderService.getManyOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "1", null);
         Integer houseManyNum = orderService.getManyOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "2", null);
         Integer fiveManyNum = orderService.getManyOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "3", null);
         Integer bigManyNum = orderService.getManyOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "4", null);
+        Integer electroManyNum = orderService.getManyOrderListByDate(orderBean.getStartTime(), orderBean.getEndTime(), "9", null);
 
         ExcelData data = new ExcelData();
         data.setName("某个时间段多次下单统计");
@@ -1138,6 +1169,7 @@ public class OutExcelController {
         titles.add("生活五废");
         titles.add("五公斤");
         titles.add("大家具");
+        titles.add("电瓶车");
         data.setTitles(titles);
         //添加列
         List<List<Object>> rows = new ArrayList();
@@ -1147,6 +1179,7 @@ public class OutExcelController {
         row.add(houseCompleteNum);
         row.add(fiveCompleteNum);
         row.add(bigCompleteNum);
+        row.add(electroCompleteNum);
         rows.add(row);
         List<Object> row1 = new ArrayList();
         row1.add("选择时间段完多次下单数量");
@@ -1154,6 +1187,7 @@ public class OutExcelController {
         row1.add(houseManyNum);
         row1.add(fiveManyNum);
         row1.add(bigManyNum);
+        row1.add(electroManyNum);
         rows.add(row1);
         data.setRows(rows);
         SimpleDateFormat fdate = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
@@ -1195,6 +1229,9 @@ public class OutExcelController {
                  * @Date: 2019/12/12 0012
                  */
                 tableName = "sb_company_stree";
+            }else if (Order.TitleType.ELECTROMOBILE.getValue().toString().equals(title)) {
+                type = "电瓶车";
+                tableName = "sb_company_street_electro_mobile";
             } else {
                 throw new ApiException("参数错误");
             }

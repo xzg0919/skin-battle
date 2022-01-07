@@ -95,6 +95,13 @@ public class MemberAddress extends  DataEntity<Long>{
 	 */
 	@TableField(exist = false)
 	private String isSmallApp;
+
+	/**
+	 * 是否回收电瓶车
+	 */
+	@TableField(exist = false)
+	private String IsElectroMobile;
+
 	/**
 	 * 城市名称
 	 */

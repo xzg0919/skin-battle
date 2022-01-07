@@ -46,6 +46,9 @@ public class CategoryAttrServiceImpl extends ServiceImpl<CategoryAttrMapper, Cat
 				}
 		return list;
 	}
+
+	@Autowired
+	CompanyStreetElectroMobileService companyStreetElectroMobileService;
 	/**
      * 根据分类id取得所有分类属性
      * @author 王灿
@@ -61,6 +64,9 @@ public class CategoryAttrServiceImpl extends ServiceImpl<CategoryAttrMapper, Cat
 				companyId = companyStreetBigService.selectStreetBigCompanyId(memberAddress.getStreetId())+"";
 			}else if ("appliance".equals(type)) {
 				companyId = companyStreetApplianceService.selectStreetApplianceCompanyId(memberAddress.getStreetId(), memberAddress.getCommunityId());
+			}
+			else if ("electromobile".equals(type)) {
+				companyId = String.valueOf(companyStreetElectroMobileService.selectCompanyByStreetId(memberAddress.getStreetId()));
 			}
 		}
 		EntityWrapper<CategoryAttr> wraper = new EntityWrapper<CategoryAttr>();

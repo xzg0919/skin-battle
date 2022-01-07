@@ -76,7 +76,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     private OrderItemAchService orderItemAchService;
     @Autowired
     private  CompanyCityRatioService companyCityRatioService;
-
+    @Autowired
+    CompanyStreetElectroMobileService companyStreetElectroMobileService;
     /**
      * 获取一级类的商品
      */
@@ -277,7 +278,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Override
     @Transactional(readOnly = false)
     public boolean updatePrice(ComIdAndCateOptIdBean comIdAndCateOptIdBean) throws Exception {
-        if (comIdAndCateOptIdBean.getTitle().equals(CategoryType.HOUSEHOLD.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.DIGITAL.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.BIGTHING.name())) {
+        if (comIdAndCateOptIdBean.getTitle().equals(CategoryType.HOUSEHOLD.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.DIGITAL.name()) || comIdAndCateOptIdBean.getTitle().equals(CategoryType.BIGTHING.name())|| comIdAndCateOptIdBean.getTitle().equals(CategoryType.ELECTROMOBILE.name())) {
             List<CategoryBean> priceList = comIdAndCateOptIdBean.getHouseholdPriceList();
             for (CategoryBean categoryBean : priceList) {
                 Category category = this.selectById(categoryBean.getId());
@@ -491,14 +492,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         }
         return price;
     }
+
+
     @Override
     @Transactional
     public BigDecimal getPricesAll(String aliUserId, long categoryId, String type, String categoryAttrOptionIds){
         //所有的分类Id
-        System.out.println("进入新的计算价格接口预估价格的Ids ：" + categoryAttrOptionIds);
         //获取当前用户的默认地址
         MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
-        System.out.println("memberAddressId 是：" + memberAddress.getId() + "分类Id：" + categoryId + "预估价格的Ids ：" + categoryAttrOptionIds);
         if (memberAddress == null) {
             throw new com.tzj.module.easyopen.exception.ApiException("暂未添加回收地址");
         }
@@ -518,8 +519,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             }
             companyId = streetBigCompanyId + "";
         }
+        else if ("ELECTROMOBILE".equals(type)) {
+            Integer streetBigCompanyId = companyStreetElectroMobileService.selectCompanyByCategoryId(category.getParentId(), memberAddress.getStreetId());
+            if (null == streetBigCompanyId) {
+                throw new com.tzj.module.easyopen.exception.ApiException("该区域暂无服务");
+            }
+            companyId = streetBigCompanyId + "";
+        }
         final BigDecimal[] price = {categoryMapper.selectCategoryPriceByCityCompanyId(categoryId, memberAddress.getCityId(), companyId)};
-        System.out.println("新的计算价格接口基准价格："+price[0]);
         //获取所有分类属性选项Id的集合
         String[] OptionIds = categoryAttrOptionIds.split(",");
         List<BigDecimal> specialPriceList = new ArrayList<>();
@@ -533,6 +540,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 price[0] = price[0].add(companyCategoryAttrOptionCity.getAttrOptionPrice());
             } else if ("BIGTHING".equals(type)) {
                 price[0] = price[0].multiply(companyCategoryAttrOptionCity.getAttrOptionPrice());
+            }
+            else if ("ELECTROMOBILE".equals(type)) {
+                price[0] = price[0].add(companyCategoryAttrOptionCity.getAttrOptionPrice());
             }
         });
         //将取到的特殊价格从小到大排序

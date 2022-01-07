@@ -476,4 +476,8 @@ public interface OrderService extends IService<Order> {
 	@Override
 	boolean updateById(Order order);
 
+
+	Map<String,Object> saveElectroMobileOrder(OrderBean orderbean);
+
+
 }

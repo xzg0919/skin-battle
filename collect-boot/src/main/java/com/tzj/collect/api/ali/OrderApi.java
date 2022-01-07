@@ -989,4 +989,109 @@ public class OrderApi {
         return member;
     }
 
+
+    @Autowired
+    CompanyStreetElectroMobileService companyStreetElectroMobileService;
+
+    /**
+     * 电瓶车下单接口
+     * @param orderbean
+     * @return
+     * @throws ApiException
+     */
+    @Api(name = "order.electroMobile.create", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Object createElectroMobileOrder(OrderBean orderbean) throws ApiException {
+        Member member = MemberUtils.getMember();
+        Map<String, Object> resultMap = null;
+        Boolean isImprisonMember = false;
+        Boolean isImprisonRule = false;
+        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.ELECTROMOBILE)){
+            throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
+        }
+        isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "9");
+        if (isImprisonMember) {
+            resultMap = new HashMap<>();
+            resultMap.put("type", 5);
+            resultMap.put("msg", "近期下单次数过多，系统检测异常，如有疑问请联系客服");
+            resultMap.put("code", 5);
+            return resultMap;
+        }
+        isImprisonRule = imprisonRuleService.isImprisonRuleByAliUserId(member.getAliUserId(), "9");
+        if (isImprisonRule) {
+            resultMap = new HashMap<>();
+            resultMap.put("type", 5);
+            resultMap.put("msg", "近期下单次数过多，系统检测异常，如有疑问请联系客服");
+            resultMap.put("code", 5);
+            return resultMap;
+        }
+        //根据当前登录的会员，获取姓名、绿账号和阿里userId
+        orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
+        orderbean.setGreenCode(member.getGreenCode());
+        orderbean.setAliUserId(member.getAliUserId());
+        //查询用户的默认地址
+        MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
+        if (memberAddress == null) {
+            return "您暂未添加回收地址";
+        }
+        //根据分类Id查询父类分类id
+        Category category = categoryService.selectById(orderbean.getCategoryId());
+        Integer communityId = memberAddress.getCommunityId();
+        String level = "1";
+        String areaId = memberAddress.getAreaId().toString();
+        //根据分类Id、街道id和小区Id查询所属企业
+        Integer companyId = companyStreetElectroMobileService.selectCompanyByCategoryId(category.getParentId(), memberAddress.getStreetId());
+        if (null == companyId) {
+            return "该区域暂无回收企业";
+        }
+        orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
+        orderbean.setCompanyId(companyId);
+        orderbean.setLevel(level);
+        orderbean.setCommunityId(communityId);
+        orderbean.setStreetId(memberAddress.getStreetId());
+        //随机生成订单号
+        String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
+            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        }
+        orderbean.setOrderNo(orderNo);
+        //保存订单
+        resultMap = orderService.saveElectroMobileOrder(orderbean);
+        log.info("电瓶车订单下单成功，订单号:{},品类id:{},街道id:{},小区id:{}",orderNo,category.getParentId(),memberAddress.getStreetId(),communityId);
+        //钉钉消息赋值回收公司名称
+        Company company = companyService.selectById(companyId);
+        if (null != company) {
+            //判断是否开启自动派单
+            try {
+                if ("1".equals(company.getIsOpenOrder())) {
+                    orderService.orderSendRecycleByOrderId(Integer.parseInt(resultMap.get("id") + ""));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            orderbean.setCompanyName(company.getName());
+            orderbean.setDingDingUrl(company.getDingDingUrl());
+            orderbean.setDingDingSing(company.getDingDingSing());
+            try {
+                if ("操作成功".equals(resultMap.get("msg") + "")) {
+                    if ("true".equals(applicationInit.getIsDd())) {
+                        //钉钉通知
+                        asyncService.notifyDingDingOrderCreate(orderbean);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //是否有马上回收红包
+        if ("Y".equals(orderbean.getIsDelivery())) {
+            RedisUtil.SaveOrGetFromRedis saveOrGetFromRedis = new RedisUtil.SaveOrGetFromRedis();
+            //保存一个月
+            saveOrGetFromRedis.saveInRedis("receive:" + orderNo, UUID.randomUUID().toString(), 30 * 24 * 60 * 60, jedisPool);
+        }
+
+        return resultMap;
+    }
+
 }

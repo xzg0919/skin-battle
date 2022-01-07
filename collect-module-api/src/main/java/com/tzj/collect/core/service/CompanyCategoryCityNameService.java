@@ -30,4 +30,6 @@ public interface CompanyCategoryCityNameService extends IService<CompanyCategory
     List<Category> getTwoCategoryListLocal(Integer categoryId,Integer companyId,Integer cityId, String isCash);
 
     boolean isAbleCategory(Integer companyId, Integer streetId, int parentId);
+
+    List<Category> getElectroMobileCategoryByCompanyId(Integer companyId, Integer cityId);
 }

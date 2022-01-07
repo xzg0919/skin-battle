@@ -57,10 +57,12 @@ public class RecyclersRangeApplianceServiceImpl extends ServiceImpl<RecyclersRan
         return recyclersRangeApplianceMapper.companyAreaRecyclerRanges(companyId);
     }
 
+    @Override
     public List<Map<String,Object>> getRecyclerAreaByTitleId(String recyclerId,String companyId){
         return recyclersRangeApplianceMapper.getRecyclerAreaByTitleId(recyclerId,companyId);
     }
 
+    @Override
     public List<Map<String,Object>> getRecyclerStreetByTitleId(String recyclerId,String companyId,String areaId){
         return recyclersRangeApplianceMapper.getRecyclerStreetByTitleId(recyclerId,companyId,areaId);
     }

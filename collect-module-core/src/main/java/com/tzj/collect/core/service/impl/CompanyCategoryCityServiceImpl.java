@@ -79,6 +79,9 @@ public class CompanyCategoryCityServiceImpl extends ServiceImpl<CompanyCategoryC
         else if("4".equals(title)){
             categoryList = categoryService.selectList(new EntityWrapper<Category>().eq("title", 4).eq("level_", 1));
         }
+         else if("9".equals(title)){
+            categoryList = categoryService.selectList(new EntityWrapper<Category>().eq("title", 9).eq("level_", 1));
+        }
         categoryList.stream().forEach(category -> {
             CompanyCategoryCityName companyCategoryCityName = companyCategoryCityNameService.selectOne(new EntityWrapper<CompanyCategoryCityName>().eq("company_id", companyId).eq("city_id", cityId).eq("category_id", category.getId()));
             if (null == companyCategoryCityName){

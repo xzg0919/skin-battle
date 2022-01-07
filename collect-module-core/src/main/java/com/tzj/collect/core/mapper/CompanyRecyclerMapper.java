@@ -94,6 +94,9 @@ public interface CompanyRecyclerMapper extends BaseMapper<CompanyRecycler>{
 	 */
 	List<Map<String,Object>> getHouseCompanyRange(Integer companyId);
 
+	List<Map<String,Object>> getElectroMobileCompanyRange(Integer companyId);
+
+
     Map<String, Object> companyBlueTooth(@Param("recId")String recId);
 	/**
 	 * 根据公司和回收类型查找回收人员信息（主要是电话）

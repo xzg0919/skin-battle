@@ -146,7 +146,6 @@ public class AppOrderApi {
     @Api(name = "app.order.savebyrecy", version = "1.0")
     @RequiresPermissions(values = APP_API_COMMON_AUTHORITY)
     public boolean saveByRecy(OrderBean orderBean) {
-        System.out.println("进完成接口了");
         return orderService.saveByRecy(orderBean);
     }
 

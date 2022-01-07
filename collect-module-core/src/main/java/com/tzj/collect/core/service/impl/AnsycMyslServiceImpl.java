@@ -197,4 +197,41 @@ public class AnsycMyslServiceImpl implements AnsycMyslService {
             System.out.println("调用失败");
         }
     }
+
+
+    @Override
+    public void updateForest(MyslRequestLog myslRequestLog ){
+
+
+            try{
+                AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", AlipayConst.XappId,AlipayConst.private_key,"json","GBK",AlipayConst.ali_public_key,"RSA2");
+                AlipayEcoActivityRecycleSendRequest request = new AlipayEcoActivityRecycleSendRequest();
+
+                request.setBizContent(myslRequestLog.getMyslParams());
+                AlipayEcoActivityRecycleSendResponse response = null;
+                try {
+                    response = alipayClient.execute(request);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                myslRequestLog.setMyslResult(JSONObject.toJSON(response).toString());
+                if(response.isSuccess()){
+                    System.out.println("调用成功");
+                    myslRequestLog.setFullEnergy(Integer.parseInt(response.getFullEnergy().toString()));
+                } else {
+                    if(response.getSubMsg().equals("参数有误已发放，无需再次发放！")){
+                        myslRequestLog.setFullEnergy(9999);
+                        myslRequestLog.setRemarks("已发放，无需再次发放！");
+                    }
+
+                }
+                myslRequestLogService.updateById(myslRequestLog);
+            }catch (Exception e) {
+
+                e.printStackTrace();
+            }
+
+
+    }
+
 }

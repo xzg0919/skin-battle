@@ -154,6 +154,9 @@
 		<if test="title == 3">
 			INNER JOIN sb_recyclers_range_household c ON f.street_id = c.street_id AND f.company_id = c.company_id
 		</if>
+		<if test="title == 9">
+			INNER JOIN sb_recyclers_range_electro c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
 		INNER JOIN sb_company_recycler d ON c.recyclers_id = d.recycler_id AND f.company_id = d.company_id
 		INNER JOIN sb_recyclers a ON c.recyclers_id = a.id
 		INNER JOIN sb_recyclers_title e ON f.title = e.title_id AND e.recycle_id = a.id
@@ -179,6 +182,9 @@
 		</if>
 		<if test="title == 4">
 			INNER JOIN sb_recyclers_range_big c ON f.street_id = c.street_id AND f.company_id = c.company_id
+		</if>
+		<if test="title == 9">
+			INNER JOIN sb_recyclers_range_electro c ON f.street_id = c.street_id AND f.company_id = c.company_id
 		</if>
 		INNER JOIN sb_company_recycler d ON c.recyclers_id = d.recycler_id AND f.company_id = d.company_id
 		INNER JOIN sb_recyclers a ON c.recyclers_id = a.id

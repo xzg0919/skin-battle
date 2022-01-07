@@ -142,6 +142,8 @@ public interface CompanyRecyclerService extends IService<CompanyRecycler>{
 	@DS("slave")
 	List<Map<String,Object>> getHouseCompanyRange(Integer companyId);
 
+	List<Map<String,Object>> getElectroMobileCompanyRange(Integer companyId);
+
 	Object recyclersDel(Integer companyId, String recycleId);
 
 	Object recycleDelete(Integer companyId, String recycleId);

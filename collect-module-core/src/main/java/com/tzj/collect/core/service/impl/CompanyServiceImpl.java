@@ -69,8 +69,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 	private RecyclersRangeHouseService recyclersRangeHouseService;
 	@Autowired
 	private AliPayService aliPayService;
+	@Autowired
+	CompanyStreetElectroMobileService companyStreetElectroMobileService;
 
-	
+	@Autowired
+	RecyclersRangeElectroService recyclersRangeElectroService;
 	/**
 	 * 返回企业信息列表
 	 */
@@ -155,6 +158,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		this.updateById(company);
 		return "操作成功";
 	}
+
+
 	@Override
 	public  Object companyAreaRanges(String title,String companyId){
 		Map<String,Object> resutMap = new HashMap<>();
@@ -169,6 +174,10 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		}else if("4".equals(title)){
 			companyRange = companyStreetBigService.companyAreaRanges(companyId);
 			companyRecycleRange = recyclersRangeBigService.companyAreaRecyclerRanges(companyId);
+		}
+		else if("9".equals(title)){
+			companyRange = companyStreetElectroMobileService.companyAreaRanges(companyId);
+			companyRecycleRange = recyclersRangeElectroService.companyAreaRecyclerRanges(companyId);
 		}
 		if(companyRange.isEmpty()){
 			companyRange.put("cityNum",0);
@@ -197,6 +206,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 		String applianceNum = "0";
 		String houseNum = "0";
 		String bigNum = "0";
+		String  electroMobileNum ="0";
 		if(null != companyTitleList&&!companyTitleList.isEmpty()){
 			for (Map map:companyTitleList ) {
 				if("1".equals(map.get("title").toString())){
@@ -206,12 +216,15 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 				}else if("4".equals(map.get("title").toString())){
 					bigNum = map.get("count").toString();
 				}
+				else if("9".equals(map.get("title").toString())){
+					electroMobileNum = map.get("count").toString();
+				}
 			}
 		}
 			resultMap.put("applianceNum",applianceNum);
 			resultMap.put("houseNum",houseNum);
 			resultMap.put("bigNum",bigNum);
-
+		    resultMap.put("electroMobileNum",electroMobileNum);
 		List<Map<String, Object>> adminCompanyList = companyMapper.getAdminCompanyList(companyName, title,pageStart,pageBean.getPageSize());
 		Integer adminCompanyCount = companyMapper.getAdminCompanyCount(companyName, title);
 		resultMap.put("adminCompanyList",adminCompanyList);
@@ -290,20 +303,24 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 
 		return "操作成功";
 	}
+
 	@Override
 	public Object adminCompanyRangeById(Integer companyId){
 		Map<String,Object> resultMap = new HashMap<>();
 		Map<String,Object> applianceRange = new HashMap<>();
 		Map<String,Object> houseRange = new HashMap<>();
 		Map<String,Object> bigRange = new HashMap<>();
+		Map<String,Object> electroMobileRange = new HashMap<>();
 		String isOpen = "1";
 		applianceRange = companyStreetApplianceService.adminCompanyAreaRanges(companyId.toString());
 		bigRange = companyStreetBigService.companyAreaRanges(companyId.toString());
 		houseRange = companyStreetHouseService.adminCompanyAreaRanges(companyId.toString());
+		electroMobileRange = companyStreetElectroMobileService.adminCompanyAreaRanges(companyId.toString());
 
 		applianceRange.put("isOpen", isOpen);
 		houseRange.put("isOpen", isOpen);
 		bigRange.put("isOpen", isOpen);
+		electroMobileRange.put("isOpen", isOpen);
 
 		List<Map<String, Object>> resuleList = categoryService.getIsOpenCategory(companyId.toString());
 		if(null != resuleList && !resuleList.isEmpty()) {
@@ -316,12 +333,16 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company> impl
 				} else if ("4".equals(map.get("title").toString())) {
 					bigRange.put("isOpen", "0");
 				}
+				else if ("9".equals(map.get("title").toString())) {
+					electroMobileRange.put("isOpen", "0");
+				}
 			}
 		}
 
 		resultMap.put("applianceRange",applianceRange);
 		resultMap.put("houseRange",houseRange);
 		resultMap.put("bigRange",bigRange);
+		resultMap.put("electroMobileRange",electroMobileRange);
 		return  resultMap;
 	}
 

@@ -25,8 +25,8 @@ spring:
     name: collect
   # 环境 dev|pro || dynamicdb-test 测试多数据源配置 | dynamicdb-pro 正式多数据源配置
   profiles:
-    #默认启动测试环境。可以启动应用的时候指定当前环境 java -jar myproject.jar --spring.profiles.active = dynamicdb-pro
-    active: dynamicdb-pro
+    #默认启动测试环境。可以启动应用的时候定当前环境 java -jar myproject.jar --spring.profiles.active = dynamicdb-pro
+    active: dev
   # cache配置
   cache:
     type: ehcache

@@ -81,7 +81,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     private RecyclerCancelLogService recyclerCancelLogService;
     @Autowired
     private RecyclersService recyclersService;
-
+    @Autowired
+    RecyclersRangeElectroService recyclersRangeElectroService;
     /**
      * 根据手机号查询回收人员
      *
@@ -369,6 +370,21 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
                         recyclersRangeBigService.delete(new EntityWrapper<RecyclersRangeBig>().eq("recyclers_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("street_id", areaBean.getStreeId()).eq("area_id", areaBean.getAreaId()));
                     }
                 }
+                else if ("9".equals(recyclersServiceRangeBean.getTitle())) {
+                    if ("0".equals(areaBean.getSaveOrDelete())) {
+                        RecyclersRangeElectro recyclersRangeElectro = recyclersRangeElectroService.selectOne(new EntityWrapper<RecyclersRangeElectro>().eq("recyclers_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("street_id", areaBean.getStreeId()).eq("area_id", areaBean.getAreaId()));
+                        if (null == recyclersRangeElectro) {
+                            recyclersRangeElectro = new RecyclersRangeElectro();
+                            recyclersRangeElectro.setCompanyId(companyId);
+                            recyclersRangeElectro.setRecyclersId(Integer.parseInt(recyclersServiceRangeBean.getRecycleId()));
+                            recyclersRangeElectro.setStreetId(Integer.parseInt(areaBean.getStreeId()));
+                            recyclersRangeElectro.setAreaId(areaBean.getAreaId());
+                            recyclersRangeElectroService.insert(recyclersRangeElectro);
+                        }
+                    } else {
+                        recyclersRangeElectroService.delete(new EntityWrapper<RecyclersRangeElectro>().eq("recyclers_id", recyclersServiceRangeBean.getRecycleId()).eq("company_id", companyId).eq("street_id", areaBean.getStreeId()).eq("area_id", areaBean.getAreaId()));
+                    }
+                }
             }
         }
         RecyclersTitle recyclersTitle = null;
@@ -428,6 +444,14 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             areaList = (List<Map<String, Object>>) recyclersRangeApplianceService.getStreeRecyclersRange(areaId, recycleId, companyId.toString());
             for (Map<String, Object> map : areaList) {
                 communityList = recyclersRangeApplianceService.getCommunityRecyclersRange(map.get("id").toString(), recycleId, companyId.toString());
+                map.put("communityList", communityList);
+            }
+            resultMap.put("areaList", areaList);
+            return resultMap;
+        }else if ("9".equals(title)) {
+            areaList = (List<Map<String, Object>>) recyclersRangeElectroService.getStreeRecyclersRange(areaId, recycleId, companyId.toString());
+            for (Map<String, Object> map : areaList) {
+                communityList = recyclersRangeElectroService.getCommunityRecyclersRange(map.get("id").toString(), recycleId, companyId.toString());
                 map.put("communityList", communityList);
             }
             resultMap.put("areaList", areaList);
@@ -501,6 +525,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             areaList = (List<Map<String, Object>>) recyclersRangeHouseService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
         } else if ("1".equals(recyclersServiceRangeBean.getTitle())) {
             areaList = (List<Map<String, Object>>) recyclersRangeApplianceService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
+        }else if ("9".equals(recyclersServiceRangeBean.getTitle())) {
+            areaList = (List<Map<String, Object>>) recyclersRangeElectroService.getAreaRecyclersRange(recyclersServiceRangeBean.getCityId(), recyclersServiceRangeBean.getRecycleId(), companyId);
         }
         List<Map<String, Object>> recyclerTitleList = recyclersTitleService.getRecyclerTitleList(recyclersServiceRangeBean.getRecycleId());
         resultMap.put("recyclerTitleList", recyclerTitleList);
@@ -529,6 +555,8 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
     public List<Long> getStreetListGroupCompany(){
         return recyclersMapper.getStreetListGroupCompany();
     }
+
+
     @Override
     public Object getRecyclerAreaByTitleId(Long recyclerId,String title,String companyId){
         List<Map<String,Object>> resultList = null;
@@ -548,6 +576,13 @@ public class RecyclersServiceImpl extends ServiceImpl<RecyclersMapper, Recyclers
             resultList = recyclersRangeBigService.getRecyclerAreaByTitleId(recyclerId.toString(),companyId);
             resultList.stream().forEach(map -> {
                 List<Map<String, Object>> streetList = recyclersRangeBigService.getRecyclerStreetByTitleId(recyclerId.toString(), companyId, map.get("areaId").toString());
+                map.put("streetList",streetList);
+            });
+        }
+        if ("9".equals(title)){
+            resultList = recyclersRangeElectroService.getRecyclerAreaByTitleId(recyclerId.toString(),companyId);
+            resultList.stream().forEach(map -> {
+                List<Map<String, Object>> streetList = recyclersRangeElectroService.getRecyclerStreetByTitleId(recyclerId.toString(), companyId, map.get("areaId").toString());
                 map.put("streetList",streetList);
             });
         }

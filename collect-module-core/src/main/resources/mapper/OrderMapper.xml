@@ -116,7 +116,7 @@
 
         </if>
         <if test="title == null  ">
-            AND a.title in (1,2,4)
+            AND a.title in (1,2,4,9)
         </if>
         <if test="reInit != null and reInit !='' ">
             AND a.cancel_reason IS NOT NULL
@@ -282,7 +282,7 @@
 
         </if>
         <if test="title == null  ">
-            AND a.title in (1,2,4)
+            AND a.title in (1,2,4,9)
         </if>
         <if test="reInit != null and reInit !='' ">
             AND a.cancel_reason IS NOT NULL
@@ -344,7 +344,7 @@
             AND a.title = #{title}
         </if>
         <if test="title == null  ">
-            AND a.title in (1,2,4)
+            AND a.title in (1,2,4,9)
         </if>
         <if test="reInit != null and reInit !='' ">
             AND a.cancel_reason IS NOT NULL
@@ -876,6 +876,7 @@
 	AND a.del_flag = 0
 	AND b.del_flag = 0
 	AND b.is_scan = 0
+	order  by b.create_date desc
 	</select>
 
     <select id="paymentPriceByOrderId" parameterType="Integer" resultType="Object">
@@ -1821,7 +1822,7 @@ ORDER BY time
         a.id,
         a.order_no AS orderNo,
         DATE_FORMAT(a.create_date, '%Y-%c-%d %H:%i:%s' ) as categoryDate,
-        if(c.title = '1','废弃家电',if(c.title = '2','生活垃圾',if(c.title = '4','大件垃圾',if(c.title = '8','生活小家电',''))))AS
+        if(a.title = '1','废弃家电',if(a.title = '2','生活垃圾',if(a.title = '4','大件垃圾',if(a.title = '8','生活小家电',if(a.title = '9','电瓶车',if(a.title = '7','生活垃圾/废弃家电',''))))))AS
         categoryName,
         c.name_ AS name,
         a.link_man AS userName,
@@ -2957,7 +2958,7 @@ ORDER BY time
         CONCAT(a.arrival_time,' ',a.arrival_period) AS arrivalTime,
         a.link_man AS linkMan,
         a.tel,
-        IF (a.title = '1','废弃家电',IF(a.title = '4','大件垃圾','生活垃圾')) AS categoryName,
+        IF (a.title = '1','废弃家电',IF(a.title = '4','大件垃圾',IF(a.title = '9','电瓶车','生活垃圾'))) AS categoryName,
         a.status_ AS status,
         TIMESTAMPDIFF(MINUTE, IF(a.arrival_period='pm',CONCAT(a.arrival_time,'
         18:00:00'),IF(a.arrival_period='am',CONCAT(a.arrival_time,' 12:00:00'),CONCAT(a.arrival_time,'
@@ -3101,7 +3102,7 @@ ORDER BY time
         SELECT
         DATE_FORMAT(a.create_date,'%Y-%m-%d %H:%i:%S') AS createDate,
         a.order_no AS orderNo,
-        IF(b.title = '1','家电数码',IF(b.title = '4','大件垃圾','生活垃圾')) AS title,
+        IF(b.title = '1','家电数码',IF(b.title = '4','大件垃圾',IF(b.title = '9','电瓶车','生活垃圾'))) AS title,
         b.link_man AS linkMan,
         b.id,
         b.tel,
@@ -3193,6 +3194,14 @@ ORDER BY time
         '大件垃圾'
         WHEN 5 THEN
         'iot订单'
+        WHEN 6 THEN
+        'iot清运订单'
+        WHEN 7 THEN
+        '生活垃圾/废弃家电订单'
+        WHEN 8 THEN
+        '小家电订单'
+        WHEN 9 THEN
+        '电瓶车订单'
         END AS title,
         IF(order_.isOverTime > 0,'是','否') AS isOverTime,
         IF(order_.isOverTime > 2880,'1',if(order_.complaintType = '3','1','0')) AS isComplaint,
@@ -3621,7 +3630,7 @@ ORDER BY time
         SELECT
         b.name_ AS name,
         a.order_no AS orderNo,
-        IF(a.title = '1','家电',IF(a.title = '4','大件','生活垃圾')) AS title,
+        IF(a.title = '1','家电',IF(a.title = '4','大件',IF(a.title = '9','电瓶车','生活垃圾'))) AS title,
         DATE_FORMAT(a.create_date, '%Y-%m-%d %k:%i:%s') AS createDate,
         a.cancel_reason AS cancelReason,
         IF(a.status_ = '4','用户取消','平台取消') AS status

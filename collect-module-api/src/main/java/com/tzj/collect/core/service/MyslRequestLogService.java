@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.service.IService;
 import com.tzj.collect.entity.Admin;
 import com.tzj.collect.entity.MyslRequestLog;
 
+import java.util.List;
+
 
 public interface MyslRequestLogService extends IService<MyslRequestLog>{
 
-
+    public List<MyslRequestLog> getNoMysqlList();
 }

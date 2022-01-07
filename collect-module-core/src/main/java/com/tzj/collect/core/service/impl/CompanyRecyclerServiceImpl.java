@@ -232,6 +232,8 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 			resultList = mapper.getHouseCompanyRange(companyId);
 		}else if ("4".equals(title)){
 			resultList = mapper.getBigCompanyRange(companyId);
+		}else if ("9".equals(title)){
+			resultList = mapper.getElectroMobileCompanyRange(companyId);
 		}else {
 			resultList = mapper.getCompanyRange(companyId);
 		}
@@ -259,6 +261,10 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 	@Override
 	public List<Map<String,Object>> getHouseCompanyRange(Integer companyId){
 		return mapper.getHouseCompanyRange(companyId);
+	}
+	@Override
+	public List<Map<String,Object>> getElectroMobileCompanyRange(Integer companyId) {
+		return mapper.getElectroMobileCompanyRange(companyId);
 	}
 
 	@Override
@@ -335,6 +341,9 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 		return map;
 	}
 
+	@Autowired
+	RecyclersRangeElectroService recyclersRangeElectroService;
+
 	@Override
 	public Object getRecycleRangeByTitle(String companyId,String recyclerId,String title){
 		Map<String,Object> resultMap = new HashMap<>();
@@ -367,6 +376,15 @@ public class CompanyRecyclerServiceImpl extends ServiceImpl<CompanyRecyclerMappe
 			List<RecyclersRangeAppliance> recyclersRangeAppliancesStreet = recyclersRangeApplianceService.selectList(new EntityWrapper<RecyclersRangeAppliance>().eq("company_id", companyId).eq("recyclers_id", recyclerId));
 			if (!recyclersRangeAppliancesStreet.isEmpty()){
 				streetNum = recyclersRangeAppliancesStreet.size();
+			}
+		}else if("9".equals(title)){
+			List<RecyclersRangeElectro> recyclersRangeElectro = recyclersRangeElectroService.selectList(new EntityWrapper<RecyclersRangeElectro>().eq("company_id", companyId).eq("recyclers_id", recyclerId).groupBy("area_id"));
+			if (!recyclersRangeElectro.isEmpty()){
+				areaNum = recyclersRangeElectro.size();
+			}
+			List<RecyclersRangeElectro> recyclersRangeElectroStreet = recyclersRangeElectroService.selectList(new EntityWrapper<RecyclersRangeElectro>().eq("company_id", companyId).eq("recyclers_id", recyclerId));
+			if (!recyclersRangeElectroStreet.isEmpty()){
+				streetNum = recyclersRangeElectroStreet.size();
 			}
 		}
 		resultMap.put("areaNum",areaNum);

@@ -200,6 +200,7 @@ public class CategoryApi {
 		resultMap.put("DIGITAL",categoryService.topList(0, 1,categoryBean.getIsFiveKg()));
 		resultMap.put("HOUSEHOLD",categoryService.topList(0, 2,categoryBean.getIsFiveKg()));
 		resultMap.put("BIGTHING",categoryService.topList(0, 4,categoryBean.getIsFiveKg()));
+		resultMap.put("ELECTROMOBILE",categoryService.topList(0, 9,categoryBean.getIsFiveKg()));
 		return resultMap;
 	}
 	/**

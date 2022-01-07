@@ -36,6 +36,8 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
             categoryList = categoryService.topList(0, 2,null);
         }else if ("4".equals(categoryBean.getTitle())){
             categoryList = categoryService.topList(0, 4,null);
+        }else if ("9".equals(categoryBean.getTitle())){
+            categoryList = categoryService.topList(0, 9,null);
         }
         if (null != categoryList ){
             categoryList.stream().forEach(category -> {
@@ -79,6 +81,8 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
     public List<Category> getAppliceCategoryByCompanyId(Integer companyId, Integer cityId){
         return companyCategoryCityNameMapper.getAppliceCategoryByCompanyId(companyId,cityId);
     }
+
+
     @Override
     public List<Category> getBigCategoryByCompanyId(Integer companyId, Integer cityId){
         return companyCategoryCityNameMapper.getBigCategoryByCompanyId(companyId,cityId);
@@ -144,5 +148,10 @@ public class CompanyCategoryCityNameServiceImpl extends ServiceImpl<CompanyCateg
         }else {
             return false;
         }
+    }
+
+    @Override
+    public List<Category> getElectroMobileCategoryByCompanyId(Integer companyId, Integer cityId) {
+        return companyCategoryCityNameMapper.getElectroMobileCategoryByCompanyId(companyId,cityId);
     }
 }

@@ -65,23 +65,36 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
     private CompanyStreetApplianceService companyStreetApplianceService;
     @Autowired
     private CompanyCategoryCityNameService companyCategoryCityNameService;
+    @Autowired
+    CompanyStreetElectroMobileService companyStreetElectroMobileService;
 
     @Override
     public Map<String, Object> categoryOneListToken(String aliUserId) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         List<Category> DIGITAL = null;
         List<Category> BIGTHING = null;
+        List<Category> ELECTROMOBILE = null;
         MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(aliUserId);
         if (memberAddress != null) {
             Integer cityId = memberAddress.getCityId();
+            //查家电服务公司
             String appliceCompanyId = companyStreetApplianceService.selectStreetApplianceCompanyId(memberAddress.getStreetId(), memberAddress.getCommunityId());
+            //查大件服务公司
             Integer bigCompanyId = companyStreetBigService.selectStreetBigCompanyId(memberAddress.getStreetId());
+            //查电瓶车服务公司
+            Integer electroMobileCompanyId = companyStreetElectroMobileService.selectCompanyByStreetId(memberAddress.getStreetId());
             if (StringUtils.isNotBlank(appliceCompanyId)) {
                 DIGITAL = companyCategoryCityNameService.getAppliceCategoryByCompanyId(Integer.parseInt(appliceCompanyId), cityId);
             }
             if (null != bigCompanyId) {
                 BIGTHING = companyCategoryCityNameService.getBigCategoryByCompanyId(bigCompanyId, cityId);
             }
+
+            if (null != electroMobileCompanyId) {
+                ELECTROMOBILE = companyCategoryCityNameService.getElectroMobileCategoryByCompanyId(electroMobileCompanyId, cityId);
+            }
+
+
         }
         if (null == DIGITAL || DIGITAL.isEmpty()) {
             DIGITAL = categoryService.topList(0, 1, null);
@@ -89,8 +102,13 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
         if (null == BIGTHING || BIGTHING.isEmpty()) {
             BIGTHING = categoryService.topList(0, 4, null);
         }
+        if (null == ELECTROMOBILE || ELECTROMOBILE.isEmpty()) {
+            ELECTROMOBILE = categoryService.topList(0, 9, null);
+        }
+
         resultMap.put("DIGITAL", DIGITAL);
         resultMap.put("BIGTHING", BIGTHING);
+        resultMap.put("ELECTROMOBILE", ELECTROMOBILE);
         return resultMap;
     }
 
@@ -139,6 +157,14 @@ public class CompanyCategoryServiceImpl extends ServiceImpl<CompanyCategoryMappe
                 if (StringUtils.isNotBlank(appliceCompanyId)) {
                     //获取当前公司下的回收列表
                     priceList = comCateMapper.getBigThingCategoryList(categoryBean.getId(), Integer.parseInt(appliceCompanyId), memberAddress.getCityId());
+                    noPriceList = new ArrayList<>();
+                }
+            }
+            else if ("electroMobile".equals(categoryBean.getType())) {
+                Integer electroMobileCompanyId =  companyStreetElectroMobileService.selectCompanyByCategoryId(categoryBean.getId(), memberAddress.getStreetId());
+                if (null != electroMobileCompanyId) {
+                    //获取当前公司下的回收列表
+                    priceList = comCateMapper.getBigThingCategoryList(categoryBean.getId(),electroMobileCompanyId, memberAddress.getCityId());
                     noPriceList = new ArrayList<>();
                 }
             }

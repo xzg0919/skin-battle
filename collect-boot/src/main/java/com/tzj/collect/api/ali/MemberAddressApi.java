@@ -44,7 +44,8 @@ public class MemberAddressApi {
 	private CompanyStreetHouseService companyStreetHouseService;
 	@Autowired
 	private CompanyStreetAppSmallService companyStreetAppSmallService;
-
+    @Autowired
+    CompanyStreetElectroMobileService companyStreetElectroMobileService;
     /**
      * 保存用户的新增地址/修改后保存的地址
      *
@@ -255,6 +256,15 @@ public class MemberAddressApi {
         } else {
             memberAddress.setIsDigThing("N");
         }
+        //判断地址是否有公司回收电瓶车
+        Integer electroMobile = companyStreetElectroMobileService.selectCompanyByStreetId(memberAddress.getStreetId());
+        if (null != electroMobile) {
+            memberAddress.setIsElectroMobile("Y");
+        } else {
+            memberAddress.setIsElectroMobile("N");
+        }
+
+
         return memberAddress;
     }
 

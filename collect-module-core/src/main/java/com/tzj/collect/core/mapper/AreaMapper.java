@@ -24,11 +24,15 @@ public interface AreaMapper extends BaseMapper<Area> {
 
 	List<Map<String, Object>> adminGetApplianceAreaRange(@Param("companyId") Integer companyId, @Param("cityId") Integer cityId);
 
+	List<Map<String, Object>> adminGetElectroAreaRange(@Param("companyId") Integer companyId, @Param("cityId") Integer cityId);
+
 	List<Map<String, Object>> adminGetHouseAreaRange(@Param("companyId") Integer companyId, @Param("cityId") Integer cityId);
 
 	List<Map<String, Object>> adminGetBigAreaRange(@Param("companyId") Integer companyId, @Param("cityId") Integer cityId);
 
 	List<Map<String, Object>> adminGetApplianceStreetRange(@Param("companyId") Integer companyId, @Param("areaId") Integer areaId);
+
+	List<Map<String, Object>> adminGetElectroStreetRange(@Param("companyId") Integer companyId, @Param("areaId") Integer areaId);
 
 	List<Map<String, Object>> adminGetHouseStreetRange(@Param("companyId") Integer companyId, @Param("areaId") Integer areaId);
 

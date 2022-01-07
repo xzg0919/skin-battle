@@ -110,4 +110,7 @@ public interface AreaService  extends IService<Area>{
 	List<Area> findstreetByAreaId(Long areaId);
 
 	List<Area> findAllCity();
+
+	List<Area> findByAreaName(String  areaName);
+
 }

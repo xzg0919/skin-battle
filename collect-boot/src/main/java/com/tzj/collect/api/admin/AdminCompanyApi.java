@@ -310,6 +310,8 @@ public class AdminCompanyApi {
 			companyRange = companyRecycleService.getHouseCompanyRange(companyBean.getId().intValue());
 		}else if ("4".equals(companyBean.getTitle())){
 			companyRange = companyRecycleService.getBigCompanyRange(companyBean.getId().intValue());
+		}else if ("9".equals(companyBean.getTitle())){
+			companyRange = companyRecycleService.getElectroMobileCompanyRange(companyBean.getId().intValue());
 		}
 		return companyRange;
 	}
