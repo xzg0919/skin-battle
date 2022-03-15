@@ -8,6 +8,7 @@ import com.alipay.api.request.AlipayFundTransUniTransferRequest;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.request.AlipayTradeCreateRequest;
 import com.alipay.api.response.*;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.tzj.collect.Application;
@@ -16,13 +17,16 @@ import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.excel.ExcelData;
 import com.tzj.collect.common.excel.ExcelUtils;
 import com.tzj.collect.common.util.MemberUtils;
+import com.tzj.collect.common.utils.ExcelHelper;
 import com.tzj.collect.core.handler.OrderCompleteHandler;
 import com.tzj.collect.core.handler.OrderHandler;
 import com.tzj.collect.core.param.mysl.MyslBean;
 import com.tzj.collect.core.param.mysl.MyslItemBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
+import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Member;
+import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.common.utils.DateUtils;
 import com.tzj.module.easyopen.exception.ApiException;
@@ -39,7 +43,9 @@ import org.springframework.util.Assert;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.*;
@@ -77,6 +83,15 @@ public class Test {
 
     @Autowired
     PointService pointService;
+
+    @Autowired
+    VoucherAliService voucherAliService;
+
+    @SneakyThrows
+    @org.junit.Test
+    public void makeCode() {
+        voucherAliService.makeCode("289");
+    }
 
 
     /**
@@ -219,12 +234,12 @@ public class Test {
     public void aliPayTransfer() throws AlipayApiException {
         AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
         AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
-        model.setOutBizNo("trans_tzj_20211013001");
+        model.setOutBizNo("trans_tzj_20220221001");
         model.setProductCode("TRANS_ACCOUNT_NO_PWD");
         Participant payeeInfo = new Participant();
-        payeeInfo.setIdentity("2088302884857519");
+        payeeInfo.setIdentity("2088332777855261");
         payeeInfo.setIdentityType("ALIPAY_USER_ID");
-        model.setTransAmount("8.2");
+        model.setTransAmount("15");
         model.setOrderTitle("垃圾分类回收(收呗)货款");
         model.setRemark("垃圾分类回收(收呗)货款");
         model.setPayeeInfo(payeeInfo);
@@ -243,24 +258,169 @@ public class Test {
 
     @Autowired
     MemberService memberService;
+    @Autowired
+    MyslRequestLogService myslRequestLogService;
 
 
     @SneakyThrows
     @org.junit.Test
     public void mysl() {
-        List<Order> orders = orderService.getOrders();
+        List<MyslRequestLog> orders = myslRequestLogService.getNoMysqlList();
         System.out.println("共获取到订单数量：" + orders.size());
 
         orders.forEach(order -> {
-            if ("1".equals(order.getIsMysl()) || order.getIsScan().equals("1")) {
-                //给用户增加蚂蚁能量
-                orderService.myslOrderData(order.getId().toString());
-            }
-        });
-
-        orders.forEach(order -> {
-            System.out.println(order.getOrderNo());
+            ansycMyslService.updateForest(order);
         });
         System.out.println("能量发完");
     }
+
+
+    @Autowired
+    AreaService areaService;
+
+    @Autowired
+    CompanyStreetElectroMobileService companyStreetElectroMobileService;
+
+
+    @SneakyThrows
+    @org.junit.Test
+    public void diandongche() {
+        List<Map<String, Object>> excelObj =
+                ExcelHelper.importExeclFileForPoi(new File("/Users/xiangzhongguo/Downloads/电瓶车可覆盖区域.xlsx"), 1, "xlsx");
+        Integer companyId = 277;
+
+        System.out.println("共" + excelObj.size());
+        List<CompanyStreetElectroMobile> companyStreetElectroMobiles = new ArrayList<>();
+        int i = 1;
+        for (Map excel : excelObj) {
+            try {
+                System.out.println("正在执行第" + i);
+                String streetName = excel.get("map1").toString();
+                String districtName = excel.get("map0").toString();
+                List<Area> byAreaName = areaService.findByAreaName(streetName);
+
+                for (Area area : byAreaName) {
+                    Area district = areaService.selectById(area.getParentId());
+                    if(district !=null && district.getAreaName().equals(districtName)){
+                        CompanyStreetElectroMobile companyStreetElectroMobile = new CompanyStreetElectroMobile();
+                        companyStreetElectroMobile.setCompanyId(companyId);
+                        companyStreetElectroMobile.setAreaId(area.getParentId());
+                        companyStreetElectroMobile.setStreetId(Integer.parseInt(area.getId().toString()));
+                        companyStreetElectroMobiles.add(companyStreetElectroMobile);
+
+                        if (companyStreetElectroMobiles.size() >= 200 || i == excelObj.size()) {
+                            companyStreetElectroMobileService.saveList(companyStreetElectroMobiles);
+                            companyStreetElectroMobiles.clear();
+                        }
+                        break;
+                }
+                }
+                i++;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+        System.out.println("结束");
+    }
+
+    @Autowired
+    CompanyCategoryCityNameService companyCategoryCityNameService;
+
+    @Autowired
+    CategoryService categoryService;
+
+    @org.junit.Test
+    public void send() {
+
+
+        List<String> categoryId = new ArrayList<>();
+        categoryId.add("177");
+        categoryId.add("178");
+        categoryId.add("179");
+        categoryId.add("180");
+        categoryId.add("181");
+        String companyId = "277";
+        List<Map<String, Object>> cityId = companyStreetElectroMobileService.getCityId();
+        for (Map<String, Object> map : cityId) {
+            for (String s : categoryId) {
+                CompanyCategoryCityName companyCategoryCityName = companyCategoryCityNameService.selectOne(new EntityWrapper<CompanyCategoryCityName>()
+                        .eq("company_id", companyId).eq("city_id", map.get("id").toString()).eq("category_id", s));
+                if (null == companyCategoryCityName) {
+                    companyCategoryCityName = new CompanyCategoryCityName();
+                    Category category = categoryService.selectById(s);
+                    Category parentCategory = categoryService.selectById(category.getParentId());
+                    companyCategoryCityName.setCompanyId(companyId);
+                    companyCategoryCityName.setCityId(map.get("id").toString());
+                    companyCategoryCityName.setCategoryId(category.getId().intValue());
+                    companyCategoryCityName.setParentId(category.getParentId());
+                    companyCategoryCityName.setParentName(parentCategory.getName());
+                    companyCategoryCityName.setParentIds(category.getParentIds());
+                    companyCategoryCityName.setPrice(category.getMarketPrice());
+                    companyCategoryCityName.setUnit(category.getUnit());
+                    companyCategoryCityNameService.insert(companyCategoryCityName);
+                }
+            }
+
+        }
+        System.out.println("执行完成");
+
+    }
+
+
+    @Autowired
+    RecyclersService recyclersService;
+    @Autowired
+    CompanyRecyclerService companyRecyclerService;
+
+
+    @SneakyThrows
+    @org.junit.Test
+    public void insertRecycler() {
+        List<Map<String, Object>> excelObj =
+                ExcelHelper.importExeclFileForPoi(new File("/Users/xiangzhongguo/Downloads/号码.xlsx"), 0, "xlsx");
+        Integer companyId = 279;
+
+        for (Map excel : excelObj) {
+
+            Recyclers recyclers1=new Recyclers();
+            recyclers1.setStatus("0");
+            recyclers1.setAuthStatus("0");
+            recyclers1.setTel(excel.get("map0").toString());
+            recyclers1.setPassword("111111");
+            recyclers1.setDsddRecycler(1);
+            recyclersService.insert(recyclers1);
+
+
+            CompanyRecycler companyRecyclers1=new CompanyRecycler();
+            companyRecyclers1.setRecyclerId(Integer.parseInt(recyclers1.getId()+""));
+            companyRecyclers1.setStatus("1");
+            companyRecyclers1.setCompanyId(companyId);
+            companyRecyclers1.setType("1");
+            companyRecyclers1.setIsManager("1");
+
+            companyRecyclerService.insert(companyRecyclers1);
+
+
+        }
+
+        System.out.println("结束");
+    }
+
+
+    @Autowired
+    AdminService adminService;
+
+    @org.junit.Test
+    public void insertRecycler1() {
+        Admin ad =new Admin();
+        ad.setName("111");
+        ad.setPassword("2222");
+        ad.setUsername("333");
+        adminService.insert(ad);
+    }
+
+
 }

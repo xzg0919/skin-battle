@@ -62,7 +62,6 @@ public class GongYiCharityServiceServiceImpl implements GongYiCharityService {
 
     @Override
     public AlipaySystemOauthTokenResponse selectUserToken(String userCode) {
-        System.out.println("-------hua用户信息接口 userCode是：" + userCode);
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, AlipayConst.flcxaAppId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
         AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
         request.setCode(userCode);

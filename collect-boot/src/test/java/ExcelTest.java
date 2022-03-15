@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -28,8 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @Description:
  */
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class})
+
 public class ExcelTest {
     @Autowired
     AreaService areaService;
@@ -168,5 +168,24 @@ public class ExcelTest {
         });
 
 
+    }
+
+
+
+
+    public static void diandongche() throws IOException {
+        List<Map<String, Object>> excelObj =
+                ExcelHelper.importExeclFileForPoi(new File("/Users/xiangzhongguo/Downloads/sss.xlsx"), 1, "xlsx");
+        Long companyId = 277L;
+
+
+        for(Map excel:excelObj){
+           Long areaId = Long.parseLong(excel.get("map0").toString());
+            System.out.println(areaId);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        diandongche();
     }
 }

@@ -479,5 +479,5 @@ public interface OrderService extends IService<Order> {
 
 	Map<String,Object> saveElectroMobileOrder(OrderBean orderbean);
 
-
+	Map<String,Object> savePashmOrder(OrderBean orderbean);
 }

@@ -60,23 +60,36 @@ public class OrderCompleteHandler extends OrderHandler {
 
             }
 
-            //家电不限制，五费四单
-            //判断家电和五费是否超订单量
+            String titleName = titleType.compareTo(Order.TitleType.DIGITAL) == 0 ? "家电" : "五公斤";
+            //生活垃圾限制次数
             int userLimitCompleteCount = Integer.parseInt(redisUtil.get("userLimitCompleteCount").toString());
+
+            //家电限制次数
+            int digitalLimitCompleteCount = Integer.parseInt(redisUtil.get("digital_limit_complete_count").toString());
+
             //限制次数为-1 表示不限制
             if (userLimitCompleteCount !=-1  &&   titleType.compareTo(Order.TitleType.HOUSEHOLD) == 0) {
-                Integer orderCount = orderService.selectCount(new EntityWrapper<Order>().eq("ali_user_id", aliUserId)
-                        .eq("title", titleType.getValue()).eq("status_", Order.OrderType.COMPLETE.getValue().toString())
-                        .last(" and  to_days(complete_date) = to_days(now())"));
-                String titleName = titleType.compareTo(Order.TitleType.DIGITAL) == 0 ? "家电" : "五公斤";
-                if (orderCount >= userLimitCompleteCount) {
+                int todayCompleteCount =getTodayCompleteCount(titleType, aliUserId);
+                if ( todayCompleteCount>= userLimitCompleteCount) {
                     throw new ApiException("该用户每日完成" + titleName + "订单超限额,每日限制次数"+userLimitCompleteCount+"次！");
                 }
             }
 
+            if (digitalLimitCompleteCount !=-1  &&   titleType.compareTo(Order.TitleType.DIGITAL) == 0) {
+                int todayCompleteCount =getTodayCompleteCount(titleType, aliUserId);
+                if (todayCompleteCount >= digitalLimitCompleteCount) {
+                    throw new ApiException("该用户每日完成" + titleName + "订单超限额,每日限制次数"+digitalLimitCompleteCount+"次！");
+                }
+            }
 
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getTodayCompleteCount(Order.TitleType titleType,String aliUserId){
+        return orderService.selectCount(new EntityWrapper<Order>().eq("ali_user_id", aliUserId)
+                .eq("title", titleType.getValue()).eq("status_", Order.OrderType.COMPLETE.getValue().toString())
+                .last(" and  to_days(complete_date) = to_days(now())"));
     }
 }

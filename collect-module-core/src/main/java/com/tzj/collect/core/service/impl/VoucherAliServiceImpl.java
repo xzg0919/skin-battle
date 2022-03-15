@@ -64,7 +64,7 @@ public class VoucherAliServiceImpl extends ServiceImpl<VoucherAliMapper, Voucher
         String code = null;
         List<VoucherCode> voucherCodeList = new ArrayList<VoucherCode>();
         Date now = new Date();
-        for(int i=1;i<=size;i++)
+        for(int i=1;i<=size+1;i++)
         {
             if(i % 5000 == 0)
             {

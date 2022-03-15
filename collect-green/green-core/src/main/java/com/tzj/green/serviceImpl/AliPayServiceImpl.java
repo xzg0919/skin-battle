@@ -27,7 +27,6 @@ public class AliPayServiceImpl implements AliPayService {
      */
     @Override
     public AlipaySystemOauthTokenResponse selectUserToken(String userCode, String appId) {
-        System.out.println("-------hua用户信息接口 userCode是：" + userCode);
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, appId, AlipayConst.private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.ali_public_key, AlipayConst.sign_type);
         AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
         request.setCode(userCode);
@@ -43,17 +42,12 @@ public class AliPayServiceImpl implements AliPayService {
             //处理异常
             e.printStackTrace();
         }
-        if (response.isSuccess()) {
-            System.out.println("调用用户查询token接口成功");
-        } else {
-            System.out.println("调用用户查询token接口失败");
-        }
+
         return response;
     }
 
     @Override
     public AlipaySystemOauthTokenResponse flcxToken(String userCode, String appId) {
-        System.out.println("-------hua用户信息接口 userCode是：" + userCode);
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConst.serverUrl, appId, AlipayConst.flcx_private_key, AlipayConst.format, AlipayConst.input_charset, AlipayConst.flcx_ali_public_key, AlipayConst.sign_type);
         AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
         request.setCode(userCode);
@@ -69,11 +63,7 @@ public class AliPayServiceImpl implements AliPayService {
             //处理异常
             e.printStackTrace();
         }
-        if (response.isSuccess()) {
-            System.out.println("调用用户查询token接口成功");
-        } else {
-            System.out.println("调用用户查询token接口失败");
-        }
+
         return response;
     }
 

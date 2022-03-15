@@ -1,9 +1,12 @@
 package com.tzj.collect.api.ali;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import com.tzj.collect.api.commom.constant.WXConst;
 import com.tzj.collect.commom.redis.RedisUtil;
+import com.tzj.collect.common.util.ApiEncrypt;
+import com.tzj.collect.common.util.HttpUtils;
 import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.config.ApplicationInit;
 import com.tzj.collect.core.mapper.CompanyStreetAppSmallMapper;
@@ -26,10 +29,13 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.JedisPool;
 
 /**
@@ -1093,5 +1099,86 @@ public class OrderApi {
 
         return resultMap;
     }
+
+
+    @Resource
+    AreaService areaService;
+
+    /**
+     * 羊绒订单下单
+     *
+     * @author 王灿
+     * @param
+     * @return
+     * @throws ApiException
+     */
+    @Transactional
+    @Api(name = "order.savePashmOrder", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Object savePashmOrder(OrderBean orderbean) throws Exception {
+        Member member = MemberUtils.getMember();
+        //根据当前登录的会员，获取姓名、绿账号和阿里userId
+        //查询用户的默认地址
+        MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
+        if (memberAddress == null) {
+            return "您暂未添加回收地址";
+        }
+        Area district =areaService.selectById(memberAddress.getAreaId());
+        Area city =areaService.selectById(district.getParentId());
+        Area province =areaService.selectById(city.getParentId());
+
+        String districtName =district.getAreaName();
+        String cityName =city.getAreaName();
+        String provinceName =province.getAreaName();
+        String linkName =memberAddress.getName();
+        String linkTel =memberAddress.getTel();
+        String address =memberAddress.getAddress()+memberAddress.getHouseNumber();
+        Integer qty =orderbean.getQty();
+        String amPm=orderbean.getArrivalPeriod();
+        String orderDate=orderbean.getArrivalTime();
+        String remarks=orderbean.getRemarks();
+        String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
+        if(StringUtils.isNotBlank(districtName)&& StringUtils.isNotBlank(cityName)&& StringUtils.isNotBlank(provinceName)&&
+                StringUtils.isNotBlank(linkName)&& StringUtils.isNotBlank(linkTel)&& StringUtils.isNotBlank(address)
+                && qty !=null && qty!= 0
+        ){
+            JSONObject requestData =new JSONObject();
+            TreeMap<String,Object> requestBody =new TreeMap<>();
+            requestBody.put("districtName",districtName);
+            requestBody.put("cityName",cityName);
+            requestBody.put("provinceName",provinceName);
+            requestBody.put("linkName",linkName);
+            requestBody.put("linkTel",linkTel);
+            requestBody.put("address",address);
+            requestBody.put("clothesCount",qty);
+            requestBody.put("remarks",remarks);
+            requestBody.put("orderDate",orderDate);
+            requestBody.put("amPm",amPm);
+            requestBody.put("orderNo",orderNo);
+            requestBody.put("userId",member.getAliUserId());
+            requestData.put("requestBody",requestBody);
+            requestData.put("merchantCode","M000000001");
+            requestData.put("dataSign", ApiEncrypt.encrypt(JSONObject.toJSONString(requestBody),"abcde","UTF-8"));
+
+            Response response = HttpUtils.post("http://101.132.120.207:8040/openApi/orderCreate", JSONObject.toJSONString(requestData));
+            JSONObject result = JSONObject.parseObject(response.body().string());
+
+            if("-1".equals(result.get("code"))){
+                throw new ApiException(result.get("msg")+"");
+            }
+            orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
+            orderbean.setAliUserId(member.getAliUserId());
+            orderbean.setOrderNo(orderNo);
+            orderbean.setAreaId(memberAddress.getAreaId());
+            orderbean.setAddress(districtName+cityName+districtName+address);
+            orderbean.setTel(memberAddress.getTel());
+            orderbean.setLinkMan(memberAddress.getName());
+            orderService.savePashmOrder(orderbean);
+        }
+        return "操作成功";
+    }
+
+
 
 }

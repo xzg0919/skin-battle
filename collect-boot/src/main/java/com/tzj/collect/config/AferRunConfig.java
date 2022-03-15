@@ -98,7 +98,7 @@ public class AferRunConfig implements ApplicationRunner {
 
 
         if (null == redisUtil.get("userLimitCompleteCount")) {
-            //用户限制每日完成订单数量
+            //生活垃圾用户限制每日完成订单数量
             redisUtil.set("userLimitCompleteCount", 4);
         }
 
@@ -106,6 +106,16 @@ public class AferRunConfig implements ApplicationRunner {
         if (null == redisUtil.get("voucherLimitAddressId")) {
             redisUtil.set("voucherLimitAddressId", "24616,24638,20317,14672,24739,45368");
         }
+        if (null == redisUtil.get("userLimitCompleteCount")) {
+            //用户限制每日完成订单数量
+            redisUtil.set("userLimitCompleteCount", 4);
+        }
+        if (null == redisUtil.get("digital_limit_complete_count")) {
+            //家电用户限制每日完成订单数量
+            redisUtil.set("digital_limit_complete_count", 2);
+        }
+
+
 
         log.info("启动参数新增完成");
 

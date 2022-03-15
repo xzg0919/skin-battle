@@ -82,6 +82,18 @@ public class Recyclers extends DataEntity<Long> {
 	private char isAddPoint;
 
 	private String aliUserId;
+
+	public int getDsddRecycler() {
+		return dsddRecycler;
+	}
+
+	public void setDsddRecycler(int dsddRecycler) {
+		this.dsddRecycler = dsddRecycler;
+	}
+
+	private int dsddRecycler=0;
+
+
 	@TableField(exist = false)
 	private String isManager;
 	@TableField(exist = false)
