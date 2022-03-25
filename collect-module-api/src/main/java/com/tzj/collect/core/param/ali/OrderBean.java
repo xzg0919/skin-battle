@@ -997,4 +997,6 @@ public class OrderBean {
     Integer clothesCount;
     String orderDate;
 
+
+
 }

@@ -184,7 +184,7 @@ public interface OrderService extends IService<Order> {
 	 * @param order:订单
 	 * @return
 	*/
-	String  orderCancel(Order order, String orderInitStatus,MqttClient mqttClient);
+	String  orderCancel(Order order, String orderInitStatus,MqttClient mqttClient) throws Exception;
 	/**
 	 * 订单详情(用户)
 	 * @author 王灿

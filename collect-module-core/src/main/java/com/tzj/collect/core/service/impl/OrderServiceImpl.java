@@ -24,7 +24,9 @@ import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.common.constant.MiniTemplatemessageUtil;
 import com.tzj.collect.common.notify.DingTalkNotify;
 import com.tzj.collect.common.push.PushUtils;
+import com.tzj.collect.common.util.ApiEncrypt;
 import com.tzj.collect.common.util.BusinessUtils;
+import com.tzj.collect.common.util.HttpUtils;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.handler.OrderHandler;
@@ -59,6 +61,7 @@ import com.tzj.collect.entity.OrderItem;
 import com.tzj.module.common.utils.DateUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import net.sf.json.JSONObject;
+import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.slf4j.Logger;
@@ -869,6 +872,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     case "9":
                         order.setCategoryTitle("电瓶车");
                         break;
+                    case "10":
+                        order.setCategoryTitle("羊绒制品");
+                        break;
                 }
             } else {
                 if (order.getTitle() == Order.TitleType.HOUSEHOLD) {
@@ -956,6 +962,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     order.setCateAttName4Page(category.getName());
                     order.setTitle(Order.TitleType.ELECTROMOBILE);
                     order.setOrderFrom("0");
+                } else if (order.getTitle() == Order.TitleType.PASHM) {
+                    order.setCateAttName4Page("羊绒制品");
+                    order.setTitle(Order.TitleType.PASHM);
+                    order.setOrderFrom("0");
                 }
             }
         }
@@ -1006,6 +1016,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         } else if (order.getTitle() == Order.TitleType.ELECTROMOBILE) {
             order.setCateAttName4Page(order.getCategory().getName());
             order.setTitle(Order.TitleType.ELECTROMOBILE);
+        } else if (order.getTitle() == Order.TitleType.PASHM) {
+            order.setCateAttName4Page("羊绒制品");
+            order.setTitle(Order.TitleType.PASHM);
         }
         return order;
     }
@@ -1026,6 +1039,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setCategory(category);
         } else if (order.getTitle() == Order.TitleType.ELECTROMOBILE) {
             category.setName("电瓶车回收");
+            order.setCategory(category);
+        } else if (order.getTitle() == Order.TitleType.PASHM) {
+            category.setName("羊绒制品");
             order.setCategory(category);
         }
         return order;
@@ -1070,6 +1086,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             } else if (order.getTitle() == CategoryType.BIGTHING) {
                 order.setCateAttName4Page(order.getCateName());
                 order.setTitle(CategoryType.BIGTHING);
+                orderLists.add(order);
+            } else if (order.getTitle() == CategoryType.PASHM) {
+                order.setCateAttName4Page("羊绒制品");
+                order.setTitle(CategoryType.PASHM);
                 orderLists.add(order);
             }
         }
@@ -1680,15 +1700,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      */
     @Transactional
     @Override
-    public String orderCancel(Order order, String orderInitStatus, MqttClient mqtt4PushOrder) {
+    public String orderCancel(Order order, String orderInitStatus, MqttClient mqtt4PushOrder) throws Exception {
         String status = OrderType.valueOf(orderInitStatus).getValue() + "";
-        boolean bool = this.updateById(order);
+
 //		if (bool) {
 //			CommToken commToken = orderMapper.getCommToken(order.getOrderNo());
 //			if (commToken != null) {
 //				xingeService.sendPostMessage("您有一笔订单已被取消", "已取消订单来自" + commToken.getCommName() + "，点击查看", commToken.getTencentToken(), XingeMessageServiceImp.XingeMessageCode.cancelOrder);
 //			}
 //		}
+        if (order.getTitle().equals(Order.TitleType.PASHM)) {
+            com.alibaba.fastjson.JSONObject requestData = new com.alibaba.fastjson.JSONObject();
+            TreeMap<String, Object> requestBody = new TreeMap<>();
+            requestBody.put("cancelReason", order.getCancelReason());
+            requestBody.put("orderNo", order.getOrderNo());
+            requestData.put("requestBody", requestBody);
+            requestData.put("merchantCode", "M000000001");
+            requestData.put("dataSign", ApiEncrypt.encrypt(com.alibaba.fastjson.JSONObject.toJSONString(requestBody), "abcde", "UTF-8"));
+            Response response = HttpUtils.post("http://101.132.120.207:8040/openApi/orderCancel",
+                    com.alibaba.fastjson.JSONObject.toJSONString(requestData));
+            com.alibaba.fastjson.JSONObject result = com.alibaba.fastjson.JSONObject.parseObject(response.body().string());
+
+            if ("-1".equals(result.get("code"))) {
+                throw new ApiException(result.get("msg") + "");
+            }
+        }
+        boolean bool = this.updateById(order);
         //如果是咸鱼的单子，就通知咸鱼订单取消
         if (StringUtils.isNotBlank(order.getTaobaoNo())) {
             QiMemOrder qiMemOrder = new QiMemOrder();
@@ -4446,6 +4483,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return orderMapper.getOrderLjByStatus(ljAdminBean.getCityId(), ljAdminBean.getAreaId(), ljAdminBean.getStreetId(), ljAdminBean.getCompanyId(), ljAdminBean.getStartDate(), ljAdminBean.getEndDate(), status);
     }
 
+
+    @Resource
+    PashmOrderService pashmOrderService;
+
     @Override
     public Object getNewOrderDetail(Integer orderId) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -4512,6 +4553,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //优惠券详情
         resultMap.putAll(this.voucherInfo(order));
 
+
+        if ((order.getTitle()+"").equals(Order.TitleType.PASHM+"")) {
+            PashmOrder pashmOrder = pashmOrderService.selectByOrderNo(order.getOrderNo());
+            resultMap.put("pashmOrder",pashmOrder );
+            order.setArrivalTimePage(DateUtils.formatDate(order.getArrivalTime(),"yyyy-MM-dd")+" "+
+                    pashmOrder.getStartTime()+"-"+pashmOrder.getEndTime());
+        }
         resultMap.put("order", order);
         resultMap.put("paymentNo", paymentNo);
         resultMap.put("recyclers", recyclers);
@@ -5695,6 +5743,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return resultMap;
     }
 
+
     @Transactional
     @Override
     public Map<String, Object> savePashmOrder(OrderBean orderbean) {
@@ -5718,6 +5767,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setAliUserId(orderbean.getAliUserId());
         order.setRemarks(orderbean.getRemarks());
         order.setTitle(Order.TitleType.PASHM);
+        order.setOrderFrom("0");
         this.insert(order);
         long orderId = order.getId();
         //储存订单的日志
@@ -5727,6 +5777,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderLog.setOp("待接单");
         orderLogService.insert(orderLog);
         asyncService.sendOpenAppMini(order.getAliUserId(), order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page, order.getOrderNo(), "平台已受理", "羊绒制品");
+
+        PashmOrder pashmOrder = new PashmOrder();
+        pashmOrder.setOrderNo(order.getOrderNo());
+        pashmOrder.setStartTime(orderbean.getStartTime());
+        pashmOrder.setEndTime(orderbean.getEndTime());
+        pashmOrderService.insert(pashmOrder);
         resultMap.put("msg", "操作成功");
         resultMap.put("code", 0);
         resultMap.put("id", orderId);

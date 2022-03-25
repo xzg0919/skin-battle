@@ -805,4 +805,64 @@
 		WHERE
 			a.title = #{title}
 	</select>
+
+
+	<select id="getAreaRange" resultType="string">
+		 SELECT   DISTINCT c.code_
+        FROM
+            sb_company_street_appliance a
+        LEFT JOIN sb_area b ON a.street_id = b.id
+        LEFT JOIN sb_area c ON b.parent_id = c.id
+        LEFT JOIN sb_company_category_city_name d ON a.company_id = d.company_id AND c.parent_id = d.city_id
+        LEFT JOIN sb_category e ON e.id = d.category_id
+        WHERE
+         e.parent_id in (
+				 select  id  from  sb_category  where title =1 )
+        AND	d.id is NOT NULL
+	</select>
+
+
+	<select id="getCityRange" resultType="com.tzj.collect.entity.Area">
+		SELECT   DISTINCT f.*
+	FROM
+	sb_company_street_appliance a
+	LEFT JOIN sb_area b ON a.street_id = b.id
+	LEFT JOIN sb_area c ON b.parent_id = c.id
+	LEFT JOIN sb_company_category_city_name d ON a.company_id = d.company_id AND c.parent_id = d.city_id
+	LEFT JOIN sb_category e ON e.id = d.category_id
+	INNER JOIN sb_area f on f.id =c.parent_id
+	WHERE
+	e.parent_id in (
+	select  id  from  sb_category  where title =1 )
+	AND	d.id is NOT NULL
+	</select>
+
+
+	<select id="getProvinceRange" resultType="com.tzj.collect.entity.Area">
+		SELECT   DISTINCT g.*
+	FROM
+	sb_company_street_appliance a
+	LEFT JOIN sb_area b ON a.street_id = b.id
+	LEFT JOIN sb_area c ON b.parent_id = c.id
+	LEFT JOIN sb_company_category_city_name d ON a.company_id = d.company_id AND c.parent_id = d.city_id
+	LEFT JOIN sb_category e ON e.id = d.category_id
+	INNER JOIN sb_area f on f.id =c.parent_id
+	inner join sb_area g on g.id =f.parent_id
+	WHERE
+	e.parent_id in (
+	select  id  from  sb_category  where title =1 )
+	AND	d.id is NOT NULL
+	</select>
+
+
+
+	<select id="selectByParentId" parameterType="Long" resultType="string">
+		SELECT
+		  code_
+		FROM
+			sb_area
+
+		 where  parent_id = #{parentId}
+	</select>
+
 </mapper>

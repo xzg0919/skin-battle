@@ -69,4 +69,14 @@ public interface AreaMapper extends BaseMapper<Area> {
 	Integer getTitleByCompanyId(@Param("tableName")String tableName,@Param("companyId")String companyId,@Param("cityId")String cityId);
 
 	Integer getCategoryTitleByCompanyId(@Param("companyId")String companyId,@Param("title")String title);
+
+
+	List<String> getAreaRange();
+
+	List<Area> getProvinceRange();
+
+	List<Area> getCityRange();
+
+	List<String> selectByParentId(@Param("parentId") Long parentId);
+
 }

@@ -207,7 +207,7 @@
             <dependency>
                 <groupId>com.alipay.sdk</groupId>
                 <artifactId>alipay-sdk-java</artifactId>
-                <version>4.13.0.ALL</version>
+                <version>4.22.57.ALL</version>
             </dependency>
 
             <dependency>

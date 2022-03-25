@@ -181,6 +181,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
                 member.setLinkName(userResponse.getNickName());
                 member.setPicUrl(userResponse.getAvatar());
             }
+            member.setAccessToken(accessToken);
             member.setAddress(cityName);
             //给用户发放会员卡
             Map<String, Object> map = aliPayService.send(accessToken, userId, cardNo, "0", AlipayConst.template_id, "0", null, appId);
@@ -207,6 +208,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
                 e.printStackTrace();
             }
         } else {
+            member.setAccessToken(accessToken);
             member.setAliUserId(userId);
             if ("XCX".equals(source)) {
                 member.setName(userResponse.getUserName());
@@ -337,6 +339,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", "上海市"));
             map.put("cityId", area.getId());
         }
+        member.setAccessToken(accessToken);
+        this.updateMemberByAliUserId(member);
         map.put("id", member.getId());
         map.put("token", securityToken);
         return map;
@@ -432,7 +436,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Transactional
     @Override
     public Object getStaticUserToken(String authCode, String cityName) {
-        System.out.println("--------拿到的参数authCode是：" + authCode + "---拿到的cityName参数是 ： " + cityName);
         Map<String, Object> resultMap = new HashMap<String, Object>();
         Area area = null;
         try {
@@ -442,7 +445,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             resultMap.put("cityName", area.getAreaName());
             resultMap.put("isExist", "0");
         } catch (Exception e2) {
-            //根据拿到的state参数去查询他的主键
+            //根据拿到的state参数去查询他的主键s
             area = areaService.selectOne(new EntityWrapper<Area>().eq("area_name", "上海市"));
             resultMap.put("cityId", area.getId());
             resultMap.put("cityName", area.getAreaName());
@@ -454,6 +457,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         if (!response.isSuccess()) {
             return "用户授权解析失败";
         }
+        System.out.println("获取accessToken---------"+JSONObject.toJSONString(response));
         String accessToken = response.getAccessToken();
         String userId = response.getUserId();
         //查询用户是否存在
@@ -462,7 +466,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             resultMap.put("token", null);
             return resultMap;
         }
-        ;
+
         if (!userId.equals(ToolUtils.getAliUserIdByOrderNo(member.getCardNo()))) {
             //删除会员卡
             aliPayService.deleteCard(member);
@@ -471,10 +475,10 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
         String token = JwtUtils.generateToken(member.getAliUserId(), ALI_API_EXPRIRE, ALI_API_TOKEN_SECRET_KEY);
         String securityToken = JwtUtils.generateEncryptToken(token, ALI_API_TOKEN_CYPTO_KEY);
-        System.out.println("token:" + securityToken);
         resultMap.put("token", securityToken);
         //更新会员登录时间
         member.setUpdateDate(new Date());
+        member.setAccessToken(accessToken);
         this.updateMemberByAliUserId(member);
         resultMap.put("member", member);
         return resultMap;

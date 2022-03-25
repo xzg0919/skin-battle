@@ -105,5 +105,7 @@ public class Member extends  DataEntity<Long>{
     //渠道Id
     private String dsddCardNo;
 
+    private String accessToken;
+
 
 }

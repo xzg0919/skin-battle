@@ -1,11 +1,21 @@
+import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayFundCouponOrderAgreementPayModel;
 import com.alipay.api.domain.AlipayFundCouponOrderDisburseModel;
+import com.alipay.api.request.AlipayCommerceIndustryOrderSyncRequest;
+import com.alipay.api.request.AlipayCommerceIndustryServiceSubmitRequest;
 import com.alipay.api.request.AlipayFundCouponOrderAgreementPayRequest;
 import com.alipay.api.request.AlipayFundCouponOrderDisburseRequest;
+import com.alipay.api.response.AlipayCommerceIndustryOrderSyncResponse;
+import com.alipay.api.response.AlipayCommerceIndustryServiceSubmitResponse;
 import com.alipay.api.response.AlipayFundCouponOrderAgreementPayResponse;
 import com.alipay.api.response.AlipayFundCouponOrderDisburseResponse;
+import com.tzj.collect.common.constant.AlipayConst;
+import com.tzj.module.common.utils.DateUtils;
+import lombok.Data;
+import sun.nio.cs.ext.GBK;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,76 +24,119 @@ import java.util.UUID;
 
 public class AlipayTest {
 
-    public static  String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+(new Random().nextInt(899999)+100000);
-    public static String appId = "2017011905224137";
-    // 支付宝的密钥
-    public static String private_key = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDJtZc6EE8XdRHOm1e9+c3af6LgGOcsykZkcbSum7XBsJ+Re/yNwMfZOcNGthj+x0qI8UtptVzSR5LfPtkFpxOgV0UQXB2khTI1s76UafkqOPaMhCLMiDmz7nqGT0CrcNno5ysue++i5wgp74QAC9E1yiIKjNPDzEfpIlAGA0rz/zFZ+kJi9f0RxU7C0n2t1e1M8cKaus9Fuxayj0IK/puU6WsFwRjsTaQxBkEaW15ObC6GA9/8Jq7aMWj3NTt4IsBl67TK/La6dkKyHVjeP8zoZwU012WUQMBqv8lwumC0juug0rscBXpwyKb2P3kTU3848LDe4BWTliQzTH6HcHq9AgMBAAECggEBAJZn1Y/yQUeYf+KzasW504mtyuGXMCnx2nNjZfsdGHaJITL2ZOe+bEbKD5ZWimTQbf+XDUiRd9lEjXvx/Rl97+CLsm/0gBYBS+NHWECKlMSrHQzCKsCgg4ZruOkVh39O8u38EfLjb1jlNO0wMBlotmOJicCcKfvCA40PjOQu6GDvAZeXwknT4kR6WepPz386+OJe8U1NKU+kngVGRLgzmmDn7oLXc/EMqavpdeRfhMEHtD4wlPgBG7lNOv1+eV9jHLmil4cOV/oNrPRJlO60bu4mWYIwoz/5kq3N16+zgT9qT+wdWd3IQ+sVIdD4RU4pYX4v5xPZYaMa/PbLxerWcQECgYEA79jwja+3bCxrpijeA7e2oabx6tl1J/ny3DH9yLSq5CNnJFaOWqfjhlB388j8dczv/ojXHscFzW+WMMT6eeXslsK+iejufLXV3Eacx5ner2fluHiWftABnyaE+cUZ0Cuy7Dw3DZpH1VziCax8w55jNk4hf2Zj7KsyLv7Tyus5HDECgYEA10si118Ugo+qFwxw2jBni7LzOt432hB4l9K/+3jbsnl6/K4JEj/4EY2PXHqveNY+SA4/k4C99MlgzA6kKamy7LK1DP5QMjiQWqzYgbep0YdZt/opnREVBMWUHHB0yS4WUTUOTxc9ROvfVqknsnfxJVFlEtDOMEKd6tgZwOGzAE0CgYEA2qhZLaKLQtgAT9wkAxmiKx9KnwMetpI9IReGOUrUHOZVqqAqaWVznMiRgrOxzSdHiDJyg8GHfbGEJ/P8MdM2bH8gPBQaD6GqVYYeei3CAQFkQVfWQ8gYImJ4ikhxbwHXvVxsCD+ly1NBUvZoS+KCqkhya3YKFQJB3uw8Y1sslpECgYBXoenIqJb8neWqBBJbfaBoKKsApzsss8+iXNJwVb13ZCM/fseKeidLXceg6P9LvEkVo1cVfy3S2bVg2gTQQJbn6cXwSAP0rTl07y4hftTMyL8oN9eAa1eW3aVv/gZLbUsAOwxb/SWfTDNYXvodlty9R+hQRFXpJvSIhvXUoQnvcQKBgGhvPsywCMElhB2fONHREVGZS3geH89quoiA92JLxVjMBxTzRkuwT6Gb5Isjpdv9VLTDkwewuU8pGmAghPWaArVKmM+wPcMGbm2zDOaUi5SofERHBXfPDsD6I3KqOFSqQj2yFn/EtcYKK5BrfhimYK2AoumWcEq1IlZ0/pLR4tF/";
-    // 支付宝的公钥
-    public static String ali_public_key  = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw1AeGXQvAJYNwlxIuCRkD8nM+Y5NfDoU7lwjka69wHWOEyzALjxSPn69x3AlPMjkQS2UPpvBhKTD4s3ELpGA2mNT7DEqGGFeS6jHl80iGziQnb5dodFm98gfdRebyJMd36pSXDmht3GjBswMQpp2x06Wd1fwlBZ9lnuUBNtSN1pceawt+4F7OXuPVcNg/27MPrAZOMvaTC3UUid7kx4nwQJ6RQYSpg0m9nyVI2zPC1wj6XSmCWuhMJOAQhQxy1DikwHLtnnRr1Jur+mUYKIG+AY7yvZjs7J4DUxXZVyjB9Jfe0XkzvoXa/7TD9ZTEDcJyHyG1/vvByZ/OuqdckmcKQIDAQAB";
-    public static String PID = "2088421446748174";
 
+    /**
+     * 低价值可回收物
+     */
+    public static final String LOW_VALUE_RECYCLE = "2022032221000149128445";
+    /**
+     * 家电回收
+     */
+    public static final String HOUSEHOLD_ELECTRICAL_APPLIANCES_RECYCLE = "2022032421000650389087";
+    /**
+     * 大件
+     */
+    public static final String BIG_GARBAGE_CHARGED_RECYCLE = "2022032221000749131061";
 
-    public static void main(String[] args) {
-//        AlipayFundCouponOrderAgreementPayResponse response = fundCoupon();
-//        System.out.println(response.getAuthNo());
-        //创建一个红包，可以分发给多个用户
-        Disbursend("2019102510002001170598185870");
+    /**
+     * 衣物回收
+     */
+    public static final String CLOTHES_RECYCLE = "2022032221000249128451";
+
+    public static void main(String[] args) throws AlipayApiException {
+        AlipayTest alipayTest=new AlipayTest();
+        alipayTest.test1();
     }
 
 
-    //创建红包接口
-    public static AlipayFundCouponOrderAgreementPayResponse fundCoupon(){
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do",appId,private_key,"json","GBK",ali_public_key,"RSA2");
-        AlipayFundCouponOrderAgreementPayRequest request = new AlipayFundCouponOrderAgreementPayRequest();
-        AlipayFundCouponOrderAgreementPayModel model = new AlipayFundCouponOrderAgreementPayModel();
-            model.setOutOrderNo(orderNo);
-            model.setOutRequestNo(UUID.randomUUID().toString());
-            model.setOrderTitle("发送红包");
-            model.setAmount("0.01");
-            model.setPayerUserId(PID);
-            model.setPayTimeout("1h");
-            request.setBizModel(model);
-        AlipayFundCouponOrderAgreementPayResponse response = null;
-        try{
-            response = alipayClient.execute(request);
-            System.out.println(response.getBody());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        if(response.isSuccess()){
-            System.out.println("调用成功");
-        } else {
-            System.out.println("调用失败");
-        }
-        return response;
+    public void test2() throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient
+                ("https://openapi.alipay.com/gateway.do",
+                        AlipayConst.XappId, AlipayConst.private_key, "json",
+                        "GBK", AlipayConst.ali_public_key, "RSA2");
+        AlipayCommerceIndustryServiceSubmitRequest request = new AlipayCommerceIndustryServiceSubmitRequest();
+        JSONObject bizContent = new JSONObject();
+        bizContent.put("service_type", "DOOR_RECYCLING");
+        bizContent.put("service_name", "家电回收非公益回收订单回流");
+        bizContent.put("service_description", "家电回收非公益回收订单回流");
+        bizContent.put("service_action", "SERVICE_UPDATE");
+        bizContent.put("service_url", "alipays://platformapi/startapp?appId=2018060660292753&page=pages/view/item-type/item-type%3Fid%3D22%26type%3Dappliance%26ss%3Dss");
+        JSONObject industryInfo = new JSONObject();
+        JSONObject platformInfo = new JSONObject();
+        platformInfo.put("platform_name", "易代扔");
+        platformInfo.put("platform_telephone", "400-686-1575");
+        JSONObject serviceInfo = new JSONObject();
+        serviceInfo.put("service_type", "HOUSEHOLD_ELECTRICAL_APPLIANCES_RECYCLE");
+        serviceInfo.put("service_city", "610100,110100,310100,340600,340500,340200,320400,320100,320500,320200,321100,330700,370200,330600,130300,210800,371000,440700,440900,460400,510400,371100,442000,210200,210100,430200,440500,370600,440300,441900,440400");
+        industryInfo.put("platform_info", platformInfo);
+        industryInfo.put("service_info", serviceInfo);
+        bizContent.put("industry_info", industryInfo);
+        request.setBizContent(bizContent.toString());
+        System.out.println(JSONObject.toJSONString(bizContent));
+        AlipayCommerceIndustryServiceSubmitResponse execute = alipayClient.execute(request);
+        System.out.println(JSONObject.toJSONString(execute));
     }
-    //给具体的用户发放具体的金额红包
-    public static AlipayFundCouponOrderDisburseResponse Disbursend(String authNo){
-        AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do",appId,private_key,"json","GBK",ali_public_key,"RSA2");
-        AlipayFundCouponOrderDisburseRequest request = new AlipayFundCouponOrderDisburseRequest();
-        AlipayFundCouponOrderDisburseModel model = new AlipayFundCouponOrderDisburseModel();
-            model.setOutOrderNo(orderNo);
-            model.setDeductAuthNo(authNo);
-            model.setOutRequestNo(UUID.randomUUID().toString());
-            model.setOrderTitle("红包打款");
-            model.setAmount("0.01");
-            model.setPayeeUserId("2088212854989662");
-            model.setPayTimeout("1h");
-            request.setBizModel(model);
-        AlipayFundCouponOrderDisburseResponse response = null;
-        try{
-            response = alipayClient.execute(request);
-            System.out.println(response.getBody());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        if(response.isSuccess()){
-            System.out.println("调用成功");
-        } else {
-            System.out.println("调用失败");
-        }
-        return response;
+
+    public void test1() throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient
+                ("https://openapi.alipay.com/gateway.do",
+                        AlipayConst.XappId, AlipayConst.private_key, "json",
+                        "GBK", AlipayConst.ali_public_key, "RSA2");
+        AlipayCommerceIndustryOrderSyncRequest request = new AlipayCommerceIndustryOrderSyncRequest();
+        JSONObject bizContent = new JSONObject();
+        //商户订单号
+        bizContent.put("merchant_order_no", "202202240001");
+        //服务类型
+        /**
+         * CLOTHES_RECYCLING 衣物回收
+         * BOOK_RECYCLING 书籍回收
+         * DIGITAL_RECYCLING 数码商品回收
+         * HOUSEHOLD_APPLIANCES_RECYCLING 家电回收
+         */
+        bizContent.put("service_type", "HOUSEHOLD_APPLIANCES_RECYCLING");
+        bizContent.put("buyer_id", "2088212017275410");
+        //服务标识
+        bizContent.put("service_code", HOUSEHOLD_ELECTRICAL_APPLIANCES_RECYCLE);
+        bizContent.put("order_source", "ALIPAY_APPLETS");
+        bizContent.put("status", "CREATE");
+        bizContent.put("order_create_time", DateUtils.formatDate(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        bizContent.put("order_modify_time", DateUtils.formatDate(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        bizContent.put("order_detail_url", "alipays://platformapi/startapp?appId=2018060660292753&page=pages/view/orderDetails/appliances/appliances%3Fid%3D10086");
+        bizContent.put("order_amount", "1");
+        bizContent.put("payment_amount","1");
+        JSONObject industryInfo = new JSONObject();
+        JSONObject serviceProductInfo = new JSONObject();
+        serviceProductInfo.put("goods_name", "冰箱");
+        serviceProductInfo.put("goods_desc", "冰箱");
+        serviceProductInfo.put("quantity", "1");
+        industryInfo.put("service_product_info", serviceProductInfo);
+        JSONObject servicePoviderInfo = new JSONObject();
+        servicePoviderInfo.put("platform_name", "易代扔");
+        servicePoviderInfo.put("platform_phone", "400-686-1575");
+        industryInfo.put("service_provider_info", servicePoviderInfo);
+        JSONObject servicePerformanceInfo = new JSONObject();
+        JSONObject appointmentTime = new JSONObject();
+        appointmentTime.put("start_time", "2022-03-25 11:00:00");
+        appointmentTime.put("end_time", "2022-03-25 18:00:00");
+        servicePerformanceInfo.put("appointment_time", appointmentTime);
+        industryInfo.put("service_performance_info", servicePerformanceInfo);
+        bizContent.put("industry_info", industryInfo);
+        request.setBizContent(bizContent.toJSONString());
+        System.out.println(request.getBizContent());
+        AlipayCommerceIndustryOrderSyncResponse response = alipayClient.execute(request,"composeBbe29a47edda04836a0f17bb67d803C41");
+        System.out.println(JSONObject.toJSONString(response));
     }
+
+    @Data
+    class OrderSyncBizContent{
+
+        String merchant_order_no;
+        String service_type =HOUSEHOLD_ELECTRICAL_APPLIANCES_RECYCLE;
+        String buyer_id;
+        String service_code ;
+        String order_source ="ALIPAY_APPLETS";
+    }
+
 
 
 }

@@ -168,10 +168,14 @@ public class OrderApi {
     @Api(name = "order.cancel", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
-    public String cancelOrder(OrderBean orderbean) {
+    public String cancelOrder(OrderBean orderbean) throws Exception {
         Order order = orderService.selectById(orderbean.getId());
         if ("3".equals(order.getStatus().getValue() + "")) {
             return "订单已被完成无法取消";
+        }
+
+        if(order.getTitle().equals(Order.TitleType.PASHM) && "2".equals(order.getStatus().getValue() + "" )){
+            return "快递已揽件，无法取消";
         }
         String orderInitStatus = order.getStatus().toString();
         order.setStatus(OrderType.CANCEL);
@@ -1135,7 +1139,8 @@ public class OrderApi {
         String linkTel =memberAddress.getTel();
         String address =memberAddress.getAddress()+memberAddress.getHouseNumber();
         Integer qty =orderbean.getQty();
-        String amPm=orderbean.getArrivalPeriod();
+        String startTime=orderbean.getStartTime();
+        String endTime = orderbean.getEndTime();
         String orderDate=orderbean.getArrivalTime();
         String remarks=orderbean.getRemarks();
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
@@ -1154,7 +1159,8 @@ public class OrderApi {
             requestBody.put("clothesCount",qty);
             requestBody.put("remarks",remarks);
             requestBody.put("orderDate",orderDate);
-            requestBody.put("amPm",amPm);
+            requestBody.put("startTime",startTime);
+            requestBody.put("endTime",endTime);
             requestBody.put("orderNo",orderNo);
             requestBody.put("userId",member.getAliUserId());
             requestData.put("requestBody",requestBody);
@@ -1174,9 +1180,9 @@ public class OrderApi {
             orderbean.setAddress(districtName+cityName+districtName+address);
             orderbean.setTel(memberAddress.getTel());
             orderbean.setLinkMan(memberAddress.getName());
-            orderService.savePashmOrder(orderbean);
+            return orderService.savePashmOrder(orderbean);
         }
-        return "操作成功";
+        return "下单失败";
     }
 
 

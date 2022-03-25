@@ -571,18 +571,22 @@ public class Order extends DataEntity<Long> {
 	private String arrivalTimePage;
 
 	public String getArrivalTimePage() {
+
 		String temp = this.arrivalPeriod;
-		if (temp != null && !"".equals(temp)) {
-			if (temp.equals("am")) {
-				temp = "上午";
-			} else if (temp.equals("pm")) {
-				temp = "下午";
+		if(StringUtils.isNotBlank(temp)){
+			if (temp != null && !"".equals(temp)) {
+				if (temp.equals("am")) {
+					temp = "上午";
+				} else if (temp.equals("pm")) {
+					temp = "下午";
+				}
+			}
+			if (this.arrivalTime != null) {
+				return this.getYMD(this.arrivalTime) +" "+ temp;
 			}
 		}
-		if (this.arrivalTime != null) {
-			return this.getYMD(this.arrivalTime) +" "+ temp;
-		}
-		return null;
+
+		return this.arrivalTimePage;
 	}
 
 	public void setArrivalTimePage(String arrivalTimePage) {

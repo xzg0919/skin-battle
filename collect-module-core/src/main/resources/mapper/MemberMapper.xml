@@ -163,6 +163,10 @@
 	<if test="member.templateId != null and member.templateId != ''">
 		a.template_id = #{member.templateId},
 	</if>
+
+	<if test="member.accessToken != null and member.accessToken != ''">
+		a.access_token = #{member.accessToken},
+	</if>
 		a.update_date = NOW()
 	WHERE
 		a.ali_user_id = #{member.aliUserId}
