@@ -20,6 +20,7 @@ import com.tzj.collect.common.util.MemberUtils;
 import com.tzj.collect.common.utils.ExcelHelper;
 import com.tzj.collect.core.handler.OrderCompleteHandler;
 import com.tzj.collect.core.handler.OrderHandler;
+import com.tzj.collect.core.mapper.AreaMapper;
 import com.tzj.collect.core.param.mysl.MyslBean;
 import com.tzj.collect.core.param.mysl.MyslItemBean;
 import com.tzj.collect.core.service.*;
@@ -30,9 +31,12 @@ import com.tzj.module.api.annotation.AuthIgnore;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.common.utils.DateUtils;
 import com.tzj.module.easyopen.exception.ApiException;
+import com.tzj.module.easyopen.util.CopyUtil;
 import com.tzj.module.easyopen.util.EhCache2Utils;
 import lombok.SneakyThrows;
 import net.sf.ehcache.CacheManager;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.aspectj.weaver.ast.Or;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -422,5 +426,40 @@ public class Test {
         adminService.insert(ad);
     }
 
+
+
+    @Autowired
+    AreaMapper areaMapper;
+
+
+    @org.junit.Test
+    public void getRange(){
+
+        StringBuffer  code =new StringBuffer();
+
+        List<String> areaRange = areaMapper.getAreaRange();
+
+        List<String> areaRangeCopy =  new ArrayList<>();
+        CollectionUtils.addAll(areaRangeCopy, new Object[areaRange.size()]);
+        Collections.copy(areaRangeCopy, areaRange);
+
+            List<Area> cityRange = areaMapper.getCityRange();
+
+        for (Area city : cityRange) {
+            List<String> areas = areaMapper.selectByParentId(city.getId());
+            if(areaRange.containsAll(areas)){
+                areaRangeCopy.removeAll(areas);
+                code.append(city.getCode()+ ",");
+            }
+        }
+
+        System.out.println("结束");
+
+
+
+
+
+
+    }
 
 }
