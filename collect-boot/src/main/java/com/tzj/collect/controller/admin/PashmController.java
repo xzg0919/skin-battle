@@ -62,6 +62,7 @@ public class PashmController {
 
             if (pashmBean.getCode() == 1) {
                 order.setStatus(Order.OrderType.COMPLETE);
+                orderService.myslOrderData(order.getId().toString());
             }
 
             if (pashmBean.getCode() == 2) {

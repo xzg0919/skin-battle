@@ -4098,7 +4098,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
         } else if ((Order.TitleType.HOUSEHOLD.getValue() + "").equals(order.getTitle().getValue() + "") || (Order.TitleType.FIVEKG.getValue() + "").equals(order.getTitle().getValue() + "") || (Order.TitleType.IOTORDER.getValue() + "").equals(order.getTitle().getValue() + "") || (Order.TitleType.SMALLDIGITAL.getValue() + "").equals(order.getTitle().getValue() + "")) {
             houseList = orderItemAchService.selectItemSumAmount(Integer.parseInt(orderId));
-        } else {
+        } else if(!(Order.TitleType.PASHM.getValue() + "").equals(order.getTitle().getValue() + "")) {
             return null;
         }
         long amount = 0;
@@ -4151,6 +4151,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     chai = true;
                 }
             }
+        }else if ((Order.TitleType.PASHM.getValue() + "").equals(order.getTitle().getValue() + "")){
+            PashmOrder pashmOrder=pashmOrderService.selectByOrderNo(order.getOrderNo());
+            EnergyGoodRequest itemOrder = new EnergyGoodRequest();
+            itemOrder.setItemName("羊绒制品");
+            itemOrder.setQuantity(pashmOrder.getWeight()*1000+"");
+            List<EnergyExtRequest> extInfo = new ArrayList<>();
+            EnergyExtRequest orderExtInfo = new EnergyExtRequest();
+            orderExtInfo.setExtKey("ITEM_TYPE");
+            orderExtInfo.setExtValue("clothes");
+            extInfo.add(orderExtInfo);
+            itemOrder.setItems(extInfo);
+            itemList.add(itemOrder);
         }
         if (null == itemList || itemList.isEmpty()) {
             return null;
@@ -5854,6 +5866,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setRemarks(orderbean.getRemarks());
         order.setTitle(Order.TitleType.PASHM);
         order.setOrderFrom("0");
+        order.setIsMysl("1");
         this.insert(order);
         long orderId = order.getId();
         //储存订单的日志
