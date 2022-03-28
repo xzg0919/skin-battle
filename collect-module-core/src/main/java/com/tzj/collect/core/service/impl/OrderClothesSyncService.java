@@ -13,6 +13,7 @@ import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Order;
 import com.tzj.module.common.utils.DateUtils;
 import com.tzj.module.easyopen.exception.ApiException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Resource;
@@ -25,6 +26,7 @@ import static com.tzj.collect.core.param.sync.OrderSyncBizContent.HOUSEHOLD_ELEC
  * @Date: 2022/03/28 0028 12:03
  * @Description:
  */
+@Slf4j
 public class OrderClothesSyncService implements OrderSyncService {
 
 
@@ -84,7 +86,7 @@ public class OrderClothesSyncService implements OrderSyncService {
         industryInfo.setService_performance_info(servicePerformanceInfo);
         orderSyncBizContent.setIndustry_info(industryInfo);
         request.setBizContent(com.alibaba.fastjson.JSONObject.toJSONString(orderSyncBizContent));
-        System.out.println(com.alibaba.fastjson.JSONObject.toJSONString(orderSyncBizContent));
+        log.info("废旧衣物订单回流请求参数："+com.alibaba.fastjson.JSONObject.toJSONString(orderSyncBizContent));
         AlipayCommerceIndustryOrderSyncResponse response = null;
         try {
             response = alipayClient.execute(request,order.getAccessToken());
@@ -92,7 +94,7 @@ public class OrderClothesSyncService implements OrderSyncService {
             e.printStackTrace();
 
         }
-        System.out.println(com.alibaba.fastjson.JSONObject.toJSONString(response));
+        log.info("废旧衣物订单回流返回参数："+com.alibaba.fastjson.JSONObject.toJSONString(response));
         if(!response.isSuccess() || !"10000".equals(response.getCode()) || StringUtils.isBlank(response.getRecordId())){
             throw new ApiException("操作失败，订单无法回流！");
         }
