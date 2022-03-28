@@ -49,9 +49,9 @@ spring:
 wxNotifyUrl: http://shoubeics.mayishoubei.com/notify/wx
 
 alipay:
-  public-cert: /Users/xiangzhongguo/文档/cert/alipay/alipayCertPublicKey_RSA2.crt
-  root-cert: /Users/xiangzhongguo/文档/cert/alipay/alipayRootCert.crt
-  app-cert: /Users/xiangzhongguo/文档/cert/alipay/appCertPublicKey.crt
+  public-cert: D:\IdeaProjects\mayishoubei-java\key\alipayCertPublicKey_RSA2.crt
+  root-cert: D:\IdeaProjects\mayishoubei-java\key\alipayRootCert.crt
+  app-cert: D:\IdeaProjects\mayishoubei-java\key\appCertPublicKey.crt
 
 
 

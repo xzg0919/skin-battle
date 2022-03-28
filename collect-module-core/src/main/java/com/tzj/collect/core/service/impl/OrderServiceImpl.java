@@ -1,7 +1,11 @@
 package com.tzj.collect.core.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.*;
+import com.alipay.api.request.AlipayCommerceIndustryOrderSyncRequest;
 import com.alipay.api.response.*;
 import com.alipay.api.domain.AntMerchantExpandTradeorderSyncModel;
 import com.alipay.api.domain.ItemOrder;
@@ -30,6 +34,7 @@ import com.tzj.collect.common.util.HttpUtils;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.handler.OrderHandler;
+import com.tzj.collect.core.handler.OrderSyncFactory;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.admin.VoucherBean;
@@ -39,6 +44,7 @@ import com.tzj.collect.core.param.app.TimeBean;
 import com.tzj.collect.core.param.business.BOrderBean;
 import com.tzj.collect.core.param.business.CompanyBean;
 import com.tzj.collect.core.param.iot.IotParamBean;
+import com.tzj.collect.core.param.sync.*;
 import com.tzj.collect.core.param.xianyu.QiMemOrder;
 import com.tzj.collect.core.result.ali.ComCatePrice;
 import com.tzj.collect.core.result.app.AppOrderResult;
@@ -82,6 +88,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static com.tzj.collect.core.param.sync.OrderSyncBizContent.HOUSEHOLD_ELECTRICAL_APPLIANCES_RECYCLE;
 import static com.tzj.collect.entity.Payment.STATUS_PAYED;
 import static com.tzj.collect.entity.Payment.STATUS_TRANSFER;
 
@@ -191,6 +198,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     OrderHandler orderCompleteHandler;
+    @Resource
+    OrderSyncService orderSyncService;
 
     protected final static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
@@ -231,7 +240,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      * @param orderbean : 订单参数实体
      * @return long
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> saveOrder(OrderBean orderbean, MqttClient mqtt4PushOrder) {
         //查询价格
@@ -309,6 +318,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setEnterpriseCode(orderbean.getEnterpriseCode());
             order.setFormId(orderbean.getFormId());
             order.setPriceT(orderbean.getPrice());
+            order.setAccessToken(orderbean.getAccessToken());
+           String recordId = OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncCreate(order);
+            order.setRecordId(recordId);
+
             flag = this.insert(order);
             //将券码跟订单进行绑定
             if (StringUtils.isNoneBlank(orderbean.getVoucherId())) {
@@ -1709,6 +1722,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //				xingeService.sendPostMessage("您有一笔订单已被取消", "已取消订单来自" + commToken.getCommName() + "，点击查看", commToken.getTencentToken(), XingeMessageServiceImp.XingeMessageCode.cancelOrder);
 //			}
 //		}
+
+        OrderOperate orderOperate = new OrderOperate();
+        orderOperate.setOrderNo(order.getOrderNo());
+        orderOperate.setOperateLog("取消订单");
+        orderOperate.setReason(order.getCancelReason());
+        orderOperate.setOperatorMan("用户");
+        orderOperateService.insert(orderOperate);
+
         if (order.getTitle().equals(Order.TitleType.PASHM)) {
             com.alibaba.fastjson.JSONObject requestData = new com.alibaba.fastjson.JSONObject();
             TreeMap<String, Object> requestBody = new TreeMap<>();
@@ -1733,6 +1754,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             qiMemOrder.setOrderStatus(QiMemOrder.QI_MEM_ORDER_CANCEL);
             qiMemOrder.setReason(order.getCancelReason());
             bool = qiMemService.updateQiMemOrder(qiMemOrder);
+        }
+
+        if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncCanceled(order );
+        }
+        if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncCanceled(order);
         }
         if ("3".equals(order.getTitle().getValue() + "") && !"0".equals(status)) {
             try {
@@ -2169,6 +2197,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 orderLog.setOp("已驳回");
                 this.updateById(order);
 
+                if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncCanceled(order );
+                }
+                if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncCanceled(order );
+                }
                 orderOperate.setOperateLog("取消订单");
                 orderOperate.setReason(cancelReason);
                 orderOperate.setOperatorMan("平台");
@@ -2216,6 +2250,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 orderLog.setOpStatusAfter("ALREADY");
                 orderLog.setOp("已接单");
                 this.updateById(order);
+                if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncTaken(order);
+                }
+                if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncTaken(order);
+                }
                 //接单消息推送
                 asyncService.pushOrder(order, mqtt4PushOrder);
                 break;
@@ -2253,6 +2293,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 orderOperate.setReason("/");
                 Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
                 orderOperate.setOperatorMan(company.getName());
+                if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncToSend(order);
+                }
+                if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncToSend(order);
+                }
 
                 PushUtils.getAcsResponse(recyclers.getTel(), order.getStatus().getValue() + "", order.getTitle().getValue() + "");
                 break;
@@ -2515,6 +2561,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             orderOperate.setOperatorMan("回收人员-" + recyclers.getName());
             orderOperate.setReason("/");
             orderOperateService.insert(orderOperate);
+            if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+                OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncAccount(order);
+            }
+            if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+                OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncAccount(order);
+            }
             if ((Order.TitleType.BIGTHING + "").equals(order.getTitle() + "")) {
                 asyncService.sendOpenAppMini(order.getAliUserId(), order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page, order.getOrderNo(), "已完成", "大件回收");
             } else if ((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")) {
@@ -2649,7 +2701,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     orderOperate.setOperateLog("完成订单");
                     orderOperate.setOperatorMan("回收人员-" + recycler.getName());
                     orderOperate.setReason("/");
-
+                    if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+                        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncAccount(order );
+                    }
+                    if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+                        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncAccount(order);
+                    }
                     this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(), descrb);
                     if (!"1".equals(companyRecycler.getIsManager())) {
                         //阿里云推送
@@ -2718,6 +2775,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                    }
+
+                    if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+                        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncTaken(order);
+                    }
+                    if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+                        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncTaken(order);
                     }
                     break;
                 default:
@@ -3260,6 +3324,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         } else {
             order.setGreenCount(amount);
         }
+
+        if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncAccount(order );
+        }
+        if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncAccount(order);
+        }
         this.updateById(order);
         //给用户增加积分
         this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), amount, "定点回收物");
@@ -3522,6 +3593,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 order.setOrderFrom("2");
                 order.setAliAccount(orderBean.getAliAccount());
             }
+            order.setAccessToken(orderBean.getAccessToken());
+            String recordId = OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncCreate(order);
+            order.setRecordId(recordId);
             this.insert(order);
         } catch (Exception e) {
             e.printStackTrace();
@@ -4199,13 +4273,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      */
     @Override
     public String orderSendRecycleByOrderId(Integer orderId) {
-
         List<Recyclers> sendOrderRecyclersList = recyclersService.getSendOrderRecyclersList(orderId);
         if (!sendOrderRecyclersList.isEmpty()) {
             Order order = this.selectById(orderId);
             order.setRecyclerId(sendOrderRecyclersList.get(0).getId().intValue());
             order.setStatus(OrderType.TOSEND);
             order.setDistributeTime(new Date());
+            if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+                OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncToSend(order);
+            }
+            if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+                OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncToSend(order);
+            }
             this.updateById(order);
         }
         return "操作成功";
@@ -4227,6 +4306,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         order.setDistributeTime(new Date());
         order.setStatus(Order.OrderType.TOSEND);
+        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncToSend(order);
         orderService.updateById(order);
         try {
             Area county = areaService.selectById(order.getAreaId());
@@ -4881,6 +4961,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderCancleExamine.setUpdateDate(new Date());
         orderCancleExamine.setStatus(orderbean.getStatus());
         orderCancleExamineService.updateById(orderCancleExamine);
+        if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncCanceled(order );
+        }
+        if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
+            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncCanceled(order);
+        }
         return "操作成功";
     }
 

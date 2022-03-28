@@ -10,6 +10,7 @@ import com.alipay.api.request.AlipayTradeCreateRequest;
 import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tzj.collect.Application;
 import com.tzj.collect.commom.redis.RedisUtil;
@@ -443,13 +444,24 @@ public class Test {
         CollectionUtils.addAll(areaRangeCopy, new Object[areaRange.size()]);
         Collections.copy(areaRangeCopy, areaRange);
 
-            List<Area> cityRange = areaMapper.getCityRange();
-
+        List<Area> cityRange = areaMapper.getCityRange();
+        List<Area> provinceRange = areaMapper.getProvinceRange();
         for (Area city : cityRange) {
             List<String> areas = areaMapper.selectByParentId(city.getId());
             if(areaRange.containsAll(areas)){
                 areaRangeCopy.removeAll(areas);
                 code.append(city.getCode()+ ",");
+            }
+        }
+
+        List<String> cityRangeString =new ArrayList<>(Arrays.asList(code.toString().split(",")));
+
+
+        StringBuffer  code1 =new StringBuffer();
+        for (Area province : provinceRange) {
+            List<String> areas = areaMapper.selectByParentId(province.getId());
+            if(cityRangeString.containsAll(areas)){
+                code1.append(province.getCode()+ ",");
             }
         }
 

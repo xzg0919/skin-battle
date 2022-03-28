@@ -184,12 +184,7 @@ public class OrderApi {
         //取消时间
         order.setCancelTime(new Date());
 
-        OrderOperate orderOperate = new OrderOperate();
-        orderOperate.setOrderNo(order.getOrderNo());
-        orderOperate.setOperateLog("取消订单");
-        orderOperate.setReason(orderbean.getCancelReason());
-        orderOperate.setOperatorMan("用户");
-        orderOperateService.insert(orderOperate);
+
 
         String status = orderService.orderCancel(order, orderInitStatus,mqtt4PushOrder);
         return status;
@@ -231,6 +226,11 @@ public class OrderApi {
         Map<String, Object> resultMap = null;
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
+
+        if(member.getAccessToken()==null){
+            throw new ApiException("授权异常，请重新授权！");
+        }
+
         if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.DIGITAL)){
             throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
@@ -274,6 +274,7 @@ public class OrderApi {
         orderbean.setLevel(level);
         orderbean.setCommunityId(communityId);
         orderbean.setStreetId(memberAddress.getStreetId());
+        orderbean.setAccessToken(member.getAccessToken());
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
         if (StringUtils.isNotBlank(orderbean.getAliAccount())){
@@ -566,6 +567,7 @@ public class OrderApi {
         Category category = categoryService.selectById(orderbean.getCategoryId());
         orderbean.setMemberId(member.getId().intValue());
         orderbean.setAliUserId(member.getAliUserId());
+        orderbean.setAccessToken(member.getAccessToken());
         if (null == orderbean.getOrderItemList()) {
             return "请选择详细内容";
         }

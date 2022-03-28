@@ -547,6 +547,16 @@ public class Order extends DataEntity<Long> {
 	 */
 	private String aliUserId;
 
+	/**
+	 * 支付宝回流订单id
+	 */
+	private String recordId;
+
+	/**
+	 * 回流时使用的支付宝用户的token，一笔订单的token使用同一个
+	 */
+	private String accessToken;
+
 	@TableField(exist = false)
 	private Recyclers recyclers;
 

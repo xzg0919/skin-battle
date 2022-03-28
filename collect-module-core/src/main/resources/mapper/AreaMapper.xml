@@ -808,50 +808,52 @@
 
 
 	<select id="getAreaRange" resultType="string">
-		 SELECT   DISTINCT c.code_
-        FROM
-            sb_company_street_appliance a
-        LEFT JOIN sb_area b ON a.street_id = b.id
-        LEFT JOIN sb_area c ON b.parent_id = c.id
-        LEFT JOIN sb_company_category_city_name d ON a.company_id = d.company_id AND c.parent_id = d.city_id
-        LEFT JOIN sb_category e ON e.id = d.category_id
-        WHERE
-         e.parent_id in (
-				 select  id  from  sb_category  where title =1 )
-        AND	d.id is NOT NULL
+		SELECT DISTINCT
+			s.code_
+		FROM
+			sb_company_stree a
+				LEFT JOIN sb_company_category b ON a.company_id = b.company_id
+				inner join  sb_area s on s.id =a.area_id
+
+		WHERE
+
+			b.parent_id = 45
+		  AND b.del_flag = 0
+		  AND a.del_flag = 0
 	</select>
 
 
 	<select id="getCityRange" resultType="com.tzj.collect.entity.Area">
-		SELECT   DISTINCT f.*
-	FROM
-	sb_company_street_appliance a
-	LEFT JOIN sb_area b ON a.street_id = b.id
-	LEFT JOIN sb_area c ON b.parent_id = c.id
-	LEFT JOIN sb_company_category_city_name d ON a.company_id = d.company_id AND c.parent_id = d.city_id
-	LEFT JOIN sb_category e ON e.id = d.category_id
-	INNER JOIN sb_area f on f.id =c.parent_id
-	WHERE
-	e.parent_id in (
-	select  id  from  sb_category  where title =1 )
-	AND	d.id is NOT NULL
+		SELECT DISTINCT
+			s1.*
+		FROM
+			sb_company_stree a
+				LEFT JOIN sb_company_category b ON a.company_id = b.company_id
+				inner join  sb_area s on s.id =a.area_id
+				inner join sb_area s1 on s1.id =s.parent_id
+
+		WHERE
+
+			b.parent_id = 45
+		  AND b.del_flag = 0
+		  AND a.del_flag = 0
 	</select>
 
 
 	<select id="getProvinceRange" resultType="com.tzj.collect.entity.Area">
-		SELECT   DISTINCT g.*
-	FROM
-	sb_company_street_appliance a
-	LEFT JOIN sb_area b ON a.street_id = b.id
-	LEFT JOIN sb_area c ON b.parent_id = c.id
-	LEFT JOIN sb_company_category_city_name d ON a.company_id = d.company_id AND c.parent_id = d.city_id
-	LEFT JOIN sb_category e ON e.id = d.category_id
-	INNER JOIN sb_area f on f.id =c.parent_id
-	inner join sb_area g on g.id =f.parent_id
-	WHERE
-	e.parent_id in (
-	select  id  from  sb_category  where title =1 )
-	AND	d.id is NOT NULL
+		SELECT DISTINCT
+			s2.*
+		FROM
+			sb_company_stree a
+				LEFT JOIN sb_company_category b ON a.company_id = b.company_id
+				inner join  sb_area s on s.id =a.area_id
+				inner join sb_area s1 on s1.id =s.parent_id
+				inner join sb_area s2 on s2.id =s1.parent_id
+		WHERE
+
+			b.parent_id = 45
+		  AND b.del_flag = 0
+		  AND a.del_flag = 0
 	</select>
 
 

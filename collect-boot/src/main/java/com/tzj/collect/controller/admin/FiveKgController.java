@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.tzj.collect.common.mq.RocketMqConst;
 import com.tzj.collect.common.constant.MiniTemplatemessageUtil;
 import com.tzj.collect.config.ApplicationInit;
+import com.tzj.collect.core.handler.OrderSyncFactory;
 import com.tzj.collect.core.param.ali.OrderBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
@@ -117,6 +118,7 @@ public class FiveKgController {
                     order.setLogisticsName(object.getString("logisticsName"));
                 }
                 order.setReceiveTime(new Date());
+                 OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncTaken(order);
                 orderService.updateById(order);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -170,6 +172,7 @@ public class FiveKgController {
                     orderPicAchService.insert(orderPicAch);
                     //给用户增加积分
                     orderService.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), order.getGreenCount(), "生活垃圾");
+                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncAccount(order);
                     //给用户增加蚂蚁能量
                     OrderBean orderBean = orderService.myslOrderData(order.getId().toString());
                     //活动  完成订单大于五公斤发送红包0.1元
@@ -202,6 +205,7 @@ public class FiveKgController {
                 order.setStatus(Order.OrderType.REJECTED);
                 order.setCancelReason(object.getString("remarks"));
                 order.setCancelTime(new Date());
+                OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncCanceled(order);
                 orderService.updateById(order);
             } catch (Exception e) {
                 e.printStackTrace();
