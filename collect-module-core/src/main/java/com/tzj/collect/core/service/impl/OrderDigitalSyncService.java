@@ -15,6 +15,8 @@ import com.tzj.module.common.utils.DateUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -27,10 +29,11 @@ import static com.tzj.collect.core.param.sync.OrderSyncBizContent.HOUSEHOLD_ELEC
  * @Description:
  */
 @Slf4j
+@Service
 public class OrderDigitalSyncService  implements OrderSyncService {
 
 
-    @Resource
+    @Autowired
     CategoryService categoryService;
 
     @Override
@@ -41,6 +44,9 @@ public class OrderDigitalSyncService  implements OrderSyncService {
                         AlipayConst.XappId, AlipayConst.private_key, "json",
                         "GBK", AlipayConst.ali_public_key, "RSA2");
         Category category = categoryService.selectById(order.getCategoryId());
+
+            Category  parentCategory = categoryService.selectById(category.getParentId());
+
         AlipayCommerceIndustryOrderSyncRequest request = new AlipayCommerceIndustryOrderSyncRequest();
         OrderSyncBizContent orderSyncBizContent=new OrderSyncBizContent();
         orderSyncBizContent.setMerchant_order_no(order.getOrderNo());
@@ -48,7 +54,7 @@ public class OrderDigitalSyncService  implements OrderSyncService {
         orderSyncBizContent.setBuyer_id(order.getAliUserId());
         orderSyncBizContent.setService_code(HOUSEHOLD_ELECTRICAL_APPLIANCES_RECYCLE);
         orderSyncBizContent.setStatus(status);
-        orderSyncBizContent.setOrder_create_time(DateUtils.formatDate(order.getCreateDate(),"yyyy-MM-dd HH:mm:ss"));
+        orderSyncBizContent.setOrder_create_time(DateUtils.formatDate(order.getCreateDate()==null?new Date():order.getCreateDate(),"yyyy-MM-dd HH:mm:ss"));
         orderSyncBizContent.setOrder_modify_time(DateUtils.formatDate(new Date(),"yyyy-MM-dd HH:mm:ss"));
         String orderId ="10086";
         if(order.getId()!=null && order.getId() != 0L){
@@ -61,7 +67,7 @@ public class OrderDigitalSyncService  implements OrderSyncService {
         IndustryInfo industryInfo=new IndustryInfo();
         ServiceProductInfo serviceProductInfo=new ServiceProductInfo();
         serviceProductInfo.setGoods_desc("家电回收");
-        serviceProductInfo.setGoods_name(category==null?"家电":category.getName());
+        serviceProductInfo.setGoods_name(parentCategory==null?"家电":parentCategory.getName());
         serviceProductInfo.setQuantity("1");
         industryInfo.setService_product_info(serviceProductInfo);
 
@@ -88,7 +94,7 @@ public class OrderDigitalSyncService  implements OrderSyncService {
 
         }
         log.info("家电订单回流返回参数："+com.alibaba.fastjson.JSONObject.toJSONString(response));
-        if(!response.isSuccess() || !"10000".equals(response.getCode()) || StringUtils.isBlank(response.getRecordId())){
+        if(!response.isSuccess() || !"10000".equals(response.getCode()) || (StringUtils.isBlank(response.getRecordId()) && !status.equals("CANCELED"))){
             throw new ApiException("操作失败，订单无法回流！");
         }
         return response.getRecordId();
