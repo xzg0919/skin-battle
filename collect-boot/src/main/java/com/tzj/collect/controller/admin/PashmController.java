@@ -63,11 +63,13 @@ public class PashmController {
             if (pashmBean.getCode() == 1) {
                 order.setStatus(Order.OrderType.COMPLETE);
                 orderService.myslOrderData(order.getId().toString());
+                order.setCompleteDate(new Date());
             }
 
             if (pashmBean.getCode() == 2) {
                 order.setStatus(Order.OrderType.REJECTED);
                 order.setCancelReason(pashmBean.getRejectReason());
+                order.setCancelTime(new Date());
             }
 
             orderService.updateById(order);
