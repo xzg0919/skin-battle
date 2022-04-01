@@ -1,6 +1,7 @@
 package com.tzj.collect.controller.admin;
 
 import com.tzj.collect.core.param.business.PashmBean;
+import com.tzj.collect.core.service.MyslRequestLogService;
 import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.core.service.PashmOrderService;
 import com.tzj.collect.entity.Order;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Auther: xiangzhongguo
@@ -28,8 +31,13 @@ public class PashmController {
     @Resource
     OrderService orderService;
 
+    @Resource
+    MyslRequestLogService myslRequestLogService;
+
     @RequestMapping("notify")
-    public String pashmNotify(@RequestBody PashmBean pashmBean) {
+    public Map pashmNotify(@RequestBody PashmBean pashmBean) {
+
+        HashMap resultMap =new HashMap();
         try {
             PashmOrder pashmOrder = pashmOrderService.selectByOrderNo(pashmBean.getOrderNo());
             Order order = orderService.getByOrderNo(pashmBean.getOrderNo());
@@ -64,6 +72,7 @@ public class PashmController {
                 order.setStatus(Order.OrderType.COMPLETE);
                 orderService.myslOrderData(order.getId().toString());
                 order.setCompleteDate(new Date());
+                resultMap.put("fullEnergy",myslRequestLogService.getFullEnergyByOrderNo(order.getOrderNo()));
             }
 
             if (pashmBean.getCode() == 2) {
@@ -74,12 +83,14 @@ public class PashmController {
 
             orderService.updateById(order);
             pashmOrderService.updateById(pashmOrder);
+            resultMap.put("status","success");
 
         } catch (Exception e) {
+            resultMap.put("status","error");
             e.printStackTrace();
-            return "error";
         }
-        return "success";
+
+        return resultMap;
     }
 
 }

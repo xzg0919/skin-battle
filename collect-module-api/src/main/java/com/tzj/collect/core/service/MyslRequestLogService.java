@@ -11,4 +11,7 @@ import java.util.List;
 public interface MyslRequestLogService extends IService<MyslRequestLog>{
 
     public List<MyslRequestLog> getNoMysqlList();
+
+
+    Integer getFullEnergyByOrderNo(String orderNo);
 }

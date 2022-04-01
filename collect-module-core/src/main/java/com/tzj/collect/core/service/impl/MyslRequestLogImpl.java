@@ -25,4 +25,17 @@ public class MyslRequestLogImpl extends ServiceImpl<MyslRequestLogMapper, MyslRe
 
         return selectList(new EntityWrapper<MyslRequestLog>().isNull("full_energy"));
     }
+
+    @Override
+    public Integer getFullEnergyByOrderNo(String orderNo) {
+
+        EntityWrapper<MyslRequestLog> entityWrapper=new EntityWrapper();
+        entityWrapper.setSqlSelect("sum(full_energy) as fullEnergy");
+        entityWrapper.eq("order_no",orderNo);
+
+        MyslRequestLog myslRequestLog = selectOne(entityWrapper);
+
+        return   myslRequestLog==null?0:myslRequestLog.getFullEnergy();
+
+    }
 }
