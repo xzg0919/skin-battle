@@ -15,6 +15,7 @@ import com.tzj.module.common.utils.DateUtils;
 import com.tzj.module.easyopen.exception.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -27,6 +28,7 @@ import static com.tzj.collect.core.param.sync.OrderSyncBizContent.HOUSEHOLD_ELEC
  * @Description:
  */
 @Slf4j
+@Service
 public class OrderClothesSyncService implements OrderSyncService {
 
 
@@ -48,7 +50,7 @@ public class OrderClothesSyncService implements OrderSyncService {
         orderSyncBizContent.setBuyer_id(order.getAliUserId());
         orderSyncBizContent.setService_code(HOUSEHOLD_ELECTRICAL_APPLIANCES_RECYCLE);
         orderSyncBizContent.setStatus(status);
-        orderSyncBizContent.setOrder_create_time(DateUtils.formatDate(order.getCreateDate(),"yyyy-MM-dd HH:mm:ss"));
+        orderSyncBizContent.setOrder_create_time(DateUtils.formatDate(order.getCreateDate()  ,"yyyy-MM-dd HH:mm:ss"));
         orderSyncBizContent.setOrder_modify_time(DateUtils.formatDate(new Date(),"yyyy-MM-dd HH:mm:ss"));
         String orderId ="10086";
         if(order.getId()!=null && order.getId() != 0L){
@@ -95,7 +97,7 @@ public class OrderClothesSyncService implements OrderSyncService {
 
         }
         log.info("废旧衣物订单回流返回参数："+com.alibaba.fastjson.JSONObject.toJSONString(response));
-        if(!response.isSuccess() || !"10000".equals(response.getCode()) || StringUtils.isBlank(response.getRecordId())){
+        if(!response.isSuccess() || !"10000".equals(response.getCode()) || (StringUtils.isBlank(response.getRecordId()) && !status.equals("CANCELED"))){
             throw new ApiException("操作失败，订单无法回流！");
         }
         return response.getRecordId();

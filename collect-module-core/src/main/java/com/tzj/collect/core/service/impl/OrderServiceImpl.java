@@ -34,7 +34,6 @@ import com.tzj.collect.common.util.HttpUtils;
 import com.tzj.collect.common.util.RecyclersUtils;
 import com.tzj.collect.common.utils.ToolUtils;
 import com.tzj.collect.core.handler.OrderHandler;
-import com.tzj.collect.core.handler.OrderSyncFactory;
 import com.tzj.collect.core.mapper.OrderMapper;
 import com.tzj.collect.core.param.admin.LjAdminBean;
 import com.tzj.collect.core.param.admin.VoucherBean;
@@ -198,8 +197,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     OrderHandler orderCompleteHandler;
-    @Resource
-    OrderSyncService orderSyncService;
+
+    @Autowired
+    OrderDigitalSyncService orderDigitalSyncService;
+
+    @Autowired
+    OrderClothesSyncService orderClothesSyncService;
+
 
     protected final static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
@@ -319,10 +323,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setFormId(orderbean.getFormId());
             order.setPriceT(orderbean.getPrice());
             order.setAccessToken(orderbean.getAccessToken());
-           String recordId = OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncCreate(order);
-            order.setRecordId(recordId);
-
             flag = this.insert(order);
+            String recordId = orderDigitalSyncService.orderSyncCreate(order);
+            order.setRecordId(recordId);
+            flag = this.updateById(order);
             //将券码跟订单进行绑定
             if (StringUtils.isNoneBlank(orderbean.getVoucherId())) {
                 boolean bool = voucherMemberService.updateVoucherUseing(order.getId(), order.getOrderNo(), order.getAliUserId(), Long.parseLong(orderbean.getVoucherId()));
@@ -1757,10 +1761,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncCanceled(order );
+            orderDigitalSyncService.orderSyncCanceled(order );
         }
         if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncCanceled(order);
+            orderClothesSyncService.orderSyncCanceled(order);
         }
         if ("3".equals(order.getTitle().getValue() + "") && !"0".equals(status)) {
             try {
@@ -2198,10 +2202,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 this.updateById(order);
 
                 if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncCanceled(order );
+                    orderDigitalSyncService.orderSyncCanceled(order );
                 }
                 if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncCanceled(order );
+                    orderClothesSyncService.orderSyncCanceled(order );
                 }
                 orderOperate.setOperateLog("取消订单");
                 orderOperate.setReason(cancelReason);
@@ -2251,10 +2255,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 orderLog.setOp("已接单");
                 this.updateById(order);
                 if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncTaken(order);
+                    orderDigitalSyncService.orderSyncTaken(order);
                 }
                 if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncTaken(order);
+                    orderClothesSyncService.orderSyncTaken(order);
                 }
                 //接单消息推送
                 asyncService.pushOrder(order, mqtt4PushOrder);
@@ -2294,10 +2298,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 Company company = companyService.selectById(BusinessUtils.getCompanyAccount().getCompanyId());
                 orderOperate.setOperatorMan(company.getName());
                 if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncToSend(order);
+                    orderDigitalSyncService.orderSyncToSend(order);
                 }
                 if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-                    OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncToSend(order);
+                    orderClothesSyncService.orderSyncToSend(order);
                 }
 
                 PushUtils.getAcsResponse(recyclers.getTel(), order.getStatus().getValue() + "", order.getTitle().getValue() + "");
@@ -2562,10 +2566,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             orderOperate.setReason("/");
             orderOperateService.insert(orderOperate);
             if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-                OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncAccount(order);
+                orderDigitalSyncService.orderSyncAccount(order);
             }
             if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-                OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncAccount(order);
+                orderClothesSyncService.orderSyncAccount(order);
             }
             if ((Order.TitleType.BIGTHING + "").equals(order.getTitle() + "")) {
                 asyncService.sendOpenAppMini(order.getAliUserId(), order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page, order.getOrderNo(), "已完成", "大件回收");
@@ -2702,10 +2706,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     orderOperate.setOperatorMan("回收人员-" + recycler.getName());
                     orderOperate.setReason("/");
                     if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-                        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncAccount(order );
+                        orderDigitalSyncService.orderSyncAccount(order );
                     }
                     if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-                        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncAccount(order);
+                        orderClothesSyncService.orderSyncAccount(order);
                     }
                     this.updateMemberPoint(order.getAliUserId(), order.getOrderNo(), orderBean.getAmount(), descrb);
                     if (!"1".equals(companyRecycler.getIsManager())) {
@@ -2778,10 +2782,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
 
                     if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-                        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncTaken(order);
+                        orderDigitalSyncService.orderSyncTaken(order);
                     }
                     if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-                        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncTaken(order);
+                        orderClothesSyncService.orderSyncTaken(order);
                     }
                     break;
                 default:
@@ -3326,10 +3330,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncAccount(order );
+            orderDigitalSyncService.orderSyncAccount(order );
         }
         if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncAccount(order);
+            orderClothesSyncService.orderSyncAccount(order);
         }
         this.updateById(order);
         //给用户增加积分
@@ -3594,9 +3598,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 order.setAliAccount(orderBean.getAliAccount());
             }
             order.setAccessToken(orderBean.getAccessToken());
-            String recordId = OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncCreate(order);
-            order.setRecordId(recordId);
             this.insert(order);
+            String recordId = orderClothesSyncService.orderSyncCreate(order);
+            order.setRecordId(recordId);
+            this.updateById(order);
         } catch (Exception e) {
             e.printStackTrace();
             resultMap.put("msg", "FAIL");
@@ -4292,10 +4297,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setStatus(OrderType.TOSEND);
             order.setDistributeTime(new Date());
             if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-                OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncToSend(order);
+                orderDigitalSyncService.orderSyncToSend(order);
             }
             if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-                OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncToSend(order);
+                orderClothesSyncService.orderSyncToSend(order);
             }
             this.updateById(order);
         }
@@ -4318,7 +4323,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         order.setDistributeTime(new Date());
         order.setStatus(Order.OrderType.TOSEND);
-        OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncToSend(order);
+        orderClothesSyncService.orderSyncToSend(order);
         orderService.updateById(order);
         try {
             Area county = areaService.selectById(order.getAreaId());
@@ -4974,10 +4979,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderCancleExamine.setStatus(orderbean.getStatus());
         orderCancleExamineService.updateById(orderCancleExamine);
         if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
-            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.DIGITAL).orderSyncCanceled(order );
+            orderDigitalSyncService.orderSyncCanceled(order );
         }
         if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
-            OrderSyncFactory.instance(OrderSyncFactory.OrderTitle.CLOTHES).orderSyncCanceled(order);
+            orderClothesSyncService.orderSyncCanceled(order);
         }
         return "操作成功";
     }
