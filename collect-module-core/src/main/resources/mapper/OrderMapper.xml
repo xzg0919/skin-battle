@@ -29,6 +29,9 @@
                 <when test="status == 0">
                     AND a.status_ IN (0,1)
                 </when>
+                <when test="status == 4">
+                    AND a.status_ IN (4,5)
+                </when>
                 <otherwise>
                     AND a.status_ = #{status}
                 </otherwise>
@@ -367,7 +370,7 @@
         so.tel,
         so.full_address,
         so.status_,
-        FORMAT( so.price, 2 ) AS price,
+        convert(so.price, decimal(12,2))AS price,
         so.ach_price AS achPrice,
         so.commissions_price AS commissionsPrice,
         so.order_no orderNo,
@@ -542,7 +545,7 @@
         scomco.link_man AS linkName,
         scomco.tel,
         scomco.id AS orderId,
-        FORMAT(scomco.price, 2) AS price,
+        convert(scomco.price, decimal(12,2))AS price,
         scomco.ach_price AS achPrice,
         scomco.commissions_price AS commissionsPrice,
         scomco.comTel,

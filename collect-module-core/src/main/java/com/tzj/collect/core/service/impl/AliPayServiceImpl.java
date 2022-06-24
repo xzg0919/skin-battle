@@ -467,6 +467,7 @@ public class AliPayServiceImpl implements AliPayService {
         // 设置回调地址,必填. 如果需要直接在支付宝APP里面打开回调地址使用alipay协议，参考下面的案例：appId用固定值 20000067，url替换为urlEncode后的业务回跳地址
         // alipays://platformapi/startapp?appId=20000067&url=https%3A%2F%2Fapp.cqkqinfo.com%2Fcertify%2FzmxyBackNew.do
         merchantConfigObj.put("return_url", "xl://goods:8888/goodsDetail?goodsId=10011002");
+        merchantConfigObj.put("return_url", "scheme://face/certify");
 
         //构造身份认证初始化服务业务参数数据
         JSONObject bizContentObj = new JSONObject();

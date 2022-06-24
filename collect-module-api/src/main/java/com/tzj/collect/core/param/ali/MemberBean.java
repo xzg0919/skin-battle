@@ -66,4 +66,6 @@ public class MemberBean {
 
     //用户授权的回调的code
     private String code;
+
+    private String sharerId;
 }

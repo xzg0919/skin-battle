@@ -239,12 +239,12 @@ public class Test {
     public void aliPayTransfer() throws AlipayApiException {
         AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
         AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
-        model.setOutBizNo("trans_tzj_20220221001");
+        model.setOutBizNo("trans_tzj_20220611001");
         model.setProductCode("TRANS_ACCOUNT_NO_PWD");
         Participant payeeInfo = new Participant();
-        payeeInfo.setIdentity("2088332777855261");
+        payeeInfo.setIdentity("2088142702343411");
         payeeInfo.setIdentityType("ALIPAY_USER_ID");
-        model.setTransAmount("15");
+        model.setTransAmount("548.75");
         model.setOrderTitle("垃圾分类回收(收呗)货款");
         model.setRemark("垃圾分类回收(收呗)货款");
         model.setPayeeInfo(payeeInfo);
@@ -420,11 +420,7 @@ public class Test {
 
     @org.junit.Test
     public void insertRecycler1() {
-        Admin ad =new Admin();
-        ad.setName("111");
-        ad.setPassword("2222");
-        ad.setUsername("333");
-        adminService.insert(ad);
+        orderService.myslOrderData(1763997+"");
     }
 
 
@@ -473,5 +469,9 @@ public class Test {
 
 
     }
+
+
+
+
 
 }

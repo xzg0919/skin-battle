@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class PashmBean {
 
-    /** 0:接单  1:完成  2:驳回*/
+    /** 0:接单  1:完成  2:驳回  3:修改预约时间*/
     Integer code;
 
     Double weight;
@@ -27,4 +27,10 @@ public class PashmBean {
     String orderNo;
 
     String rejectReason;
+
+    String arrivalTime;
+
+    String startTime;
+
+    String endTime;
 }

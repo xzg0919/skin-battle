@@ -13,4 +13,8 @@ public class XcxSourceNumBean {
 
     private String aliUserId;
 
+    private String sharerId;
+
+    private String date;
+
 }

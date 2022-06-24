@@ -25,7 +25,7 @@ public interface MemberService extends IService<Member>{
      * @param source
      * @return
      */
-    Object getAuthCode(String authCode, String state, String cityName, String source);
+    Object getAuthCode(String authCode, String state, String cityName, String source,String sharerId);
     /**
      * 小程序静默授权
      * 根据用户的code解析用户数据并保存

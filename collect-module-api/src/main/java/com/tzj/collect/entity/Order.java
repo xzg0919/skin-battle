@@ -731,7 +731,7 @@ public class Order extends DataEntity<Long> {
 	public String getStatusPage() {
 		switch (this.status) {
 			case INIT:
-				statusPage = "待处理";
+				statusPage = "已受理";
 				break;
 			case COMPLETE:
 				statusPage = "已完成";
@@ -1117,7 +1117,7 @@ public class Order extends DataEntity<Long> {
 		HOUSEDIGITAL(7),//生活垃圾/废弃家电
 		SMALLDIGITAL(8), // 小家电（家电数码里归类出来的）
 		ELECTROMOBILE(9), //电瓶车
-		PASHM(10); //羊绒
+		PASHM(10); //
 		private int value;
 
 		TitleType(final int value) {

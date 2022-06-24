@@ -32,10 +32,15 @@ public class SubjectServiceImpl implements SubjectService{
     public Subject getSubjectByTokenSubject(String token,String key, Map<String, Object> map) {
         Subject subjectCache=getSubjectCache(token);
         if(subjectCache!=null){
+            Member cacheMember = (Member) subjectCache.getUser();
+            if(cacheMember.getAccessToken() ==null){
+                cacheMember = memberService.selectMemberByAliUserId(key);
+                subjectCache.setUser(cacheMember);
+                setSubjectCache(token,subjectCache);
+            }
             return subjectCache;
         }
         Member member = memberService.selectMemberByAliUserId(key);
-
         Subject subject=new Subject();
         subject.setId(member.getId().toString());
         subject.setName(member.getName());

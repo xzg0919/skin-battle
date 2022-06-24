@@ -49,7 +49,7 @@ public class MemberApi {
     @SignIgnore
     @AuthIgnore 
     public Object getAuthCode(MemberBean memberBean) {
-       return memberService.getAuthCode(memberBean.getAuthCode(),memberBean.getState(),memberBean.getCityName(),memberBean.getSource());
+       return memberService.getAuthCode(memberBean.getAuthCode(),memberBean.getState(),memberBean.getCityName(),memberBean.getSource(),memberBean.getSharerId());
     }
 	/**
 	 * 根据用户授权返回的authCode,闲鱼授权解析接口

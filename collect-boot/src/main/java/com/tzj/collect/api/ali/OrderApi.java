@@ -18,11 +18,14 @@ import com.tzj.collect.core.param.enterprise.EnterpriseCodeBean;
 import com.tzj.collect.core.service.*;
 import com.tzj.collect.entity.*;
 import com.tzj.collect.entity.Order.OrderType;
+
 import static com.tzj.collect.common.constant.TokenConst.ALI_API_COMMON_AUTHORITY;
+
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
 import com.tzj.module.easyopen.ApiContext;
 import com.tzj.module.easyopen.exception.ApiException;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
@@ -42,7 +45,6 @@ import redis.clients.jedis.JedisPool;
  * 订单相关api
  *
  * @Author 王美霞20180305
- *
  */
 @ApiService
 @Slf4j
@@ -78,7 +80,7 @@ public class OrderApi {
     private CompanyStreetApplianceService companyStreetApplianceService;
     @Autowired
     private CompanyCategoryService companyCategoryService;
-    @Resource(name= "mqtt4PushOrder")
+    @Resource(name = "mqtt4PushOrder")
     private MqttClient mqtt4PushOrder;
     @Autowired
     private CompanyStreetHouseService companyStreetHouseService;
@@ -105,9 +107,9 @@ public class OrderApi {
     /**
      * 获取会员的未完成订单列表 不分页
      *
-     * @author 王灿
      * @param
      * @return List<Order>:未完成的订单列表
+     * @author 王灿
      */
     @Api(name = "order.unfinishlist", version = "1.0")
     @SignIgnore
@@ -121,9 +123,9 @@ public class OrderApi {
     /**
      * 获取会员的订单列表 分页
      *
-     * @author 王灿
      * @param
      * @return
+     * @author 王灿
      */
     @Api(name = "order.orderlist", version = "1.0")
     @SignIgnore
@@ -146,9 +148,9 @@ public class OrderApi {
     /**
      * 根据订单id获取订单详情
      *
-     * @author 王灿
      * @param orderbean :
      * @return
+     * @author 王灿
      */
     @Api(name = "order.detail", version = "1.0")
     @SignIgnore
@@ -161,9 +163,9 @@ public class OrderApi {
     /**
      * 取消订单
      *
-     * @author 王灿
      * @param
      * @return
+     * @author 王灿
      */
     @Api(name = "order.cancel", version = "1.0")
     @SignIgnore
@@ -171,11 +173,11 @@ public class OrderApi {
     public String cancelOrder(OrderBean orderbean) throws Exception {
         Order order = orderService.selectById(orderbean.getId());
         if ("3".equals(order.getStatus().getValue() + "")) {
-            return "订单已被完成无法取消";
+            throw new ApiException("订单已被完成无法取消");
         }
 
-        if(order.getTitle().equals(Order.TitleType.PASHM) && "2".equals(order.getStatus().getValue() + "" )){
-            return "快递已揽件，无法取消";
+        if (order.getTitle().equals(Order.TitleType.PASHM) && "2".equals(order.getStatus().getValue() + "")) {
+            throw new ApiException("快递已揽件，无法取消");
         }
         String orderInitStatus = order.getStatus().toString();
         order.setStatus(OrderType.CANCEL);
@@ -185,17 +187,16 @@ public class OrderApi {
         order.setCancelTime(new Date());
 
 
-
-        String status = orderService.orderCancel(order, orderInitStatus,mqtt4PushOrder);
+        String status = orderService.orderCancel(order, orderInitStatus, mqtt4PushOrder);
         return status;
     }
 
     /**
      * 完成订单
      *
-     * @author 王灿
      * @param
      * @return
+     * @author 王灿
      */
     @Api(name = "order.completeOrder", version = "1.0")
     @SignIgnore
@@ -213,25 +214,26 @@ public class OrderApi {
     /**
      * 家电下单接口
      *
-     * @author 王灿
      * @param
      * @return
      * @throws ApiException
+     * @author 王灿
      */
     @Api(name = "order.create", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object createOrder(OrderBean orderbean) throws ApiException {
         Member member = MemberUtils.getMember();
+        member = memberService.selectMemberByAliUserId(member.getAliUserId());
         Map<String, Object> resultMap = null;
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
 
-        if(member.getAccessToken()==null){
+        if (member.getAccessToken() == null) {
             throw new ApiException("授权异常，请重新授权！");
         }
 
-        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.DIGITAL)){
+        if (memberService.checkBlackList(member.getAliUserId(), Order.TitleType.DIGITAL)) {
             throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "1");
@@ -277,13 +279,13 @@ public class OrderApi {
         orderbean.setAccessToken(member.getAccessToken());
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
-        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
-            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())) {
+            orderNo = "XY" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
         }
         orderbean.setOrderNo(orderNo);
         //保存订单
-        resultMap = orderService.saveOrder(orderbean,mqtt4PushOrder);
-        log.info("家电订单下单成功，订单号:{},品类id:{},街道id:{},小区id:{}",orderNo,category.getParentId(),memberAddress.getStreetId(),communityId);
+        resultMap = orderService.saveOrder(orderbean, mqtt4PushOrder);
+        log.info("家电订单下单成功，订单号:{},品类id:{},街道id:{},小区id:{}", orderNo, category.getParentId(), memberAddress.getStreetId(), communityId);
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(companyId);
         if (null != company) {
@@ -322,9 +324,9 @@ public class OrderApi {
     /**
      * 根据小区Id和分类Id查询所属的企业
      *
-     * @author 王灿
      * @param
      * @return
+     * @author 王灿
      */
     @Api(name = "order.getCompanyByIds", version = "1.0")
     @SignIgnore
@@ -391,9 +393,9 @@ public class OrderApi {
     /**
      * 小程序保存六废订单
      *
-     * @author 王灿
      * @param
      * @return
+     * @author 王灿
      */
     @Api(name = "order.XcxSaveOrder", version = "1.0")
     @SignIgnore
@@ -401,7 +403,7 @@ public class OrderApi {
     public Object XcxSaveOrder(OrderBean orderbean) {
         Member member = MemberUtils.getMember();
         Map<String, Object> resultMap = null;
-        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.HOUSEHOLD)){
+        if (memberService.checkBlackList(member.getAliUserId(), Order.TitleType.HOUSEHOLD)) {
             throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         //查询用户的默认地址
@@ -432,12 +434,12 @@ public class OrderApi {
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
-        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
-            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())) {
+            orderNo = "XY" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
         }
         orderbean.setOrderNo(orderNo);
-        resultMap = (Map<String, Object>) orderService.XcxSaveOrder(orderbean, member,mqtt4PushOrder);
-        log.info("五废订单下单成功，订单号:{},品类id:{},街道id:{},小区id:{}",orderNo,category.getParentId(),memberAddress.getStreetId(),communityId);
+        resultMap = (Map<String, Object>) orderService.XcxSaveOrder(orderbean, member, mqtt4PushOrder);
+        log.info("五废订单下单成功，订单号:{},品类id:{},街道id:{},小区id:{}", orderNo, category.getParentId(), memberAddress.getStreetId(), communityId);
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(companyId);
         if (null != company) {
@@ -537,10 +539,11 @@ public class OrderApi {
     public Object savefiveKgOrder(OrderBean orderbean) throws Exception {
         //获取当前登录的会员
         Member member = MemberUtils.getMember();
+        member = memberService.selectMemberByAliUserId(member.getAliUserId());
         Map<String, Object> resultMap = null;
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
-        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.FIVEKG)){
+        if (memberService.checkBlackList(member.getAliUserId(), Order.TitleType.FIVEKG)) {
             throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "3");
@@ -587,12 +590,12 @@ public class OrderApi {
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
-        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
-            orderNo = "XYZ"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())) {
+            orderNo = "XYZ" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
         }
         orderbean.setOrderNo(orderNo);
         resultMap = (Map<String, Object>) orderService.savefiveKgOrder(orderbean);
-        log.info("五公斤订单下单成功，订单号:{},品类id:{},街道id:{} ",orderNo,45,memberAddress.getStreetId());
+        log.info("五公斤订单下单成功，订单号:{},品类id:{},街道id:{} ", orderNo, 45, memberAddress.getStreetId() + ",请求参数：" + JSONObject.toJSONString(orderbean));
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(streeCompanyId);
         if (null != company) {
@@ -638,6 +641,7 @@ public class OrderApi {
             return resultMap;
         }
     }
+
     /**
      * 保存小家电的订单
      *
@@ -652,7 +656,7 @@ public class OrderApi {
         Map<String, Object> resultMap = null;
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
-        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.SMALLDIGITAL)){
+        if (memberService.checkBlackList(member.getAliUserId(), Order.TitleType.SMALLDIGITAL)) {
             throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "8");
@@ -698,12 +702,12 @@ public class OrderApi {
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
-        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
-            orderNo = "XYZ"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())) {
+            orderNo = "XYZ" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
         }
         orderbean.setOrderNo(orderNo);
         resultMap = (Map<String, Object>) orderService.saveSmallAppOrder(orderbean);
-        log.info("小家电订单下单成功，订单号:{},城市id:{},街道id:{} ",orderNo,memberAddress.getCityId(),memberAddress.getStreetId());
+        log.info("小家电订单下单成功，订单号:{},城市id:{},街道id:{} ", orderNo, memberAddress.getCityId(), memberAddress.getStreetId());
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(streeCompanyId);
         if (null != company) {
@@ -762,10 +766,10 @@ public class OrderApi {
     /**
      * 小程序大家具下单接口
      *
-     * @author 王灿
      * @param
      * @return
      * @throws ApiException
+     * @author 王灿
      */
     @Api(name = "order.saveBigThingOrder", version = "1.0")
     @SignIgnore
@@ -777,7 +781,7 @@ public class OrderApi {
         orderbean.setAliUserId(member.getAliUserId());
         //查询用户的默认地址
         Map<String, Object> resultMap = null;
-        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.BIGTHING)){
+        if (memberService.checkBlackList(member.getAliUserId(), Order.TitleType.BIGTHING)) {
             throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
@@ -802,12 +806,12 @@ public class OrderApi {
         orderbean.setAddress(memberAddressService.getMemberAddressById(memberAddress.getId().toString(), member.getAliUserId()));
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
-        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
-            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())) {
+            orderNo = "XY" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
         }
         orderbean.setOrderNo(orderNo);
         //保存订单
-        resultMap = orderService.saveBigThingOrder(orderbean,mqtt4PushOrder);
+        resultMap = orderService.saveBigThingOrder(orderbean, mqtt4PushOrder);
         //钉钉消息赋值回收公司名称
         if (StringUtils.isNoneBlank(streetBigCompanyId + "")) {
             Company company = companyService.selectOne(new EntityWrapper<Company>().eq("id", streetBigCompanyId));
@@ -843,10 +847,10 @@ public class OrderApi {
     /**
      * 小程序第二版订单详情接口
      *
-     * @author 王灿
      * @param
      * @return
      * @throws ApiException
+     * @author 王灿
      */
     @Api(name = "order.getNewOrderDetail", version = "1.0")
     @SignIgnore
@@ -854,6 +858,7 @@ public class OrderApi {
     public Object getNewOrderDetail(OrderBean orderbean) throws ApiException {
         return orderService.getNewOrderDetail(orderbean.getId());
     }
+
     /**
      * @Description 定时定点订单详情
      * @Author yangwenhui
@@ -868,57 +873,57 @@ public class OrderApi {
     }
 
     /**
-     *
-     * @author 王灿
      * @param
      * @return
      * @throws ApiException
+     * @author 王灿
      */
     @Api(name = "order.getCollectDetail", version = "1.0")
     @AuthIgnore
     @SignIgnore
     @Cacheable(value = "getCollectDetail", key = "#root.methodName", sync = true)
     public Object getCollectDetail() throws ApiException {
-            //注册总用户数量
-            long memberCount = memberService.getMemberCount();
-            int OrderCount = orderService.selectCount(new EntityWrapper<Order>());
-            Long greenCount = (long) 0;
-            List<Map<String, Object>> maps = orderService.selectHouseAmount();
-            for (Map<String, Object> map : maps) {
-                Integer green = 0;
-                if ("废塑料".equals(map.get("categoryName"))) {
-                    green = 144;
-                } else if ("废旧衣物".equals(map.get("categoryName"))) {
-                    green = 78;
-                } else if ("废纺衣物".equals(map.get("categoryName"))) {
-                    green = 78;
-                } else if ("废衣服".equals(map.get("categoryName"))) {
-                    green = 78;
-                } else if ("废纸".equals(map.get("categoryName"))) {
-                    green = 100;
-                } else if ("废金属".equals(map.get("categoryName"))) {
-                    green = 13;
-                }
-                greenCount += new Double((double) map.get("amount") * green).longValue();
-            };
-            int counts = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1"));
-            int count1 = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1").eq("category_id", "23"));
-            int count2 = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1").eq("category_id", "24"));
-            greenCount += Long.valueOf(count1 * 987) + Long.valueOf(counts - count1 - count2) * 9763;
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("memberCount", memberCount);
-            resultMap.put("OrderCount", OrderCount);
-            resultMap.put("greenCount", greenCount);
-            return resultMap;
+        //注册总用户数量
+        long memberCount = memberService.getMemberCount();
+        int OrderCount = orderService.selectCount(new EntityWrapper<Order>());
+        Long greenCount = (long) 0;
+        List<Map<String, Object>> maps = orderService.selectHouseAmount();
+        for (Map<String, Object> map : maps) {
+            Integer green = 0;
+            if ("废塑料".equals(map.get("categoryName"))) {
+                green = 144;
+            } else if ("废旧衣物".equals(map.get("categoryName"))) {
+                green = 78;
+            } else if ("废纺衣物".equals(map.get("categoryName"))) {
+                green = 78;
+            } else if ("废衣服".equals(map.get("categoryName"))) {
+                green = 78;
+            } else if ("废纸".equals(map.get("categoryName"))) {
+                green = 100;
+            } else if ("废金属".equals(map.get("categoryName"))) {
+                green = 13;
+            }
+            greenCount += new Double((double) map.get("amount") * green).longValue();
+        }
+        ;
+        int counts = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1"));
+        int count1 = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1").eq("category_id", "23"));
+        int count2 = orderService.selectCount(new EntityWrapper<Order>().eq("status_", "3").eq("title", "1").eq("category_id", "24"));
+        greenCount += Long.valueOf(count1 * 987) + Long.valueOf(counts - count1 - count2) * 9763;
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("memberCount", memberCount);
+        resultMap.put("OrderCount", OrderCount);
+        resultMap.put("greenCount", greenCount);
+        return resultMap;
     }
 
     /**
      * 用户领取现金红包(领取前订单是否完成，该随机数是否准确，是否已被领取)
      *
+     * @param orderbean(包含领奖随机数 + 订单编号)
+     * @return
      * @author sgmark@aliyun.com （抄自答答答）
      * @date 2019/8/12 0012
-     * @param orderbean(包含领奖随机数 + 订单编号 )
-     * @return
      */
     @Api(name = "order.receiving.money", version = "1.0")
     @SignIgnore
@@ -933,9 +938,9 @@ public class OrderApi {
     IotOrderService iotOrderService;
 
 
-
     /**
      * IOT4分类订单列表
+     *
      * @param
      * @return
      */
@@ -947,12 +952,13 @@ public class OrderApi {
         //获取当前登录的会员信息
         Member member = MemberUtils.getMember();
         //根据会员ID回去订单列表
-        Map<String, Object> map = iotOrderService.findOrderListByUserId(member.getAliUserId(),   pageBean.getPageNumber(), pageBean.getPageSize());
+        Map<String, Object> map = iotOrderService.findOrderListByUserId(member.getAliUserId(), pageBean.getPageNumber(), pageBean.getPageSize());
         return map;
     }
 
     /**
      * iot4分类订单明细
+     *
      * @param orderBean
      * @return
      */
@@ -960,13 +966,13 @@ public class OrderApi {
     @SignIgnore
     @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
     public Object iot4OrderDetail(OrderBean orderBean) {
-       return  iotOrderService.getOrderDetail(orderBean.getOrderNo());
+        return iotOrderService.getOrderDetail(orderBean.getOrderNo());
 
     }
 
 
     /**
-     *  微信回收订单支付
+     * 微信回收订单支付
      *
      * @param
      * @return
@@ -977,7 +983,7 @@ public class OrderApi {
     public Object collectPrePay(OrderPayParam orderPayParam) {
         Order order = orderService.selectOrder(orderPayParam.getOrderId());
         if (order == null || !order.getTitle().equals(Order.TitleType.BIGTHING)
-                || order.getStatus().equals(Order.OrderType.COMPLETE) ||  order.getStatus().equals(Order.OrderType.CANCEL) ) {
+                || order.getStatus().equals(Order.OrderType.COMPLETE) || order.getStatus().equals(Order.OrderType.CANCEL)) {
             throw new ApiException("订单错误");
         }
 
@@ -986,7 +992,6 @@ public class OrderApi {
                 WXConst.FROM_JS_API, order.getAchPrice(), "大件订单", PrepayOrder.COLLECT);
         return wxPayMpOrderResult;
     }
-
 
 
     public static Member getUserFromToken() throws ApiException {
@@ -1007,6 +1012,7 @@ public class OrderApi {
 
     /**
      * 电瓶车下单接口
+     *
      * @param orderbean
      * @return
      * @throws ApiException
@@ -1019,7 +1025,7 @@ public class OrderApi {
         Map<String, Object> resultMap = null;
         Boolean isImprisonMember = false;
         Boolean isImprisonRule = false;
-        if(memberService.checkBlackList(member.getAliUserId(), Order.TitleType.ELECTROMOBILE)){
+        if (memberService.checkBlackList(member.getAliUserId(), Order.TitleType.ELECTROMOBILE)) {
             throw new ApiException("您的账号异常，限制下单，如有疑问请联系客服");
         }
         isImprisonMember = imprisonMemberService.isImprisonMember(member.getAliUserId(), "9");
@@ -1064,13 +1070,13 @@ public class OrderApi {
         orderbean.setStreetId(memberAddress.getStreetId());
         //随机生成订单号
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
-        if (StringUtils.isNotBlank(orderbean.getAliAccount())){
-            orderNo = "XY"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
+        if (StringUtils.isNotBlank(orderbean.getAliAccount())) {
+            orderNo = "XY" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(8999) + 1000);
         }
         orderbean.setOrderNo(orderNo);
         //保存订单
         resultMap = orderService.saveElectroMobileOrder(orderbean);
-        log.info("电瓶车订单下单成功，订单号:{},品类id:{},街道id:{},小区id:{}",orderNo,category.getParentId(),memberAddress.getStreetId(),communityId);
+        log.info("电瓶车订单下单成功，订单号:{},品类id:{},街道id:{},小区id:{}", orderNo, category.getParentId(), memberAddress.getStreetId(), communityId);
         //钉钉消息赋值回收公司名称
         Company company = companyService.selectById(companyId);
         if (null != company) {
@@ -1113,10 +1119,10 @@ public class OrderApi {
     /**
      * 羊绒订单下单
      *
-     * @author 王灿
      * @param
      * @return
      * @throws ApiException
+     * @author 王灿
      */
     @Transactional
     @Api(name = "order.savePashmOrder", version = "1.0")
@@ -1130,56 +1136,58 @@ public class OrderApi {
         if (memberAddress == null) {
             return "您暂未添加回收地址";
         }
-        Area district =areaService.selectById(memberAddress.getAreaId());
-        Area city =areaService.selectById(district.getParentId());
-        Area province =areaService.selectById(city.getParentId());
+        Area district = areaService.selectById(memberAddress.getAreaId());
+        Area city = areaService.selectById(district.getParentId());
+        Area province = areaService.selectById(city.getParentId());
 
-        String districtName =district.getAreaName();
-        String cityName =city.getAreaName();
-        String provinceName =province.getAreaName();
-        String linkName =memberAddress.getName();
-        String linkTel =memberAddress.getTel();
-        String address =memberAddress.getAddress()+memberAddress.getHouseNumber();
-        Integer qty =orderbean.getQty();
-        String startTime=orderbean.getStartTime();
+        String districtName = district.getAreaName();
+        String cityName = city.getAreaName();
+        String provinceName = province.getAreaName();
+        String linkName = memberAddress.getName();
+        String linkTel = memberAddress.getTel();
+        String address = memberAddress.getAddress() + memberAddress.getHouseNumber();
+        Integer qty = orderbean.getQty();
+        String startTime = orderbean.getStartTime();
         String endTime = orderbean.getEndTime();
-        String orderDate=orderbean.getArrivalTime();
-        String remarks=orderbean.getRemarks();
+        String orderDate = orderbean.getArrivalTime();
+        String remarks = orderbean.getRemarks();
+        String picUrl = orderbean.getPicUrl();
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
-        if(StringUtils.isNotBlank(districtName)&& StringUtils.isNotBlank(cityName)&& StringUtils.isNotBlank(provinceName)&&
-                StringUtils.isNotBlank(linkName)&& StringUtils.isNotBlank(linkTel)&& StringUtils.isNotBlank(address)
-                && qty !=null && qty!= 0
-        ){
-            JSONObject requestData =new JSONObject();
-            TreeMap<String,Object> requestBody =new TreeMap<>();
-            requestBody.put("districtName",districtName);
-            requestBody.put("cityName",cityName);
-            requestBody.put("provinceName",provinceName);
-            requestBody.put("linkName",linkName);
-            requestBody.put("linkTel",linkTel);
-            requestBody.put("address",address);
-            requestBody.put("clothesCount",qty);
-            requestBody.put("remarks",remarks);
-            requestBody.put("orderDate",orderDate);
-            requestBody.put("startTime",startTime);
-            requestBody.put("endTime",endTime);
-            requestBody.put("orderNo",orderNo);
-            requestBody.put("userId",member.getAliUserId());
-            requestData.put("requestBody",requestBody);
-            requestData.put("merchantCode","M000000001");
-            requestData.put("dataSign", ApiEncrypt.encrypt(JSONObject.toJSONString(requestBody),"abcde","UTF-8"));
+        if (StringUtils.isNotBlank(districtName) && StringUtils.isNotBlank(cityName) && StringUtils.isNotBlank(provinceName) &&
+                StringUtils.isNotBlank(linkName) && StringUtils.isNotBlank(linkTel) && StringUtils.isNotBlank(address)
+                && qty != null && qty != 0
+        ) {
+            JSONObject requestData = new JSONObject();
+            TreeMap<String, Object> requestBody = new TreeMap<>();
+            requestBody.put("districtName", districtName);
+            requestBody.put("cityName", cityName);
+            requestBody.put("provinceName", provinceName);
+            requestBody.put("linkName", linkName);
+            requestBody.put("linkTel", linkTel);
+            requestBody.put("address", address);
+            requestBody.put("clothesCount", qty);
+            requestBody.put("remarks", remarks);
+            requestBody.put("orderDate", orderDate);
+            requestBody.put("startTime", startTime);
+            requestBody.put("endTime", endTime);
+            requestBody.put("orderNo", orderNo);
+            requestBody.put("orderImage", picUrl);
+            requestBody.put("userId", member.getAliUserId());
+            requestData.put("requestBody", requestBody);
+            requestData.put("merchantCode", "M000000001");
+            requestData.put("dataSign", ApiEncrypt.encrypt(JSONObject.toJSONString(requestBody), "abcde", "UTF-8"));
 
-            Response response = HttpUtils.post("http://101.132.120.207:8040/openApi/orderCreate", JSONObject.toJSONString(requestData));
+            Response response = HttpUtils.post("https://open.shanhesheng.com/openApi/orderCreate", JSONObject.toJSONString(requestData));
             JSONObject result = JSONObject.parseObject(response.body().string());
 
-            if("-1".equals(result.get("code"))){
-                throw new ApiException(result.get("msg")+"");
+            if ("-1".equals(result.get("code"))) {
+                throw new ApiException(result.get("msg") + "");
             }
             orderbean.setMemberId(Integer.parseInt(member.getId().toString()));
             orderbean.setAliUserId(member.getAliUserId());
             orderbean.setOrderNo(orderNo);
             orderbean.setAreaId(memberAddress.getAreaId());
-            orderbean.setAddress(districtName+cityName+districtName+address);
+            orderbean.setAddress(districtName + cityName + districtName + address);
             orderbean.setTel(memberAddress.getTel());
             orderbean.setLinkMan(memberAddress.getName());
             return orderService.savePashmOrder(orderbean);
@@ -1188,5 +1196,51 @@ public class OrderApi {
     }
 
 
+    /**
+     * 羊绒订单快递预约时间
+     *
+     * @param
+     * @return
+     * @throws ApiException
+     * @author 王灿
+     */
+    @Transactional
+    @Api(name = "order.pashm.times", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ALI_API_COMMON_AUTHORITY)
+    public Object getPashmTimes(OrderBean orderbean) throws Exception {
+        Member member = MemberUtils.getMember();
+        //根据当前登录的会员，获取姓名、绿账号和阿里userId
+        //查询用户的默认地址
+        MemberAddress memberAddress = memberAddressService.getMemberAdderssByAliUserId(member.getAliUserId());
+        if (memberAddress == null) {
+            return "您暂未添加回收地址";
+        }
+        Area district = areaService.selectById(memberAddress.getAreaId());
+        Area city = areaService.selectById(district.getParentId());
+        Area province = areaService.selectById(city.getParentId());
+
+        String cityName = city.getAreaName();
+        String provinceName = province.getAreaName();
+        if (StringUtils.isNotBlank(cityName) && StringUtils.isNotBlank(provinceName)
+        ) {
+            JSONObject requestData = new JSONObject();
+            TreeMap<String, Object> requestBody = new TreeMap<>();
+            requestBody.put("cityName", cityName);
+            requestBody.put("provinceName", provinceName);
+            requestData.put("requestBody", requestBody);
+            requestData.put("merchantCode", "M000000001");
+            requestData.put("dataSign", ApiEncrypt.encrypt(JSONObject.toJSONString(requestBody), "abcde", "UTF-8"));
+
+            Response response = HttpUtils.post("https://open.shanhesheng.com/openApi/getTimes", JSONObject.toJSONString(requestData));
+            JSONObject result = JSONObject.parseObject(response.body().string());
+
+            if ("-1".equals(result.get("code"))) {
+                throw new ApiException(result.get("msg") + "");
+            }
+            return result.get("data");
+        }
+        return "获取预约时间失败";
+    }
 
 }

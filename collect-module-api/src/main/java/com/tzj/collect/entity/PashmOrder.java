@@ -31,13 +31,15 @@ public class PashmOrder extends DataEntity<Long> {
 
 	String endTime;
 
+
+
 	@Override
 	public Long getId() {
-		return null;
+		return id;
 	}
 
 	@Override
-	public void setId(Long aLong) {
-
+	public void setId(Long id) {
+		this.id = id;
 	}
 }

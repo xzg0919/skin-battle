@@ -8,6 +8,7 @@ import com.alipay.api.response.AlipayCommerceIndustryOrderSyncResponse;
 import com.tzj.collect.common.constant.AlipayConst;
 import com.tzj.collect.core.param.sync.*;
 import com.tzj.collect.core.service.CategoryService;
+import com.tzj.collect.core.service.OrderService;
 import com.tzj.collect.core.service.OrderSyncService;
 import com.tzj.collect.entity.Category;
 import com.tzj.collect.entity.Order;
@@ -19,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 
 import static com.tzj.collect.core.param.sync.OrderSyncBizContent.HOUSEHOLD_ELECTRICAL_APPLIANCES_RECYCLE;
@@ -35,6 +39,8 @@ public class OrderDigitalSyncService  implements OrderSyncService {
 
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    OrderService orderService;
 
     @Override
     public  String OrderSync(Order order, String status){
@@ -54,8 +60,23 @@ public class OrderDigitalSyncService  implements OrderSyncService {
         orderSyncBizContent.setBuyer_id(order.getAliUserId());
         orderSyncBizContent.setService_code(HOUSEHOLD_ELECTRICAL_APPLIANCES_RECYCLE);
         orderSyncBizContent.setStatus(status);
+        log.info("数据库取出来时间："+com.alibaba.fastjson.JSONObject.toJSONString(order));
+        log.info("传出去时间："+DateUtils.formatDate(order.getCreateDate()==null?new Date():order.getCreateDate(),"yyyy-MM-dd HH:mm:ss"));
         orderSyncBizContent.setOrder_create_time(DateUtils.formatDate(order.getCreateDate()==null?new Date():order.getCreateDate(),"yyyy-MM-dd HH:mm:ss"));
-        orderSyncBizContent.setOrder_modify_time(DateUtils.formatDate(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        Date modifyTime =new Date();
+
+        if("CREATE".equals(status)){
+            modifyTime =order.getCreateDate();
+        }
+        //自动派单时间相等，修改时间+2s
+        if("TO_SEND".equals(status) && DateUtils.formatDate(modifyTime,"yyyy-MM-dd HH:mm:ss")
+                .equals(orderSyncBizContent.getOrder_create_time())){
+            Calendar calendar= Calendar.getInstance();
+            calendar.setTime(modifyTime);
+            calendar.add(Calendar.SECOND,2);
+            modifyTime =calendar.getTime();
+        }
+        orderSyncBizContent.setOrder_modify_time(DateUtils.formatDate(modifyTime,"yyyy-MM-dd HH:mm:ss"));
         String orderId ="10086";
         if(order.getId()!=null && order.getId() != 0L){
             orderId  = order.getId()+"";
@@ -94,7 +115,11 @@ public class OrderDigitalSyncService  implements OrderSyncService {
 
         }
         log.info("家电订单回流返回参数："+com.alibaba.fastjson.JSONObject.toJSONString(response));
-        if(!response.isSuccess() || !"10000".equals(response.getCode()) || (StringUtils.isBlank(response.getRecordId()) && !status.equals("CANCELED"))){
+        if(!response.isSuccess() || !"10000".equals(response.getCode()) /*|| (StringUtils.isBlank(response.getRecordId()) && !status.equals("CANCELED"))*/){
+            //throw new ApiException("操作失败，订单无法回流！");
+            log.info("回流失败，订单号："+order.getOrderNo());
+        }
+        if((!response.isSuccess() || !"10000".equals(response.getCode())) &&  "CREATE".equals(status) /*|| (StringUtils.isBlank(response.getRecordId()) && !status.equals("CANCELED"))*/){
             throw new ApiException("操作失败，订单无法回流！");
         }
         return response.getRecordId();
@@ -104,27 +129,40 @@ public class OrderDigitalSyncService  implements OrderSyncService {
 
     @Override
     public   String orderSyncCreate(Order order){
+        order =orderService.getByOrderNo(order.getOrderNo());
         return OrderSync(order,"CREATE");
 
     }
     @Override
     public   String orderSyncToSend(Order order){
+        if (order.getRecordId() == null) {
+            return null;
+        }
         return OrderSync(order,"TO_SEND");
 
     }
     @Override
     public   String orderSyncTaken(Order order){
+        if (order.getRecordId() == null) {
+            return null;
+        }
         return OrderSync(order,"ORDER_TAKEN");
 
     }
 
     @Override
     public   String orderSyncAccount(Order order){
+        if (order.getRecordId() == null) {
+            return null;
+        }
         return OrderSync(order,"ACCOUNT");
 
     }
     @Override
     public   String orderSyncCanceled(Order order){
+        if (order.getRecordId() == null) {
+            return null;
+        }
         return OrderSync(order,"CANCELED");
 
     }

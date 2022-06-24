@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ import sun.rmi.runtime.Log;
  */
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> implements MemberService {
 
     @Autowired
@@ -79,7 +81,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     BlackListService blackListService;
     @Autowired
     MessageService messageService;
-
+    @Autowired
+    ShareInfoService shareInfoService;
 
 
     @Override
@@ -109,7 +112,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
      */
     @Transactional
     @Override
-    public Object getAuthCode(String authCode, String state, String cityName, String source) {
+    public Object getAuthCode(String authCode, String state, String cityName, String source,String sharerId) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         System.out.println("--------拿到的参数state是：" + state + "---拿到的cityName参数是 ： " + cityName);
         Area area = null;
@@ -207,6 +210,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            log.info("sharerId="+sharerId+"-----aliuid="+member.getAliUserId());
+            if(StringUtils.isNotBlank(sharerId)){
+                shareInfoService.share(sharerId, member.getAliUserId(),member.getName(),member.getMobile());
+            }
+
         } else {
             member.setAccessToken(accessToken);
             member.setAliUserId(userId);
@@ -346,6 +355,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         return map;
     }
 
+    @Autowired
+    SharerService sharerService;
     /**
      * 获取会员个人中心的相关数据
      *
@@ -361,6 +372,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         Integer insuranceId = null;
         String title = null;
         String defeatMsg = "";
+        String isSharer ="NO";
         //查询该用户是否有保单
         PiccOrder piccOrder = piccOrderService.selectOne(new EntityWrapper<PiccOrder>().eq("ali_user_id", aliUserId).eq("del_flag", 0).in("status_", "0,2,4"));
         if (null != piccOrder) {
@@ -379,6 +391,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         PiccWater piccWater = piccWaterService.selectOne(new EntityWrapper<PiccWater>().eq("ali_user_id", aliUserId).eq("del_flag", 0).eq("status_", 0).ge("point_count", 1));
         if (null != piccWater) {
             isPiccWater = "YES";
+        }
+
+        //判断是不是分享人
+        Sharer sharer = sharerService.getByAliUserId(aliUserId);
+        if (null != sharer) {
+            isSharer = "YES";
         }
         //查询保单信息
         List<PiccInsurancePolicy> piccInsurancePolicy = piccInsurancePolicyService.selectList(new EntityWrapper<PiccInsurancePolicy>().eq("del_flag", 0));
@@ -400,6 +418,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         //获取个人中心电话
         Company company = companyService.selectById(1);
         resultMap.put("isPiccInsurance", isPiccInsurance);
+        resultMap.put("isSharer", isSharer);
         resultMap.put("isPiccWater", isPiccWater);
         resultMap.put("piccOrder", piccOrder);
         resultMap.put("insuranceId", insuranceId);
@@ -457,7 +476,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         if (!response.isSuccess()) {
             return "用户授权解析失败";
         }
-        System.out.println("获取accessToken---------"+JSONObject.toJSONString(response));
+        log.info("获取accessToken---------"+JSONObject.toJSONString(response));
         String accessToken = response.getAccessToken();
         String userId = response.getUserId();
         //查询用户是否存在
@@ -479,7 +498,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         //更新会员登录时间
         member.setUpdateDate(new Date());
         member.setAccessToken(accessToken);
-        this.updateMemberByAliUserId(member);
+        Integer updateFlag= this.updateMemberByAliUserId(member);
+        log.info(updateFlag+"flag");
         resultMap.put("member", member);
         return resultMap;
     }

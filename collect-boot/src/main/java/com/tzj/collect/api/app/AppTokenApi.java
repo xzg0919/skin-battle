@@ -149,4 +149,11 @@ public class AppTokenApi {
         return recyclersService.getAuthCode(recyclersBean.getAuthCode(), recycler.getId());
     }
 
+
+    public static void main(String[] args) {
+        String token = JwtUtils.generateToken("1", APP_API_EXPRIRE, APP_API_TOKEN_SECRET_KEY);
+        String securityToken = JwtUtils.generateEncryptToken(token, APP_API_TOKEN_CYPTO_KEY);
+        System.out.println("返回回收人员的token是 ：" + securityToken);
+    }
+
 }

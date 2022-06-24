@@ -26,7 +26,7 @@ spring:
   # 环境 dev|pro || dynamicdb-test 测试多数据源配置 | dynamicdb-pro 正式多数据源配置
   profiles:
     #默认启动测试环境。可以启动应用的时候定当前环境 java -jar myproject.jar --spring.profiles.active = dynamicdb-pro
-    active: dynamicdb-test
+    active: dynamicdb-pro
   # cache配置
   cache:
     type: ehcache
@@ -92,7 +92,7 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 #热部署配置
 devtools:

@@ -28,69 +28,18 @@ public class PashmController {
     @Resource
     PashmOrderService pashmOrderService;
 
-    @Resource
-    OrderService orderService;
-
-    @Resource
-    MyslRequestLogService myslRequestLogService;
 
     @RequestMapping("notify")
     public Map pashmNotify(@RequestBody PashmBean pashmBean) {
-
-        HashMap resultMap =new HashMap();
+        HashMap<String, Object> resultMap = new HashMap<>();
         try {
-            PashmOrder pashmOrder = pashmOrderService.selectByOrderNo(pashmBean.getOrderNo());
-            Order order = orderService.getByOrderNo(pashmBean.getOrderNo());
-
-            if (pashmBean.getWeight() != null && pashmBean.getWeight() != 0) {
-                pashmOrder.setWeight(pashmBean.getWeight());
-            }
-
-            if (pashmBean.getNormalClothesCount() != null) {
-                pashmOrder.setNormalClothesCount(pashmBean.getNormalClothesCount());
-            }
-
-            if (pashmBean.getPashmClothesCount() != null) {
-                pashmOrder.setPashmClothesCount(pashmBean.getPashmClothesCount());
-            }
-
-
-            if (StringUtils.isNotBlank(pashmBean.getNormalClothesImg())) {
-                pashmOrder.setNormalClothesImg(pashmBean.getNormalClothesImg());
-            }
-
-            if (StringUtils.isNotBlank(pashmBean.getPashmClothesImg())) {
-                pashmOrder.setPashmClothesImg(pashmBean.getPashmClothesImg());
-            }
-
-            if (pashmBean.getCode() == 0) {
-                order.setReceiveTime(new Date());
-                order.setStatus(Order.OrderType.ALREADY);
-            }
-
-            if (pashmBean.getCode() == 1) {
-                order.setStatus(Order.OrderType.COMPLETE);
-                orderService.myslOrderData(order.getId().toString());
-                order.setCompleteDate(new Date());
-                resultMap.put("fullEnergy",myslRequestLogService.getFullEnergyByOrderNo(order.getOrderNo()));
-            }
-
-            if (pashmBean.getCode() == 2) {
-                order.setStatus(Order.OrderType.REJECTED);
-                order.setCancelReason(pashmBean.getRejectReason());
-                order.setCancelTime(new Date());
-            }
-
-            orderService.updateById(order);
-            pashmOrderService.updateById(pashmOrder);
-            resultMap.put("status","success");
-
+            resultMap = pashmOrderService.savePashmOrder(pashmBean);
         } catch (Exception e) {
-            resultMap.put("status","error");
+            resultMap.put("status", "error");
             e.printStackTrace();
         }
-
         return resultMap;
+
     }
 
 }

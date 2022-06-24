@@ -60,6 +60,7 @@ public class UtilApi {
     @SignIgnore //这个api忽略sign验证以及随机数以及时间戳验证
     @AuthIgnore
     public List<FileBean> uploadImage(FileBase64Param file){
+        System.out.println("----------------------开始上传图片了uploadImage------------------");
         List<FileBase64Param> files=new ArrayList<>();
         files.add(file);
     	return fileUploadService.uploadImage(files);

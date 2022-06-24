@@ -224,6 +224,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (status != -1) {
             if (status == 0) {
                 wrapper.in("status_", "0,1");
+            }
+            else if (status == 4) {
+                wrapper.in("status_", "4,5");
             } else {
                 wrapper.eq("status_", status);
             }
@@ -324,9 +327,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setPriceT(orderbean.getPrice());
             order.setAccessToken(orderbean.getAccessToken());
             flag = this.insert(order);
-            String recordId = orderDigitalSyncService.orderSyncCreate(order);
-            order.setRecordId(recordId);
-            flag = this.updateById(order);
+
             //将券码跟订单进行绑定
             if (StringUtils.isNoneBlank(orderbean.getVoucherId())) {
                 boolean bool = voucherMemberService.updateVoucherUseing(order.getId(), order.getOrderNo(), order.getAliUserId(), Long.parseLong(orderbean.getVoucherId()));
@@ -349,6 +350,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             resultMap.put("msg", "FAIL");
             return resultMap;
         }
+        String recordId = orderDigitalSyncService.orderSyncCreate(order);
+        order.setRecordId(recordId);
+        flag = this.updateById(order);
         long orderId = order.getId();
 
         //保存orderItem
@@ -608,7 +612,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order order = this.selectById(orderbean.getId());
         orderCompleteHandler.beforeComplete(order.getRecyclerId() == null ? null : Long.parseLong(order.getRecyclerId().toString())
                 , order.getTitle(), order.getAliUserId());
-        if (order.getCompanyId() == 273 && "1".equals(order.getIsMysl())) {
+        if (order.getCompanyId() == 273 && "1".equals(order.getIsMysl()) && order.getTitle().equals(Order.TitleType.HOUSEHOLD)) {
             final BigDecimal[] payMoney = {new BigDecimal("0")};
             Map<String, BigDecimal> categoryMysl = new HashMap<>();
             List<OrderItemAch> orderItemAchList = orderItemAchService.selectByOrderId(Integer.parseInt(order.getId() + ""));
@@ -626,11 +630,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 payMoney[0] = payMoney[0].add(categoryMysl.get(key)
                         .compareTo(new BigDecimal("9763")) == 1 ? new BigDecimal("9763") : categoryMysl.get(key));
             });
-            order.setCommissionsPrice(payMoney[0].divide(new BigDecimal("1000")).setScale(2, BigDecimal.ROUND_DOWN));
+            order.setCommissionsPrice(payMoney[0].divide(new BigDecimal("1000")).multiply(new BigDecimal("0.9")).setScale(2, BigDecimal.ROUND_DOWN));
             this.updateById(order);
-            logger.info("getPriceByOrderId订单金额：" + order.getAchPrice() + "佣金:" + payMoney[0].divide(new BigDecimal("1000")).setScale(2, BigDecimal.ROUND_DOWN));
+            logger.info("getPriceByOrderId订单金额：" + order.getAchPrice() + "佣金:" + payMoney[0].divide(new BigDecimal("1000")).multiply(new BigDecimal("0.9")).setScale(2, BigDecimal.ROUND_DOWN));
 
-            return payMoney[0].divide(new BigDecimal("1000")).setScale(2, BigDecimal.ROUND_DOWN);
+            return payMoney[0].divide(new BigDecimal("1000")).multiply(new BigDecimal("0.9")).setScale(2, BigDecimal.ROUND_DOWN);
         }
 
         order.setAchPrice(new BigDecimal(orderbean.getAchPrice()));
@@ -1742,7 +1746,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             requestData.put("requestBody", requestBody);
             requestData.put("merchantCode", "M000000001");
             requestData.put("dataSign", ApiEncrypt.encrypt(com.alibaba.fastjson.JSONObject.toJSONString(requestBody), "abcde", "UTF-8"));
-            Response response = HttpUtils.post("http://101.132.120.207:8040/openApi/orderCancel",
+            Response response = HttpUtils.post("https://open.shanhesheng.com/openApi/orderCancel",
                     com.alibaba.fastjson.JSONObject.toJSONString(requestData));
             com.alibaba.fastjson.JSONObject result = com.alibaba.fastjson.JSONObject.parseObject(response.body().string());
 
@@ -3599,15 +3603,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
             order.setAccessToken(orderBean.getAccessToken());
             this.insert(order);
-            String recordId = orderClothesSyncService.orderSyncCreate(order);
-            order.setRecordId(recordId);
-            this.updateById(order);
         } catch (Exception e) {
             e.printStackTrace();
             resultMap.put("msg", "FAIL");
             return resultMap;
         }
-
+        String recordId = orderClothesSyncService.orderSyncCreate(order);
+        order.setRecordId(recordId);
+        this.updateById(order);
         //储存图片链接
         OrderPic orderPic = orderBean.getOrderPic();
         if (orderPic != null) {
@@ -3618,14 +3621,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             String[] picUrls = picUrl.split(",");
             String[] smallPics = smallPic.split(",");
             OrderPic orderPicc = null;
+            boolean imgUoloadTag=true;
             for (int i = 0; i < origPicss.length; i++) {
                 orderPicc = new OrderPic();
                 orderPicc.setOrigPic(origPicss[i]);
                 orderPicc.setPicUrl(picUrls[i]);
                 orderPicc.setSmallPic(smallPics[i]);
                 orderPicc.setOrderId(Integer.parseInt(order.getId() + ""));
-                orderPicService.insert(orderPicc);
+                imgUoloadTag = orderPicService.insert(orderPicc);
+                if(!imgUoloadTag){
+                    throw new ApiException("网络异常，请重新提交订单");
+                }
             }
+        }else{
+            throw new ApiException("请上传图片！");
         }
         //储存回收人员提交的信息
         List<OrderItemBean> orderItemList = orderBean.getOrderItemList();
@@ -4146,10 +4155,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 itemOrder.setItems(extInfo);
                 itemList.add(itemOrder);
 
-                if ("plastic".equals(itemMap.get("aliItemType").toString()) && 67790 <= Math.floor((double) itemMap.get("amount"))) {
+                if ("plastic".equals(itemMap.get("aliItemType").toString()) && 67800 <= Math.floor((double) itemMap.get("amount"))) {
                     chai = true;
                 }
-                if ("paper".equals(itemMap.get("aliItemType").toString()) && 97630 <= Math.floor((double) itemMap.get("amount"))) {
+                if ("paper".equals(itemMap.get("aliItemType").toString()) && 97640 <= Math.floor((double) itemMap.get("amount"))) {
                     chai = true;
                 }
                 if ("metal".equals(itemMap.get("aliItemType").toString()) && 741000 <= Math.floor((double) itemMap.get("amount"))) {
@@ -4978,12 +4987,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderCancleExamine.setUpdateDate(new Date());
         orderCancleExamine.setStatus(orderbean.getStatus());
         orderCancleExamineService.updateById(orderCancleExamine);
-        if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
+       /* if((Order.TitleType.DIGITAL + "").equals(order.getTitle() + "")){
             orderDigitalSyncService.orderSyncCanceled(order );
         }
         if((Order.TitleType.FIVEKG + "").equals(order.getTitle() + "")){
             orderClothesSyncService.orderSyncCanceled(order);
-        }
+        }*/
         return "操作成功";
     }
 
@@ -5881,6 +5890,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderLog.setOp("待接单");
         orderLogService.insert(orderLog);
         asyncService.sendOpenAppMini(order.getAliUserId(), order.getFormId(), MiniTemplatemessageUtil.orderTemplateId, MiniTemplatemessageUtil.page, order.getOrderNo(), "平台已受理", "羊绒制品");
+
+
+        //储存图片链接
+        if (StringUtils.isNoneBlank(orderbean.getPicUrl())) {
+            String [] origPics = orderbean.getPicUrl().split(",");
+            for (int i = 0; i < origPics.length; i++) {
+                OrderPic orderPicc = new OrderPic();
+                orderPicc.setOrigPic(origPics[i]);
+                orderPicc.setPicUrl(origPics[i]);
+                orderPicc.setSmallPic(origPics[i]);
+                orderPicc.setOrderId(Integer.parseInt(orderId + ""));
+                orderPicService.insert(orderPicc);
+            }
+        }
+
 
         PashmOrder pashmOrder = new PashmOrder();
         pashmOrder.setOrderNo(order.getOrderNo());

@@ -95,7 +95,7 @@ public class DingTalkNotify {
         try {
             ArrayList<String> atMobiles = new ArrayList<>();
             atMobiles.add("18601780883");
-            sendTextMessageWithAtAndAtAll("一个人测试", atMobiles, false, "https://oapi.dingtalk.com/robot/send?access_token=9125390abc8e864da7deddba297580b32948bd8752804f8d25cc524372f78fbd");
+            sendTextMessageWithAtAndAtAll("订单11111111", atMobiles, false, "https://oapi.dingtalk.com/robot/send?access_token=9125390abc8e864da7deddba297580b32948bd8752804f8d25cc524372f78fbd");
         } catch (Exception e) {
             e.printStackTrace();
         }

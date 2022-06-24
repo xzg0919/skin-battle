@@ -9,10 +9,14 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,10 +48,21 @@ public class QRBarCodeUtil {
      * @param outputStream ：输出流，比如 HttpServletResponse 的 getOutputStream
      */
     public static void createCodeToOutputStream(String codeContent, OutputStream outputStream) {
+
+        try {
+            ImageIO.write(createCodeToBufferedImage(codeContent), "png", outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static BufferedImage createCodeToBufferedImage(String codeContent ) {
+        BufferedImage bufferedImage =null;
         try {
             /** 参数检验*/
             if (codeContent == null || "".equals(codeContent.trim())) {
-                return;
+                return null;
             }
             codeContent = codeContent.trim();
 
@@ -84,20 +99,43 @@ public class QRBarCodeUtil {
              *      y：像素位置的纵坐标，即行
              *      rgb：像素的值，采用 16 进制,如 0xFFFFFF 白色
              */
-            BufferedImage bufferedImage = new BufferedImage(CODE_WIDTH, CODE_HEIGHT, BufferedImage.TYPE_INT_BGR);
+            bufferedImage = new BufferedImage(CODE_WIDTH, CODE_HEIGHT, BufferedImage.TYPE_INT_BGR);
             for (int x = 0; x < CODE_WIDTH; x++) {
                 for (int y = 0; y < CODE_HEIGHT; y++) {
                     bufferedImage.setRGB(x, y, bitMatrix.get(x, y) ? FRONT_COLOR : BACKGROUND_COLOR);
                 }
             }
 
-            /**
-             * 区别就是以一句，输出到输出流中，如果第三个参数是 File，则输出到文件中
-             */
-            ImageIO.write(bufferedImage, "png", outputStream);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return  bufferedImage;
+    }
+
+
+    /**
+     *  BufferedImage转成 base64
+     * @param bufferedImage
+     * @param imageFormatName
+     * @return
+     * @throws IOException
+     */
+    public static String getBufferedImageToBase64(BufferedImage bufferedImage,String imageFormatName)   {
+        if(StringUtils.isBlank(imageFormatName)){
+            imageFormatName = "png";
+        }
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage, imageFormatName, stream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return Base64.getEncoder().encodeToString(stream.toByteArray());
     }
 }

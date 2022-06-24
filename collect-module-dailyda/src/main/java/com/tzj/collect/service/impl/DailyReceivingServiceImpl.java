@@ -228,9 +228,11 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
 //            System.out.println(Double.parseDouble(new Random().nextInt(4) + 2  +""));
 //        }
 //        System.out.println(a+"-----------------"+b+"--------"+c +"----------" +d);
-        for (int i = 0; i < 1000; i++) {
+       /* for (int i = 0; i < 1000; i++) {
             System.out.println((Math.random() * .01 + .10 + "").substring(0, 4));
-        }
+        }*/
+
+        System.out.println(0.99 * .01 + .10  );
     }
 
     /** 每个位置随机金额（万分之1几率99
@@ -274,6 +276,8 @@ public class DailyReceivingServiceImpl extends ServiceImpl<DailyReceivingMapper,
             return "0";
         }
     }
+
+
 
     public static double randomPoint(){
         Integer randomInt = new Random().nextInt(10000);
