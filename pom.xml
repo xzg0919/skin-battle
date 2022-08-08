@@ -4,38 +4,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.tzj</groupId>
-    <artifactId>collect</artifactId>
+    <groupId>com.xxx</groupId>
+    <artifactId>skin-battle</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <!--
-        <version>1.5.9.RELEASE</version>
-        -->
         <version>2.1.5.RELEASE</version>
     </parent>
 
     <modules>
 
-        <module>collect-boot</module>
-        <module>collect-module-task-collect</module>
-        <module>collect-module-task-flcx</module>
-        <module>collect-module-flcx</module>
-        <module>collect-module-flcx-boot</module>
-        <module>collect-module-point</module>
-        <module>collect-module-dailyda</module>
-        <module>collect-module-dailyda-boot</module>
-        <module>collect-module-iot</module>
-        <module>collect-module-iot4</module>
-        <module>collect-module-api</module>
-        <module>collect-module-common</module>
-        <module>collect-module-core</module>
-        <module>collect-module-xxl-job</module>
-        <module>collect-green</module>
-        <module>collect-idle-fish</module>
+        <module>skin-battle-boot</module>
+        <module>skin-battle-api</module>
+        <module>skin-battle-common</module>
+        <module>skin-battle-core</module>
+
     </modules>
 
     <repositories>
@@ -74,11 +60,6 @@
         <maven.build.timestamp.format>MMdd</maven.build.timestamp.format>
         
         <jaskjson.version>2.9.9</jaskjson.version>
-        <dubbo.version>2.6.5</dubbo.version>
-        <dubbo-registry-nacos.version>2.6.7</dubbo-registry-nacos.version>
-        <dubbo-spring-context-support.version>1.0.2</dubbo-spring-context-support.version>
-        <dubbo-spring-boot-starter.version>0.2.1.RELEASE</dubbo-spring-boot-starter.version>
-        <nacos-discovery-spring-boot-starter.version>0.2.1</nacos-discovery-spring-boot-starter.version>
         <gongyi-version>1.0.0</gongyi-version>
     </properties>
 
@@ -158,29 +139,20 @@
 
             <!-- 收呗模块包 -->
 
+
             <dependency>
-                <groupId>com.tzj</groupId>
-                <artifactId>collect-module-flcx</artifactId>
+                <groupId>com.xxx</groupId>
+                <artifactId>skin-battle-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.tzj</groupId>
-                <artifactId>collect-module-dailyda</artifactId>
+                <groupId>com.xxx</groupId>
+                <artifactId>skin-battle-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.tzj</groupId>
-                <artifactId>collect-module-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.tzj</groupId>
-                <artifactId>collect-module-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.tzj</groupId>
-                <artifactId>collect-module-core</artifactId>
+                <groupId>com.xxx</groupId>
+                <artifactId>skin-battle-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- 收呗模块包 -->
@@ -223,41 +195,7 @@
                 <version>1.2.2</version>
             </dependency>
 
-            <!-- dubbo + nacos start -->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>dubbo-registry-nacos</artifactId>
-                <version>${dubbo-registry-nacos.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>dubbo</artifactId>
-                <version>${dubbo.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba.spring</groupId>
-                <artifactId>dubbo-spring-context-support</artifactId>
-                <version>${dubbo-spring-context-support.version}</version>
-            </dependency>
-            <!-- dubbo + nacos end -->
 
-            <!-- dubbo + spring-boot + nacos start -->
-            <dependency>
-                <groupId>com.alibaba.boot</groupId>
-                <artifactId>nacos-discovery-spring-boot-starter</artifactId>
-                <version>${nacos-discovery-spring-boot-starter.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba.boot</groupId>
-                <artifactId>dubbo-spring-boot-starter</artifactId>
-                <version>${dubbo-spring-boot-starter.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.alibaba</groupId>
-                        <artifactId>dubbo</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
 
 
             <dependency>

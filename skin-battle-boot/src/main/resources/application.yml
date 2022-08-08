@@ -1,0 +1,127 @@
+# Tomcat
+server:
+    tomcat:
+    #    uri-encoding: UTF-8
+        max-threads: 300
+        max-connections: 1000
+    #    min-spare-threads: 30
+        accept-count: 300
+    port: 9090
+    connection-timeout: 20000
+    #context-path: /collect
+    jetty:
+      acceptors: 2
+      selectors: 4
+
+# mysql
+spring:
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      enabled: true
+      max-file-size: 100MB
+      file-size-threshold: 0
+  application:
+    name: collect
+  # 环境 dev|pro || dynamicdb-test 测试多数据源配置 | dynamicdb-pro 正式多数据源配置
+  profiles:
+    #默认启动测试环境。可以启动应用的时候定当前环境 java -jar myproject.jar --spring.profiles.active = dynamicdb-pro
+    active: dynamicdb-test
+  # cache配置
+  cache:
+    type: ehcache
+    ehcache:
+      config: classpath:config/ehcache.xml
+  # jackson时间格式化
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  # 指定静态资源的路径
+  #resources:
+  #static-locations: classpath:/static/,classpath:/views/
+  redis:
+    #open: false  # 是否开启redis缓存  true开启   false关闭
+    #database: 0
+    # 正式地址
+    host: r-uf6crus7stfo0npql7pd.redis.rds.aliyuncs.com
+    # 测试地址
+    #host: 172.19.193.25
+    # 测试6370 正式6379
+    port: 6379
+    password: sb_123456      # 密码（默认为空）
+    timeout: 1000  # 连接超时时长（毫秒）
+    jedis:
+      pool:
+        max-active: 1000  # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1     # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 10      # 连接池中的最大空闲连接
+        min-idle: 5       # 连接池中的最小空闲连接
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    mode: LEGACYHTML5MyMetaObjectHandler
+    servlet:
+      content-type: text/html
+
+
+
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.tzj.collect.entity
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 0
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+    #序列接口实现类配置
+    #逻辑删除配置
+    logic-delete-value: 0
+    logic-not-delete-value: 1
+    meta-object-handler: com.tzj.collect.common.handler.BaseMetaObjectHandler
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#热部署配置
+devtools:
+  livereload:
+    enabled: true
+  restart:
+    enabled: true
+    #additional-exclude: views/**
+
+#配置日志
+logging:
+  #配置日志文件路径
+  path: /temp/skin-battle.log
+  level:
+    org.springfromework.web: warn
+    org.hibernate: error
+
+wx:
+  pay:
+    #微信公众号或者小程序等的appid
+    appId-wx: wx96c50c79195a1f1f
+    appId-app: wxb95aa13cf7e003ca
+    #商户号
+    mch-id: 1611054727
+    #商户key
+    mch-key: SHANGHAIZHUQIANnopqrstuvwxyz1257
+    # p12证书的位置，可以指定绝对路径，也可以指定类路径（以classpath:开头）
+    key-path: /collect/wxCert//apiclient_cert.p12
+
+
+#微信异步通知地
+wxNotifyUrl: http://shoubeics.mayishoubei.com/notify/wx
