@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.xxx</groupId>
+    <groupId>com.97skin</groupId>
     <artifactId>skin-battle</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -52,7 +52,7 @@
         <HikariCP.version>2.4.13</HikariCP.version>
         <fastjson.version>1.2.67</fastjson.version>
         <hufm.version>4.1.3</hufm.version>
-        <mybatisplus.version>2.3.3</mybatisplus.version>
+        <mybatisplus.version>3.5.2</mybatisplus.version>
         <druid.version>1.1.18</druid.version>
         <skipTests>true</skipTests>
         <alipay-sdk.version>3.7.151.ALL</alipay-sdk.version>
@@ -141,17 +141,17 @@
 
 
             <dependency>
-                <groupId>com.xxx</groupId>
+                <groupId>com.97skin</groupId>
                 <artifactId>skin-battle-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.xxx</groupId>
+                <groupId>com.97skin</groupId>
                 <artifactId>skin-battle-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.xxx</groupId>
+                <groupId>com.97skin</groupId>
                 <artifactId>skin-battle-core</artifactId>
                 <version>${project.version}</version>
             </dependency>

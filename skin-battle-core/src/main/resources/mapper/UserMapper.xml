@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skin.core.mapper.UserMapper">
+
+
+    <select id="getUserPage" resultType="com.skin.dto.UserPage">
+        select
+        u.id as uid,DATE_FORMAT (u.create_date,'%y-%m-%d %H:%m:%s') as createDate,u.nick_name as nickName,u.tel as tel,u.email,p.point
+        from user u inner join point_info p on u.id = p.user_id
+        <where>
+            <if test="nickName != null and nickName !='' ">
+                and  u.nick_name = #{nickName}
+            </if>
+            <if test="tel != null and tel !='' ">
+              and ( u.tel = #{tel} or email = #{tel})
+            </if>
+        </where>
+     order by u.create_date
+    </select>
+
+</mapper>

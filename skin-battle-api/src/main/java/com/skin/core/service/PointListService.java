@@ -1,0 +1,22 @@
+package com.skin.core.service;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.skin.entity.PointInfo;
+import com.skin.entity.PointList;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * @Auther: xiangzhongguo
+ * @Date: 2022/8/10 16:55
+ * @Description:
+ */
+public interface PointListService extends IService<PointList> {
+
+
+    Page<Map<String, Objects>> getPointListPage(Integer pageNum, Integer pageSize, Long userId,Integer orderFrom,String orderNo);
+
+}

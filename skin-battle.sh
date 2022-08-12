@@ -1,4 +1,4 @@
-AppName=collect-boot.jar
+AppName=skin-battle.jar
 
 #JVM参数
 JVM_OPTS="-Dname=$AppName  -Duser.timezone=Asia/Shanghai -server -Xms6000M -Xmx6000M -XX:PermSize=512M -XX:MaxPermSize=512M -XX:+HeapDumpOnOutOfMemoryError -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9001 -Dcom.sun.management.jmxremote.rmi.port=9001  -Dcom.sun.management.jmxremote.ssl=false  -Dcom.sun.management.jmxremote.authenticate=false "
@@ -24,7 +24,7 @@ function start()
         if [ x"$PID" != x"" ]; then
             echo "$AppName is running..."
         else
-                nohup java -jar  $JVM_OPTS $AppName > /$APP_HOME/collect.log 2>&1 &
+                nohup java -jar  $JVM_OPTS $AppName > /$APP_HOME/skin-battle.log 2>&1 &
                 echo "Start $AppName success..."
         fi
 }
