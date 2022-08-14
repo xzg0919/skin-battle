@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.function.Function;
 
 
 /**
@@ -33,4 +34,6 @@ public class Skin extends DataEntity<Long>{
 	private BigDecimal price ;
 	/** 图片链接 */
 	private String picUrl ;
+
+
 }

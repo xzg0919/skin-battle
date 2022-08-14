@@ -1,6 +1,7 @@
 package com.skin.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -28,4 +29,10 @@ public class RollRoomSkinInfo extends DataEntity<Long>{
 	private String specifiedUser ;
 	/** 价格 */
 	private BigDecimal price ;
+	/** 品级  稀有级别 0 初级 1 中级 2高级 */
+	@TableField("level_")
+	private Integer level ;
+	/** 磨损度 */
+	private String attritionRate ;
+
 }

@@ -17,4 +17,6 @@ public class SysParamBean {
     String qq;
 
     String QrCode;
+
+    Long id;
 }

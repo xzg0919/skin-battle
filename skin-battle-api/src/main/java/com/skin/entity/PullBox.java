@@ -1,6 +1,7 @@
 package com.skin.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -26,4 +27,8 @@ public class PullBox extends DataEntity<Long>{
     private String attritionRate ;
     /** 图片链接 */
     private String skinPic ;
+
+    /** 是否启用 1：是 0：否 */
+    @TableField("enable_")
+    private Integer enable ;
 }

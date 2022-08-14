@@ -110,7 +110,6 @@ public abstract class DataEntity<ID> extends AbstractEntity<ID> {
 		this.version = version;
 	}
 
-	@Transactional
 	public String getDate(Date date) {
 		if(date ==null){
 			return "" ;

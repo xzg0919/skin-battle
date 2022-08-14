@@ -21,6 +21,7 @@ public class PullBoxSkin extends DataEntity<Long>{
 	@TableId(type = IdType.AUTO)
 	private  Long id ;
 
+	private Long pullBoxId;
 	/** 皮肤名称 */
 	private String skinName;
 	/** 磨损度 */

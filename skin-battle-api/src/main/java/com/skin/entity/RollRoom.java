@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.tzj.module.common.utils.DateUtils;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -35,8 +36,20 @@ public class RollRoom extends DataEntity<Long>{
 	/** 充值金额 */
 	private BigDecimal price ;
 	/** 房间描述 */
-	@TableField("desc")
-	private String desc_ ;
+	@TableField("desc_")
+	private String desc ;
 	/** 房间图片 */
 	private String roomPic ;
+
+	/** 房间状态  1：待开奖 2：已结束 */
+	Integer roomStatus ;
+
+	public String getLotteryTimeStr() {
+		return getDate(lotteryTime);
+	}
+
+	@TableField(exist = false)
+	String lotteryTimeStr;
+
+
 }

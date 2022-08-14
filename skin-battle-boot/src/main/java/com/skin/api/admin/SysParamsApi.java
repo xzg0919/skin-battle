@@ -1,5 +1,6 @@
 package com.skin.api.admin;
 
+import com.skin.common.util.AssertUtil;
 import com.skin.core.service.SysParamsService;
 import com.skin.entity.SysParams;
 import com.skin.params.SysParamBean;
@@ -10,6 +11,7 @@ import com.tzj.module.api.annotation.SignIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import static com.skin.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
 
@@ -49,5 +51,40 @@ public class SysParamsApi {
         sysParamsService.updateById(qrcode);
         return "success";
     }
+
+    @Api(name = "boxType.list", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object boxList(SysParamBean sysParams) {
+        return sysParamsService.getSysParams("box_type");
+    }
+
+    @Api(name = "boxType.insertOrUpdate", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object boxTypeIOU(SysParamBean sysParams) {
+         if(sysParams.getId()!=null){
+             SysParams sysParams1 = sysParamsService.getById(sysParams.getId());
+             sysParams1.setVal(sysParams.getVal());
+             sysParamsService.updateById(sysParams1);
+         }else{
+                SysParams sysParams1 = new SysParams();
+                AssertUtil.isTrue(sysParamsService.getSysParams("box_type",sysParams.getVal()) != null, "该参数已存在");
+                sysParams1.setParam("box_type");
+                sysParams1.setVal(sysParams.getVal());
+                sysParamsService.save(sysParams1);
+         }
+        return "success";
+    }
+
+
+    @Api(name = "boxType.getOne", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object boxTypeGetOne(SysParamBean sysParams) {
+        return sysParamsService.getById(sysParams.getId());
+    }
+
+
 
 }

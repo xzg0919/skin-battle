@@ -8,6 +8,8 @@ import com.skin.entity.SysParams;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @Auther: xiangzhongguo
  * @Date: 2022/8/11 14:52
@@ -21,5 +23,15 @@ public class SysParamsServiceImpl extends ServiceImpl<SysParamsMapper, SysParams
     @Override
     public SysParams getSysParams(String param) {
         return baseMapper.selectOne(new QueryWrapper<SysParams>().eq("param", param));
+    }
+
+    @Override
+    public List<SysParams> getSysParamsList(String param) {
+        return baseMapper.selectList(new QueryWrapper<SysParams>().eq("param", param));
+    }
+
+    @Override
+    public SysParams getSysParams(String param, String val) {
+        return baseMapper.selectOne(new QueryWrapper<SysParams>().eq("param", param).eq("val", val));
     }
 }
