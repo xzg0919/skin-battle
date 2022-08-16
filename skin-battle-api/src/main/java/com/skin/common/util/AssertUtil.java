@@ -48,7 +48,11 @@ public class AssertUtil {
             throw new ApiException(msg);
         }
     }
-
+    public static void isNotNull(Object object, String msg) {
+        if (object != null) {
+            throw new ApiException(msg);
+        }
+    }
 
 
 }

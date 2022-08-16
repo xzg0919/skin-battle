@@ -29,5 +29,8 @@ public interface PointListService extends IService<PointList> {
     Integer consumeCount(Integer orderFrom,String startTime,String endTime);
 
 
+    Page<PointList> userPage(Long userId,String startDate,String endDate,Integer type,Integer pageNum,Integer pageSize);
+
+
 
 }

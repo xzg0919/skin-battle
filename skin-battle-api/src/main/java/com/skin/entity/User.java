@@ -41,5 +41,8 @@ public class User extends DataEntity<Long>{
 	/** steamID */
 	private String steamId ;
 	/** vip等级 */
-	private Integer vip ;
+	private Integer vip =0;
+
+	/** 密码 */
+	private String userPwd;
 }

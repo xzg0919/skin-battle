@@ -26,7 +26,7 @@ public class TakeOrder extends DataEntity<Long>{
 	/** 订单号 **/
 	String orderNo;
 
-	String userId;
+	Long  userId;
 	/** 来源 */
 	private Integer source ;
 	/** 皮肤名称 */

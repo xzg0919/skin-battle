@@ -86,6 +86,8 @@ public class PullBoxServiceImpl extends ServiceImpl<PullBoxMapper, PullBox> impl
     @Override
     public void insertSkin(Long skinId,Long pullBoxId, double probability) {
         Optional.ofNullable(skinService.getById(skinId)).ifPresent(skin -> {
+            PullBoxSkin sameSkin = pullBoxSkinMapper.selectOne(new QueryWrapper<PullBoxSkin>().eq("skin_name", skin.getName()).eq("pull_box_id", pullBoxId));
+            AssertUtil.isNotNull(sameSkin, "该皮肤已经存在");
             PullBoxSkin pullBoxSkin = new PullBoxSkin();
             pullBoxSkin.setPicUrl(skin.getPicUrl());
             pullBoxSkin.setPullBoxId(pullBoxId);

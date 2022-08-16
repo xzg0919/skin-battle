@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.skin.dto.UserPage;
 import com.skin.entity.User;
+import com.skin.params.UserBean;
 
 
 /**
@@ -19,4 +20,12 @@ public interface UserService extends IService<User> {
 
 
     void editUser(User user);
+
+    User getUserByTel(String tel);
+
+    User getUserByPromoCode(String promoCode);
+
+    void register(UserBean userBean);
+
+    User login(String tel,String password);
 }

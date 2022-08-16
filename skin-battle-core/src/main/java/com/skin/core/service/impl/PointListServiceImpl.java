@@ -72,4 +72,22 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
         queryWrapper.le("create_date", endTime);
         return baseMapper.selectCount(queryWrapper).intValue();
     }
+
+    @Override
+    public Page<PointList> userPage(Long userId, String startDate, String endDate, Integer type, Integer pageNum, Integer pageSize) {
+        Page page = new Page<>(pageNum, pageSize);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_id", userId);
+        if(StringUtils.isNotBlank(startDate)){
+            queryWrapper.ge("create_date", startDate);
+        }
+        if(StringUtils.isNotBlank(endDate)){
+            queryWrapper.le("create_date", endDate);
+        }
+        if(type != null){
+            queryWrapper.eq("order_from", type);
+        }
+        queryWrapper.orderByDesc("create_date");
+        return baseMapper.selectPage(page, queryWrapper);
+    }
 }

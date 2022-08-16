@@ -35,4 +35,7 @@ public class PointList extends DataEntity<Long>{
 	private BigDecimal point ;
 	/** 金额 */
 	private BigDecimal amount ;
+
+	/** 被邀请人 */
+	private  Long inviteUserId;
 }

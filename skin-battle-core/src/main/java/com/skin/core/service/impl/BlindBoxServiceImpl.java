@@ -3,6 +3,7 @@ package com.skin.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.skin.common.util.AssertUtil;
 import com.skin.core.mapper.BlindBoxMapper;
 import com.skin.core.mapper.BlindBoxSKinMapper;
 import com.skin.core.service.BlindBoxService;
@@ -92,6 +93,8 @@ public class BlindBoxServiceImpl extends ServiceImpl<BlindBoxMapper, BlindBox> i
     @Override
     public void insertSkin(Long boxId, Long skinId, double probability) {
         Optional.ofNullable(skinService.getById(skinId)).ifPresent(skin -> {
+            BlindBoxSkin sameSkin = blindBoxSKinMapper.selectOne(new QueryWrapper<BlindBoxSkin>().eq("skin_name", skin.getName()).eq("box_id", boxId));
+            AssertUtil.isNotNull(sameSkin, "该皮肤已经存在");
             BlindBoxSkin blindBoxSkin = new BlindBoxSkin();
             blindBoxSkin.setPicUrl(skin.getPicUrl());
             blindBoxSkin.setBoxId(boxId);

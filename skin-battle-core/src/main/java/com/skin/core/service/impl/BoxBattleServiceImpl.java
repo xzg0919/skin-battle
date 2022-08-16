@@ -3,6 +3,7 @@ package com.skin.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.skin.common.util.AssertUtil;
 import com.skin.core.mapper.BlindBoxMapper;
 import com.skin.core.mapper.BlindBoxSKinMapper;
 import com.skin.core.mapper.BoxBattleMapper;
@@ -93,6 +94,8 @@ public class BoxBattleServiceImpl extends ServiceImpl<BoxBattleMapper, BoxBattle
     @Override
     public void insertSkin(Long boxId, Long skinId, double probability) {
         Optional.ofNullable(skinService.getById(skinId)).ifPresent(skin -> {
+            BoxBattleSkin sameSkin = boxBattleSkinMapper.selectOne(new QueryWrapper<BoxBattleSkin>().eq("skin_name", skin.getName()).eq("box_battle_id", boxId));
+            AssertUtil.isNotNull(sameSkin, "该皮肤已经存在");
             BoxBattleSkin boxBattleSkin = new BoxBattleSkin();
             boxBattleSkin.setPicUrl(skin.getPicUrl());
             boxBattleSkin.setBoxBattleId(boxId);

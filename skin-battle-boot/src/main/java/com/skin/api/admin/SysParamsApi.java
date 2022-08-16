@@ -87,5 +87,12 @@ public class SysParamsApi {
     }
 
 
+    @Api(name = "sysParams.list", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object paramsList(SysParamBean sysParams) {
+        return sysParamsService.getSysParamsList(sysParams.getParam());
+    }
+
 
 }

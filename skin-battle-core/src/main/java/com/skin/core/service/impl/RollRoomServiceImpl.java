@@ -3,6 +3,7 @@ package com.skin.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.skin.common.util.AssertUtil;
 import com.skin.core.mapper.RollRoomMapper;
 import com.skin.core.mapper.RollRoomSkinInfoMapper;
 import com.skin.core.mapper.RollRoomUserMapper;
@@ -78,6 +79,8 @@ public class RollRoomServiceImpl extends ServiceImpl<RollRoomMapper, RollRoom> i
     @Override
     public void addToRoom(Long SkinId, Long roomId) {
             Optional.ofNullable(skinService.getById(SkinId)).ifPresent(skin -> {
+            RollRoomSkinInfo sameInfo = rollRoomSkinInfoMapper.selectOne(new QueryWrapper<RollRoomSkinInfo>().eq("skin_name", skin.getName()).eq("room_id", roomId));
+            AssertUtil.isNotNull(sameInfo, "该皮肤已经存在于该房间中");
             RollRoomSkinInfo rollRoomSkinInfo = new RollRoomSkinInfo();
             rollRoomSkinInfo.setSkinName(skin.getName());
             rollRoomSkinInfo.setPicUrl(skin.getPicUrl());

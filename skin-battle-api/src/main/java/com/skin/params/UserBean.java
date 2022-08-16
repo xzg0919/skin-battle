@@ -29,4 +29,18 @@ public class UserBean {
       String avatar;
 
       String orderNo;
+
+      String userPwd;
+
+      String verificationCode;
+
+      String invitationCode;
+
+      String steamUrl;
+
+      Integer type;
+
+      String startDate;
+
+      String endDate;
 }

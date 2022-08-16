@@ -5,9 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.skin.core.mapper.TakeOrderMapper;
+import com.skin.core.service.MessageService;
 import com.skin.core.service.TakeOrderService;
+import com.skin.entity.Message;
 import com.skin.entity.TakeOrder;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,8 @@ import java.util.Map;
 public class TakeOrderServiceImpl extends ServiceImpl<TakeOrderMapper, TakeOrder> implements TakeOrderService {
 
 
+    @Autowired
+    MessageService messageService;
     @Override
     public Page<Map<String, Object>> userTakeOrderPage(Integer pageNum, Integer pageSize, Long userId,String orderNo) {
         Page page = new Page<>(pageNum, pageSize);
@@ -64,8 +69,27 @@ public class TakeOrderServiceImpl extends ServiceImpl<TakeOrderMapper, TakeOrder
     @Override
     public void changeStatus(Long id, Integer status) {
         TakeOrder takeOrder = baseMapper.selectById(id);
-        takeOrder.setStatus(status);
-        baseMapper.updateById(takeOrder);
+        if(takeOrder.getStatus() == 0){
+            takeOrder.setStatus(status);
+            baseMapper.updateById(takeOrder);
+            Message message=new Message();
+            switch (status){
+                case 1:
+                    message.setTitle("物品取回通知");
+                    message.setContent("订单号："+takeOrder.getOrderNo()+"，物品已取回，请查收！");
+                    message.setUserId(takeOrder.getUserId());
+                    messageService.save(message);
+                    break;
+                case 2:
+                    message.setTitle("物品取回通知");
+                    message.setContent("订单号："+takeOrder.getOrderNo()+"，物品取回被驳回！");
+                    message.setUserId(takeOrder.getUserId());
+                    messageService.save(message);
+                    break;
+            }
+        }else {
+            throw new RuntimeException("当前订单状态不是待发货状态");
+        }
     }
 
     @Override
