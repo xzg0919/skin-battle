@@ -14,11 +14,14 @@ import java.math.BigDecimal;
  * @author : http://www.chiner.pro
  * @date : 2022-8-9
  */
-@TableName("admin")
+@TableName("box_battle_skin")
 @Data
 public class BoxBattleSkin extends DataEntity<Long>{
 	@TableId(type = IdType.AUTO)
 	private  Long id ;
+
+	private Long BoxBattleId;
+
 	/** 皮肤名称 */
 	private String skinName;
 	/** 磨损度 */

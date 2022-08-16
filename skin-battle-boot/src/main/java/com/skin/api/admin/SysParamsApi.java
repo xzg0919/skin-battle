@@ -56,7 +56,7 @@ public class SysParamsApi {
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
     public Object boxList(SysParamBean sysParams) {
-        return sysParamsService.getSysParams("box_type");
+        return sysParamsService.getSysParamsList("box_type");
     }
 
     @Api(name = "boxType.insertOrUpdate", version = "1.0")
@@ -65,6 +65,7 @@ public class SysParamsApi {
     public Object boxTypeIOU(SysParamBean sysParams) {
          if(sysParams.getId()!=null){
              SysParams sysParams1 = sysParamsService.getById(sysParams.getId());
+             AssertUtil.isNull(sysParams1,"不存在该类型");
              sysParams1.setVal(sysParams.getVal());
              sysParamsService.updateById(sysParams1);
          }else{

@@ -5,12 +5,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.skin.core.mapper.BlindBoxMapper;
 import com.skin.core.mapper.BlindBoxSKinMapper;
+import com.skin.core.mapper.BoxBattleMapper;
+import com.skin.core.mapper.BoxBattleSkinMapper;
 import com.skin.core.service.BlindBoxService;
+import com.skin.core.service.BoxBattleService;
 import com.skin.core.service.SkinService;
 import com.skin.entity.BlindBox;
 import com.skin.entity.BlindBoxSkin;
-import com.skin.entity.CdkInfo;
-import com.skin.entity.PullBoxSkin;
+import com.skin.entity.BoxBattle;
+import com.skin.entity.BoxBattleSkin;
 import com.tzj.module.easyopen.exception.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,22 +29,19 @@ import java.util.Optional;
  */
 @Service
 @Transactional(readOnly = true, rollbackFor = Exception.class)
-public class BlindBoxServiceImpl extends ServiceImpl<BlindBoxMapper, BlindBox> implements BlindBoxService {
+public class BoxBattleServiceImpl extends ServiceImpl<BoxBattleMapper, BoxBattle> implements BoxBattleService {
 
     @Autowired
-    BlindBoxSKinMapper blindBoxSKinMapper;
+    BoxBattleSkinMapper boxBattleSkinMapper;
     @Autowired
     SkinService skinService;
 
     @Override
-    public Page<BlindBox> getPage(Integer pageNo, Integer pageSize, String boxName, Long boxType) {
+    public Page<BoxBattle> getPage(Integer pageNo, Integer pageSize, String boxName) {
 
         QueryWrapper queryWrapper = new QueryWrapper();
         if (StringUtils.isNotBlank(boxName)) {
             queryWrapper.like("box_name", boxName);
-        }
-        if (boxType != null && boxType != 0L) {
-            queryWrapper.eq("box_type", boxType);
         }
         queryWrapper.orderByDesc("create_date");
         return baseMapper.selectPage(new Page<>(pageNo, pageSize), queryWrapper);
@@ -50,57 +50,58 @@ public class BlindBoxServiceImpl extends ServiceImpl<BlindBoxMapper, BlindBox> i
     @Transactional
     @Override
     public void changeStatus(Long id) {
-        BlindBox blindBox = this.getById(id);
-        if (blindBox == null) {
+        BoxBattle boxBattle = this.getById(id);
+        if (boxBattle == null) {
             throw new ApiException("更改的数据不存在");
         }
-        if (blindBox.getEnable() == 1) {
-            blindBox.setEnable(0);
+        if (boxBattle.getStatus() == 1) {
+            boxBattle.setStatus(0);
         } else {
-            blindBox.setEnable(1);
+            boxBattle.setStatus(1);
         }
-        this.updateById(blindBox);
+        this.updateById(boxBattle);
     }
 
     @Override
-    public Page<BlindBoxSkin> getSkinPage(Integer pageNo, Integer pageSize, String skinName) {
+    public Page<BoxBattleSkin> getSkinPage(Integer pageNo, Integer pageSize, String skinName) {
         QueryWrapper queryWrapper = new QueryWrapper();
         if (StringUtils.isNotBlank(skinName)) {
             queryWrapper.like("skin_name", skinName);
         }
         queryWrapper.orderByDesc("create_date");
-        return blindBoxSKinMapper.selectPage(new Page<>(pageNo, pageSize), queryWrapper);
+        return boxBattleSkinMapper.selectPage(new Page<>(pageNo, pageSize), queryWrapper);
     }
 
     @Transactional
     @Override
     public void delBoxSkin(Long id) {
-        blindBoxSKinMapper.deleteById(id);
+        boxBattleSkinMapper.deleteById(id);
     }
 
     @Override
-    public BlindBoxSkin getSkinById(Long id) {
-        return blindBoxSKinMapper.selectById(id);
+    public BoxBattleSkin getSkinById(Long id) {
+        return boxBattleSkinMapper.selectById(id);
     }
 
+    @Transactional
     @Override
-    public void updateSkin(BlindBoxSkin blindBoxSkin) {
-        blindBoxSKinMapper.updateById(blindBoxSkin);
+    public void updateSkin(BoxBattleSkin boxBattleSkin) {
+        boxBattleSkinMapper.updateById(boxBattleSkin);
     }
 
     @Transactional
     @Override
     public void insertSkin(Long boxId, Long skinId, double probability) {
         Optional.ofNullable(skinService.getById(skinId)).ifPresent(skin -> {
-            BlindBoxSkin blindBoxSkin = new BlindBoxSkin();
-            blindBoxSkin.setPicUrl(skin.getPicUrl());
-            blindBoxSkin.setBoxId(boxId);
-            blindBoxSkin.setSkinName(skin.getName());
-            blindBoxSkin.setAttritionRate(skin.getAttritionRate());
-            blindBoxSkin.setLevel(skin.getLevel());
-            blindBoxSkin.setPrice(skin.getPrice());
-            blindBoxSkin.setProbability(probability);
-            blindBoxSKinMapper.insert(blindBoxSkin);
+            BoxBattleSkin boxBattleSkin = new BoxBattleSkin();
+            boxBattleSkin.setPicUrl(skin.getPicUrl());
+            boxBattleSkin.setBoxBattleId(boxId);
+            boxBattleSkin.setSkinName(skin.getName());
+            boxBattleSkin.setAttritionRate(skin.getAttritionRate());
+            boxBattleSkin.setLevel(skin.getLevel());
+            boxBattleSkin.setPrice(skin.getPrice());
+            boxBattleSkin.setProbability(probability);
+            boxBattleSkinMapper.insert(boxBattleSkin);
         });
     }
 }

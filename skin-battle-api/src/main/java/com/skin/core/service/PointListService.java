@@ -19,4 +19,15 @@ public interface PointListService extends IService<PointList> {
 
     Page<Map<String, Objects>> getPointListPage(Integer pageNum, Integer pageSize, Long userId,Integer orderFrom,String orderNo);
 
+
+    BigDecimal sumPoint(Integer orderFrom);
+
+    BigDecimal sumPoint(Integer orderFrom,String startTime,String endTime);
+
+    Integer consumeCount(Integer orderFrom);
+
+    Integer consumeCount(Integer orderFrom,String startTime,String endTime);
+
+
+
 }

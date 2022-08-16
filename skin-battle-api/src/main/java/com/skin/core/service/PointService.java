@@ -16,4 +16,8 @@ public interface PointService extends IService<PointInfo> {
 
 
     PointInfo  getByUid(Long id );
+
+
+    BigDecimal userPointSum();
+
 }

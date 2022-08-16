@@ -12,5 +12,23 @@ public interface TakeOrderService extends IService<TakeOrder> {
       Page<Map<String,Object>>  userTakeOrderPage(Integer pageNum, Integer pageSize, Long userId,String orderNo);
 
 
-    BigDecimal totalPrice(Long userId);
+      BigDecimal totalPrice(Long userId);
+
+
+      Page<TakeOrder> getPage(Integer pageNum, Integer pageSize,String email,String nickName);
+
+
+      void changeStatus(Long id,Integer status);
+
+      BigDecimal totalPrice();
+
+      BigDecimal totalPrice(String dateBegin,String dateEnd);
+
+      Integer takeOrderCount(String dateBegin,String dateEnd);
+
+      Integer takeOrderCount();
+
+      BigDecimal totalPrice( Integer status,Integer source);
+
+      BigDecimal totalPrice(String dateBegin,String dateEnd,Integer status,Integer source);
 }

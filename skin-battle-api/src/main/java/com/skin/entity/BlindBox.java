@@ -1,6 +1,7 @@
 package com.skin.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -20,10 +21,11 @@ public class BlindBox extends DataEntity<Long>{
 	private  Long id ;
 	/** 皮肤名称 */
 	private String boxName ;
+
+	/** 盒子类型 **/
+	private Long boxType;
 	/** 价格 */
 	private BigDecimal price ;
-	/** 磨损度 */
-	private String attritionRate ;
 	/** 盒子图片 */
 	private String boxPic ;
 	/** 高中奖概率 */
@@ -37,4 +39,10 @@ public class BlindBox extends DataEntity<Long>{
 	/** 皮肤图片 */
 	private String skinPic ;
 
+	/** 是否启用 1：是 0：否 */
+	@TableField("enable_")
+	private Integer enable ;
+
+	/** 折后价格 **/
+	private BigDecimal discountPrice ;
 }

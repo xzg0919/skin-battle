@@ -1,5 +1,6 @@
 package com.skin.core.service.impl;
 
+import com.aliyun.mns.common.utils.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.skin.common.security.MD5Util;
@@ -8,6 +9,7 @@ import com.skin.core.service.PointService;
 import com.skin.core.service.UserService;
 import com.skin.entity.PointInfo;
 import com.taobao.api.ApiException;
+import com.tzj.module.common.utils.DateUtils;
 import lombok.SneakyThrows;
 import org.bouncycastle.jcajce.provider.asymmetric.rsa.DigestSignatureSpi;
 import org.bouncycastle.jcajce.provider.digest.MD5;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -72,6 +75,13 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, PointInfo> implem
     public PointInfo getByUid(Long id) {
         return getOne(new QueryWrapper<PointInfo>().eq("user_id", id));
     }
+
+    @Override
+    public BigDecimal userPointSum() {
+        return baseMapper.selectOne(new QueryWrapper<PointInfo>().select("sum(total_Point) as totalPoint")).getTotalPoint();
+    }
+
+
 
 
     public Integer getVip(BigDecimal point) {

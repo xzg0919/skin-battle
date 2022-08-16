@@ -28,27 +28,29 @@ public class PointApi {
     PointListService pointListService;
 
 
-
     @Api(name = "point.edit", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
-    public Object editPoint(UserBean userBean){
-        pointService.editPoint(userBean.getId(),userBean.getPoint());
+    public Object editPoint(UserBean userBean) {
+        pointService.editPoint(userBean.getId(), userBean.getPoint());
         return "success";
     }
 
     @Api(name = "point.info", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
-    public Object getPointInfo(UserBean userBean){
+    public Object getPointInfo(UserBean userBean) {
         return pointService.getByUid(userBean.getId());
     }
 
     @Api(name = "point.listPage", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
-    public Object editPoint(PointBean pointBean){
+    public Object editPoint(PointBean pointBean) {
         return pointListService.getPointListPage(pointBean.getPageBean().getPageNum(), pointBean.getPageBean().getPageSize(),
-                pointBean.getUserId(), pointBean.getOrderFrom(),pointBean.getOrderNo());
+                pointBean.getUserId(), pointBean.getOrderFrom(), pointBean.getOrderNo());
     }
+
+
+
 }

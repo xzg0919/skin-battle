@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
 
@@ -36,5 +37,39 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
         queryWrapper.select("create_date as createDate,order_no as orderNo,amount");
         queryWrapper.orderByDesc("create_date");
         return baseMapper.selectPage(page, queryWrapper);
+    }
+
+    @Override
+    public BigDecimal sumPoint(Integer orderFrom) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_from", orderFrom);
+        PointList pointList = baseMapper.selectOne(queryWrapper.select("sum(point) as point"));
+        return pointList == null ? BigDecimal.ZERO : pointList.getPoint();
+    }
+
+    @Override
+    public BigDecimal sumPoint(Integer orderFrom, String startTime, String endTime) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_from", orderFrom);
+        queryWrapper.ge("create_date", startTime);
+        queryWrapper.le("create_date", endTime);
+        PointList pointList = baseMapper.selectOne(queryWrapper.select("sum(point) as point"));
+        return pointList == null ? BigDecimal.ZERO : pointList.getPoint();
+    }
+
+    @Override
+    public Integer consumeCount(Integer orderFrom) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_from", orderFrom);
+        return baseMapper.selectCount(queryWrapper).intValue();
+    }
+
+    @Override
+    public Integer consumeCount(Integer orderFrom, String startTime, String endTime) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_from", orderFrom);
+        queryWrapper.ge("create_date", startTime);
+        queryWrapper.le("create_date", endTime);
+        return baseMapper.selectCount(queryWrapper).intValue();
     }
 }
