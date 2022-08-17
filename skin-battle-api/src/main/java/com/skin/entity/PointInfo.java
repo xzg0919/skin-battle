@@ -15,11 +15,10 @@ import java.math.BigDecimal;
  */
 @TableName("point_info")
 @Data
-public class PointInfo extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class PointInfo extends DataEntity{
+
 	/** userid */
-	private String userId ;
+	private Long userId ;
 
 	/** 总积分 */
 	private BigDecimal totalPoint ;

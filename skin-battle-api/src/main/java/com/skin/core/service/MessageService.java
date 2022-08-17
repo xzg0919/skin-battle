@@ -11,4 +11,6 @@ public interface MessageService extends IService<Message> {
 
 
 
+    Message getByUserIdAndId(Long userId,Long messageId);
+
 }

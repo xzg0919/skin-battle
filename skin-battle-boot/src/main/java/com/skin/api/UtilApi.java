@@ -1,7 +1,10 @@
 package com.skin.api;
 
 
+import com.skin.config.EmailUtils;
 import com.skin.core.service.TencentOssService;
+import com.skin.core.service.VerifyMessageService;
+import com.skin.entity.VerifyMessage;
 import com.skin.params.UtilBean;
 import com.taobao.api.ApiException;
 import com.tzj.module.api.annotation.Api;
@@ -20,7 +23,11 @@ public class UtilApi {
 
     @Autowired
     TencentOssService tencentOssService;
+    @Autowired
+    EmailUtils emailUtils;
 
+    @Autowired
+    VerifyMessageService verifyMessageService;
     
     @SneakyThrows
     @Api(name = "util.uploadImage", version = "1.0")
@@ -41,4 +48,22 @@ public class UtilApi {
             throw new ApiException("上传文件失败！");
         }
     }
+
+    @Api(name = "util.sendEmail", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object sendEmail(UtilBean utilBean){
+        String title = "97SKINS验证码";
+        String verifyCode =(int)((Math.random()*9+1)*100000) + "";
+        String content = "<html><h1>验证码：<b>"+verifyCode+"</b>,五分钟内有效</h1>  </html>";
+
+        emailUtils.sendMessage(utilBean.getEmail(), title, content);
+
+        VerifyMessage verifyMessage = new VerifyMessage();
+        verifyMessage.setVerifyCode(verifyCode);
+        verifyMessage.setTo(utilBean.getEmail());
+        verifyMessageService.save(verifyMessage);
+        return "success";
+    }
+
 }

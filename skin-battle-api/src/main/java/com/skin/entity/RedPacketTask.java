@@ -18,9 +18,8 @@ import java.util.Date;
  */
 @TableName("red_packet_task")
 @Data
-public class RedPacketTask extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class RedPacketTask extends DataEntity{
+
 	/** 充值金额 */
 	private BigDecimal price ;
 	/** 标题 */

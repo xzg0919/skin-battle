@@ -22,7 +22,7 @@ import static com.skin.common.constant.TokenConst.*;
 * @Author michael_wang
 **/
 @Controller
-@RequestMapping(value = "/admin/api")
+@RequestMapping(value = "/user/api")
 public class UserApiController extends ApiController{
 
 	 @Resource(name="apiNonceServiceImpl")

@@ -15,9 +15,8 @@ import lombok.Data;
  */
 @TableName("notice")
 @Data
-public class Notice extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class Notice extends DataEntity{
+
 	/** 标题 */
 	private String title ;
 	/** 内容 */

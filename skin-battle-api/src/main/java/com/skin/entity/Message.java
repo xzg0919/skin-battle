@@ -13,9 +13,8 @@ import lombok.Data;
  */
 @TableName("message")
 @Data
-public class Message extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class Message extends DataEntity{
+
 
 	private String title ;
 

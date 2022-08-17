@@ -1,25 +1,28 @@
 package com.skin.entity;
 
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-
 /**
- * admin;
- * @author : http://www.chiner.pro
- * @date : 2022-8-9
+ * @Auther: xiangzhongguo
+ * @Date: 2022/8/17 13:47
+ * @Description:
  */
-@TableName("sys_params")
+
+@TableName("verify_message")
 @Data
-public class SysParams extends DataEntity{
+public class VerifyMessage extends DataEntity {
 
-	private String param ;
-	@TableField("desc_")
-	private String desc;
-	private String val ;
 
+
+
+    String verifyCode;
+
+    @TableField("to_")
+    String  to;
+
+    Integer isUse =0;
 }

@@ -19,9 +19,8 @@ import java.util.Date;
  */
 @TableName("roll_room")
 @Data
-public class RollRoom extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class RollRoom extends DataEntity{
+
 	@TableField("name_")
 	/** 房间名称 */
 	private String name ;

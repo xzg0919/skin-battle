@@ -11,4 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class UtilBean {
       MultipartFile file;
+
+      String email;
 }

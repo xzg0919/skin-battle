@@ -15,4 +15,5 @@ public class ApiGlobleStartConfig {
         GlobleConfig globleConfig=new GlobleConfig();
         return new GlobleStartListener(globleConfig);
     }
+
 }

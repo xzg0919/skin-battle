@@ -16,9 +16,8 @@ import java.math.BigDecimal;
  */
 @TableName("blind_box")
 @Data
-public class BlindBox extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class BlindBox extends DataEntity{
+
 	/** 皮肤名称 */
 	private String boxName ;
 

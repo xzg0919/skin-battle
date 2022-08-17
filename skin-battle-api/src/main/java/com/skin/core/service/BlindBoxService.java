@@ -24,4 +24,8 @@ public interface BlindBoxService extends IService<BlindBox> {
     void updateSkin(BlindBoxSkin blindBoxSkin);
 
     void insertSkin(Long boxId,Long skinId,double probability);
+
+
+    Page<BlindBox> getBoxByType(Integer pageNo, Integer pageSize,Long boxType);
+
 }

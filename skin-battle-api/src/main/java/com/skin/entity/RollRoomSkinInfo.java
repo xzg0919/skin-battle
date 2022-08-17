@@ -16,9 +16,8 @@ import java.math.BigDecimal;
  */
 @TableName("roll_room_skin_info")
 @Data
-public class RollRoomSkinInfo extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class RollRoomSkinInfo extends DataEntity{
+
 	/** 房间id */
 	private Long roomId ;
 	/** 皮肤图片 */

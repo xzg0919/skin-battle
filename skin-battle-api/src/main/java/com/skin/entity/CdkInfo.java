@@ -16,9 +16,8 @@ import java.math.BigDecimal;
  */
 @TableName("cdk_info")
 @Data
-public class CdkInfo extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class CdkInfo extends DataEntity{
+
 	/** 8位兑换码 */
 	@TableField("code_")
 	private String code ;

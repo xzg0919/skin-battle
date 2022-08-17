@@ -15,9 +15,8 @@ import java.math.BigDecimal;
  */
 @TableName("mall_skin")
 @Data
-public class MallSkin extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class MallSkin extends DataEntity{
+
 
 	/** 商品名称 */
 	private String goodsName ;

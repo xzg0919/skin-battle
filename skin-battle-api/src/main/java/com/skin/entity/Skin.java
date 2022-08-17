@@ -18,10 +18,9 @@ import java.util.function.Function;
  */
 @TableName("skin")
 @Data
-public class Skin extends DataEntity<Long>{
+public class Skin extends DataEntity{
 
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+
 	/** 名称 */
 	@TableField("name_")
 	private String name ;

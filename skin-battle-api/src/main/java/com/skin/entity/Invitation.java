@@ -15,9 +15,8 @@ import java.math.BigDecimal;
  */
 @TableName("invitation")
 @Data
-public class Invitation extends DataEntity<Long>{
-    @TableId(type = IdType.AUTO)
-    private  Long id ;
+public class Invitation extends DataEntity{
+
 
     /** 邀请人 */
     Long userId;

@@ -1,8 +1,6 @@
 package com.skin.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -14,13 +12,19 @@ import java.math.BigDecimal;
  * @author : http://www.chiner.pro
  * @date : 2022-8-9
  */
-@TableName("box_battle_skin")
+@TableName("user_package")
 @Data
-public class BoxBattleSkin extends DataEntity{
+public class UserPackage extends DataEntity{
 
 
-	private Long BoxBattleId;
+	private Long userId;
+	/** 是否已取回 0：待取回 1：取回中 2：已取回 */
+	private Integer isTake;
 
+	private Long boxId;
+
+	@TableField("from_")
+	private Integer from;
 	/** 皮肤名称 */
 	private String skinName;
 	/** 磨损度 */
@@ -32,7 +36,9 @@ public class BoxBattleSkin extends DataEntity{
 	private BigDecimal price ;
 	/** 图片链接 */
 	private String picUrl ;
-	/** 中奖概率 */
-	private Double probability ;
+
+	private String nickName;
+
+	private String avatar;
 
 }

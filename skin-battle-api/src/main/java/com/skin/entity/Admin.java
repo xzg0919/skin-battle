@@ -13,9 +13,8 @@ import lombok.Data;
  */
 @TableName("admin")
 @Data
-public class Admin extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class Admin extends DataEntity  {
+
 	/** 账号 */
 
 	private String userCode ;

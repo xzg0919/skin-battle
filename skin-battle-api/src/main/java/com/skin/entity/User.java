@@ -15,9 +15,8 @@ import java.math.BigDecimal;
  */
 @TableName("user")
 @Data
-public class User extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class User extends DataEntity{
+
 	/** 电话 */
 	private String tel ;
 	/** 邮箱 */
@@ -35,9 +34,9 @@ public class User extends DataEntity<Long>{
 	/** 高中奖概率 */
 	private Double highProbability ;
 	/** 中中奖概率 */
-	private Double middleProbability ;
+	private Double middleProbability;
 	/** 低中奖概率 */
-	private Double lowProbability ;
+	private Double lowProbability;
 	/** steamID */
 	private String steamId ;
 	/** vip等级 */

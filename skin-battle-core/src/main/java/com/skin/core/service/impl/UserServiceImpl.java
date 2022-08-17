@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.skin.common.security.MD5Util;
 import com.skin.core.mapper.PointMapper;
 import com.skin.core.mapper.UserMapper;
+import com.skin.core.service.InvitationService;
 import com.skin.core.service.UserService;
 import com.skin.dto.UserPage;
+import com.skin.entity.Invitation;
 import com.skin.entity.PointInfo;
 import com.skin.entity.User;
 import com.skin.params.UserBean;
@@ -30,6 +32,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    InvitationService invitationService;
 
     @Autowired
     PointMapper pointMapper;
@@ -82,20 +86,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setTel(userBean.getTel());
         }
         user.setNickName(userBean.getNickName());
-        user.setUserPwd(userBean.getUserPwd());
+        user.setUserPwd(MD5Util.md5(userBean.getUserPwd()));
         user.setUserId(UUID.randomUUID().toString().replace("-", "").replace("o", "0").replace("i", "1"));
         user.setPromoCode(UUID.randomUUID().toString().replace("-", "").replace("o", "0").replace("i", "1").substring(0, 7).toUpperCase());
         baseMapper.insert(user);
         //初始化pointInfo
         PointInfo pointInfo = new PointInfo();
-        pointInfo.setUserId(user.getUserId());
+        pointInfo.setUserId(user.getId());
         pointInfo.setConsumePoint(BigDecimal.ZERO);
         pointInfo.setTotalPoint(BigDecimal.ZERO);
         pointInfo.setPoint(BigDecimal.ZERO);
         pointInfo.setMd5Code(MD5Util.md5(pointInfo.getPoint().toString() + pointInfo.getTotalPoint().toString() + MD5Util.SIGN_KEY));
         pointMapper.insert(pointInfo);
 
-        //TODO 如果填写了邀请码 记录
+        // 如果填写了邀请码 记录
+
+        User invitationUser = this.findByInvitationCode(userBean.getInvitationCode());
+        Invitation invitation =new Invitation();
+        invitation.setUserId(invitationUser.getId());
+        invitation.setInviteUserId(user.getId());
+        invitation.setInviteUserName(user.getNickName());
+        invitationService.save(invitation);
     }
 
     @Override
@@ -108,10 +119,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             queryWrapper.eq("tel", tel);
         }
         queryWrapper.eq("user_pwd",password);
+        queryWrapper.select("id","nick_name","tel","email","promo_code","vip","user_id","steam_url","avatar");
          return  baseMapper.selectOne(queryWrapper);
     }
 
+    @Override
+    public User getUserInfo(Long id) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id", id);
+        queryWrapper.select("id","nick_name","tel","email","promo_code","vip","user_id","steam_url","avatar");
+        return  baseMapper.selectOne(queryWrapper);
+    }
 
+    @Override
+    public User findByInvitationCode(String invitationCode) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("promo_code", invitationCode);
+        return baseMapper.selectOne(queryWrapper);
+    }
 
 
 }

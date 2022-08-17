@@ -106,4 +106,16 @@ public class BlindBoxServiceImpl extends ServiceImpl<BlindBoxMapper, BlindBox> i
             blindBoxSKinMapper.insert(blindBoxSkin);
         });
     }
+
+    @Override
+    public Page<BlindBox> getBoxByType(Integer pageNo, Integer pageSize, Long boxType) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if (boxType != null && boxType != 0L) {
+            queryWrapper.eq("box_type", boxType);
+        }
+        queryWrapper.eq("enable_", 1);
+        queryWrapper.select("id,box_name,price,discount_price,box_pic,discount,skin_pic");
+        queryWrapper.orderByDesc("create_date");
+        return baseMapper.selectPage(new Page<>(pageNo, pageSize), queryWrapper);
+    }
 }

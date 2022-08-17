@@ -15,9 +15,8 @@ import java.math.BigDecimal;
  */
 @TableName("pull_box")
 @Data
-public class PullBox extends DataEntity<Long>{
-    @TableId(type = IdType.AUTO)
-    private  Long id;
+public class PullBox extends DataEntity{
+
 
     /** 皮肤名称 */
     private String skinName ;

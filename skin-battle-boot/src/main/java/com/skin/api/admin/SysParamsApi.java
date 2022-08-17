@@ -4,10 +4,7 @@ import com.skin.common.util.AssertUtil;
 import com.skin.core.service.SysParamsService;
 import com.skin.entity.SysParams;
 import com.skin.params.SysParamBean;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -89,7 +86,7 @@ public class SysParamsApi {
 
     @Api(name = "sysParams.list", version = "1.0")
     @SignIgnore
-    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    @AuthIgnore
     public Object paramsList(SysParamBean sysParams) {
         return sysParamsService.getSysParamsList(sysParams.getParam());
     }

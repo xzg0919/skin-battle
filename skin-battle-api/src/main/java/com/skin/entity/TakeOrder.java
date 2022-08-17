@@ -18,10 +18,9 @@ import java.util.Date;
  */
 @TableName("take_order")
 @Data
-public class TakeOrder extends DataEntity<Long>{
+public class TakeOrder extends DataEntity{
 
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+
 
 	/** 订单号 **/
 	String orderNo;

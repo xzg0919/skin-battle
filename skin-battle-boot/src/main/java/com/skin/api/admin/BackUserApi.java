@@ -22,7 +22,7 @@ import static com.skin.common.constant.TokenConst.ADMIN_API_COMMON_AUTHORITY;
  * @Description:
  */
 @ApiService
-public class UserApi {
+public class BackUserApi {
 
     @Autowired
     UserService userService;

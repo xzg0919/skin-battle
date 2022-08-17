@@ -14,6 +14,8 @@ public interface DataBaseConstant {
 	 * 删除标记
 	 */
 	public static final String DEL_FLAG = "delFlag";
+
+	public static final String VERSION = "version";
 	/**
 	 * 创建时间
 	 */

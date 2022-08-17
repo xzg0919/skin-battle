@@ -28,4 +28,9 @@ public interface UserService extends IService<User> {
     void register(UserBean userBean);
 
     User login(String tel,String password);
+
+    User getUserInfo (Long id );
+
+
+    User findByInvitationCode(String invitationCode);
 }

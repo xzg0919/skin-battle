@@ -17,9 +17,8 @@ import java.math.BigDecimal;
  */
 @TableName("daily_task")
 @Data
-public class DailyTask extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class DailyTask extends DataEntity{
+
 	/** 标题 */
 	private String title ;
 	/** 状态 0：启用 1：禁用 */

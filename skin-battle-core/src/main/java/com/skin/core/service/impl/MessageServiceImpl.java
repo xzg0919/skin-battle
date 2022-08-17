@@ -26,4 +26,19 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         queryWrapper.orderByDesc("create_date");
         return baseMapper.selectPage(new Page<>(pageNo, pageSize), queryWrapper);
     }
+
+    @Transactional
+    @Override
+    public Message getByUserIdAndId(Long userId, Long messageId) {
+        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("id", messageId);
+        queryWrapper.select("content,title,create_date");
+        Message message = baseMapper.selectOne(queryWrapper);
+        if(message.getIsRead() ==0){
+            message.setIsRead(1);
+            baseMapper.updateById(message);
+        }
+        return message;
+    }
 }

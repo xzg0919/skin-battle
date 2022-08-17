@@ -17,9 +17,8 @@ import java.math.BigDecimal;
  */
 @TableName("box_battle")
 @Data
-public class BoxBattle extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class BoxBattle extends DataEntity{
+
 
 	/** 皮肤名称 */
 	private String boxName ;

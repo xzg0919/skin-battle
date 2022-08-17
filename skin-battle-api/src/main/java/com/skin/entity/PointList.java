@@ -15,9 +15,8 @@ import java.math.BigDecimal;
  */
 @TableName("point_list")
 @Data
-public class PointList extends DataEntity<Long>{
-	@TableId(type = IdType.AUTO)
-	private  Long id ;
+public class PointList extends DataEntity{
+
 
 	private String userId;
 

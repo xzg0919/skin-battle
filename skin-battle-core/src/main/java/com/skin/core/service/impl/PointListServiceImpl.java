@@ -87,6 +87,7 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
         if(type != null){
             queryWrapper.eq("order_from", type);
         }
+        queryWrapper.select("order_from_chn","create_date","point");
         queryWrapper.orderByDesc("create_date");
         return baseMapper.selectPage(page, queryWrapper);
     }
