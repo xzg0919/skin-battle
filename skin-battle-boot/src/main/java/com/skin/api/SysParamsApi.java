@@ -26,7 +26,7 @@ public class SysParamsApi {
 
     @Api(name = "kefu.get", version = "1.0")
     @SignIgnore
-    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    @AuthIgnore
     public Object kefuGet() {
         HashMap<String, String> map = new HashMap<>();
         String qq = sysParamsService.getSysParams("kefu_qq").getVal();

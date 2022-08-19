@@ -9,4 +9,10 @@ public interface MallSkinService extends IService<MallSkin> {
 
 
     Page<MallSkin> getSkinPage(Integer pageNum, Integer pageSize, String skinName );
+
+
+    Page<MallSkin> getSkinPage(Integer pageNum, Integer pageSize, String skinName, Integer isDesc );
+
+
+    void exchangeSkin(Long userId, Long skinId);
 }

@@ -43,7 +43,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, PointInfo> implem
     public void editPoint(Long id, BigDecimal point) {
         //判断当前余额是否被修改
         PointInfo pointInfo = this.getByUid(id);
-        if (!MD5Util.md5(pointInfo.getPoint().toString() + pointInfo.getTotalPoint().toString() + MD5Util.SIGN_KEY).equals(pointInfo.getMd5Code())) {
+        if (!MD5Util.md5(pointInfo.getPoint().setScale(2).toString() + pointInfo.getTotalPoint().setScale(2).toString() + MD5Util.SIGN_KEY).equals(pointInfo.getMd5Code())) {
             throw new ApiException("数据已被篡改，请重新操作");
         }
         pointInfo.setPoint(point);
@@ -80,7 +80,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, PointInfo> implem
         pointListService.save(pointList);
 
         //判断当前余额是否被修改
-        if (!MD5Util.md5(pointInfo.getPoint().toString() + pointInfo.getTotalPoint().toString() + MD5Util.SIGN_KEY).equals(pointInfo.getMd5Code())) {
+        if (!MD5Util.md5(pointInfo.getPoint().setScale(2).toString() + pointInfo.getTotalPoint().setScale(2).toString() + MD5Util.SIGN_KEY).equals(pointInfo.getMd5Code())) {
             throw new ApiException("数据已被篡改，请重新操作");
         }
         pointInfo.setPoint(pointInfo.getPoint().add(point));

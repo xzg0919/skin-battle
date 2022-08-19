@@ -33,9 +33,11 @@ public class InvitationHandler {
     }
 
 
-    public int getReward(BigDecimal point) {
+    public static  int getReward(BigDecimal point) {
         int reward = 0;
         for (Map.Entry<Integer, BigDecimal> entry : invitationLevelMap.entrySet()) {
+            if (point.compareTo(BigDecimal.ZERO)==0)
+                return invitationRewardMap.get(1);
             if (point.divide(entry.getValue()).compareTo(new BigDecimal("1")) >= 0) {
                 reward = entry.getKey();
             } else {

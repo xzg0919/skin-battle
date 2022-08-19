@@ -96,7 +96,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         pointInfo.setConsumePoint(BigDecimal.ZERO);
         pointInfo.setTotalPoint(BigDecimal.ZERO);
         pointInfo.setPoint(BigDecimal.ZERO);
-        pointInfo.setMd5Code(MD5Util.md5(pointInfo.getPoint().toString() + pointInfo.getTotalPoint().toString() + MD5Util.SIGN_KEY));
+        pointInfo.setMd5Code(MD5Util.md5(pointInfo.getPoint().setScale(2).setScale(2).toString() + pointInfo.getTotalPoint().setScale(2).toString() + MD5Util.SIGN_KEY));
         pointMapper.insert(pointInfo);
 
         // 如果填写了邀请码 记录

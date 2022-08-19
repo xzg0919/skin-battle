@@ -74,7 +74,7 @@
     FROM
     point_list pl
     INNER JOIN invitation i ON pl.USER_ID = i.INVITE_USER_ID
-    INNER JOIN USER u ON u.id = pl.USER_ID
+    INNER JOIN user u ON u.id = pl.USER_ID
     WHERE
     pl.ORDER_FROM = 2 and i.USER_ID = #{userId}
     GROUP BY
@@ -85,7 +85,7 @@
     sum( point ) AS reward
     FROM
     point_list pl
-    INNER JOIN USER u ON u.id = pl.be_invite_user_id
+    INNER JOIN user u ON u.id = pl.be_invite_user_id
     WHERE
     pl.ORDER_FROM = 5 and pl.USER_ID = #{userId}
     GROUP BY

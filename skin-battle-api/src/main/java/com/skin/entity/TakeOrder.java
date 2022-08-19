@@ -1,6 +1,7 @@
 package com.skin.entity;
 
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -21,6 +22,7 @@ import java.util.Date;
 public class TakeOrder extends DataEntity{
 	/** 订单号 **/
 	String orderNo;
+
 	Long  userId;
 	/** 来源 */
 	private Integer source ;
@@ -37,6 +39,8 @@ public class TakeOrder extends DataEntity{
 	/** 状态 0：待取回 1：取回中 2：已发货 3：已驳回 4:已回收 */
 	@TableField("status_")
 	private Integer status ;
+
+	@JSONField(format="yyyy-MM-dd HH:mm:ss")
 	/** 发货时间 */
 	private Date takeTime ;
 	/** 价格 */
@@ -50,5 +54,8 @@ public class TakeOrder extends DataEntity{
 	/** 图片链接 */
 	private String picUrl ;
 	private String avatar;
+
+	@JSONField(format="yyyy-MM-dd HH:mm:ss")
+	private Date applyTime;
 
 }

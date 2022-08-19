@@ -106,16 +106,12 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
     }
 
 
-    @Override
-    public BigDecimal sumByInvitation(Long userId) {
-        return baseMapper.selectOne(new QueryWrapper<PointList>().select("sum(point) as point")
-                .eq("invite_user_id", userId)).getPoint();
-    }
+
 
     @Override
     public BigDecimal invitationReward(Long userId) {
         int from = Integer.parseInt(sysParamsService.getSysParams("business_type", "邀请", "5"));
-        return baseMapper.selectOne(new QueryWrapper<PointList>().select("sum(point) as point")
+        return baseMapper.selectOne(new QueryWrapper<PointList>().select("ifnull(sum(point) ,0)as point")
                 .eq("user_id", userId).eq("order_from",from)).getPoint();
     }
 }

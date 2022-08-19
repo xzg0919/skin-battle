@@ -61,13 +61,14 @@ public class VipRewardServiceImpl extends ServiceImpl<VipRewardMapper, VipReward
     }
 
     @Override
-    public List<VipCheckList> getVipCheckList(Long userId) {
+    public List<VipCheckList> getVipCheckList(Long userId,BigDecimal growthValue) {
         List<VipCheckList> vipCheckLists =  new ArrayList<>();
         List<VipReward> vipRewards = baseMapper.selectList(new QueryWrapper<VipReward>().eq("user_id",userId));
         for (Map.Entry<Integer, BigDecimal> entry : VipHandler.vipLevelMap.entrySet()) {
             VipCheckList vipCheckList = new VipCheckList();
             vipCheckList.setVipLevel("VIP"+entry.getKey());
             vipCheckList.setCondition(entry.getValue());
+            vipCheckList.setCanReceive(growthValue.compareTo(entry.getValue()) >= 0?1:0);
             vipCheckList.setReward(VipHandler.vipAwardMap.get(entry.getKey()));
             vipCheckList.isReceive(vipRewards.stream().filter(v -> v.getLevel().equals(entry.getKey())).findAny().isPresent());
             vipCheckLists.add(vipCheckList);

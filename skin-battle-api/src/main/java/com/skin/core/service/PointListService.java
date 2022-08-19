@@ -35,8 +35,5 @@ public interface PointListService extends IService<PointList> {
     Integer getCountByUserIdAndType(Long userId,Integer type);
 
 
-
-    BigDecimal sumByInvitation(Long userId);
-
     BigDecimal invitationReward(Long userId);
 }

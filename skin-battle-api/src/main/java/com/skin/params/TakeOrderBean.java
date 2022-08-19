@@ -22,5 +22,6 @@ public class TakeOrderBean {
     Integer status;
 
 
-    List<Long> packageIds;
+
+    String packageIds;
 }

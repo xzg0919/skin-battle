@@ -17,6 +17,7 @@ import com.tzj.module.easyopen.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +47,9 @@ public class UserApi {
     TakeOrderService takeOrderService;
     @Autowired
     VipRewardService    vipRewardService;
+
+    @Autowired
+    InvitationService   invitationService;
 
     @Api(name = "user.register", version = "1.0")
     @SignIgnore
@@ -184,8 +188,9 @@ public class UserApi {
     @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
     public Object vipRewardList(TakeOrderBean takeOrderBean) {
         HashMap<String,Object> rewardMap =new HashMap<>();
-        rewardMap.put("reward",vipRewardService.getVipCheckList(UserApi.getMember().getId()));
-        rewardMap.put("growthValue", userService.getUserInfo(UserApi.getMember().getId()).getGrowthValue());
+        BigDecimal growthValue = userService.getById(UserApi.getMember().getId()).getGrowthValue();
+        rewardMap.put("reward",vipRewardService.getVipCheckList(UserApi.getMember().getId(),growthValue));
+        rewardMap.put("growthValue", growthValue);
         return rewardMap;
     }
 
@@ -195,6 +200,39 @@ public class UserApi {
     public Object receiveReward(UserBean userBean) {
         vipRewardService.receiveVipReward(UserApi.getMember().getId(),userBean.getLevel());
         return "领取成功";
+    }
+
+
+    @Api(name = "user.userInvitationInfo", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object userInvitationInfo() {
+        HashMap<String,Object> rewardMap =new HashMap<>();
+        rewardMap.put("inviteCount",invitationService.getInvitationCount(UserApi.getMember().getId()));
+        rewardMap.put("reward", pointListService.invitationReward(UserApi.getMember().getId()));
+        rewardMap.put("invitationPercentage", invitationService.invitationPercentage(UserApi.getMember().getId()));
+        return rewardMap;
+    }
+
+    @Api(name = "user.userInvitationRule", version = "1.0")
+    @SignIgnore
+  @AuthIgnore
+    public Object userInvitationRule() {
+        return invitationService.userInvitationRule();
+    }
+
+    @Api(name = "user.userInvitationPage", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object userInvitationPage(UserBean userBean) {
+        return invitationService.getInvitationPage(userBean.getPageBean().getPageNum(), userBean.getPageBean().getPageSize(), UserApi.getMember().getId());
+    }
+
+    @Api(name = "user.userInvitationDetailPage", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object userInvitationDetailPage(UserBean userBean) {
+        return invitationService.getInvitationLogPage(userBean.getPageBean().getPageNum(), userBean.getPageBean().getPageSize(), UserApi.getMember().getId());
     }
 
 }

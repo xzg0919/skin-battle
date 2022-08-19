@@ -183,7 +183,7 @@ public class TakeOrderServiceImpl extends ServiceImpl<TakeOrderMapper, TakeOrder
     public Page<TakeOrder> getUserPackage(Long userId, Integer pageNo, Integer pageSize) {
         Page<TakeOrder> page = new Page<>(pageNo, pageSize);
         QueryWrapper<TakeOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("id,skin_name,pic_url,price,is_take,attrition_rate");
+        queryWrapper.select("id,skin_name,pic_url,price,status_,attrition_rate");
         queryWrapper.eq("user_id", userId);
         queryWrapper.ne("status_", 4);
         queryWrapper.orderByDesc("create_date");
@@ -202,6 +202,7 @@ public class TakeOrderServiceImpl extends ServiceImpl<TakeOrderMapper, TakeOrder
                 .eq("id", packageId).in("status_", 0, 3));
         AssertUtil.isNull(takeOrder, "取回异常");
         takeOrder.setStatus(1);
+        takeOrder.setApplyTime(new Date());
         baseMapper.updateById(takeOrder);
     }
 
@@ -220,9 +221,9 @@ public class TakeOrderServiceImpl extends ServiceImpl<TakeOrderMapper, TakeOrder
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void recycleBatch(Long userId, List<Long> packageIds) {
-        for (Long packageId : packageIds) {
-            takeOrderService.recycle(userId, packageId);
+    public void recycleBatch(Long userId, String packageIds) {
+        for (String packageId : packageIds.split(",")) {
+            takeOrderService.recycle(userId, Long.parseLong(packageId));
         }
     }
 }

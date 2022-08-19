@@ -22,4 +22,6 @@ public class VipCheckList {
     public void isReceive(boolean present) {
         this.isReceive = present?1:0;
     }
+
+    Integer canReceive;
 }
