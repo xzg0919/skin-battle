@@ -1,4 +1,4 @@
-package com.skin.api.admin;
+package com.skin.api;
 
 import com.skin.common.util.AssertUtil;
 import com.skin.core.service.SysParamsService;

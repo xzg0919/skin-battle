@@ -25,7 +25,7 @@ public class VerifyMessageServiceImpl extends ServiceImpl<VerifyMessageMapper, V
 
         AssertUtil.isNull(verifyMessage, "验证码错误");
 
-        if(verifyMessage.getCreateDate().getTime()<(System.currentTimeMillis()-60*5*1000)){
+        if(verifyMessage.getCreateDate().getTime()<(System.currentTimeMillis()-60*15*1000)){
             throw new RuntimeException("验证码已过期");
         }
         return verifyMessage;

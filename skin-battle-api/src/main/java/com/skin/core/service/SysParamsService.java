@@ -16,4 +16,6 @@ public interface SysParamsService extends IService<SysParams> {
 
     SysParams getSysParams(String param, String val);
 
+    String getSysParams(String param, String desc, String defaultVal);
+
 }

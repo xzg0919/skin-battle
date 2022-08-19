@@ -43,4 +43,6 @@ public class UserBean {
       String startDate;
 
       String endDate;
+
+      Integer level;
 }

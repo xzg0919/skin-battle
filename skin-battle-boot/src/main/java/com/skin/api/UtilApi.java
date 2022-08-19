@@ -55,7 +55,7 @@ public class UtilApi {
     public Object sendEmail(UtilBean utilBean){
         String title = "97SKINS验证码";
         String verifyCode =(int)((Math.random()*9+1)*100000) + "";
-        String content = "<html><h1>验证码：<b>"+verifyCode+"</b>,五分钟内有效</h1>  </html>";
+        String content = "<html><h1>验证码：<b>"+verifyCode+"</b>,十五分钟内有效</h1>  </html>";
 
         emailUtils.sendMessage(utilBean.getEmail(), title, content);
 

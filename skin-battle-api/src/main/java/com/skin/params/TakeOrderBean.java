@@ -2,6 +2,8 @@ package com.skin.params;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @Auther: xiangzhongguo
  * @Date: 2022/8/15 14:42
@@ -18,4 +20,7 @@ public class TakeOrderBean {
     Long id ;
 
     Integer status;
+
+
+    List<Long> packageIds;
 }

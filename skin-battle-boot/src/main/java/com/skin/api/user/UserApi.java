@@ -2,12 +2,10 @@ package com.skin.api.user;
 
 import com.skin.common.security.MD5Util;
 import com.skin.common.util.AssertUtil;
-import com.skin.core.service.MessageService;
-import com.skin.core.service.PointListService;
-import com.skin.core.service.UserService;
-import com.skin.core.service.VerifyMessageService;
+import com.skin.core.service.*;
 import com.skin.entity.User;
 import com.skin.entity.VerifyMessage;
+import com.skin.params.TakeOrderBean;
 import com.skin.params.UserBean;
 import com.tzj.module.api.annotation.*;
 import com.tzj.module.api.entity.Subject;
@@ -43,6 +41,11 @@ public class UserApi {
 
     @Autowired
     VerifyMessageService verifyMessageService;
+
+    @Autowired
+    TakeOrderService takeOrderService;
+    @Autowired
+    VipRewardService    vipRewardService;
 
     @Api(name = "user.register", version = "1.0")
     @SignIgnore
@@ -141,6 +144,57 @@ public class UserApi {
         }
         User user = (User) subject.getUser();
         return user;
+    }
+
+    @Api(name = "user.getPackagePage", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object getpackagePage(TakeOrderBean takeOrderBean) {
+        return  takeOrderService.getUserPackage(UserApi.getMember().getId(),
+                takeOrderBean.getPageBean().getPageNum(), takeOrderBean.getPageBean().getPageSize());
+    }
+
+    @Api(name = "user.take", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object take(TakeOrderBean takeOrderBean) {
+          takeOrderService.userTake(UserApi.getMember().getId(),takeOrderBean.getId());
+          return "提货申请已提交！";
+    }
+
+
+    @Api(name = "user.recycle", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object recycle(TakeOrderBean takeOrderBean) {
+          takeOrderService.recycle(UserApi.getMember().getId(), takeOrderBean.getId());
+        return "回收成功";
+    }
+
+    @Api(name = "user.recycleBatch", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object recycleBatch(TakeOrderBean takeOrderBean) {
+        takeOrderService.recycleBatch(UserApi.getMember().getId(), takeOrderBean.getPackageIds());
+        return "回收成功";
+    }
+
+    @Api(name = "user.vipRewardList", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object vipRewardList(TakeOrderBean takeOrderBean) {
+        HashMap<String,Object> rewardMap =new HashMap<>();
+        rewardMap.put("reward",vipRewardService.getVipCheckList(UserApi.getMember().getId()));
+        rewardMap.put("growthValue", userService.getUserInfo(UserApi.getMember().getId()).getGrowthValue());
+        return rewardMap;
+    }
+
+    @Api(name = "user.receiveReward", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object receiveReward(UserBean userBean) {
+        vipRewardService.receiveVipReward(UserApi.getMember().getId(),userBean.getLevel());
+        return "领取成功";
     }
 
 }

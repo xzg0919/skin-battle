@@ -18,12 +18,10 @@ import java.math.BigDecimal;
 public class PointList extends DataEntity{
 
 
-	private String userId;
+	private Long userId;
 
 	/** 订单号 */
 	private String orderNo ;
-	/** 订单id */
-	private Long orderId ;
 	/** 订单来源中文 */
 	private String orderFromChn ;
 	/** 订单来源 */
@@ -32,9 +30,17 @@ public class PointList extends DataEntity{
 	private Integer type ;
 	/** 积分值 */
 	private BigDecimal point ;
+
+	/**
+	 * 变更之后的积分值
+	 */
+	private BigDecimal afterPoint;
 	/** 金额 */
 	private BigDecimal amount ;
 
-	/** 被邀请人 */
+	/** 邀请人 */
 	private  Long inviteUserId;
+
+	/** 被邀请人 */
+	private  Long beInviteUserId;
 }

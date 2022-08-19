@@ -42,6 +42,11 @@ public class User extends DataEntity{
 	/** vip等级 */
 	private Integer vip =0;
 
+	/**
+	 * 成长值
+	 */
+	private BigDecimal growthValue =BigDecimal.ZERO;
+
 	/** 密码 */
 	private String userPwd;
 }

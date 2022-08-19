@@ -1,3 +1,5 @@
+
+
 package com.skin.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -19,5 +21,10 @@ public interface PointService extends IService<PointInfo> {
 
 
     BigDecimal userPointSum();
+
+
+
+    void editPoint(Long userId, BigDecimal point, Integer from,String fromChn,String orderNo,Integer type);
+
 
 }

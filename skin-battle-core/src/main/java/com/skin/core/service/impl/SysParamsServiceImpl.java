@@ -36,4 +36,13 @@ public class SysParamsServiceImpl extends ServiceImpl<SysParamsMapper, SysParams
     public SysParams getSysParams(String param, String val) {
         return baseMapper.selectOne(new QueryWrapper<SysParams>().eq("param", param).eq("val", val));
     }
+
+    @Override
+    public String getSysParams(String param, String desc, String defaultVal) {
+        SysParams sysParams = baseMapper.selectOne(new QueryWrapper<SysParams>().eq("param", param).eq("desc_", desc));
+        if(sysParams == null){
+             return defaultVal;
+        }
+        return sysParams.getVal();
+    }
 }

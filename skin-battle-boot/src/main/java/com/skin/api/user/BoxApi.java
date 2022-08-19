@@ -1,8 +1,7 @@
 package com.skin.api.user;
 
 import com.skin.core.service.BlindBoxService;
-import com.skin.core.service.UserPackageService;
-import com.skin.entity.UserPackage;
+import com.skin.core.service.TakeOrderService;
 import com.skin.params.BlindBoxBean;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
@@ -20,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class BoxApi {
 
     @Autowired
-    UserPackageService userPackageService;
+    TakeOrderService takeOrderService;
     @Autowired
     BlindBoxService     blindBoxService;
 
@@ -36,6 +35,6 @@ public class BoxApi {
     @SignIgnore
     @AuthIgnore
     public Object getLastPageList() {
-        return userPackageService.getLastPageList( );
+        return takeOrderService.getLastPageList( );
     }
 }

@@ -1,27 +1,22 @@
 package com.skin.core.service.impl;
 
-import com.aliyun.mns.common.utils.DateUtil;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.skin.common.security.MD5Util;
 import com.skin.core.mapper.PointMapper;
+import com.skin.core.service.PointListService;
 import com.skin.core.service.PointService;
 import com.skin.core.service.UserService;
 import com.skin.entity.PointInfo;
-import com.taobao.api.ApiException;
-import com.tzj.module.common.utils.DateUtils;
+import com.skin.entity.PointList;
+import com.tzj.module.easyopen.exception.ApiException;
 import lombok.SneakyThrows;
-import org.bouncycastle.jcajce.provider.asymmetric.rsa.DigestSignatureSpi;
-import org.bouncycastle.jcajce.provider.digest.MD5;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @Auther: xiangzhongguo
@@ -36,21 +31,10 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, PointInfo> implem
     @Autowired
     UserService userService;
 
+    @Autowired
+    PointListService pointListService;
 
-    static Map<Integer, BigDecimal> pointMap = new TreeMap<>();
 
-    static {
-        pointMap.put(1, new BigDecimal("50"));
-        pointMap.put(2, new BigDecimal("200"));
-        pointMap.put(3, new BigDecimal("500"));
-        pointMap.put(4, new BigDecimal("1000"));
-        pointMap.put(5, new BigDecimal("2000"));
-        pointMap.put(6, new BigDecimal("3500"));
-        pointMap.put(7, new BigDecimal("5000"));
-        pointMap.put(8, new BigDecimal("7500"));
-        pointMap.put(9, new BigDecimal("10000"));
-        pointMap.put(10, new BigDecimal("20000"));
-    }
 
 
     @SneakyThrows
@@ -67,8 +51,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, PointInfo> implem
         pointInfo.setTotalPoint(point);
         pointInfo.setMd5Code(MD5Util.md5(pointInfo.getPoint().toString() + pointInfo.getTotalPoint().toString() + MD5Util.SIGN_KEY));
         baseMapper.updateById(pointInfo);
-        //计算vip等级
-        userService.updateVIP(id, this.getVip(pointInfo.getTotalPoint()));
+
     }
 
     @Override
@@ -81,20 +64,41 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, PointInfo> implem
         return baseMapper.selectOne(new QueryWrapper<PointInfo>().select("sum(total_Point) as totalPoint")).getTotalPoint();
     }
 
+    @SneakyThrows
+    @Transactional
+    @Override
+    public void editPoint(Long userId, BigDecimal point, Integer from,String fromChn,String orderNo,Integer type) {
+        PointInfo pointInfo =this.getByUid(userId);
+        PointList pointList = new PointList();
+        pointList.setUserId(userId);
+        pointList.setOrderNo(orderNo);
+        pointList.setType(type);
+        pointList.setPoint(point);
+        pointList.setOrderFromChn(fromChn);
+        pointList.setOrderFrom(from);
+        pointList.setAfterPoint(pointInfo.getPoint().add(point));
+        pointListService.save(pointList);
 
-
-
-    public Integer getVip(BigDecimal point) {
-        Integer vip = 0;
-        for (Map.Entry<Integer, BigDecimal> entry : pointMap.entrySet()) {
-            if (point.divide(entry.getValue()).compareTo(new BigDecimal("1")) == 1) {
-                vip = entry.getKey();
-            } else {
-                break;
-            }
+        //判断当前余额是否被修改
+        if (!MD5Util.md5(pointInfo.getPoint().toString() + pointInfo.getTotalPoint().toString() + MD5Util.SIGN_KEY).equals(pointInfo.getMd5Code())) {
+            throw new ApiException("数据已被篡改，请重新操作");
         }
-        return vip;
+        pointInfo.setPoint(pointInfo.getPoint().add(point));
+        if(type == 1){
+            pointInfo.setTotalPoint(pointInfo.getTotalPoint().add(point));
+        }else{
+            pointInfo.setConsumePoint(pointInfo.getConsumePoint().add(point));
+        }
+
+        pointInfo.setMd5Code(MD5Util.md5(pointInfo.getPoint().toString() + pointInfo.getTotalPoint().toString() + MD5Util.SIGN_KEY));
+        baseMapper.updateById(pointInfo);
+        //计算vip等级  只算充值的 并且不算充值赠送的
+        //userService.updateVIP(userId, this.getVip(pointInfo.getTotalPoint()));
+
+        //用户充值后判断 是不是被邀请的 如果是 则赠送积分 并记录
     }
+
+
 
 
 }

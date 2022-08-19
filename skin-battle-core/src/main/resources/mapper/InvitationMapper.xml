@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skin.core.mapper.InvitationMapper">
+
+
+    <select id="getInvitationPage" resultType="com.skin.dto.InvitationPage">
+        SELECT
+            gdate,
+            sum( icount ) AS inviteCount,
+            sum( rcount ) AS rechargeCount,
+            sum( rpoint ) AS rechargePoint,
+            sum( repoint ) AS reward
+        FROM
+            (
+                SELECT
+                    DATE_FORMAT( i.CREATE_DATE, '%Y-%m-%d' ) AS gdate,
+                    count( 1 ) AS icount,
+                    0 AS rcount,
+                    0 AS rpoint,
+                    0 AS repoint
+                FROM
+                    invitation i
+                where user_id = #{userId}
+
+                GROUP BY
+                    gdate UNION
+                SELECT
+                    DATE_FORMAT( pl.CREATE_DATE, '%Y-%m-%d' ) AS gdate,
+                    0 AS icount,
+                    count( 1 ) AS rcount,
+                    sum( point ) AS rpoint,
+                    0 AS repoint
+                FROM
+                    point_list pl
+                        LEFT JOIN invitation i ON pl.USER_ID = i.INVITE_USER_ID
+                WHERE
+                    pl.ORDER_FROM = 2
+                    and i.USER_ID = #{userId}
+                GROUP BY
+                    gdate UNION
+                SELECT
+                    DATE_FORMAT( pl.CREATE_DATE, '%Y-%m-%d' ) AS gdate,
+                    0 AS icount,
+                    0 AS rcount,
+                    0 AS rpoint,
+                    sum( point ) AS repoint
+                FROM
+                    point_list pl
+                WHERE
+                    pl.ORDER_FROM = 5 and pl.USER_ID = #{userId}
+                GROUP BY
+                    gdate
+            ) a
+        GROUP BY
+            gdate
+        ORDER BY
+            gdate DESC
+    </select>
+
+
+
+    <select id="getInvitationLogPage" resultType="com.skin.dto.InvitationPage">
+
+    SELECT
+    nickName,
+    sum( rechargePoint ) AS rechargePoint,
+    sum( reward ) AS reward
+    FROM
+    (
+    SELECT
+    u.NICK_NAME AS nickName,
+    sum( point ) AS rechargePoint,
+    0 AS reward
+    FROM
+    point_list pl
+    INNER JOIN invitation i ON pl.USER_ID = i.INVITE_USER_ID
+    INNER JOIN USER u ON u.id = pl.USER_ID
+    WHERE
+    pl.ORDER_FROM = 2 and i.USER_ID = #{userId}
+    GROUP BY
+    nickName UNION
+    SELECT
+    u.NICK_NAME AS nickName,
+    0 AS rechargePoint,
+    sum( point ) AS reward
+    FROM
+    point_list pl
+    INNER JOIN USER u ON u.id = pl.be_invite_user_id
+    WHERE
+    pl.ORDER_FROM = 5 and pl.USER_ID = #{userId}
+    GROUP BY
+    nickName
+    ) a
+    GROUP BY
+    nickName
+    ORDER BY
+    nickName DESC
+    </select>
+
+
+
+
+
+</mapper>

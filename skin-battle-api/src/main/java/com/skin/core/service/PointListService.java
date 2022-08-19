@@ -32,5 +32,11 @@ public interface PointListService extends IService<PointList> {
     Page<PointList> userPage(Long userId,String startDate,String endDate,Integer type,Integer pageNum,Integer pageSize);
 
 
+    Integer getCountByUserIdAndType(Long userId,Integer type);
 
+
+
+    BigDecimal sumByInvitation(Long userId);
+
+    BigDecimal invitationReward(Long userId);
 }
