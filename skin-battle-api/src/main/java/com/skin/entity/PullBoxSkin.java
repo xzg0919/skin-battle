@@ -35,4 +35,7 @@ public class PullBoxSkin extends DataEntity{
 	/** 中奖概率 */
 	private Double probability ;
 
+	/** 是否是拉货物品 0不是 1是 */
+	Integer isReward;
+
 }

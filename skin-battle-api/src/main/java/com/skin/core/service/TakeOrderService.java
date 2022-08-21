@@ -46,4 +46,6 @@ public interface TakeOrderService extends IService<TakeOrder> {
       void recycle(Long userId,Long packageId);
 
       void recycleBatch(Long userId,String  packageIds);
+
+      Page<TakeOrder> recentTakeOrder(Long boxId,Integer pageNo,Integer pageSize);
 }

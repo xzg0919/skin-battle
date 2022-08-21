@@ -4,10 +4,7 @@ import com.skin.core.service.NoticeService;
 import com.skin.entity.MallSkin;
 import com.skin.entity.Notice;
 import com.skin.params.NoticeBean;
-import com.tzj.module.api.annotation.Api;
-import com.tzj.module.api.annotation.ApiService;
-import com.tzj.module.api.annotation.RequiresPermissions;
-import com.tzj.module.api.annotation.SignIgnore;
+import com.tzj.module.api.annotation.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +24,7 @@ public class NoticeApi {
 
     @Api(name = "notice.pageList", version = "1.0")
     @SignIgnore
-    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    @AuthIgnore
     public Object pageList(NoticeBean noticeBean) {
         return noticeService.getPage(noticeBean.getPageBean().getPageNum(), noticeBean.getPageBean().getPageSize());
     }
@@ -61,7 +58,7 @@ public class NoticeApi {
 
     @Api(name = "notice.info", version = "1.0")
     @SignIgnore
-    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    @AuthIgnore
     public Object info(NoticeBean noticeBean) {
         return noticeService.getById(noticeBean.getId());
     }

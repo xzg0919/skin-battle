@@ -25,4 +25,7 @@ public interface InvitationService extends IService<Invitation> {
     Page<InvitationPage> getInvitationLogPage(Integer pageNum,Integer pageSize ,Long userId);
 
     List<HashMap<String, Object>> userInvitationRule();
+
+
+    Invitation getInvitationByUserId(Long inviteUserId);
 }

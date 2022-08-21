@@ -173,7 +173,7 @@ public class TakeOrderServiceImpl extends ServiceImpl<TakeOrderMapper, TakeOrder
     @Override
     public List<TakeOrder> getLastPageList() {
         QueryWrapper<TakeOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("skin_name,box_id,pic_url,level_,nick_name,avatar");
+        queryWrapper.select("skin_name,box_id,pic_url,level_,nick_name,avatar,attrition_rate");
         queryWrapper.orderByDesc("create_date");
         queryWrapper.last("limit 9");
         return baseMapper.selectList(queryWrapper);
@@ -225,5 +225,15 @@ public class TakeOrderServiceImpl extends ServiceImpl<TakeOrderMapper, TakeOrder
         for (String packageId : packageIds.split(",")) {
             takeOrderService.recycle(userId, Long.parseLong(packageId));
         }
+    }
+
+    @Override
+    public Page<TakeOrder> recentTakeOrder(Long boxId, Integer pageNo, Integer pageSize) {
+        Page<TakeOrder> page = new Page<>(pageNo, pageSize);
+        QueryWrapper<TakeOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("skin_name,pic_url,level_,attrition_rate");
+        queryWrapper.eq("box_id", boxId);
+        queryWrapper.orderByDesc("create_date");
+        return baseMapper.selectPage(page, queryWrapper);
     }
 }

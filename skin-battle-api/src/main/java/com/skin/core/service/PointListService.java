@@ -36,4 +36,12 @@ public interface PointListService extends IService<PointList> {
 
 
     BigDecimal invitationReward(Long userId);
+
+
+    BigDecimal getRechargePointToday(Long userId);
+
+
+    BigDecimal getRechargePointByDate(Long userId,String startDate,String endDate);
+
+    BigDecimal getConsumePointToday(Long userId);
 }

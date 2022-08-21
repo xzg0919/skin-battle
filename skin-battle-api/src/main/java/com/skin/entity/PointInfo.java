@@ -29,4 +29,9 @@ public class PointInfo extends DataEntity{
 	/** 校验码 */
 	private String md5Code ;
 
+	/**
+	 * 充值金额
+	 */
+	private BigDecimal rechargePoint;
+
 }

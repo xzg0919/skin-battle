@@ -30,4 +30,9 @@ public class DailyTask extends DataEntity{
 	private BigDecimal price ;
 	/** 获得的金额 */
 	private BigDecimal rewardPrice ;
+
+
+	/** 1：未满足条件 2：已满足未领取 3：已领取*/
+	@TableField(exist = false)
+	private Integer canReceive;
 }

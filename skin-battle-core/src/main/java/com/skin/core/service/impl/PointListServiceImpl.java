@@ -9,6 +9,7 @@ import com.skin.core.service.PointListService;
 import com.skin.core.service.SysParamsService;
 import com.skin.entity.PointInfo;
 import com.skin.entity.PointList;
+import com.tzj.module.common.utils.DateUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,5 +114,28 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
         int from = Integer.parseInt(sysParamsService.getSysParams("business_type", "邀请", "5"));
         return baseMapper.selectOne(new QueryWrapper<PointList>().select("ifnull(sum(point) ,0)as point")
                 .eq("user_id", userId).eq("order_from",from)).getPoint();
+    }
+
+    @Override
+    public BigDecimal getRechargePointToday(Long userId) {
+        int from = Integer.parseInt(sysParamsService.getSysParams("business_type", "充值", "2"));
+        return baseMapper.selectOne(new QueryWrapper<PointList>().select("ifnull(sum(point) ,0)as point")
+                .eq("user_id", userId).eq("order_from",from).between("create_date", DateUtils.getDate()+" 00:00:00",DateUtils.getDate()+" 23:59:59")).getPoint();
+    }
+
+    @Override
+    public BigDecimal getRechargePointByDate(Long userId, String startDate, String endDate) {
+        int from = Integer.parseInt(sysParamsService.getSysParams("business_type", "充值", "2"));
+        return baseMapper.selectOne(new QueryWrapper<PointList>().select("ifnull(sum(point) ,0)as point")
+                .eq("user_id", userId).eq("order_from",from).between("create_date", startDate+" 00:00:00",endDate+" 23:59:59")).getPoint();
+    }
+
+    @Override
+    public BigDecimal getConsumePointToday(Long userId) {
+        int from = Integer.parseInt(sysParamsService.getSysParams("business_type", "商城兑换", "10"));
+        return baseMapper.selectOne(new QueryWrapper<PointList>().select("ifnull(sum(point) ,0)as point")
+                .eq("user_id", userId)
+                .between("create_date", DateUtils.getDate()+" 00:00:00",DateUtils.getDate()+" 23:59:59")
+                .eq("type_",0).ne("from_",from)).getPoint();
     }
 }

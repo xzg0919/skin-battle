@@ -26,5 +26,5 @@ public interface PointService extends IService<PointInfo> {
 
     void editPoint(Long userId, BigDecimal point, Integer from,String fromChn,String orderNo,Integer type);
 
-
+    void editPoint(Long userId, BigDecimal point, Integer from,String fromChn,String orderNo,Integer type,Long beInvitedUserId);
 }

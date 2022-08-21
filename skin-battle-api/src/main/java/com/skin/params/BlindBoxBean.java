@@ -49,4 +49,7 @@ public class BlindBoxBean {
     private String picUrl ;
     /** 中奖概率 */
     private Double probability ;
+
+    private Integer num;
+
 }

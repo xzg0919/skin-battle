@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.skin.entity.BlindBox;
 import com.skin.entity.BlindBoxSkin;
+import com.skin.entity.TakeOrder;
+
+import java.util.List;
 
 public interface BlindBoxService extends IService<BlindBox> {
 
@@ -27,5 +30,14 @@ public interface BlindBoxService extends IService<BlindBox> {
 
 
     Page<BlindBox> getBoxByType(Integer pageNo, Integer pageSize,Long boxType);
+
+
+    List<TakeOrder> openBox(Long userId,Long boxId,Integer num);
+
+    BlindBox getBoxById(Long id);
+
+
+    List<BlindBoxSkin> getSkinByBoxId(Long boxId);
+
 
 }

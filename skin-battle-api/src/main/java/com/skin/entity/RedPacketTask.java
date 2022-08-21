@@ -35,4 +35,8 @@ public class RedPacketTask extends DataEntity{
 	/** 状态 0：正常 1：停用 */
 	@TableField("status_")
 	private Integer status;
+
+	/** 1：未满足条件 2：已满足未领取 3：已领取*/
+	@TableField(exist = false)
+	private Integer canReceive;
 }

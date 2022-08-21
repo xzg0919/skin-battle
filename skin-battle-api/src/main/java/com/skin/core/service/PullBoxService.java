@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.skin.entity.PullBox;
 import com.skin.entity.PullBoxSkin;
+import com.skin.entity.TakeOrder;
 
 public interface PullBoxService extends IService<PullBox> {
 
@@ -24,4 +25,9 @@ public interface PullBoxService extends IService<PullBox> {
 
 
     void insertSkin(Long skinId,Long pullBoxId,double probability);
+
+    TakeOrder openBox(Long userId,Long pullBoxId,Double probability);
+
+    void setReward(Long userId,Long pullBoxSkinId,Integer status);
+
 }

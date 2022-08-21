@@ -74,4 +74,9 @@ public class InvitationServiceImpl extends ServiceImpl<InvitationMapper, Invitat
         }
         return result;
     }
+
+    @Override
+    public Invitation getInvitationByUserId(Long inviteUserId) {
+        return baseMapper.selectOne(new QueryWrapper<Invitation>().eq("invite_user_id", inviteUserId));
+    }
 }
