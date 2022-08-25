@@ -116,4 +116,12 @@ public class PullBoxApi {
         pullBoxService.insertSkin(pullBoxBean.getSkinId(),pullBoxBean.getId(),pullBoxBean.getProbability());
         return "success";
     }
+
+    @Api(name = "pullBoxSkin.changeStatus", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = ADMIN_API_COMMON_AUTHORITY)
+    public Object pullBoxSkinChangeStatus(PullBoxBean pullBoxBean) {
+        pullBoxService.setReward(pullBoxBean.getSkinId());
+        return "success";
+    }
 }

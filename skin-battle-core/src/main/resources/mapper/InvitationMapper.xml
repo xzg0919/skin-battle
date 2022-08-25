@@ -3,7 +3,7 @@
 <mapper namespace="com.skin.core.mapper.InvitationMapper">
 
 
-    <select id="getInvitationPage" resultType="com.skin.dto.InvitationPage">
+    <select id="getInvitationPage" resultType="com.skin.vo.InvitationPage">
         SELECT
             gdate,
             sum( icount ) AS inviteCount,
@@ -59,7 +59,7 @@
 
 
 
-    <select id="getInvitationLogPage" resultType="com.skin.dto.InvitationPage">
+    <select id="getInvitationLogPage" resultType="com.skin.vo.InvitationPage">
 
     SELECT
     nickName,

@@ -1,4 +1,4 @@
-package com.skin.dto;
+package com.skin.vo;
 
 import lombok.Data;
 

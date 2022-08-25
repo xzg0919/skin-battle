@@ -1,12 +1,16 @@
 package com.skin.api.user;
 
+import com.skin.common.util.AssertUtil;
 import com.skin.core.service.BlindBoxService;
 import com.skin.core.service.PullBoxService;
 import com.skin.core.service.TakeOrderService;
+import com.skin.entity.PullBox;
 import com.skin.params.BlindBoxBean;
+import com.skin.params.PullBoxBean;
 import com.tzj.module.api.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import static com.skin.common.constant.TokenConst.USER_API_COMMON_AUTHORITY;
@@ -72,8 +76,42 @@ public class BoxApi {
     @Api(name = "pull.openBox", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
-    public Object pullOpenBox(BlindBoxBean blindBoxBean) {
+    public Object pullOpenBox(PullBoxBean pullBoxBean) {
+        AssertUtil.isTrue(pullBoxBean.getProbability()>75.00,"最大概率不能超过75%");
+        return pullBoxService.openBox(UserApi.getMember().getId(),pullBoxBean.getId(),pullBoxBean.getProbability());
+    }
+    @Api(name = "pull.getPrice", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object pullGetPrice(PullBoxBean pullBoxBean) {
+        AssertUtil.isTrue(pullBoxBean.getProbability()>75.00,"最大概率不能超过75%");
+        PullBox pullBox = pullBoxService.getById(pullBoxBean.getId());
+        BigDecimal totalPrice = pullBox.getPrice().multiply(new BigDecimal(String.valueOf(pullBoxBean.getProbability()))).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return totalPrice;
+    }
 
-        return null;
+
+    @Api(name = "pull.getSkinList", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object pullGetSkinList(PullBoxBean pullBoxBean) {
+        return pullBoxService.getSkinList( pullBoxBean.getId());
+    }
+
+
+    @Api(name = "pull.getPage", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object pullGetPage(PullBoxBean pullBoxBean) {
+        return pullBoxService.getPage(pullBoxBean.getPageBean().getPageNum(),pullBoxBean.getPageBean().getPageSize(),pullBoxBean.getSkinName()
+        ,pullBoxBean.getBeginPrice(),pullBoxBean.getEndPrice());
+    }
+
+
+    @Api(name = "pull.pullLog", version = "1.0")
+    @SignIgnore
+    @AuthIgnore
+    public Object pullLog(PullBoxBean pullBoxBean) {
+        return pullBoxService.getPullBoxLogPage(UserApi.getMember().getId(),pullBoxBean.getPageBean().getPageNum(),pullBoxBean.getPageBean().getPageSize());
     }
 }

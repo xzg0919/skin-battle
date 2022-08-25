@@ -138,4 +138,15 @@ public class PointListServiceImpl extends ServiceImpl<PointListMapper, PointList
                 .between("create_date", DateUtils.getDate()+" 00:00:00",DateUtils.getDate()+" 23:59:59")
                 .eq("type_",0).ne("from_",from)).getPoint();
     }
+
+    @Override
+    public BigDecimal sumPoint(Integer orderFrom, String startTime, String endTime, Long userId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_from", orderFrom);
+        queryWrapper.ge("create_date", startTime);
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.le("create_date", endTime);
+        PointList pointList = baseMapper.selectOne(queryWrapper.select("sum(point) as point"));
+        return pointList == null ? BigDecimal.ZERO : pointList.getPoint();
+    }
 }

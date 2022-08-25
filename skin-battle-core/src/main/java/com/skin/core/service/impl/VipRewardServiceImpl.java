@@ -9,7 +9,7 @@ import com.skin.core.service.PointService;
 import com.skin.core.service.SysParamsService;
 import com.skin.core.service.UserService;
 import com.skin.core.service.VipRewardService;
-import com.skin.dto.VipCheckList;
+import com.skin.vo.VipCheckList;
 import com.skin.entity.User;
 import com.skin.entity.VipReward;
 import org.springframework.beans.factory.annotation.Autowired;

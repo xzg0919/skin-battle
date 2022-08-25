@@ -7,7 +7,7 @@ import com.skin.common.handler.InvitationHandler;
 import com.skin.core.mapper.InvitationMapper;
 import com.skin.core.service.InvitationService;
 import com.skin.core.service.PointListService;
-import com.skin.dto.InvitationPage;
+import com.skin.vo.InvitationPage;
 import com.skin.entity.Invitation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

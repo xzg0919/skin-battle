@@ -1,6 +1,7 @@
 package com.skin.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -18,9 +19,9 @@ import java.math.BigDecimal;
 public class RollRoomUser extends DataEntity{
 
 	/** ROLL房ID */
-	private String roomId ;
+	private Long roomId ;
 	/** 用户ID */
-	private String userId ;
+	private Long userId ;
 	/** 昵称 */
 	private String nickName ;
 	/** 电话 */
@@ -35,5 +36,16 @@ public class RollRoomUser extends DataEntity{
 	private BigDecimal price ;
 	/** 皮肤图片链接 */
 	private String picUrl ;
+
+	/** 品级  稀有级别 0 初级 1 中级 2高级 */
+	@TableField("level_")
+	private Integer level ;
+	/** 磨损度 */
+	private String attritionRate ;
+
+	private String avatar;
+
+	private String userIdStr;
+
 
 }

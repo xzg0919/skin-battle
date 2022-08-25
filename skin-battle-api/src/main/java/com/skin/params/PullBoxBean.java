@@ -28,4 +28,7 @@ public class PullBoxBean {
     private Double probability ;
 
     Long skinId;
+
+    BigDecimal  beginPrice;
+    BigDecimal endPrice;
 }

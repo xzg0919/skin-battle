@@ -5,6 +5,8 @@ import com.skin.core.service.RollRoomService;
 import com.skin.entity.RollRoom;
 import com.skin.params.RollRoomBean;
 import com.skin.entity.RollRoomSkinInfo;
+import com.skin.task.RollRoomItem;
+import com.skin.task.RollRoomTask;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
 import com.tzj.module.api.annotation.RequiresPermissions;
@@ -31,6 +33,14 @@ public class RollRoomApi {
 
     @Autowired
     RollRoomService     rollRoomService;
+
+
+    public static void main(String[] args) {
+        Integer ss= 128;
+        Integer ss1 =128;
+
+        System.out.println(ss.equals(ss1));
+    }
 
     @Api(name = "rollRoom.delete", version = "1.0")
     @SignIgnore
@@ -65,19 +75,20 @@ public class RollRoomApi {
     public Object rollRoomIOU(RollRoomBean rollRoomBean) {
         //设置的时间必须大于当前时间+5分钟
         Date now =new Date();
+        RollRoom rollRoom;
         if(StringUtils.isNotBlank(rollRoomBean.getLotteryTime()) &&
                 DateUtils.parseDate(rollRoomBean.getLotteryTime(),"yyyy-MM-dd HH:mm:ss").getTime()-now.getTime()<5*60*1000){
             throw new ApiException("设置的时间必须大于当前时间+5分钟") ;
         }
         if (rollRoomBean.getId() == null) {
-            RollRoom rollRoom = new RollRoom();
+            rollRoom= new RollRoom();
             BeanUtils.copyProperties(rollRoomBean,rollRoom);
             rollRoom.setRoomStatus(1);
             rollRoom.setLotteryTime(DateUtils.parseDate(rollRoomBean.getLotteryTime(),"yyyy-MM-dd HH:mm:ss"));
             rollRoomService.save(rollRoom);
         } else {
 
-            RollRoom rollRoom = rollRoomService.getById(rollRoomBean.getId());
+            rollRoom = rollRoomService.getById(rollRoomBean.getId());
             AssertUtil.isNull(rollRoom,"该房间不存在");
             //已开奖的数据不允许编辑
             if(rollRoom.getRoomStatus()==2){
@@ -85,8 +96,12 @@ public class RollRoomApi {
             }
             BeanUtils.copyProperties(rollRoomBean,rollRoom);
             rollRoom.setLotteryTime(DateUtils.parseDate(rollRoomBean.getLotteryTime(),"yyyy-MM-dd HH:mm:ss"));
+            RollRoomTask.queue.removeIf(rollRoomItem -> rollRoomItem.getId().equals(rollRoomBean.getId()));
+
             rollRoomService.updateById(rollRoom);
         }
+        RollRoomItem rollRoomItem =new RollRoomItem(rollRoom.getName(),rollRoom.getLotteryTime().getTime(),rollRoom.getId());
+        RollRoomTask.queue.put(rollRoomItem);
         return "success";
     }
 
@@ -117,6 +132,9 @@ public class RollRoomApi {
     public Object rollSkinEdit(RollRoomBean rollRoomBean) {
         RollRoomSkinInfo roomSkinInfo = rollRoomService.getRoomSkinInfo(rollRoomBean.getId());
         AssertUtil.isNull(roomSkinInfo,"该皮肤不存在");
+        //判断有没有参加
+         AssertUtil.isTrue(StringUtils.isNotBlank(rollRoomBean.getSpecifiedUser())
+        && !rollRoomService.isJoin(rollRoomBean.getId(),rollRoomBean.getSpecifiedUser()),"该用户没有加入该房间");
         roomSkinInfo.setSpecifiedUser(rollRoomBean.getSpecifiedUser().isEmpty()?null:rollRoomBean.getSpecifiedUser());
         rollRoomService.updateRoomSkinInfo(roomSkinInfo);
         return "success";

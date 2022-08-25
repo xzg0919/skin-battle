@@ -131,6 +131,8 @@ public class LotteryUtils {
         //把商品比例放进来
         for (LotteryBean orignalRate : lotteryBeans) {
             orignalRates.add(orignalRate.getBili());
+
+            System.out.println("id:"+orignalRate.getGoodsId()+"概率："+orignalRate.getBili());
         }
         for (int i = 1; i <= num; i++) {
             int orignalIndex = LotteryUtils.lottery(orignalRates);

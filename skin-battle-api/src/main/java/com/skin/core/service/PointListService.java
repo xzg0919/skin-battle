@@ -44,4 +44,8 @@ public interface PointListService extends IService<PointList> {
     BigDecimal getRechargePointByDate(Long userId,String startDate,String endDate);
 
     BigDecimal getConsumePointToday(Long userId);
+
+
+    BigDecimal sumPoint(Integer orderFrom,String startTime,String endTime,Long userId);
+
 }

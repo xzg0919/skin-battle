@@ -46,4 +46,12 @@ public class RollRoomBean {
 
 
     Long skinId;
+
+
+    /**
+     * 1:全部  2：已结束 3：我参与的
+     */
+    Integer status;
+
+
 }

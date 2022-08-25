@@ -1,7 +1,7 @@
 package com.skin.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.skin.dto.VipCheckList;
+import com.skin.vo.VipCheckList;
 import com.skin.entity.VipReward;
 
 import java.math.BigDecimal;

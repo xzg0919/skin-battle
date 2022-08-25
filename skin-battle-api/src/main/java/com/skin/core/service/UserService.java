@@ -2,7 +2,7 @@ package com.skin.core.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.skin.dto.UserPage;
+import com.skin.vo.UserPage;
 import com.skin.entity.User;
 import com.skin.params.UserBean;
 

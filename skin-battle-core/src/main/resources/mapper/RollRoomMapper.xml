@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skin.core.mapper.RollRoomMapper">
+
+
+    <select id="getRollPage" resultType="com.skin.vo.RollVo">
+        select rr.ROOM_PIC as roomPic,rr.user_count as userCount,rr.award_count as awardCount,
+        rr.award_price as awardPrice,name_ as 'name',rr.ROOM_TYPE as roomType ,
+        rr.LOTTERY_TIME as lotteryTime,
+        IF(room_status=1,if(EXISTS(select 1 from roll_room_user where user_id = #{userId} and ROOM_ID =rr.id ),3,1),2) as
+        roomStatus
+        from roll_room rr
+        left join roll_room_user rru on rru.ROOM_ID = rr.id
+        <where>
+            <if test="userId != null and userId != '' and status == 3 ">
+                rru.user_id = #{userId}
+            </if>
+
+            <if test="status == 2 ">
+                room_status =2
+            </if>
+        </where>
+        GROUP BY
+        rr.ROOM_PIC ,rr.user_count,rr.award_count ,
+        rr.award_price,name_ ,rr.ROOM_TYPE ,
+        rr.LOTTERY_TIME
+
+    </select>
+
+
+</mapper>

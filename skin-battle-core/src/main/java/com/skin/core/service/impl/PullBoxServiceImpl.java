@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.skin.common.lottery.LotteryBean;
 import com.skin.common.lottery.LotteryUtils;
 import com.skin.common.util.AssertUtil;
+import com.skin.core.mapper.PullBoxLogMapper;
 import com.skin.core.mapper.PullBoxMapper;
 import com.skin.core.mapper.PullBoxSkinMapper;
 import com.skin.core.service.*;
@@ -41,6 +42,8 @@ public class PullBoxServiceImpl extends ServiceImpl<PullBoxMapper, PullBox> impl
     SysParamsService sysParamsService;
     @Autowired
     TakeOrderService takeOrderService;
+    @Autowired
+    PullBoxLogMapper pullBoxLogMapper;
     @Override
     public Page<PullBox> getPage(Integer pageNo, Integer pageSize, String skinName) {
         QueryWrapper<PullBox> queryWrapper = new QueryWrapper<PullBox>().orderByDesc("create_date");
@@ -111,6 +114,7 @@ public class PullBoxServiceImpl extends ServiceImpl<PullBoxMapper, PullBox> impl
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public TakeOrder openBox(Long userId, Long pullBoxId,Double probability) {
         //判断用户是否填写steam链接
@@ -120,12 +124,15 @@ public class PullBoxServiceImpl extends ServiceImpl<PullBoxMapper, PullBox> impl
         AssertUtil.isNull(pullBox, "系统异常");
         AssertUtil.isTrue(pullBox.getEnable() == 0, "该盒子已经关闭");
         PointInfo pointInfo = pointService.getByUid(userId);
-        BigDecimal totalPrice = pullBox.getPrice().multiply(new BigDecimal(String.valueOf(probability))).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal totalPrice = pullBox.getPrice().multiply(new BigDecimal(String.valueOf(probability))).divide(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
         AssertUtil.isTrue(totalPrice.compareTo(pointInfo.getPoint()) > 0, "余额不足，请先充值");
         List<PullBoxSkin> blindBoxSkins = pullBoxSkinMapper.selectList(new QueryWrapper<PullBoxSkin>().eq("pull_box_id", pullBoxId));
+
+        AssertUtil.isTrue(!blindBoxSkins.stream().filter(skin -> skin.getIsReward() == 1).findAny().isPresent(),"系统异常");
         if (blindBoxSkins == null || blindBoxSkins.size() == 0) {
             throw new ApiException("该盒子没有皮肤");
         }
+        PullBoxSkin rewardSkin = blindBoxSkins.stream().filter(skin -> skin.getIsReward() == 1).findAny().get();
         List<LotteryBean> lotteryBeans = new ArrayList<>();
         blindBoxSkins.forEach(blindBoxSkin -> {
             LotteryBean lotteryBean = new LotteryBean();
@@ -135,13 +142,13 @@ public class PullBoxServiceImpl extends ServiceImpl<PullBoxMapper, PullBox> impl
                 lotteryBean.setBili(blindBoxSkin.getProbability()+probability);
             }
             //判断是否设置了单独的概率
-            if (user.getHighProbability() != null && user.getHighProbability() != 0 && blindBoxSkin.getLevel() == 2) {
+            if (user.getHighProbability() != null  && blindBoxSkin.getLevel() == 2) {
                 lotteryBean.setBili(user.getHighProbability());
             }
-            if (user.getMiddleProbability() != null && user.getMiddleProbability() != 0 && blindBoxSkin.getLevel() == 1) {
+            if (user.getMiddleProbability() != null  && blindBoxSkin.getLevel() == 1) {
                 lotteryBean.setBili(user.getMiddleProbability());
             }
-            if (user.getLowProbability() != null && user.getLowProbability() != 0 && blindBoxSkin.getLevel() == 0) {
+            if (user.getLowProbability() != null  && blindBoxSkin.getLevel() == 0) {
                 lotteryBean.setBili(user.getLowProbability());
             }
             lotteryBeans.add(lotteryBean);
@@ -151,28 +158,42 @@ public class PullBoxServiceImpl extends ServiceImpl<PullBoxMapper, PullBox> impl
         TakeOrder takeOrder = new TakeOrder();
         //存入背包
         lotteryResult.forEach(map -> {
-            PullBoxSkin blindBoxSkin = pullBoxSkinMapper.selectById((Long) map.get("goodsId"));
-            AssertUtil.isNull(blindBoxSkin, "网络异常，请稍后再试");
+            PullBoxSkin pullBoxSkin = pullBoxSkinMapper.selectById((Long) map.get("goodsId"));
+            AssertUtil.isNull(pullBoxSkin, "网络异常，请稍后再试");
             takeOrder.setBoxId(pullBoxId);
             takeOrder.setUserId(userId);
             String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
             takeOrder.setOrderNo(orderNo);
             takeOrder.setSource(Integer.parseInt(sysParamsService.getSysParams("blind_box").getVal()));
-            takeOrder.setSkinName(blindBoxSkin.getSkinName());
+            takeOrder.setSkinName(pullBoxSkin.getSkinName());
             takeOrder.setNickName(user.getNickName());
             takeOrder.setSteamUrl(user.getSteamUrl());
             takeOrder.setTel(user.getTel());
             takeOrder.setEmail(user.getEmail());
             takeOrder.setStatus(0);
-            takeOrder.setPrice(blindBoxSkin.getPrice());
-            takeOrder.setAttritionRate(blindBoxSkin.getAttritionRate());
-            takeOrder.setLevel(blindBoxSkin.getLevel());
-            takeOrder.setPicUrl(blindBoxSkin.getPicUrl());
+            takeOrder.setPrice(pullBoxSkin.getPrice());
+            takeOrder.setAttritionRate(pullBoxSkin.getAttritionRate());
+            takeOrder.setLevel(pullBoxSkin.getLevel());
+            takeOrder.setPicUrl(pullBoxSkin.getPicUrl());
             takeOrder.setAvatar(user.getAvatar());
             int from = Integer.parseInt(sysParamsService.getSysParams("business_type", "拉货", "1"));
             pointService.editPoint(userId, totalPrice, from, "拉货", orderNo, 0);
             takeOrderService.save(takeOrder);
 
+
+            //存入拉货历史记录
+            PullBoxLog pullBoxLog =new PullBoxLog();
+            pullBoxLog.setUserId(userId);
+            pullBoxLog.setPullBoxAttritionRate(pullBox.getAttritionRate());
+            pullBoxLog.setPullBoxPicUrl(pullBox.getSkinPic());
+            pullBoxLog.setPullBoxSkinName(pullBox.getSkinName());
+            pullBoxLog.setAwardBoxPicUrl(pullBoxSkin.getPicUrl());
+            pullBoxLog.setAwardAttritionRate(pullBoxSkin.getAttritionRate());
+            pullBoxLog.setAwardSkinName(pullBoxSkin.getSkinName());
+            pullBoxLog.setIsSuccess(pullBoxSkin.getSkinName().equals(rewardSkin.getSkinName())?1:0);
+            pullBoxLog.setPrice(pullBoxSkin.getPrice());
+            pullBoxLog.setProbability(probability);
+            pullBoxLogMapper.insert(pullBoxLog);
         });
 
         return takeOrder;
@@ -180,12 +201,48 @@ public class PullBoxServiceImpl extends ServiceImpl<PullBoxMapper, PullBox> impl
 
     @Transactional
     @Override
-    public void setReward(Long userId, Long pullBoxSkinId,Integer status) {
-        PullBoxSkin pullBoxSkin = pullBoxSkinMapper.selectById(pullBoxSkinId);
-        if(status ==1){
+    public void setReward( Long pullBoxSkinId) {
+            PullBoxSkin pullBoxSkin = pullBoxSkinMapper.selectById(pullBoxSkinId);
             pullBoxSkinMapper.updateSkin(pullBoxSkin.getPullBoxId());
             pullBoxSkin.setIsReward(1);
             pullBoxSkinMapper.updateById(pullBoxSkin);
+    }
+
+    @Override
+    public Page<PullBox> getPage(Integer pageNo, Integer pageSize, String skinName, BigDecimal beginPrice, BigDecimal endPrice) {
+        QueryWrapper<PullBox> queryWrapper = new QueryWrapper<PullBox>().orderByDesc("create_date");
+        if (StringUtils.isNotBlank(skinName)) {
+            queryWrapper.like("skin_name", skinName);
         }
+
+        if (beginPrice !=null) {
+            queryWrapper.ge("price", beginPrice);
+        }
+
+        if (endPrice !=null) {
+            queryWrapper.le("price", endPrice);
+        }
+        queryWrapper.eq("enable_",1);
+        queryWrapper.select("id,skin_name,price,attrition_rate,skin_pic");
+        return baseMapper.selectPage(new Page<>(pageNo, pageSize), queryWrapper);
+    }
+
+    @Override
+    public List<PullBoxSkin> getSkinList(Long pullBoxId) {
+       QueryWrapper<PullBoxSkin> queryWrapper =new QueryWrapper<>();
+       queryWrapper.eq("pull_box_id",pullBoxId);
+       queryWrapper.select("skin_name,attrition_rate,level_,price,pic_url");
+      return  pullBoxSkinMapper.selectList(queryWrapper);
+    }
+
+
+
+    @Override
+    public Page<PullBoxLog> getPullBoxLogPage(Long userId, Integer pageNo, Integer pageSize) {
+        QueryWrapper<PullBoxLog> queryWrapper = new QueryWrapper<PullBoxLog>().orderByDesc("create_date");
+        queryWrapper.eq("user_id",userId);
+        queryWrapper.select("pullBoxSkinName,pullBoxAttritionRate,pullBoxPicUrl,probability,isSuccess, awardSkinName" +
+                ", awardAttritionRate, awardBoxPicUrl, price,createDate");
+        return pullBoxLogMapper.selectPage(new Page<>(pageNo, pageSize), queryWrapper);
     }
 }

@@ -8,7 +8,7 @@ import com.skin.core.mapper.PointMapper;
 import com.skin.core.mapper.UserMapper;
 import com.skin.core.service.InvitationService;
 import com.skin.core.service.UserService;
-import com.skin.dto.UserPage;
+import com.skin.vo.UserPage;
 import com.skin.entity.Invitation;
 import com.skin.entity.PointInfo;
 import com.skin.entity.User;

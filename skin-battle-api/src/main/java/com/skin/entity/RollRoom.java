@@ -47,8 +47,17 @@ public class RollRoom extends DataEntity{
 		return getDate(lotteryTime);
 	}
 
+
 	@TableField(exist = false)
 	String lotteryTimeStr;
 
+	Integer userCount;
+
+	Integer awardCount;
+
+	BigDecimal awardPrice;
+
+	@TableField(exist = false)
+	Integer join;
 
 }

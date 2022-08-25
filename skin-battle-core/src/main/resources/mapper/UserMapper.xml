@@ -3,7 +3,7 @@
 <mapper namespace="com.skin.core.mapper.UserMapper">
 
 
-    <select id="getUserPage" resultType="com.skin.dto.UserPage">
+    <select id="getUserPage" resultType="com.skin.vo.UserPage">
         select
         u.id as uid,DATE_FORMAT (u.create_date,'%y-%m-%d %H:%m:%s') as createDate,u.nick_name as nickName,u.tel as tel,u.email,p.point
         from user u inner join point_info p on u.id = p.user_id

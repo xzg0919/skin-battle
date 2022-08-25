@@ -151,13 +151,13 @@ public class BlindBoxServiceImpl extends ServiceImpl<BlindBoxMapper, BlindBox> i
             lotteryBean.setGoodsId(blindBoxSkin.getId());
             lotteryBean.setBili(blindBoxSkin.getProbability());
             //判断是否设置了单独的概率
-            if (user.getHighProbability() != null && user.getHighProbability() != 0 && blindBoxSkin.getLevel() == 2) {
+            if (user.getHighProbability() != null && blindBoxSkin.getLevel() == 2) {
                 lotteryBean.setBili(user.getHighProbability());
             }
-            if (user.getMiddleProbability() != null && user.getMiddleProbability() != 0 && blindBoxSkin.getLevel() == 1) {
+            if (user.getMiddleProbability() != null  && blindBoxSkin.getLevel() == 1) {
                 lotteryBean.setBili(user.getMiddleProbability());
             }
-            if (user.getLowProbability() != null && user.getLowProbability() != 0 && blindBoxSkin.getLevel() == 0) {
+            if (user.getLowProbability() != null  && blindBoxSkin.getLevel() == 0) {
                 lotteryBean.setBili(user.getLowProbability());
             }
             lotteryBeans.add(lotteryBean);
