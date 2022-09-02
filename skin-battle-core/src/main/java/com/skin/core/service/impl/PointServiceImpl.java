@@ -75,6 +75,11 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, PointInfo> implem
         return baseMapper.selectOne(new QueryWrapper<PointInfo>().select("sum(total_Point) as totalPoint")).getTotalPoint();
     }
 
+    @Override
+    public BigDecimal getUserValidPoint(Long userId) {
+        return  getOne(new QueryWrapper<PointInfo>().eq("user_id", userId)).getPoint();
+    }
+
     @SneakyThrows
     @Transactional(rollbackFor = Exception.class)
     @Override

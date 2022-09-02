@@ -13,4 +13,8 @@ public class SkinBean {
     String skinName;
 
     PageBean pageBean;
+
+    Integer isDesc;
+
+    Long skinId;
 }

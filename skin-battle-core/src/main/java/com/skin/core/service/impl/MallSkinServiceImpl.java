@@ -3,6 +3,7 @@ package com.skin.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.skin.common.util.AssertUtil;
 import com.skin.core.mapper.MallSkinMapper;
 import com.skin.core.mapper.SkinMapper;
 import com.skin.core.service.*;
@@ -57,9 +58,9 @@ public class MallSkinServiceImpl extends ServiceImpl<MallSkinMapper, MallSkin> i
             queryWrapper.eq("goods_name", skinName);
         }
         queryWrapper.gt("stock", 0);
-        if (isDesc == 1) {
+        if (isDesc!=null && isDesc == 1) {
             queryWrapper.orderByDesc("price");
-        } else if (isDesc == 0) {
+        } else if (isDesc!=null && isDesc == 0) {
             queryWrapper.orderByAsc("price");
         } else {
             queryWrapper.orderByAsc("create_date");
@@ -81,18 +82,28 @@ public class MallSkinServiceImpl extends ServiceImpl<MallSkinMapper, MallSkin> i
         }
 
         User user = userService.getById(userId);
+        AssertUtil.isBlank(user.getSteamUrl(), "您还没有绑定Steam交易链接，请先绑定链接以继续游戏");
         String orderNo = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(899999) + 100000);
         TakeOrder takeOrder = new TakeOrder();
         takeOrder.setUserId(userId);
         takeOrder.setOrderNo(orderNo);
         takeOrder.setSource(6);
         takeOrder.setSkinName(mallSkin.getGoodsName());
-        BeanUtils.copyProperties(user, takeOrder);
+        takeOrder.setNickName(user.getNickName());
+        takeOrder.setUserId(user.getId());
+        takeOrder.setSteamUrl(user.getSteamUrl());
+        takeOrder.setTel(user.getTel());
+        takeOrder.setEmail(user.getEmail());
+        takeOrder.setAvatar(user.getAvatar());
         takeOrder.setStatus(0);
         takeOrder.setPrice(mallSkin.getPrice());
+        takeOrder.setAttritionRate(mallSkin.getAttritionRate());
         takeOrder.setPicUrl(mallSkin.getGoodsPic());
         takeOrderService.save(takeOrder);
 
+        //扣减库存
+        mallSkin.setStock(mallSkin.getStock()-1);
+        baseMapper.updateById(mallSkin);
         int from = Integer.parseInt(sysParamsService.getSysParams("business_type", "商城兑换", "10"));
         pointService.editPoint(userId, mallSkin.getPrice().negate(), from, "商城兑换", orderNo, 0);
     }

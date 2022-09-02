@@ -22,6 +22,7 @@ public interface PointService extends IService<PointInfo> {
 
     BigDecimal userPointSum();
 
+    BigDecimal getUserValidPoint(Long userId);
 
 
     void editPoint(Long userId, BigDecimal point, Integer from,String fromChn,String orderNo,Integer type);

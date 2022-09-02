@@ -193,6 +193,7 @@ public class RollRoomServiceImpl extends ServiceImpl<RollRoomMapper, RollRoom> i
         }
 
         User user = userService.getById(userId);
+        AssertUtil.isBlank(user.getSteamUrl(), "您还没有绑定Steam交易链接，请先绑定链接以继续游戏");
         RollRoomUser rollRoomUser = new RollRoomUser();
         rollRoomUser.setRoomId(roomId);
         rollRoomUser.setUserId(userId);

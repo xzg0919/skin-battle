@@ -1,6 +1,8 @@
 package com.skin.task;
 
+import com.skin.core.service.BoxBattleService;
 import com.skin.core.service.RollRoomService;
+import com.skin.entity.BoxBattleInfo;
 import com.skin.entity.RollRoom;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,14 @@ import java.util.concurrent.DelayQueue;
  * @Description:
  */
 @Component
-public class RollRoomTask implements ApplicationRunner {
+public class BoxBattleTask implements ApplicationRunner {
+
 
     @Autowired
-    RollRoomService rollRoomService;
+    BoxBattleService boxBattleService;
 
 
-    public static DelayQueue<RollRoomItem> queue = new DelayQueue<>();
+    public static DelayQueue<BoxBattleItem> queue = new DelayQueue<>();
 
 
     @Override
@@ -34,22 +37,23 @@ public class RollRoomTask implements ApplicationRunner {
             @SneakyThrows
             @Override
             public void run() {
-                List<RollRoom> unFinishRoom = rollRoomService.getUnfinishRoom();
-                for (RollRoom rollRoom : unFinishRoom) {
-                    RollRoomItem item =  new RollRoomItem(rollRoom.getName(),rollRoom.getLotteryTime().getTime(),rollRoom.getId());
+                List<BoxBattleInfo> unFinishRoom = boxBattleService.getUnfinishList();
+                for (BoxBattleInfo boxBattleInfo : unFinishRoom) {
+                    long time =boxBattleInfo.getUpdateDate().getTime()+1000*boxBattleInfo.getBoxCount();
+                    BoxBattleItem item =  new BoxBattleItem(time,boxBattleInfo.getId());
                     queue.put(item);
                 }
-                System.out.println("roll房task已启动" + LocalDateTime.now());
+                System.out.println("拼箱task已启动：" + LocalDateTime.now());
 
                 while(true){
-                    RollRoomItem take = queue.take();
-                    rollRoomService.roll(take.getId());
+                    BoxBattleItem take = queue.take();
+                    boxBattleService.finishBattle(take.getId());
                 }
             }
         };
 
         Thread t =new Thread(runnable);
-        t.setName("Thread-rollRoomTask");
+        t.setName("Thread-boxBattleTask");
         t.setDaemon(true);
         t.start();
     }

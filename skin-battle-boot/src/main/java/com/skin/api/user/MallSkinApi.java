@@ -1,6 +1,7 @@
 package com.skin.api.user;
 
 import com.skin.core.service.MallSkinService;
+import com.skin.params.SkinBean;
 import com.skin.params.UserBean;
 import com.tzj.module.api.annotation.Api;
 import com.tzj.module.api.annotation.ApiService;
@@ -26,8 +27,16 @@ public class MallSkinApi {
     @Api(name = "mall.skinPage", version = "1.0")
     @SignIgnore
     @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
-    public Object skinPage(UserBean userBean) {
+    public Object skinPage(SkinBean skinBean) {
+        return mallSkinService.getSkinPage(skinBean.getPageBean().getPageNum(), skinBean.getPageBean().getPageSize(), skinBean.getSkinName(), skinBean.getIsDesc());
+    }
 
-        return "领取成功";
+
+    @Api(name = "mall.exchange", version = "1.0")
+    @SignIgnore
+    @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
+    public Object exchange(SkinBean skinBean) {
+        mallSkinService.exchangeSkin(UserApi.getMember().getId(), skinBean.getSkinId());
+        return "success";
     }
 }

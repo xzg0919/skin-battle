@@ -1,6 +1,7 @@
 package com.skin;
 
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
+import com.skin.common.utils.SteamLoginUtil;
 import org.apache.catalina.connector.Connector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.util.HashMap;
 
 
 @EnableTransactionManagement
@@ -32,6 +35,9 @@ public class Application {
         app.setBannerMode(Banner.Mode.OFF);
         app.run(args);
         logger.info("PortalApplication is success!");
+
+
+
     }
 
     @Bean

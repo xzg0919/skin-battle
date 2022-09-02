@@ -50,6 +50,8 @@ public class UserApi {
 
     @Autowired
     InvitationService   invitationService;
+    @Autowired
+    PointService pointService;
 
     @Api(name = "user.register", version = "1.0")
     @SignIgnore
@@ -114,7 +116,10 @@ public class UserApi {
     @SignIgnore
     @RequiresPermissions(values = USER_API_COMMON_AUTHORITY)
     public Object getUserInfo(UserBean userBean) {
-        return userService.getUserInfo(getMember().getId());
+        HashMap<String,Object> result  =new HashMap<>();
+        result.put("userInfo",userService.getUserInfo(getMember().getId()));
+        result.put("point",pointService.getUserValidPoint(getMember().getId()));
+        return result;
     }
 
     @Api(name = "user.getMessagePage", version = "1.0")

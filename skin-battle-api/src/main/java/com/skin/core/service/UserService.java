@@ -6,6 +6,8 @@ import com.skin.vo.UserPage;
 import com.skin.entity.User;
 import com.skin.params.UserBean;
 
+import java.math.BigDecimal;
+
 
 /**
  * @Auther: xiangzhongguo

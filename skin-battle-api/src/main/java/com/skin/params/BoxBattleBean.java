@@ -30,7 +30,7 @@ public class BoxBattleBean {
 
     private  Long id ;
 
-    private Long BoxBattleId;
+    private Long boxBattleId;
 
     /** 皮肤名称 */
     private String skinName;
@@ -42,4 +42,13 @@ public class BoxBattleBean {
     private String picUrl ;
     /** 中奖概率 */
     private Double probability ;
+
+
+    /**
+     * 选择的盒子id  1,3,4,5
+     */
+    String boxIds;
+
+    Integer userCount;
+
 }
